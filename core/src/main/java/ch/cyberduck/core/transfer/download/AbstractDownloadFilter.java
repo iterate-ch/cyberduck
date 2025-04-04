@@ -196,11 +196,16 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     }
                     else if(status.getLength() > threshold) {
                         // if file is smaller than threshold do not attempt to segment
-                        final long segmentSize = findSegmentSize(status.getLength(),
-                                new AutoTransferConnectionLimiter().getLimit(session.getHost()), threshold,
-                                preferences.getLong("queue.download.segments.size"),
-                                preferences.getLong("queue.download.segments.count"));
-
+                        final long segmentSize;
+                        if(preferences.getBoolean("queue.download.segments.size.dynamic")) {
+                            segmentSize = findSegmentSize(status.getLength(),
+                                    new AutoTransferConnectionLimiter().getLimit(session.getHost()), threshold,
+                                    preferences.getLong("queue.download.segments.size"),
+                                    preferences.getLong("queue.download.segments.count"));
+                        }
+                        else {
+                            segmentSize = preferences.getLong("queue.download.segments.size");
+                        }
                         // with default settings this can handle files up to 16 GiB, with 128 segments at 128 MiB.
                         // this scales down to files of size 20MiB with 2 segments at 10 MiB
                         long remaining = status.getLength(), offset = 0;

@@ -16,10 +16,6 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ctera.directio.DirectIOInputStream;
 import ch.cyberduck.core.ctera.directio.EncryptInfo;
@@ -30,7 +26,6 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.Range;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 
@@ -41,104 +36,27 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static ch.cyberduck.core.ctera.CteraDirectIOInterceptor.toAccountName;
-import static ch.cyberduck.core.ctera.CteraDirectIOInterceptor.toServiceNameForSecretKey;
-
 public class CteraDirectIOReadFeature implements Read {
 
     private final CteraSession session;
-    private final HostPasswordStore keychain = PasswordStoreFactory.get();
-    private final CteraFileIdProvider fileid;
-    private final Host bookmark;
 
-
-    public CteraDirectIOReadFeature(final CteraSession session, final CteraFileIdProvider fileid) {
+    public CteraDirectIOReadFeature(final CteraSession session) {
         this.session = session;
-        this.fileid = fileid;
-        this.bookmark = session.getHost();
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final DirectIO directio = this.getMetadata(file);
-            final EncryptInfo key = new EncryptInfo(directio.wrapped_key, keychain.getPassword(toServiceNameForSecretKey(bookmark), toAccountName(bookmark)), true);
-            final TransferInfo info = this.getTransferInfo(directio, status);
-            final ChunkSequenceInputStream stream = new ChunkSequenceInputStream(info.chunks, key);
-            // Skip to requested position in first relevant chunk
-            stream.skip(info.offset);
-            return stream;
+            final EncryptInfo key = new EncryptInfo(status.getParameters().get("wrapped_key"), session.getOrCreateAPIKeys().secretKey, true);
+            final List<DirectIO.Chunk> chunks = new ArrayList<>();
+            final DirectIO.Chunk chunk = new DirectIO.Chunk();
+            chunk.url = status.getUrl();
+            chunk.len = status.getLength();
+            chunks.add(chunk);
+            return new ChunkSequenceInputStream(chunks, key);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
-        }
-    }
-
-    private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
-        final HttpGet request = new HttpGet(String.format("%s/directio/%s", new HostUrlProvider().withPath(false).get(session.getHost()), file.attributes().getCustom().get(CteraAttributesFinderFeature.CTERA_FILEID)));
-        //final HttpGet request = new HttpGet(String.format("%s/directio/%s", new HostUrlProvider().withPath(false).get(session.getHost()), fileid.getFileId(file)));
-        final HttpResponse response = session.getClient().getClient().execute(request);
-        ObjectMapper mapper = new ObjectMapper();
-        final HttpMethodReleaseInputStream stream = new HttpMethodReleaseInputStream(response, new TransferStatus());
-        final DirectIO directio = mapper.readValue(stream, DirectIO.class);
-        stream.close();
-        return directio;
-    }
-
-    protected TransferInfo getTransferInfo(final DirectIO directio, final TransferStatus status) {
-        long fileSize = directio.chunks.stream().mapToLong(chunk -> chunk.len).sum();
-        if(status.isAppend()) {
-            final List<DirectIO.Chunk> chunks = new ArrayList<>();
-            final Range<Long> requestedRange;
-            if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
-                requestedRange = Range.of(status.getOffset(), fileSize);
-            }
-            else {
-                requestedRange = Range.of(status.getOffset(), status.getOffset() + status.getLength());
-            }
-            long offsetInFirstChunk = 0;
-            long position = 0;
-            for(DirectIO.Chunk chunk : directio.chunks) {
-                final Range<Long> chunkRange = Range.of(position, position + chunk.len);
-                if(chunkRange.getMaximum() > requestedRange.getMinimum()) {
-                    if(chunkRange.contains(requestedRange.getMinimum())) {
-                        // First relevant chunk - calculate offset
-                        offsetInFirstChunk = requestedRange.getMinimum() - position;
-                    }
-                    final Range<Long> readRangeInChunk = Range.of(position, Math.min(position + chunk.len, requestedRange.getMaximum()));
-                    final long toRead = readRangeInChunk.getMaximum() - readRangeInChunk.getMinimum();
-                    if(toRead > 0) {
-                        chunks.add(chunk);
-                    }
-                    else {
-                        return new TransferInfo(chunks, offsetInFirstChunk);
-                    }
-                    if(chunkRange.getMaximum() > requestedRange.getMaximum()) {
-                        // Partial read of chunk
-                        return new TransferInfo(chunks, offsetInFirstChunk);
-                    }
-                }
-                position += chunk.len;
-            }
-            return new TransferInfo(chunks, offsetInFirstChunk);
-        }
-        return new TransferInfo(directio.chunks, 0);
-    }
-
-    protected static final class TransferInfo {
-
-        public List<DirectIO.Chunk> chunks;
-        public long offset;
-
-        /***
-         * @param chunks Normalized list of chunks
-         * @param offset Offset for first chunk
-         */
-        public TransferInfo(final List<DirectIO.Chunk> chunks, final long offset) {
-            this.chunks = chunks;
-            this.offset = offset;
         }
     }
 

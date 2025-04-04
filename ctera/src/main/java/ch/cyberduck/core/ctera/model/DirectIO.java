@@ -28,7 +28,7 @@ public final class DirectIO {
 
     public static final class Chunk {
         public String url;
-        public int len;
+        public long len;
     }
 }
 

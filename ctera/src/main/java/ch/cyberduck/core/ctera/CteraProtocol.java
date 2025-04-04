@@ -26,6 +26,9 @@ import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
 import ch.cyberduck.core.synchronization.ETagComparisonService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.auto.service.AutoService;
 
 @AutoService(Protocol.class)
@@ -96,6 +99,15 @@ public class CteraProtocol extends AbstractProtocol {
     @Override
     public String getTokenPlaceholder() {
         return "CTERA Token";
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        final Map<String, String> properties = new HashMap<>();
+        properties.put("queue.download.segments.size.dynamic", String.valueOf(false));
+        properties.put("queue.download.segments.size", "4194304");
+        properties.put("queue.download.segments.threshold", "4194304");
+        return properties;
     }
 
     @Override
