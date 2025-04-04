@@ -122,7 +122,8 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
                         new AbstractMap.SimpleEntry<>("readpermission", "false"),
                         new AbstractMap.SimpleEntry<>("deletepermission", "false"),
                         new AbstractMap.SimpleEntry<>("createdirectoriespermission", "false"),
-                        new AbstractMap.SimpleEntry<>("guid", "c51c40dc-1de0-441c-a6bf-3d07c0420329:1")
+                        new AbstractMap.SimpleEntry<>("guid", "c51c40dc-1de0-441c-a6bf-3d07c0420329:1"),
+                        new AbstractMap.SimpleEntry<>("fileid", "570825")
                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
                 noAccess.get(0).getCustomProps());
         assertEquals(new Acl(new Acl.CanonicalUser()), new CteraAttributesFinderFeature(session).toAttributes(noAccess.get(0)).getAcl());
