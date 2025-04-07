@@ -35,7 +35,6 @@ public interface Download {
      * @param listener Progress callback
      * @param status   Transfer status holder
      * @param callback Prompt
-     * @throws BackgroundException
      */
     void download(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
                   TransferStatus status, ConnectionCallback callback) throws BackgroundException;

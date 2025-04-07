@@ -33,8 +33,8 @@ public interface Upload<Reply> {
      * @param file           File on server
      * @param local          File on local disk
      * @param throttle       Bandwidth management
-     * @param progress
-     * @param streamListener Progress callback
+     * @param progress       Progress callback
+     * @param streamListener Stream copy callback
      * @param status         Transfer status holder
      * @param callback       Prompt
      * @see AttributesAdapter#toAttributes(Reply)

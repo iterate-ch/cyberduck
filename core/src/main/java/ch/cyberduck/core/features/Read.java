@@ -43,7 +43,7 @@ public interface Read {
      * @param file File
      * @return True if read with offset is supported
      */
-    default boolean offset(Path file) throws BackgroundException {
+    default boolean offset(final Path file) throws BackgroundException {
         if(this.features(file).contains(Flags.offset)) {
             return true;
         }
@@ -61,7 +61,7 @@ public interface Read {
     /**
      * @return Supported features
      */
-    default EnumSet<Flags> features(Path file) {
+    default EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.offset);
     }
 
