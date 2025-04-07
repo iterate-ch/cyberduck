@@ -51,18 +51,20 @@ public final class StringAppender {
         if(StringUtils.isBlank(StringUtils.trim(message))) {
             return this;
         }
-        if(buffer.length() > 0) {
-            buffer.append(" ");
-        }
-        buffer.append(StringUtils.trim(message));
-        if(buffer.charAt(buffer.length() - 1) == '.') {
-            return this;
-        }
-        if(buffer.charAt(buffer.length() - 1) == ':') {
-            buffer.deleteCharAt(buffer.length() - 1);
-        }
-        if(!Pattern.matches("[.?!]", String.valueOf(buffer.charAt(buffer.length() - 1)))) {
-            buffer.append(suffix);
+        if(!buffer.toString().contains(StringUtils.trim(message))) {
+            if(buffer.length() > 0) {
+                buffer.append(" ");
+            }
+            buffer.append(StringUtils.trim(message));
+            if(buffer.charAt(buffer.length() - 1) == '.') {
+                return this;
+            }
+            if(buffer.charAt(buffer.length() - 1) == ':') {
+                buffer.deleteCharAt(buffer.length() - 1);
+            }
+            if(!Pattern.matches("[.?!]", String.valueOf(buffer.charAt(buffer.length() - 1)))) {
+                buffer.append(suffix);
+            }
         }
         return this;
     }
