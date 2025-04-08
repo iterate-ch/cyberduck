@@ -17,7 +17,7 @@ package ch.cyberduck.core.ctera.directio;
 
 public class EncryptInfo {
 
-    public EncryptInfo(String wrappedKey, String wrappingKey) {
+    public EncryptInfo(final String wrappedKey, final String wrappingKey) {
         this.wrappedKey = wrappedKey;
         this.wrappingKey = wrappingKey;
     }

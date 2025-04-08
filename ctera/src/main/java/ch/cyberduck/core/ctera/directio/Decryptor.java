@@ -41,12 +41,10 @@ public class Decryptor {
     private static final String ENCRYPTION_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String ENCRYPTION_KEY_ALGORITHM = "AES";
 
-
     private static final byte[] GZIP_MAGIC = {0x1F, (byte) 0x8B};
     private static final byte[] SNAPPY_MAGIC = {-126, 83, 78, 65, 80, 80, 89, 0};
 
-    public InputStream decryptData(final InputStream blockData, final EncryptInfo encryptInfo)
-            throws IOException {
+    public InputStream decryptData(final InputStream blockData, final EncryptInfo encryptInfo) throws IOException {
         try {
             final DecryptKey decryptKey = new DecryptKey(encryptInfo.getWrappedKey());
             decryptKey.decrypt(encryptInfo.getWrappingKey());

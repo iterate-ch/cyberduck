@@ -31,7 +31,6 @@ public class DirectIOInputStream extends ProxyInputStream {
         super(proxy);
         this.decryptor = new Decryptor();
         this.encryptInfo = encryptInfo;
-        this.decryptedInputStream = null;
     }
 
     @Override
