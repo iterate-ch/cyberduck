@@ -97,6 +97,7 @@
     <Convert Include="$(TargetBuildDir)commons-lang.commons-lang.jar" />
     <Convert Include="$(TargetBuildDir)io.dropwizard.metrics.metrics-core.jar" />
     <Convert Include="$(TargetBuildDir)io.dropwizard.metrics.metrics-jmx.jar" />
+    <Convert Include="$(TargetBuildDir)io.grpc.grpc-api.jar" />
     <Convert Include="$(TargetBuildDir)io.grpc.grpc-context.jar" />
     <Convert Include="$(TargetBuildDir)io.mikael.urlbuilder.jar" />
     <Convert Include="$(TargetBuildDir)io.opencensus.opencensus-api.jar" />
