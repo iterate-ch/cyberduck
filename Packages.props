@@ -20,7 +20,7 @@
     <PackageReference Update="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.100" />
     <PackageReference Update="ExceptionReporter " Version="2.4.2" />
     <PackageReference Update="IKVM" Version="8.11.0-dev.283" />
-    <PackageReference Update="iterate-ch.IKVM.MSBuild.SkipDuplicates" Version="1.0.0" />
+    <PackageReference Update="iterate-ch.IKVM.MSBuild.SkipDuplicates" Version="1.0.1" />
     <PackageReference Update="Microsoft.Build.Utilities.Core" Version="17.1.0" />
     <PackageReference Update="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.1.0" />
