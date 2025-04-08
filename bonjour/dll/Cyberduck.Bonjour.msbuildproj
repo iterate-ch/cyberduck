@@ -11,9 +11,9 @@
 
   <ItemGroup>
     <CyberduckReference Include="Core" />
+    <PackageReference Include="iterate-ch.IKVM.MSBuild.SkipDuplicates" />
 
-    <Convert Include="$(TargetBuildDir)ch.cyberduck.bonjour.jar" />
-    <Convert Include="$(TargetBuildDir)com.apple.dnssd.jar" />
+    <Convert Include="$(TargetBuildDir)*.jar" />
   </ItemGroup>
 
 </Project>
