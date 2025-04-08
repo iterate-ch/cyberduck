@@ -48,7 +48,7 @@ public class CteraDirectIOReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final EncryptInfo key = new EncryptInfo(status.getParameters().get("wrapped_key"), session.getOrCreateAPIKeys().secretKey, true);
+            final EncryptInfo key = new EncryptInfo(status.getParameters().get("wrapped_key"), session.getOrCreateAPIKeys().secretKey);
             final List<DirectIO.Chunk> chunks = new ArrayList<>();
             final DirectIO.Chunk chunk = new DirectIO.Chunk();
             chunk.url = status.getUrl();

@@ -80,8 +80,9 @@ public class CteraSession extends DAVSession {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.disableRedirectHandling();
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt))));
-        configuration.addInterceptorFirst(directio = new CteraDirectIOInterceptor(this));
+                new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt),
+                        directio = new CteraDirectIOInterceptor(this))));
+        configuration.addInterceptorFirst(directio);
         configuration.addInterceptorFirst(new CteraCookieInterceptor());
         final DAVClient client = new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
         final HttpGet request = new HttpGet(PUBLIC_INFO_PATH);
@@ -141,8 +142,8 @@ public class CteraSession extends DAVSession {
     }
 
     public APICredentials getOrCreateAPIKeys() throws BackgroundException {
-        final String accessKey = keychain.getPassword(toServiceNameForAccessKey(host), toAccountName(host));
-        final String secretKey = keychain.getPassword(toServiceNameForSecretKey(host), toAccountName(host));
+        final String accessKey = keychain.getPassword(toServiceName(host), toAccountNameForAccessKey(host));
+        final String secretKey = keychain.getPassword(toServiceName(host), toAccountNameForSecretKey(host));
         final APICredentials credentials;
         if(StringUtils.isBlank(accessKey) || StringUtils.isBlank(secretKey)) {
             credentials = this.createAPICredentials();
@@ -171,8 +172,8 @@ public class CteraSession extends DAVSession {
                     return mapper.readValue(entity.getContent(), APICredentials.class);
                 }
             });
-            keychain.addPassword(toServiceNameForAccessKey(host), toAccountName(host), credentials.accessKey);
-            keychain.addPassword(toServiceNameForSecretKey(host), toAccountName(host), credentials.secretKey);
+            keychain.addPassword(toServiceName(host), toAccountNameForAccessKey(host), credentials.accessKey);
+            keychain.addPassword(toServiceName(host), toAccountNameForSecretKey(host), credentials.secretKey);
             return credentials;
         }
         catch(HttpResponseException e) {
@@ -183,17 +184,17 @@ public class CteraSession extends DAVSession {
         }
     }
 
-    private static String toAccountName(final Host bookmark) {
-        return new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl();
-    }
-
-    private static String toServiceNameForAccessKey(final Host bookmark) {
+    private static String toAccountNameForAccessKey(final Host bookmark) {
         return String.format("API Access Key (%s)", bookmark.getCredentials().getUsername());
     }
 
-    private static String toServiceNameForSecretKey(final Host bookmark) {
+    private static String toAccountNameForSecretKey(final Host bookmark) {
         return String.format("API Secret Key (%s)", bookmark.getCredentials().getUsername());
+    }
+
+    private static String toServiceName(final Host bookmark) {
+        return new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl();
     }
 
     @Override

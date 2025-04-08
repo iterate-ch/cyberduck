@@ -58,10 +58,10 @@ public class AbstractCteraTest extends VaultTest {
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
         public String getPassword(final String serviceName, final String accountName) {
-            if(serviceName.equals("API Access Key (admin)")) {
+            if(accountName.equals("API Access Key (admin)")) {
                 return PROPERTIES.get("ctera.directio.accesskey");
             }
-            if(serviceName.equals("API Secret Key (admin)")) {
+            if(accountName.equals("API Secret Key (admin)")) {
                 return PROPERTIES.get("ctera.directio.secretkey");
             }
             return null;
@@ -69,10 +69,10 @@ public class AbstractCteraTest extends VaultTest {
 
         @Override
         public void addPassword(final String serviceName, final String accountName, final String password) {
-            if(serviceName.equals("API Access Key (admin)")) {
+            if(accountName.equals("API Access Key (admin)")) {
                 VaultTest.add("ctera.directio.accesskey", password);
             }
-            if(serviceName.equals("API Secret Key (admin)")) {
+            if(accountName.equals("API Secret Key (admin)")) {
                 VaultTest.add("ctera.directio.secretkey", password);
             }
         }

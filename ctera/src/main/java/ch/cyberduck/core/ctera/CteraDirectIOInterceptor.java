@@ -17,17 +17,21 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ServiceUnavailableRetryStrategy;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-public class CteraDirectIOInterceptor implements HttpRequestInterceptor {
-
+public class CteraDirectIOInterceptor implements HttpRequestInterceptor, ServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(CteraDirectIOInterceptor.class);
 
     public static final String DIRECTIO_PATH = "/directio/";
@@ -46,7 +50,33 @@ public class CteraDirectIOInterceptor implements HttpRequestInterceptor {
             }
             catch(BackgroundException e) {
                 log.error("Failure creating API keys. {}", e.getMessage());
+                throw new IOException(e);
             }
         }
+    }
+
+    @Override
+    public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
+        switch(response.getStatusLine().getStatusCode()) {
+            case HttpStatus.SC_UNAUTHORIZED:
+                final HttpClientContext clientContext = HttpClientContext.adapt(context);
+                if(StringUtils.startsWith(clientContext.getRequest().getRequestLine().getUri(), CteraDirectIOInterceptor.DIRECTIO_PATH)) {
+                    try {
+                        session.createAPICredentials();
+                        // Try again
+                        return true;
+                    }
+                    catch(BackgroundException e) {
+                        log.error("Failure creating API keys. {}", e.getMessage());
+                        return false;
+                    }
+                }
+        }
+        return false;
+    }
+
+    @Override
+    public long getRetryInterval() {
+        return 0L;
     }
 }
