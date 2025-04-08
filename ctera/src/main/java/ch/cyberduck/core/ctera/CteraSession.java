@@ -49,6 +49,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -64,6 +65,9 @@ public class CteraSession extends DAVSession {
 
     private final HostPasswordStore keychain;
     private final VersionIdProvider versionid = new DefaultVersionIdProvider(this);
+
+    private APICredentials apiCredentials;
+    private final ReentrantLock lock = new ReentrantLock();
 
     public CteraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         this(host, trust, key, PasswordStoreFactory.get());
@@ -142,45 +146,61 @@ public class CteraSession extends DAVSession {
     }
 
     public APICredentials getOrCreateAPIKeys() throws BackgroundException {
-        final String accessKey = keychain.getPassword(toServiceName(host), toAccountNameForAccessKey(host));
-        final String secretKey = keychain.getPassword(toServiceName(host), toAccountNameForSecretKey(host));
-        final APICredentials credentials;
-        if(StringUtils.isBlank(accessKey) || StringUtils.isBlank(secretKey)) {
-            credentials = this.createAPICredentials();
+        lock.lock();
+        try {
+            if(null != apiCredentials) {
+                return apiCredentials;
+            }
+            final String accessKey = keychain.getPassword(toServiceName(host), toAccountNameForAccessKey(host));
+            final String secretKey = keychain.getPassword(toServiceName(host), toAccountNameForSecretKey(host));
+            final APICredentials credentials;
+            if(StringUtils.isBlank(accessKey) || StringUtils.isBlank(secretKey)) {
+                credentials = this.createAPICredentials();
+            }
+            else {
+                credentials = new APICredentials();
+                credentials.accessKey = accessKey;
+                credentials.secretKey = secretKey;
+                apiCredentials = credentials;
+            }
+            return credentials;
         }
-        else {
-            credentials = new APICredentials();
-            credentials.accessKey = accessKey;
-            credentials.secretKey = secretKey;
+        finally {
+            lock.unlock();
         }
-        return credentials;
     }
 
     public APICredentials createAPICredentials() throws BackgroundException {
-        final HttpPost post = new HttpPost(API_PATH);
+        lock.lock();
         try {
-            final String userId = this.getPortalSession().getUserIdFromUserRef();
-            post.setEntity(
-                    new StringEntity(String.format("<obj><att id=\"type\"><val>user-defined</val></att><att id=\"name\"><val>createApiKey</val></att><att id=\"param\"><val>%s</val></att></obj>",
-                            userId), ContentType.TEXT_XML
-                    )
-            );
-            final APICredentials credentials = this.getClient().execute(post, new AbstractResponseHandler<APICredentials>() {
-                @Override
-                public APICredentials handleEntity(final HttpEntity entity) throws IOException {
-                    ObjectMapper mapper = new ObjectMapper();
-                    return mapper.readValue(entity.getContent(), APICredentials.class);
-                }
-            });
-            keychain.addPassword(toServiceName(host), toAccountNameForAccessKey(host), credentials.accessKey);
-            keychain.addPassword(toServiceName(host), toAccountNameForSecretKey(host), credentials.secretKey);
-            return credentials;
+            final HttpPost post = new HttpPost(API_PATH);
+            try {
+                final String userId = this.getPortalSession().getUserIdFromUserRef();
+                post.setEntity(
+                        new StringEntity(String.format("<obj><att id=\"type\"><val>user-defined</val></att><att id=\"name\"><val>createApiKey</val></att><att id=\"param\"><val>%s</val></att></obj>",
+                                userId), ContentType.TEXT_XML
+                        )
+                );
+                final APICredentials credentials = this.getClient().execute(post, new AbstractResponseHandler<APICredentials>() {
+                    @Override
+                    public APICredentials handleEntity(final HttpEntity entity) throws IOException {
+                        ObjectMapper mapper = new ObjectMapper();
+                        return mapper.readValue(entity.getContent(), APICredentials.class);
+                    }
+                });
+                keychain.addPassword(toServiceName(host), toAccountNameForAccessKey(host), credentials.accessKey);
+                keychain.addPassword(toServiceName(host), toAccountNameForSecretKey(host), credentials.secretKey);
+                return apiCredentials = credentials;
+            }
+            catch(HttpResponseException e) {
+                throw new DefaultHttpResponseExceptionMappingService().map(e);
+            }
+            catch(IOException e) {
+                throw new HttpExceptionMappingService().map(e);
+            }
         }
-        catch(HttpResponseException e) {
-            throw new DefaultHttpResponseExceptionMappingService().map(e);
-        }
-        catch(IOException e) {
-            throw new HttpExceptionMappingService().map(e);
+        finally {
+            lock.unlock();
         }
     }
 
