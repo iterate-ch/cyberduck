@@ -15,7 +15,6 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -25,7 +24,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
@@ -36,7 +34,6 @@ import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -61,7 +58,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class CteraConcurrentTransferWorkerTest extends AbstractCteraTest {
+public class CteraConcurrentTransferWorkerTest extends AbstractCteraDirectIOTest {
 
     @Test
     public void testLargeUpAndDownload() throws Exception {
@@ -76,12 +73,7 @@ public class CteraConcurrentTransferWorkerTest extends AbstractCteraTest {
         assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         final Transfer download = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
-        final SessionPool pool = SessionPoolFactory.create(new AbstractController() {
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                runnable.run();
-            }
-        }, session.getHost());
+        final SessionPool pool = new SessionPool.SingleSessionPool(session);
         final BytecountStreamListener bytecount = new BytecountStreamListener();
         assertTrue(new ConcurrentTransferWorker(pool, pool, download, new TransferOptions(), new TransferSpeedometer(download), new DisabledTransferPrompt() {
             @Override
@@ -95,5 +87,4 @@ public class CteraConcurrentTransferWorkerTest extends AbstractCteraTest {
         local.delete();
         localFile.delete();
     }
-
 }

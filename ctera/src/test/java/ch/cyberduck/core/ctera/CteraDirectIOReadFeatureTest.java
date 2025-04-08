@@ -48,7 +48,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
+public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
 
     @Test
     public void testReadChunk() throws Exception {
