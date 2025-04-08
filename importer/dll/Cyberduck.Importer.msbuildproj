@@ -8,9 +8,9 @@
 
   <ItemGroup>
     <CyberduckReference Include="Core" />
+    <PackageReference Include="iterate-ch.IKVM.MSBuild.SkipDuplicates" />
 
-    <Convert Include="$(TargetBuildDir)ch.cyberduck.binding.jar" />
-    <Convert Include="$(TargetBuildDir)ch.cyberduck.importer.jar" />
+    <Convert Include="$(TargetBuildDir)*.jar" />
   </ItemGroup>
 
 </Project>
