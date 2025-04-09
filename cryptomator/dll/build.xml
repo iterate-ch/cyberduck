@@ -32,8 +32,6 @@
             <arg value="-skipDuplicates"/>
             <fileset dir="${build}">
                 <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
                 <exclude name="*-sources.jar"/>
                 <exclude name="*-tests.jar"/>
             </fileset>
