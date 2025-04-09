@@ -54,6 +54,7 @@ public class ListWorker extends Worker<AttributedList<Path>> {
             final AttributedList<Path> list;
             listener.reset();
             if(this.isCached()) {
+                log.debug("Lookup cached contents for {}", directory);
                 list = cache.get(directory);
                 listener.chunk(directory, list);
             }
@@ -80,6 +81,7 @@ public class ListWorker extends Worker<AttributedList<Path>> {
 
     @Override
     public void cleanup(final AttributedList<Path> list, final BackgroundException failure) {
+        log.debug("Run cleanup for listener {} with list {} and failure {}", listener, list, failure);
         listener.cleanup(directory, list, Optional.ofNullable(failure));
         super.cleanup(list, failure);
     }
