@@ -361,7 +361,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return this.isBrowser() && controller.isMounted() && controller.getNavigation().getBack().size() > 1;
         }
         else if(action.equals(Foundation.selector("forwardButtonClicked:"))) {
-            return this.isBrowser() && controller.isMounted() && controller.getNavigation().getForward().size() > 0;
+            return this.isBrowser() && controller.isMounted() && !controller.getNavigation().getForward().isEmpty();
         }
         else if(action.equals(Foundation.selector("printDocument:"))) {
             return this.isBrowser() && controller.isMounted();
