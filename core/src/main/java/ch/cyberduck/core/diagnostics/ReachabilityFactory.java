@@ -23,6 +23,8 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.JumpHostConfiguratorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyFinder;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,27 +49,28 @@ public class ReachabilityFactory extends Factory<Reachability> {
 
         @Override
         public void test(final Host bookmark) throws BackgroundException {
+            final ProxyFinder proxy = ProxyFactory.get();
             switch(bookmark.getProtocol().getScheme()) {
                 case file:
                     new DiskReachability().test(bookmark);
                     break;
                 case https:
                 case http:
-                    new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(), new HttpReachability()).test(bookmark);
+                    new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(proxy), new HttpReachability(proxy)).test(bookmark);
                     break;
                 case sftp:
                     final Host jumphost = JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname());
                     if(null != jumphost) {
                         log.warn("Run reachablity check for jump host {}", jumphost);
-                        new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(), new TcpReachability()).test(jumphost);
+                        new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(proxy), new TcpReachability(proxy)).test(jumphost);
                         return;
                     }
                     else {
-                        new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(), new TcpReachability()).test(bookmark);
+                        new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(proxy), new TcpReachability(proxy)).test(bookmark);
                     }
                     break;
                 default:
-                    new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(), new TcpReachability()).test(bookmark);
+                    new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(proxy), new TcpReachability(proxy)).test(bookmark);
                     break;
             }
         }

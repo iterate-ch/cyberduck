@@ -62,7 +62,11 @@ public class HttpReachability implements Reachability {
     private final CertificateStore store;
 
     public HttpReachability() {
-        this(ProxyFactory.get(), CertificateStoreFactory.get());
+        this(ProxyFactory.get());
+    }
+
+    public HttpReachability(final ProxyFinder proxy) {
+        this(proxy, CertificateStoreFactory.get());
     }
 
     public HttpReachability(final ProxyFinder proxy, final CertificateStore store) {
