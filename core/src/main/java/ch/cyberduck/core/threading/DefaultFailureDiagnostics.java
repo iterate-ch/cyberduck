@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -63,6 +64,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
                 return Type.network;
             }
             if(failure instanceof TransferCanceledException) {
+                return Type.skip;
+            }
+            if(failure instanceof ListCanceledException) {
                 return Type.skip;
             }
             if(failure instanceof ConnectionCanceledException) {
