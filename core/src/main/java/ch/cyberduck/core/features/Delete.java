@@ -15,17 +15,14 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -91,10 +88,7 @@ public interface Delete {
     }
 
     default void preflight(final Path file) throws BackgroundException {
-        if(!file.attributes().getPermission().isWritable()) {
-            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot delete {0}", "Error"),
-                    file.getName())).withFile(file);
-        }
+        // No-op
     }
 
     /**
