@@ -33,6 +33,11 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v3
         with:
           args: install wixtoolset -y
+      - name: Install OpenSSL
+        if: ${{ runner.os == 'Windows' }}
+        uses: crazy-max/ghaction-chocolatey@v3
+        with:
+          args: install openssl -y
       - name: Build with Maven
         run: mvn --batch-mode deploy -DskipTests -DskipITs -DskipSign -DskipNotarize
         env:
