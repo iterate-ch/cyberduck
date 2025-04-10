@@ -1,6 +1,6 @@
 # Changelog
 
-[9.1.4](https://github.com/iterate-ch/cyberduck/compare/release-9-1-3...release-9-1-3)
+[9.1.4](https://github.com/iterate-ch/cyberduck/compare/release-9-1-3...release-9-1-4)
 
 * [Bugfix] Slow file transfers (SMB) ([#16135](https://trac.cyberduck.io/ticket/16135))
 * [Bugfix] Interoperability with Bitwarden SFTP Agent ([#16954](https://trac.cyberduck.io/ticket/16954))
@@ -11,6 +11,7 @@
 * [Bugfix] No pre-signed URLs available when using credentials from AWS Command Line Interface (CLI) connection
   profile (S3) ([#13738](https://trac.cyberduck.io/ticket/13738))
 * [Bugfix] No pre-signed URLs available when using credentials from OpenID Connect (OIDC) connection profile (S3)
+* [Bugfix] Error opening connection ([#17012](https://trac.cyberduck.io/ticket/17012)) (Azure) (Windows, CLI)
 
 [9.1.3](https://github.com/iterate-ch/cyberduck/compare/release-9-1-2...release-9-1-3)
 * [Bugfix] Invalid progress in Finder transferring multiple files (macOS) ([#16738](https://trac.cyberduck.io/ticket/16738))
