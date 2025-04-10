@@ -140,6 +140,7 @@
                     <artifactId>Cyberduck.Core.Native</artifactId>
                     <type>dll</type>
                     <version>${project.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
