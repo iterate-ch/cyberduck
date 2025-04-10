@@ -28,6 +28,11 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v3
         with:
           args: install bonjour -y
+      - name: Install WiX Toolset
+        if: ${{ runner.os == 'Windows' }}
+        uses: crazy-max/ghaction-chocolatey@v3
+        with:
+          args: install wixtoolset -y
       - name: Build with Maven
         run: mvn --batch-mode deploy -DskipTests -DskipITs -DskipSign -DskipNotarize
         env:
