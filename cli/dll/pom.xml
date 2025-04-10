@@ -113,12 +113,24 @@
                     <type>dll</type>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>ch.cyberduck</groupId>
+                            <artifactId>core</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core.Native</artifactId>
                     <type>dll</type>
                     <version>${project.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>ch.cyberduck</groupId>
+                            <artifactId>Cyberduck.Core</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
@@ -126,6 +138,12 @@
                     <type>dll</type>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>ch.cyberduck</groupId>
+                            <artifactId>protocols</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
@@ -133,6 +151,12 @@
                     <type>dll</type>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>ch.cyberduck</groupId>
+                            <artifactId>cryptomator</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
             </dependencies>
         </profile>
@@ -143,6 +167,20 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>cli</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>cryptomator</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>protocols</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
