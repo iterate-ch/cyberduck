@@ -122,39 +122,6 @@
                                     </target>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>run-ant-installer-target</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <property name="version" value="${project.version}" />
-                                        <property name="revision" value="${git.commitsCount}" />
-                                        <property name="skip" value="${skipSign}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
-                                    </target>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>run-ant-deploy-target</id>
-                                <phase>deploy</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <property name="version" value="${project.version}" />
-                                        <property name="revision" value="${git.commitsCount}" />
-                                        <property name="hash" value="${git.revision}" />
-                                        <property name="sparkle.feed" value="${sparkle.feed}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="deploy" dir="." />
-                                    </target>
-                                </configuration>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
@@ -231,6 +198,59 @@
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
+        </profile>
+        <profile>
+            <id>installer</id>
+            <activation>
+                <property>
+                    <name>env.JENKINS_HOME</name>
+                </property>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>run-ant-installer-target</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <property name="home" value="${main.basedir}"/>
+                                        <property name="version" value="${project.version}"/>
+                                        <property name="revision" value="${git.commitsCount}"/>
+                                        <property name="skip" value="${skipSign}"/>
+                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="."/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-ant-deploy-target</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <property name="home" value="${main.basedir}"/>
+                                        <property name="version" value="${project.version}"/>
+                                        <property name="revision" value="${git.commitsCount}"/>
+                                        <property name="hash" value="${git.revision}"/>
+                                        <property name="sparkle.feed" value="${sparkle.feed}"/>
+                                        <ant antfile="${project.basedir}/build.xml" target="deploy" dir="."/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
