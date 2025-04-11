@@ -19,6 +19,8 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 
@@ -31,10 +33,20 @@ import java.net.Socket;
 public class TcpReachability implements Reachability {
     private static final Logger log = LogManager.getLogger(TcpReachability.class);
 
+    private final ProxyFinder proxy;
+
+    public TcpReachability() {
+        this(ProxyFactory.get());
+    }
+
+    public TcpReachability(final ProxyFinder proxy) {
+        this.proxy = proxy;
+    }
+
     @Override
     public void test(final Host bookmark) throws BackgroundException {
         final HostnameConfigurator configurator = bookmark.getProtocol().getFeature(HostnameConfigurator.class);
-        try (Socket socket = new ProxySocketFactory(bookmark, new DefaultSocketConfigurator(Reachability.timeout))
+        try(Socket socket = new ProxySocketFactory(bookmark, new DefaultSocketConfigurator(Reachability.timeout), proxy)
                 .createSocket(configurator.getHostname(bookmark.getHostname()), bookmark.getPort())) {
             log.info("Opened socket {} for {}", socket, bookmark);
         }

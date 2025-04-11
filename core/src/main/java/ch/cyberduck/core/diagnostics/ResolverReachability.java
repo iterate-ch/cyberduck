@@ -19,15 +19,39 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.Resolver;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
-public class ResolverReachability extends DisabledReachability {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+public class ResolverReachability extends DisabledReachability {
+    private static final Logger log = LogManager.getLogger(ResolverReachability.class);
+
+    private final ProxyFinder proxy;
     private final Resolver resolver = new Resolver();
+
+    public ResolverReachability() {
+        this(ProxyFactory.get());
+    }
+
+    public ResolverReachability(final ProxyFinder proxy) {
+        this.proxy = proxy;
+    }
 
     @Override
     public void test(final Host bookmark) throws BackgroundException {
         final HostnameConfigurator configurator = bookmark.getProtocol().getFeature(HostnameConfigurator.class);
-        resolver.resolve(configurator.getHostname(bookmark.getHostname()), CancelCallback.noop);
+        final String hostname = configurator.getHostname(bookmark.getHostname());
+        if(proxy.find(new ProxyHostUrlProvider().get(bookmark)) == Proxy.DIRECT) {
+            // Only try to resolve target hostname if direct connection
+            resolver.resolve(hostname, CancelCallback.noop);
+        }
+        else {
+            log.warn("Skip attempt to resolve hostname {} for {} with proxy configuration found", hostname, bookmark);
+        }
     }
 }
