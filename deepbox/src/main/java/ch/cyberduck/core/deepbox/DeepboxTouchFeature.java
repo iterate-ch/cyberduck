@@ -41,22 +41,22 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Node> {
     @Override
     public void preflight(final Path workdir, final String filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
-        }
-        if(containerService.isCompany(workdir)) {
             throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted at the organisation level", "Deepbox")).withFile(workdir);
         }
-        if(containerService.isDeepbox(workdir)) {
+        if(containerService.isCompany(workdir)) {
             throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
+        }
+        if(containerService.isDeepbox(workdir)) {
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in the boxes area", "Deepbox")).withFile(workdir);
         }
         if(containerService.isTrash(workdir)) {
             throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
         }
         if(containerService.isSharedWithMe(workdir)) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in the boxes area", "Deepbox")).withFile(workdir);
         }
         if(containerService.isBox(workdir)) {
-            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in the boxes area", "Deepbox")).withFile(workdir);
+            throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted in this area", "Deepbox")).withFile(workdir);
         }
         final Acl acl = workdir.attributes().getAcl();
         if(Acl.EMPTY == acl) {
