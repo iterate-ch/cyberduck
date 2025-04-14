@@ -37,7 +37,8 @@ public class CryptoFindFeature implements Find {
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return delegate.find(vault.encrypt(session, file, true), new DecryptingListProgressListener(session, vault, listener));
+        return delegate.find(vault.encrypt(session, file, true),
+                new DecryptingListProgressListener(session, vault, file.getParent(), listener));
     }
 
     @Override

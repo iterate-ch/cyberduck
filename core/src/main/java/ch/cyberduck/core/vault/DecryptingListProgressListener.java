@@ -35,16 +35,18 @@ import java.util.regex.Pattern;
 public class DecryptingListProgressListener extends IndexedListProgressListener {
     private static final Logger log = LogManager.getLogger(DecryptingListProgressListener.class);
 
+    private final Path directory;
     private final Session<?> session;
     private final Vault vault;
     private final ListProgressListener delegate;
     private final Filter<Path> skip;
 
-    public DecryptingListProgressListener(final Session<?> session, final Vault vault, final ListProgressListener delegate) {
-        this(session, vault, delegate, new SkipRegexFilter(Pattern.compile(PreferencesFactory.get().getProperty("cryptomator.vault.skip.regex"))));
+    public DecryptingListProgressListener(final Session<?> session, final Vault vault, final Path directory, final ListProgressListener delegate) {
+        this(session, vault, directory, delegate, new SkipRegexFilter(Pattern.compile(PreferencesFactory.get().getProperty("cryptomator.vault.skip.regex"))));
     }
 
-    public DecryptingListProgressListener(final Session<?> session, final Vault vault, final ListProgressListener delegate, final Filter<Path> skip) {
+    public DecryptingListProgressListener(final Session<?> session, final Vault vault, final Path directory, final ListProgressListener delegate, final Filter<Path> skip) {
+        this.directory = directory;
         this.session = session;
         this.vault = vault;
         this.delegate = delegate;
@@ -69,14 +71,14 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     }
 
     @Override
-    public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
+    public void chunk(final Path encrypted, final AttributedList<Path> list) throws ConnectionCanceledException {
         super.chunk(directory, list);
         delegate.chunk(directory, list);
         super.chunk(directory, list);
     }
 
     @Override
-    public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
+    public void cleanup(final Path encrypted, final AttributedList<Path> list, final Optional<BackgroundException> e) {
         delegate.cleanup(directory, list, e);
     }
 

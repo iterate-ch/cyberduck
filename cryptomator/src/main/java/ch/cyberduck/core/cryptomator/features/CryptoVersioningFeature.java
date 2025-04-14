@@ -67,7 +67,7 @@ public class CryptoVersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return delegate.list(vault.encrypt(session, file), new DecryptingListProgressListener(session, vault, listener));
+        return delegate.list(vault.encrypt(session, file), new DecryptingListProgressListener(session, vault, file, listener));
     }
 
     @Override
