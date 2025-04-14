@@ -42,17 +42,9 @@ public class MemoryListProgressListener extends ProxyListProgressListener {
 
     @Override
     public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
-        super.cleanup(directory, list, e);
+        // Cache contents in proxy
+        super.cleanup(directory, contents.get(), e);
         log.debug("Clear cached contents for {}", directory);
         contents.set(AttributedList.emptyList());
-    }
-
-    /**
-     * @return Cached directory listing
-     */
-    public AttributedList<Path> getContents() {
-        final AttributedList<Path> list = contents.get();
-        log.debug("Return cached contents {}", list);
-        return list;
     }
 }

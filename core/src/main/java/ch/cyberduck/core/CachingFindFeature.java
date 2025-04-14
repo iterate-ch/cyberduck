@@ -96,12 +96,12 @@ public class CachingFindFeature implements Find {
         try {
             final boolean found = delegate.find(file, memory);
             // Notify listener with contents
-            memory.cleanup(directory, memory.getContents(), Optional.empty());
+            memory.cleanup(directory, AttributedList.emptyList(), Optional.empty());
             return found;
         }
         catch(NotfoundException e) {
             log.warn("Parent directory for file {} not found", file);
-            memory.cleanup(directory, memory.getContents(), Optional.of(e));
+            memory.cleanup(directory, AttributedList.emptyList(), Optional.of(e));
             return false;
         }
     }
