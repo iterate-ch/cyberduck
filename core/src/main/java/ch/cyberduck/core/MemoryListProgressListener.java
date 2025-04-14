@@ -34,6 +34,13 @@ public class MemoryListProgressListener extends ProxyListProgressListener {
     }
 
     @Override
+    public ListProgressListener reset() throws ConnectionCanceledException {
+        contents.set(AttributedList.emptyList());
+        super.reset();
+        return this;
+    }
+
+    @Override
     public void chunk(final Path directory, final AttributedList<Path> list) throws ConnectionCanceledException {
         super.chunk(directory, list);
         log.debug("Cache list {} for {}", list, directory);
