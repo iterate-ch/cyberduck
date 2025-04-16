@@ -54,10 +54,7 @@ public class FindWorker extends Worker<Boolean> {
 
     @Override
     public void cleanup(final Boolean result, final BackgroundException e) {
-        final Path directory = file.getParent();
-        final AttributedList<Path> list = memory.getContents();
-        log.debug("Cache directory listing {} for {}", list, directory);
-        memory.cleanup(directory, list, Optional.ofNullable(e));
+        memory.cleanup(file.getParent(), AttributedList.emptyList(), Optional.ofNullable(e));
     }
 
     @Override

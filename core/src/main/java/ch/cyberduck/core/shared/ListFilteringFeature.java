@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.CaseSensitivePathPredicate;
 import ch.cyberduck.core.DefaultPathPredicate;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -46,7 +47,8 @@ public abstract class ListFilteringFeature {
     protected Path search(final Path file, final ListProgressListener listener) throws BackgroundException {
         final Path directory = file.getParent();
         log.debug("Lookup {} in {}", file, directory);
-        final AttributedList<Path> list = session._getFeature(ListService.class).list(directory, listener);
+        // List directory contents with no decryption and without notifying listener
+        final AttributedList<Path> list = session._getFeature(ListService.class).list(directory, new DisabledListProgressListener());
         // Try to match path only as the version might have changed in the meantime
         final Path found = list.find(new ListFilteringPredicate(session.getCaseSensitivity(), file));
         if(null == found) {
@@ -55,6 +57,8 @@ public abstract class ListFilteringFeature {
         else {
             log.debug("Return attributes {} for file {}", found.attributes(), file);
         }
+        // Notify listener that possibly decrypts and caches contents
+        listener.chunk(directory, list);
         return found;
     }
 

@@ -22,6 +22,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.vault.DecryptingListProgressListener;
 
 public class CryptoAttributesFeature implements AttributesFinder {
 
@@ -37,7 +38,8 @@ public class CryptoAttributesFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        final PathAttributes attributes = new PathAttributes(delegate.find(vault.encrypt(session, file, true), listener));
+        final PathAttributes attributes = new PathAttributes(delegate.find(vault.encrypt(session, file, true),
+                new DecryptingListProgressListener(session, vault, file.getParent(), listener)));
         if(file.isFile()) {
             attributes.setSize(vault.toCleartextSize(0L, attributes.getSize()));
         }

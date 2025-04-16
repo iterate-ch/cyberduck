@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -38,8 +37,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -50,7 +47,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-@RunWith(value = Parameterized.class)
 public class GoogleStorageListServiceTest extends AbstractGoogleStorageTest {
 
     @Test
@@ -58,24 +54,24 @@ public class GoogleStorageListServiceTest extends AbstractGoogleStorageTest {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
-        final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final Path vault = cryptomator.create(session, new VaultCredentials("test"), CryptoVault.VAULT_VERSION);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        assertTrue(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(vault).isEmpty());
         final CryptoDirectoryV7Feature<StorageObject> mkdir = new CryptoDirectoryV7Feature<>(session, new GoogleStorageDirectoryFeature(session),
                 new GoogleStorageWriteFeature(session), cryptomator);
         final Path directory1 = mkdir.mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener())
+        assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(vault)
                 .find(new SimplePathPredicate(directory1)));
         final CryptoTouchFeature<StorageObject> touch = new CryptoTouchFeature<>(session, new GoogleStorageTouchFeature(session),
                 new GoogleStorageWriteFeature(session), cryptomator);
         final Path test = touch.touch(
                 new Path(directory1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(directory1, new DisabledListProgressListener())
+        assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(directory1)
                 .find(new SimplePathPredicate(test)));
         final Path directory2 = mkdir.mkdir(
                 new Path(directory1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(directory1, new DisabledListProgressListener())
+        assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(directory1)
                 .find(new SimplePathPredicate(directory2)));
         cryptomator.getFeature(session, Delete.class, new GoogleStorageDeleteFeature(session))
                 .delete(Arrays.asList(test, directory1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

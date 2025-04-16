@@ -48,7 +48,7 @@ public class CachingListProgressListener extends ProxyListProgressListener {
         }
         else {
             if(!(AttributedList.<Path>emptyList() == list)) {
-                log.debug("Cache contents for {}", directory);
+                log.debug("Cache directory listing {} for {}", list, directory);
                 cache.put(directory, list);
             }
             else {

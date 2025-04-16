@@ -16,17 +16,25 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
+import ch.cyberduck.core.ftp.FTPFindFeature;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.ftp.list.FTPListService;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,9 +49,9 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
@@ -57,10 +65,41 @@ public class FTPListServiceTest extends AbstractFTPTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        assertTrue(new CryptoListService(session, new FTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new CryptoListService(session, new FTPListService(session), cryptomator).list(vault).isEmpty());
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)
         ), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
-        assertEquals(test, new CryptoListService(session, new FTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
+        assertEquals(test, new CryptoListService(session, new FTPListService(session), cryptomator).list(vault, new DisabledListProgressListener() {
+            @Override
+            public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {
+                assertEquals(vault, directory);
+                for(Path f : list) {
+                    assertTrue(f.getType().contains(Path.Type.decrypted));
+                }
+            }
+
+            @Override
+            public void chunk(final Path directory, final AttributedList<Path> list) {
+                assertEquals(vault, directory);
+                for(Path f : list) {
+                    assertTrue(f.getType().contains(Path.Type.decrypted));
+                }
+            }
+        }).get(0));
+        {
+            final Cache<Path> cache = new PathCache(1);
+            assertTrue(new CachingFindFeature(session, cache, new CryptoFindFeature(session, new FTPFindFeature(session), cryptomator)).find(test));
+            assertFalse(cache.isCached(vault));
+        }
+        {
+            final Cache<Path> cache = new PathCache(1);
+            assertTrue(new CachingFindFeature(session, cache, new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator)).find(test));
+            assertTrue(cache.isCached(vault));
+            final AttributedList<Path> list = cache.get(vault);
+            assertFalse(list.isEmpty());
+            for(Path f : list) {
+                assertTrue(f.getType().contains(Path.Type.decrypted));
+            }
+        }
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

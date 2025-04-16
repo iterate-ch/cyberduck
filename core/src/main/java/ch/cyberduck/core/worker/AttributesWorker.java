@@ -27,15 +27,11 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
 
 public class AttributesWorker extends Worker<PathAttributes> {
-    private static final Logger log = LogManager.getLogger(AttributesWorker.class.getName());
 
     private final Cache<Path> cache;
     private final Path file;
@@ -55,10 +51,7 @@ public class AttributesWorker extends Worker<PathAttributes> {
 
     @Override
     public void cleanup(final PathAttributes result, final BackgroundException e) {
-        final Path directory = file.getParent();
-        final AttributedList<Path> list = memory.getContents();
-        log.debug("Cache directory listing {} for {}", list, directory);
-        memory.cleanup(directory, list, Optional.ofNullable(e));
+        memory.cleanup(file.getParent(), AttributedList.emptyList(), Optional.ofNullable(e));
     }
 
     @Override

@@ -95,11 +95,11 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
         try {
             final PathAttributes attr = delegate.find(file, memory);
             // Notify listener with contents
-            memory.cleanup(directory, memory.getContents(), Optional.empty());
+            memory.cleanup(directory, AttributedList.emptyList(), Optional.empty());
             return attr;
         }
         catch(NotfoundException e) {
-            memory.cleanup(directory, memory.getContents(), Optional.of(e));
+            memory.cleanup(directory, AttributedList.emptyList(), Optional.of(e));
             throw e;
         }
     }
