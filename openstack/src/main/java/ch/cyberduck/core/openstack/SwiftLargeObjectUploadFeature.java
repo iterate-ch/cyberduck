@@ -183,8 +183,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
             stored.setMd5sum(checksum);
             // Mark parent status as complete
-            status.setResponse(new SwiftAttributesFinderFeature(session).toAttributes(stored));
-            status.setComplete();
+            status.setResponse(new SwiftAttributesFinderFeature(session).toAttributes(stored)).setComplete();
             return stored;
         }
         catch(GenericException e) {

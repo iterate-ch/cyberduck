@@ -70,10 +70,11 @@ public class CryptoCopyFeature implements Copy {
                     vault.contains(copy) ? vault.encrypt(session, copy) : copy,
                     vault.contains(copy) ? new TransferStatus(status) {
                         @Override
-                        public void setResponse(final PathAttributes attributes) {
+                        public TransferStatus setResponse(final PathAttributes attributes) {
                             status.setResponse(attributes);
                             // Will be converted back to clear text when decrypting file below set in default copy feature implementation using writer.
                             super.setResponse(new PathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                            return this;
                         }
                     } : status,
                     callback, listener);

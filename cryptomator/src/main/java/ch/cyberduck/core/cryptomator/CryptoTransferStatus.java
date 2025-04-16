@@ -39,12 +39,13 @@ public class CryptoTransferStatus extends ProxyTransferStatus implements StreamC
     }
 
     @Override
-    public void setResponse(final PathAttributes attributes) {
+    public TransferStatus setResponse(final PathAttributes attributes) {
         try {
             super.setResponse(attributes.setSize(vault.toCleartextSize(0L, attributes.getSize())));
         }
         catch(CryptoInvalidFilesizeException e) {
             log.warn("Failure {} translating file size from response {}", e, attributes);
         }
+        return this;
     }
 }

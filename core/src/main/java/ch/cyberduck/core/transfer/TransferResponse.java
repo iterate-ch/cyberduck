@@ -27,6 +27,7 @@ public interface TransferResponse {
      * Set latest attributes from server after file transfer
      *
      * @param attributes Metadata
+     * @return Self
      */
-    void setResponse(PathAttributes attributes);
+    TransferStatus setResponse(PathAttributes attributes);
 }

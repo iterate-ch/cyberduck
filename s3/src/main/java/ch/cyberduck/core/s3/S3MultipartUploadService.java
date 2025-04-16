@@ -195,8 +195,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 object.addAllMetadata(multipart.getMetadata());
             }
             // Mark parent status as complete
-            status.setResponse(new S3AttributesAdapter(session.getHost()).toAttributes(object));
-            status.setComplete();
+            status.setResponse(new S3AttributesAdapter(session.getHost()).toAttributes(object)).setComplete();
             return object;
         }
         catch(ServiceException e) {

@@ -229,12 +229,11 @@ public class DownloadTransfer extends Transfer {
                 progress.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), local.getName()));
                 try {
                     new DefaultLocalDirectoryFeature().mkdir(local);
-                    status.setComplete();
                     // Post process of file
                     filter.complete(
                             status.getRename().remote != null ? status.getRename().remote : entry.getKey().remote,
                             status.getRename().local != null ? status.getRename().local : entry.getKey().local,
-                            status, progress);
+                            status.setComplete(), progress);
                 }
                 catch(AccessDeniedException e) {
                     if(error.prompt(entry.getKey(), status, e, files.size())) {

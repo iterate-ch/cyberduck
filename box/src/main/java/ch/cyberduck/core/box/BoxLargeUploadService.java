@@ -111,8 +111,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             if(optional.isPresent()) {
                 final File commited = optional.get();
                 // Mark parent status as complete
-                status.setResponse(new BoxAttributesFinderFeature(session, fileid).toAttributes(commited));
-                status.setComplete();
+                status.setResponse(new BoxAttributesFinderFeature(session, fileid).toAttributes(commited)).setComplete();
                 return commited;
             }
             throw new NotfoundException(file.getAbsolute());

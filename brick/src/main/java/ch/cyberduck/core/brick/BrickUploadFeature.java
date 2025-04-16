@@ -108,8 +108,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
             final List<TransferStatus> checksums = Interruptibles.awaitAll(parts);
             final FileEntity entity = this.completeUpload(file, ref, status, checksums);
             // Mark parent status as complete
-            status.setResponse(new BrickAttributesFinderFeature(session).toAttributes(entity));
-            status.setComplete();
+            status.setResponse(new BrickAttributesFinderFeature(session).toAttributes(entity)).setComplete();
             return entity;
         }
         finally {

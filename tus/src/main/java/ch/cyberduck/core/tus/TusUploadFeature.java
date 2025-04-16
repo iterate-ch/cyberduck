@@ -151,8 +151,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             // Await upload of chunks
             Interruptibles.awaitAll(chunks);
             // Mark parent status as complete
-            status.setComplete();
-            preferences.deleteProperty(toUploadUrlPropertyKey(host, file, status));
+            preferences.deleteProperty(toUploadUrlPropertyKey(host, file, status.setComplete()));
             return null;
         }
         catch(HttpResponseException e) {

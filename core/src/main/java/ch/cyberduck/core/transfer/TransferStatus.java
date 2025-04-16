@@ -18,7 +18,11 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -43,6 +47,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TransferStatus implements TransferResponse, StreamCancelation, StreamProgress {
     private static final Logger log = LogManager.getLogger(TransferStatus.class);
+
+    public static final TransferStatus empty = new TransferStatus();
 
     public static final long KILO = 1024; //2^10
     public static final long MEGA = 1048576; // 2^20
@@ -255,15 +261,17 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     }
 
     @Override
-    public void setComplete() {
+    public TransferStatus setComplete() {
         complete.set(true);
         done.countDown();
+        return this;
     }
 
     @Override
-    public void setFailure(final BackgroundException failure) {
+    public TransferStatus setFailure(final BackgroundException failure) {
         complete.set(false);
         done.countDown();
+        return this;
     }
 
     /**
@@ -457,8 +465,9 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     }
 
     @Override
-    public void setResponse(PathAttributes attributes) {
+    public TransferStatus setResponse(PathAttributes attributes) {
         this.response = attributes;
+        return this;
     }
 
     public Permission getPermission() {

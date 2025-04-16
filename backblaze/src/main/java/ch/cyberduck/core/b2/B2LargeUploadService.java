@@ -15,7 +15,14 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
@@ -35,17 +42,21 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2FinishLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 import synapticloop.b2.response.BaseB2Response;
-
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.concurrent.Future;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE_MILLIS;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
@@ -186,8 +197,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             log.info("Finished large file upload {} with {} parts", file, completed.size());
             fileid.cache(file, response.getFileId());
             // Mark parent status as complete
-            status.setResponse(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
-            status.setComplete();
+            status.setResponse(new B2AttributesFinderFeature(session, fileid).toAttributes(response)).setComplete();
             return response;
         }
         catch(B2ApiException e) {

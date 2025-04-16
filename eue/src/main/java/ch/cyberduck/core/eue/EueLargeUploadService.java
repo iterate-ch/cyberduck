@@ -137,8 +137,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             }
             final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
             // Mark parent status as complete
-            status.setResponse(new EueAttributesAdapter().toAttributes(object));
-            status.setComplete();
+            status.setResponse(new EueAttributesAdapter().toAttributes(object)).setComplete();
             return object;
         }
         catch(NoSuchAlgorithmException e) {
