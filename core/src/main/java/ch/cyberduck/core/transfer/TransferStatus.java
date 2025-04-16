@@ -48,8 +48,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class TransferStatus implements TransferResponse, StreamCancelation, StreamProgress {
     private static final Logger log = LogManager.getLogger(TransferStatus.class);
 
-    public static final TransferStatus empty = new TransferStatus();
-
     public static final long KILO = 1024; //2^10
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
