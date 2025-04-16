@@ -38,22 +38,26 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
 
     @Override
     public Credentials configure(final Host host) {
-        if(WinHttpClients.isWinAuthAvailable()) {
-            if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
-                final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
-                final Credentials credentials = new Credentials(host.getCredentials())
-                        .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
-                if(!includeDomain && StringUtils.contains(nameSamCompatible, '\\')) {
-                    credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
-                }
-                else {
-                    credentials.setUsername(nameSamCompatible);
-                }
-                log.debug("Configure {} with username {}", host, credentials);
-                return credentials;
-            }
+        if(!WinHttpClients.isWinAuthAvailable()) {
+            log.warn("No Windows authentication available");
+            return CredentialsConfigurator.DISABLED.configure(host);
         }
-        return CredentialsConfigurator.DISABLED.configure(host);
+        if(host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
+            log.warn("Skip auto configuration of credentials for {}", host);
+            return CredentialsConfigurator.DISABLED.configure(host);
+        }
+        // No username preset
+        final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
+        final Credentials credentials = new Credentials(host.getCredentials())
+                .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
+        if(!includeDomain && StringUtils.contains(nameSamCompatible, '\\')) {
+            credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
+        }
+        else {
+            credentials.setUsername(nameSamCompatible);
+        }
+        log.debug("Configure {} with username {}", host, credentials);
+        return credentials;
     }
 
     @Override
