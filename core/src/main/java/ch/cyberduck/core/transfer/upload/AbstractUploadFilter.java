@@ -294,17 +294,27 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     public void apply(final Path file, final Local local, final TransferStatus status,
                       final ProgressListener listener) throws BackgroundException {
         if(file.isFile()) {
-            if(status.isExists() && !status.isAppend()) {
-                if(options.versioning) {
-                    switch(session.getHost().getProtocol().getVersioningMode()) {
-                        case custom:
-                            final Versioning feature = session.getFeature(Versioning.class);
-                            if(feature != null && feature.getConfiguration(file).isEnabled()) {
-                                if(feature.save(file)) {
-                                    log.debug("Clear exist flag for file {}", file);
-                                    status.setExists(false).getDisplayname().exists(false);
+            if(status.isExists()) {
+                if(status.isAppend()) {
+                    // Append to existing file
+                    log.debug("Resume upload for existing file {}", file);
+                }
+                else {
+                    if(options.versioning) {
+                        switch(session.getHost().getProtocol().getVersioningMode()) {
+                            case custom:
+                                final Versioning feature = session.getFeature(Versioning.class);
+                                if(feature != null) {
+                                    log.debug("Use custom versioning {}", feature);
+                                    if(feature.getConfiguration(file).isEnabled()) {
+                                        log.debug("Enabled versioning for {}", file);
+                                        if(feature.save(file)) {
+                                            log.debug("Clear exist flag for file {}", file);
+                                            status.setExists(false).getDisplayname().exists(false);
+                                        }
+                                    }
                                 }
-                            }
+                        }
                     }
                 }
             }
