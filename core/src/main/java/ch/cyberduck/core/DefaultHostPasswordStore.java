@@ -42,7 +42,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn("Missing hostname in {}", bookmark);
+            log.warn("Missing username in {}", bookmark);
             return null;
         }
         log.info("Fetching login password from keychain for {}", bookmark);
