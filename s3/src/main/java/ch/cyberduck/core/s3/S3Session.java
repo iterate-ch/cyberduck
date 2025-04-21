@@ -303,7 +303,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 return interceptor;
             }
             else {
-                return () -> new Credentials(host.getCredentials());
+                final Credentials credentials = new Credentials(host.getCredentials());
+                return () -> credentials;
             }
         }
     }
