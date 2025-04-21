@@ -192,6 +192,7 @@ public class SFTPSession extends Session<SSHClient> {
                     return key.verify(host, publicKey);
                 }
                 catch(BackgroundException e) {
+                    log.warn("Error {} verifying host key {} connecting to {}:{}", e, publicKey, hostname, port);
                     return false;
                 }
             }
