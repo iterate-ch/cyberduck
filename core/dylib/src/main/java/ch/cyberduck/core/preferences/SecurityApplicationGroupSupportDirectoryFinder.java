@@ -43,9 +43,7 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
 
     @Override
     public Local find() {
-        final NSFileManager manager = NSFileManager.defaultManager();
-        final NSURL group = manager
-                .containerURLForSecurityApplicationGroupIdentifier(identifier);
+        final NSURL group = NSFileManager.defaultManager().containerURLForSecurityApplicationGroupIdentifier(identifier);
         if(null == group) {
             log.warn("Missing com.apple.security.application-groups in sandbox entitlements");
         }
