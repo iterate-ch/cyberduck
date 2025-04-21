@@ -548,7 +548,7 @@
                                         </popUpButtonCell>
                                     </popUpButton>
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="103">
-                                        <rect key="frame" x="11" y="181" width="313" height="18"/>
+                                        <rect key="frame" x="11" y="181" width="372" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Heruntergeladene Dateien mit Standardprogramm öffnen" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="104">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
