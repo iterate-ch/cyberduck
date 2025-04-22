@@ -79,7 +79,15 @@ public class AbstractDeepboxTest extends VaultTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DeepboxProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Deepbox Integration.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get(user)));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get(user))) {
+            @Override
+            public String getProperty(final String key) {
+                if("deepbox.listing.box.trash".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
         DeepboxSession session = new DeepboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
