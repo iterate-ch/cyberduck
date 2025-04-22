@@ -104,7 +104,6 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         new StoregateTouchFeature(session, fileid).touch(test2, new TransferStatus());
         assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, test2, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener()).attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new StoregateListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
         assertTrue(find.find(test2));
         new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(top), new DisabledLoginCallback(), new Delete.DisabledCallback());
