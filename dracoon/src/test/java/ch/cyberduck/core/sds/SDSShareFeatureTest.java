@@ -210,7 +210,7 @@ public class SDSShareFeatureTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSShareFeature(session, nodeid).toDownloadUrl(test,
                 Share.Sharee.world, new CreateDownloadShareRequest()
-                        .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(1744300800000L)))
+                        .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(1955400800000L)))
                         .notifyCreator(false)
                         .sendMail(false)
                         .sendSms(false)
