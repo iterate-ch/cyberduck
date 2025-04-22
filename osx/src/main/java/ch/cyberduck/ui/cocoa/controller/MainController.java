@@ -46,6 +46,7 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.aquaticprime.DonationKey;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.NotificationRendezvousListener;
@@ -592,7 +593,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             }
             else if("cyberducklicense".equals(f.getExtension())) {
-                final License l = LicenseFactory.get(f);
+                final License l = new DonationKey(f);
                 if(l.verify()) {
                     try {
                         f.copy(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), f.getName()));
