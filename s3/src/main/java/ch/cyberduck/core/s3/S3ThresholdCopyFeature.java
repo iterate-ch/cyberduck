@@ -29,6 +29,7 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Optional;
 
 public class S3ThresholdCopyFeature implements Copy {
@@ -68,5 +69,10 @@ public class S3ThresholdCopyFeature implements Copy {
                 throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
             }
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        return new S3CopyFeature(session, accessControlListFeature).features(source, target);
     }
 }
