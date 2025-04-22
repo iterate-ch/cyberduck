@@ -63,6 +63,8 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
         // Rewrite object with timestamp earlier than already set
         final TransferStatus rewriteStatus = new TransferStatus().setModified(1530305150672L);
         feature.setTimestamp(test, rewriteStatus);
+        assertNotEquals(test.attributes().getVersionId(), rewriteStatus.getResponse().getVersionId());
+        test.attributes().setVersionId(null);
         final PathAttributes attrAfterRewrite = new GoogleStorageAttributesFinderFeature(session).find(test);
         assertEquals(rewriteStatus.getResponse(), attrAfterRewrite);
         assertEquals(1530305150672L, attrAfterRewrite.getModificationDate());

@@ -77,7 +77,8 @@ public class GoogleStorageTimestampFeature implements Timestamp {
                 // You cannot remove Custom-Time once it's been set on an object. Additionally, the value for Custom-Time cannot
                 // decrease. That is, you cannot set Custom-Time to be an earlier date/time than the existing Custom-Time.
                 // You can, however, effectively remove or reset the Custom-Time by rewriting the object.
-                status.setResponse(new GoogleStorageCopyFeature(session).copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener()).attributes());
+                final Path copy = new GoogleStorageCopyFeature(session).copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+                status.setResponse(copy.attributes());
                 return;
             }
             throw failure;
