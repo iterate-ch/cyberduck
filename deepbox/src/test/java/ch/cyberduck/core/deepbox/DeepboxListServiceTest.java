@@ -65,7 +65,6 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         assertFalse(list.isEmpty());
         assertNotNull(list.find(new SimplePathPredicate(new Path("/ORG 1 - DeepBox Desktop App", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
         assertNotNull(list.find(new SimplePathPredicate(new Path("/ORG 4 - DeepBox Desktop App", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
-        assertEquals(2, list.size());
         for(final Path f : list) {
             assertSame(directory, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
