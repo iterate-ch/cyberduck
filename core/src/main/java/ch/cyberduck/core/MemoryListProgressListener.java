@@ -54,4 +54,13 @@ public class MemoryListProgressListener extends ProxyListProgressListener {
         log.debug("Clear cached contents for {}", directory);
         contents.set(AttributedList.emptyList());
     }
+
+    /**
+     * @return Cached directory listing
+     */
+    public AttributedList<Path> getContents() {
+        final AttributedList<Path> list = contents.get();
+        log.debug("Return cached contents {}", list);
+        return list;
+    }
 }

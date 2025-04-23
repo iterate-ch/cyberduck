@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.MemoryListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,8 +38,13 @@ public class CryptoFindFeature implements Find {
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return delegate.find(vault.encrypt(session, file, true),
-                new DecryptingListProgressListener(session, vault, file.getParent(), listener));
+        final MemoryListProgressListener memory = new MemoryListProgressListener();
+        // Fetch with any directory listing stored in memory encrypted
+        final boolean found = delegate.find(vault.encrypt(session, file, true), memory);
+        final Path directory = file.getParent();
+        // Decrypt directory listing and forward to proxy
+        new DecryptingListProgressListener(session, vault, directory, listener).chunk(directory, memory.getContents());
+        return found;
     }
 
     @Override
