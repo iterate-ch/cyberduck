@@ -79,7 +79,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrategy {
-
     private static final Logger log = LogManager.getLogger(CteraAuthenticationHandler.class);
 
     public static final String AUTH_PATH = "/ServicesPortal/api/login?format=jsonext";
