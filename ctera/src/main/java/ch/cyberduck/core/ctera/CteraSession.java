@@ -83,10 +83,16 @@ public class CteraSession extends DAVSession {
     protected DAVClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.disableRedirectHandling();
-        configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt),
-                        directio = new CteraDirectIOInterceptor(this))));
-        configuration.addInterceptorFirst(directio);
+        if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt),
+                            directio = new CteraDirectIOInterceptor(this))));
+            configuration.addInterceptorFirst(directio);
+        }
+        else {
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt))));
+        }
         configuration.addInterceptorFirst(new CteraCookieInterceptor());
         final DAVClient client = new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
         final HttpGet request = new HttpGet(PUBLIC_INFO_PATH);
@@ -232,7 +238,10 @@ public class CteraSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == VersionIdProvider.class) {
-            return (T) versionid;
+            if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+                return (T) versionid;
+            }
+            return null;
         }
         if(type == Touch.class) {
             return (T) new CteraTouchFeature(this);
