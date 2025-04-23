@@ -29,6 +29,23 @@ public final class DirectIO {
     public static final class Chunk {
         public String url;
         public long len;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Chunk{");
+            sb.append("url='").append(url).append('\'');
+            sb.append(", len=").append(len);
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DirectIO{");
+        sb.append("chunks=").append(chunks);
+        sb.append('}');
+        return sb.toString();
     }
 }
 

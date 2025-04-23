@@ -29,6 +29,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +40,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 public class CteraDirectIOReadFeature implements Read {
+    private static final Logger log = LogManager.getLogger(CteraDirectIOReadFeature.class);
 
     private final CteraSession session;
 
@@ -54,6 +57,7 @@ public class CteraDirectIOReadFeature implements Read {
             chunk.url = status.getUrl();
             chunk.len = status.getLength();
             chunks.add(chunk);
+            log.debug("Return chunk {} for file {}", chunk, file);
             return new ChunkSequenceInputStream(chunks, key);
         }
         catch(IOException e) {
@@ -90,6 +94,7 @@ public class CteraDirectIOReadFeature implements Read {
         }
 
         private InputStream getStream(final DirectIO.Chunk chunk) throws IOException {
+            log.debug("Request chunk {}", chunk);
             final HttpGet chunkRequest = new HttpGet(chunk.url);
             final HttpResponse chunkResponse = session.getClient().getClient().execute(chunkRequest);
             return new DirectIOInputStream(new HttpMethodReleaseInputStream(chunkResponse, new TransferStatus()), key);
