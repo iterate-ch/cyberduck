@@ -15,41 +15,22 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultFileIdProvider;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
+import ch.cyberduck.core.ctera.model.APICredentials;
 import ch.cyberduck.core.ctera.model.PortalSession;
 import ch.cyberduck.core.ctera.model.PublicInfo;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.CustomActions;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.FileIdProvider;
-import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.features.Metadata;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -57,33 +38,61 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.EnumSet;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CteraSession extends DAVSession {
 
     private static final String PUBLIC_INFO_PATH = "/ServicesPortal/public/publicInfo?format=jsonext";
-    private static final String CURRENT_SESSION_PATH = "/ServicesPortal/api/currentSession?format=jsonext";
+    public static final String CURRENT_SESSION_PATH = "/ServicesPortal/api/currentSession?format=jsonext";
+    public static final String API_PATH = "/ServicesPortal/api?format=jsonext";
 
     protected CteraAuthenticationHandler authentication;
+    protected CteraDirectIOInterceptor directio;
     protected PublicInfo info;
 
+    private final HostPasswordStore keychain;
+    private final VersionIdProvider versionid = new DefaultVersionIdProvider(this);
+
+    private APICredentials apiCredentials;
+    private final ReentrantLock lock = new ReentrantLock();
+
     public CteraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        this(host, trust, key, PasswordStoreFactory.get());
+    }
+
+    protected CteraSession(final Host host, final X509TrustManager trust, final X509KeyManager key,
+                           final HostPasswordStore keychain) {
         super(host, trust, key);
+        this.keychain = keychain;
     }
 
     @Override
     protected DAVClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.disableRedirectHandling();
-        configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt))));
+        if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt),
+                            directio = new CteraDirectIOInterceptor(this))));
+            configuration.addInterceptorFirst(directio);
+        }
+        else {
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt))));
+        }
         configuration.addInterceptorFirst(new CteraCookieInterceptor());
         final DAVClient client = new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
         final HttpGet request = new HttpGet(PUBLIC_INFO_PATH);
@@ -122,20 +131,96 @@ public class CteraSession extends DAVSession {
                 CteraTokens.parse(credentials.getToken())).validate();
         credentials.setToken(String.format("%s:%s", tokens.getDeviceId(), tokens.getSharedSecret()));
         if(StringUtils.isBlank(credentials.getUsername())) {
-            final HttpGet request = new HttpGet(CURRENT_SESSION_PATH);
+            credentials.setUsername(this.getPortalSession().username);
+        }
+    }
+
+    private PortalSession getPortalSession() throws BackgroundException {
+        final HttpGet request = new HttpGet(CURRENT_SESSION_PATH);
+        try {
+            return client.execute(request, new AbstractResponseHandler<PortalSession>() {
+                @Override
+                public PortalSession handleEntity(final HttpEntity entity) throws IOException {
+                    ObjectMapper mapper = new ObjectMapper();
+                    return mapper.readValue(entity.getContent(), PortalSession.class);
+                }
+            });
+        }
+        catch(IOException e) {
+            throw new HttpExceptionMappingService().map(e);
+        }
+    }
+
+    public APICredentials getOrCreateAPIKeys() throws BackgroundException {
+        lock.lock();
+        try {
+            if(null != apiCredentials) {
+                return apiCredentials;
+            }
+            final String accessKey = keychain.getPassword(toServiceName(host), toAccountNameForAccessKey(host));
+            final String secretKey = keychain.getPassword(toServiceName(host), toAccountNameForSecretKey(host));
+            final APICredentials credentials;
+            if(StringUtils.isBlank(accessKey) || StringUtils.isBlank(secretKey)) {
+                credentials = this.createAPICredentials();
+            }
+            else {
+                credentials = new APICredentials();
+                credentials.accessKey = accessKey;
+                credentials.secretKey = secretKey;
+                apiCredentials = credentials;
+            }
+            return credentials;
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    public APICredentials createAPICredentials() throws BackgroundException {
+        lock.lock();
+        try {
+            final HttpPost post = new HttpPost(API_PATH);
             try {
-                credentials.setUsername(client.execute(request, new AbstractResponseHandler<PortalSession>() {
+                final String userId = this.getPortalSession().getUserIdFromUserRef();
+                post.setEntity(
+                        new StringEntity(String.format("<obj><att id=\"type\"><val>user-defined</val></att><att id=\"name\"><val>createApiKey</val></att><att id=\"param\"><val>%s</val></att></obj>",
+                                userId), ContentType.TEXT_XML
+                        )
+                );
+                final APICredentials credentials = this.getClient().execute(post, new AbstractResponseHandler<APICredentials>() {
                     @Override
-                    public PortalSession handleEntity(final HttpEntity entity) throws IOException {
+                    public APICredentials handleEntity(final HttpEntity entity) throws IOException {
                         ObjectMapper mapper = new ObjectMapper();
-                        return mapper.readValue(entity.getContent(), PortalSession.class);
+                        return mapper.readValue(entity.getContent(), APICredentials.class);
                     }
-                }).username);
+                });
+                keychain.addPassword(toServiceName(host), toAccountNameForAccessKey(host), credentials.accessKey);
+                keychain.addPassword(toServiceName(host), toAccountNameForSecretKey(host), credentials.secretKey);
+                return apiCredentials = credentials;
+            }
+            catch(HttpResponseException e) {
+                throw new DefaultHttpResponseExceptionMappingService().map(e);
             }
             catch(IOException e) {
                 throw new HttpExceptionMappingService().map(e);
             }
         }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    private static String toAccountNameForAccessKey(final Host bookmark) {
+        return String.format("API Access Key (%s)", bookmark.getCredentials().getUsername());
+    }
+
+    private static String toAccountNameForSecretKey(final Host bookmark) {
+        return String.format("API Secret Key (%s)", bookmark.getCredentials().getUsername());
+    }
+
+    private static String toServiceName(final Host bookmark) {
+        return new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl();
     }
 
     @Override
@@ -145,12 +230,19 @@ public class CteraSession extends DAVSession {
         }
         finally {
             super.logout();
+            versionid.clear();
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == VersionIdProvider.class) {
+            if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+                return (T) versionid;
+            }
+            return null;
+        }
         if(type == Touch.class) {
             return (T) new CteraTouchFeature(this);
         }
@@ -182,6 +274,9 @@ public class CteraSession extends DAVSession {
             return (T) new CteraListService(this);
         }
         if(type == Read.class) {
+            if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+                return (T) new CteraDelegatingReadFeature(this);
+            }
             return (T) new CteraReadFeature(this);
         }
         if(type == Write.class) {
@@ -193,11 +288,14 @@ public class CteraSession extends DAVSession {
         if(type == Copy.class) {
             return (T) new CteraCopyFeature(this);
         }
-        if(type == FileIdProvider.class) {
-            return (T) new DefaultFileIdProvider();
-        }
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
+        }
+        if(type == Bulk.class) {
+            if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+                return (T) new CteraBulkFeature(this, versionid);
+            }
+            return null;
         }
         return super._getFeature(type);
     }

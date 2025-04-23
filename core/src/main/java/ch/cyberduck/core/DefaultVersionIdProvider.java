@@ -17,21 +17,23 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.features.VersionIdProvider;
 
-public class DefaultFileIdProvider implements FileIdProvider {
+import org.apache.commons.lang3.StringUtils;
+
+public class DefaultVersionIdProvider implements VersionIdProvider {
 
     private final Session<?> session;
 
-    public DefaultFileIdProvider(final Session<?> session) {
+    public DefaultVersionIdProvider(final Session<?> session) {
         this.session = session;
     }
 
     @Override
-    public String getFileId(final Path file) throws BackgroundException {
-        if(null != file.attributes().getFileId()) {
-            return file.attributes().getFileId();
+    public String getVersionId(final Path file) throws BackgroundException {
+        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            return file.attributes().getVersionId();
         }
-        return session.getFeature(AttributesFinder.class).find(file).getFileId();
+        return session.getFeature(AttributesFinder.class).find(file).getVersionId();
     }
 }

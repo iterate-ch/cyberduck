@@ -30,7 +30,14 @@ import com.github.sardine.DavResource;
 public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     private static final Logger log = LogManager.getLogger(CteraAttributesFinderFeature.class);
 
+    /**
+     * Identifier for file across revisions
+     */
     public static final String CTERA_GUID = "guid";
+    /**
+     * Identifier for specific file revision
+     */
+    public static final String CTERA_FILEID = "fileid";
     public static final String CTERA_NAMESPACE_URI = "http://www.ctera.com/ns";
     public static final String CTERA_NAMESPACE_PREFIX = "ctera";
     /**
@@ -69,6 +76,7 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
     )));
     public static final Set<QName> ALL_ACL_QN = Collections.unmodifiableSet(ALL_ACL_ROLES.stream().map(CteraAttributesFinderFeature::toQn).collect(Collectors.toSet()));
     public static final QName GUID_QN = new QName(CteraAttributesFinderFeature.CTERA_NAMESPACE_URI, CteraAttributesFinderFeature.CTERA_GUID, CteraAttributesFinderFeature.CTERA_NAMESPACE_PREFIX);
+    public static final QName FILEID_QN = new QName(CteraAttributesFinderFeature.CTERA_NAMESPACE_URI, CteraAttributesFinderFeature.CTERA_FILEID, CteraAttributesFinderFeature.CTERA_NAMESPACE_PREFIX);
 
     private final DAVSession session;
 
@@ -147,8 +155,8 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
 
     @Override
     protected List<DavResource> list(final Path file) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(file), 0, Collections.unmodifiableSet(Stream.concat(
-                Stream.of(GUID_QN), ALL_ACL_QN.stream()
+        return session.getClient().list(new DAVPathEncoder().encode(file), 0, Collections.unmodifiableSet(Stream.concat(Stream.concat(
+                Stream.of(GUID_QN), ALL_ACL_QN.stream()), Stream.of(FILEID_QN)
         ).collect(Collectors.toSet())));
     }
 
@@ -159,6 +167,9 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         final PathAttributes attributes = super.toAttributes(resource);
         if(customProps.containsKey(CTERA_GUID)) {
             attributes.setFileId(customProps.get(CTERA_GUID));
+        }
+        if(customProps.containsKey(CTERA_FILEID)) {
+            attributes.setVersionId(customProps.get(CTERA_FILEID));
         }
         return attributes.setAcl(acl);
     }
