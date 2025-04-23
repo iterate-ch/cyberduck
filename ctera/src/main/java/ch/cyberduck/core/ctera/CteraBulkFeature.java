@@ -28,7 +28,7 @@ import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.logging.log4j.LogManager;
@@ -38,8 +38,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CteraBulkFeature extends DisabledBulkFeature {
 
@@ -54,20 +52,20 @@ public class CteraBulkFeature extends DisabledBulkFeature {
 
     @Override
     public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        switch(type) {
+        switch (type) {
             case upload:
                 break;
             case download:
-                for(Map.Entry<TransferItem, TransferStatus> file : files.entrySet()) {
+                for (Map.Entry<TransferItem, TransferStatus> file : files.entrySet()) {
                     final DirectIO metadata = this.getMetadata(file.getKey().remote);
                     final TransferStatus status = file.getValue();
-                    if(status.isSegmented()) {
+                    if (status.isSegmented()) {
                         final List<TransferStatus> segments = status.getSegments();
-                        if(segments.size() <= metadata.chunks.size()) {
-                            for(int i = 0; i < segments.size(); i++) {
+                        if (segments.size() <= metadata.chunks.size()) {
+                            for (int i = 0; i < segments.size(); i++) {
                                 final TransferStatus segment = segments.get(i);
-                                if(i == 0) {
-                                    if(segment.getOffset() > 0) {
+                                if (i == 0) {
+                                    if (segment.getOffset() > 0) {
                                         log.warn(String.format("DirectIO download for %s with an initial offset is not supported", file.getKey().remote));
                                         continue;
                                     }
@@ -77,9 +75,17 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                                 parameters.put("wrapped_key", metadata.wrapped_key);
                                 segment.setParameters(parameters);
                             }
-                        }
-                        else {
+                        } else {
                             throw new TransferCanceledException(String.format("Mismatch between number of segments and chunks for %s", file.getKey().remote));
+                        }
+                    } else {
+                        if (status.getOffset() == 0) {
+                            status.setUrl(metadata.chunks.get(0).url);
+                            final Map<String, String> parameters = new HashMap<>(status.getParameters());
+                            parameters.put("wrapped_key", metadata.wrapped_key);
+                            status.setParameters(parameters);
+                        } else {
+                            log.warn(String.format("DirectIO download for %s with an initial offset is not supported", file.getKey().remote));
                         }
                     }
                 }
@@ -97,8 +103,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
             final DirectIO directio = mapper.readValue(stream, DirectIO.class);
             stream.close();
             return directio;
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
         }
     }

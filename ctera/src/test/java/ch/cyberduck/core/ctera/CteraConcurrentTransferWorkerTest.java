@@ -74,7 +74,7 @@ public class CteraConcurrentTransferWorkerTest extends AbstractCteraDirectIOTest
     public void testLargeUpAndDownload() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final byte[] content = RandomUtils.nextBytes(10485760); // 100MB
+        final byte[] content = RandomUtils.nextBytes(104857600); // 100MB
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);

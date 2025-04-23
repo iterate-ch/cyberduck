@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
@@ -36,10 +35,7 @@ public class CteraDelegatingReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(status.isSegment() && StringUtils.isNotBlank(status.getUrl())) {
-            return new CteraDirectIOReadFeature(session).read(file, status, callback);
-        }
-        if(!status.isSegment() && status.getOffset() == 0) {
+        if (StringUtils.isNotBlank(status.getUrl())) {
             return new CteraDirectIOReadFeature(session).read(file, status, callback);
         }
         return new CteraReadFeature(session).read(file, status, callback);
