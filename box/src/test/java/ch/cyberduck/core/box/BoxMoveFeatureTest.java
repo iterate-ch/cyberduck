@@ -80,8 +80,8 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
                 new TransferStatus().setExists(true).setRemote(target.attributes()), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new BoxFindFeature(session, fileid).find(test));
         assertTrue(new BoxFindFeature(session, fileid).find(override));
-        assertEquals(test.attributes().getModificationDate(), target.attributes().getModificationDate());
-        assertEquals(test.attributes().getChecksum(), target.attributes().getChecksum());
+        assertEquals(test.attributes().getModificationDate(), override.attributes().getModificationDate());
+        assertEquals(test.attributes().getChecksum(), override.attributes().getChecksum());
         new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
