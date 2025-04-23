@@ -63,7 +63,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                         metadata = this.getMetadata(file.getKey().remote);
                     }
                     catch(IOException e) {
-                        log.warn(String.format("DirectIO download for %s is not supported", file.getKey().remote));
+                        log.warn("DirectIO download for {} is not supported", file.getKey().remote);
                         continue;
                     }
                     final TransferStatus status = file.getValue();
@@ -74,7 +74,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                                 final TransferStatus segment = segments.get(i);
                                 if(i == 0) {
                                     if(segment.getOffset() > 0) {
-                                        log.warn(String.format("DirectIO download for %s with an initial offset is not supported", file.getKey().remote));
+                                        log.warn("DirectIO download for {} with an initial offset is not supported", file.getKey().remote);
                                         continue;
                                     }
                                 }
@@ -96,7 +96,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                             status.setParameters(parameters);
                         }
                         else {
-                            log.warn(String.format("DirectIO download for %s with an initial offset is not supported", file.getKey().remote));
+                            log.warn("DirectIO download for {} with an initial offset is not supported", file.getKey().remote);
                         }
                     }
                 }
