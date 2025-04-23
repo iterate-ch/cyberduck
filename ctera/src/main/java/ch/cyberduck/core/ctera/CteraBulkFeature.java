@@ -41,8 +41,8 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CteraBulkFeature extends DisabledBulkFeature {
-
     private static final Logger log = LogManager.getLogger(CteraBulkFeature.class);
+
     private final CteraSession session;
     private final VersionIdProvider versionid;
 
