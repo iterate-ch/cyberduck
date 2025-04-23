@@ -87,7 +87,7 @@ public class CteraCustomActionVersioning {
                                     PathRelativizer.relativize(session.getHost().getProtocol().getDefaultPath(), file.getAbsolute())), StandardCharsets.UTF_8.name()),
                             token);
             final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.html", new AlphanumericRandomStringService().random()));
-            try (final OutputStream out = file.getOutputStream(false)) {
+            try(final OutputStream out = file.getOutputStream(false)) {
                 IOUtils.write(content, out, StandardCharsets.UTF_8);
             }
             return file;
