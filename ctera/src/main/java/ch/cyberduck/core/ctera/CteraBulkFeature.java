@@ -63,7 +63,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                         metadata = this.getMetadata(file.getKey().remote);
                     }
                     catch(IOException e) {
-                        log.warn("DirectIO download for {} is not supported", file.getKey().remote);
+                        log.warn("Ignore DirectIO download failure {} for {}", e, file.getKey().remote);
                         continue;
                     }
                     final TransferStatus status = file.getValue();
@@ -89,7 +89,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                         }
                     }
                     else {
-                        if(status.getOffset() == 0) {
+                        if(0L == status.getOffset()) {
                             status.setUrl(metadata.chunks.get(0).url);
                             final Map<String, String> parameters = new HashMap<>(status.getParameters());
                             parameters.put("wrapped_key", metadata.wrapped_key);
