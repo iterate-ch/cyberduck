@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
@@ -222,7 +223,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
         }
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test(expected = LoginFailureException.class)
     public void testUnknownFormat() throws Exception {
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
