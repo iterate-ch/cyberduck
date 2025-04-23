@@ -49,7 +49,7 @@ public class CteraDirectIOInterceptor implements HttpRequestInterceptor, Service
                 httpRequest.addHeader("Authorization", String.format("Bearer %s", session.getOrCreateAPIKeys().accessKey));
             }
             catch(BackgroundException e) {
-                log.error("Failure creating API keys. {}", e.getMessage());
+                log.error("Failure {} creating API keys", e.toString());
                 throw new IOException(e);
             }
         }
@@ -67,7 +67,7 @@ public class CteraDirectIOInterceptor implements HttpRequestInterceptor, Service
                         return true;
                     }
                     catch(BackgroundException e) {
-                        log.error("Failure creating API keys. {}", e.getMessage());
+                        log.error("Failure {} creating API keys", e.toString());
                         return false;
                     }
                 }
