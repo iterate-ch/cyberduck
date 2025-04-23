@@ -106,12 +106,12 @@ public class CteraBulkFeature extends DisabledBulkFeature {
     }
 
     private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
-        final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withPath(false).get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
+        final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withPath(false)
+                .get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
         final HttpResponse response = session.getClient().getClient().execute(request);
         final ObjectMapper mapper = new ObjectMapper();
-        final HttpMethodReleaseInputStream stream = new HttpMethodReleaseInputStream(response, new TransferStatus());
-        final DirectIO directio = mapper.readValue(stream, DirectIO.class);
-        stream.close();
-        return directio;
+        try (final HttpMethodReleaseInputStream stream = new HttpMethodReleaseInputStream(response, new TransferStatus())) {
+            return mapper.readValue(stream, DirectIO.class);
+        }
     }
 }
