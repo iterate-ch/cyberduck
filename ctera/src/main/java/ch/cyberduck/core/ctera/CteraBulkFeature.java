@@ -92,7 +92,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
         try {
             final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withPath(false).get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
             final HttpResponse response = session.getClient().getClient().execute(request);
-            ObjectMapper mapper = new ObjectMapper();
+            final ObjectMapper mapper = new ObjectMapper();
             final HttpMethodReleaseInputStream stream = new HttpMethodReleaseInputStream(response, new TransferStatus());
             final DirectIO directio = mapper.readValue(stream, DirectIO.class);
             stream.close();
