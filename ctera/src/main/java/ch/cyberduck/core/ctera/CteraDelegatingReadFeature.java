@@ -22,11 +22,14 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.util.EnumSet;
 
 public class CteraDelegatingReadFeature implements Read {
+    private static final Logger log = LogManager.getLogger(CteraDelegatingReadFeature.class);
 
     private final CteraSession session;
 
@@ -39,6 +42,7 @@ public class CteraDelegatingReadFeature implements Read {
         if(StringUtils.isNotBlank(status.getUrl())) {
             return new CteraDirectIOReadFeature(session).read(file, status, callback);
         }
+        log.warn("No URL found in status {} for {}", status, file);
         return new CteraReadFeature(session).read(file, status, callback);
     }
 
