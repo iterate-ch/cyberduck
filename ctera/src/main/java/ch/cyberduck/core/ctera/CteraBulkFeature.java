@@ -22,7 +22,6 @@ import ch.cyberduck.core.ctera.model.DirectIO;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.VersionIdProvider;
-import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
@@ -57,7 +56,13 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                 break;
             case download:
                 for (Map.Entry<TransferItem, TransferStatus> file : files.entrySet()) {
-                    final DirectIO metadata = this.getMetadata(file.getKey().remote);
+                    final DirectIO metadata;
+                    try {
+                        metadata = this.getMetadata(file.getKey().remote);
+                    } catch (IOException e) {
+                        log.warn(String.format("DirectIO download for %s is not supported", file.getKey().remote));
+                        continue;
+                    }
                     final TransferStatus status = file.getValue();
                     if (status.isSegmented()) {
                         final List<TransferStatus> segments = status.getSegments();
@@ -94,17 +99,13 @@ public class CteraBulkFeature extends DisabledBulkFeature {
         return files;
     }
 
-    private DirectIO getMetadata(final Path file) throws BackgroundException {
-        try {
-            final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withPath(false).get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
-            final HttpResponse response = session.getClient().getClient().execute(request);
-            final ObjectMapper mapper = new ObjectMapper();
-            final HttpMethodReleaseInputStream stream = new HttpMethodReleaseInputStream(response, new TransferStatus());
-            final DirectIO directio = mapper.readValue(stream, DirectIO.class);
-            stream.close();
-            return directio;
-        } catch (IOException e) {
-            throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
-        }
+    private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
+        final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withPath(false).get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
+        final HttpResponse response = session.getClient().getClient().execute(request);
+        final ObjectMapper mapper = new ObjectMapper();
+        final HttpMethodReleaseInputStream stream = new HttpMethodReleaseInputStream(response, new TransferStatus());
+        final DirectIO directio = mapper.readValue(stream, DirectIO.class);
+        stream.close();
+        return directio;
     }
 }
