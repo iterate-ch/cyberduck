@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
@@ -47,8 +48,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).find(target);
         assertNotNull(attributes.getETag());
         assertEquals(target.attributes().getFileId(), attributes.getFileId());
-        // Can create again regardless if exists
-        new GraphDirectoryFeature(session, fileid).mkdir(target, new TransferStatus());
+        assertThrows(ConflictException.class, () -> new GraphDirectoryFeature(session, fileid).mkdir(target, new TransferStatus()));
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
