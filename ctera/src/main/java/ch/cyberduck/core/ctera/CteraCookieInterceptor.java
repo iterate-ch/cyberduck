@@ -29,7 +29,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 public class CteraCookieInterceptor implements HttpResponseInterceptor {
-
     private static final Logger log = LogManager.getLogger(CteraCookieInterceptor.class);
 
     @Override
