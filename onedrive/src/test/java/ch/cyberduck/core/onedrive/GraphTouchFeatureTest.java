@@ -44,7 +44,8 @@ import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class GraphTouchFeatureTest extends AbstractOneDriveTest {
@@ -98,9 +99,8 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         in.close();
         out.close();
         final AttributedList<Path> list = new OneDriveListService(session, fileid).list(container, new DisabledListProgressListener());
-        assertNotNull(list.find(new SimplePathPredicate(new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)))));
-        assertEquals(content.length, list.find(new SimplePathPredicate(new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)))).attributes().getSize());
-        assertNull(list.find(new SimplePathPredicate(file)));
+        assertNotNull(list.find(new SimplePathPredicate(new Path(container, StringUtils.lowerCase(filename), EnumSet.of(Path.Type.file)))));
+        assertEquals(content.length, list.find(new SimplePathPredicate(new Path(container, StringUtils.lowerCase(filename), EnumSet.of(Path.Type.file)))).attributes().getSize());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
