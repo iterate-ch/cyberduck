@@ -136,6 +136,28 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     }
 
     @Test
+    public void testFindAttributesFinderWithCacheCryptomator() throws Exception {
+        final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final CryptoVault cryptomator = new CryptoVault(vault);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
+        final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DriveWriteFeature(session, idProvider)), new DriveWriteFeature(session, idProvider), cryptomator).touch(
+                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path found = new CryptoListService(session, new DriveListService(session, idProvider), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        assertEquals(0L, found.attributes().getSize());
+        final Cache<Path> cache = new PathCache(1);
+        final PathAttributes attributes = new CachingAttributesFinderFeature(session, cache, cryptomator.getFeature(session, AttributesFinder.class, new DriveAttributesFinderFeature(session, idProvider))).find(test);
+        assertNotNull(attributes);
+        assertEquals(0L, attributes.getSize());
+        assertTrue(cache.isCached(vault));
+        assertEquals(test, cache.get(vault).get(0));
+        assertEquals(0L, cache.get(vault).get(0).attributes().getSize());
+        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, idProvider)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testFindDirectoryDefaultAttributesFinderWithCacheCryptomator() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
