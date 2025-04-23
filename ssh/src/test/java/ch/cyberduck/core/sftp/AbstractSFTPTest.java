@@ -140,7 +140,7 @@ public class AbstractSFTPTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SFTPProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/SFTP.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), 2202, new Credentials("test", "test"));
+        final Host host = new Host(profile, "localhost", 2202, new Credentials("test", "test"));
         session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
