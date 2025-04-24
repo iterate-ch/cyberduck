@@ -23,7 +23,9 @@ import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.webloc.UrlFileWriter;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.DriveItem.Metadata;
 
 import java.util.EnumSet;
 
@@ -48,6 +50,14 @@ public abstract class AbstractItemListService extends AbstractListService<DriveI
             fileName = metadata.getName();
         }
         return new Path(directory, fileName, this.resolveType(metadata), attr);
+    }
+
+    @Override
+    protected boolean filter(final Path directory, final Metadata metadata) {
+        if(StringUtils.isBlank(metadata.getId())) {
+            return false;
+        }
+        return super.filter(directory, metadata);
     }
 
     private EnumSet<Path.Type> resolveType(final DriveItem.Metadata metadata) {

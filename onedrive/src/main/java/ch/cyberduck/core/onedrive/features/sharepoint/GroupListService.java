@@ -61,4 +61,12 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
         }
         return new Path(directory, name, EnumSet.of(Path.Type.volume, Path.Type.directory, Path.Type.placeholder), attributes);
     }
+
+    @Override
+    protected boolean filter(final Path directory, final GroupItem.Metadata metadata) {
+        if(StringUtils.isBlank(metadata.getId())) {
+            return false;
+        }
+        return super.filter(directory, metadata);
+    }
 }

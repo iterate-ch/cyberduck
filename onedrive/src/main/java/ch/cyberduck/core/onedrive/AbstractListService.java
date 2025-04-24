@@ -40,8 +40,7 @@ public abstract class AbstractListService<T> implements ListService {
     @Override
     public final AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<>();
-        final Iterator<T> iterator = getIterator(directory);
-        final boolean filtering = isFiltering(directory);
+        final Iterator<T> iterator = this.getIterator(directory);
         try {
             while(iterator.hasNext()) {
                 final T metadata;
@@ -52,7 +51,8 @@ public abstract class AbstractListService<T> implements ListService {
                     log.warn(e.getMessage());
                     continue;
                 }
-                if(filtering && !filter(metadata)) {
+                if(!this.filter(directory, metadata)) {
+                    log.debug("Filtering metadata {} in {}", metadata, directory);
                     continue;
                 }
                 children.add(toPath(metadata, directory));
@@ -71,11 +71,7 @@ public abstract class AbstractListService<T> implements ListService {
 
     protected abstract Path toPath(final T metadata, final Path directory);
 
-    protected boolean isFiltering(final Path directory) {
-        return false;
-    }
-
-    protected boolean filter(final T metadata) {
+    protected boolean filter(final Path directory, final T metadata) {
         return true;
     }
 

@@ -18,6 +18,7 @@ import org.nuxeo.onedrive.client.Sites;
 import org.nuxeo.onedrive.client.types.BaseItem;
 import org.nuxeo.onedrive.client.types.SharePointIds;
 import org.nuxeo.onedrive.client.types.Site;
+import org.nuxeo.onedrive.client.types.Site.Metadata;
 
 import java.net.URI;
 import java.util.EnumSet;
@@ -58,40 +59,38 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
     }
 
     @Override
-    protected boolean isFiltering(final Path directory) {
-        return !session.isSingleSite() && directory.getParent().isRoot();
-    }
-
-    @Override
-    protected boolean filter(final Site.Metadata metadata) {
-        if(metadata.getRoot() == null) {
+    protected boolean filter(final Path directory, final Metadata metadata) {
+        if(StringUtils.isBlank(metadata.getId())) {
             return false;
         }
-
-        final SharePointIds ids = metadata.getSharepointIds();
-        if(ids != null) {
-            if(isInvalid(ids.getSiteId())) {
+        if(!session.isSingleSite() && directory.getParent().isRoot()) {
+            if(metadata.getRoot() == null) {
                 return false;
             }
-            if(isInvalid(ids.getWebId())) {
-                return false;
+            final SharePointIds ids = metadata.getSharepointIds();
+            if(ids != null) {
+                if(isInvalid(ids.getSiteId())) {
+                    return false;
+                }
+                if(isInvalid(ids.getWebId())) {
+                    return false;
+                }
+            }
+            else {
+                // fallback for not retrieving sharepoint ids.
+                final String[] split = StringUtils.split(metadata.getId(), ',');
+                if(split.length != 3) {
+                    // Sharepoint IDs _must_ be tenant-url,siteId,webId
+                    return false;
+                }
+                if(isInvalid(split[1])) {
+                    return false;
+                }
+                if(isInvalid(split[2])) {
+                    return false;
+                }
             }
         }
-        else {
-            // fallback for not retrieving sharepoint ids.
-            final String[] split = StringUtils.split(metadata.getId(), ',');
-            if(split.length != 3) {
-                // Sharepoint IDs _must_ be tenant-url,siteId,webId
-                return false;
-            }
-            if(isInvalid(split[1])) {
-                return false;
-            }
-            if(isInvalid(split[2])) {
-                return false;
-            }
-        }
-
         return true;
     }
 
