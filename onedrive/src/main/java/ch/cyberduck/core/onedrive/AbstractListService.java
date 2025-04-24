@@ -17,11 +17,9 @@ package ch.cyberduck.core.onedrive;
 
 import java.util.Iterator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
-import org.nuxeo.onedrive.client.types.BaseItem;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
@@ -30,7 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
-public abstract class AbstractListService<T extends BaseItem.Metadata<T>> implements ListService {
+public abstract class AbstractListService<T> implements ListService {
     private static final Logger log = LogManager.getLogger(AbstractListService.class);
 
     private final GraphFileIdProvider fileid;
@@ -83,9 +81,7 @@ public abstract class AbstractListService<T extends BaseItem.Metadata<T>> implem
         return false;
     }
 
-    protected boolean preFilter(final T metadata) {
-        return StringUtils.isBlank(metadata.getId());
-    }
+    protected abstract boolean preFilter(final T metadata);
 
     protected boolean filter(final T metadata) {
         return true;

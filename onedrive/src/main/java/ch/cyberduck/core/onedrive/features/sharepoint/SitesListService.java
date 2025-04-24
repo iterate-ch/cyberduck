@@ -18,6 +18,7 @@ import org.nuxeo.onedrive.client.Sites;
 import org.nuxeo.onedrive.client.types.BaseItem;
 import org.nuxeo.onedrive.client.types.SharePointIds;
 import org.nuxeo.onedrive.client.types.Site;
+import org.nuxeo.onedrive.client.types.Site.Metadata;
 
 import java.net.URI;
 import java.util.EnumSet;
@@ -60,6 +61,12 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
     @Override
     protected boolean isFiltering(final Path directory) {
         return !session.isSingleSite() && directory.getParent().isRoot();
+    }
+
+
+    @Override
+    protected boolean preFilter(Metadata metadata) {
+        return StringUtils.isBlank(metadata.getId());
     }
 
     @Override
