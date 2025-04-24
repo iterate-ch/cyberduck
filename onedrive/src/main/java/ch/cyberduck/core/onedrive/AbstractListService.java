@@ -15,6 +15,14 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import java.util.Iterator;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
+import org.nuxeo.onedrive.client.types.BaseItem;
+
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -22,13 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveRuntimeException;
-
-import java.util.Iterator;
-
-public abstract class AbstractListService<T> implements ListService {
+public abstract class AbstractListService<T extends BaseItem.Metadata<T>> implements ListService {
     private static final Logger log = LogManager.getLogger(AbstractListService.class);
 
     private final GraphFileIdProvider fileid;
@@ -52,6 +54,12 @@ public abstract class AbstractListService<T> implements ListService {
                     log.warn(e.getMessage());
                     continue;
                 }
+                if(preFilter(metadata)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Filtering bad metadata {} in {}", metadata, directory);
+                    }
+                    continue;
+                }
                 if(filtering && !filter(metadata)) {
                     continue;
                 }
@@ -73,6 +81,10 @@ public abstract class AbstractListService<T> implements ListService {
 
     protected boolean isFiltering(final Path directory) {
         return false;
+    }
+
+    protected boolean preFilter(final T metadata) {
+        return StringUtils.isBlank(metadata.getId());
     }
 
     protected boolean filter(final T metadata) {
