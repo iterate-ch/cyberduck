@@ -15,18 +15,18 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import java.util.Iterator;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveRuntimeException;
-
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
+
+import java.util.Iterator;
 
 public abstract class AbstractListService<T> implements ListService {
     private static final Logger log = LogManager.getLogger(AbstractListService.class);
@@ -40,8 +40,7 @@ public abstract class AbstractListService<T> implements ListService {
     @Override
     public final AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<>();
-        final Iterator<T> iterator = getIterator(directory);
-        final boolean filtering = isFiltering(directory);
+        final Iterator<T> iterator = this.getIterator(directory);
         try {
             while(iterator.hasNext()) {
                 final T metadata;
@@ -52,13 +51,8 @@ public abstract class AbstractListService<T> implements ListService {
                     log.warn(e.getMessage());
                     continue;
                 }
-                if(preFilter(metadata)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Filtering bad metadata {} in {}", metadata, directory);
-                    }
-                    continue;
-                }
-                if(filtering && !filter(metadata)) {
+                if(!this.filter(directory, metadata)) {
+                    log.debug("Filtering metadata {} in {}", metadata, directory);
                     continue;
                 }
                 children.add(toPath(metadata, directory));
@@ -77,13 +71,7 @@ public abstract class AbstractListService<T> implements ListService {
 
     protected abstract Path toPath(final T metadata, final Path directory);
 
-    protected boolean isFiltering(final Path directory) {
-        return false;
-    }
-
-    protected abstract boolean preFilter(final T metadata);
-
-    protected boolean filter(final T metadata) {
+    protected boolean filter(final Path directory, final T metadata) {
         return true;
     }
 

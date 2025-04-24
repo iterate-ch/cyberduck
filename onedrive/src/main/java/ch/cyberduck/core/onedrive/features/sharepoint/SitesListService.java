@@ -59,46 +59,38 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
     }
 
     @Override
-    protected boolean isFiltering(final Path directory) {
-        return !session.isSingleSite() && directory.getParent().isRoot();
-    }
-
-
-    @Override
-    protected boolean preFilter(Metadata metadata) {
-        return StringUtils.isBlank(metadata.getId());
-    }
-
-    @Override
-    protected boolean filter(final Site.Metadata metadata) {
-        if(metadata.getRoot() == null) {
+    protected boolean filter(final Path directory, final Metadata metadata) {
+        if(StringUtils.isBlank(metadata.getId())) {
             return false;
         }
-
-        final SharePointIds ids = metadata.getSharepointIds();
-        if(ids != null) {
-            if(isInvalid(ids.getSiteId())) {
+        if(!session.isSingleSite() && directory.getParent().isRoot()) {
+            if(metadata.getRoot() == null) {
                 return false;
             }
-            if(isInvalid(ids.getWebId())) {
-                return false;
+            final SharePointIds ids = metadata.getSharepointIds();
+            if(ids != null) {
+                if(isInvalid(ids.getSiteId())) {
+                    return false;
+                }
+                if(isInvalid(ids.getWebId())) {
+                    return false;
+                }
+            }
+            else {
+                // fallback for not retrieving sharepoint ids.
+                final String[] split = StringUtils.split(metadata.getId(), ',');
+                if(split.length != 3) {
+                    // Sharepoint IDs _must_ be tenant-url,siteId,webId
+                    return false;
+                }
+                if(isInvalid(split[1])) {
+                    return false;
+                }
+                if(isInvalid(split[2])) {
+                    return false;
+                }
             }
         }
-        else {
-            // fallback for not retrieving sharepoint ids.
-            final String[] split = StringUtils.split(metadata.getId(), ',');
-            if(split.length != 3) {
-                // Sharepoint IDs _must_ be tenant-url,siteId,webId
-                return false;
-            }
-            if(isInvalid(split[1])) {
-                return false;
-            }
-            if(isInvalid(split[2])) {
-                return false;
-            }
-        }
-
         return true;
     }
 

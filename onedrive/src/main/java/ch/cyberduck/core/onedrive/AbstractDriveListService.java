@@ -21,8 +21,8 @@ import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.Drive;
-import org.nuxeo.onedrive.client.types.Quota;
 import org.nuxeo.onedrive.client.types.Drive.Metadata;
+import org.nuxeo.onedrive.client.types.Quota;
 
 import java.util.EnumSet;
 
@@ -51,7 +51,10 @@ public abstract class AbstractDriveListService extends AbstractListService<Drive
     }
 
     @Override
-    protected boolean preFilter(Metadata metadata) {
-        return StringUtils.isBlank(metadata.getId());
+    protected boolean filter(final Path directory, final Metadata metadata) {
+        if(StringUtils.isBlank(metadata.getId())) {
+            return false;
+        }
+        return super.filter(directory, metadata);
     }
 }

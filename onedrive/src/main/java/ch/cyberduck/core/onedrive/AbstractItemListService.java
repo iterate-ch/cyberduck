@@ -53,8 +53,11 @@ public abstract class AbstractItemListService extends AbstractListService<DriveI
     }
 
     @Override
-    protected boolean preFilter(Metadata metadata) {
-        return StringUtils.isBlank(metadata.getId());
+    protected boolean filter(final Path directory, final Metadata metadata) {
+        if(StringUtils.isBlank(metadata.getId())) {
+            return false;
+        }
+        return super.filter(directory, metadata);
     }
 
     private EnumSet<Path.Type> resolveType(final DriveItem.Metadata metadata) {

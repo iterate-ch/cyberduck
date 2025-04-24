@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Users;
-import org.nuxeo.onedrive.client.types.Drive.Metadata;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.User;
 
@@ -64,7 +63,10 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
     }
 
     @Override
-    protected boolean preFilter(GroupItem.Metadata metadata) {
-        return StringUtils.isBlank(metadata.getId());
+    protected boolean filter(final Path directory, final GroupItem.Metadata metadata) {
+        if(StringUtils.isBlank(metadata.getId())) {
+            return false;
+        }
+        return super.filter(directory, metadata);
     }
 }
