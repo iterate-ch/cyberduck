@@ -43,7 +43,7 @@ jobs:
         env:
           SPARKLE_PRIVATE_KEY_DSA: ${{ secrets.SPARKLE_PRIVATE_KEY_DSA }}
       - name: Build with Maven
-        run: mvn --batch-mode deploy -DskipTests -DskipITs -DskipSign -DskipNotarize
+        run: mvn --batch-mode deploy -Pinstaller -DskipTests -DskipITs -DskipNotarize
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
