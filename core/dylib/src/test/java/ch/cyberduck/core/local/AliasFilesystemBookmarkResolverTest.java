@@ -16,14 +16,14 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 
 import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class AliasFilesystemBookmarkResolverTest {
 
@@ -35,9 +35,9 @@ public class AliasFilesystemBookmarkResolverTest {
     }
 
     @Test
-    public void testCreateFileUserdir() throws Exception {
+    public void testCreate() throws Exception {
         final String name = UUID.randomUUID().toString();
-        Local l = new FinderLocal(System.getProperty("user.dir"), name);
+        final Local l = new FinderLocal(System.getProperty("user.dir"), name);
         new DefaultLocalTouchFeature().touch(l);
         try {
             final AliasFilesystemBookmarkResolver resolver = new AliasFilesystemBookmarkResolver();
@@ -49,5 +49,33 @@ public class AliasFilesystemBookmarkResolverTest {
         finally {
             l.delete();
         }
+    }
+
+    @Test
+    public void testRename() throws Exception {
+        final Local source = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random());
+        new DefaultLocalTouchFeature().touch(source);
+        final Local target = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random());
+        new DefaultLocalTouchFeature().touch(target);
+        final AliasFilesystemBookmarkResolver resolver = new AliasFilesystemBookmarkResolver();
+
+        final String bookmarkSource = resolver.create(source);
+        assertNotNull(bookmarkSource);
+        assertNotNull(resolver.resolve(bookmarkSource));
+        assertEquals(source.getAbsolute(), resolver.resolve(bookmarkSource).path());
+
+        final String bookmarkTarget = resolver.create(target);
+        assertNotNull(bookmarkTarget);
+        assertNotNull(resolver.resolve(bookmarkTarget));
+        assertEquals(target.getAbsolute(), resolver.resolve(bookmarkTarget).path());
+
+        new Local(source.getAbsolute()).rename(target);
+        assertFalse(source.exists());
+        assertTrue(target.exists());
+
+        assertEquals(target.getAbsolute(), resolver.resolve(bookmarkSource).path());
+        assertEquals(target.getAbsolute(), resolver.resolve(bookmarkTarget).path());
+
+        target.delete();
     }
 }
