@@ -38,6 +38,10 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v3
         with:
           args: install openssl -y
+      - name: Copy Sparkle Updater Private Key (DSA)
+        run: ${{ env.SPARKLE_PRIVATE_KEY_DSA }} > www/update/private.pem
+        env:
+          SPARKLE_PRIVATE_KEY_DSA: ${{ secrets.SPARKLE_PRIVATE_KEY_DSA }}
       - name: Build with Maven
         run: mvn --batch-mode deploy -DskipTests -DskipITs -DskipSign -DskipNotarize
         env:
