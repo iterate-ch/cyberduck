@@ -43,3 +43,18 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snapshot Binaries
+          path: |-
+            osx/target/release/*.zip
+            osx/target/release/*.pkg
+            windows/target/release/*.exe
+            windows/target/release/*.msi
+            windows/target/release/*.appx          
+            cli/osx/target/release/*.pkg
+            cli/linux/target/release/*.deb
+            cli/linux/target/release/*.rpm
+            cli/windows/target/release/*.exe
+            cli/windows/target/release/*.msi
