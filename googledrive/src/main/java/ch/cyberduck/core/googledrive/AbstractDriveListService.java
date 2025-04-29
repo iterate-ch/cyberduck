@@ -77,16 +77,16 @@ public abstract class AbstractDriveListService implements ListService {
             final String query = this.query(directory, listener);
             do {
                 final FileList list = session.getClient().files().list()
-                    // Whether Team Drive items should be included in results
-                    .setIncludeItemsFromAllDrives(true)
-                    // Whether the requesting application supports Shared Drives
+                        // Whether Team Drive items should be included in results
+                        .setIncludeItemsFromAllDrives(true)
+                        // Whether the requesting application supports Shared Drives
                         .setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                    .setQ(query)
-                    // Please note that there is a current limitation for users with approximately one million files in which the requested sort order is ignored
-                    .setOrderBy("name")
-                    .setPageToken(page)
-                    .setFields(fields)
-                    .setPageSize(pagesize).execute();
+                        .setQ(query)
+                        // Please note that there is a current limitation for users with approximately one million files in which the requested sort order is ignored
+                        .setOrderBy("name")
+                        .setPageToken(page)
+                        .setFields(fields)
+                        .setPageSize(pagesize).execute();
                 log.debug("Chunk of {} retrieved", list.getFiles().size());
                 for(File f : list.getFiles()) {
                     final PathAttributes properties = attributes.toAttributes(f);
@@ -140,13 +140,13 @@ public abstract class AbstractDriveListService implements ListService {
             // Shortcut file details. Only populated for shortcut files, which have the mimeType field set to application/vnd.google-apps.shortcut
             final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
             type = DRIVE_FOLDER.equals(shortcutDetails.getTargetMimeType()) ? EnumSet.of(Path.Type.directory) :
-                StringUtils.startsWith(shortcutDetails.getTargetMimeType(), GOOGLE_APPS_PREFIX)
-                    ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+                    StringUtils.startsWith(shortcutDetails.getTargetMimeType(), GOOGLE_APPS_PREFIX)
+                            ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
         }
         else {
             type = DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
-                StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)
-                    ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+                    StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)
+                            ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
         }
         return type;
     }
