@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
@@ -68,6 +69,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
@@ -160,7 +162,15 @@ public class OwncloudSession extends DAVSession {
             }
         }
         if(type == Write.class) {
-            return (T) new NextcloudWriteFeature(this);
+            return (T) new NextcloudWriteFeature(this) {
+                @Override
+                public EnumSet<Flags> features(final Path file) {
+                    if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
+                        return new TusWriteFeature(tus, client.getClient()).features(file);
+                    }
+                    return super.features(file);
+                }
+            };
         }
         if(type == UrlProvider.class) {
             return (T) new NextcloudUrlProvider(this);
