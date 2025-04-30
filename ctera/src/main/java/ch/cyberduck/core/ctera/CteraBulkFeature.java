@@ -22,14 +22,14 @@ import ch.cyberduck.core.ctera.model.DirectIO;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.VersionIdProvider;
-import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpResponse;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -108,10 +108,12 @@ public class CteraBulkFeature extends DisabledBulkFeature {
     private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
         final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withPath(false)
                 .get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
-        final HttpResponse response = session.getClient().getClient().execute(request);
-        final ObjectMapper mapper = new ObjectMapper();
-        try (final HttpMethodReleaseInputStream stream = new HttpMethodReleaseInputStream(response, new TransferStatus())) {
-            return mapper.readValue(stream, DirectIO.class);
-        }
+        return session.getClient().getClient().execute(request, new AbstractResponseHandler<DirectIO>() {
+            @Override
+            public DirectIO handleEntity(final HttpEntity entity) throws IOException {
+                final ObjectMapper mapper = new ObjectMapper();
+                return mapper.readValue(entity.getContent(), DirectIO.class);
+            }
+        });
     }
 }
