@@ -3,7 +3,7 @@
 [9.1.4](https://github.com/iterate-ch/cyberduck/compare/release-9-1-3...release-9-1-4)
 
 * [Bugfix] Slow file transfers (SMB) ([#16135](https://trac.cyberduck.io/ticket/16135))
-* [Bugfix] Interoperability with Bitwarden SFTP Agent ([#16954](https://trac.cyberduck.io/ticket/16954))
+* [Bugfix] Interoperability with Bitwarden SSH Agent ([#16954](https://trac.cyberduck.io/ticket/16954))
 * [Bugfix] Skip trashed files for downloads (Google Drive) ([#16927](https://trac.cyberduck.io/ticket/16927))
 * [Bugfix] Cannot delete entries from metadata (Google Drive) ([#16976](https://trac.cyberduck.io/ticket/16976))
 * [Bugfix] Error uploading files when bucket name is set in hostname (
