@@ -31,6 +31,7 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -295,7 +296,7 @@ public class CteraSession extends DAVSession {
             if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
                 return (T) new CteraBulkFeature(this, versionid);
             }
-            return null;
+            return (T) new DisabledBulkFeature();
         }
         return super._getFeature(type);
     }
