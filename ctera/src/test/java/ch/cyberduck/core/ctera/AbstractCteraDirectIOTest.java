@@ -45,7 +45,15 @@ public class AbstractCteraDirectIOTest extends VaultTest {
         final Host host = new Host(new CteraProtocol(), "dcdirect.ctera.me", new Credentials(
                 PROPERTIES.get("ctera.directio.user"), PROPERTIES.get("ctera.directio.password"),
                 PROPERTIES.get("ctera.directio.token")
-        ));
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("ctera.download.directio.enable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
         host.setDefaultPath("/ServicesPortal/webdav/My Files");
         session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), new TestPasswordStore());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
