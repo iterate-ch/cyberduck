@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 /**
  * Check for existence of file or folder on server
  */
+@Optional
 public interface Find {
 
     default boolean find(Path file) throws BackgroundException {
