@@ -116,12 +116,32 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     public abstract DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException;
 
-    public boolean isAccessible(final Path path) {
-        return this.isAccessible(path, true);
+    /**
+     * Determines if the specified file path is accessible.
+     *
+     * @param file The file path to check for accessibility.
+     * @return True if the file path is accessible; false otherwise.
+     */
+    public boolean isAccessible(final Path file) {
+        return this.isAccessible(file, true);
     }
 
+    /**
+     * Determines if the specified path is accessible, either as a file or as part of a container.
+     *
+     * @param file      File or directory to check for accessibility
+     * @param container Flag indicating whether to check accessibility as part of a container
+     * @return True if the path is accessible based on the specified parameters; false otherwise
+     */
     public abstract boolean isAccessible(Path file, boolean container);
 
+    /**
+     * Retrieves the container details associated with the given file path.
+     *
+     * @param file The file path for which the container details should be retrieved.
+     * @return An instance of {@code ContainerItem} representing the container details of the specified file path.
+     *         Returns {@code ContainerItem.EMPTY} if no container details are found.
+     */
     public abstract ContainerItem getContainer(Path file);
 
     public User.Metadata getUser() {

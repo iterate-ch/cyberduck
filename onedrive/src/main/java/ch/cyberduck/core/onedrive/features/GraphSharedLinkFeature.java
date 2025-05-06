@@ -42,10 +42,7 @@ public class GraphSharedLinkFeature implements Share {
     @Override
     public boolean isSupported(final Path file, final Type type) {
         if(Type.download == type) {
-            if(session.getContainer(file).isDrive()) {
-                return false;
-            }
-            return session.isAccessible(file, true);
+            return session.isAccessible(file, false);
         }
         return false;
     }
