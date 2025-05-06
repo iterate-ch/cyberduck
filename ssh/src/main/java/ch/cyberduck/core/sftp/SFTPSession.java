@@ -283,13 +283,18 @@ public class SFTPSession extends Session<SSHClient> {
         // Ordered list of preferred authentication methods
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
+            switch(Platform.getDefault()) {
+                case windows:
+                    defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
+                    defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator()));
+                    break;
+            }
             final String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
             if(configuration != null) {
                 final String identityAgent = LocalFactory.get(configuration).getAbsolute();
                 log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
                 switch(Platform.getDefault()) {
                     case windows:
-                        defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
                         defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator(identityAgent)));
                         break;
                     default:

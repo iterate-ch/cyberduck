@@ -24,17 +24,14 @@ import com.jcraft.jsch.agentproxy.USocketFactory;
 import com.jcraft.jsch.agentproxy.connector.SSHAgentConnector;
 
 public class WindowsOpenSSHAgentAuthenticator extends OpenSSHAgentAuthenticator {
-    private final static String SSH_AGENT_PIPE = "\\\\.\\pipe\\openssh-ssh-agent";
+    public final static String SSH_AGENT_PIPE = "\\\\.\\pipe\\openssh-ssh-agent";
 
-    public WindowsOpenSSHAgentAuthenticator(final String socketPath) {
-        super(new AgentProxy(new SSHAgentConnector(new RandomAccessFileSocketFactory(), fixupSocketPath(socketPath))));
+    public WindowsOpenSSHAgentAuthenticator() {
+        this(SSH_AGENT_PIPE);
     }
 
-    static String fixupSocketPath(final String path) {
-        if(path == null) {
-            return SSH_AGENT_PIPE;
-        }
-        return path;
+    public WindowsOpenSSHAgentAuthenticator(final String socketPath) {
+        super(new AgentProxy(new SSHAgentConnector(new RandomAccessFileSocketFactory(), socketPath)));
     }
 
     /**
