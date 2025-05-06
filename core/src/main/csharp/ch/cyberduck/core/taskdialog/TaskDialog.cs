@@ -21,6 +21,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -58,8 +59,10 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
     public sealed class TaskDialog : IDisposable
     {
+        private static readonly AutoResetEvent syncEvent = new(true);
         private readonly List<TASKDIALOG_BUTTON> buttons = new();
         private readonly List<TASKDIALOG_BUTTON> radioButtons = new();
+        private readonly object syncRoot = new();
         private readonly GCRegistry registry = new();
         private bool buttonsConfigured = false;
         private TaskDialogHandler callback;
@@ -69,6 +72,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
         private bool hasVerification = false;
         private bool mainIconConfigured = false;
         private bool radioButtonsConfigured = false;
+        private bool syncLockAcquired = false;
 
         private static readonly PFTASKDIALOGCALLBACK s_callbackProcDelegate;
 
@@ -309,19 +313,24 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 handle = GCHandle.Alloc(this, GCHandleType.Normal);
                 copy.lpCallbackData = GCHandle.ToIntPtr(handle);
 
+                syncLockAcquired = syncEvent.WaitOne(250);
                 result = TaskDialogIndirect(copy, &button, &radioButton, &verificationChecked);
             }
             finally
             {
+                SetSyncEvent();
                 if (handle.IsAllocated)
                 {
                     handle.Free();
                 }
+
                 Closed?.Invoke(this, EventArgs.Empty);
                 this.Dispose();
             }
             if (button == 0)
+            {
                 Marshal.ThrowExceptionForHR(result);
+            }
 
             return new(
                 (MESSAGEBOX_RESULT)button,
@@ -436,6 +445,11 @@ namespace Ch.Cyberduck.Core.TaskDialog
         {
             var notification = (TASKDIALOG_NOTIFICATIONS)msg;
 
+            if (notification is TDN_CREATED)
+            {
+                SetSyncEvent();
+            }
+
             EventArgs args = (TASKDIALOG_NOTIFICATIONS)msg switch
             {
                 TDN_CREATED => new TaskDialogCreatedEventArgs(hwnd),
@@ -452,6 +466,18 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 _ => default
             };
             return callback?.Invoke(this, args) == true ? S_FALSE : S_OK;
+        }
+
+        private void SetSyncEvent()
+        {
+            lock (syncRoot)
+            {
+                if (syncLockAcquired)
+                {
+                    syncLockAcquired = false;
+                    syncEvent.Set();
+                }
+            }
         }
 
         private struct GCRegistry : IDisposable
