@@ -78,10 +78,6 @@
     <condition property="debug" value="on" else="off">
         <equals arg1="${configuration}" arg2="debug" />
     </condition>
-    <condition property="ikvm.debug">
-        <equals arg1="${configuration}" arg2="debug" />
-    </condition>
-
     <target name="init" depends="timestamp">
         <echo message=""/>
         <echo message="	  ---------------------------------------------------------------"/>
@@ -129,5 +125,26 @@
                     timezone="GMT+1"
                     locale="en"/>
         </tstamp>
+    </target>
+
+    <target name="msbuild" depends="version">
+        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+        </taskdef>
+
+        <condition property="msbuild.configuration" value="Debug">
+            <equals arg1="${configuration}" arg2="debug"/>
+        </condition>
+        <property name="msbuild.configuration" value="Release"/>
+
+        <copy todir="${build}/generated/msbuild" overwrite="True">
+            <resources>
+                <fileset dir="${home}/src/template/msbuild" erroronmissingdir="false"/>
+                <fileset dir="${module}/src/template/msbuild" erroronmissingdir="false"/>
+            </resources>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
     </target>
 </project>
