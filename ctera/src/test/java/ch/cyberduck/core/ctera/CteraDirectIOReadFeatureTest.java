@@ -68,12 +68,12 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         status.setSegments(Collections.singletonList(segment));
         final CteraBulkFeature bulk = new CteraBulkFeature(session, new DefaultVersionIdProvider(session));
         bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-        assertNotNull(status.getUrl());
-        assertNotNull(status.getParameters());
+        assertNotNull(segment.getUrl());
+        assertNotNull(segment.getParameters());
         final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        new StreamCopier(status, status).transfer(in, buffer);
+        new StreamCopier(segment, segment).transfer(in, buffer);
         in.close();
         assertArrayEquals(content, buffer.toByteArray());
         new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
