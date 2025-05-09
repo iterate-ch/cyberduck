@@ -71,7 +71,7 @@ public class S3LoggingFeature implements Logging {
             }
             else {
                 try {
-                    configuration.setContainers(new S3BucketListService(session).list(Home.ROOT, new DisabledListProgressListener()).toList());
+                    configuration.setContainers(new S3BucketListService(session).list(Home.root(), new DisabledListProgressListener()).toList());
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn("Failure listing buckets. {}", e.getMessage());

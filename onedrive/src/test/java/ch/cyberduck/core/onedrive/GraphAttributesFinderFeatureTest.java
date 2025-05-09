@@ -45,7 +45,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindRoot() throws Exception {
         final GraphAttributesFinderFeature f = new GraphAttributesFinderFeature(session, fileid);
-        assertEquals(PathAttributes.EMPTY, f.find(Home.ROOT));
+        assertEquals(PathAttributes.EMPTY, f.find(Home.root()));
     }
 
     @Test(expected = NotfoundException.class)

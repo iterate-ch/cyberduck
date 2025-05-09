@@ -58,7 +58,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListVirtualHostStyle() throws Exception {
-        final Path bucket = Home.ROOT;
+        final Path bucket = Home.root();
         assertNotSame(AttributedList.EMPTY, new S3ObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(
                 bucket, new DisabledListProgressListener()));
     }

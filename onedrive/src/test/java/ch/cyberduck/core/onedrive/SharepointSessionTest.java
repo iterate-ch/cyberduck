@@ -44,7 +44,7 @@ public class SharepointSessionTest {
 
     @Test
     public void isAccessible() {
-        assertFalse(session.isAccessible(Home.ROOT));
+        assertFalse(session.isAccessible(Home.root()));
         assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME));
         assertFalse(session.isAccessible(SharepointListService.DEFAULT_NAME, false));
         final Path defaultSiteDrive =

@@ -49,10 +49,10 @@ public abstract class AbstractSharepointSession extends GraphSession {
     public AbstractSharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
         if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            this.home = PathNormalizer.compose(Home.ROOT, host.getDefaultPath());
+            this.home = PathNormalizer.compose(Home.root(), host.getDefaultPath());
         }
         else {
-            this.home = Home.ROOT;
+            this.home = Home.root();
         }
     }
 

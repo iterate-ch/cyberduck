@@ -38,7 +38,7 @@ public class S3ListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListBucketNameInHostname() throws Exception {
-        new S3ListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(Home.ROOT, new DisabledListProgressListener());
+        new S3ListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(Home.root(), new DisabledListProgressListener());
     }
 
     @Test

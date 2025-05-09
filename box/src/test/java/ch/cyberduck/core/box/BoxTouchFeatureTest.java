@@ -29,6 +29,6 @@ public class BoxTouchFeatureTest extends AbstractBoxTest {
     @Test
     public void testSupported() {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        assertTrue(new BoxTouchFeature(session, fileid).isSupported(Home.ROOT, "xacjivli-éf"));
+        assertTrue(new BoxTouchFeature(session, fileid).isSupported(Home.root(), "xacjivli-éf"));
     }
 }

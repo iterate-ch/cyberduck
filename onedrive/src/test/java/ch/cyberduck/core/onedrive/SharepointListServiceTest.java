@@ -48,7 +48,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
 
     @Test
     public void testListRoot() throws Exception {
-        final AttributedList<Path> list = new SharepointListService(session, fileid).list(Home.ROOT, new DisabledListProgressListener());
+        final AttributedList<Path> list = new SharepointListService(session, fileid).list(Home.root(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(3, list.size());
     }

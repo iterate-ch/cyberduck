@@ -26,7 +26,9 @@ import java.util.EnumSet;
 @Optional
 public interface Home {
 
-    Path ROOT = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
+    static Path root() {
+        return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
+    }
 
     /**
      * Find user home directory

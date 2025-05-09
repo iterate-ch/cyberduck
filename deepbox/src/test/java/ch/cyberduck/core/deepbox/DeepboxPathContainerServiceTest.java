@@ -34,7 +34,7 @@ public class DeepboxPathContainerServiceTest {
     public void testRoot() {
         final DeepboxSession session = new DeepboxSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final DeepboxPathContainerService container = new DeepboxPathContainerService(session, new DeepboxIdProvider(session));
-        final Path folder = Home.ROOT;
+        final Path folder = Home.root();
         assertFalse(container.isContainer(folder));
         assertFalse(container.isCompany(folder));
         assertFalse(container.isDeepbox(folder));
@@ -44,7 +44,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertEquals(Home.root(), container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertNull(container.getCompanyPath(folder));
         assertNull(container.getDeepboxPath(folder));
@@ -66,7 +66,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertEquals(Home.root(), container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder, container.getCompanyPath(folder));
         assertNull(container.getDeepboxPath(folder));
@@ -88,7 +88,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertEquals(Home.root(), container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent(), container.getCompanyPath(folder));
         assertEquals(folder, container.getDeepboxPath(folder));
@@ -111,7 +111,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertEquals(Home.root(), container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent(), container.getCompanyPath(folder));
         assertNull(container.getDeepboxPath(folder));
@@ -133,7 +133,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertEquals(Home.root(), container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent().getParent(), container.getCompanyPath(folder));
         assertEquals(folder.getParent(), container.getDeepboxPath(folder));
@@ -155,7 +155,7 @@ public class DeepboxPathContainerServiceTest {
         assertTrue(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertEquals(Home.root(), container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent().getParent().getParent(), container.getCompanyPath(folder));
         assertEquals(folder.getParent().getParent(), container.getDeepboxPath(folder));
@@ -177,7 +177,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertEquals(Home.root(), container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent().getParent().getParent(), container.getCompanyPath(folder));
         assertEquals(folder.getParent().getParent(), container.getDeepboxPath(folder));
@@ -199,7 +199,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertTrue(container.isTrash(folder));
         assertEquals(folder, container.getContainer(folder));
-        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertEquals(Home.root(), container.getRoot(folder));
         assertNull(container.getKey(folder));
         assertEquals(folder.getParent().getParent().getParent(), container.getCompanyPath(folder));
         assertEquals(folder.getParent().getParent(), container.getDeepboxPath(folder));
@@ -221,7 +221,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(folder));
         assertFalse(container.isTrash(folder));
         assertEquals(folder.getParent(), container.getContainer(folder));
-        assertEquals(Home.ROOT, container.getRoot(folder));
+        assertEquals(Home.root(), container.getRoot(folder));
         assertEquals("Auditing", container.getKey(folder));
         assertEquals(folder.getParent().getParent().getParent().getParent(), container.getCompanyPath(folder));
         assertEquals(folder.getParent().getParent().getParent(), container.getDeepboxPath(folder));
@@ -243,7 +243,7 @@ public class DeepboxPathContainerServiceTest {
         assertFalse(container.isInbox(file));
         assertFalse(container.isTrash(file));
         assertEquals(file.getParent().getParent(), container.getContainer(file));
-        assertEquals(Home.ROOT, container.getRoot(file));
+        assertEquals(Home.root(), container.getRoot(file));
         assertEquals("Auditing/nix4.txt", container.getKey(file));
         assertEquals(file.getParent().getParent().getParent().getParent().getParent(), container.getCompanyPath(file));
         assertEquals(file.getParent().getParent().getParent().getParent(), container.getDeepboxPath(file));

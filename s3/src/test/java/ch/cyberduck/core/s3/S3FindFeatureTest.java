@@ -33,7 +33,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindNotFoundVirtualHost() throws Exception {
-        final Path container = Home.ROOT;
+        final Path container = Home.root();
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertFalse(new S3FindFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(test));
     }
@@ -52,8 +52,8 @@ public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(Home.ROOT));
-        assertTrue(new S3FindFeature(virtualhost, new S3AccessControlListFeature(session)).find(Home.ROOT));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(Home.root()));
+        assertTrue(new S3FindFeature(virtualhost, new S3AccessControlListFeature(session)).find(Home.root()));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
 
     @Test
     public void testFindCommonPrefixWithVirtualHost() throws Exception {
-        final Path container = Home.ROOT;
+        final Path container = Home.root();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         assertTrue(new S3FindFeature(virtualhost, acl).find(container));
         final String prefix = new AlphanumericRandomStringService().random();

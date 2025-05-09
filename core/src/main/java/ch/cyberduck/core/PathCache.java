@@ -21,7 +21,7 @@ import ch.cyberduck.core.features.Home;
 
 public class PathCache extends AbstractCache<Path> {
 
-    private static final CacheReference<Path> NULL_KEY = new DefaultPathPredicate(Home.ROOT);
+    private static final CacheReference<Path> NULL_KEY = new DefaultPathPredicate(Home.root());
 
     private static final PathCache EMPTY = new PathCache(0) {
         @Override

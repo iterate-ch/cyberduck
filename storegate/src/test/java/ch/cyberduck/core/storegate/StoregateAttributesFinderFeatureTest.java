@@ -53,7 +53,7 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
     @Test
     public void testDefaultPaths() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
-        for(Path container : new StoregateListService(session, nodeid).list(Home.ROOT, new DisabledListProgressListener())) {
+        for(Path container : new StoregateListService(session, nodeid).list(Home.root(), new DisabledListProgressListener())) {
             assertEquals(container.attributes(), new StoregateAttributesFinderFeature(session, nodeid).find(container));
         }
         for(RootFolder root : session.roots()) {

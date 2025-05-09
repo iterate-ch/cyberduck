@@ -51,7 +51,7 @@ public class BoxShareFeatureTest extends AbstractBoxTest {
     public void testFile() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new BoxTouchFeature(session, fileid).touch(
-                new Path(Home.ROOT, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(Home.root(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final BoxShareFeature feature = new BoxShareFeature(session, fileid);
         assertTrue(feature.isSupported(test, Share.Type.download));
         assertFalse(feature.isSupported(test, Share.Type.upload));

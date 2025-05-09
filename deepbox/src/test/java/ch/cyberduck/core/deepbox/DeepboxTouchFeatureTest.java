@@ -44,7 +44,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testTouchRoot() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, fileid).preflight(Home.ROOT, new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, fileid).preflight(Home.root(), new AlphanumericRandomStringService().random()));
         assertThrows(NotfoundException.class, () -> new DeepboxTouchFeature(session, fileid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus()));
     }
 

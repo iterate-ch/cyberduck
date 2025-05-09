@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -39,7 +40,7 @@ public class DefaultPathHomeFeature extends AbstractHomeFeature {
     @Override
     public Path find() throws BackgroundException {
         if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            return PathNormalizer.compose(ROOT, host.getDefaultPath());
+            return PathNormalizer.compose(Home.root(), host.getDefaultPath());
         }
         log.debug("No default path set for bookmark {}", host);
         // No default path configured

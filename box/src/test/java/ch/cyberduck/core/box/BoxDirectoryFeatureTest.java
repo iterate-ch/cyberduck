@@ -53,11 +53,11 @@ public class BoxDirectoryFeatureTest extends AbstractBoxTest {
     @Test
     public void isSupported() {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        assertTrue(new BoxDirectoryFeature(session, fileid).isSupported(Home.ROOT, new AlphanumericRandomStringService().random()));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.ROOT, String.format("%s ", new AlphanumericRandomStringService().random())));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.ROOT, String.format("%s\\", new AlphanumericRandomStringService().random())));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.ROOT, String.format("%s/", new AlphanumericRandomStringService().random())));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.ROOT, "."));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.ROOT, ".."));
+        assertTrue(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), new AlphanumericRandomStringService().random()));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), String.format("%s ", new AlphanumericRandomStringService().random())));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), String.format("%s\\", new AlphanumericRandomStringService().random())));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), String.format("%s/", new AlphanumericRandomStringService().random())));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), "."));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), ".."));
     }
 }

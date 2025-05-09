@@ -50,7 +50,7 @@ public class DeepboxFindFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new DeepboxFindFeature(session, new DeepboxIdProvider(session)).find(Home.ROOT));
+        assertTrue(new DeepboxFindFeature(session, new DeepboxIdProvider(session)).find(Home.root()));
     }
 
     @Test
