@@ -51,7 +51,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final BoxWriteFeature feature = new BoxWriteFeature(session, fileid);
         final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
-                new Path(Home.ROOT, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(Home.root(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long folderModification = new BoxAttributesFinderFeature(session, fileid).find(folder).getModificationDate();
         assertEquals(folderModification, folder.attributes().getModificationDate());
         // Makes sure to test overwrite

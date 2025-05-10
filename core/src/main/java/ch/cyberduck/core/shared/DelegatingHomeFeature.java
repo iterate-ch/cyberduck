@@ -40,6 +40,6 @@ public class DelegatingHomeFeature implements Home {
             }
             return home;
         }
-        return ROOT;
+        return Home.root();
     }
 }

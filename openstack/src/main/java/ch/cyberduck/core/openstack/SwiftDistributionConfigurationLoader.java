@@ -54,7 +54,7 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
             return Collections.emptyMap();
         }
         final AttributedList<Path> containers = new SwiftContainerListService(session,
-                new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(Home.ROOT, new DisabledListProgressListener());
+                new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(Home.root(), new DisabledListProgressListener());
         final Map<Path, Set<Distribution>> distributions = new HashMap<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {

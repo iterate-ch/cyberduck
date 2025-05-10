@@ -44,7 +44,7 @@ public class S3SearchFeatureTest extends AbstractS3Test {
     @Test
     public void testSearchInBucket() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
-        final Path root = Home.ROOT;
+        final Path root = Home.root();
         final Path bucket = new Path(root, "test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path file = new S3TouchFeature(session, acl).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());

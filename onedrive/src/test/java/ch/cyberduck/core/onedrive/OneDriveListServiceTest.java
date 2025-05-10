@@ -32,10 +32,10 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
     @Test
     public void testListDrives() throws Exception {
         // "Drives" rather placeholders for "My Files" and "Shared".
-        final AttributedList<Path> list = new OneDriveListService(session, fileid).list(Home.ROOT, new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(session, fileid).list(Home.root(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            assertEquals(Home.ROOT, f.getParent());
+            assertEquals(Home.root(), f.getParent());
         }
         assertTrue(list.contains(new OneDriveHomeFinderService().find()));
     }

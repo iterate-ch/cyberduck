@@ -77,7 +77,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
             new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
         assertEquals("us-east-1", cache.getRegionForBucketName("test-us-east-1-cyberduck"));
-        assertEquals(new S3LocationFeature.S3Region("us-east-1"), feature.getLocation(Home.ROOT));
+        assertEquals(new S3LocationFeature.S3Region("us-east-1"), feature.getLocation(Home.root()));
         assertEquals("us-east-1", cache.getRegionForBucketName(""));
     }
 
@@ -139,7 +139,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     @Test
     public void testAccessBucketNameInHostname() throws Exception {
         final RegionEndpointCache cache = virtualhost.getClient().getRegionEndpointCache();
-        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(virtualhost, cache).getLocation(Home.ROOT));
+        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(virtualhost, cache).getLocation(Home.root()));
         assertEquals("eu-central-1", cache.getRegionForBucketName(""));
     }
 

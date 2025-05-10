@@ -32,7 +32,7 @@ public class SMBRootListServiceTest extends AbstractSMBTest {
 
     @Test
     public void testListAllShares() throws Exception {
-        final Path root = Home.ROOT;
+        final Path root = Home.root();
         final AttributedList<Path> result = session.getFeature(ListService.class)/*SMBRootListService*/.list(root, new DisabledListProgressListener());
         for(Path f : result) {
             assertTrue(f.isVolume());

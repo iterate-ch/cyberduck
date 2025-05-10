@@ -37,8 +37,8 @@ public class SpectraTouchFeatureTest extends AbstractSpectraTest {
 
     @Test
     public void testFile() {
-        assertFalse(new SpectraTouchFeature(session).isSupported(Home.ROOT, StringUtils.EMPTY));
-        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(Home.ROOT, "/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), StringUtils.EMPTY));
+        assertFalse(new SpectraTouchFeature(session).isSupported(Home.root(), StringUtils.EMPTY));
+        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), StringUtils.EMPTY));
     }
 
     @Test

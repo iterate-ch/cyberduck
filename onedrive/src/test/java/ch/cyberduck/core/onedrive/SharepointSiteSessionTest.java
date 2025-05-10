@@ -35,6 +35,6 @@ public class SharepointSiteSessionTest {
     @Test
     public void testHome() {
         Assert.assertFalse(session.isHome(SharepointListService.DEFAULT_NAME));
-        Assert.assertTrue(session.isHome(Home.ROOT));
+        Assert.assertTrue(session.isHome(Home.root()));
     }
 }

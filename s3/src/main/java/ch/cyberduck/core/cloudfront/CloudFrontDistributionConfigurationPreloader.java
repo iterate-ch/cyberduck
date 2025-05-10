@@ -50,7 +50,7 @@ public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedul
         if(null == feature) {
             return Collections.emptySet();
         }
-        final AttributedList<Path> containers = new S3BucketListService(session).list(Home.ROOT, new DisabledListProgressListener());
+        final AttributedList<Path> containers = new S3BucketListService(session).list(Home.root(), new DisabledListProgressListener());
         final Set<Distribution> distributions = new LinkedHashSet<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {

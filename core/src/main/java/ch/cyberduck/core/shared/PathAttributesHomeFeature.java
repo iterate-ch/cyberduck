@@ -50,9 +50,6 @@ public class PathAttributesHomeFeature implements Home {
         final Path home = proxy.find();
         try {
             log.debug("Read attributes for {}", home);
-            if(Home.ROOT == home) {
-                return home;
-            }
             // Set correct type from protocol and current attributes from server
             return home.withAttributes(attributes.find(home)).withType(container.isContainer(home) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : home.getType());
         }

@@ -40,7 +40,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
     @Test
     public void testGetOrigin() {
         final Host origin = new Host(new TestProtocol(), "m");
-        final Path container = Home.ROOT;
+        final Path container = Home.root();
         origin.setWebURL("http://w.example.net");
         final CustomOriginCloudFrontDistributionConfiguration configuration
             = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager(), new DefaultX509KeyManager());
@@ -54,7 +54,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
     @Test
     public void testGetOriginCustomHttpPort() {
         final Host origin = new Host(new TestProtocol(), "m");
-        final Path container = Home.ROOT;
+        final Path container = Home.root();
         origin.setWebURL("http://w.example.net:8080");
         final CustomOriginCloudFrontDistributionConfiguration configuration
             = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager(), new DefaultX509KeyManager());
@@ -68,7 +68,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
     @Test
     public void testGetOriginCustomHttpsPort() {
         final Host origin = new Host(new TestProtocol(), "m");
-        final Path container = Home.ROOT;
+        final Path container = Home.root();
         origin.setWebURL("https://w.example.net:4444");
         final CustomOriginCloudFrontDistributionConfiguration configuration
             = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager(), new DefaultX509KeyManager());

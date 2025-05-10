@@ -42,7 +42,7 @@ public class TildeResolvingHomeFeature implements Home {
             if(StringUtils.startsWith(host.getDefaultPath(), Path.HOME)) {
                 return new Path(new TildePathExpander(proxy.find()).expand(host.getDefaultPath(), Path.HOME + Path.DELIMITER), EnumSet.of(Path.Type.directory));
             }
-            return PathNormalizer.compose(ROOT, host.getDefaultPath());
+            return PathNormalizer.compose(Home.root(), host.getDefaultPath());
         }
         return proxy.find();
     }
