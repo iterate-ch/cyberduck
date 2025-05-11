@@ -221,6 +221,14 @@ public class S3UrlProvider implements UrlProvider {
                     region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucket.getName());
                 }
             }
+            if(StringUtils.isBlank(region)) {
+                // Only for AWS
+                switch(session.getSignatureVersion()) {
+                    case AWS4HMACSHA256:
+                        // Region is required for AWS4-HMAC-SHA256 signature
+                        region = S3LocationFeature.DEFAULT_REGION.getIdentifier();
+                }
+            }
             return new S3PresignedUrlProvider(session).create(
                     secret,
                     bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(),

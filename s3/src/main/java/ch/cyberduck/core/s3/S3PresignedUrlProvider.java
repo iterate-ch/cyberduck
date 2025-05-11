@@ -19,18 +19,25 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
 
 public class S3PresignedUrlProvider {
+    private static final Logger log = LogManager.getLogger(S3PresignedUrlProvider.class);
+
     private final S3Session session;
+    private final HostPreferences preferences;
 
     public S3PresignedUrlProvider(final S3Session session) {
         this.session = session;
+        this.preferences = HostPreferencesFactory.get(session.getHost());
     }
 
     /**
@@ -43,21 +50,16 @@ public class S3PresignedUrlProvider {
      * @param expiry Milliseconds
      * @return a URL signed in such a way as to grant access to an S3 resource to whoever uses it.
      */
-    public String create(final String secret, final String bucket, String region, final String key, final String method, final long expiry) {
-        if(StringUtils.isBlank(region)) {
-            // Only for AWS
-            switch(session.getSignatureVersion()) {
-                case AWS4HMACSHA256:
-                    // Region is required for AWS4-HMAC-SHA256 signature
-                    region = S3LocationFeature.DEFAULT_REGION.getIdentifier();
-            }
-        }
+    public String create(final String secret, final String bucket, final String region, final String key, final String method, final long expiry) {
         final Host bookmark = session.getHost();
         return new RestS3Service(new AWSCredentials(StringUtils.strip(bookmark.getCredentials().getUsername()), StringUtils.strip(secret))) {
             @Override
             public String getEndpoint() {
                 if(S3Session.isAwsHostname(bookmark.getHostname())) {
-                    return bookmark.getProtocol().getDefaultHostname();
+                    final String endpoint = preferences.getBoolean("s3.endpoint.dualstack.enable")
+                            ? preferences.getProperty("s3.endpoint.format.ipv6") : preferences.getProperty("s3.endpoint.format.ipv4");
+                    log.debug("Apply region {} to endpoint {}", region, endpoint);
+                    return String.format(endpoint, region);
                 }
                 return bookmark.getHostname();
             }
@@ -69,6 +71,6 @@ public class S3PresignedUrlProvider {
         }.createSignedUrlUsingSignatureVersion(
                 session.getSignatureVersion().toString(),
                 region, method, bucket, key, null, null, expiry / 1000, false, true,
-                HostPreferencesFactory.get(bookmark).getBoolean("s3.bucket.virtualhost.disable"));
+                preferences.getBoolean("s3.bucket.virtualhost.disable"));
     }
 }
