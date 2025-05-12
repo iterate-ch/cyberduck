@@ -3545,6 +3545,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
+                    // Invalidate renamed source folders
+                    foreach (Path f in Utils.ConvertFromJavaList<Path>(_files.keySet()))
+                    {
+                        if(f.isDirectory())
+                        {
+                            _controller.Cache.invalidate(f);
+                        }
+                    }
                     List changed = new ArrayList();
                     changed.addAll(_files.keySet());
                     changed.addAll(_files.values());
