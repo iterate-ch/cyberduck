@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -129,6 +130,14 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 }
                 // Found common prefix
                 return PathAttributes.EMPTY;
+            }
+            else {
+                if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.multipart.lookup")) {
+                    final Write.Append append = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl).append(file, new TransferStatus());
+                    if(append.append) {
+                        return new PathAttributes().setSize(append.offset);
+                    }
+                }
             }
             throw e;
         }

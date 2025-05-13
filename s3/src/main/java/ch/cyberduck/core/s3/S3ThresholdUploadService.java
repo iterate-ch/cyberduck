@@ -88,14 +88,14 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     }
 
     protected boolean threshold(final TransferStatus status) {
+        if(!HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.multipart")) {
+            log.warn("Multipart upload is disabled");
+            return false;
+        }
+        if(status.isAppend()) {
+            return true;
+        }
         if(status.getLength() >= threshold) {
-            if(!HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.multipart")) {
-                log.warn("Multipart upload is disabled with property s3.upload.multipart");
-                // Disabled by user
-                if(status.getLength() < HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.required.threshold")) {
-                    return false;
-                }
-            }
             return true;
         }
         return false;
