@@ -75,6 +75,12 @@ public class MoveController extends ProxyController {
                         new MoveWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(parent, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
                             @Override
                             public void cleanup(final Map<Path, Path> result) {
+                                // Invalidate renamed source folders
+                                for(Path f : selected.keySet()) {
+                                    if(f.isDirectory()) {
+                                        cache.invalidate(f);
+                                    }
+                                }
                                 final List<Path> changed = new ArrayList<>();
                                 changed.addAll(selected.keySet());
                                 changed.addAll(selected.values());
