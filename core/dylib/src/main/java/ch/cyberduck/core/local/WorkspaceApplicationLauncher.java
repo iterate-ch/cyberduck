@@ -71,10 +71,8 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
      */
     @Override
     public void bounce(final Local file) {
-        synchronized(NSWorkspace.class) {
-            NSDistributedNotificationCenter.defaultCenter().postNotification(
-                    NSNotification.notificationWithName("com.apple.DownloadFileFinished", file.getAbsolute())
-            );
-        }
+        NSDistributedNotificationCenter.defaultCenter().postNotification(
+                NSNotification.notificationWithName("com.apple.DownloadFileFinished", file.getAbsolute())
+        );
     }
 }

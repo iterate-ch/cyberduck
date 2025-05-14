@@ -287,7 +287,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             log.debug("Run completion for file {} with status {}", local, status);
             if(file.isFile()) {
                 // Bounce Downloads folder dock icon by sending download finished notification
-                launcher.bounce(local);
+                if(preferences.getBoolean("queue.download.complete.bounce")) {
+                    launcher.bounce(local);
+                }
                 if(options.quarantine || options.wherefrom) {
                     final DescriptiveUrlBag provider = session.getFeature(UrlProvider.class).toUrl(file,
                             EnumSet.of(DescriptiveUrl.Type.provider)).filter(DescriptiveUrl.Type.provider, DescriptiveUrl.Type.http);
