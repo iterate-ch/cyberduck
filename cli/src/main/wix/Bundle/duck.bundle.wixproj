@@ -6,12 +6,6 @@
       ProductVersion=$(FileVersion)
     </DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
-  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\csharp\duck.csproj" Publish="true" />
   </ItemGroup>

@@ -1,23 +1,27 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package Name="Cyberduck CLI"
-    Manufacturer="iterate GmbH"
-    Version="$(ProductVersion)"
-    UpgradeCode="98B2B672-3720-4CAC-BF3E-220757500AE0">
+           Manufacturer="iterate GmbH"
+           Version="$(ProductVersion)"
+           UpgradeCode="98B2B672-3720-4CAC-BF3E-220757500AE0">
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="true" />
 
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="INSTALLFOLDER" Name="!(bind.Property.ProductName)">
-        <Files Include="$(duck.TargetDir)**" />
+      <Directory Id="INSTALLFOLDER"
+                 Name="!(bind.Property.ProductName)">
+        <Files Include="$(duck.TargetDir)**">
+          <Exclude Files="**.pdb" />
+        </Files>
 
-        <Component Id="SetEnvironment" Guid="B429556B-9604-45DD-896C-4AE7BFFBE9EB">
+        <Component Id="SetEnvironment"
+                   Guid="B429556B-9604-45DD-896C-4AE7BFFBE9EB">
           <Environment Id="PathVar"
-            Action="set"
-            Part="last"
-            Name="PATH"
-            Permanent="no"
-            System="yes"
-            Value="[INSTALLFOLDER]" />
+                       Action="set"
+                       Part="last"
+                       Name="PATH"
+                       Permanent="no"
+                       System="yes"
+                       Value="[INSTALLFOLDER]" />
         </Component>
       </Directory>
     </StandardDirectory>
