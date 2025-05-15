@@ -18,8 +18,8 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <PropertyGroup>
-        <OutputPath>$(OutputPath)$(Configuration)</OutputPath>
-        <SetupDir>$(CyberduckDir)setup\wix\</SetupDir>
+      <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+      <SetupDir>$(CyberduckDir)setup\wix\</SetupDir>
     </PropertyGroup>
 
 </Project>

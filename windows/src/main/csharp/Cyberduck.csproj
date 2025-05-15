@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
-    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <Platforms>x64</Platforms>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
 
@@ -23,6 +23,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>$(Filename)$(Extension)</Link>
     </Content>
+    <Content Include="$(CyberduckDir)cyberduck-application.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(CyberduckDir)cyberduck-document.ico" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
