@@ -12,11 +12,11 @@
         <dependency id="Cyberduck.Core.Native" version="$version$" />
         <dependency id="DotNetProjects.Extended.Wpf.Toolkit" version="$PkgDotNetProjects_Extended_Wpf_ToolkitVersion$" />
         <dependency id="ReactiveUI.WPF" version="$PkgReactiveUI_WPFVersion$" />
-        <dependency id="System.Memory" version="$PkgSystem_MemoryVersion$" />
         <dependency id="System.Runtime.Caching" version="$PkgSystem_Runtime_CachingVersion$" />
       </group>
 
       <group targetFramework="net472">
+        <dependency id="System.Memory" version="$PkgSystem_MemoryVersion$" />
       </group>
 
       <group targetFramework="net8.0-windows10.0.22621.0">
