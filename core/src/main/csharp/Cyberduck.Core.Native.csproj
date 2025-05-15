@@ -15,16 +15,10 @@
 
 <Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup Condition="'$(Platform)'=='x64'">
-    <TargetFrameworks>net472</TargetFrameworks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
-    <Platforms>x64</Platforms>
-  </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(TargetFrameworks)'==''">net472;net8.0-windows10.0.22621.0</TargetFrameworks>
-    <Platforms Condition="'$(Platforms)'==''">x64;arm64</Platforms>
+    <TargetFrameworks>net472;net8.0-windows10.0.22621.0</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
+    <Platforms>x64;arm64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -45,13 +39,13 @@
     <PackageReference Include="ReactiveUI" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' != '' And $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net472')) ">
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETFramework'">
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Security" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != '' And $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0')) ">
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp'">
     <PackageReference Include="System.Configuration.ConfigurationManager" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" />
   </ItemGroup>
