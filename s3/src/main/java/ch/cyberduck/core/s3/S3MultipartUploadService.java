@@ -108,6 +108,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     final List<MultipartUpload> list = multipartService.find(file);
                     if(!list.isEmpty()) {
                         multipart = list.iterator().next();
+                        log.debug("Resume multipart upload {}", multipart);
                     }
                 }
             }
@@ -129,6 +130,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(status.isAppend()) {
                     // Add already completed parts
                     completed.addAll(multipartService.list(multipart));
+                    log.debug("Add completed parts {} for multipart upload {}", completed, multipart);
                 }
             }
             // Full size of file

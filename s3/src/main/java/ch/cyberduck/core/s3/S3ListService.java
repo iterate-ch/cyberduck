@@ -95,7 +95,7 @@ public class S3ListService implements ListService {
             try {
                 for(MultipartUpload upload : new S3DefaultMultipartService(session).find(directory)) {
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setDuplicate(true);
+                    attributes.setHidden(true);
                     attributes.setVersionId(upload.getUploadId());
                     attributes.setModificationDate(upload.getInitiatedDate().getTime());
                     objects.add(new Path(directory, PathNormalizer.name(upload.getObjectKey()), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));

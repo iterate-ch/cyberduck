@@ -139,22 +139,13 @@ public class UploadTransfer extends Transfer {
         return children;
     }
 
-    /**
-     * @return True if only single file in transfer
-     */
-    private boolean isSingle() {
-        return roots.size() == 1 && !roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent();
-    }
-
     @Override
     public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         log.debug("Filter transfer with action {} and options {}", action, options);
         final Symlink symlink = source.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
-        final Find find;
-        final AttributesFinder attributes;
-        find = this.isSingle() ? new CachingFindFeature(source, cache, source.getFeature(Find.class)) : new CachingFindFeature(source, cache);
-        attributes = this.isSingle() ? new CachingAttributesFinderFeature(source, cache, source.getFeature(AttributesFinder.class)) : new CachingAttributesFinderFeature(source, cache);
+        final Find find = new CachingFindFeature(source, cache);
+        final AttributesFinder attributes = new CachingAttributesFinderFeature(source, cache);
         log.debug("Determined features {} and {}", find, attributes);
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, source, find, attributes, options);
@@ -194,7 +185,7 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
-                final Find find = this.isSingle() ? new CachingFindFeature(source, cache, source.getFeature(Find.class)) : new CachingFindFeature(source, cache);
+                final Find find = new CachingFindFeature(source, cache);
                 if(find.find(upload.remote)) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
