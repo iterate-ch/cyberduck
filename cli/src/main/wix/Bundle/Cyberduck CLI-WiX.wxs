@@ -10,7 +10,7 @@
       <Directory Id="INSTALLFOLDER"
                  Name="!(bind.Property.ProductName)">
         <Files Include="$(duck.TargetDir)**">
-          <Exclude Files="**.pdb" />
+          <Exclude Files="$(duck.TargetDir)**.pdb" />
         </Files>
 
         <Component Id="SetEnvironment"

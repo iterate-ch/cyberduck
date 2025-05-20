@@ -33,7 +33,7 @@
 
     <ComponentGroup Id="Package">
       <Files Directory="INSTALLFOLDER" Include="$(Cyberduck.TargetDir)**">
-        <Exclude Files="$(Cyberduck.TargetPath);**.pdb" />
+        <Exclude Files="$(Cyberduck.TargetPath);$(Cyberduck.TargetDir)**.pdb" />
       </Files>
 
       <Component Id="InstallLocationRegistrySearch">
