@@ -19,14 +19,11 @@
     <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)'=='win7-x64'">win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
-  <Target Name="SignAppHost" BeforeTargets="Compile" DependsOnTargets="_CreateAppHost;UsesSignTool" Inputs="$(AppHostIntermediatePath)" Outputs="$(AppHostIntermediatePath)" Condition="'$(AppHostIntermediatePath)'!='' And '$(SignOutput)'=='true'">
-    <ItemGroup>
-      <SignToolPath Include="$(WindowsSDK_ExecutablePath)" />
-    </ItemGroup>
-    <PropertyGroup>
-      <SignTool>SignTool.exe sign /d "$(AppName)" /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n "iterate GmbH"</SignTool>
-      <SignToolPath>PATH=@(SignToolPath, '%3B')</SignToolPath>
-    </PropertyGroup>
+  <Target Name="SignIntermediateAssembly" AfterTargets="CoreCompile" DependsOnTargets="UsesSignTool" Condition="'$(SignOutput)'=='true'">
+    <Exec Command="$(SignTool) &quot;@(IntermediateAssembly)&quot;" EnvironmentVariables="$(SignToolPath)" />
+  </Target>
+
+  <Target Name="SignAppHost" BeforeTargets="Compile" DependsOnTargets="_CreateAppHost;UsesSignTool" Condition="'$(AppHostIntermediatePath)'!='' And '$(SignOutput)'=='true'">
     <Exec Command="$(SignTool) &quot;$(AppHostIntermediatePath)&quot;" EnvironmentVariables="$(SignToolPath)" />
   </Target>
 
