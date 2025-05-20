@@ -2,8 +2,4 @@
 
   <Target Name="CompileJava" />
 
-  <Target Name="SignIntermediateAssembly" BeforeTargets="CoreCompile" DependsOnTargets="UsesSignTool" Condition="'$(SignOutput)'=='true'">
-    <Exec Command="$(SignTool) &quot;@(IntermediateAssembly)&quot;" EnvironmentVariables="$(SignToolPath)" />
-  </Target>
-
 </Project>
