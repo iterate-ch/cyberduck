@@ -61,6 +61,36 @@ public class Permission implements Serializable {
         public String getSymbol() {
             return "--";
         }
+
+        @Override
+        public void setUser(final Action user) {
+            // No-op
+        }
+
+        @Override
+        public void setGroup(final Action group) {
+            // No-op
+        }
+
+        @Override
+        public void setOther(final Action other) {
+            // No-op
+        }
+
+        @Override
+        public void setSetuid(final boolean setuid) {
+            // No-op
+        }
+
+        @Override
+        public void setSetgid(final boolean setgid) {
+            // No-op
+        }
+
+        @Override
+        public void setSticky(final boolean sticky) {
+            // No-op
+        }
     };
 
     private Action user;

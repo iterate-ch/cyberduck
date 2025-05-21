@@ -36,10 +36,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Serializable {
+public class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Serializable {
     private static final Logger log = LogManager.getLogger(Acl.class);
 
-    public static final Acl EMPTY = new Acl();
+    public static final Acl EMPTY = new Acl() {
+        @Override
+        public boolean isEditable() {
+            return false;
+        }
+
+        @Override
+        public void addAll(final User user, final Role... permissions) {
+            // No-op
+        }
+
+        @Override
+        public void addAll(final UserAndRole... set) {
+            // No-op
+        }
+    };
     /**
      * A pre-canned REST ACL to set an object's permissions to Private (only owner can read/write)
      */
