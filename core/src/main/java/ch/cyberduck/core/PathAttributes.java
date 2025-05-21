@@ -39,8 +39,6 @@ import java.util.Objects;
 public class PathAttributes extends Attributes implements Serializable {
     private static final Logger log = LogManager.getLogger(PathAttributes.class);
 
-    public static final PathAttributes EMPTY = new PathAttributes();
-
     /**
      * The file length
      */
@@ -716,4 +714,166 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append('}');
         return sb.toString();
     }
+
+    public static final PathAttributes EMPTY = new PathAttributes() {
+        @Override
+        public <T> T serialize(final Serializer<T> dict) {
+            return super.serialize(dict);
+        }
+
+        @Override
+        public PathAttributes setSize(final long size) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setQuota(final Quota.Space quota) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setModificationDate(final long millis) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setCreationDate(final long millis) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setAccessedDate(final long millis) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setPermission(final Permission p) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setAcl(final Acl acl) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setOwner(final String o) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setGroup(final String g) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setChecksum(final Checksum checksum) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setETag(final String etag) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setStorageClass(final String storageClass) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setEncryption(final Encryption.Algorithm encryption) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setVersionId(final String versionId) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setFileId(final String fileId) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setLockId(final String lockId) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setDirectoryId(final String directoryId) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setRevision(final Long revision) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setDecrypted(final Path decrypted) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setEncrypted(final Path encrypted) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setVault(final Path vault) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setDuplicate(final boolean duplicate) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setHidden(final boolean hidden) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setTrashed(final boolean trashed) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setMetadata(final Map<String, String> metadata) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setRegion(final String region) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setDisplayname(final String displayname) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setLink(final DescriptiveUrl link) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setCustom(final Map<String, String> custom) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setCustom(final String key, final String value) {
+            return this;
+        }
+
+        @Override
+        public PathAttributes setVerdict(final Verdict verdict) {
+            return this;
+        }
+    };
 }
