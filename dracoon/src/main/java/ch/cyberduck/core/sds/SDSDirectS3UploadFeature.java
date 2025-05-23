@@ -25,6 +25,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -237,7 +238,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
     private Future<TransferStatus> submit(final ThreadPool pool, final Path file, final Local local,
                                           final Buffer buffer, final BandwidthThrottle throttle, final StreamListener listener,
                                           final TransferStatus overall, final String url, final Integer partNumber,
-                                          final long offset, final long length, final ConnectionCallback callback) {
+                                          final long offset, final long length, final ConnectionCallback callback) throws ConnectionCanceledException {
+        overall.validate();
         log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<TransferStatus>() {
