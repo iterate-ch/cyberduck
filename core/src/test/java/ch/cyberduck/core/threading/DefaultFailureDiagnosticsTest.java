@@ -39,6 +39,6 @@ public class DefaultFailureDiagnosticsTest {
         assertEquals(FailureDiagnostics.Type.skip, new DefaultFailureDiagnostics().determine(new TransferCanceledException()));
         assertEquals(FailureDiagnostics.Type.application, new DefaultFailureDiagnostics().determine(new BackgroundException(new ConnectionCanceledException())));
         // By transfer status
-        assertEquals(FailureDiagnostics.Type.cancel, new DefaultFailureDiagnostics().determine(new TransferStatusCanceledException()));
+        assertEquals(FailureDiagnostics.Type.skip, new DefaultFailureDiagnostics().determine(new TransferStatusCanceledException()));
     }
 }

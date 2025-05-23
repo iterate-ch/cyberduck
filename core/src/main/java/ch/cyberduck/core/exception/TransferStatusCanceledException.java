@@ -18,7 +18,7 @@ package ch.cyberduck.core.exception;
 /**
  * Skip of file when preparing transfer status
  */
-public class TransferStatusCanceledException extends ConnectionCanceledException {
+public class TransferStatusCanceledException extends TransferCanceledException {
     public TransferStatusCanceledException() {
     }
 

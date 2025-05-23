@@ -15,6 +15,13 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
+/**
+ * An exception that is thrown when a file transfer operation is canceled by the user.
+ *
+ * This exception extends {@link ConnectionCanceledException}, representing a higher-level
+ * interruption specific to transfer operations. It provides constructors to specify
+ * detailed error messages and optional causes for the cancellation.
+ */
 public class TransferCanceledException extends ConnectionCanceledException {
     public TransferCanceledException() {
     }
