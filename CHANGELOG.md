@@ -1,7 +1,14 @@
 # Changelog
 
-[9.1.4](https://github.com/iterate-ch/cyberduck/compare/release-9-1-3...release-9-1-4)
+[9.1.6](https://github.com/iterate-ch/cyberduck/compare/release-9-1-5...release-9-1-6)
+* [Bugfix] Use regular dual-stack endpoints for presigned URLs (S3)
+* [Bugfix] No attempt to use SSH agent for authentication (SFTP) (Windows)
+* [Bugfix] Share menu item not enabled (OneDrive, SharePoint) (#17082)
 
+[9.1.5](https://github.com/iterate-ch/cyberduck/compare/release-9-1-4...release-9-1-5)
+* [Bugfix] Failure notarizing builds with unsigned native library (macOS)
+
+[9.1.4](https://github.com/iterate-ch/cyberduck/compare/release-9-1-3...release-9-1-4)
 * [Bugfix] Slow file transfers (SMB) ([#16135](https://trac.cyberduck.io/ticket/16135))
 * [Bugfix] Interoperability with Bitwarden SSH Agent ([#16954](https://trac.cyberduck.io/ticket/16954))
 * [Bugfix] Skip trashed files for downloads (Google Drive) ([#16927](https://trac.cyberduck.io/ticket/16927))
