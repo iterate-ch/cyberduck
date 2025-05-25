@@ -2,6 +2,7 @@ name: Publish Artifacts
 on:
   workflow_dispatch:
   push:
+    tags: [ '*' ]
     branches:
       - master
 jobs:
