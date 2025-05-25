@@ -55,7 +55,7 @@ jobs:
           p12-file-base64: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_BASE64 }}
           p12-password: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_PASSWORD }}
       - name: Build with Maven
-        run: mvn --batch-mode deploy -Pinstaller -DskipTests -DskipITs
+        run: mvn --batch-mode deploy -Pinstaller -DskipTests -DskipITs -D"sparkle.feed=nightly"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
