@@ -1,6 +1,7 @@
 name: Publish Snapshot Artifacts
 on:
   push:
+    tags: [ '*' ]
     branches:
       - master
 jobs:
