@@ -26,7 +26,7 @@ jobs:
           java-version: 21
           cache: maven
       - name: Add msbuild to PATH
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: microsoft/setup-msbuild@v3
         with:
           msbuild-architecture: x64
@@ -38,17 +38,17 @@ jobs:
           echo "NuGetPackageSourceCredentials_gh-ikvmnet=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
           echo "NuGetPackageSourceCredentials_gh-iterate-ch=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
       - name: Install Bonjour SDK
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: crazy-max/ghaction-chocolatey@v4
         with:
           args: install bonjour -y
       - name: Install WiX Toolset
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: crazy-max/ghaction-chocolatey@v4
         with:
           args: install wixtoolset -y
       - name: Install OpenSSL
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: crazy-max/ghaction-chocolatey@v4
         with:
           args: install openssl -y
