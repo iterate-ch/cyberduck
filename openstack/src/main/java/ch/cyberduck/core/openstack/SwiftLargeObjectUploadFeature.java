@@ -30,6 +30,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
@@ -196,7 +197,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     private Future<StorageObject> submit(final ThreadPool pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
-                                         final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) {
+                                         final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) throws ConnectionCanceledException {
+        overall.validate();
+        log.info("Submit part {} to queue with offset {} and length {}", segment, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
             @Override

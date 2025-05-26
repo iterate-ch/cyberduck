@@ -28,6 +28,7 @@ import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -212,7 +213,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private Future<MultipartPart> submit(final ThreadPool pool, final Path file, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final MultipartUpload multipart,
-                                         final int partNumber, final long offset, final long length, final ConnectionCallback callback) {
+                                         final int partNumber, final long offset, final long length, final ConnectionCallback callback) throws ConnectionCanceledException {
+        overall.validate();
         log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {

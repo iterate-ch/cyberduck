@@ -26,6 +26,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEnt
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -152,7 +153,8 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     private Future<EueWriteFeature.Chunk> submit(final ThreadPool pool, final Path file, final Local local,
                                                  final BandwidthThrottle throttle, final StreamListener listener,
                                                  final TransferStatus overall, final String url, final String resourceId,
-                                                 final int partNumber, final long offset, final long length, final ConnectionCallback callback) {
+                                                 final int partNumber, final long offset, final long length, final ConnectionCallback callback) throws ConnectionCanceledException {
+        overall.validate();
         log.info("Submit {} to queue with offset {} and length {}", file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<EueWriteFeature.Chunk>() {

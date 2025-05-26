@@ -167,6 +167,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                                 final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus overall, final String uploadUrl,
                                 final long offset, final long length, final ConnectionCallback callback) throws BackgroundException {
+        overall.validate();
         log.info("Send part of {} with offset {} and length {}", file, offset, length);
         return ConcurrentUtils.constantFuture(new DefaultRetryCallable<>(host, new BackgroundExceptionCallable<Void>() {
             @Override

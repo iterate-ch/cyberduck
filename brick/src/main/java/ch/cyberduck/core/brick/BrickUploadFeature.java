@@ -29,6 +29,7 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -154,7 +155,8 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
     private Future<TransferStatus> submit(final ThreadPool pool, final Path file, final Local local,
                                           final BandwidthThrottle throttle, final StreamListener listener,
                                           final TransferStatus overall, final String url, final Integer partNumber,
-                                          final long offset, final long length, final ConnectionCallback callback) {
+                                          final long offset, final long length, final ConnectionCallback callback) throws ConnectionCanceledException {
+        overall.validate();
         log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<TransferStatus>() {
