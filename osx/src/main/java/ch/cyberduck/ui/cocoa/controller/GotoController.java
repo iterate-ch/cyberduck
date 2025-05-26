@@ -96,7 +96,7 @@ public class GotoController extends AlertController {
     public void callback(final int returncode) {
         switch(returncode) {
             case DEFAULT_OPTION:
-                final String filename = folderCombobox.stringValue();
+                final String filename = folderCombobox.stringValue().trim();
                 final Path workdir = parent.workdir();
                 java.io.File localFileCheck = new java.io.File(filename);
                 if (localFileCheck.isFile()) {
