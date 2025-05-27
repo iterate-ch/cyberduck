@@ -52,7 +52,7 @@
         </msbuild>
     </target>
 
-    <target name="package" depends="msbuild">
+    <target name="package" depends="version,msbuild">
         <copy todir="${build}">
             <fileset dir="${home}">
                 <include name="*.ico"/>
