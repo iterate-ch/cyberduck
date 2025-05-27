@@ -1,13 +1,13 @@
 ﻿<Project Sdk="WixToolset.Sdk">
   <PropertyGroup>
     <OutputName>Cyberduck-Installer-$(FileVersion)</OutputName>
-    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
     <DefineConstants>
       CyberduckDir=$(CyberduckDir);
       $(DefineConstants)
     </DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\csharp\Cyberduck.csproj" SetPlatform="Platform=x64" Publish="true" />
+    <ProjectReference Include="..\..\csharp\Cyberduck.csproj" Publish="true" />
   </ItemGroup>
 </Project>

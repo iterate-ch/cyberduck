@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <LangVersion>11.0</LangVersion>
-    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>

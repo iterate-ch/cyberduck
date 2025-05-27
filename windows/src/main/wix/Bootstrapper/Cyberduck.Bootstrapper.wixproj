@@ -1,7 +1,7 @@
 <Project Sdk="WixToolset.Sdk">
   <PropertyGroup>
     <OutputName>Cyberduck-Installer-$(FileVersion)</OutputName>
-    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
     <OutputType>Bundle</OutputType>
     <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir)</DefineConstants>
   </PropertyGroup>

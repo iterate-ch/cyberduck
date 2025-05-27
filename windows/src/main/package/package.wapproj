@@ -31,7 +31,7 @@
     </PropertyGroup>
     <ItemGroup>
         <None Include="Package.appxmanifest.template" />
-        <AppxManifest Include="$(TargetDir)generated/Package.appxmanifest">
+        <AppxManifest Include="$(TargetBuildDir)generated/Package.appxmanifest">
             <Link>Package.appxmanifest</Link>
             <SubType>Designer</SubType>
             <DependentUpon>Package.appxmanifest.template</DependentUpon>
