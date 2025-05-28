@@ -1,5 +1,5 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
-  <Bundle Name="Cyberduck CLI" Version="!(bind.packageVersion.Setup)" Manufacturer="iterate GmbH" UpgradeCode="46C3FB4E-2B23-4728-8196-BEA25ADE868A" IconSourceFile="$(CyberduckDir)cyberduck-application.ico">
+  <Bundle Name="Cyberduck CLI" Version="$(ProductVersion)" Manufacturer="iterate GmbH" UpgradeCode="46C3FB4E-2B23-4728-8196-BEA25ADE868A" IconSourceFile="$(CyberduckDir)cyberduck-application.ico">
     <BootstrapperApplication>
       <bal:WixStandardBootstrapperApplication LicenseUrl="" LogoFile="$(SetupDir)banner.png" LogoSideFile="$(SetupDir)welcome.bmp" Theme="hyperlinkSidebarLicense" />
     </BootstrapperApplication>
@@ -9,7 +9,12 @@
     <bal:Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application." Condition="WindowsBuildNumber &gt;= 14393" />
 
     <Chain>
-      <MsiPackage Id="Setup" Compressed="yes" SourceFile="$(duck.bundle.TargetPath)" Vital="yes">
+      <MsiPackage Id="Setup.arm64" Compressed="yes" SourceFile="!(bindpath.duck.bundle.arm64)\$(TargetName)-arm64.msi" Vital="yes" bal:PrimaryPackageType="arm64" InstallCondition="NativeMachine = 43620">
+        <!-- NativeMachine=0xAA64 (43620) -->
+        <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]" />
+      </MsiPackage>
+      <MsiPackage Id="Setup.x64" Compressed="yes" SourceFile="!(bindpath.duck.bundle.x64)\$(TargetName)-x64.msi" Vital="yes" bal:PrimaryPackageType="x64" InstallCondition="NativeMachine = 34404">
+        <!-- NativeMachine=0x8664 (34404) -->
         <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]" />
       </MsiPackage>
     </Chain>
