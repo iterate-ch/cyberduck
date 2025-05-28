@@ -1,15 +1,14 @@
-<Project Sdk="WixToolset.Sdk">
+﻿<Project Sdk="WixToolset.Sdk">
   <PropertyGroup>
-    <OutputName>duck-$(FileVersion)-$(Platform)</OutputName>
-    <Platforms>x64;arm64</Platforms>
+    <OutputName>duck-$(FileVersion)</OutputName>
     <OutputType>Bundle</OutputType>
-    <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir)</DefineConstants>
+    <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir);ProductVersion=$(FileVersion)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.Bal.wixext" />
     <PackageReference Include="WixToolset.Util.wixext" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../Bundle/duck.bundle.wixproj" />
+    <ProjectReference Include="../Bundle/duck.bundle.wixproj" Platforms="arm64;x64" />
   </ItemGroup>
 </Project>
