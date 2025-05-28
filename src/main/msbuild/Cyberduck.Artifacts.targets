@@ -1,7 +1,10 @@
 <Project>
 
-  <PropertyGroup Condition="'$(Platforms)'==''">
+  <PropertyGroup Condition="'$(Platforms)'=='AnyCPU'">
     <OutputPath>$(BaseOutputPath)</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath Condition="'$(TargetFrameworks)'==''">false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   
   <PropertyGroup>
