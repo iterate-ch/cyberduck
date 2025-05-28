@@ -18,6 +18,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.junit.Test;
 
@@ -30,14 +31,15 @@ public class AliasFilesystemBookmarkResolverTest {
     @Test
     public void testCreateNotFound() throws Exception {
         final String name = UUID.randomUUID().toString();
-        Local l = new FinderLocal(System.getProperty("user.dir"), name);
+        final FinderLocal l = new FinderLocal(System.getProperty("user.dir"), name);
         assertNull(new AliasFilesystemBookmarkResolver().create(l));
+        assertEquals(-1L, l.attributes().getSize());
     }
 
     @Test
     public void testCreate() throws Exception {
         final String name = UUID.randomUUID().toString();
-        final Local l = new FinderLocal(System.getProperty("user.dir"), name);
+        final FinderLocal l = new FinderLocal(System.getProperty("user.dir"), name);
         new DefaultLocalTouchFeature().touch(l);
         try {
             final AliasFilesystemBookmarkResolver resolver = new AliasFilesystemBookmarkResolver();
@@ -53,9 +55,19 @@ public class AliasFilesystemBookmarkResolverTest {
 
     @Test
     public void testRename() throws Exception {
-        final Local source = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random());
+        final FinderLocal source = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random()) {
+            @Override
+            public NSURL lock(final boolean interactive) throws AccessDeniedException {
+                return this.lock(interactive, new AliasFilesystemBookmarkResolver());
+            }
+        };
         new DefaultLocalTouchFeature().touch(source);
-        final Local target = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random());
+        final FinderLocal target = new FinderLocal(System.getProperty("user.dir"), new AlphanumericRandomStringService().random()) {
+            @Override
+            public NSURL lock(final boolean interactive) throws AccessDeniedException {
+                return this.lock(interactive, new AliasFilesystemBookmarkResolver());
+            }
+        };
         new DefaultLocalTouchFeature().touch(target);
         final AliasFilesystemBookmarkResolver resolver = new AliasFilesystemBookmarkResolver();
 
@@ -75,6 +87,10 @@ public class AliasFilesystemBookmarkResolverTest {
 
         assertEquals(target.getAbsolute(), resolver.resolve(bookmarkSource).path());
         assertEquals(target.getAbsolute(), resolver.resolve(bookmarkTarget).path());
+
+        source.setBookmark(bookmarkSource);
+        assertTrue(source.exists());
+        assertEquals(0, source.attributes().getSize());
 
         target.delete();
     }
