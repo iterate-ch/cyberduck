@@ -28,7 +28,6 @@ import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.rococoa.ObjCObjectByReference;
@@ -49,20 +48,16 @@ public class FinderLocalAttributes extends LocalAttributes {
         this.local = local;
     }
 
-    private NSDictionary getNativeAttributes() throws AccessDeniedException, NotfoundException {
-        if((!local.exists())) {
-            throw new LocalNotfoundException(local.getAbsolute());
-        }
+    private NSDictionary getNativeAttributes(final String path) throws AccessDeniedException, NotfoundException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
         // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
         // if the link points to a nonexistent file, this method returns null. If flag is false,
         // the attributes of the symbolic link are returned.
-        final NSDictionary dict = NSFileManager.defaultManager().attributesOfItemAtPath_error(
-            local.getAbsolute(), error);
+        final NSDictionary dict = NSFileManager.defaultManager().attributesOfItemAtPath_error(path, error);
         if(null == dict) {
             final NSError f = error.getValueAs(NSError.class);
             if(null == f) {
-                throw new LocalAccessDeniedException(local.getAbsolute());
+                throw new LocalAccessDeniedException(path);
             }
             throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
@@ -70,9 +65,43 @@ public class FinderLocalAttributes extends LocalAttributes {
     }
 
     private NSObject getNativeAttribute(final String name) throws AccessDeniedException, NotfoundException {
-        final NSDictionary dict = this.getNativeAttributes();
-        // Returns an entry’s value given its key, or null if no value is associated with key.
-        return dict.objectForKey(name);
+        NSURL resolved = null;
+        try {
+            String path;
+            try {
+                resolved = local.lock(false);
+                if(null == resolved) {
+                    path = local.getAbsolute();
+                }
+                else {
+                    path = resolved.path();
+                }
+            }
+            catch(AccessDeniedException e) {
+                path = local.getAbsolute();
+            }
+            final NSDictionary dict = this.getNativeAttributes(path);
+            // Returns an entry’s value given its key, or null if no value is associated with key.
+            return dict.objectForKey(name);
+        }
+        finally {
+            local.release(resolved);
+        }
+    }
+
+    @Override
+    public long getSize() {
+        try {
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSize);
+            if(object.isKindOfClass(Rococoa.createClass("NSNumber", NSNumber._Class.class))) {
+                final NSNumber number = Rococoa.cast(object, NSNumber.class);
+                return number.longValue();
+            }
+            return -1L;
+        }
+        catch(AccessDeniedException | NotfoundException e) {
+            return -1L;
+        }
     }
 
     /**
