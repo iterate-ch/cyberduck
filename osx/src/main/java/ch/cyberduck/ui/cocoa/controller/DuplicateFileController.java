@@ -45,7 +45,7 @@ public class DuplicateFileController extends FileController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Duplicate File", "Duplicate"));
@@ -54,7 +54,7 @@ public class DuplicateFileController extends FileController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Duplicate", "Duplicate"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Duplicate"));
         alert.setIcon(IconCacheFactory.<NSImage>get().fileIcon(selected, 64));
-        super.loadBundle(alert);
+        return alert;
     }
 
     @Override

@@ -48,15 +48,10 @@ public abstract class FileController extends AlertController {
     }
 
     @Override
-    public void loadBundle(final NSAlert alert) {
-        this.inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
-        this.inputField.cell().setWraps(false);
-        this.inputField.cell().setPlaceholderString(alert.informativeText());
-        super.loadBundle(alert);
-    }
-
-    @Override
     public NSView getAccessoryView(final NSAlert alert) {
+        inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        inputField.cell().setWraps(false);
+        inputField.cell().setPlaceholderString(alert.informativeText());
         return inputField;
     }
 
@@ -92,7 +87,6 @@ public abstract class FileController extends AlertController {
             case DEFAULT_OPTION:
             case ALTERNATE_OPTION:
                 this.callback(returncode, new Path(directory, StringUtils.trim(inputField.stringValue()), EnumSet.of(Path.Type.file)));
-                break;
         }
     }
 

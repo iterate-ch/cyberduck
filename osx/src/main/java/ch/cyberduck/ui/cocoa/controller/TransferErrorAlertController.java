@@ -28,7 +28,7 @@ public class TransferErrorAlertController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
@@ -37,6 +37,6 @@ public class TransferErrorAlertController extends AlertController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        super.loadBundle(alert);
+        return alert;
     }
 }

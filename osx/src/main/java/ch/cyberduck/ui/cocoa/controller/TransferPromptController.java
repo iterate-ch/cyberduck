@@ -19,7 +19,6 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
-import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAttributedString;
@@ -73,7 +72,7 @@ public abstract class TransferPromptController extends SheetController implement
     protected final Transfer transfer;
 
     protected final Cache<TransferItem> cache
-        = new ReverseLookupCache<TransferItem>(new TransferItemCache(Integer.MAX_VALUE), Integer.MAX_VALUE);
+            = new ReverseLookupCache<>(new TransferItemCache(Integer.MAX_VALUE), Integer.MAX_VALUE);
 
     protected final NSButtonCell buttonCellPrototype = NSButtonCell.buttonCell();
     protected final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
@@ -177,24 +176,20 @@ public abstract class TransferPromptController extends SheetController implement
         browserView.reloadData();
         browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0L)), false);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-            MessageFormat.format(LocaleFactory.localizedString("{0} Items"), String.valueOf(browserView.numberOfRows())),
-            TRUNCATE_MIDDLE_ATTRIBUTES));
+                MessageFormat.format(LocaleFactory.localizedString("{0} Items"), String.valueOf(browserView.numberOfRows())),
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     @Override
     public TransferAction prompt(final TransferItem file) {
         log.debug("Prompt for transfer action of {}", transfer);
-        new SheetInvoker(this, parent, this).beginSheet();
-        return action;
-    }
-
-    @Override
-    public void callback(final int returncode) {
+        final int returncode = parent.alert(this);
         log.debug("Callback with return code {}", returncode);
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.cancel;
         }
         preferences.setProperty("transfer.toggle.details", toggleDetailsButton.state());
+        return action;
     }
 
     @Override

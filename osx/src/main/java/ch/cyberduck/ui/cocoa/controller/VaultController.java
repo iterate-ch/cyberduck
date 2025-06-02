@@ -72,7 +72,7 @@ public class VaultController extends FolderController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create Vault", "Cryptomator"));
@@ -81,7 +81,7 @@ public class VaultController extends FolderController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create Vault", "Cryptomator"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("cryptomator.tiff", 64));
-        super.loadBundle(alert);
+        return alert;
     }
 
     @Action

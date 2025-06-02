@@ -35,7 +35,7 @@ public class CreateFileController extends FileController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create new file", "File"));
@@ -47,19 +47,12 @@ public class CreateFileController extends FileController {
             alert.addButtonWithTitle(LocaleFactory.localizedString("Edit", "File"));
         }
         alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(null, 64));
-        super.loadBundle(alert);
+        return alert;
     }
 
     @Override
     public void callback(final int returncode, final Path file) {
-        switch(returncode) {
-            case DEFAULT_OPTION:
-                callback.callback(false, file);
-                break;
-            case ALTERNATE_OPTION:
-                callback.callback(true, file);
-                break;
-        }
+        callback.callback(ALTERNATE_OPTION == returncode, file);
     }
 
     public interface Callback {

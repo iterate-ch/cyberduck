@@ -62,7 +62,7 @@ public class GotoController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Go to folder", "Goto"));
@@ -70,7 +70,7 @@ public class GotoController extends AlertController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Go", "Goto"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Goto"));
         alert.setIcon(IconCacheFactory.<NSImage>get().folderIcon(64));
-        super.loadBundle(alert);
+        return alert;
     }
 
     @Override

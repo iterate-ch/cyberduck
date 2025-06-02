@@ -16,10 +16,10 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.DisabledSheetCallback;
+import ch.cyberduck.binding.AlertSheetRunner;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.SheetInvoker;
-import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -44,7 +44,6 @@ import ch.cyberduck.ui.cocoa.controller.ProgressAlertController;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 
 import java.util.concurrent.CountDownLatch;
@@ -53,23 +52,23 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     private static final Logger log = LogManager.getLogger(PromptLoginCallback.class);
 
     private final Preferences preferences
-        = PreferencesFactory.get();
+            = PreferencesFactory.get();
 
-    private final WindowController parent;
+    private final ProxyController controller;
 
     @Outlet
     private NSOpenPanel select;
 
-    public PromptLoginCallback(final WindowController parent) {
-        super(parent);
-        this.parent = parent;
+    public PromptLoginCallback(final ProxyController controller) {
+        super(controller);
+        this.controller = controller;
     }
 
     @Override
     public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message) throws ConnectionCanceledException {
         log.debug("Display progress alert for {}", bookmark);
-        final AlertController alert = new ProgressAlertController(signal, title, message, bookmark.getProtocol());
-        final int returnCode = alert.beginSheet(parent);
+        final AlertController alert = new ProgressAlertController(title, message, bookmark.getProtocol());
+        final int returnCode = controller.alert(alert, signal);
         switch(returnCode) {
             case SheetCallback.DEFAULT_OPTION:
                 // User dismissed sheet
@@ -83,7 +82,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
         log.debug("Display insecure connection alert for {}", bookmark);
         final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton,
                 bookmark.getProtocol(), StringUtils.isNotBlank(preference));
-        int option = alert.beginSheet(parent);
+        int option = controller.alert(alert);
         if(alert.isSuppressed()) {
             // Never show again.
             preferences.setProperty(preference, true);
@@ -100,9 +99,8 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
                               final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         log.debug("Prompt for credentials for {}", username);
         final Credentials credentials = new Credentials(username).withSaved(options.save);
-        final LoginController controller = new LoginController(new Host(bookmark).withCredentials(credentials), title, reason, options);
-        final SheetInvoker sheet = new SheetInvoker(controller, parent, controller);
-        final int option = sheet.beginSheet();
+        final LoginController alert = new LoginController(new Host(bookmark).withCredentials(credentials), title, reason, options);
+        final int option = controller.alert(alert);
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
         }
@@ -110,30 +108,27 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     public Local select(final Local identity) throws LoginCanceledException {
-        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), parent, new WindowController() {
+        final int option = controller.alert(new SheetController.NoBundleSheetController(select), new AlertSheetRunner() {
             @Override
-            protected String getBundleName() {
-                return null;
-            }
-
-            @Override
-            public NSWindow window() {
-                return select;
-            }
-        }) {
-            @Override
-            public void beginSheet(final NSWindow window) {
+            public void alert(final NSWindow parentWindow, final NSWindow sheetWindow, final ProxyController.SheetDidCloseReturnCodeDelegate delegate) {
                 select = NSOpenPanel.openPanel();
                 select.setCanChooseDirectories(false);
                 select.setCanChooseFiles(true);
                 select.setAllowsMultipleSelection(false);
                 select.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
                 select.setPrompt(LocaleFactory.localizedString("Choose"));
-                select.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(),
-                    null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
+                if(null == parentWindow) {
+                    delegate.sheetDidClose_returnCode_contextInfo(sheetWindow,
+                            select.runModal(null == identity ? LocalFactory.get("~/.ssh").getAbsolute() : identity.getParent().getAbsolute(),
+                                    null == identity ? StringUtils.EMPTY : identity.getName()).intValue(), null);
+                }
+                else {
+                    select.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(),
+                            null, parentWindow, delegate.id(), ProxyController.SheetDidCloseReturnCodeDelegate.selector, null);
+
+                }
             }
-        };
-        final int option = sheet.beginSheet();
+        });
         if(option == SheetCallback.DEFAULT_OPTION) {
             final NSObject url = select.URLs().lastObject();
             if(url != null) {

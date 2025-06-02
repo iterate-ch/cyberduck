@@ -1501,6 +1501,14 @@ public abstract class NSWindow extends NSResponder {
     public abstract NSWindow attachedSheet();
 
     /**
+     * This method ends the modal session with the specified return code.
+     *
+     * @param sheetWindow The window object that represents the sheet to dismiss.
+     * @param returnCode  The return code to send to the completion handler.
+     */
+    public abstract void endSheet_returnCode(NSWindow sheetWindow, NSInteger returnCode);
+
+    /**
      * Original signature : <code>NSButton* standardWindowButton(NSWindowButton)</code><br>
      * <i>native declaration : :514</i>
      */

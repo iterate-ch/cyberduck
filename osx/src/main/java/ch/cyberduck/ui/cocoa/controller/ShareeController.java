@@ -22,6 +22,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.features.Share;
@@ -53,7 +54,7 @@ public class ShareeController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(), 64));
@@ -65,7 +66,7 @@ public class ShareeController extends AlertController {
         alert.setInformativeText(LocaleFactory.localizedString("Send share to:", "Share"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "Share"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Share"));
-        super.loadBundle(alert);
+        return alert;
     }
 
     public NSView getAccessoryView(final NSAlert alert) {

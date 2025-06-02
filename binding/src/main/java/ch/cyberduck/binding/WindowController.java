@@ -15,7 +15,7 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSPrintInfo;
@@ -23,7 +23,6 @@ import ch.cyberduck.binding.application.NSPrintOperation;
 import ch.cyberduck.binding.application.NSPrintPanel;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
-import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.LocaleFactory;
@@ -89,6 +88,7 @@ public abstract class WindowController extends BundleController implements NSWin
         this.window.setDelegate(this.id());
     }
 
+    @Override
     public NSWindow window() {
         return window;
     }
@@ -243,22 +243,6 @@ public abstract class WindowController extends BundleController implements NSWin
         toggle.setState(select ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
-    /**
-     * Display alert as sheet to the window of this controller
-     *
-     * @param alert    Sheet
-     * @param callback Dismissed notification
-     */
-    public void alert(final NSAlert alert, final SheetCallback callback) {
-        final AlertController c = new AlertController(alert) {
-            @Override
-            public void callback(final int returncode) {
-                callback.callback(returncode);
-            }
-        };
-        c.beginSheet(this);
-    }
-
     @Action
     public void helpButtonClicked(final ID sender) {
         BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
@@ -280,5 +264,16 @@ public abstract class WindowController extends BundleController implements NSWin
         if(!success) {
             log.warn("Printing failed for context {}", contextInfo);
         }
+    }
+
+    /**
+     * Run sheet alert window
+     */
+    @Override
+    public void alert(final NSWindow parentWindow, final NSWindow sheetWindow, final SheetDidCloseReturnCodeDelegate delegate) {
+        log.debug("Order front window {}", parentWindow);
+        parentWindow.makeKeyAndOrderFront(null);
+        log.debug("Begin sheet {}", sheetWindow);
+        NSApplication.sharedApplication().beginSheet(sheetWindow, window, delegate.id(), SheetDidCloseReturnCodeDelegate.selector, null);
     }
 }

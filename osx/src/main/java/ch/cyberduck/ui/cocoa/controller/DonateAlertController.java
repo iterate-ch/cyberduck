@@ -36,7 +36,7 @@ public class DonateAlertController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setMessageText(LocaleFactory.localizedString("Thank you for using Cyberduck!", "Donate"));
         final StringAppender message = new StringAppender();
@@ -49,14 +49,14 @@ public class DonateAlertController extends AlertController {
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setShowsSuppressionButton(preferences.getBoolean("donate.reminder.suppress.enable"));
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again for this version", "Donate"));
-        this.loadBundle(alert);
+        return alert;
     }
 
     @Override
     public void callback(final int returncode) {
         if(this.isSuppressed()) {
             preferences.setProperty("donate.reminder",
-                NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
+                    NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
         }
         // Remember this reminder date
         preferences.setProperty("donate.reminder.date", System.currentTimeMillis());
@@ -74,7 +74,7 @@ public class DonateAlertController extends AlertController {
     private void terminate() {
         if(this.isSuppressed()) {
             preferences.setProperty("donate.reminder",
-                NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
+                    NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
         }
         // Remember this reminder date
         preferences.setProperty("donate.reminder.date", System.currentTimeMillis());
