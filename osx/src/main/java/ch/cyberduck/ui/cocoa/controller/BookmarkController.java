@@ -633,11 +633,6 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.update();
     }
 
-    @Override
-    public void callback(final int returncode) {
-        //
-    }
-
     public interface BookmarkObserver {
         void change(final Host bookmark);
     }

@@ -45,7 +45,7 @@ public class BackgroundExceptionAlertController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setMessageText(String.format("%s (%s)", null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
                 BookmarkNameProvider.toString(host)));
@@ -63,7 +63,7 @@ public class BackgroundExceptionAlertController extends AlertController {
                 alert.addButtonWithTitle(LocaleFactory.localizedString("Help", "Main"));
                 break;
         }
-        this.loadBundle(alert);
+        return alert;
     }
 
     @Override
