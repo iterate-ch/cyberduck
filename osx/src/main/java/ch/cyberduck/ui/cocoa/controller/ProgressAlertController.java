@@ -17,8 +17,6 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.SheetInvoker;
-import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSProgressIndicator;
@@ -33,12 +31,9 @@ import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
-import java.util.concurrent.CountDownLatch;
-
 public class ProgressAlertController extends AlertController {
     private static final Logger log = LogManager.getLogger(ProgressAlertController.class);
 
-    private final CountDownLatch signal;
     private final String title;
     private final String message;
     private final Protocol protocol;
@@ -48,15 +43,14 @@ public class ProgressAlertController extends AlertController {
     @Outlet
     private NSProgressIndicator progress;
 
-    public ProgressAlertController(final CountDownLatch signal, final String title, final String message, final Protocol protocol) {
-        this.signal = signal;
+    public ProgressAlertController(final String title, final String message, final Protocol protocol) {
         this.title = title;
         this.message = message;
         this.protocol = protocol;
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         log.debug("Load alert for message {}", message);
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
@@ -65,11 +59,7 @@ public class ProgressAlertController extends AlertController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
         alert.setShowsHelp(true);
         alert.setShowsSuppressionButton(false);
-        super.loadBundle(alert);
-    }
-
-    public int beginSheet(final WindowController parent) {
-        return new SheetInvoker(this, parent, this, signal).beginSheet();
+        return alert;
     }
 
     @Override
