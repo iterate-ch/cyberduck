@@ -39,4 +39,11 @@ public interface SheetCallback {
      * @param returncode Selected button
      */
     void callback(int returncode);
+
+    SheetCallback noop = new SheetCallback() {
+        @Override
+        public void callback(final int returncode) {
+            //
+        }
+    };
 }
