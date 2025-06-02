@@ -97,7 +97,8 @@ public abstract class AlertController extends SheetController implements SheetCa
     }
 
     protected void focus(final NSAlert alert) {
-        NSEnumerator buttons = alert.buttons().objectEnumerator();
+        log.debug("Focus alert {}", alert);
+        final NSEnumerator buttons = alert.buttons().objectEnumerator();
         NSObject button;
         while((button = buttons.nextObject()) != null) {
             final NSButton b = Rococoa.cast(button, NSButton.class);
@@ -124,6 +125,7 @@ public abstract class AlertController extends SheetController implements SheetCa
             final NSView subview = Rococoa.cast(next, NSView.class);
             frame.size.height = new CGFloat(frame.size.height.doubleValue() + subview.frame().size.height.doubleValue() + SUBVIEWS_VERTICAL_SPACE * 2);
         }
+        log.debug("Calculated frame {} for alert {} with accessory {}", frame, alert, accessory);
         return frame;
     }
 
@@ -147,6 +149,7 @@ public abstract class AlertController extends SheetController implements SheetCa
     @Action
     public void suppressionButtonClicked(final NSButton sender) {
         suppressed = sender.state() == NSCell.NSOnState;
+        log.debug("Suppression state set to {}", suppressed);
     }
 
     public boolean isSuppressed() {
