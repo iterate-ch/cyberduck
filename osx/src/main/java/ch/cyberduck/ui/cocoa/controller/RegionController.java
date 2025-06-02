@@ -51,7 +51,7 @@ public class RegionController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Choose Region", "Folder"));
@@ -59,7 +59,7 @@ public class RegionController extends AlertController {
         alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Choose"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
-        super.loadBundle(alert);
+        return alert;
     }
 
     public NSView getAccessoryView(final NSAlert alert) {

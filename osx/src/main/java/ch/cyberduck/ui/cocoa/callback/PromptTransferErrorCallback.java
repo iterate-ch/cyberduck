@@ -16,7 +16,7 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -26,12 +26,12 @@ import ch.cyberduck.ui.cocoa.controller.TransferErrorAlertController;
 
 public class PromptTransferErrorCallback implements TransferErrorCallback {
 
-    private final WindowController controller;
+    private final ProxyController controller;
 
     private boolean suppressed;
     private boolean option;
 
-    public PromptTransferErrorCallback(final WindowController controller) {
+    public PromptTransferErrorCallback(final ProxyController controller) {
         this.controller = controller;
     }
 
@@ -41,7 +41,7 @@ public class PromptTransferErrorCallback implements TransferErrorCallback {
             return !option;
         }
         final AlertController alert = new TransferErrorAlertController(failure);
-        option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
+        option = controller.alert(alert) == SheetCallback.DEFAULT_OPTION;
         if(alert.isSuppressed()) {
             suppressed = true;
         }

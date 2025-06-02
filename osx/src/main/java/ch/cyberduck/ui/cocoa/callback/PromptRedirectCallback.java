@@ -16,7 +16,7 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
@@ -27,12 +27,12 @@ public class PromptRedirectCallback implements RedirectCallback {
     private final RedirectCallback preferences
             = new PreferencesRedirectCallback();
 
-    private final WindowController controller;
+    private final ProxyController controller;
 
     private boolean suppressed;
     private boolean option;
 
-    public PromptRedirectCallback(final WindowController controller) {
+    public PromptRedirectCallback(final ProxyController controller) {
         this.controller = controller;
     }
 
@@ -46,7 +46,7 @@ public class PromptRedirectCallback implements RedirectCallback {
             return true;
         }
         final AlertController alert = new RedirectAlertController(method);
-        option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
+        option = controller.alert(alert) == SheetCallback.DEFAULT_OPTION;
         if(alert.isSuppressed()) {
             suppressed = true;
         }

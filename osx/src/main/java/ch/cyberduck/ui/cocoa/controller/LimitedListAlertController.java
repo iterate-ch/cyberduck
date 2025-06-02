@@ -32,7 +32,7 @@ public class LimitedListAlertController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"), StringUtils.EMPTY));
@@ -41,6 +41,6 @@ public class LimitedListAlertController extends AlertController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        super.loadBundle(alert);
+        return alert;
     }
 }

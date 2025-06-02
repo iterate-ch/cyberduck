@@ -61,7 +61,7 @@ public class FolderController extends FileController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create new folder", "Folder"));
@@ -70,7 +70,7 @@ public class FolderController extends FileController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "Folder"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("folderplus.tiff", 64));
-        super.loadBundle(alert);
+        return alert;
     }
 
     public NSView getAccessoryView(final NSAlert alert) {

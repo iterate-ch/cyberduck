@@ -19,7 +19,7 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSView;
-import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
@@ -33,23 +33,12 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSRect;
 
-public abstract class AlertController extends SheetController implements SheetCallback, InputValidator {
+public abstract class AlertController extends SheetController implements InputValidator {
     private static final Logger log = LogManager.getLogger(AlertController.class);
 
     protected static final int SUBVIEWS_VERTICAL_SPACE = 4;
 
     private boolean suppressed = false;
-
-    @Outlet
-    private NSAlert alert;
-
-    public AlertController(final NSAlert alert) {
-        this.loadBundle(alert);
-    }
-
-    public AlertController() {
-        // No bundle
-    }
 
     /**
      * @return Null by default, a sheet with no custom NIB
@@ -63,28 +52,12 @@ public abstract class AlertController extends SheetController implements SheetCa
         return null;
     }
 
-    public int beginSheet(final WindowController parent) {
-        return new SheetInvoker(this, parent, this).beginSheet();
-    }
-
-    @Override
-    public void callback(final int returncode) {
-        log.warn("Ignore return code {}", returncode);
-    }
-
-    @Override
-    public void invalidate() {
-        alert = null;
-        super.invalidate();
-    }
+    public abstract NSAlert loadAlert();
 
     @Override
     public void loadBundle() {
-        //
-    }
-
-    protected void loadBundle(final NSAlert alert) {
-        this.alert = alert;
+        final NSAlert alert = this.loadAlert();
+        log.debug("Display alert {}", alert);
         alert.setShowsHelp(true);
         alert.setDelegate(this.id());
         if(alert.showsSuppressionButton()) {
@@ -93,7 +66,9 @@ public abstract class AlertController extends SheetController implements SheetCa
         }
         // Layout alert view on main thread
         this.focus(alert);
-        this.setWindow(alert.window());
+        final NSWindow window = alert.window();
+        log.debug("Use window {}", window);
+        this.setWindow(window);
     }
 
     protected void focus(final NSAlert alert) {
