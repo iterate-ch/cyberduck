@@ -81,7 +81,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${project.build.directory}/duck.bundle/Contents/Frameworks</outputDirectory>
-                                    <includeTypes>dylib</includeTypes>
+                                    <includeTypes>dylib,jnilib</includeTypes>
                                     <includeScope>runtime</includeScope>
                                     <stripClassifier>true</stripClassifier>
                                     <stripVersion>true</stripVersion>
@@ -225,6 +225,22 @@
             <type>pom</type>
             <scope>test</scope>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>${jansi.version}</version>
+            <classifier>x86_64</classifier>
+            <type>jnilib</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>${jansi.version}</version>
+            <classifier>arm64</classifier>
+            <type>jnilib</type>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

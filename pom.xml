@@ -92,6 +92,7 @@
         <jwt.version>4.5.0</jwt.version>
         <java-native-dll>8u312b07</java-native-dll>
         <rococoa-version>0.10.0</rococoa-version>
+        <jansi.version>2.4.2</jansi.version>
         <surefire.group.excluded>ch.cyberduck.test.IntegrationTest</surefire.group.excluded>
     </properties>
 
