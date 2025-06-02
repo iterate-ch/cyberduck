@@ -20,7 +20,7 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.SheetInvoker;
+import ch.cyberduck.binding.SystemAlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -2336,13 +2336,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void gotoButtonClicked(final ID sender) {
-        final GotoController sheet = new GotoController(this, cache);
-        sheet.beginSheet(this);
+        final AlertController sheet = new GotoController(this, cache);
+        this.alert(sheet);
     }
 
     @Action
     public void createFileButtonClicked(final ID sender) {
-        final CreateFileController sheet = new CreateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateFileController.Callback() {
+        final AlertController sheet = new CreateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateFileController.Callback() {
             @Override
             public void callback(final boolean edit, final Path file) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
@@ -2359,12 +2359,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
     public void createSymlinkButtonClicked(final ID sender) {
-        final CreateSymlinkController sheet = new CreateSymlinkController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateSymlinkController.Callback() {
+        final AlertController sheet = new CreateSymlinkController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateSymlinkController.Callback() {
             public void callback(final Path selected, final Path link) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected.getName()) {
                     @Override
@@ -2374,12 +2374,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }));
             }
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
     public void duplicateFileButtonClicked(final ID sender) {
-        final DuplicateFileController sheet = new DuplicateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new DuplicateFileController.Callback() {
+        final AlertController sheet = new DuplicateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new DuplicateFileController.Callback() {
             @Override
             public void callback(final Map<Path, Path> selected) {
                 new OverwriteController(BrowserController.this).overwrite(new ArrayList<>(selected.values()), new DefaultMainAction() {
@@ -2402,13 +2402,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 });
             }
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
-        final FolderController sheet = new FolderController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
+        final AlertController sheet = new FolderController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
                 feature != null ? feature.getLocations() : Collections.emptySet(), feature != null ? feature.getDefault() : Location.unknown, new FolderController.Callback() {
 
             @Override
@@ -2422,13 +2422,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         }));
             }
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
     public void createEncryptedVaultButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
-        final VaultController sheet = new VaultController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
+        final AlertController sheet = new VaultController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
                 feature != null ? feature.getLocations() : Collections.emptySet(), feature != null ? feature.getDefault() : Location.unknown, new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
@@ -2445,7 +2445,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 );
             }
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
@@ -2496,9 +2496,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void sendCustomCommandClicked(final ID sender) {
-        final CommandController controller = new CommandController(this, pool);
-        final SheetInvoker sheet = new SheetInvoker(controller, this, controller);
-        sheet.beginSheet();
+        final CommandController controller = new CommandController(pool);
+        this.alert(controller);
     }
 
     @Action
@@ -2605,7 +2604,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                             public void cleanup(final DescriptiveUrl url) {
                                 if(null != url) {
                                     // Display
-                                    final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
+                                    final AlertController alert = new SystemAlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
                                             MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
                                             LocaleFactory.localizedString("Continue", "Credentials"),
                                             DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
@@ -2631,7 +2630,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                             return field;
                                         }
                                     };
-                                    alert.beginSheet(BrowserController.this);
+                                    BrowserController.this.alert(alert);
                                 }
                             }
                         }
@@ -2647,7 +2646,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                             @Override
                             public void cleanup(final DescriptiveUrl url) {
                                 if(null != url) {
-                                    final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
+                                    final AlertController alert = new SystemAlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
                                             MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
                                             LocaleFactory.localizedString("Continue", "Credentials"),
                                             DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
@@ -2673,7 +2672,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                             return field;
                                         }
                                     };
-                                    alert.beginSheet(BrowserController.this);
+                                    BrowserController.this.alert(alert);
                                 }
                             }
                         }
@@ -2926,16 +2925,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void connectButtonClicked(final ID sender) {
         final ConnectionController controller = ConnectionControllerFactory.create(this);
-        final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
+        this.alert(controller, new SheetCallback() {
             @Override
             public void callback(final int returncode) {
-                if(returncode == SheetCallback.DEFAULT_OPTION) {
-                    mount(controller.getBookmark());
+                final Host bookmark = controller.getBookmark();
+                switch(returncode) {
+                    case DEFAULT_OPTION:
+                        mount(bookmark);
+                        break;
+                    case CANCEL_OPTION:
+                        bookmark.getCredentials().setPassword(null);
+                        break;
                 }
-                controller.callback(returncode);
             }
-        }, this, controller);
-        sheet.beginSheet();
+        });
     }
 
     @Action
@@ -3391,16 +3394,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 );
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                this.alert(alert, new SheetCallback() {
+                this.alert(alert, new SheetCallback.DelegatingSheetCallback(new SheetCallback() {
                     @Override
-                    public void callback(int returncode) {
+                    public void callback(final int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
                             // Never show again.
                             preferences.setProperty("browser.disconnect.confirm", false);
                         }
-                        callback.callback(returncode);
                     }
-                });
+                }, callback));
                 // No unmount yet
                 return false;
             }

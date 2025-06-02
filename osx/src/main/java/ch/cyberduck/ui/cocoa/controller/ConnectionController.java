@@ -21,7 +21,6 @@ import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSSecureTextField;
-import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -62,13 +61,6 @@ public class ConnectionController extends BookmarkController {
     @Override
     protected String getBundleName() {
         return "Connection";
-    }
-
-    @Override
-    public void callback(final int returncode) {
-        if(SheetCallback.CANCEL_OPTION == returncode) {
-            bookmark.getCredentials().setPassword(null);
-        }
     }
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {

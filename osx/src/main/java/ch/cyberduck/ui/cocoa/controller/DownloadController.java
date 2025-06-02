@@ -60,14 +60,14 @@ public class DownloadController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("New Download", "Download"));
         alert.setInformativeText(LocaleFactory.localizedString("URL", "Download"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Download", "Download"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Download"));
-        this.loadBundle(alert);
+        return alert;
     }
 
     @Override
