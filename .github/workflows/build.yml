@@ -7,6 +7,9 @@ on:
   pull_request:
 jobs:
   build:
+    permissions:
+      checks: write
+      contents: read
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
