@@ -22,4 +22,11 @@ public interface InputValidator {
      * @return true if a valid input has been given
      */
     boolean validate(final int option);
+
+    InputValidator disabled = new InputValidator() {
+        @Override
+        public boolean validate(final int option) {
+            return true;
+        }
+    };
 }
