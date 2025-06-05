@@ -20,7 +20,6 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.SystemAlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -95,14 +94,12 @@ import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
-import ch.cyberduck.core.worker.DownloadShareWorker;
 import ch.cyberduck.core.worker.ListWorker;
 import ch.cyberduck.core.worker.LoadVaultWorker;
 import ch.cyberduck.core.worker.LockVaultWorker;
 import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.TouchWorker;
-import ch.cyberduck.core.worker.UploadShareWorker;
 import ch.cyberduck.ui.browser.BookmarkColumn;
 import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -127,8 +124,6 @@ import ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory;
 import ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarValidator;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
-import ch.cyberduck.ui.pasteboard.PasteboardService;
-import ch.cyberduck.ui.pasteboard.PasteboardServiceFactory;
 import ch.cyberduck.ui.quicklook.QuickLook;
 import ch.cyberduck.ui.quicklook.QuickLookFactory;
 
@@ -2599,85 +2594,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void shareFileButtonClicked(final ID sender) {
         final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
         this.background(new WorkerBackgroundAction<>(this, pool,
-                        new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this)) {
-                            @Override
-                            public void cleanup(final DescriptiveUrl url) {
-                                if(null != url) {
-                                    // Display
-                                    final AlertController alert = new SystemAlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
-                                            MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
-                                            LocaleFactory.localizedString("Continue", "Credentials"),
-                                            DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
-                                            null)) {
-                                        @Override
-                                        public void callback(final int returncode) {
-                                            switch(returncode) {
-                                                case SheetCallback.CANCEL_OPTION:
-                                                    PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
-                                            }
-                                        }
-
-                                        @Override
-                                        public NSView getAccessoryView(final NSAlert alert) {
-                                            if(null == url.getUrl()) {
-                                                return null;
-                                            }
-                                            final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
-                                            field.setEditable(false);
-                                            field.setSelectable(true);
-                                            field.cell().setWraps(false);
-                                            field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
-                                            return field;
-                                        }
-                                    };
-                                    BrowserController.this.alert(alert);
-                                }
-                            }
-                        }
-                )
-        );
+                new AlertDownloadShareWorker<Void>(this, file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this))));
     }
 
     @Action
     public void requestFilesButtonClicked(final ID sender) {
         final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
         this.background(new WorkerBackgroundAction<>(this, pool,
-                        new UploadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this)) {
-                            @Override
-                            public void cleanup(final DescriptiveUrl url) {
-                                if(null != url) {
-                                    final AlertController alert = new SystemAlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
-                                            MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
-                                            LocaleFactory.localizedString("Continue", "Credentials"),
-                                            DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
-                                            null)) {
-                                        @Override
-                                        public void callback(final int returncode) {
-                                            switch(returncode) {
-                                                case SheetCallback.CANCEL_OPTION:
-                                                    PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
-                                            }
-                                        }
-
-                                        @Override
-                                        public NSView getAccessoryView(final NSAlert alert) {
-                                            if(null == url.getUrl()) {
-                                                return null;
-                                            }
-                                            final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
-                                            field.setEditable(false);
-                                            field.setSelectable(true);
-                                            field.cell().setWraps(false);
-                                            field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
-                                            return field;
-                                        }
-                                    };
-                                    BrowserController.this.alert(alert);
-                                }
-                            }
-                        }
-                )
-        );
+                new AlertUploadShareWorker<Void>(this, file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this))));
     }
 
     @Action
