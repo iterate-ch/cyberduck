@@ -27,7 +27,7 @@ public abstract class NSViewController extends NSResponder {
     }
 
     public static NSViewController create() {
-        return CLASS.alloc();
+        return CLASS.alloc().init();
     }
 
     public static NSViewController create(String nib, NSBundle bundle) {
