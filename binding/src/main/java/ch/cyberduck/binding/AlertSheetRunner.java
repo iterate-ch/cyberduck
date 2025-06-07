@@ -1,12 +1,12 @@
 package ch.cyberduck.binding;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,11 +15,8 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.application.NSWindow;
 
-public class DisabledSheetCallback implements SheetCallback {
-    @Override
-    public void callback(int returncode) {
-        //
-    }
+public interface AlertSheetRunner {
+    void alert(final NSWindow parentWindow, NSWindow sheetWindow, ProxyController.SheetDidCloseReturnCodeDelegate delegate);
 }

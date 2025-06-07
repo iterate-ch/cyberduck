@@ -22,6 +22,7 @@ import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.SystemAlertController;
 import ch.cyberduck.binding.application.AlertSheetReturnCodeMapper;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
@@ -522,7 +523,7 @@ public class MainController extends BundleController implements NSApplication.De
     public void newDownloadMenuClicked(final ID sender) {
         this.showTransferQueueClicked(sender);
         final DownloadController c = new DownloadController();
-        c.beginSheet(TransferControllerFactory.get());
+        TransferControllerFactory.get().alert(c);
     }
 
     @Action
@@ -756,12 +757,7 @@ public class MainController extends BundleController implements NSApplication.De
             null
         );
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-        final AlertController controller = new AlertController() {
-            @Override
-            public void loadBundle() {
-                this.loadBundle(alert);
-            }
-
+        final AlertController controller = new SystemAlertController(alert) {
             @Override
             public NSView getAccessoryView(final NSAlert alert) {
                 return bookmarksPopup;
@@ -793,7 +789,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
             }
         };
-        controller.beginSheet(TransferControllerFactory.get());
+        TransferControllerFactory.get().alert(controller);
         return true;
     }
 
@@ -1162,10 +1158,7 @@ public class MainController extends BundleController implements NSApplication.De
             // Make sure prompt is not loaded twice upon next quit event
             displayDonationPrompt = false;
             donationController = new DonateAlertController(app);
-            donationController.setCallback(donationController);
-            donationController.loadBundle();
-            donationController.window().center();
-            donationController.window().makeKeyAndOrderFront(null);
+            this.alert(donationController);
             // Delay application termination. Dismissing the donation dialog will reply to quit.
             return NSApplication.NSTerminateLater;
         }

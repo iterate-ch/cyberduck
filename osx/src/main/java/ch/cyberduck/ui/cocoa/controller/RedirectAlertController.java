@@ -27,7 +27,7 @@ public class RedirectAlertController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setMessageText(LocaleFactory.localizedString("Redirect"));
         alert.setInformativeText(LocaleFactory.localizedString(String.format("Allow redirect for method %s", method), "Alert"));
@@ -35,6 +35,6 @@ public class RedirectAlertController extends AlertController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        super.loadBundle(alert);
+        return alert;
     }
 }

@@ -71,7 +71,7 @@ public class PasswordController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
@@ -83,7 +83,7 @@ public class PasswordController extends AlertController {
             alert.addButtonWithTitle(LocaleFactory.localizedString("Skip", "Transfer"));
         }
         alert.setShowsSuppressionButton(false);
-        this.loadBundle(alert);
+        return alert;
     }
 
     @Override
