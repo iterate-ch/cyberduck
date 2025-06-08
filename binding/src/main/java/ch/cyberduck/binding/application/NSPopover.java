@@ -178,4 +178,23 @@ public abstract class NSPopover extends NSResponder {
 
         void popoverDidClose(NSNotification notification);
     }
+
+    /**
+     * The userInfo key containing the reason for the NSPopoverWillCloseNotification.
+     */
+    public static final String NSPopoverCloseReasonKey = "NSPopoverCloseReasonKey";
+
+    /**
+     * Values that specify the reason for the NSPopoverWillCloseNotification notification.
+     */
+    public static class NSPopoverCloseReasonValue {
+        /**
+         * Specifies that the popover has been closed because it is being detached to a window.
+         */
+        public static final String NSPopoverCloseReasonDetachToWindow = "NSPopoverCloseReasonDetachToWindow";
+        /**
+         * Specifies that the popover has been closed in a standard way.
+         */
+        public static final String NSPopoverCloseReasonStandard = "NSPopoverCloseReasonStandard";
+    }
 }
