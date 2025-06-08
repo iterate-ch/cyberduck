@@ -108,8 +108,8 @@ public class ProxyController extends AbstractController implements AlertSheetRun
         return this.alert(sheet, this, callback, new CountDownLatch(1));
     }
 
-    public int alert(final SheetController sheet, final AlertSheetRunner invoker) {
-        return this.alert(sheet, invoker, SheetCallback.noop, new CountDownLatch(1));
+    public int alert(final SheetController sheet, final AlertSheetRunner runner) {
+        return this.alert(sheet, runner, SheetCallback.noop, new CountDownLatch(1));
     }
 
     /**
@@ -120,7 +120,7 @@ public class ProxyController extends AbstractController implements AlertSheetRun
      * @param signal   Signal to stop waiting for selection from user
      * @return Return code from selected option
      */
-    public int alert(final SheetController sheet, final AlertSheetRunner invoker, final SheetCallback callback, final CountDownLatch signal) {
+    public int alert(final SheetController sheet, final AlertSheetRunner runner, final SheetCallback callback, final CountDownLatch signal) {
         final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
         final SheetDidCloseReturnCodeDelegate proxy = new SheetDidCloseReturnCodeDelegate(new SheetCallback.DelegatingSheetCallback(
                 new SheetCallback.ReturnCodeSheetCallback(option), callback, sheet, new SignalSheetCallback(signal)));
@@ -138,7 +138,7 @@ public class ProxyController extends AbstractController implements AlertSheetRun
                 NSApplication.sharedApplication().activateIgnoringOtherApps(true);
                 // Maybe null
                 final NSWindow parentWindow = window();
-                invoker.alert(parentWindow, sheetWindow, proxy);
+                runner.alert(parentWindow, sheet.window(), proxy);
             }
         }, true);
         if(!NSThread.isMainThread()) {
