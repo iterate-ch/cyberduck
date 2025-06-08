@@ -17,7 +17,6 @@ package ch.cyberduck.binding;
 
 import ch.cyberduck.binding.application.AlertSheetReturnCodeMapper;
 import ch.cyberduck.binding.application.AppKitFunctionsLibrary;
-import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -25,14 +24,20 @@ import ch.cyberduck.ui.InputValidator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Selector;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class SheetController extends WindowController implements InputValidator, SheetCallback {
     private static final Logger log = LogManager.getLogger(SheetController.class);
 
-    private static final NSApplication app = NSApplication.sharedApplication();
+    public static final Selector BUTTON_CLOSE_SELECTOR = Foundation.selector("closeSheet:");
 
     private final InputValidator validator;
+    private final Set<AlertRunner.CloseHandler> handlers = new HashSet<>();
 
     public SheetController() {
         this(disabled);
@@ -77,15 +82,13 @@ public abstract class SheetController extends WindowController implements InputV
                 return;
             }
         }
-        if(window.isSheet()) {
-            // Ends a document modal session by specifying the sheet window.
-            app.endSheet(window, option);
-        }
-        else {
-            // The result code you want returned from the runModalForWindow:
-            app.stopModalWithCode(option);
-        }
+        handlers.forEach(h -> h.closed(option));
         window.orderOut(null);
+        handlers.clear();
+    }
+
+    public void addHandler(final AlertRunner.CloseHandler handler) {
+        handlers.add(handler);
     }
 
     @Override
@@ -99,6 +102,9 @@ public abstract class SheetController extends WindowController implements InputV
         this.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
     }
 
+    /**
+     * Implementation with no bundle loaded but window reference only
+     */
     public static class NoBundleSheetController extends SheetController {
         public NoBundleSheetController(final NSWindow window) {
             this(window, InputValidator.disabled);

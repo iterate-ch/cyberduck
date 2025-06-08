@@ -16,10 +16,11 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.AlertSheetRunner;
+import ch.cyberduck.binding.AlertRunner;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -55,6 +56,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
             = PreferencesFactory.get();
 
     private final ProxyController controller;
+    private final NSWindow window;
 
     @Outlet
     private NSOpenPanel select;
@@ -62,6 +64,13 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     public PromptLoginCallback(final ProxyController controller) {
         super(controller);
         this.controller = controller;
+        this.window = null;
+    }
+
+    public PromptLoginCallback(final WindowController controller) {
+        super(controller);
+        this.controller = controller;
+        this.window = controller.window();
     }
 
     @Override
@@ -108,23 +117,22 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     public Local select(final Local identity) throws LoginCanceledException {
-        final int option = controller.alert(new SheetController.NoBundleSheetController(select), new AlertSheetRunner() {
+        final int option = controller.alert(new SheetController.NoBundleSheetController(select), new AlertRunner() {
             @Override
-            public void alert(final NSWindow parentWindow, final NSWindow sheetWindow, final ProxyController.SheetDidCloseReturnCodeDelegate delegate) {
+            public void alert(final NSWindow sheet, final SheetCallback callback) {
                 select = NSOpenPanel.openPanel();
                 select.setCanChooseDirectories(false);
                 select.setCanChooseFiles(true);
                 select.setAllowsMultipleSelection(false);
                 select.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
                 select.setPrompt(LocaleFactory.localizedString("Choose"));
-                if(null == parentWindow) {
-                    delegate.sheetDidClose_returnCode_contextInfo(sheetWindow,
-                            select.runModal(null == identity ? LocalFactory.get("~/.ssh").getAbsolute() : identity.getParent().getAbsolute(),
-                                    null == identity ? StringUtils.EMPTY : identity.getName()).intValue(), null);
+                if(null == window) {
+                    callback.callback(select.runModal(null == identity ? LocalFactory.get("~/.ssh").getAbsolute() : identity.getParent().getAbsolute(),
+                            null == identity ? StringUtils.EMPTY : identity.getName()).intValue());
                 }
                 else {
                     select.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(),
-                            null, parentWindow, delegate.id(), ProxyController.SheetDidCloseReturnCodeDelegate.selector, null);
+                            null, window, new WindowController.SheetDidCloseReturnCodeDelegate(callback).id(), WindowController.SheetDidCloseReturnCodeDelegate.selector, null);
 
                 }
             }

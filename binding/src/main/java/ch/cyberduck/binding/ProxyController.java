@@ -26,18 +26,14 @@ import ch.cyberduck.core.threading.MainAction;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.Selector;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
-public class ProxyController extends AbstractController implements AlertSheetRunner {
+public class ProxyController extends AbstractController {
     private static final Logger log = LogManager.getLogger(ProxyController.class);
 
     private final Proxy proxy = new Proxy(this);
@@ -100,45 +96,71 @@ public class ProxyController extends AbstractController implements AlertSheetRun
         return this.alert(sheet, SheetCallback.noop);
     }
 
+    /**
+     * @param sheet  Controller for alert window
+     * @param signal Signaling will dismiss sheet without user input
+     * @return Selected alert option by user
+     */
     public int alert(final SheetController sheet, final CountDownLatch signal) {
-        return this.alert(sheet, this, SheetCallback.noop, signal);
+        return this.alert(sheet, sheet::closeSheetWithOption, signal);
     }
 
+    /**
+     * @param sheet    Controller for alert window
+     * @param callback Handler invoked after sheet is dismissed with selected option
+     * @return Selected alert option by user
+     */
     public int alert(final SheetController sheet, final SheetCallback callback) {
-        return this.alert(sheet, this, callback, new CountDownLatch(1));
+        return this.alert(sheet, callback, new CountDownLatch(1));
     }
 
-    public int alert(final SheetController sheet, final AlertSheetRunner runner) {
-        return this.alert(sheet, runner, SheetCallback.noop, new CountDownLatch(1));
+    /**
+     * @param sheet    Controller for alert window
+     * @param callback Handler invoked after sheet is dismissed with selected option
+     * @param signal   Signaling will dismiss sheet without user input
+     * @return Selected alert option by user
+     */
+    public int alert(final SheetController sheet, final SheetCallback callback, final CountDownLatch signal) {
+        return this.alert(sheet, callback, this.alertFor(sheet), signal);
+    }
+
+    /**
+     * @param sheet  Controller for alert window
+     * @param runner Implementation to display alert window
+     * @return Selected alert option by user
+     */
+    public int alert(final SheetController sheet, final AlertRunner runner) {
+        return this.alert(sheet, SheetCallback.noop, runner, new CountDownLatch(1));
+    }
+
+    /**
+     * @param sheet  Controller for alert window
+     * @param runner Implementation to display alert window
+     * @param signal Signaling will dismiss sheet without user input
+     * @return Selected alert option by user
+     */
+    public int alert(final SheetController sheet, final AlertRunner runner, final CountDownLatch signal) {
+        return this.alert(sheet, SheetCallback.noop, runner, signal);
     }
 
     /**
      * Display as sheet attached to window of parent controller
      *
      * @param sheet    Alert window controller
-     * @param callback Handler invoked after sheet is dismissed
-     * @param signal   Signal to stop waiting for selection from user
-     * @return Return code from selected option
+     * @param callback Handler invoked after sheet is dismissed with selected option
+     * @param runner   Implementation to display alert window
+     * @param signal   Await signal before continuing when on background thread
+     * @return Selected alert option by user
      */
-    public int alert(final SheetController sheet, final AlertSheetRunner runner, final SheetCallback callback, final CountDownLatch signal) {
+    public int alert(final SheetController sheet, final SheetCallback callback, final AlertRunner runner, final CountDownLatch signal) {
         final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
-        final SheetDidCloseReturnCodeDelegate proxy = new SheetDidCloseReturnCodeDelegate(new SheetCallback.DelegatingSheetCallback(
-                new SheetCallback.ReturnCodeSheetCallback(option), callback, sheet, new SignalSheetCallback(signal)));
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
                 log.info("Load bundle for alert {}", sheet);
                 sheet.loadBundle();
-                final NSWindow sheetWindow = sheet.window();
-                log.debug("Configure window {}", sheetWindow);
-                sheetWindow.setHidesOnDeactivate(false);
-                sheetWindow.setPreventsApplicationTerminationWhenModal(false);
-                // Activate ignoring other applications and move window to floating window level
-                sheetWindow.setLevel(NSWindow.NSWindowLevel.NSFloatingWindowLevel);
-                NSApplication.sharedApplication().activateIgnoringOtherApps(true);
-                // Maybe null
-                final NSWindow parentWindow = window();
-                runner.alert(parentWindow, sheet.window(), proxy);
+                runner.alert(sheet.window(), new SheetCallback.DelegatingSheetCallback(
+                        new SheetCallback.ReturnCodeSheetCallback(option), sheet, callback, new SignalSheetCallback(signal)));
             }
         }, true);
         if(!NSThread.isMainThread()) {
@@ -153,62 +175,60 @@ public class ProxyController extends AbstractController implements AlertSheetRun
         return option.get();
     }
 
-    /**
-     * Run modal alert window
-     *
-     * @param parentWindow Parent window or null
-     * @param sheetWindow  Alert window
-     * @param delegate     Proxy to send dismiss notification
-     * @see SheetDidCloseReturnCodeDelegate
-     * @see SheetCallback
-     */
-    @Override
-    public void alert(final NSWindow parentWindow, final NSWindow sheetWindow, final SheetDidCloseReturnCodeDelegate delegate) {
-        // This method runs a modal event loop for the specified window synchronously. It displays the specified window, makes it key,
-        // starts the run loop, and processes events for that window.
-        delegate.sheetDidClose_returnCode_contextInfo(sheetWindow,
-                NSApplication.sharedApplication().runModalForWindow(sheetWindow).intValue(), null);
+    protected AlertRunner alertFor(final SheetController sheet) {
+        final ModalWindowAlertRunner runner = new ModalWindowAlertRunner();
+        sheet.addHandler(runner);
+        return runner;
     }
 
+    /**
+     * Floating window orderd front
+     */
+    public static class FloatingWindowAlertRunner implements AlertRunner {
+        @Override
+        public void alert(final NSWindow sheet, final SheetCallback callback) {
+            log.debug("Configure window {}", sheet);
+            sheet.setHidesOnDeactivate(false);
+            // Activate ignoring other applications and move window to floating window level
+            sheet.setLevel(NSWindow.NSWindowLevel.NSFloatingWindowLevel);
+            NSApplication.sharedApplication().activateIgnoringOtherApps(true);
+            sheet.orderFront(null);
+        }
+    }
 
-    public static final class SheetDidCloseReturnCodeDelegate extends Proxy {
-
-        /**
-         * Keep a reference to the sheet to protect it from being deallocated as a weak reference before the callback from
-         * the runtime
-         */
-        private static final Set<SheetDidCloseReturnCodeDelegate> registry
-                = new HashSet<>();
-
-        public static final Selector selector = Foundation.selector("sheetDidClose:returnCode:contextInfo:");
-
-        private final SheetCallback callback;
-
-        public SheetDidCloseReturnCodeDelegate(final SheetCallback callback) {
-            this.callback = callback;
-            registry.add(this);
+    /**
+     * Floating window in modal run loop
+     */
+    public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner implements AlertRunner.CloseHandler {
+        @Override
+        public void closed(final int returncode) {
+            log.debug("Stop modal with return code {}", returncode);
+            // The result code you want returned from the runModalForWindow:
+            NSApplication.sharedApplication().stopModalWithCode(returncode);
         }
 
         /**
-         * Called by the runtime after a sheet has been dismissed. Ends any modal session and sends the returncode to the
-         * callback implementation. Also invalidates this controller to be garbage collected and notifies the lock object
+         * Run modal alert window
          *
-         * @param sheetWindow Sheet window
-         * @param returncode  Identifier for the button clicked by the user
-         * @param contextInfo Not used
+         * @param sheet    Alert window
+         * @param callback Proxy to send dismiss notification
+         * @see SheetCallback
          */
-        @Delegate
-        public void sheetDidClose_returnCode_contextInfo(final NSWindow sheetWindow, final int returncode, final ID contextInfo) {
-            log.debug("Close with return code {}", returncode);
-            callback.callback(returncode);
-            registry.remove(this);
+        @Override
+        public void alert(final NSWindow sheet, final SheetCallback callback) {
+            super.alert(sheet, callback);
+            sheet.setPreventsApplicationTerminationWhenModal(false);
+            // This method runs a modal event loop for the specified window synchronously. It displays the specified window, makes it key,
+            // starts the run loop, and processes events for that window.
+            log.debug("Run modal for window {} with callback {}", sheet, callback);
+            callback.callback(NSApplication.sharedApplication().runModalForWindow(sheet).intValue());
         }
     }
 
     /**
      * Signal count down latch when sheet is dismissed
      */
-    static final class SignalSheetCallback implements SheetCallback {
+    public static final class SignalSheetCallback implements SheetCallback {
         private final CountDownLatch signal;
 
         public SignalSheetCallback(final CountDownLatch signal) {
@@ -220,9 +240,5 @@ public class ProxyController extends AbstractController implements AlertSheetRun
             log.debug("Signal {} after closing sheet with code {}", signal, returncode);
             signal.countDown();
         }
-    }
-
-    public NSWindow window() {
-        return null;
     }
 }
