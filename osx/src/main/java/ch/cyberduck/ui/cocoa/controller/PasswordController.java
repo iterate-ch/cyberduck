@@ -114,7 +114,7 @@ public class PasswordController extends AlertController {
             keychainCheckbox.setState(credentials.isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
             keychainCheckbox.sizeToFit();
             // Override accessory view with location menu added
-            keychainCheckbox.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue()));
+            keychainCheckbox.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue()));
             view.addSubview(keychainCheckbox);
         }
         if(options.password) {
@@ -124,7 +124,7 @@ public class PasswordController extends AlertController {
             inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
         }
         inputField.cell().setPlaceholderString(options.getPasswordPlaceholder());
-        inputField.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        inputField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(inputField);
         return view;
     }

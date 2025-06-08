@@ -15,9 +15,10 @@ package ch.cyberduck.ui.cocoa.callback;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.AlertSheetRunner;
+import ch.cyberduck.binding.AlertRunner;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.FoundationKitFunctions;
@@ -45,9 +46,19 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
     private static final Logger log = LogManager.getLogger(PromptCertificateIdentityCallback.class);
 
     private final ProxyController controller;
+    /**
+     * Parent window or null
+     */
+    private final NSWindow window;
 
     public PromptCertificateIdentityCallback(final ProxyController controller) {
         this.controller = controller;
+        this.window = null;
+    }
+
+    public PromptCertificateIdentityCallback(final WindowController controller) {
+        this.controller = controller;
+        this.window = controller.window();
     }
 
     @Override
@@ -69,16 +80,16 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
         panel.setInformativeText(MessageFormat.format(LocaleFactory.localizedString(
                 "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."), hostname));
         final NSArray identities = KeychainCertificateStore.toDEREncodedCertificates(certificates);
-        final int option = controller.alert(new SheetController.NoBundleSheetController(panel), new AlertSheetRunner() {
+        final int option = controller.alert(new SheetController.NoBundleSheetController(panel), new AlertRunner() {
             @Override
-            public void alert(final NSWindow parentWindow, final NSWindow sheetWindow, final ProxyController.SheetDidCloseReturnCodeDelegate delegate) {
-                if(null == parentWindow) {
-                    delegate.sheetDidClose_returnCode_contextInfo(sheetWindow,
-                            panel.runModalForIdentities_message(identities, null).intValue(), null);
+            public void alert(final NSWindow sheet, final SheetCallback callback) {
+                if(null == window) {
+                    callback.callback(panel.runModalForIdentities_message(identities, null).intValue());
                 }
                 else {
                     panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_identities_message(
-                            parentWindow, delegate.id(), ProxyController.SheetDidCloseReturnCodeDelegate.selector, null, identities, null
+                            window, new WindowController.SheetDidCloseReturnCodeDelegate(callback).id(),
+                            WindowController.SheetDidCloseReturnCodeDelegate.selector, null, identities, null
                     );
                 }
             }

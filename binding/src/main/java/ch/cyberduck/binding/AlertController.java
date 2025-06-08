@@ -64,11 +64,11 @@ public abstract class AlertController extends SheetController implements InputVa
             alert.suppressionButton().setTarget(this.id());
             alert.suppressionButton().setAction(Foundation.selector("suppressionButtonClicked:"));
         }
-        // Layout alert view on main thread
-        this.focus(alert);
         final NSWindow window = alert.window();
         log.debug("Use window {}", window);
         this.setWindow(window);
+        // Layout alert view on main thread
+        this.focus(alert);
     }
 
     protected void focus(final NSAlert alert) {
@@ -78,29 +78,29 @@ public abstract class AlertController extends SheetController implements InputVa
         while((button = buttons.nextObject()) != null) {
             final NSButton b = Rococoa.cast(button, NSButton.class);
             b.setTarget(this.id());
-            b.setAction(Foundation.selector("closeSheet:"));
+            b.setAction(SheetController.BUTTON_CLOSE_SELECTOR);
         }
         final NSView accessory = this.getAccessoryView(alert);
         if(accessory != null) {
-            final NSRect frame = this.getFrame(alert, accessory);
+            final NSRect frame = this.getFrame(accessory);
             accessory.setFrameSize(frame.size);
             alert.setAccessoryView(accessory);
-            alert.window().makeFirstResponder(accessory);
+            window.makeFirstResponder(accessory);
         }
         // First call layout and then do any special positioning and sizing of the accessory view prior to running the alert
         alert.layout();
-        alert.window().recalculateKeyViewLoop();
+        window.recalculateKeyViewLoop();
     }
 
-    protected NSRect getFrame(final NSAlert alert, final NSView accessory) {
-        final NSRect frame = new NSRect(alert.window().frame().size.width.doubleValue(), accessory.frame().size.height.doubleValue());
+    protected NSRect getFrame(final NSView accessory) {
+        final NSRect frame = new NSRect(window.frame().size.width.doubleValue(), accessory.frame().size.height.doubleValue());
         final NSEnumerator enumerator = accessory.subviews().objectEnumerator();
         NSObject next;
         while(null != (next = enumerator.nextObject())) {
             final NSView subview = Rococoa.cast(next, NSView.class);
             frame.size.height = new CGFloat(frame.size.height.doubleValue() + subview.frame().size.height.doubleValue() + SUBVIEWS_VERTICAL_SPACE * 2);
         }
-        log.debug("Calculated frame {} for alert {} with accessory {}", frame, alert, accessory);
+        log.debug("Calculated frame {} for alert {} with accessory {}", frame, this, accessory);
         return frame;
     }
 

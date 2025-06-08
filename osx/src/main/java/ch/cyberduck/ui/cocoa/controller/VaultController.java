@@ -29,7 +29,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordStrengthValidator;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -100,7 +99,7 @@ public class VaultController extends FolderController {
         if(strengthIndicator.respondsToSelector(Foundation.selector("setLevelIndicatorStyle:"))) {
             strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
         }
-        strengthIndicator.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        strengthIndicator.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(strengthIndicator);
 
         passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
@@ -109,12 +108,12 @@ public class VaultController extends FolderController {
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
             passwordField.id());
-        passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(passwordField);
 
         final NSView accessory = super.getAccessoryView(alert);
-        accessory.setFrameSize(this.getFrame(alert, accessory).size);
-        accessory.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        accessory.setFrameSize(this.getFrame(accessory).size);
+        accessory.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(accessory);
         return view;
     }
@@ -134,11 +133,6 @@ public class VaultController extends FolderController {
             return true;
         }
         return false;
-    }
-
-    @Override
-    protected String help() {
-        return ProviderHelpServiceFactory.get().help();
     }
 
     @Override
