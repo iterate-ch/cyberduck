@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSPrintOperation;
 import ch.cyberduck.binding.application.NSPrintPanel;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.LocaleFactory;
@@ -33,6 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
@@ -40,6 +42,7 @@ import org.rococoa.cocoa.foundation.NSSize;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static final Logger log = LogManager.getLogger(WindowController.class);
@@ -88,7 +91,6 @@ public abstract class WindowController extends BundleController implements NSWin
         this.window.setDelegate(this.id());
     }
 
-    @Override
     public NSWindow window() {
         return window;
     }
@@ -266,14 +268,71 @@ public abstract class WindowController extends BundleController implements NSWin
         }
     }
 
-    /**
-     * Run sheet alert window
-     */
     @Override
-    public void alert(final NSWindow parentWindow, final NSWindow sheetWindow, final SheetDidCloseReturnCodeDelegate delegate) {
-        log.debug("Order front window {}", parentWindow);
-        parentWindow.makeKeyAndOrderFront(null);
-        log.debug("Begin sheet {}", sheetWindow);
-        NSApplication.sharedApplication().beginSheet(sheetWindow, window, delegate.id(), SheetDidCloseReturnCodeDelegate.selector, null);
+    protected AlertRunner alertFor(final SheetController sheet) {
+        final SheetAlertRunner handler = new SheetAlertRunner(window, sheet);
+        sheet.addHandler(handler);
+        return handler;
+    }
+
+    /**
+     * Display as sheet attached to window of parent controller
+     */
+    public static final class SheetAlertRunner implements AlertRunner, AlertRunner.CloseHandler {
+        private final NSWindow window;
+        private final SheetController controller;
+        private final AtomicReference<Proxy> reference = new AtomicReference<>();
+
+        /**
+         * @param window     Parent window
+         * @param controller Controller for sheet window
+         */
+        public SheetAlertRunner(final NSWindow window, final SheetController controller) {
+            this.window = window;
+            this.controller = controller;
+        }
+
+        @Override
+        public void closed(final int returncode) {
+            // Ends a document modal session by specifying the sheet window
+            log.debug("End sheet window for {}", controller);
+            NSApplication.sharedApplication().endSheet(controller.window(), returncode);
+        }
+
+        /**
+         * Run sheet alert window
+         */
+        @Override
+        public void alert(final NSWindow sheet, final SheetCallback callback) {
+            final Proxy proxy = new SheetDidCloseReturnCodeDelegate(callback);
+            reference.set(proxy);
+            log.debug("Begin sheet {} for {}", sheet, controller);
+            NSApplication.sharedApplication().beginSheet(sheet, window,
+                    proxy.id(), SheetDidCloseReturnCodeDelegate.selector, null);
+        }
+    }
+
+    public static final class SheetDidCloseReturnCodeDelegate extends Proxy {
+        public static final Selector selector = Foundation.selector("sheetDidClose:returnCode:contextInfo:");
+
+        private final SheetCallback callback;
+
+        public SheetDidCloseReturnCodeDelegate(final SheetCallback callback) {
+            this.callback = callback;
+        }
+
+        /**
+         * Called by the runtime after a sheet has been dismissed. Ends any modal session and sends the returncode to the
+         * callback implementation. Also invalidates this controller to be garbage collected and notifies the lock object
+         *
+         * @param sheetWindow Sheet window
+         * @param returncode  Identifier for the button clicked by the user
+         * @param contextInfo Not used
+         */
+        @Delegate
+        public void sheetDidClose_returnCode_contextInfo(final NSWindow sheetWindow, final int returncode, final ID contextInfo) {
+            log.debug("Close with return code {}", returncode);
+            callback.callback(returncode);
+        }
     }
 }

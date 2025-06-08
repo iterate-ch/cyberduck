@@ -15,9 +15,10 @@ package ch.cyberduck.ui.cocoa.callback;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.AlertSheetRunner;
+import ch.cyberduck.binding.AlertRunner;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.FoundationKitFunctions;
@@ -44,9 +45,19 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
     private static final Logger log = LogManager.getLogger(PromptCertificateTrustCallback.class);
 
     private final ProxyController controller;
+    /**
+     * Parent window or null
+     */
+    private final NSWindow window;
 
     public PromptCertificateTrustCallback(final ProxyController controller) {
         this.controller = controller;
+        this.window = null;
+    }
+
+    public PromptCertificateTrustCallback(final WindowController controller) {
+        this.controller = controller;
+        this.window = controller.window();
     }
 
     @Override
@@ -68,16 +79,16 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
         panel.setPolicies(policyRef);
         panel.setShowsHelp(true);
         log.debug("Display trust panel for controller {}", controller);
-        final int option = controller.alert(new SheetController.NoBundleSheetController(panel), new AlertSheetRunner() {
+        final int option = controller.alert(new SheetController.NoBundleSheetController(panel), new AlertRunner() {
             @Override
-            public void alert(final NSWindow parentWindow, final NSWindow sheetWindow, final ProxyController.SheetDidCloseReturnCodeDelegate delegate) {
-                if(null == parentWindow) {
-                    delegate.sheetDidClose_returnCode_contextInfo(sheetWindow,
-                            panel.runModalForTrust_message(trustRef, null).intValue(), null);
+            public void alert(final NSWindow sheet, final SheetCallback callback) {
+                if(null == window) {
+                    callback.callback(panel.runModalForTrust_message(trustRef, null).intValue());
                 }
                 else {
                     panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message(
-                            parentWindow, delegate.id(), ProxyController.SheetDidCloseReturnCodeDelegate.selector, null, trustRef, null);
+                            window, new WindowController.SheetDidCloseReturnCodeDelegate(callback).id(),
+                            WindowController.SheetDidCloseReturnCodeDelegate.selector, null, trustRef, null);
                 }
             }
         });
