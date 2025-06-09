@@ -18,10 +18,18 @@ package ch.cyberduck.binding.application;
  *  dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSSize;
+
 public interface WindowListener {
 
     /**
      * Sent after NSWindow.WindowWillCloseNotification is fired for this window
      */
-    void windowWillClose();
+    default void windowWillClose() {
+        //
+    }
+
+    default void windowDidResize(NSSize windowFrame) {
+        //
+    }
 }

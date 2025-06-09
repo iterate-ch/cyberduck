@@ -58,4 +58,6 @@ public abstract class NSViewController extends NSResponder {
      * @param view The view controller’s primary view.
      */
     public abstract void setView(NSView view);
+
+    public abstract NSView view();
 }
