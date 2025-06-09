@@ -49,13 +49,18 @@ public abstract class WindowController extends BundleController implements NSWin
 
     protected static final String DEFAULT = LocaleFactory.localizedString("Default");
 
-    private final Set<WindowListener> listeners
-            = Collections.synchronizedSet(new HashSet<WindowListener>());
+    protected final Set<WindowListener> listeners
+            = Collections.synchronizedSet(new HashSet<>());
     /**
      * The window this controller is owner of
      */
     @Outlet
     protected NSWindow window;
+
+    /**
+     * Main content view of window
+     */
+    protected NSView view;
 
     public WindowController() {
         super();
@@ -86,6 +91,7 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public void setWindow(final NSWindow window) {
         this.window = window;
+        this.view = window.contentView();
         this.window.recalculateKeyViewLoop();
         this.window.setReleasedWhenClosed(!this.isSingleton());
         this.window.setDelegate(this.id());
@@ -197,22 +203,26 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * Resize window frame to fit the content view of the currently selected tab.
      */
-    protected void resize() {
+    public void resize() {
         final NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
         final double height = this.getMinWindowHeight();
         final NSRect frameRect = new NSRect(
                 new NSPoint(windowFrame.origin.x.doubleValue(), windowFrame.origin.y.doubleValue() + windowFrame.size.height.doubleValue() - height),
                 new NSSize(windowFrame.size.width.doubleValue(), height)
         );
+        log.debug("Resize window {} to {}", window, frameRect);
         window.setFrame_display_animate(NSWindow.frameRectForContentRect_styleMask(frameRect, window.styleMask()),
                 true, window.isVisible());
+        for(WindowListener listener : listeners) {
+            listener.windowDidResize(frameRect.size);
+        }
     }
 
     protected double getMinWindowHeight() {
         final NSRect contentRect = this.getContentRect();
         //Border top + toolbar
         return contentRect.size.height.doubleValue()
-                + 40 + toolbarHeightForWindow(window);
+                + 40 + toolbarHeightForWindow();
     }
 
     protected double getMinWindowWidth() {
@@ -220,16 +230,16 @@ public abstract class WindowController extends BundleController implements NSWin
         return contentRect.size.width.doubleValue();
     }
 
-    protected static double toolbarHeightForWindow(final NSWindow window) {
-        NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
-        return windowFrame.size.height.doubleValue() - window.contentView().frame().size.height.doubleValue();
+    protected double toolbarHeightForWindow() {
+        final NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
+        return windowFrame.size.height.doubleValue() - view.frame().size.height.doubleValue();
     }
 
     /**
      * @return Minimum size to fit content view of currently selected tab.
      */
     protected NSRect getContentRect() {
-        return window.contentView().frame();
+        return view.frame();
     }
 
     /**
