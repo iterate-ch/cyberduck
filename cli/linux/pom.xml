@@ -81,6 +81,14 @@
                     <version>${jna-version}</version>
                     <scope>runtime</scope>
                 </dependency>
+                <dependency>
+                    <groupId>org.fusesource.jansi</groupId>
+                    <artifactId>jansi</artifactId>
+                    <version>${jansi.version}</version>
+                    <classifier>arm64</classifier>
+                    <type>so</type>
+                    <scope>runtime</scope>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
@@ -97,6 +105,14 @@
                     <classifier>${os.arch}</classifier>
                     <type>so</type>
                     <version>${jna-version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.fusesource.jansi</groupId>
+                    <artifactId>jansi</artifactId>
+                    <version>${jansi.version}</version>
+                    <classifier>${os.arch}</classifier>
+                    <type>so</type>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
@@ -117,6 +133,14 @@
                     <version>${jna-version}</version>
                     <scope>runtime</scope>
                 </dependency>
+                <dependency>
+                    <groupId>org.fusesource.jansi</groupId>
+                    <artifactId>jansi</artifactId>
+                    <version>${jansi.version}</version>
+                    <classifier>x86_64</classifier>
+                    <type>so</type>
+                    <scope>runtime</scope>
+                </dependency>
             </dependencies>
         </profile>
     </profiles>
@@ -126,22 +150,6 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>cli</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi</artifactId>
-            <version>${jansi.version}</version>
-            <classifier>x86_64</classifier>
-            <type>so</type>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi</artifactId>
-            <version>${jansi.version}</version>
-            <classifier>arm64</classifier>
-            <type>so</type>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>
