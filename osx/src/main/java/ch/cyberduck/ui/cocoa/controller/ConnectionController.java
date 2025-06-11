@@ -54,6 +54,15 @@ public class ConnectionController extends BookmarkController {
     }
 
     @Override
+    public void callback(final int returncode) {
+        switch(returncode) {
+            case CANCEL_OPTION:
+                bookmark.getCredentials().setPassword(null);
+                break;
+        }
+    }
+
+    @Override
     public boolean isSingleton() {
         return true;
     }
