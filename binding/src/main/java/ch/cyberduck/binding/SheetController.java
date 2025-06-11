@@ -37,7 +37,7 @@ public abstract class SheetController extends WindowController implements InputV
     public static final Selector BUTTON_CLOSE_SELECTOR = Foundation.selector("closeSheet:");
 
     private final InputValidator validator;
-    private final Set<AlertRunner.CloseHandler> handlers = new HashSet<>();
+    private final Set<CloseHandler> handlers = new HashSet<>();
 
     public SheetController() {
         this(disabled);
@@ -82,12 +82,11 @@ public abstract class SheetController extends WindowController implements InputV
                 return;
             }
         }
-        handlers.forEach(h -> h.closed(option));
-        window.orderOut(null);
+        handlers.forEach(h -> h.closed(window, option));
         handlers.clear();
     }
 
-    public void addHandler(final AlertRunner.CloseHandler handler) {
+    public void addHandler(final AlertRunner handler) {
         handlers.add(handler);
     }
 
