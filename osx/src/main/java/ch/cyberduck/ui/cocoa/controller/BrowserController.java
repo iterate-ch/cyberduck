@@ -2857,9 +2857,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     case DEFAULT_OPTION:
                         mount(bookmark);
                         break;
-                    case CANCEL_OPTION:
-                        bookmark.getCredentials().setPassword(null);
-                        break;
                 }
             }
         });
