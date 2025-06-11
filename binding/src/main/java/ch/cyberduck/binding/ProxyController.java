@@ -102,7 +102,7 @@ public class ProxyController extends AbstractController {
      * @return Selected alert option by user
      */
     public int alert(final SheetController sheet, final CountDownLatch signal) {
-        return this.alert(sheet, sheet::closeSheetWithOption, signal);
+        return this.alert(sheet, SheetCallback.noop, signal);
     }
 
     /**
@@ -154,19 +154,30 @@ public class ProxyController extends AbstractController {
      */
     public int alert(final SheetController sheet, final SheetCallback callback, final AlertRunner runner, final CountDownLatch signal) {
         final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
+        final CountDownLatch state = new CountDownLatch(1);
+        final SheetCallback.DelegatingSheetCallback chain = new SheetCallback.DelegatingSheetCallback(new SheetCallback.ReturnCodeSheetCallback(option), sheet, callback);
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
                 log.info("Load bundle for alert {}", sheet);
                 sheet.loadBundle();
-                runner.alert(sheet.window(), new SheetCallback.DelegatingSheetCallback(
-                        new SheetCallback.ReturnCodeSheetCallback(option), sheet, callback, new SignalSheetCallback(signal)));
+                runner.alert(sheet.window(), new SheetCallback.DelegatingSheetCallback(new SignalSheetCallback(state),
+                        chain, new SignalSheetCallback(signal)));
             }
         }, true);
         if(!NSThread.isMainThread()) {
             log.debug("Await sheet dismiss");
             Uninterruptibles.awaitUninterruptibly(signal);
             log.debug("Continue after sheet dismiss");
+            if(0 != state.getCount()) {
+                log.warn("Invoke callback chain with cancel option after missing signal from sheet dismiss");
+                this.invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        runner.closed(sheet.window(), SheetCallback.CANCEL_OPTION);
+                    }
+                }, true);
+            }
         }
         else {
             log.warn("Skip await sheet dismiss");
@@ -199,9 +210,11 @@ public class ProxyController extends AbstractController {
     /**
      * Floating window in modal run loop
      */
-    public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner implements AlertRunner.CloseHandler {
+    public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner {
         @Override
-        public void closed(final int returncode) {
+        public void closed(final NSWindow sheet, final int returncode) {
+            // Close window
+            sheet.orderOut(null);
             log.debug("Stop modal with return code {}", returncode);
             // The result code you want returned from the runModalForWindow:
             NSApplication.sharedApplication().stopModalWithCode(returncode);

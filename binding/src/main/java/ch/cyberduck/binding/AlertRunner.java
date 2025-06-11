@@ -30,7 +30,7 @@ import ch.cyberduck.binding.application.SheetCallback;
  * Method implementations typically interact with system-level APIs
  * or frameworks such as AppKit to display and manage the sheet/window.
  */
-public interface AlertRunner {
+public interface AlertRunner extends CloseHandler {
     /**
      * Displays an alert dialog attached to the specified NSWindow (sheet).
      * The user interaction result is handled via the provided callback.
@@ -39,16 +39,20 @@ public interface AlertRunner {
      * @param callback The callback to handle actions triggered by the alert
      */
     void alert(NSWindow sheet, SheetCallback callback);
+}
 
+/**
+ * Callback when alert is dismissed by user
+ */
+interface CloseHandler {
     /**
-     * Callback when alert is dismissed by user
+     * Notified when alert is closed by user input
+     *
+     * @param sheet Sheet window
+     * @param returncode Selected option
      */
-    interface CloseHandler {
-        /**
-         * Notified when alert is closed by user input
-         *
-         * @param returncode Selected option
-         */
-        void closed(int returncode);
+    default void closed(NSWindow sheet, int returncode) {
+        sheet.orderOut(null);
     }
 }
+
