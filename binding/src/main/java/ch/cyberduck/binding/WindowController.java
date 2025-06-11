@@ -288,7 +288,7 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * Display as sheet attached to window of parent controller
      */
-    public static final class SheetAlertRunner implements AlertRunner, AlertRunner.CloseHandler {
+    public static final class SheetAlertRunner implements AlertRunner {
         private final NSWindow window;
         private final SheetController controller;
         private final AtomicReference<Proxy> reference = new AtomicReference<>();
@@ -303,7 +303,9 @@ public abstract class WindowController extends BundleController implements NSWin
         }
 
         @Override
-        public void closed(final int returncode) {
+        public void closed(final NSWindow sheet, final int returncode) {
+            // Close window
+            sheet.orderOut(null);
             // Ends a document modal session by specifying the sheet window
             log.debug("End sheet window for {}", controller);
             NSApplication.sharedApplication().endSheet(controller.window(), returncode);
