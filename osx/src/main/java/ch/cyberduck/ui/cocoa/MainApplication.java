@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.logging.LoggerPrintStream;
@@ -53,6 +54,9 @@ public final class MainApplication {
             // Register factory implementations.
             final Preferences preferences = new ApplicationUserDefaultsPreferences();
             PreferencesFactory.set(preferences);
+
+            app.setApplicationIconImage(NSImage.imageNamed(
+                    preferences.getProperty("application.icon.filename")));
 
             final ProtocolFactory protocols = ProtocolFactory.get();
             for(Protocol p : AutoServiceLoaderFactory.<Protocol>get().load(Protocol.class)) {
