@@ -241,6 +241,7 @@ public class ProxyController extends AbstractController {
         public void alert(final NSWindow sheet, final SheetCallback callback) {
             super.alert(sheet, callback);
             sheet.setPreventsApplicationTerminationWhenModal(false);
+            sheet.setLevel(NSWindow.NSWindowLevel.NSModalPanelWindowLevel);
             sheet.center();
             // This method runs a modal event loop for the specified window synchronously. It displays the specified window, makes it key,
             // starts the run loop, and processes events for that window.
