@@ -31,7 +31,6 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.Comparator;
@@ -46,8 +45,6 @@ public class FolderController extends FileController {
     private final Location.Name defaultRegion;
     private final Callback callback;
 
-    @Outlet
-    private NSView accessoryView;
     @Outlet
     private NSPopUpButton regionPopup;
 
@@ -75,7 +72,7 @@ public class FolderController extends FileController {
 
     public NSView getAccessoryView(final NSAlert alert) {
         if(this.hasLocation()) {
-            accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
+            final NSView accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
             regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
             regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
                 regionPopup.addItemWithTitle(region.toString());
@@ -90,13 +87,8 @@ public class FolderController extends FileController {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }
             });
-            // Override accessory view with location menu added
-            regionPopup.setFrameOrigin(new NSPoint(0, 0));
-            accessoryView.addSubview(regionPopup);
-            final NSView accessory = super.getAccessoryView(alert);
-            accessory.setFrameSize(this.getFrame(accessory).size);
-            accessory.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue() + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-            accessoryView.addSubview(accessory);
+            this.addAccessorySubview(accessoryView, regionPopup);
+            this.addAccessorySubview(accessoryView, super.getAccessoryView(alert));
             return accessoryView;
         }
         return super.getAccessoryView(alert);
