@@ -213,7 +213,6 @@ public class ProxyController extends AbstractController {
             // Activate ignoring other applications and move window to floating window level
             sheet.setLevel(NSWindow.NSWindowLevel.NSFloatingWindowLevel);
             NSApplication.sharedApplication().activateIgnoringOtherApps(true);
-            sheet.center();
             sheet.orderFront(null);
         }
     }
@@ -242,6 +241,7 @@ public class ProxyController extends AbstractController {
         public void alert(final NSWindow sheet, final SheetCallback callback) {
             super.alert(sheet, callback);
             sheet.setPreventsApplicationTerminationWhenModal(false);
+            sheet.center();
             // This method runs a modal event loop for the specified window synchronously. It displays the specified window, makes it key,
             // starts the run loop, and processes events for that window.
             log.debug("Run modal for window {} with callback {}", sheet, callback);
