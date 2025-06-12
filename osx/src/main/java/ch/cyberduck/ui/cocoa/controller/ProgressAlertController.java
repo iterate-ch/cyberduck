@@ -27,7 +27,6 @@ import ch.cyberduck.core.StringAppender;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
 public class ProgressAlertController extends AlertController {
@@ -63,7 +62,6 @@ public class ProgressAlertController extends AlertController {
         progress.setDisplayedWhenStopped(false);
         progress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
         progress.setControlSize(NSCell.NSRegularControlSize);
-        progress.setFrameOrigin(new NSPoint(0, 0));
         progress.startAnimation(this.id());
         return progress;
     }
