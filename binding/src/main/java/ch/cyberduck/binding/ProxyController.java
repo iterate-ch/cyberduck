@@ -202,17 +202,25 @@ public class ProxyController extends AbstractController {
         return runner;
     }
 
+    public static class RegularWindowAlertRunner implements AlertRunner {
+        @Override
+        public void alert(final NSWindow sheet, final SheetCallback callback) {
+            log.debug("Configure window {}", sheet);
+            sheet.orderFront(null);
+        }
+    }
+
     /**
-     * Floating window orderd front
+     * Floating window ordered front
      */
-    public static class FloatingWindowAlertRunner implements AlertRunner {
+    public static class FloatingWindowAlertRunner extends RegularWindowAlertRunner {
         @Override
         public void alert(final NSWindow sheet, final SheetCallback callback) {
             log.debug("Configure window {}", sheet);
             sheet.setHidesOnDeactivate(false);
             // Activate ignoring other applications and move window to floating window level
             sheet.setLevel(NSWindow.NSWindowLevel.NSFloatingWindowLevel);
-            sheet.orderFront(null);
+            super.alert(sheet, callback);
         }
     }
 
@@ -238,10 +246,10 @@ public class ProxyController extends AbstractController {
          */
         @Override
         public void alert(final NSWindow sheet, final SheetCallback callback) {
-            super.alert(sheet, callback);
             sheet.setPreventsApplicationTerminationWhenModal(false);
             sheet.setLevel(NSWindow.NSWindowLevel.NSModalPanelWindowLevel);
             sheet.center();
+            super.alert(sheet, callback);
             // This method runs a modal event loop for the specified window synchronously. It displays the specified window, makes it key,
             // starts the run loop, and processes events for that window.
             log.debug("Run modal for window {} with callback {}", sheet, callback);
