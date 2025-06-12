@@ -47,7 +47,7 @@ public class FolderController extends FileController {
     private final Callback callback;
 
     @Outlet
-    private NSView view;
+    private NSView accessoryView;
     @Outlet
     private NSPopUpButton regionPopup;
 
@@ -75,7 +75,7 @@ public class FolderController extends FileController {
 
     public NSView getAccessoryView(final NSAlert alert) {
         if(this.hasLocation()) {
-            view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
+            accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
             regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
             regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
                 regionPopup.addItemWithTitle(region.toString());
@@ -92,10 +92,12 @@ public class FolderController extends FileController {
             });
             // Override accessory view with location menu added
             regionPopup.setFrameOrigin(new NSPoint(0, 0));
-            view.addSubview(regionPopup);
-            inputField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-            view.addSubview(inputField);
-            return view;
+            accessoryView.addSubview(regionPopup);
+            final NSView accessory = super.getAccessoryView(alert);
+            accessory.setFrameSize(this.getFrame(accessory).size);
+            accessory.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue() + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+            accessoryView.addSubview(accessory);
+            return accessoryView;
         }
         return super.getAccessoryView(alert);
     }
