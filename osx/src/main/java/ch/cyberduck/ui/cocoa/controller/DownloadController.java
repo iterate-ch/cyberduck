@@ -28,7 +28,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -115,10 +114,5 @@ public class DownloadController extends AlertController {
             return false;
         }
         return StringUtils.isNotBlank(host.getDefaultPath());
-    }
-
-    @Override
-    protected String help() {
-        return ProviderHelpServiceFactory.get().help();
     }
 }
