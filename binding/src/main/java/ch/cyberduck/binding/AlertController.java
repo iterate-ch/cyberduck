@@ -44,6 +44,14 @@ public abstract class AlertController extends SheetController implements InputVa
     @Outlet
     private NSAlert alert;
 
+    public AlertController() {
+        super();
+    }
+
+    public AlertController(final InputValidator callback) {
+        super(callback);
+    }
+
     /**
      * @return Null by default, a sheet with no custom NIB
      */
@@ -109,7 +117,7 @@ public abstract class AlertController extends SheetController implements InputVa
     }
 
     /**
-     * Open help page.
+     * @return Help page.
      */
     protected String help() {
         return ProviderHelpServiceFactory.get().help();
