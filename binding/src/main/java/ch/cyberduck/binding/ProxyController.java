@@ -28,6 +28,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -144,6 +146,13 @@ public class ProxyController extends AbstractController {
     }
 
     /**
+     * Keep a reference to the sheet to protect it from being deallocated as a weak reference before the callback from
+     * the runtime
+     */
+    protected static final Set<AlertRunner> alerts
+            = new HashSet<>();
+
+    /**
      * Display as sheet attached to window of parent controller
      *
      * @param sheet    Alert window controller
@@ -153,6 +162,7 @@ public class ProxyController extends AbstractController {
      * @return Selected alert option by user
      */
     public int alert(final SheetController sheet, final SheetCallback callback, final AlertRunner runner, final CountDownLatch signal) {
+        alerts.add(runner);
         final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
         final CountDownLatch state = new CountDownLatch(1);
         final SheetCallback.DelegatingSheetCallback chain = new SheetCallback.DelegatingSheetCallback(new SheetCallback.ReturnCodeSheetCallback(option), sheet, callback);
@@ -162,7 +172,7 @@ public class ProxyController extends AbstractController {
                 log.info("Load bundle for alert {}", sheet);
                 sheet.loadBundle();
                 runner.alert(sheet.window(), new SheetCallback.DelegatingSheetCallback(new SignalSheetCallback(state),
-                        chain, new SignalSheetCallback(signal)));
+                        chain, new SignalSheetCallback(signal), (returncode) -> alerts.remove(runner)));
             }
         }, true);
         if(!NSThread.isMainThread()) {
