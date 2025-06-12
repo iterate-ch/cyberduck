@@ -99,6 +99,7 @@ public abstract class SheetController extends WindowController implements InputV
     // Handle keyboard esc event when not running as sheet
     public void cancel(ID sender) {
         this.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
+        this.close();
     }
 
     /**
