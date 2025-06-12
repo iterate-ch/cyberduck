@@ -203,6 +203,7 @@ public class ProxyController extends AbstractController {
             // Activate ignoring other applications and move window to floating window level
             sheet.setLevel(NSWindow.NSWindowLevel.NSFloatingWindowLevel);
             NSApplication.sharedApplication().activateIgnoringOtherApps(true);
+            sheet.center();
             sheet.orderFront(null);
         }
     }
