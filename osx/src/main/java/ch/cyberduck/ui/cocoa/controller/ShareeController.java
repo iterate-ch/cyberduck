@@ -22,7 +22,6 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
-import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.features.Share;
@@ -36,8 +35,6 @@ import java.util.Set;
 
 public class ShareeController extends AlertController {
 
-    @Outlet
-    private NSView view;
     @Outlet
     private NSPopUpButton shareePopup;
 
@@ -70,7 +67,6 @@ public class ShareeController extends AlertController {
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
-        view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
         shareePopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
         shareePopup.setFrameOrigin(new NSPoint(0, 0));
         shareePopup.addItemWithTitle(Share.Sharee.world.getDescription());
@@ -83,9 +79,7 @@ public class ShareeController extends AlertController {
             }
         });
         shareePopup.selectItemAtIndex(shareePopup.indexOfItemWithRepresentedObject(Share.Sharee.world.getIdentifier()));
-        // Override accessory view with location menu added
-        view.addSubview(shareePopup);
-        return view;
+        return shareePopup;
     }
 
     @Override

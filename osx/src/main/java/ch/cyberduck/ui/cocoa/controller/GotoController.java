@@ -43,9 +43,9 @@ import java.util.Comparator;
 public class GotoController extends AlertController {
 
     @Outlet
-    private final NSComboBox folderCombobox;
+    private NSComboBox folderCombobox;
     @Delegate
-    private final ProxyController folderComboboxModel;
+    private ProxyController folderComboboxModel;
 
     private final BrowserController parent;
     private final Cache<Path> cache;
@@ -53,12 +53,6 @@ public class GotoController extends AlertController {
     public GotoController(final BrowserController parent, final Cache<Path> cache) {
         this.parent = parent;
         this.cache = cache;
-        folderCombobox = NSComboBox.textfieldWithFrame(new NSRect(0, 26));
-        folderCombobox.setCompletes(true);
-        folderCombobox.setUsesDataSource(true);
-        folderComboboxModel = new FolderComboboxModel(parent.workdir());
-        folderCombobox.setDataSource(folderComboboxModel.id());
-        folderCombobox.setStringValue(parent.workdir().getAbsolute());
     }
 
     @Override
@@ -75,6 +69,12 @@ public class GotoController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
+        this.folderCombobox = NSComboBox.textfieldWithFrame(new NSRect(0, 26));
+        this.folderCombobox.setCompletes(true);
+        this.folderCombobox.setUsesDataSource(true);
+        this.folderComboboxModel = new FolderComboboxModel(parent.workdir());
+        this.folderCombobox.setDataSource(folderComboboxModel.id());
+        this.folderCombobox.setStringValue(parent.workdir().getAbsolute());
         return folderCombobox;
     }
 
