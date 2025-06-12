@@ -16,7 +16,6 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSProgressIndicator;
@@ -37,11 +36,6 @@ public class ProgressAlertController extends AlertController {
     private final String title;
     private final String message;
     private final Protocol protocol;
-
-    @Outlet
-    private NSView view;
-    @Outlet
-    private NSProgressIndicator progress;
 
     public ProgressAlertController(final String title, final String message, final Protocol protocol) {
         this.title = title;
@@ -64,16 +58,14 @@ public class ProgressAlertController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
-        view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-        progress = NSProgressIndicator.progressIndicatorWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
+        final NSProgressIndicator progress = NSProgressIndicator.progressIndicatorWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
         progress.setIndeterminate(true);
         progress.setDisplayedWhenStopped(false);
         progress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
         progress.setControlSize(NSCell.NSRegularControlSize);
         progress.setFrameOrigin(new NSPoint(0, 0));
-        view.addSubview(progress);
         progress.startAnimation(this.id());
-        return view;
+        return progress;
     }
 
     @Override
