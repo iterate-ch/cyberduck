@@ -27,7 +27,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.Comparator;
@@ -62,7 +61,6 @@ public class RegionController extends AlertController {
 
     public NSView getAccessoryView(final NSAlert alert) {
         regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
-        regionPopup.setFrameOrigin(new NSPoint(0, 0));
         regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
             regionPopup.addItemWithTitle(region.toString());
             final NSMenuItem item = regionPopup.itemWithTitle(region.toString());
