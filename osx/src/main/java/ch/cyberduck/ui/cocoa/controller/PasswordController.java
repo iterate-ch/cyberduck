@@ -47,7 +47,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 public class PasswordController extends AlertController {
 
     @Outlet
-    private NSView view;
+    private NSView accessoryView;
     @Outlet
     private NSTextField inputField;
     @Outlet
@@ -104,7 +104,7 @@ public class PasswordController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
-        view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
+        accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
         if(options.keychain) {
             keychainCheckbox = NSButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
             keychainCheckbox.setTitle(LocaleFactory.localizedString("Save Password", "Keychain"));
@@ -114,8 +114,8 @@ public class PasswordController extends AlertController {
             keychainCheckbox.setState(credentials.isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
             keychainCheckbox.sizeToFit();
             // Override accessory view with location menu added
-            keychainCheckbox.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue()));
-            view.addSubview(keychainCheckbox);
+            keychainCheckbox.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue()));
+            accessoryView.addSubview(keychainCheckbox);
         }
         if(options.password) {
             inputField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
@@ -124,9 +124,9 @@ public class PasswordController extends AlertController {
             inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
         }
         inputField.cell().setPlaceholderString(options.getPasswordPlaceholder());
-        inputField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-        view.addSubview(inputField);
-        return view;
+        inputField.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue() + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        accessoryView.addSubview(inputField);
+        return accessoryView;
     }
 
     public void setPasswordFieldText(final String input) {

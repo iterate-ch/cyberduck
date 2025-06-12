@@ -47,7 +47,7 @@ public class VaultController extends FolderController {
     private final Callback callback;
 
     @Outlet
-    private NSView view;
+    private NSView accessoryView;
     @Outlet
     private NSSecureTextField passwordField;
     @Outlet
@@ -89,18 +89,18 @@ public class VaultController extends FolderController {
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
-        view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
+        accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
         confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
         confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
         confirmField.setFrameOrigin(new NSPoint(0, 0));
-        view.addSubview(confirmField);
+        accessoryView.addSubview(confirmField);
 
         strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
         if(strengthIndicator.respondsToSelector(Foundation.selector("setLevelIndicatorStyle:"))) {
             strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
         }
-        strengthIndicator.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-        view.addSubview(strengthIndicator);
+        strengthIndicator.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue() + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        accessoryView.addSubview(strengthIndicator);
 
         passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
         passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
@@ -108,14 +108,14 @@ public class VaultController extends FolderController {
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
             passwordField.id());
-        passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-        view.addSubview(passwordField);
+        passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue() + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        accessoryView.addSubview(passwordField);
 
         final NSView accessory = super.getAccessoryView(alert);
         accessory.setFrameSize(this.getFrame(accessory).size);
-        accessory.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-        view.addSubview(accessory);
-        return view;
+        accessory.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue() + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        accessoryView.addSubview(accessory);
+        return accessoryView;
     }
 
     @Override
