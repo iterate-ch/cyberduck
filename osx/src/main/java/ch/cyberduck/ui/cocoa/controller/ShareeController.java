@@ -27,7 +27,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
-import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.Comparator;
@@ -68,7 +67,6 @@ public class ShareeController extends AlertController {
 
     public NSView getAccessoryView(final NSAlert alert) {
         shareePopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
-        shareePopup.setFrameOrigin(new NSPoint(0, 0));
         shareePopup.addItemWithTitle(Share.Sharee.world.getDescription());
         shareePopup.menu().addItem(NSMenuItem.separatorItem());
         sharees.stream().sorted(Comparator.comparing(Share.Sharee::getDescription)).forEach(sharee -> {

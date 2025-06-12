@@ -36,7 +36,6 @@ import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
-import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.EnumSet;
@@ -46,8 +45,6 @@ public class VaultController extends FolderController {
 
     private final Callback callback;
 
-    @Outlet
-    private NSView accessoryView;
     @Outlet
     private NSSecureTextField passwordField;
     @Outlet
@@ -89,18 +86,17 @@ public class VaultController extends FolderController {
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
-        accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
+        final NSView accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
         confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
         confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
-        confirmField.setFrameOrigin(new NSPoint(0, 0));
-        accessoryView.addSubview(confirmField);
+        this.addAccessorySubview(accessoryView, confirmField);
 
         strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
+        strengthIndicator.setTickMarkPosition(1);
         if(strengthIndicator.respondsToSelector(Foundation.selector("setLevelIndicatorStyle:"))) {
             strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
         }
-        strengthIndicator.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue() + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-        accessoryView.addSubview(strengthIndicator);
+        this.addAccessorySubview(accessoryView, strengthIndicator);
 
         passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
         passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
@@ -108,13 +104,9 @@ public class VaultController extends FolderController {
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
             passwordField.id());
-        passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue() + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-        accessoryView.addSubview(passwordField);
+        this.addAccessorySubview(accessoryView, passwordField);
 
-        final NSView accessory = super.getAccessoryView(alert);
-        accessory.setFrameSize(this.getFrame(accessory).size);
-        accessory.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue() + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-        accessoryView.addSubview(accessory);
+        this.addAccessorySubview(accessoryView, super.getAccessoryView(alert));
         return accessoryView;
     }
 
