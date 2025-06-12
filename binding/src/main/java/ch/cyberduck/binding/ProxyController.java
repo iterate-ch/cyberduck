@@ -206,7 +206,7 @@ public class ProxyController extends AbstractController {
         @Override
         public void alert(final NSWindow sheet, final SheetCallback callback) {
             log.debug("Configure window {}", sheet);
-            sheet.orderFront(null);
+            sheet.makeKeyAndOrderFront(null);
         }
     }
 
