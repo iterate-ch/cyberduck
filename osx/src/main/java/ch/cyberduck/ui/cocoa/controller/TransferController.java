@@ -604,7 +604,7 @@ public final class TransferController extends WindowController implements Transf
             public void init() throws BackgroundException {
                 super.init();
                 if(preferences.getBoolean("queue.window.open.transfer.start")) {
-                    window.makeKeyAndOrderFront(null);
+                    display();
                 }
             }
 
@@ -622,7 +622,7 @@ public final class TransferController extends WindowController implements Transf
                 if(transfer.isReset() && transfer.isComplete()) {
                     if(preferences.getBoolean("queue.window.open.transfer.stop")) {
                         if(!(collection.numberOfRunningTransfers() > 0)) {
-                            window.orderOut(null);
+                            close();
                         }
                     }
                 }
