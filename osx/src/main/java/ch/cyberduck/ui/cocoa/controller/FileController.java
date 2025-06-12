@@ -22,7 +22,6 @@ import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
@@ -91,9 +90,4 @@ public abstract class FileController extends AlertController {
     }
 
     public abstract void callback(final int returncode, final Path file);
-
-    @Override
-    protected String help() {
-        return ProviderHelpServiceFactory.get().help();
-    }
 }
