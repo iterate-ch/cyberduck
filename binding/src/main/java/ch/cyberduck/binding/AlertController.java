@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class AlertController extends SheetController implements InputValidator {
@@ -132,5 +133,12 @@ public abstract class AlertController extends SheetController implements InputVa
 
     public boolean isSuppressed() {
         return suppressed;
+    }
+
+    protected void addAccessorySubview(final NSView accessoryView, final NSView view) {
+        view.setFrameSize(this.getFrame(view).size);
+        view.setFrameOrigin(new NSPoint(0, this.getFrame(accessoryView).size.height.doubleValue()
+                + accessoryView.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        accessoryView.addSubview(view);
     }
 }
