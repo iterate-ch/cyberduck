@@ -205,7 +205,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(!force) {
             for(BrowserController controller : browsers) {
                 if(controller.isIdle()) {
-                    controller.window().makeKeyAndOrderFront(null);
+                    controller.display();
                     return controller;
                 }
             }
@@ -220,7 +220,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(StringUtils.isNotBlank(frame)) {
             controller.window().setFrameUsingName(frame);
         }
-        controller.window().makeKeyAndOrderFront(null);
+        controller.display();
         browsers.add(controller);
         return controller;
     }
@@ -514,8 +514,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void preferencesMenuClicked(final ID sender) {
-        PreferencesController controller = PreferencesControllerFactory.instance();
-        controller.window().makeKeyAndOrderFront(null);
+        final PreferencesController c = PreferencesControllerFactory.instance();
+        c.display();
     }
 
     @Action
@@ -561,18 +561,18 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void showTransferQueueClicked(final ID sender) {
-        TransferController c = TransferControllerFactory.get();
-        c.window().makeKeyAndOrderFront(null);
+        final TransferController c = TransferControllerFactory.get();
+        c.display();
     }
 
     @Action
     public void showActivityWindowClicked(final ID sender) {
-        ActivityController c = ActivityControllerFactory.get();
+        final ActivityController c = ActivityControllerFactory.get();
         if(c.isVisible()) {
-            c.window().orderOut(null);
+            c.close();
         }
         else {
-            c.window().orderFront(null);
+            c.display();
         }
     }
 
@@ -893,8 +893,8 @@ public class MainController extends BundleController implements NSApplication.De
         // Load main menu
         this.loadBundle();
         if(preferences.getBoolean("queue.window.open.default")) {
-            TransferController c = TransferControllerFactory.get();
-            c.window().makeKeyAndOrderFront(null);
+            final TransferController c = TransferControllerFactory.get();
+            c.display();
         }
         final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
         final AbstractHostCollection sessions = SessionsCollection.defaultCollection();
@@ -925,7 +925,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                         else {
                             final BrowserController c = newDocument();
-                            c.window().makeKeyAndOrderFront(null);
+                            c.display();
                         }
                     }
                 }
@@ -1279,7 +1279,7 @@ public class MainController extends BundleController implements NSApplication.De
                                 if(browser.isMounted()) {
                                     if(new HostUrlProvider().get(browser.getSession().getHost()).equals(new HostUrlProvider().get(h))) {
                                         // Handle browser window already connected to the same host. #4215
-                                        browser.window().makeKeyAndOrderFront(null);
+                                        browser.display();
                                         if(Path.Type.directory == detector.detect(h.getDefaultPath())) {
                                             browser.setWorkdir(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)));
                                         }

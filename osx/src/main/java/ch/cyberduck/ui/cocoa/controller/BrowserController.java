@@ -1899,7 +1899,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
-        c.window().makeKeyAndOrderFront(null);
+        c.display();
     }
 
     @Action
@@ -1948,7 +1948,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
         final BookmarkController c = BookmarkControllerFactory.create(bookmarks, item);
-        c.window().makeKeyAndOrderFront(null);
+        c.display();
     }
 
     @Action
@@ -2552,8 +2552,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void infoButtonClicked(final ID sender) {
         if(this.getSelectionCount() > 0) {
-            InfoController c = InfoControllerFactory.create(this, this.getSelectedPaths());
-            c.window().makeKeyAndOrderFront(null);
+            final InfoController c = InfoControllerFactory.create(this, this.getSelectedPaths());
+            c.display();
         }
     }
 
