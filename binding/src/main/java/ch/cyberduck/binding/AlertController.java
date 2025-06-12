@@ -40,6 +40,9 @@ public abstract class AlertController extends SheetController implements InputVa
 
     private boolean suppressed = false;
 
+    @Outlet
+    private NSAlert alert;
+
     /**
      * @return Null by default, a sheet with no custom NIB
      */
@@ -56,7 +59,7 @@ public abstract class AlertController extends SheetController implements InputVa
 
     @Override
     public void loadBundle() {
-        final NSAlert alert = this.loadAlert();
+        alert = this.loadAlert();
         log.debug("Display alert {}", alert);
         alert.setShowsHelp(true);
         alert.setDelegate(this.id());
