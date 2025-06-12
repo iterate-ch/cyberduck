@@ -102,6 +102,34 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     /**
+     * Order front window
+     */
+    public void display() {
+        this.display(true);
+    }
+
+    /**
+     * Order front window
+     *
+     * @param key Make key window
+     */
+    public void display(final boolean key) {
+        if(key) {
+            window.makeKeyAndOrderFront(null);
+        }
+        else {
+            window.orderFront(null);
+        }
+    }
+
+    /**
+     * Order out window
+     */
+    public void close() {
+        window.orderOut(null);
+    }
+
+    /**
      * A singleton window is not released when closed and the controller is not invalidated
      *
      * @return Always false
