@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.controller.ShareeController;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-public final class PromptShareeCallback implements Share.ShareeCallback {
+public class PromptShareeCallback implements Share.ShareeCallback {
 
     private final Host host;
     private final ProxyController controller;
