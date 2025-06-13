@@ -53,7 +53,7 @@ public class ContentReader {
 
     public byte[] readBytes(final Path file) throws BackgroundException {
         final Read read = session._getFeature(Read.class);
-        final TransferStatus status = new TransferStatus().withLength(file.attributes().getSize());
+        final TransferStatus status = new TransferStatus().setLength(file.attributes().getSize());
         try (final InputStream in = read.read(file, status, new DisabledConnectionCallback())) {
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
             new StreamCopier(status, status).transfer(in, out);
