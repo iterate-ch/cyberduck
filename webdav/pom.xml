@@ -18,13 +18,13 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>9.2.0-SNAPSHOT</version>
+        <version>10.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>webdav</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <sardine-version>5.14.1</sardine-version>
+        <sardine-version>5.14</sardine-version>
         <milton-api.version>4.0.5.2421</milton-api.version>
     </properties>
 
