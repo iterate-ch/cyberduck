@@ -101,7 +101,6 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.net.URI;
@@ -706,7 +705,7 @@ public class MainController extends BundleController implements NSApplication.De
             log.warn("No bookmark for upload");
             return false;
         }
-        final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
+        final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonPullsDown(false);
         bookmarksPopup.setToolTip(LocaleFactory.localizedString("Bookmarks", "Browser"));
         for(Host b : bookmarks) {
             String title = BookmarkNameProvider.toString(b);

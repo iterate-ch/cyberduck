@@ -27,7 +27,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -35,7 +34,7 @@ import java.util.Set;
 public class RegionController extends AlertController {
 
     @Outlet
-    private final NSPopUpButton regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
+    private final NSPopUpButton regionPopup = NSPopUpButton.buttonPullsDown(false);
 
     private final Set<Location.Name> regions;
     private final Location.Name defaultRegion;

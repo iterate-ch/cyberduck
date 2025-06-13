@@ -139,7 +139,6 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -2727,10 +2726,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         uploadPanel.setAllowsMultipleSelection(true);
         uploadPanel.setPrompt(LocaleFactory.localizedString("Upload", "Transfer"));
         if(uploadPanel.respondsToSelector(Foundation.selector("setShowsHiddenFiles:"))) {
-            uploadPanelHiddenFilesCheckbox = NSButton.buttonWithFrame(new NSRect(0, 0));
-            uploadPanelHiddenFilesCheckbox.setTitle(LocaleFactory.localizedString("Show Hidden Files"));
-            uploadPanelHiddenFilesCheckbox.setTarget(this.id());
-            uploadPanelHiddenFilesCheckbox.setAction(Foundation.selector("uploadPanelSetShowHiddenFiles:"));
+            uploadPanelHiddenFilesCheckbox = NSButton.buttonWithTitleTargetAction(LocaleFactory.localizedString("Show Hidden Files"),
+                    this.id(), Foundation.selector("uploadPanelSetShowHiddenFiles:"));
             uploadPanelHiddenFilesCheckbox.setButtonType(NSButton.NSSwitchButton);
             uploadPanelHiddenFilesCheckbox.setState(NSCell.NSOffState);
             uploadPanelHiddenFilesCheckbox.sizeToFit();
