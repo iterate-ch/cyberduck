@@ -31,7 +31,6 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -46,7 +45,7 @@ public class FolderController extends FileController {
     private final Callback callback;
 
     @Outlet
-    private final NSPopUpButton regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
+    private final NSPopUpButton regionPopup = NSPopUpButton.buttonPullsDown(false);
 
     public FolderController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
         super(workdir, selected, cache);
