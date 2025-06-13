@@ -51,6 +51,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 21
+          cache: maven
       - name: checkout
         uses: actions/checkout@v4
         with:

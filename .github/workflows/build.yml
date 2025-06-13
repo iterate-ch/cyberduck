@@ -22,6 +22,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 21
+          cache: maven
       - name: Disable Testcontainers for Windows and MacOS
         run: echo "args=-P=no-testcontainers" >> "$GITHUB_ENV"
         shell: bash
@@ -34,13 +35,6 @@ jobs:
         if: runner.os == 'windows'
         with:
           msbuild-architecture: x64
-      - name: Cache local Maven repository
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
       - name: Build with Maven
         run: mvn --no-transfer-progress verify -DskipITs -DskipSign ${{ env.args }} --batch-mode -Drevision=0
       - name: Publish Test Report
