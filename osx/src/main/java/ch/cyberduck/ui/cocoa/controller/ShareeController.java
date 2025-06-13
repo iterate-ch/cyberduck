@@ -27,15 +27,13 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
-import org.rococoa.cocoa.foundation.NSRect;
-
 import java.util.Comparator;
 import java.util.Set;
 
 public class ShareeController extends AlertController {
 
     @Outlet
-    private final NSPopUpButton shareePopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
+    private final NSPopUpButton shareePopup = NSPopUpButton.buttonPullsDown(false);
 
     private final Host host;
     private final Share.Type type;

@@ -46,9 +46,9 @@ public class VaultController extends FolderController {
     private final Callback callback;
 
     @Outlet
-    private final NSSecureTextField passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(0, 22));
+    private final NSSecureTextField passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
     @Outlet
-    private final NSSecureTextField confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(0, 22));
+    private final NSSecureTextField confirmField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
     @Outlet
     private final NSLevelIndicator strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(0, 18));
 
