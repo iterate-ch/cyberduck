@@ -1,5 +1,6 @@
 name: Publish Snapshot Artifacts
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
