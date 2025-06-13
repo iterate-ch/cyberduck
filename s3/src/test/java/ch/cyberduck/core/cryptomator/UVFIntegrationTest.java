@@ -121,7 +121,7 @@ public class UVFIntegrationTest {
                 try(final InputStream in = UVFIntegrationTest.class.getResourceAsStream("/uvf/first_vault" + fi)) {
                     size = in.read(content);
                 }
-                final TransferStatus transferStatus = new TransferStatus().withLength(size);
+                final TransferStatus transferStatus = new TransferStatus().setLength(size);
                 transferStatus.setChecksum(storage.getFeature(Write.class).checksum(file, transferStatus).compute(new ByteArrayInputStream(content), transferStatus));
                 storage.getFeature(Bulk.class).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), transferStatus), new DisabledConnectionCallback());
                 final StatusOutputStream<?> out = storage.getFeature(Write.class).write(file, transferStatus, new DisabledConnectionCallback());
@@ -260,7 +260,7 @@ public class UVFIntegrationTest {
 
     private static byte @NotNull [] writeRandomFile(final Session<?> session, final Path file, int size) throws BackgroundException, IOException {
         final byte[] content = RandomUtils.nextBytes(size);
-        final TransferStatus transferStatus = new TransferStatus().withLength(content.length);
+        final TransferStatus transferStatus = new TransferStatus().setLength(content.length);
         transferStatus.setChecksum(session.getFeature(Write.class).checksum(file, transferStatus).compute(new ByteArrayInputStream(content), transferStatus));
         session.getFeature(Bulk.class).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), transferStatus), new DisabledConnectionCallback());
         final StatusOutputStream<?> out = session.getFeature(Write.class).write(file, transferStatus, new DisabledConnectionCallback());
