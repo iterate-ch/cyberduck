@@ -46,14 +46,14 @@ public class VaultController extends FolderController {
     private final Callback callback;
 
     @Outlet
-    private NSSecureTextField passwordField;
+    private final NSSecureTextField passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(0, 22));
     @Outlet
-    private NSSecureTextField confirmField;
+    private final NSSecureTextField confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(0, 22));
     @Outlet
-    private NSLevelIndicator strengthIndicator;
+    private final NSLevelIndicator strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(0, 18));
 
     private final NSNotificationCenter notificationCenter
-        = NSNotificationCenter.defaultCenter();
+            = NSNotificationCenter.defaultCenter();
 
     private final PasswordStrengthValidator passwordStrengthValidator = new PasswordStrengthValidator();
 
@@ -86,24 +86,21 @@ public class VaultController extends FolderController {
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
-        final NSView accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-        confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        final NSView accessoryView = NSView.create();
         confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
         this.addAccessorySubview(accessoryView, confirmField);
 
-        strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
         strengthIndicator.setTickMarkPosition(1);
         if(strengthIndicator.respondsToSelector(Foundation.selector("setLevelIndicatorStyle:"))) {
             strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
         }
         this.addAccessorySubview(accessoryView, strengthIndicator);
 
-        passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
         passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
-            passwordField.id());
+                passwordField.id());
         this.addAccessorySubview(accessoryView, passwordField);
 
         this.addAccessorySubview(accessoryView, super.getAccessoryView(alert));

@@ -35,7 +35,7 @@ import java.util.Set;
 public class ShareeController extends AlertController {
 
     @Outlet
-    private NSPopUpButton shareePopup;
+    private final NSPopUpButton shareePopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
 
     private final Host host;
     private final Share.Type type;
@@ -66,7 +66,6 @@ public class ShareeController extends AlertController {
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
-        shareePopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
         shareePopup.addItemWithTitle(Share.Sharee.world.getDescription());
         shareePopup.menu().addItem(NSMenuItem.separatorItem());
         sharees.stream().sorted(Comparator.comparing(Share.Sharee::getDescription)).forEach(sharee -> {

@@ -27,7 +27,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.EnumSet;
 
@@ -38,7 +37,7 @@ public abstract class FileController extends AlertController {
     private final Cache<Path> cache;
 
     @Outlet
-    protected NSTextField inputField;
+    protected NSTextField inputField = NSTextField.textFieldWithString(StringUtils.EMPTY);
 
     public FileController(final Path workdir, final Path selected, final Cache<Path> cache) {
         this.workdir = workdir;
@@ -48,7 +47,6 @@ public abstract class FileController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
-        inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
         inputField.cell().setWraps(false);
         inputField.cell().setPlaceholderString(alert.informativeText());
         return inputField;
