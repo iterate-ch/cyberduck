@@ -1396,14 +1396,13 @@ public abstract class NSWindow extends NSResponder {
      * Conversion Error : NSSize
      */
     public abstract void setContentMaxSize(NSSize size);
+
     /**
-     * <i>native declaration : :487</i><br>
-     * Conversion Error : NSSize
+     * Sets the size of the window’s content view to a given size, which is expressed in the window’s base coordinate system.
+     * @param size The new size of the window’s content view in the window’s base coordinate system.
      */
-    /**
-     * <i>native declaration : :488</i><br>
-     * Conversion Error : NSSize
-     */
+    public abstract void setContentSize(NSSize size);
+
     /**
      * Original signature : <code>NSEvent* nextEventMatchingMask(NSUInteger)</code><br>
      * <i>native declaration : :490</i>
@@ -1499,6 +1498,14 @@ public abstract class NSWindow extends NSResponder {
      * <i>native declaration : :510</i>
      */
     public abstract NSWindow attachedSheet();
+
+    /**
+     * This method ends the modal session with the specified return code.
+     *
+     * @param sheetWindow The window object that represents the sheet to dismiss.
+     * @param returnCode  The return code to send to the completion handler.
+     */
+    public abstract void endSheet_returnCode(NSWindow sheetWindow, NSInteger returnCode);
 
     /**
      * Original signature : <code>NSButton* standardWindowButton(NSWindowButton)</code><br>

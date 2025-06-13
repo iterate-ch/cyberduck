@@ -20,6 +20,7 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 /**
  * A means to display additional content related to existing content on the screen.
@@ -160,10 +161,37 @@ public abstract class NSPopover extends NSResponder {
      */
     public abstract void setDelegate(ID delegate);
 
+    public abstract NSSize contentSize();
+
+    /**
+     * Changes to the content size of the popover will cause the popover to animate while it is shown if the animates property is true.
+     *
+     * @param size The content size of the popover.
+     */
+    public abstract void setContentSize(NSSize size);
+
     /**
      * A set of optional methods that a popover delegate can implement to provide additional or custom functionality.
      */
     public interface NSPopoverDelegate {
+        /**
+         * Detaches the popover creating a window containing the content.
+         * <p>
+         * You should not remove the popover’s content view as part of your implementation of this method.
+         * <p>
+         * The popover and the detachable window may be shown at the same time and therefore cannot share a content view or content view controller.
+         * <p>
+         * If the popover and the detachable window should have the same content, you should define the content in a separate nib file and use a view controller to instantiate separate copies of the content for the popover and the detachable window.
+         * <p>
+         * The popover will animate to appear as though it morphs into the detachable window (unless the popover’s animates property is set to false). The exact animation used is not guaranteed.
+         * <p>
+         * If there is no delegate, the delegate does not implement this method, or the delegate returns nil, the popup will not be displayed detached.
+         *
+         * @param popover The popover.
+         * @return Returns a window instance to which the popover should be detached.
+         */
+        NSWindow detachableWindowForPopover(NSPopover popover);
+
         boolean popoverShouldClose(NSPopover popover);
 
         boolean popoverShouldDetach(NSPopover popover);
@@ -177,5 +205,24 @@ public abstract class NSPopover extends NSResponder {
         void popoverWillClose(NSNotification notification);
 
         void popoverDidClose(NSNotification notification);
+    }
+
+    /**
+     * The userInfo key containing the reason for the NSPopoverWillCloseNotification.
+     */
+    public static final String NSPopoverCloseReasonKey = "NSPopoverCloseReasonKey";
+
+    /**
+     * Values that specify the reason for the NSPopoverWillCloseNotification notification.
+     */
+    public static class NSPopoverCloseReasonValue {
+        /**
+         * Specifies that the popover has been closed because it is being detached to a window.
+         */
+        public static final String NSPopoverCloseReasonDetachToWindow = "NSPopoverCloseReasonDetachToWindow";
+        /**
+         * Specifies that the popover has been closed in a standard way.
+         */
+        public static final String NSPopoverCloseReasonStandard = "NSPopoverCloseReasonStandard";
     }
 }
