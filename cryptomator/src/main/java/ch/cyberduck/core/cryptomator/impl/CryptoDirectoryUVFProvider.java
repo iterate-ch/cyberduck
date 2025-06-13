@@ -90,8 +90,8 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
         if(new SimplePathPredicate(directory).test(home) || directory.isChild(home)) {
             final PathAttributes attributes = new PathAttributes(directory.attributes());
             // The root of the vault is a different target directory and file ids always correspond to the metadata file
-            attributes.withVersionId(null);
-            attributes.withFileId(null);
+            attributes.setVersionId(null);
+            attributes.setFileId(null);
             // Remember random directory id for use in vault
             final byte[] id = this.toDirectoryId(session, directory, directoryId);
             log.debug("Use directory ID '{}' for folder {}", id, directory);

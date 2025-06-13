@@ -802,7 +802,7 @@ public class PathAttributes extends Attributes implements Serializable {
         }
 
         @Override
-        public PathAttributes setDirectoryId(final String directoryId) {
+        public PathAttributes setDirectoryId(final byte[] directoryId) {
             return this;
         }
 
