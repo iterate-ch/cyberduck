@@ -57,7 +57,7 @@ public class ProgressAlertController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
-        final NSProgressIndicator progress = NSProgressIndicator.progressIndicatorWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
+        final NSProgressIndicator progress = NSProgressIndicator.progressIndicatorWithFrame(new NSRect(0, 18));
         progress.setIndeterminate(true);
         progress.setDisplayedWhenStopped(false);
         progress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);

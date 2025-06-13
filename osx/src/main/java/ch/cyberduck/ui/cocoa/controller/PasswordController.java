@@ -41,12 +41,11 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
-import org.rococoa.cocoa.foundation.NSRect;
 
 public class PasswordController extends AlertController {
 
     @Outlet
-    private NSTextField inputField;
+    private final NSTextField inputField;
 
     private final Host bookmark;
     private final Credentials credentials;
@@ -60,6 +59,12 @@ public class PasswordController extends AlertController {
         this.title = title;
         this.reason = reason;
         this.options = options;
+        if(options.password) {
+            this.inputField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+        }
+        else {
+            this.inputField = NSTextField.textFieldWithString(StringUtils.EMPTY);
+        }
     }
 
     @Override
@@ -101,13 +106,7 @@ public class PasswordController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
-        final NSView accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-        if(options.password) {
-            inputField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
-        }
-        else {
-            inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
-        }
+        final NSView accessoryView = NSView.create();
         inputField.cell().setPlaceholderString(options.getPasswordPlaceholder());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),

@@ -35,7 +35,7 @@ import java.util.Set;
 public class RegionController extends AlertController {
 
     @Outlet
-    private NSPopUpButton regionPopup;
+    private final NSPopUpButton regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
 
     private final Set<Location.Name> regions;
     private final Location.Name defaultRegion;
@@ -60,7 +60,6 @@ public class RegionController extends AlertController {
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
-        regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
         regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
             regionPopup.addItemWithTitle(region.toString());
             final NSMenuItem item = regionPopup.itemWithTitle(region.toString());

@@ -19,6 +19,7 @@ package ch.cyberduck.binding.application;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 
 import org.rococoa.ID;
@@ -30,12 +31,72 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class NSTextField extends NSControl {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTextField", _Class.class);
 
-    public static NSTextField textfieldWithFrame(NSRect frameRect) {
+    public static NSTextField textfieldWithFrame(final NSRect frameRect) {
         return CLASS.alloc().initWithFrame(frameRect);
+    }
+
+    /**
+     * Initializes a single-line editable text field for user input using the system default font and standard visual appearance.
+     *
+     * @param stringValue A string to use as the initial content of the editable text field.
+     * @return A single-line editable text field that displays the specified string.
+     */
+    public static NSTextField textFieldWithString(final String stringValue) {
+        return CLASS.textFieldWithString(stringValue);
+    }
+
+    /**
+     * Initializes a text field for use as a static label that uses the system default font, doesn’t wrap, and doesn’t have selectable text.
+     *
+     * @param stringValue A string to use as the content of the label.
+     * @return A text field that displays the specified string as a static label.
+     */
+    public static NSTextField labelWithString(final String stringValue) {
+        return CLASS.labelWithString(stringValue);
+    }
+
+    /**
+     * Initializes a text field for use as a multiline static label with selectable text that uses the system default font.
+     *
+     * @param stringValue A string to use as the initial content of the editable text field.
+     * @return A multiline text field that displays the specified string.
+     */
+    public static NSTextField wrappingLabelWithString(final String stringValue) {
+        return CLASS.wrappingLabelWithString(stringValue);
+    }
+
+    /**
+     * Creates a text field for use as a static label that displays styled text, doesn’t wrap, and doesn’t have selectable text.
+     *
+     * @param attributedStringValue An attributed string to use as the content of the label.
+     * @return A text field that displays the specified attributed string as a static label.
+     */
+    public static NSTextField labelWithAttributedString(NSAttributedString attributedStringValue) {
+        return CLASS.labelWithAttributedString(attributedStringValue);
     }
 
     public interface _Class extends ObjCClass {
         NSTextField alloc();
+
+        /**
+         * @since macOS 10.12+
+         */
+        NSTextField textFieldWithString(String stringValue);
+
+        /**
+         * @since macOS 10.12+
+         */
+        NSTextField labelWithString(String stringValue);
+
+        /**
+         * @since macOS 10.12+
+         */
+        NSTextField wrappingLabelWithString(String stringValue);
+
+        /**
+         * @since macOS 10.12+
+         */
+        NSTextField labelWithAttributedString(NSAttributedString attributedStringValue);
     }
 
     @Override
@@ -216,5 +277,5 @@ public abstract class NSTextField extends NSControl {
      */
     public abstract void setImportsGraphics(boolean flag);
 
-    public abstract NSTextFieldCell cell();   
+    public abstract NSTextFieldCell cell();
 }
