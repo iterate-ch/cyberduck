@@ -21,8 +21,6 @@ import ch.cyberduck.core.worker.DownloadShareWorker;
 import ch.cyberduck.ui.pasteboard.PasteboardService;
 import ch.cyberduck.ui.pasteboard.PasteboardServiceFactory;
 
-import org.rococoa.cocoa.foundation.NSRect;
-
 import java.text.MessageFormat;
 
 public final class AlertDownloadShareWorker<Options> extends DownloadShareWorker<Options> {
@@ -49,7 +47,7 @@ public final class AlertDownloadShareWorker<Options> extends DownloadShareWorker
                     if(DescriptiveUrl.EMPTY == url) {
                         return null;
                     }
-                    final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+                    final NSTextField field = NSTextField.textFieldWithString(url.getUrl());
                     field.setEditable(false);
                     field.setSelectable(true);
                     field.cell().setWraps(false);

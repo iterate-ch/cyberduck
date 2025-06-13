@@ -46,7 +46,7 @@ public class FolderController extends FileController {
     private final Callback callback;
 
     @Outlet
-    private NSPopUpButton regionPopup;
+    private final NSPopUpButton regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
 
     public FolderController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
         super(workdir, selected, cache);
@@ -72,8 +72,7 @@ public class FolderController extends FileController {
 
     public NSView getAccessoryView(final NSAlert alert) {
         if(this.hasLocation()) {
-            final NSView accessoryView = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-            regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
+            final NSView accessoryView = NSView.create();
             regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
                 regionPopup.addItemWithTitle(region.toString());
                 final NSMenuItem item = regionPopup.itemWithTitle(region.toString());
