@@ -49,7 +49,7 @@ import org.rococoa.Rococoa;
 
 import java.util.concurrent.CountDownLatch;
 
-public final class PromptLoginCallback extends PromptPasswordCallback implements LoginCallback {
+public class PromptLoginCallback extends PromptPasswordCallback implements LoginCallback {
     private static final Logger log = LogManager.getLogger(PromptLoginCallback.class);
 
     private final Preferences preferences
