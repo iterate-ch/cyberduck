@@ -15,15 +15,15 @@ package ch.cyberduck.ui.cocoa.callback;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.DisabledSheetCallback;
-import ch.cyberduck.binding.SheetInvoker;
+import ch.cyberduck.binding.AlertRunner;
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.CertificateIdentityCallback;
-import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.KeychainCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -35,7 +35,6 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.rococoa.Foundation;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -46,10 +45,20 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PromptCertificateIdentityCallback implements CertificateIdentityCallback {
     private static final Logger log = LogManager.getLogger(PromptCertificateIdentityCallback.class);
 
-    private final Controller controller;
+    private final ProxyController controller;
+    /**
+     * Parent window or null
+     */
+    private final NSWindow window;
 
-    public PromptCertificateIdentityCallback(final Controller controller) {
+    public PromptCertificateIdentityCallback(final ProxyController controller) {
         this.controller = controller;
+        this.window = null;
+    }
+
+    public PromptCertificateIdentityCallback(final WindowController controller) {
+        this.controller = controller;
+        this.window = controller.window();
     }
 
     @Override
@@ -69,10 +78,22 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
         panel.setShowsHelp(false);
         panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
         panel.setInformativeText(MessageFormat.format(LocaleFactory.localizedString(
-            "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
-            hostname));
+                "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."), hostname));
         final NSArray identities = KeychainCertificateStore.toDEREncodedCertificates(certificates);
-        final int option = this.prompt(panel, identities);
+        final int option = controller.alert(new SheetController.NoBundleSheetController(panel), new AlertRunner() {
+            @Override
+            public void alert(final NSWindow sheet, final SheetCallback callback) {
+                if(null == window) {
+                    callback.callback(panel.runModalForIdentities_message(identities, null).intValue());
+                }
+                else {
+                    panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_identities_message(
+                            window, new WindowController.SheetDidCloseReturnCodeDelegate(callback).id(),
+                            WindowController.SheetDidCloseReturnCodeDelegate.selector, null, identities, null
+                    );
+                }
+            }
+        });
         switch(option) {
             case SheetCallback.DEFAULT_OPTION:
                 // Use the identity method to obtain the identity chosen by the user.
@@ -90,17 +111,5 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
             default:
                 throw new ConnectionCanceledException();
         }
-    }
-
-    protected int prompt(final SFChooseIdentityPanel panel, final NSArray identities) {
-        return new SheetInvoker(new DisabledSheetCallback(), ((WindowController) controller).window(), panel) {
-            @Override
-            protected void beginSheet(final NSWindow sheet) {
-                panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_identities_message(
-                    ((WindowController) controller).window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null,
-                    identities, null
-                );
-            }
-        }.beginSheet();
     }
 }

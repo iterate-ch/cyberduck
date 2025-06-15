@@ -16,7 +16,7 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.LimitedListProgressListener;
@@ -26,11 +26,11 @@ import ch.cyberduck.ui.cocoa.controller.LimitedListAlertController;
 
 public class PromptLimitedListProgressListener extends LimitedListProgressListener {
 
-    private final WindowController controller;
+    private final ProxyController controller;
 
     private boolean suppressed;
 
-    public PromptLimitedListProgressListener(final WindowController controller) {
+    public PromptLimitedListProgressListener(final ProxyController controller) {
         super(controller);
         this.controller = controller;
     }
@@ -45,7 +45,7 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
         }
         catch(ListCanceledException e) {
             final AlertController alert = new LimitedListAlertController(e);
-            final int returncode = alert.beginSheet(controller);
+            final int returncode = controller.alert(alert);
             if(alert.isSuppressed()) {
                 this.disable();
             }

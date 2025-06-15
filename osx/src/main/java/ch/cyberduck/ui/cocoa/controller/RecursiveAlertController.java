@@ -32,7 +32,7 @@ public class RecursiveAlertController<T> extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Apply changes recursively"));
@@ -42,6 +42,6 @@ public class RecursiveAlertController<T> extends AlertController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        super.loadBundle(alert);
+        return alert;
     }
 }
