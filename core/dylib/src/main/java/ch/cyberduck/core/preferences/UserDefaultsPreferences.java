@@ -193,7 +193,6 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             }
             this.setDefault("application.receipt.path", String.format("%s/Contents/_MASReceipt", bundle.bundlePath()));
         }
-        this.setDefault("application.icon.filename", "cyberduck-application-rect.icns");
         this.setDefault("oauth.handler.scheme",
                 String.format("x-%s-action", StringUtils.deleteWhitespace(StringUtils.lowerCase(this.getProperty("application.name")))));
 
