@@ -184,7 +184,7 @@ public class ProxyController extends AbstractController {
                 this.invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
-                        runner.closed(sheet.window(), SheetCallback.CANCEL_OPTION);
+                        sheet.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
                     }
                 }, true);
             }
@@ -227,7 +227,7 @@ public class ProxyController extends AbstractController {
     /**
      * Floating window in modal run loop
      */
-    public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner {
+    public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner implements AlertRunner.CloseHandler {
         @Override
         public void closed(final NSWindow sheet, final int returncode) {
             // Close window

@@ -316,7 +316,7 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * Display as sheet attached to window of parent controller
      */
-    public static final class SheetAlertRunner implements AlertRunner {
+    public static final class SheetAlertRunner implements AlertRunner, AlertRunner.CloseHandler {
         private final NSWindow window;
         private final SheetController controller;
         private final AtomicReference<Proxy> reference = new AtomicReference<>();
