@@ -562,8 +562,11 @@ public abstract class NSApplication extends NSObject {
     public abstract NSMenu mainMenu();
 
     /**
-     * Original signature : <code>void setApplicationIconImage(NSImage*)</code><br>
-     * <i>native declaration : :179</i>
+     * Assign an image to this property when you want to temporarily change the app icon in the dock app tile. The image
+     * you provide is scaled as needed so that it fits in the tile. To restore your app’s original icon, set this
+     * property to nil.
+     *
+     * @param image The image used for the app’s icon.
      */
     public abstract void setApplicationIconImage(NSImage image);
 
