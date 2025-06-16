@@ -26,9 +26,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "duck", "duck", "{457F1D6D-8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cyberduck", "Cyberduck", "{7D32EE61-B6F0-4978-B500-45172B181283}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Cyberduck.Bootstrapper", "windows\src\main\wix\Bootstrapper\Cyberduck.Bootstrapper.wixproj", "{00858CE5-437F-46BE-8A2E-519B552DBF7D}"
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Cyberduck.Bootstrapper", "windows\src\main\wix\Bootstrapper\Cyberduck.Bootstrapper.wixproj", "{00858CE5-437F-46BE-8A2E-519B552DBF7D}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Cyberduck.Bundle", "windows\src\main\wix\Bundle\Cyberduck.Bundle.wixproj", "{65AB4CE3-5AF4-411A-928C-7FFD250C6D85}"
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Cyberduck.Bundle", "windows\src\main\wix\Bundle\Cyberduck.Bundle.wixproj", "{65AB4CE3-5AF4-411A-928C-7FFD250C6D85}"
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "duck.bootstrapper", "cli\src\main\wix\Bootstrapper\duck.bootstrapper.wixproj", "{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}"
 EndProject
@@ -100,13 +100,9 @@ Global
 		{65AB4CE3-5AF4-411A-928C-7FFD250C6D85}.Release|x64.ActiveCfg = Release|x64
 		{65AB4CE3-5AF4-411A-928C-7FFD250C6D85}.Release|x64.Build.0 = Release|x64
 		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Debug|x64.ActiveCfg = Debug|x64
-		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Debug|x64.Build.0 = Debug|x64
 		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Release|x64.ActiveCfg = Release|x64
-		{EF87DE0E-BC36-4D3C-8852-C8AD11D01F04}.Release|x64.Build.0 = Release|x64
 		{F6975079-F730-4A31-9909-DE536E524764}.Debug|x64.ActiveCfg = Debug|x64
-		{F6975079-F730-4A31-9909-DE536E524764}.Debug|x64.Build.0 = Debug|x64
 		{F6975079-F730-4A31-9909-DE536E524764}.Release|x64.ActiveCfg = Release|x64
-		{F6975079-F730-4A31-9909-DE536E524764}.Release|x64.Build.0 = Release|x64
 		{D1286C4A-9D6A-4904-B9AD-CB7688483EDB}.Debug|x64.ActiveCfg = Debug|x64
 		{D1286C4A-9D6A-4904-B9AD-CB7688483EDB}.Debug|x64.Build.0 = Debug|x64
 		{D1286C4A-9D6A-4904-B9AD-CB7688483EDB}.Release|x64.ActiveCfg = Release|x64
