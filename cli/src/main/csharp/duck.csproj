@@ -15,6 +15,7 @@
   <ItemGroup>
     <Content Include="$(CyberduckDir)Acknowledgments.rtf" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(TargetBuildDir)lib\$(Platform)\jansi.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(TargetBuildDir)lib\$(Platform)\jnidispatch.dll" CopyToOutputDirectory="PreserveNewest" />
 
     <Content Include="$(CyberduckDir)bookmarks/*.duck">
