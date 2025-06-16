@@ -40,5 +40,3 @@ jobs:
       - name: Publish Test Report
         if: ${{ always() }}
         uses: scacap/action-surefire-report@v1.9.0
-      - name: Submit Dependency Snapshot
-        uses: advanced-security/maven-dependency-submission-action@v5
