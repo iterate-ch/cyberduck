@@ -202,7 +202,7 @@ public class ProxyController extends AbstractController {
         return runner;
     }
 
-    public static class RegularWindowAlertRunner implements AlertRunner {
+    public static class RegularWindowAlertRunner implements AlertRunner, AlertRunner.CloseHandler {
         @Override
         public void alert(final NSWindow sheet, final SheetCallback callback) {
             log.debug("Configure window {}", sheet);
@@ -227,7 +227,7 @@ public class ProxyController extends AbstractController {
     /**
      * Floating window in modal run loop
      */
-    public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner implements AlertRunner.CloseHandler {
+    public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner {
         @Override
         public void closed(final NSWindow sheet, final int returncode) {
             // Close window
