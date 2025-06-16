@@ -625,7 +625,7 @@
                             </goals>
                             <configuration>
                                 <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                                <excludeClassifiers>net472,net8.0,net8.0-x64,net8.0-arm64,aarch64,x86_64</excludeClassifiers>
+                                <excludeClassifiers>net472,net8.0,net8.0-x64,net8.0-arm64,aarch64,arm64,x86_64</excludeClassifiers>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
@@ -653,7 +653,7 @@
                             </goals>
                             <configuration>
                                 <outputDirectory>${project.build.directory}/lib/arm64</outputDirectory>
-                                <includeClassifiers>aarch64</includeClassifiers>
+                                <includeClassifiers>aarch64,arm64</includeClassifiers>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
