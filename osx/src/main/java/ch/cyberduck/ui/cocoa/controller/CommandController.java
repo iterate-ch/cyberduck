@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
-import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
@@ -34,6 +33,7 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -68,12 +68,9 @@ public class CommandController extends SheetController implements TranscriptList
     @Outlet
     private NSImageView image;
 
-    private final WindowController parent;
-
     private final SessionPool session;
 
-    public CommandController(final WindowController parent, final SessionPool session) {
-        this.parent = parent;
+    public CommandController(final SessionPool session) {
         this.session = session;
     }
 
@@ -128,7 +125,7 @@ public class CommandController extends SheetController implements TranscriptList
         if(StringUtils.isNotBlank(command)) {
             progress.startAnimation(null);
             sender.setEnabled(false);
-            parent.background(new RegistryBackgroundAction<Void>(this, session) {
+            this.background(new RegistryBackgroundAction<Void>(this, session) {
                 @Override
                 public boolean alert(final BackgroundException e) {
                     return false;
@@ -137,7 +134,7 @@ public class CommandController extends SheetController implements TranscriptList
                 @Override
                 public Void run(final Session<?> session) throws BackgroundException {
                     final Command feature = session.getFeature(Command.class);
-                    feature.send(command, parent, CommandController.this);
+                    feature.send(command, new DisabledProgressListener(), CommandController.this);
                     return null;
                 }
 
@@ -172,10 +169,5 @@ public class CommandController extends SheetController implements TranscriptList
     public void invalidate() {
         responseField.layoutManager().setDelegate(null);
         super.invalidate();
-    }
-
-    @Override
-    public void callback(final int returncode) {
-        //
     }
 }

@@ -16,7 +16,7 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.worker.Worker;
@@ -24,13 +24,12 @@ import ch.cyberduck.ui.cocoa.controller.RecursiveAlertController;
 
 public class PromptRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
 
-    private final WindowController controller;
+    private final ProxyController controller;
 
     private boolean suppressed;
-
     private boolean option;
 
-    public PromptRecursiveCallback(final WindowController controller) {
+    public PromptRecursiveCallback(final ProxyController controller) {
         this.controller = controller;
     }
 
@@ -40,7 +39,7 @@ public class PromptRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
             return option;
         }
         final AlertController alert = new RecursiveAlertController<T>(value, directory);
-        option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
+        option = controller.alert(alert) == SheetCallback.DEFAULT_OPTION;
         if(alert.isSuppressed()) {
             suppressed = true;
         }

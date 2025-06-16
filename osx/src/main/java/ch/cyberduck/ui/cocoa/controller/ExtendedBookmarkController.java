@@ -40,7 +40,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
@@ -321,11 +320,5 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     @Action
     public void webUrlButtonClicked(final NSButton sender) {
         BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
-    }
-
-    @Override
-    @Action
-    public void helpButtonClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
     }
 }

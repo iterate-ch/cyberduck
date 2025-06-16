@@ -15,14 +15,14 @@ package ch.cyberduck.ui.cocoa.callback;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.DisabledSheetCallback;
-import ch.cyberduck.binding.SheetInvoker;
+import ch.cyberduck.binding.AlertRunner;
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.core.CertificateTrustCallback;
-import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.KeychainCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -34,7 +34,6 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.rococoa.Foundation;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -45,10 +44,20 @@ import com.sun.jna.ptr.PointerByReference;
 public class PromptCertificateTrustCallback implements CertificateTrustCallback {
     private static final Logger log = LogManager.getLogger(PromptCertificateTrustCallback.class);
 
-    private final Controller controller;
+    private final ProxyController controller;
+    /**
+     * Parent window or null
+     */
+    private final NSWindow window;
 
-    public PromptCertificateTrustCallback(final Controller controller) {
+    public PromptCertificateTrustCallback(final ProxyController controller) {
         this.controller = controller;
+        this.window = null;
+    }
+
+    public PromptCertificateTrustCallback(final WindowController controller) {
+        this.controller = controller;
+        this.window = controller.window();
     }
 
     @Override
@@ -70,7 +79,19 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
         panel.setPolicies(policyRef);
         panel.setShowsHelp(true);
         log.debug("Display trust panel for controller {}", controller);
-        final int option = this.prompt(panel, trustRef);
+        final int option = controller.alert(new SheetController.NoBundleSheetController(panel), new AlertRunner() {
+            @Override
+            public void alert(final NSWindow sheet, final SheetCallback callback) {
+                if(null == window) {
+                    callback.callback(panel.runModalForTrust_message(trustRef, null).intValue());
+                }
+                else {
+                    panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message(
+                            window, new WindowController.SheetDidCloseReturnCodeDelegate(callback).id(),
+                            WindowController.SheetDidCloseReturnCodeDelegate.selector, null, trustRef, null);
+                }
+            }
+        });
         FoundationKitFunctions.library.CFRelease(trustRef);
         FoundationKitFunctions.library.CFRelease(policyRef);
         switch(option) {
@@ -79,16 +100,5 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
             default:
                 throw new ConnectionCanceledException();
         }
-    }
-
-    protected int prompt(final SFCertificateTrustPanel panel, final SecTrustRef trustRef) {
-        return new SheetInvoker(new DisabledSheetCallback(), (WindowController) controller, panel) {
-            @Override
-            protected void beginSheet(final NSWindow sheet) {
-                panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message(
-                    ((WindowController) controller).window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
-                    null, trustRef, null);
-            }
-        }.beginSheet();
     }
 }

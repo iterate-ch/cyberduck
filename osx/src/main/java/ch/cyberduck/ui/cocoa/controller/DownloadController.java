@@ -16,6 +16,7 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
@@ -28,7 +29,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -38,15 +38,14 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.EnumSet;
 
 public class DownloadController extends AlertController {
     private static final Logger log = LogManager.getLogger(DownloadController.class);
 
-    protected final NSTextField urlField
-        = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+    @Outlet
+    protected final NSTextField urlField = NSTextField.textFieldWithString(StringUtils.EMPTY);
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
     private final String url;
@@ -60,14 +59,14 @@ public class DownloadController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("New Download", "Download"));
         alert.setInformativeText(LocaleFactory.localizedString("URL", "Download"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Download", "Download"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Download"));
-        this.loadBundle(alert);
+        return alert;
     }
 
     @Override
@@ -115,10 +114,5 @@ public class DownloadController extends AlertController {
             return false;
         }
         return StringUtils.isNotBlank(host.getDefaultPath());
-    }
-
-    @Override
-    protected String help() {
-        return ProviderHelpServiceFactory.get().help();
     }
 }

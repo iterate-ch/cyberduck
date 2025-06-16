@@ -36,6 +36,7 @@ public final class AlertSheetReturnCodeMapper {
     }
 
     public int getOption(final int option) {
+        log.debug("Map selected tag {}", option);
         switch(option) {
             case NSAlert.NSAlertFirstButtonReturn:
             case NSPanel.NSOKButton:
