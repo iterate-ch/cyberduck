@@ -228,17 +228,8 @@
         </dependency>
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi</artifactId>
+            <artifactId>libjansi</artifactId>
             <version>${jansi.version}</version>
-            <classifier>x86_64</classifier>
-            <type>jnilib</type>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi</artifactId>
-            <version>${jansi.version}</version>
-            <classifier>arm64</classifier>
             <type>jnilib</type>
             <scope>runtime</scope>
         </dependency>
