@@ -19,6 +19,7 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSThread;
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -197,16 +198,45 @@ public class ProxyController extends AbstractController {
     }
 
     protected AlertRunner alertFor(final SheetController sheet) {
-        final ModalWindowAlertRunner runner = new ModalWindowAlertRunner();
+        final ModalWindowAlertRunner runner = new ModalWindowAlertRunner(sheet);
         sheet.addHandler(runner);
         return runner;
     }
 
     public static class RegularWindowAlertRunner implements AlertRunner, AlertRunner.CloseHandler {
+        private final WindowController controller;
+        private final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
+
+        public RegularWindowAlertRunner(final WindowController controller) {
+            this.controller = controller;
+        }
+
         @Override
         public void alert(final NSWindow sheet, final SheetCallback callback) {
+            controller.addListener(new SheetCallbackWindowListener(callback, option));
             log.debug("Configure window {}", sheet);
             sheet.makeKeyAndOrderFront(null);
+        }
+
+        @Override
+        public void closed(final NSWindow sheet, final int returncode) {
+            option.set(returncode);
+            sheet.performClose(null);
+        }
+
+        private static final class SheetCallbackWindowListener implements WindowListener {
+            private final SheetCallback callback;
+            private final AtomicInteger returncode;
+
+            public SheetCallbackWindowListener(final SheetCallback callback, final AtomicInteger returncode) {
+                this.callback = callback;
+                this.returncode = returncode;
+            }
+
+            @Override
+            public void windowWillClose() {
+                callback.callback(returncode.get());
+            }
         }
     }
 
@@ -214,6 +244,10 @@ public class ProxyController extends AbstractController {
      * Floating window ordered front
      */
     public static class FloatingWindowAlertRunner extends RegularWindowAlertRunner {
+        public FloatingWindowAlertRunner(final WindowController sheet) {
+            super(sheet);
+        }
+
         @Override
         public void alert(final NSWindow sheet, final SheetCallback callback) {
             log.debug("Configure window {}", sheet);
@@ -227,11 +261,15 @@ public class ProxyController extends AbstractController {
     /**
      * Floating window in modal run loop
      */
-    public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner {
+    public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner implements AlertRunner.CloseHandler {
+        public ModalWindowAlertRunner(final WindowController sheet) {
+            super(sheet);
+        }
+
         @Override
         public void closed(final NSWindow sheet, final int returncode) {
             // Close window
-            sheet.orderOut(null);
+            super.closed(sheet, returncode);
             log.debug("Stop modal with return code {}", returncode);
             // The result code you want returned from the runModalForWindow:
             NSApplication.sharedApplication().stopModalWithCode(returncode);

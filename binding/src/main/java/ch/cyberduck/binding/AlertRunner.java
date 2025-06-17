@@ -50,8 +50,6 @@ public interface AlertRunner {
          * @param sheet      Sheet window
          * @param returncode Selected option
          */
-        default void closed(NSWindow sheet, int returncode) {
-            sheet.orderOut(null);
-        }
+        void closed(NSWindow sheet, int returncode);
     }
 }
