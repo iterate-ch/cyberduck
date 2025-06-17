@@ -162,7 +162,7 @@ public class TransferTableDataSource extends ListDataSource {
             if(StringUtils.isNotBlank(droppedText)) {
                 log.info("NSPasteboard.StringPboardType:{}", droppedText);
                 final DownloadController c = new DownloadController(droppedText);
-                c.beginSheet(TransferControllerFactory.get());
+                TransferControllerFactory.get().alert(c);
                 return true;
             }
             return false;

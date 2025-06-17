@@ -18,7 +18,13 @@ package ch.cyberduck.binding.application;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 public interface SheetCallback {
+    Logger log = LogManager.getLogger(SheetCallback.class);
 
     /**
      * Use default option; 'OK'
@@ -39,4 +45,41 @@ public interface SheetCallback {
      * @param returncode Selected button
      */
     void callback(int returncode);
+
+    SheetCallback noop = new SheetCallback() {
+        @Override
+        public void callback(final int returncode) {
+            //
+        }
+    };
+
+    final class DelegatingSheetCallback implements SheetCallback {
+        final SheetCallback[] delegates;
+
+        public DelegatingSheetCallback(final SheetCallback... delegates) {
+            this.delegates = delegates;
+        }
+
+        @Override
+        public void callback(final int returncode) {
+            for(SheetCallback delegate : delegates) {
+                log.debug("Invoke handler {}", delegate);
+                delegate.callback(returncode);
+            }
+        }
+    }
+
+    final class ReturnCodeSheetCallback implements SheetCallback {
+        final AtomicInteger option;
+
+        public ReturnCodeSheetCallback(final AtomicInteger option) {
+            this.option = option;
+        }
+
+        @Override
+        public void callback(final int returncode) {
+            log.debug("Received return code {}", returncode);
+            option.set(returncode);
+        }
+    }
 }

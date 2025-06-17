@@ -51,6 +51,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public new ILoginView View { get; set; }
 
+        object LoginCallback.getFeature(java.lang.Class type) => LoginCallback.__DefaultMethods.getFeature(this, type);
+
         public void await(CountDownLatch signal, Host bookmark, string title, string message) => Dialogs.AwaitBackgroundAction(signal, bookmark, title, message, Images.CyberduckApplication);
 
         public void warn(Host bookmark, String title, String message, String continueButton, String disconnectButton,

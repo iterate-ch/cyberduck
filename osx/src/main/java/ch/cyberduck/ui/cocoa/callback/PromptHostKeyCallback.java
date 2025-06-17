@@ -16,7 +16,7 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -42,16 +42,16 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     private static final Logger log = LogManager.getLogger(PromptHostKeyCallback.class);
 
     private final Preferences preferences = PreferencesFactory.get();
-    private final WindowController controller;
+    private final ProxyController controller;
     private final Local file;
 
-    public PromptHostKeyCallback(final WindowController c) {
+    public PromptHostKeyCallback(final ProxyController c) {
         this(c, LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).setBookmark(
                 PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
         ));
     }
 
-    public PromptHostKeyCallback(final WindowController controller, final Local file) {
+    public PromptHostKeyCallback(final ProxyController controller, final Local file) {
         super(file);
         this.controller = controller;
         this.file = file;
@@ -61,7 +61,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key) throws BackgroundException {
         final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
         final AlertController alert = new UnknownHostKeyAlertController(hostname.getHostname(), fingerprint, key);
-        switch(alert.beginSheet(controller)) {
+        switch(controller.alert(alert)) {
             case SheetCallback.DEFAULT_OPTION:
                 final Object lock = file.lock(true);
                 try {
@@ -81,7 +81,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) throws BackgroundException {
         final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
         final AlertController alert = new ChangedHostKeyAlertController(hostname.getHostname(), fingerprint, key);
-        switch(alert.beginSheet(controller)) {
+        switch(controller.alert(alert)) {
             case SheetCallback.DEFAULT_OPTION:
                 final Object lock = file.lock(true);
                 try {

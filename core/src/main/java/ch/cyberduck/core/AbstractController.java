@@ -73,9 +73,10 @@ public abstract class AbstractController implements Controller {
     }
 
     /**
-     * Free resources
+     * Free resources and references to model and delegates
      */
     protected void invalidate() {
+        // No-op
     }
 
     @Override

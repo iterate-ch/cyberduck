@@ -36,7 +36,6 @@ import ch.cyberduck.ui.cocoa.controller.TransferController;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
-import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
 import java.text.MessageFormat;
@@ -264,7 +263,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     }
                     toolbarMenu.setSubmenu(bandwidthMenu);
                     item.setMenuFormRepresentation(toolbarMenu);
-                    final NSPopUpButton button = NSPopUpButton.buttonWithFrame(new NSRect(52, 26));
+                    final NSPopUpButton button = NSPopUpButton.buttonPullsDown(false);
                     button.setBezelStyle(NSTexturedRoundedBezelStyle);
                     button.setImage(bandwidth.image());
                     button.setMenu(bandwidthMenu);
@@ -301,7 +300,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     }
                     toolbarMenu.setSubmenu(connectionsMenu);
                     item.setMenuFormRepresentation(toolbarMenu);
-                    final NSPopUpButton button = NSPopUpButton.buttonWithFrame(new NSRect(52, 26));
+                    final NSPopUpButton button = NSPopUpButton.buttonPullsDown(false);
                     button.setBezelStyle(NSTexturedRoundedBezelStyle);
                     button.setImage(connections.image());
                     button.setMenu(connectionsMenu);
@@ -319,12 +318,9 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     item.setImage(type.image());
                     item.setTarget(controller.id());
                     item.setAction(type.action());
-                    final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                    final NSButton button = NSButton.buttonWithImageTargetAction(type.image(), controller.id(), type.action());
                     button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
-                    button.setImage(type.image());
                     button.sizeToFit();
-                    button.setTarget(controller.id());
-                    button.setAction(type.action());
                     item.setView(button);
                     return item;
                 }

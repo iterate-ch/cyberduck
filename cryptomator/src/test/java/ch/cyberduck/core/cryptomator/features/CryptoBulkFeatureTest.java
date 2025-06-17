@@ -105,7 +105,7 @@ public class CryptoBulkFeatureTest {
                 return item.remote.isDirectory();
             }
         }).findFirst().get().remote;
-        final String directoryId = encryptedDirectory.attributes().getDirectoryId();
+        final byte[] directoryId = encryptedDirectory.attributes().getDirectoryId();
         assertNotNull(directoryId);
         for(TransferItem file : pre.keySet().stream().filter(new Predicate<TransferItem>() {
             @Override

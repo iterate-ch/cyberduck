@@ -157,7 +157,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.file)))) {
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.file, Protocol.Type.none)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
@@ -190,7 +190,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         if(null == sender.selectedItem().representedObject()) {
             final PreferencesController controller = PreferencesControllerFactory.instance();
-            controller.window().makeKeyAndOrderFront(null);
+            controller.display();
             controller.setSelectedPanel(PreferencesController.PreferencesToolbarItem.profiles.name());
         }
         else {
@@ -631,11 +631,6 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Override
     public void collectionItemChanged(Object item) {
         this.update();
-    }
-
-    @Override
-    public void callback(final int returncode) {
-        //
     }
 
     public interface BookmarkObserver {

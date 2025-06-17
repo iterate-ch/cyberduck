@@ -130,13 +130,15 @@ public static class CollectionObservables
             }
 
             void CollectionListener.collectionLoaded()
-            { /* Maybe call into observable.Populate(this)? */ }
+            {
+                observable.Populate(this);
+            }
 
             void IDisposable.Dispose() => Dispose();
 
             internal void Load(Collection arrayList)
             {
-                if (loaded)
+                if (loaded || !arrayList.isLoaded())
                 {
                     return;
                 }

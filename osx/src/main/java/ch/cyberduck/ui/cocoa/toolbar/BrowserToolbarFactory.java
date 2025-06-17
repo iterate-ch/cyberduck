@@ -564,7 +564,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     }
                     toolbarMenu.setSubmenu(charsetMenu);
                     item.setMenuFormRepresentation(toolbarMenu);
-                    final NSPopUpButton button = NSPopUpButton.buttonWithFrame(new NSRect(120, 26));
+                    final NSPopUpButton button = NSPopUpButton.buttonPullsDown(false);
                     button.setBezelStyle(NSTexturedRoundedBezelStyle);
                     button.setImage(encoding.image());
                     button.setMenu(charsetMenu);
@@ -585,12 +585,10 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     editMenu.setAutoenablesItems(true);
                     editMenu.setDelegate(controller.getEditMenuDelegate().id());
                     toolbarMenu.setSubmenu(editMenu);
-                    final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                    final NSButton button = NSButton.buttonWithTitleTargetAction(StringUtils.EMPTY, controller.id(), edit.action());
                     button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                     button.setImage(edit.image());
                     button.sizeToFit();
-                    button.setTarget(controller.id());
-                    button.setAction(edit.action());
                     item.setView(button);
                     item.setMenuFormRepresentation(toolbarMenu);
                     return item;
@@ -601,36 +599,30 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setPaletteLabel(application.getName());
                     item.setTarget(controller.id());
                     item.setAction(terminal.action());
-                    final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                    final NSButton button = NSButton.buttonWithTitleTargetAction(StringUtils.EMPTY, controller.id(), terminal.action());
                     button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                     button.setImage(terminal.image());
                     button.sizeToFit();
-                    button.setTarget(controller.id());
-                    button.setAction(terminal.action());
                     item.setView(button);
                     return item;
                 }
                 case quicklook: {
                     item.setLabel(quicklook.label());
                     item.setPaletteLabel(quicklook.label());
-                    final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                    final NSButton button = NSButton.buttonWithTitleTargetAction(StringUtils.EMPTY, controller.id(), quicklook.action());
                     button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                     button.setImage(quicklook.image());
                     button.sizeToFit();
-                    button.setTarget(controller.id());
-                    button.setAction(quicklook.action());
                     item.setView(button);
                     return item;
                 }
                 case cryptomator: {
                     item.setLabel(cryptomator.label());
                     item.setPaletteLabel(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
-                    final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                    final NSButton button = NSButton.buttonWithTitleTargetAction(StringUtils.EMPTY, controller.id(), cryptomator.action());
                     button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                     button.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate"));
                     button.sizeToFit();
-                    button.setTarget(controller.id());
-                    button.setAction(cryptomator.action());
                     item.setView(button);
                     return item;
                 }
@@ -654,11 +646,10 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setPaletteLabel(LocaleFactory.localizedString(type.label()));
                     item.setToolTip(type.tooltip());
                     item.setAction(type.action());
-                    final NSButton button = NSButton.buttonWithFrame(new NSRect(0, 0));
+                    final NSButton button = NSButton.buttonWithTitleTargetAction(StringUtils.EMPTY, controller.id(), type.action());
                     button.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                     button.setImage(type.image());
                     button.sizeToFit();
-                    button.setAction(type.action());
                     item.setView(button);
                     return item;
                 }
