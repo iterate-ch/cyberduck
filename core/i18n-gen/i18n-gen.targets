@@ -10,7 +10,7 @@
     AssemblyFile="$(i18n_gen_dll)"
     TaskFactory="TaskHostFactory" />
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)'=='true'">
     <ProjectReference Include="$(MSBuildThisFileDirectory)i18n-gen.csproj"
       OutputItemType="Analyzer"
       ReferenceOutputAssembly="False"
