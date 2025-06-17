@@ -53,9 +53,9 @@ public class DefaultSecureRandomProvider implements SecureRandomProvider {
                             PreferencesFactory.get().getProperty("connection.ssl.securerandom.provider"));
                 }
                 catch(NoSuchAlgorithmException | NoSuchProviderException e) {
-                    log.warn("Failure {} obtaining secure random", e.getMessage());
+                    log.error("Failure {} obtaining secure random", e.getMessage());
                     // Keep null for default secure random
-                    return null;
+                    seeder = new SecureRandom();
                 }
             }
             return seeder;
