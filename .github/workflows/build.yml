@@ -10,6 +10,7 @@ jobs:
     permissions:
       checks: write
       contents: read
+      packages: read
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
