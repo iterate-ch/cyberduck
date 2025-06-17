@@ -83,6 +83,10 @@ public abstract class SheetController extends WindowController implements InputV
             }
         }
         handlers.forEach(h -> h.closed(window, option));
+        if(handlers.isEmpty()) {
+            log.warn("No close handlers for {}", this);
+            window.performClose(null);
+        }
         handlers.clear();
     }
 
@@ -99,7 +103,6 @@ public abstract class SheetController extends WindowController implements InputV
     // Handle keyboard esc event when not running as sheet
     public void cancel(ID sender) {
         this.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
-        this.close();
     }
 
     /**
