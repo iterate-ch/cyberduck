@@ -2,13 +2,13 @@
 
   <Import Project="Microsoft.WindowsSdk.props" />
 
-  <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
+  <Target Name="SignMsi" DependsOnTargets="UsesSignTool" Condition="'$(SignOutput)'=='true'">
     <Exec Command="$(SignTool) &quot;%(SignMsi.FullPath)&quot;" EnvironmentVariables="$(SignToolPath)" />
   </Target>
-  <Target Name="SignBundle" DependsOnTargets="UsesSignTool">
+  <Target Name="SignBundle" DependsOnTargets="UsesSignTool" Condition="'$(SignOutput)'=='true'">
     <Exec Command="$(SignTool) &quot;%(SignBundle.FullPath)&quot;" EnvironmentVariables="$(SignToolPath)" />
   </Target>
-  <Target Name="SignBundleEngine" DependsOnTargets="UsesSignTool">
+  <Target Name="SignBundleEngine" DependsOnTargets="UsesSignTool" Condition="'$(SignOutput)'=='true'">
     <Exec Command="$(SignTool) &quot;%(SignBundleEngine.FullPath)&quot;" EnvironmentVariables="$(SignToolPath)" />
   </Target>
   
