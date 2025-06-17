@@ -349,11 +349,6 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    public boolean isSingleton() {
-        return preferences.getBoolean("browser.info.inspector");
-    }
-
-    @Override
     protected void initializePanel(final String identifier) {
         InfoToolbarItem item;
         try {

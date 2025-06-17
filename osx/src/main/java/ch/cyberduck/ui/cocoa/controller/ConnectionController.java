@@ -63,11 +63,6 @@ public class ConnectionController extends BookmarkController {
     }
 
     @Override
-    public boolean isSingleton() {
-        return true;
-    }
-
-    @Override
     protected String getBundleName() {
         return "Connection";
     }

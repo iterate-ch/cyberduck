@@ -28,7 +28,13 @@ public final class ActivityControllerFactory {
     public static ActivityController get() {
         synchronized(NSApplication.sharedApplication()) {
             if(null == shared) {
-                shared = new ActivityController();
+                shared = new ActivityController() {
+                    @Override
+                    public void invalidate() {
+                        shared = null;
+                        super.invalidate();
+                    }
+                };
                 shared.loadBundle();
             }
             return shared;

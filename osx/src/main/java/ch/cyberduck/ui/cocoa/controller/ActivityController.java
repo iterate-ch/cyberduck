@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class ActivityController extends WindowController {
+public class ActivityController extends WindowController {
     private static final Logger log = LogManager.getLogger(ActivityController.class);
 
     private final BackgroundActionRegistry registry;
@@ -124,11 +124,6 @@ public final class ActivityController extends WindowController {
         window.setContentMinSize(window.frame().size);
         window.setTitle(LocaleFactory.localizedString("Activity"));
         super.setWindow(window);
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
     }
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();

@@ -93,7 +93,7 @@ public abstract class WindowController extends BundleController implements NSWin
         this.window = window;
         this.view = window.contentView();
         this.window.recalculateKeyViewLoop();
-        this.window.setReleasedWhenClosed(!this.isSingleton());
+        this.window.setReleasedWhenClosed(true);
         this.window.setDelegate(this.id());
     }
 
@@ -127,17 +127,6 @@ public abstract class WindowController extends BundleController implements NSWin
      */
     public void close() {
         window.orderOut(null);
-    }
-
-    /**
-     * A singleton window is not released when closed and the controller is not invalidated
-     *
-     * @return Always false
-     * @see #invalidate()
-     * @see ch.cyberduck.binding.application.NSWindow#setReleasedWhenClosed(boolean)
-     */
-    public boolean isSingleton() {
-        return false;
     }
 
     /**
@@ -215,10 +204,7 @@ public abstract class WindowController extends BundleController implements NSWin
         for(WindowListener listener : listeners.toArray(new WindowListener[listeners.size()])) {
             listener.windowWillClose();
         }
-        if(!this.isSingleton()) {
-            //If the window is closed it is assumed the controller object is no longer used
-            this.invalidate();
-        }
+        this.invalidate();
     }
 
     /**
