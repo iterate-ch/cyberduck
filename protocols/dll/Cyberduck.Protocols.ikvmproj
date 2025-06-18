@@ -1,13 +1,7 @@
 <Project Sdk="IKVM.NET.Sdk">
-
   <PropertyGroup>
-    <!--
-      Only really used in Cyberduck.
-    -->
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
   </PropertyGroup>
-
-  <Import Project="$(BuildSupportDir)Cyberduck.Java.props" />
 
   <ItemGroup>
     <CyberduckReference Include="Core" />
@@ -15,5 +9,4 @@
 
     <Convert Include="$(TargetBuildDir)*.jar" />
   </ItemGroup>
-
 </Project>

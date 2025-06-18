@@ -1,0 +1,22 @@
+<Project>
+
+  <PropertyGroup>
+    <GenerateNuspecDependsOn>$(GenerateNuspecDependsOn);CyberduckNuspecProperties</GenerateNuspecDependsOn>
+  </PropertyGroup>
+
+  <Target Name="CyberduckNuspecProperties">
+    <PropertyGroup>
+      <NuspecProperties>
+        $(PackageVersions);
+        id=$(PackageId);
+        version=$(PackageVersion);
+        authors=$(Authors);
+        company=$(Company);
+        description=$(Description);
+        buildDir=$(TargetBuildDir);
+        $(NuspecProperties)
+      </NuspecProperties>
+    </PropertyGroup>
+  </Target>
+
+</Project>
