@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                 AtomicBoolean c = new AtomicBoolean(false);
                 _controller.Invoke(delegate
                 {
-                    if (UiUtils.CommandBox(
+                    UiUtils.CommandBox(
                         owner: _controller.Window,
                         title: LocaleFactory.localizedString("Apply changes recursively"),
                         mainInstruction: LocaleFactory.localizedString("Apply changes recursively"),
@@ -65,15 +65,13 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                         footerIcon: TaskDialogIcon.Information,
                         handler: (opt, verificationChecked) =>
                         {
+                            c.SetValue(opt is 0);
                             if (verificationChecked)
                             {
                                 _supressed = true;
                                 _option = c.Value;
                             }
-                        }) is { Button: 0 })
-                    {
-                        c.SetValue(true);
-                    }
+                        });
                 }, true);
                 return c.Value;
             }
