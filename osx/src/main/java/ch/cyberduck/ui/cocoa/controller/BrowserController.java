@@ -311,10 +311,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
-    public BrowserController() {
-        this.loadBundle();
-    }
-
     public static void updateBookmarkTableRowHeight() {
         for(BrowserController controller : MainController.getBrowsers()) {
             controller._updateBookmarkCell();

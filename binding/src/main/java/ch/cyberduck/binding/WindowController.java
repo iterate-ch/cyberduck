@@ -114,6 +114,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param key Make key window
      */
     public void display(final boolean key) {
+        this.loadBundle();
         if(key) {
             window.makeKeyAndOrderFront(null);
         }

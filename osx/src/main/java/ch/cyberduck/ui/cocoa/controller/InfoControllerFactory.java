@@ -58,7 +58,6 @@ public final class InfoControllerFactory {
                     super.invalidate();
                 }
             };
-            info.loadBundle();
             open.put(parent, info);
             return info;
         }

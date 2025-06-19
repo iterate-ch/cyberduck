@@ -35,7 +35,6 @@ public final class ActivityControllerFactory {
                         super.invalidate();
                     }
                 };
-                shared.loadBundle();
             }
             return shared;
         }
