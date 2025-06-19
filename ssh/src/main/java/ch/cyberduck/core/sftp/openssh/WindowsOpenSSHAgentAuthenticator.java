@@ -39,7 +39,17 @@ public class WindowsOpenSSHAgentAuthenticator extends OpenSSHAgentAuthenticator 
      */
     private static class RandomAccessFileSocketFactory implements USocketFactory {
         public Socket open(String path) throws IOException {
-            return new WindowsSocket(path);
+            try {
+                return new WindowsSocket(path);
+            }
+            catch(Exception e) {
+                if(e instanceof IOException) {
+                    throw e;
+                }
+
+                // Wrap System.TimeoutException in IOException.
+                throw new IOException(e);
+            }
         }
 
         static class WindowsSocket extends Socket {
