@@ -659,6 +659,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         super.setWindow(window);
         // Accept file promises from history tab
         window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
+    }
+
+    @Override
+    public void display(final boolean key) {
+        super.display(key);
         cascade = this.cascade(cascade);
     }
 

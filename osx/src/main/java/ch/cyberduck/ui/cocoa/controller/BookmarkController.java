@@ -499,6 +499,11 @@ public class BookmarkController extends SheetController implements CollectionLis
             }
         });
         super.setWindow(window);
+    }
+
+    @Override
+    public void display(final boolean key) {
+        super.display(key);
         cascade = this.cascade(cascade);
     }
 

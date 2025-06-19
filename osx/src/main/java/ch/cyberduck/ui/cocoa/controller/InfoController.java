@@ -337,9 +337,12 @@ public class InfoController extends ToolbarWindowController {
             window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStyleExpanded);
         }
         super.setWindow(window);
-        if(!preferences.getBoolean("browser.info.inspector")) {
-            cascade = this.cascade(cascade);
-        }
+    }
+
+    @Override
+    public void display(final boolean key) {
+        super.display(key);
+        cascade = this.cascade(cascade);
     }
 
     @Override
