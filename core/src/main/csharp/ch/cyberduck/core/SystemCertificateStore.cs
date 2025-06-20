@@ -108,7 +108,6 @@ namespace Ch.Cyberduck.Core
             }
 
             string errorFromChainStatus = GetErrorFromChainStatus(chain, hostName);
-            bool certError = null != errorFromChainStatus;
             bool hostnameMismatch = hostName != null &&
                                     !HostnameVerifier.CheckServerIdentity(certs.get(0) as X509Certificate,
                                         serverCert, hostName);
@@ -127,11 +126,6 @@ namespace Ch.Cyberduck.Core
                 // Force use of ThreadLocal, otherwise we can't persist X.certificate.accept
                 using (DialogPromptCertificateTrustCallback.Register(() =>
                 {
-                    if (certError)
-                    {
-                        AddCertificate(serverCert, StoreName.Root);
-                    }
-
                     PreferencesFactory.get()
                         .setProperty(hostName + ".certificate.accept", serverCert.Thumbprint);
                 }))
@@ -178,21 +172,6 @@ namespace Ch.Cyberduck.Core
         {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             return (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
-        }
-
-        private void AddCertificate(X509Certificate2 cert, StoreName storeName)
-        {
-            Log.debug("Add certificate:" + cert.SubjectName.Name);
-            X509Store store = new X509Store(storeName, StoreLocation.CurrentUser);
-            try
-            {
-                store.Open(OpenFlags.ReadWrite);
-                store.Add(cert);
-            }
-            finally
-            {
-                store.Close();
-            }
         }
 
         private bool CheckForException(string hostname, X509Certificate2 cert)
