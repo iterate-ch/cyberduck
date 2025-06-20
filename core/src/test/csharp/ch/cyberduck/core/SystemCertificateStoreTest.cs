@@ -25,7 +25,6 @@ using java.io;
 using java.security.cert;
 using java.util;
 using NUnit.Framework;
-using Console = System.Console;
 using List = java.util.List;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -60,11 +59,13 @@ namespace Ch.Cyberduck.Ui.Controller
             List certs = new ArrayList();
             certs.add(cert);
             Assert.False(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
-            //register exception
+            // Register exception with legacy thumbprint
             PreferencesFactory.get()
-                .setProperty(hostName + ".certificate.accept",
-                    SystemCertificateStore.ConvertCertificate(cert).Thumbprint);
+                .setProperty(hostName + ".certificate.accept", SystemCertificateStore.ConvertCertificate(cert).Thumbprint);
             Assert.IsTrue(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
+            // Verify migration
+            Assert.AreEqual(SystemCertificateStore.GetSha2Thumbprint(SystemCertificateStore.ConvertCertificate(cert)), PreferencesFactory.get()
+                .getProperty(hostName + ".certificate.accept"));
         }
 
         [Test]
@@ -127,13 +128,11 @@ namespace Ch.Cyberduck.Ui.Controller
                         "hJYa6ulLyko8z7MPf8OSOipYKOW/gXfV1XxMYh+k5qwaKLK4BsoXuwiB/kMVJtTJ\n" + "ndIN\n" +
                         "-----END CERTIFICATE-----\n";
 
-
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
             InputStream his = new ByteArrayInputStream(Encoding.ASCII.GetBytes(host));
             X509Certificate hostCert = (X509Certificate) certFactory.generateCertificate(his);
             InputStream cais = new ByteArrayInputStream(Encoding.ASCII.GetBytes(ca));
             X509Certificate caCert = (X509Certificate) certFactory.generateCertificate(cais);
-
 
             const string hostName = "www.google.ch";
             List certs = new ArrayList();
@@ -141,10 +140,10 @@ namespace Ch.Cyberduck.Ui.Controller
             certs.add(caCert);
 
             Assert.False(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
-            //register exception
+            // Register exception
             PreferencesFactory.get()
-                .setProperty(hostName + ".certificate.accept",
-                    SystemCertificateStore.ConvertCertificate(hostCert).Thumbprint);
+                .setProperty(hostName + ".certificate.accept", SystemCertificateStore.GetSha2Thumbprint(
+                    SystemCertificateStore.ConvertCertificate(hostCert)));
             Assert.IsTrue(new SystemCertificateStore().verify(new DisabledCertificateTrustCallback(), hostName, certs));
         }
     }
