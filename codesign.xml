@@ -40,8 +40,12 @@
     <property name="codesign.options" value="--force --options runtime"/>
     <property name="codesign.arg"
               value="--entitlements ${setup}/app/default.entitlements --requirements ${codesign.requirement}"/>
+    <property name="codesign.provisionprofile" value="embedded.provisionprofile"/>
 
     <target name="codesign" depends="dotclean,compile-codesign-requirement">
+        <copy todir="${bundle}/${bundle.contents}" overwrite="true">
+            <file file="${setup}/app/${codesign.provisionprofile}"/>
+        </copy>
         <echo
             message="Code signing ${bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg} from ${codesign.keychain}"/>
         <apply executable="/usr/bin/xcrun" failonerror="true"
