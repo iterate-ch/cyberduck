@@ -40,8 +40,6 @@ namespace ch.cyberduck.ui.ViewModels
         private readonly ReadOnlyObservableCollection<TransferItemViewModel> roots;
         private readonly string transferTypeName;
         [ObservableProperty]
-        private bool isSelected;
-        [ObservableProperty]
         private double progress;
         [ObservableProperty]
         private bool progressPending;

@@ -15,6 +15,7 @@ using ch.cyberduck.ui.ViewModels;
 using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ch.cyberduck.ui.Views
 {
@@ -42,6 +43,16 @@ namespace ch.cyberduck.ui.Views
             }
 
             return base.MeasureOverride(availableSize with { Width = Width });
+        }
+
+        private void TransferList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!ReferenceEquals(transferList, e.OriginalSource))
+            {
+                return;
+            }
+
+            ((TransfersViewModel)DataContext)?.SelectionChangedCommand.Execute(e);
         }
     }
 }

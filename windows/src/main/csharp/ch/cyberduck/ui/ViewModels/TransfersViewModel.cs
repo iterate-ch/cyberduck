@@ -30,11 +30,13 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shell;
 using static Ch.Cyberduck.ImageHelper;
@@ -50,8 +52,9 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
     private readonly WpfIconProvider iconProvider;
     private readonly CompositeDisposable subscriptions = [];
     private readonly Preferences preferences;
-    private readonly ReadOnlyObservableCollection<TransferViewModel> selectedTransfers;
+    private readonly ObservableCollection<TransferViewModel> selectedTransfers = [];
     private readonly TransfersStore store;
+    private readonly SynchronizationContext synchronizationContext = SynchronizationContext.Current;
     private readonly DrawingImage taskbarOverlayCache;
     private readonly ReadOnlyObservableCollection<TransferViewModel> transfers;
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(OpenCommand))]
@@ -97,7 +100,7 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
         }
     }
 
-    public ReadOnlyObservableCollection<TransferViewModel> SelectedTransfers => selectedTransfers;
+    public ReadOnlyObservableCollection<TransferViewModel> SelectedTransfers { get; }
 
     public bool ToolbarCleanup
     {
@@ -241,11 +244,7 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
             .Select(transfersCache.WatchValue).Switch()
             .ObserveOnDispatcher().Subscribe(OnRevealTransfer));
 
-        var localTransfers = transfersCache.Connect()
-            .AutoRefresh(m => m.IsSelected).Filter(m => m.IsSelected)
-            .Bind(out selectedTransfers).AsObservableCache().DisposeWith(subscriptions);
-        subscriptions.Add(localTransfers.Connect().WhenAnyPropertyChanged().ObserveOnDispatcher().Subscribe(OnSelectedTransferPropertyChanged));
-        subscriptions.Add(localTransfers.CountChanged.Subscribe(OnSelectionCountChanged));
+        SelectedTransfers = new(selectedTransfers);
 
         var progressStream = controller.Progress.Connect();
         subscriptions.Add(Observable.CombineLatest(
@@ -277,6 +276,12 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         subscriptions.Dispose();
+        foreach (var item in SelectedTransfers)
+        {
+            item.PropertyChanged -= OnSelectedTransferPropertyChanged;
+        }
+
+        selectedTransfers.Clear();
     }
 
     partial void OnSelectedConnectionLimitChanged(ConnectionViewModel value)
@@ -421,7 +426,7 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
     {
         if (SelectedTransfers.Count is 0)
         {
-            transfer.IsSelected = true;
+            SelectedTransfer = transfer;
             WeakReferenceMessenger.Default.Send(new BringIntoViewMessage(transfer));
         }
     }
@@ -440,14 +445,30 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
         }
     }
 
-    private void OnSelectedTransferPropertyChanged(TransferViewModel _)
+    private void OnSelectedTransferPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        ValidateCommands();
+        synchronizationContext.Send(state => ((TransfersViewModel)state).SelectedTransferPropertyChanged(), this);
     }
 
-    private void OnSelectionCountChanged(int _)
+    [RelayCommand]
+    private void OnSelectionChanged(SelectionChangedEventArgs args)
     {
-        OnSelectedTransferChanged(null);
+        foreach (TransferViewModel item in args.RemovedItems)
+        {
+            selectedTransfers.Remove(item);
+            item.PropertyChanged -= OnSelectedTransferPropertyChanged;
+        }
+
+        foreach (TransferViewModel item in args.AddedItems)
+        {
+            selectedTransfers.Add(item);
+            item.PropertyChanged += OnSelectedTransferPropertyChanged;
+        }
+
+        if (args.AddedItems.Count != args.RemovedItems.Count)
+        {
+            OnSelectedTransferChanged(null);
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanShow))]
@@ -554,6 +575,11 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
                 }
             }
         }
+    }
+
+    private void SelectedTransferPropertyChanged()
+    {
+        ValidateCommands();
     }
 
     private void UpdateSelectedBandwidth()

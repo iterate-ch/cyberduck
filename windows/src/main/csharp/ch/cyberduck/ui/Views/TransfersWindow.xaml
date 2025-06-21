@@ -360,6 +360,7 @@
                  HorizontalContentAlignment="Stretch"
                  SelectionMode="Extended"
                  Background="Transparent"
+                 SelectionChanged="TransferList_SelectionChanged"
                  Grid.IsSharedSizeScope="True"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -377,8 +378,6 @@
                             Value="{Binding Name}" />
                     <Setter Property="AutomationProperties.Name"
                             Value="{Binding Summary}" />
-                    <Setter Property="IsSelected"
-                            Value="{Binding IsSelected}" />
                 </Style>
             </ListBox.ItemContainerStyle>
 
