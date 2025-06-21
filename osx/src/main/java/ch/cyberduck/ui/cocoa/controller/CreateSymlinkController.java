@@ -40,7 +40,7 @@ public class CreateSymlinkController extends FileController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create new symbolic link", "File"));
@@ -49,7 +49,7 @@ public class CreateSymlinkController extends FileController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "File"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "File"));
         alert.setIcon(IconCacheFactory.<NSImage>get().aliasIcon(null, 64));
-        super.loadBundle(alert);
+        return alert;
     }
 
     @Override

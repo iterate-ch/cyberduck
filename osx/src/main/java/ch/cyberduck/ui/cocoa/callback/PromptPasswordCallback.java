@@ -15,7 +15,7 @@ package ch.cyberduck.ui.cocoa.callback;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -28,23 +28,23 @@ import ch.cyberduck.ui.cocoa.controller.PasswordController;
 
 public class PromptPasswordCallback implements PasswordCallback {
 
-    private final WindowController parent;
+    private final ProxyController controller;
 
-    private PasswordController controller;
+    private PasswordController alert;
     private boolean suppressed;
 
-    public PromptPasswordCallback(final WindowController parent) {
-        this.parent = parent;
+    public PromptPasswordCallback(final ProxyController controller) {
+        this.controller = controller;
     }
 
     @Override
     public void close(final String input) {
-        if(null == controller) {
+        if(null == alert) {
             return;
         }
-        controller.setPasswordFieldText(input);
-        controller.passwordFieldTextDidChange(NSNotification.notificationWithName(NSControl.NSControlTextDidChangeNotification, input));
-        controller.closeSheetWithOption(SheetCallback.ALTERNATE_OPTION);
+        alert.setPasswordFieldText(input);
+        alert.passwordFieldTextDidChange(NSNotification.notificationWithName(NSControl.NSControlTextDidChangeNotification, input));
+        alert.closeSheetWithOption(SheetCallback.ALTERNATE_OPTION);
     }
 
     @Override
@@ -53,10 +53,10 @@ public class PromptPasswordCallback implements PasswordCallback {
             throw new LoginCanceledException();
         }
         final Credentials credentials = new Credentials().withSaved(options.save);
-        controller = new PasswordController(bookmark, credentials, title, reason, options);
-        final int option = controller.beginSheet(parent);
+        alert = new PasswordController(bookmark, credentials, title, reason, options);
+        final int option = controller.alert(alert);
         if(option == SheetCallback.CANCEL_OPTION) {
-            if(controller.isSuppressed()) {
+            if(alert.isSuppressed()) {
                 suppressed = true;
             }
             throw new LoginCanceledException();

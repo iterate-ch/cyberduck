@@ -27,7 +27,7 @@ public abstract class NSViewController extends NSResponder {
     }
 
     public static NSViewController create() {
-        return CLASS.alloc();
+        return CLASS.alloc().init();
     }
 
     public static NSViewController create(String nib, NSBundle bundle) {
@@ -58,4 +58,6 @@ public abstract class NSViewController extends NSResponder {
      * @param view The view controller’s primary view.
      */
     public abstract void setView(NSView view);
+
+    public abstract NSView view();
 }

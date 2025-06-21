@@ -45,14 +45,11 @@ public final class ConnectionControllerFactory {
                         super.invalidate();
                     }
                 };
-                c.loadBundle();
                 open.put(parent, c);
                 return c;
             }
             else {
-                final ConnectionController c = open.get(parent);
-                c.loadBundle();
-                return c;
+                return open.get(parent);
             }
         }
     }

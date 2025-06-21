@@ -15,41 +15,144 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
+import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.application.NSImageView;
+import ch.cyberduck.binding.application.NSMenuItem;
+import ch.cyberduck.binding.application.NSOpenPanel;
+import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
+import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.rococoa.Foundation;
+import org.rococoa.ID;
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSInteger;
 
-public class LoginController extends ConnectionController {
+public class LoginController extends AlertController {
 
+    private final Host bookmark;
     private final String title;
     private final String reason;
+    private final LoginOptions options;
 
     @Outlet
-    private NSImageView iconView;
+    private final NSTextField usernameField = NSTextField.textFieldWithString(StringUtils.EMPTY);
     @Outlet
-    private NSTextField titleField;
+    private final NSTextField passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
     @Outlet
-    private NSTextField textField;
+    private final NSPopUpButton privateKeyPopup = NSPopUpButton.buttonPullsDown(false);
+    @Outlet
+    private NSOpenPanel privateKeyOpenPanel;
+
 
     public LoginController(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-        super(bookmark, options);
+        super(new LoginInputValidator(bookmark, options));
+        this.bookmark = bookmark;
         this.title = title;
         this.reason = reason;
+        this.options = options;
     }
 
     @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
+    public NSAlert loadAlert() {
+        final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
+        alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
+        alert.setMessageText(LocaleFactory.localizedString(title, "Credentials"));
+        alert.setInformativeText(new StringAppender().append(reason).toString());
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Login", "Login"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Login"));
+        if(options.anonymous) {
+            alert.addButtonWithTitle(LocaleFactory.localizedString("Skip", "Transfer"));
+        }
+        alert.setShowsSuppressionButton(options.keychain);
+        if(options.keychain) {
+            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Save Password", "Keychain"));
+            alert.suppressionButton().setState(bookmark.getCredentials().isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
+        }
+        return alert;
+    }
+
+    @Override
+    public NSView getAccessoryView(final NSAlert alert) {
+        final NSView accessoryView = NSView.create();
+        if(options.publickey) {
+            privateKeyPopup.setTarget(this.id());
+            privateKeyPopup.setAction(Foundation.selector("privateKeyPopupClicked:"));
+            privateKeyPopup.removeAllItems();
+            privateKeyPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+            privateKeyPopup.lastItem().setRepresentedObject(StringUtils.EMPTY);
+            privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+            for(Local key : new OpenSSHPrivateKeyConfigurator().list()) {
+                privateKeyPopup.addItemWithTitle(key.getAbbreviatedPath());
+                privateKeyPopup.lastItem().setRepresentedObject(key.getAbsolute());
+            }
+            // Choose another folder
+            privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+            privateKeyPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
+            if(bookmark.getCredentials().isPublicKeyAuthentication()) {
+                final Local key = bookmark.getCredentials().getIdentity();
+                privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()));
+                if(-1 == privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
+                    final NSInteger index = new NSInteger(0);
+                    privateKeyPopup.insertItemWithTitle_atIndex(key.getAbbreviatedPath(), index);
+                    privateKeyPopup.itemAtIndex(index).setRepresentedObject(key.getAbsolute());
+                }
+            }
+            else {
+                privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+            }
+            this.addAccessorySubview(accessoryView, privateKeyPopup);
+        }
+        if(options.password) {
+            this.updateField(passwordField, bookmark.getCredentials().getPassword());
+            passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
+            NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                    Foundation.selector("passwordFieldTextDidChange:"),
+                    NSControl.NSControlTextDidChangeNotification,
+                    passwordField.id());
+            this.addAccessorySubview(accessoryView, passwordField);
+        }
+        if(options.user) {
+            this.updateField(usernameField, bookmark.getCredentials().getUsername());
+            usernameField.cell().setPlaceholderString(options.getUsernamePlaceholder());
+            NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                    Foundation.selector("usernameFieldTextDidChange:"),
+                    NSControl.NSControlTextDidChangeNotification,
+                    usernameField.id());
+            this.addAccessorySubview(accessoryView, usernameField);
+        }
+        return accessoryView;
+    }
+
+    @Override
+    protected void focus(final NSAlert alert) {
+        super.focus(alert);
         if(options.user) {
             window.makeFirstResponder(usernameField);
         }
@@ -59,31 +162,79 @@ public class LoginController extends ConnectionController {
     }
 
     @Override
-    protected String getBundleName() {
-        return "Login";
+    public void callback(final int returncode) {
+        switch(returncode) {
+            case ALTERNATE_OPTION:
+                bookmark.getCredentials().setUsername(HostPreferencesFactory.get(bookmark).getProperty("connection.login.anon.name"));
+                bookmark.getCredentials().setPassword(HostPreferencesFactory.get(bookmark).getProperty("connection.login.anon.pass"));
+                break;
+            case CANCEL_OPTION:
+                bookmark.getCredentials().setPassword(null);
+                break;
+        }
     }
 
-    public void setIconView(NSImageView iconView) {
-        this.iconView = iconView;
-        this.iconView.setImage(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
+    @Override
+    public boolean validate(final int option) {
+        switch(option) {
+            case DEFAULT_OPTION:
+                return super.validate(option);
+        }
+        return true;
     }
 
-    public void setTitleField(NSTextField titleField) {
-        this.titleField = titleField;
-        this.updateField(this.titleField, LocaleFactory.localizedString(title, "Credentials"));
+    @Override
+    public void suppressionButtonClicked(final NSButton sender) {
+        super.suppressionButtonClicked(sender);
+        bookmark.getCredentials().setSaved(sender.state() == NSCell.NSOnState);
     }
 
-    public void setTextField(NSTextField textField) {
-        this.textField = textField;
-        this.textField.setSelectable(true);
-        if(StringUtils.startsWith(reason, Scheme.http.name())) {
-            // For OAuth2
-            this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(reason));
-            this.textField.setAllowsEditingTextAttributes(true);
-            this.textField.setSelectable(true);
+    @Action
+    public void usernameInputDidChange(final NSNotification sender) {
+        bookmark.getCredentials().setUsername(StringUtils.trim(usernameField.stringValue()));
+    }
+
+    @Action
+    public void passwordFieldTextDidChange(final NSNotification notification) {
+        bookmark.getCredentials().setPassword(StringUtils.trim(passwordField.stringValue()));
+    }
+
+    @Action
+    public void privateKeyPopupClicked(final NSPopUpButton sender) {
+        final String selected = sender.selectedItem().representedObject();
+        if(null == selected) {
+            privateKeyOpenPanel = NSOpenPanel.openPanel();
+            privateKeyOpenPanel.setCanChooseDirectories(false);
+            privateKeyOpenPanel.setCanChooseFiles(true);
+            privateKeyOpenPanel.setAllowsMultipleSelection(false);
+            privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+            privateKeyOpenPanel.setPrompt(LocaleFactory.localizedString("Choose"));
+            privateKeyOpenPanel.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(), null, this.window(), this.id(),
+                    Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            this.updateField(this.textField, new StringAppender().append(reason).toString());
+            bookmark.getCredentials().setIdentity(StringUtils.isBlank(selected) ? null : LocalFactory.get(selected));
         }
+    }
+
+    public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
+        switch(returncode) {
+            case SheetCallback.DEFAULT_OPTION:
+                final NSObject url = privateKeyOpenPanel.URLs().lastObject();
+                if(url != null) {
+                    final Local selected = LocalFactory.get(Rococoa.cast(url, NSURL.class).path());
+                    selected.setBookmark(FilesystemBookmarkResolverFactory.get().create(selected));
+                    bookmark.getCredentials().setIdentity(selected);
+                }
+                break;
+            case SheetCallback.ALTERNATE_OPTION:
+                bookmark.getCredentials().setIdentity(null);
+                break;
+        }
+    }
+
+    @Override
+    protected String help() {
+        return ProviderHelpServiceFactory.get().help(bookmark.getProtocol());
     }
 }

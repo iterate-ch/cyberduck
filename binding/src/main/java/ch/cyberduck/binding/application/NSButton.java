@@ -21,7 +21,9 @@ package ch.cyberduck.binding.application;
 
 import ch.cyberduck.binding.foundation.NSAttributedString;
 
+import org.rococoa.ID;
 import org.rococoa.ObjCClass;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -29,8 +31,26 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class NSButton extends NSControl {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButton", _Class.class);
 
-    public static NSButton buttonWithFrame(NSRect frameRect) {
-        return CLASS.alloc().initWithFrame(frameRect);
+    /**
+     * Creates a standard push button with the title you specify.
+     *
+     * @param title  The localized title string to display on the button.
+     * @param target The target object that receives action messages from the control.
+     * @param action The action message the button sends to the target.
+     */
+    public static NSButton buttonWithTitleTargetAction(final String title, final ID target, final Selector action) {
+        return CLASS.buttonWithTitle_target_action(title, target, action);
+    }
+
+    /**
+     * Creates a standard push button with the image you specify.
+     *
+     * @param image  The image to display in the body of the button.
+     * @param target The target object that receives action messages from the button.
+     * @param action The action message the button sends to the target.
+     */
+    public static NSButton buttonWithImageTargetAction(final NSImage image, final ID target, final Selector action) {
+        return CLASS.buttonWithImage_target_action(image, target, action);
     }
 
     public static final int NSMomentaryLightButton = 0;    // was NSMomentaryPushButton
@@ -59,6 +79,16 @@ public abstract class NSButton extends NSControl {
 
     public interface _Class extends ObjCClass {
         NSButton alloc();
+
+        /**
+         * @since macOS 10.12+
+         */
+        NSButton buttonWithTitle_target_action(String title, ID target, Selector action);
+
+        /**
+         * @since macOS 10.12+
+         */
+        NSButton buttonWithImage_target_action(NSImage image, ID target, Selector action);
     }
 
     @Override

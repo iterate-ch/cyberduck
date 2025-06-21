@@ -57,10 +57,6 @@ public abstract class TranscriptController extends BundleController implements T
     @Outlet
     private NSTextView logTextView;
 
-    public TranscriptController() {
-        this.loadBundle();
-    }
-
     public NSView getLogView() {
         return logView;
     }

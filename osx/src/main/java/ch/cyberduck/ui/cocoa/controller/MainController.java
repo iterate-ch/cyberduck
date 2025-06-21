@@ -22,7 +22,7 @@ import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetController;
-import ch.cyberduck.binding.application.AlertSheetReturnCodeMapper;
+import ch.cyberduck.binding.SystemAlertController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSCell;
@@ -101,7 +101,6 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.net.URI;
@@ -205,7 +204,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(!force) {
             for(BrowserController controller : browsers) {
                 if(controller.isIdle()) {
-                    controller.window().makeKeyAndOrderFront(null);
+                    controller.display();
                     return controller;
                 }
             }
@@ -220,7 +219,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(StringUtils.isNotBlank(frame)) {
             controller.window().setFrameUsingName(frame);
         }
-        controller.window().makeKeyAndOrderFront(null);
+        controller.display();
         browsers.add(controller);
         return controller;
     }
@@ -514,15 +513,15 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void preferencesMenuClicked(final ID sender) {
-        PreferencesController controller = PreferencesControllerFactory.instance();
-        controller.window().makeKeyAndOrderFront(null);
+        final PreferencesController c = PreferencesControllerFactory.instance();
+        c.display();
     }
 
     @Action
     public void newDownloadMenuClicked(final ID sender) {
         this.showTransferQueueClicked(sender);
         final DownloadController c = new DownloadController();
-        c.beginSheet(TransferControllerFactory.get());
+        TransferControllerFactory.get().alert(c);
     }
 
     @Action
@@ -561,18 +560,18 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void showTransferQueueClicked(final ID sender) {
-        TransferController c = TransferControllerFactory.get();
-        c.window().makeKeyAndOrderFront(null);
+        final TransferController c = TransferControllerFactory.get();
+        c.display();
     }
 
     @Action
     public void showActivityWindowClicked(final ID sender) {
-        ActivityController c = ActivityControllerFactory.get();
+        final ActivityController c = ActivityControllerFactory.get();
         if(c.isVisible()) {
-            c.window().orderOut(null);
+            c.close();
         }
         else {
-            c.window().orderFront(null);
+            c.display();
         }
     }
 
@@ -607,7 +606,7 @@ public class MainController extends BundleController implements NSApplication.De
                             null
                         );
                         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                        if(new AlertSheetReturnCodeMapper().getOption(alert.runModal()) == SheetCallback.DEFAULT_OPTION) {
+                        if(this.alert(new SystemAlertController(alert)) == SheetCallback.DEFAULT_OPTION) {
                             for(BrowserController c : MainController.getBrowsers()) {
                                 c.removeDonateWindowTitle();
                             }
@@ -706,7 +705,7 @@ public class MainController extends BundleController implements NSApplication.De
             log.warn("No bookmark for upload");
             return false;
         }
-        final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
+        final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonPullsDown(false);
         bookmarksPopup.setToolTip(LocaleFactory.localizedString("Bookmarks", "Browser"));
         for(Host b : bookmarks) {
             String title = BookmarkNameProvider.toString(b);
@@ -756,12 +755,7 @@ public class MainController extends BundleController implements NSApplication.De
             null
         );
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-        final AlertController controller = new AlertController() {
-            @Override
-            public void loadBundle() {
-                this.loadBundle(alert);
-            }
-
+        final AlertController controller = new SystemAlertController(alert) {
             @Override
             public NSView getAccessoryView(final NSAlert alert) {
                 return bookmarksPopup;
@@ -793,7 +787,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
             }
         };
-        controller.beginSheet(TransferControllerFactory.get());
+        TransferControllerFactory.get().alert(controller);
         return true;
     }
 
@@ -898,8 +892,8 @@ public class MainController extends BundleController implements NSApplication.De
         // Load main menu
         this.loadBundle();
         if(preferences.getBoolean("queue.window.open.default")) {
-            TransferController c = TransferControllerFactory.get();
-            c.window().makeKeyAndOrderFront(null);
+            final TransferController c = TransferControllerFactory.get();
+            c.display();
         }
         final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
         final AbstractHostCollection sessions = SessionsCollection.defaultCollection();
@@ -930,7 +924,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                         else {
                             final BrowserController c = newDocument();
-                            c.window().makeKeyAndOrderFront(null);
+                            c.display();
                         }
                     }
                 }
@@ -972,7 +966,7 @@ public class MainController extends BundleController implements NSApplication.De
                 alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                int choice = new AlertSheetReturnCodeMapper().getOption(alert.runModal());
+                int choice = this.alert(new SystemAlertController(alert));
                 if(alert.suppressionButton().state() == NSCell.NSOnState) {
                     // Never show again.
                     preferences.setProperty("defaulthandler.reminder", false);
@@ -1105,7 +1099,7 @@ public class MainController extends BundleController implements NSApplication.De
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     alert.setShowsSuppressionButton(true);
                     alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                    int choice = new AlertSheetReturnCodeMapper().getOption(alert.runModal());
+                    int choice = this.alert(new SystemAlertController(alert));
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
                         preferences.setProperty("browser.disconnect.confirm", false);
@@ -1162,10 +1156,7 @@ public class MainController extends BundleController implements NSApplication.De
             // Make sure prompt is not loaded twice upon next quit event
             displayDonationPrompt = false;
             donationController = new DonateAlertController(app);
-            donationController.setCallback(donationController);
-            donationController.loadBundle();
-            donationController.window().center();
-            donationController.window().makeKeyAndOrderFront(null);
+            this.alert(donationController);
             // Delay application termination. Dismissing the donation dialog will reply to quit.
             return NSApplication.NSTerminateLater;
         }
@@ -1287,7 +1278,7 @@ public class MainController extends BundleController implements NSApplication.De
                                 if(browser.isMounted()) {
                                     if(new HostUrlProvider().get(browser.getSession().getHost()).equals(new HostUrlProvider().get(h))) {
                                         // Handle browser window already connected to the same host. #4215
-                                        browser.window().makeKeyAndOrderFront(null);
+                                        browser.display();
                                         if(Path.Type.directory == detector.detect(h.getDefaultPath())) {
                                             browser.setWorkdir(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)));
                                         }
@@ -1332,7 +1323,7 @@ public class MainController extends BundleController implements NSApplication.De
         log.debug("Workspace will sleep with notification {}", notification);
     }
 
-    private static final class ImporterBackgroundAction extends AbstractBackgroundAction<Void> {
+    private final class ImporterBackgroundAction extends AbstractBackgroundAction<Void> {
         private final Preferences preferences = PreferencesFactory.get();
 
         private final AbstractHostCollection bookmarks;
@@ -1392,7 +1383,7 @@ public class MainController extends BundleController implements NSApplication.De
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
                 alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                int choice = new AlertSheetReturnCodeMapper().getOption(alert.runModal()); //alternate
+                int choice = MainController.this.alert(new SystemAlertController(alert)); //alternate
                 if(alert.suppressionButton().state() == NSCell.NSOnState) {
                     // Never show again.
                     preferences.setProperty(t.getConfiguration(), true);
