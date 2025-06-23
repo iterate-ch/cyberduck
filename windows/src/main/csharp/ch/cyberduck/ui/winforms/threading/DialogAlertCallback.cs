@@ -59,7 +59,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                     string title = BookmarkNameProvider.toString(host);
                     string message = failure.getMessage() ?? LocaleFactory.localizedString("Unknown");
                     string detail = failure.getDetail() ?? LocaleFactory.localizedString("Unknown");
-                    string expanded = log.length() > 0 ? log.toString() : null;
                     string commandButtons;
                     if (type == FailureDiagnostics.Type.network)
                     {
@@ -81,7 +80,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                         title: title,
                         mainInstruction: message,
                         content: detail,
-                        expandedInfo: expanded,
+                        expandedInfo: null,
                         help: footer,
                         verificationText: null,
                         commandButtons: commandButtons,
