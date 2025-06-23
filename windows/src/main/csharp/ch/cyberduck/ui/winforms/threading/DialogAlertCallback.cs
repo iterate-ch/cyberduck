@@ -51,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             {
                 return false;
             }
-            _notification.alert(host, failure, log);
+            _notification.alert(host, failure);
             bool r = false;
             _controller.Invoke(delegate
                 {
