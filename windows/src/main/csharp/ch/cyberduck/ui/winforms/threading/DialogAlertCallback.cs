@@ -42,11 +42,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
 
         public bool alert(Host host, BackgroundException failure)
         {
-            return alert(host, failure, new StringBuilder());
-        }
-
-        public bool alert(Host host, BackgroundException failure, StringBuilder log)
-        {
             FailureDiagnostics.Type type = _diagnostics.determine(failure);
             if (type == FailureDiagnostics.Type.cancel)
             {
@@ -56,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             {
                 return false;
             }
-            _notification.alert(host, failure, log);
+            _notification.alert(host, failure);
             bool r = false;
             _controller.Invoke(delegate
                 {
@@ -64,7 +59,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                     string title = BookmarkNameProvider.toString(host);
                     string message = failure.getMessage() ?? LocaleFactory.localizedString("Unknown");
                     string detail = failure.getDetail() ?? LocaleFactory.localizedString("Unknown");
-                    string expanded = log.length() > 0 ? log.toString() : null;
                     string commandButtons;
                     if (type == FailureDiagnostics.Type.network)
                     {
@@ -86,7 +80,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                         title: title,
                         mainInstruction: message,
                         content: detail,
-                        expandedInfo: expanded,
+                        expandedInfo: null,
                         help: footer,
                         verificationText: null,
                         commandButtons: commandButtons,

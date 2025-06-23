@@ -68,7 +68,7 @@ public class SessionBackgroundActionTest {
             new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")),
             new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new AlertCallback() {
             @Override
-            public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+            public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f) {
                 assertEquals(failure, f);
                 return false;
             }
@@ -95,7 +95,7 @@ public class SessionBackgroundActionTest {
             new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")),
             new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new AlertCallback() {
             @Override
-            public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+            public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f) {
                 assertEquals(failure, f);
                 return false;
             }
@@ -124,7 +124,7 @@ public class SessionBackgroundActionTest {
             new NullSession(new Host(new TestProtocol(), "t")),
             new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new AlertCallback() {
             @Override
-            public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+            public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f) {
                 assertEquals(failure, f);
                 return false;
             }

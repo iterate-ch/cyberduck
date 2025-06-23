@@ -21,7 +21,6 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.pool.SessionPool;
 
@@ -29,19 +28,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class SessionBackgroundAction<T> extends AbstractBackgroundAction<T> implements ProgressListener, TranscriptListener {
+public abstract class SessionBackgroundAction<T> extends AbstractBackgroundAction<T> implements ProgressListener {
     private static final Logger log = LogManager.getLogger(SessionBackgroundAction.class);
 
     /**
      * This action encountered one or more exceptions
      */
     private BackgroundException failure;
-
-    /**
-     * Contains the transcript of the session while this action was running
-     */
-    private final StringBuffer transcript
-            = new StringBuffer();
 
     private static final String LINE_SEPARATOR
             = System.lineSeparator();
@@ -62,14 +55,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public void message(final String message) {
         progress.message(message);
-    }
-
-    /**
-     * Append to the transcript and notify listeners.
-     */
-    @Override
-    public void log(final Type request, final String message) {
-        transcript.append(message).append(LINE_SEPARATOR);
     }
 
     @Override
@@ -112,7 +97,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public T run() throws BackgroundException {
         final Session<?> session;
         try {
-            session = pool.borrow(this).withListener(this);
+            session = pool.borrow(this);
         }
         catch(BackgroundException e) {
             failure = e;
@@ -126,7 +111,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             throw e;
         }
         finally {
-            pool.release(session.removeListener(this), failure);
+            pool.release(session, failure);
         }
     }
 
@@ -140,12 +125,11 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         }
         log.info("Run alert callback {} for failure {}", alert, failure);
         // Display alert if the action was not canceled intentionally
-        return alert.alert(pool.getHost(), failure, new StringBuilder(transcript.toString()));
+        return alert.alert(pool.getHost(), failure);
     }
 
     @Override
     public void cleanup(final T result, final BackgroundException failure) {
-        transcript.setLength(0);
         this.message(StringUtils.EMPTY);
         super.cleanup(result, failure);
     }

@@ -23,12 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public interface AlertCallback {
     
-    default boolean alert(final Host host, final BackgroundException failure) {
-        return this.alert(host, failure, new StringBuilder());
-    }
-
     /**
      * @return True if action should be repeated
      */
-    boolean alert(Host host, BackgroundException failure, StringBuilder transcript);
+    boolean alert(Host host, BackgroundException failure);
 }

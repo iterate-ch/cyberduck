@@ -28,7 +28,7 @@ public class NotificationAlertCallback implements AlertCallback {
     private final NotificationService notification = NotificationServiceFactory.get();
 
     @Override
-    public boolean alert(final Host bookmark, final BackgroundException failure, final StringBuilder transcript) {
+    public boolean alert(final Host bookmark, final BackgroundException failure) {
         notification.notify(BookmarkNameProvider.toString(bookmark), bookmark.getUuid(), failure.getMessage(), BookmarkNameProvider.toString(bookmark));
         return false;
     }

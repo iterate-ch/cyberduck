@@ -3217,7 +3217,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             terminal.open(pool.getHost(), workdir);
         }
         catch(AccessDeniedException e) {
-            new PromptAlertCallback(this).alert(pool.getHost(), e, new StringBuilder());
+            new PromptAlertCallback(this).alert(pool.getHost(), e);
         }
     }
 

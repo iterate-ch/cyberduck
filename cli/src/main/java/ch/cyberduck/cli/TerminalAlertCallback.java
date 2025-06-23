@@ -29,7 +29,7 @@ public class TerminalAlertCallback implements AlertCallback {
     private final Console console = new Console();
 
     @Override
-    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
+    public boolean alert(final Host host, final BackgroundException failure) {
         this.print(failure);
         // Never repeat
         return false;
