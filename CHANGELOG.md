@@ -1,5 +1,10 @@
 # Changelog
 
+[9.1.7](https://github.com/iterate-ch/cyberduck/compare/release-9-1-6...release-9-1-7)
+* [Bugfix] Timeout error when attempting to connect using public key authentication (SFTP) (Windows)
+* [Bugfix] Use SHA-2 thumbprints to save trusted server certificates (Windows)
+* [Bugfix] Do not save user trusted server certificates in system (Windows)
+
 [9.1.6](https://github.com/iterate-ch/cyberduck/compare/release-9-1-5...release-9-1-6)
 * [Bugfix] Use regular dual-stack endpoints for presigned URLs (S3)
 * [Bugfix] No attempt to use SSH agent for authentication (SFTP) (Windows)
