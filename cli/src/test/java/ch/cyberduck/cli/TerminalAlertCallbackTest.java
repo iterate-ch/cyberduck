@@ -29,6 +29,6 @@ public class TerminalAlertCallbackTest  {
 
     @Test
     public void testAlert() {
-        assertFalse(new TerminalAlertCallback().alert(new Host(new TestProtocol()), new BackgroundException(), new StringBuilder()));
+        assertFalse(new TerminalAlertCallback().alert(new Host(new TestProtocol()), new BackgroundException()));
     }
 }

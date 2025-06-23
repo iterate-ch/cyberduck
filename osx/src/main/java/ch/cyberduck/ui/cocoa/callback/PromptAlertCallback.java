@@ -39,7 +39,7 @@ public class PromptAlertCallback implements AlertCallback {
     }
 
     @Override
-    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
+    public boolean alert(final Host host, final BackgroundException failure) {
         final FailureDiagnostics.Type type = new DefaultFailureDiagnostics().determine(failure);
         switch(type) {
             case cancel:
@@ -47,7 +47,7 @@ public class PromptAlertCallback implements AlertCallback {
                 return false;
             default:
                 // Send notification
-                notification.alert(host, failure, transcript);
+                notification.alert(host, failure);
                 // Run prompt
                 final AlertController alert = new BackgroundExceptionAlertController(failure, host);
                 switch(alert.beginSheet(parent)) {
