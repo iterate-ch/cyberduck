@@ -30,8 +30,6 @@ jobs:
         if: runner.os == 'windows' || runner.os == 'macos'
       - run: msiexec /i setup\wix\Bonjour64.msi /Quiet /Passive /NoRestart
         if: runner.os == 'windows'
-      - uses: ilammy/msvc-dev-cmd@v1
-        if: runner.os == 'windows'
       - uses: microsoft/setup-msbuild@v2
         if: runner.os == 'windows'
         with:
