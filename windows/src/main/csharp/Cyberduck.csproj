@@ -19,10 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="$(TargetBuildDir)lib\jnidispatch.dll;$(TargetBuildDir)lib\winsparkle.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>$(Filename)$(Extension)</Link>
-    </Content>
+    <Content Include="$(TargetBuildDir)lib\$(Platform)\jnidispatch.dll;$(TargetBuildDir)lib\$(Platform)\winsparkle.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(CyberduckDir)cyberduck-application.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(CyberduckDir)cyberduck-document.ico" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
