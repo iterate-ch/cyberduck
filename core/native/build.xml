@@ -48,6 +48,7 @@
             <target name="Test" />
 
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Platform" value="x64" />
         </msbuild>
     </target>
 </project>
