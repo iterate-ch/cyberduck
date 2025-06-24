@@ -28,6 +28,8 @@ jobs:
       - name: Add msbuild to PATH
         if: ${{ runner.os == 'Windows' }}
         uses: microsoft/setup-msbuild@v2
+        with:
+          msbuild-architecture: x64
       - name: Install Bonjour SDK
         if: ${{ runner.os == 'Windows' }}
         uses: crazy-max/ghaction-chocolatey@v3
