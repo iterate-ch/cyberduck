@@ -198,7 +198,7 @@ public class CryptoVault extends AbstractVault {
             this.open(new VaultConfig(version, CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
                     CryptorProvider.Scheme.SIV_CTRMAC, null, null).withMasterkeyFile(masterkeyFile), passphrase);
         }
-        final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
+        final Path secondLevel = directoryProvider.toEncrypted(session, home);
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         log.debug("Create vault root directory at {}", secondLevel);

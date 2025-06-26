@@ -44,7 +44,7 @@ public class CryptoDirectoryV7ProviderTest {
         final SecureRandom random = new SecureRandom();
         final Cryptor cryptor = crypto.provide(PerpetualMasterkey.generate(random), random);
         final CryptoDirectory provider = new CryptoDirectoryV7Provider(new CryptoVault(home), new CryptoFilenameV7Provider(), new CryptorCache(cryptor.fileNameCryptor()));
-        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/vault/f", EnumSet.of(Path.Type.file)));
+        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), new Path("/vault/f", EnumSet.of(Path.Type.file)));
     }
 
     @Test(expected = NotfoundException.class)
@@ -54,7 +54,7 @@ public class CryptoDirectoryV7ProviderTest {
         final SecureRandom random = new SecureRandom();
         final Cryptor cryptor = crypto.provide(PerpetualMasterkey.generate(random), random);
         final CryptoDirectory provider = new CryptoDirectoryV7Provider(new CryptoVault(home), new CryptoFilenameV7Provider(), new CryptorCache(cryptor.fileNameCryptor()));
-        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), null, new Path("/", EnumSet.of(Path.Type.directory)));
+        provider.toEncrypted(new NullSession(new Host(new TestProtocol())), new Path("/", EnumSet.of(Path.Type.directory)));
     }
 
     @Test
@@ -65,9 +65,9 @@ public class CryptoDirectoryV7ProviderTest {
         final SecureRandom random = new SecureRandom();
         final Cryptor cryptor = crypto.provide(PerpetualMasterkey.generate(random), random);
         final CryptoDirectory provider = new CryptoDirectoryV7Provider(new CryptoVault(home), new CryptoFilenameV7Provider(), new CryptorCache(cryptor.fileNameCryptor()));
-        assertNotNull(provider.toEncrypted(session, null, home));
+        assertNotNull(provider.toEncrypted(session, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));
-        assertNotNull(provider.toEncrypted(session, null, f));
-        assertEquals(provider.toEncrypted(session, null, f), provider.toEncrypted(session, null, f));
+        assertNotNull(provider.toEncrypted(session, f));
+        assertEquals(provider.toEncrypted(session, f), provider.toEncrypted(session, f));
     }
 }
