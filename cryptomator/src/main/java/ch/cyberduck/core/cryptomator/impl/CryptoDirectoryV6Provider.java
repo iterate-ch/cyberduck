@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -69,15 +70,15 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     }
 
     @Override
-    public String toEncrypted(final Session<?> session, final byte[] directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
+    public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
-        final String ciphertextName = prefix + filenameCryptor.encryptFilename(CryptorCache.BASE32, filename, directoryId);
+        final String ciphertextName = prefix + filenameCryptor.encryptFilename(CryptorCache.BASE32, filename, this.getOrCreateDirectoryId(session, parent));
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return filenameProvider.deflate(session, ciphertextName);
     }
 
     @Override
-    public Path toEncrypted(final Session<?> session, final byte[] directoryId, final Path directory) throws BackgroundException {
+    public Path toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
         if(!directory.isDirectory()) {
             throw new NotfoundException(directory.getAbsolute());
         }
@@ -87,7 +88,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
             attributes.setVersionId(null);
             attributes.setFileId(null);
             // Remember random directory id for use in vault
-            final byte[] id = this.toDirectoryId(session, directory, directoryId);
+            final byte[] id = this.getOrCreateDirectoryId(session, directory);
             log.debug("Use directory ID '{}' for folder {}", id, directory);
             attributes.setDirectoryId(id);
             attributes.setDecrypted(directory);
@@ -133,13 +134,13 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     }
 
     protected byte[] load(final Session<?> session, final Path directory) throws BackgroundException {
-        final Path parent = this.toEncrypted(session, directory.getParent().attributes().getDirectoryId(), directory.getParent());
+        Path encryptedParent = this.toEncrypted(session, directory.getParent());
         final String cleartextName = directory.getName();
-        final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
+        final String ciphertextName = this.toEncrypted(session, directory.getParent(), cleartextName, EnumSet.of(Path.Type.directory));
         // Read directory id from file
         try {
             log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
-            final Path metadataFile = new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted));
+            final Path metadataFile = new Path(encryptedParent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted));
             return new ContentReader(session).readBytes(metadataFile);
         }
         catch(NotfoundException e) {
@@ -167,5 +168,22 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         finally {
             lock.writeLock().unlock();
         }
+    }
+
+    @Override
+    public byte[] getOrCreateDirectoryId(final Session<?> session, final Path file) throws BackgroundException {
+        if(file.attributes().getDirectoryId() != null) {
+            return file.attributes().getDirectoryId();
+        }
+        final Path decrypted = file.getType().contains(AbstractPath.Type.encrypted) ? file.attributes().getDecrypted() : file;
+        return this.toDirectoryId(session, decrypted.getType().contains(AbstractPath.Type.file) ? decrypted.getParent() : decrypted, null);
+    }
+
+    @Override
+    public byte[] createDirectoryId(final Path directory) {
+        final byte[] directoryId = random.random().getBytes(StandardCharsets.US_ASCII);
+        //TODO lock?
+        cache.put(new SimplePathPredicate(directory), directoryId);
+        return directoryId;
     }
 }
