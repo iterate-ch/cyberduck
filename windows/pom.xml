@@ -38,24 +38,6 @@
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>unpack-runtime</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>ch.iterate</groupId>
-                                            <artifactId>ikvm</artifactId>
-                                            <type>zip</type>
-                                            <version>${ikvm-version}</version>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
                                 <id>unpack-profiles-core</id>
                                 <phase>generate-sources</phase>
                                 <goals>
@@ -78,34 +60,6 @@
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
-                            <execution>
-                                <id>run-ant-restore-target</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="restore" dir="." />
-                                    </target>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>run-ant-build-target</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="home" value="${main.basedir}" />
-                                        <property name="version" value="${project.version}" />
-                                        <property name="revision" value="${git.commitsCount}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
-                                    </target>
-                                </configuration>
-                            </execution>
                             <execution>
                                 <id>run-ant-test-target</id>
                                 <phase>test</phase>
@@ -130,56 +84,58 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core.Native</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core.Refresh</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Protocols</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Bonjour</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Bonjour.Native</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Importer</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cryptomator</artifactId>
+                    <classifier>net472</classifier>
                     <type>dll</type>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.github.vslavik</groupId>
@@ -195,7 +151,6 @@
                     <classifier>native</classifier>
                     <type>dll</type>
                     <version>1.0.0.1</version>
-                    <scope>runtime</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -253,23 +208,4 @@
             </build>
         </profile>
     </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>protocols</artifactId>
-            <type>pom</type>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>importer</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>cryptomator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 </project>

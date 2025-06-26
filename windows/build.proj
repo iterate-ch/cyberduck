@@ -10,14 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(BuildProject)'=='True' ">
-    <ProjectReference Include="src\main\csharp\Cyberduck.csproj" />
-    <ProjectReference Include="src\test\csharp\Cyberduck.Test.csproj" />
+    <ProjectReference Include="src\main\csharp\Cyberduck.csproj" SetPlatform="Platform=x64" />
+    <ProjectReference Include="src\test\csharp\Cyberduck.Test.csproj" SetPlatform="Platform=x64" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(BuildInstaller)'=='True' ">
     <ProjectReference Include="src\main\wix\WindowsVersionCustomAction\WindowsVersionCustomAction.vcxproj" SetPlatform="Platform=Win32" />
     <ProjectReference Include="src\main\wix\Bundle\Cyberduck.Bundle.wixproj" />
     <ProjectReference Include="src\main\wix\Bootstrapper\Cyberduck.Bootstrapper.wixproj" />
-    <ProjectReference Include="src\main\package\package.wapproj" />
+    <ProjectReference Include="src\main\package\package.wapproj" SetPlatform="Platform=x64" />
   </ItemGroup>
 </Project>

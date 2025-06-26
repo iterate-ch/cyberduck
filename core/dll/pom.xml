@@ -44,26 +44,6 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack-runtime</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>ch.iterate</groupId>
-                                            <artifactId>ikvm</artifactId>
-                                            <type>zip</type>
-                                            <version>${ikvm-version}</version>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
@@ -78,8 +58,14 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
+                                            <classifier>net472</classifier>
                                             <type>dll</type>
-                                            <file>${project.build.directory}/Cyberduck.Core.dll</file>
+                                            <file>${project.build.directory}/net472/Cyberduck.Core.dll</file>
+                                        </artifact>
+                                        <artifact>
+                                            <classifier>net8.0</classifier>
+                                            <type>dll</type>
+                                            <file>${project.build.directory}/net8.0/Cyberduck.Core.dll</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -98,35 +84,15 @@
                       -->
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
-                    <scope>compile</scope>
+                    <scope>provided</scope>
                 </dependency>
                 <dependency>
-                    <groupId>net.java.openjdk</groupId>
-                    <artifactId>sunmscapi</artifactId>
-                    <classifier>x86_64</classifier>
-                    <type>dll</type>
-                    <version>${java-native-dll}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>net.java.openjdk</groupId>
-                    <artifactId>sunmscapi</artifactId>
-                    <version>${java-native-dll}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>net.java.openjdk</groupId>
-                    <artifactId>sunec</artifactId>
-                    <classifier>x86_64</classifier>
-                    <type>dll</type>
-                    <version>${java-native-dll}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>net.java.openjdk</groupId>
-                    <artifactId>sunec</artifactId>
-                    <version>${java-native-dll}</version>
-                    <scope>runtime</scope>
+                    <!--
+                        Workaround for com.auth0.java-jwt being included in Protocols & Cryptomator.
+                      -->
+                    <groupId>com.auth0</groupId>
+                    <artifactId>java-jwt</artifactId>
+                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>net.java.dev.jna</groupId>
@@ -145,6 +111,7 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

@@ -1,0 +1,16 @@
+<Project Sdk="IKVM.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="$(BuildSupportDir)Cyberduck.Java.props" />
+
+  <ItemGroup>
+    <CyberduckReference Include="Core;Bonjour;Protocols;Cryptomator" />
+    <PackageReference Include="iterate-ch.IKVM.MSBuild.SkipDuplicates" />
+
+    <Convert Include="$(TargetBuildDir)*.jar" />
+  </ItemGroup>
+
+</Project>

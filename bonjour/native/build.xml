@@ -23,31 +23,18 @@
 
     <import file="../../build.xml"/>
 
-    <property name="msbuild.configuration" value="release"/>
-
-    <target name="init-msbuild">
-        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-        </taskdef>
-    </target>
-
-    <target name="restore" depends="init-msbuild, version">
+    <target name="restore" depends="msbuild">
         <msbuild buildfile="../src/main/csharp/Cyberduck.Bonjour.Native.csproj">
             <target name="Restore" />
         </msbuild>
     </target>
 
-    <target name="build" depends="init-msbuild, version">
+    <target name="build" depends="restore,msbuild">
         <!-- Create DLL Cyberduck.Bonjour.Native -->
         <msbuild buildfile="../src/main/csharp/Cyberduck.Bonjour.Native.csproj">
             <target name="Build"/>
 
-            <property name="Version"
-                      value="${version}.${revision}"/>
-            <property name="ShortVersion"
-                      value="${version} (${revision})"/>
-            <property name="Configuration"
-                      value="${msbuild.configuration}"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
         </msbuild>
     </target>
 </project>

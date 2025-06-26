@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.Build.Traversal">
 
   <ItemGroup Condition=" '$(Exe)'=='True' ">
-    <ProjectReference Include="..\src\main\csharp\duck.csproj" />
+    <ProjectReference Include="..\src\main\csharp\duck.csproj" SetPlatform="Platform=x64" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Installer)'=='True' ">

@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <Platforms>x64</Platforms>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
 
@@ -17,11 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="$(TargetBuildDir)ikvm/bin/ikvm-native-win32-*.dll">
-      <Link>$(Filename)$(Extension)</Link>
+    <Content Include="$(TargetBuildDir)lib\jnidispatch.dll;$(TargetBuildDir)lib\winsparkle.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(TargetBuildDir)sunmscapi.dll;$(TargetBuildDir)jnidispatch.dll;$(TargetBuildDir)msvcr120.dll;$(TargetBuildDir)sunec.dll;$(TargetBuildDir)winsparkle.dll">
       <Link>$(Filename)$(Extension)</Link>
     </Content>
   </ItemGroup>
@@ -31,9 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="@(IKVMReferences)" />
     <Reference Include="CustomOpenFileFolderDialog">
-      <HintPath>$(TargetBuildDir)CustomOpenFileFolderDialog.dll</HintPath>
+      <HintPath>$(TargetBuildDir)lib/CustomOpenFileFolderDialog.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System.Design" />
@@ -46,6 +44,9 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
     <PackageReference Include="ExceptionReporter" />
+    <PackageReference Include="IKVM">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
     <PackageReference Include="Microsoft.Windows.CsWin32">
       <PrivateAssets>all</PrivateAssets>

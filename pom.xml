@@ -90,7 +90,6 @@
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>1.46.3</google-http-client.version>
         <jwt.version>4.5.0</jwt.version>
-        <ikvm-version>8.0.312.b07-8</ikvm-version>
         <java-native-dll>8u312b07</java-native-dll>
         <rococoa-version>0.10.0</rococoa-version>
         <surefire.group.excluded>ch.cyberduck.test.IntegrationTest</surefire.group.excluded>
@@ -623,7 +622,36 @@
                                 <goal>copy-dependencies</goal>
                             </goals>
                             <configuration>
-                                <outputDirectory>${project.build.directory}</outputDirectory>
+                                <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                <excludeClassifiers>net472,net8.0</excludeClassifiers>
+                                <includeTypes>dll</includeTypes>
+                                <stripClassifier>true</stripClassifier>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-dependencies-dll-net472-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/lib/net472</outputDirectory>
+                                <classifier>net472</classifier>
+                                <includeTypes>dll</includeTypes>
+                                <stripClassifier>true</stripClassifier>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>copy-dependencies-dll-net8.0-target</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/lib/net8.0</outputDirectory>
+                                <classifier>net8.0</classifier>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
@@ -1010,6 +1038,33 @@
             <properties>
                 <configuration>debug</configuration>
             </properties>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-dependency-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>copy-dependencies-jar-target</id>
+                                    <configuration>
+                                        <prependGroupId>true</prependGroupId>
+                                        <stripVersion>true</stripVersion>
+                                        <includeScope>compile</includeScope>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
         </profile>
     </profiles>
 </project>
