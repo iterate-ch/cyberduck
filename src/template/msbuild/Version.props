@@ -7,7 +7,11 @@
     <Revision Condition=" '$(Revision)' == '' ">0</Revision>
     <FileVersion>$(AssemblyVersion).$(Revision)</FileVersion>
     <Copyright><![CDATA[${copyright}]]></Copyright>
-    <Version>$(FileVersion)</Version>
+    <Version>$(InformationalVersion)</Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SignOutput>${msbuild.sign}</SignOutput>
   </PropertyGroup>
 
 </Project>

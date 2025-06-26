@@ -18,7 +18,7 @@
   <PropertyGroup>
     <TargetFrameworks>net472;net8.0-windows10.0.22621.0</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;arm64</Platforms>
     <LangVersion>12.0</LangVersion>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
-    <PackageReference Include="IKVM" />
     <PackageReference Include="Microsoft.Windows.CsWin32">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -41,8 +40,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="ReactiveUI.WPF" />
-    <PackageReference Include="System.Memory" />
     <PackageReference Include="System.Runtime.Caching" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETFramework'">
+    <PackageReference Include="System.Memory" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,51 @@
+<Project>
+
+  <!-- 
+    Don't include in Common.props, this will be included by vcxproj
+    and these already import Microsoft.Cpp.WindowsSdk.props.
+  -->
+
+  <!--
+    Copied from Microsoft.Cpp.Common.props, because it's overwriting DefaultSourceLanguageExtension
+  -->
+  <PropertyGroup>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+    <VSInstallDir>$(VsInstallRoot)\</VSInstallDir>
+    <VCIDEInstallDir>$(VSInstallDir)Common7\IDE\VC\</VCIDEInstallDir>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)Microsoft.Cpp.WindowsSDK.props" />
+
+  <!-- import vc tools props -->
+  <Import Condition="'$(UseVCTools)' != 'false'" Project="$(VCTargetsPath)\Microsoft.Cpp.VCTools.props" />
+
+  <PropertyGroup Condition="'$(PreferredToolArchitecture)' == 'x64' and '$(_VC_x64_ToolsInstalled)' == 'true'">
+    <VCToolArchitecture>Native64Bit</VCToolArchitecture>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PreferredToolArchitecture)' == 'arm64' and '$(_VC_arm64_ToolsInstalled)' == 'true'">
+    <VCToolArchitecture>NativeARM64</VCToolArchitecture>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(VCToolArchitecture)' != 'Native64Bit' and '$(VCToolArchitecture)' != 'NativeARM64'">
+    <VCToolArchitecture>Native32Bit</VCToolArchitecture>
+  </PropertyGroup>
+
+  <!-- WindowsSDK tools architecture needs to match VC tools -->
+  <PropertyGroup>
+    <WindowsSDKToolArchitecture>$(VCToolArchitecture)</WindowsSDKToolArchitecture>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(WindowsSDKToolArchitecture)' == 'Native64Bit'">
+    <WindowsSDK_ExecutablePath>$(WindowsSDK_ExecutablePath_x64);$(WindowsSDK_ExecutablePath_x86)</WindowsSDK_ExecutablePath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(WindowsSDKToolArchitecture)' == 'NativeARM64'">
+    <WindowsSDK_ExecutablePath>$(WindowsSDK_ExecutablePath_ARM64);$(WindowsSDK_ExecutablePath_x86)</WindowsSDK_ExecutablePath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(WindowsSDKToolArchitecture)' != 'Native64Bit' and '$(WindowsSDKToolArchitecture)' != 'NativeARM64'">
+    <WindowsSDK_ExecutablePath>$(WindowsSDK_ExecutablePath_x86)</WindowsSDK_ExecutablePath>
+  </PropertyGroup>
+
+</Project>
