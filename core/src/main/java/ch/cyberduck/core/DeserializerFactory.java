@@ -44,7 +44,7 @@ public class DeserializerFactory<T> extends Factory<Deserializer<T>> {
         }
     }
 
-    public static <T> Deserializer<T> get() {
-        return new DeserializerFactory<T>().create();
+    public static <T> Deserializer<T> get(final T dict) {
+        return new DeserializerFactory<T>().create(dict);
     }
 }
