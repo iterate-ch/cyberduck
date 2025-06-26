@@ -52,17 +52,17 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
     }
 
     @Override
-    public String toEncrypted(final Session<?> session, final byte[] directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
-        final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(), filename, directoryId) + vault.getRegularFileExtension();
+    public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
+        final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(), filename, this.getOrCreateDirectoryId(session, parent)) + vault.getRegularFileExtension();
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return filenameProvider.deflate(session, ciphertextName);
     }
 
     protected byte[] load(final Session<?> session, final Path directory) throws BackgroundException {
-        final Path parent = this.toEncrypted(session, directory.getParent().attributes().getDirectoryId(), directory.getParent());
+        final Path encryptedParent = this.toEncrypted(session, directory.getParent());
         final String cleartextName = directory.getName();
-        final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
-        final Path metadataParent = new Path(parent, ciphertextName, EnumSet.of(Path.Type.directory));
+        final String ciphertextName = this.toEncrypted(session, directory.getParent(), cleartextName, EnumSet.of(Path.Type.directory));
+        final Path metadataParent = new Path(encryptedParent, ciphertextName, EnumSet.of(Path.Type.directory));
         // Read directory id from file
         try {
             log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);

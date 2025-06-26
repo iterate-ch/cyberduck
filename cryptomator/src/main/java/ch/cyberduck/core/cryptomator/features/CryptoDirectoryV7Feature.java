@@ -32,7 +32,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
-import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
@@ -54,8 +53,8 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
-        final Path encrypt = vault.encrypt(session, folder, random.random().getBytes(StandardCharsets.US_ASCII), false);
-        final byte[] directoryId = encrypt.attributes().getDirectoryId();
+        final byte[] directoryId = vault.getDirectoryProvider().createDirectoryId(folder);
+        final Path encrypt = vault.encrypt(session, folder, false);
         // Create metadata file for directory
         final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(vault.encrypt(session, folder, true),
                 new TransferStatus().setRegion(status.getRegion()));

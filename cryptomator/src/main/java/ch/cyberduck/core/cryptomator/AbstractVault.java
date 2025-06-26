@@ -122,15 +122,11 @@ public abstract class AbstractVault implements Vault {
 
     @Override
     public Path encrypt(Session<?> session, Path file) throws BackgroundException {
-        return this.encrypt(session, file, file.attributes().getDirectoryId(), false);
+        return this.encrypt(session, file, false);
     }
 
     @Override
     public Path encrypt(Session<?> session, Path file, boolean metadata) throws BackgroundException {
-        return this.encrypt(session, file, file.attributes().getDirectoryId(), metadata);
-    }
-
-    public Path encrypt(Session<?> session, Path file, byte[] directoryId, boolean metadata) throws BackgroundException {
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {
@@ -145,12 +141,12 @@ public abstract class AbstractVault implements Vault {
             final String filename;
             if(file.getType().contains(Path.Type.encrypted)) {
                 final Path decrypted = file.attributes().getDecrypted();
-                parent = this.getDirectoryProvider().toEncrypted(session, decrypted.getParent().attributes().getDirectoryId(), decrypted.getParent());
-                filename = this.getDirectoryProvider().toEncrypted(session, parent.attributes().getDirectoryId(), decrypted.getName(), decrypted.getType());
+                parent = this.getDirectoryProvider().toEncrypted(session, decrypted.getParent());
+                filename = this.getDirectoryProvider().toEncrypted(session, decrypted.getParent(), decrypted.getName(), decrypted.getType());
             }
             else {
-                parent = this.getDirectoryProvider().toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
-                filename = this.getDirectoryProvider().toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
+                parent = this.getDirectoryProvider().toEncrypted(session, file.getParent());
+                filename = this.getDirectoryProvider().toEncrypted(session, file.getParent(), file.getName(), file.getType());
             }
             final PathAttributes attributes = new PathAttributes(file.attributes());
             attributes.setDirectoryId(null);
@@ -176,9 +172,9 @@ public abstract class AbstractVault implements Vault {
                 return file;
             }
             if(file.getType().contains(Path.Type.vault)) {
-                return this.getDirectoryProvider().toEncrypted(session, this.getHome().attributes().getDirectoryId(), this.getHome());
+                return this.getDirectoryProvider().toEncrypted(session, this.getHome());
             }
-            encrypted = this.getDirectoryProvider().toEncrypted(session, directoryId, file);
+            encrypted = this.getDirectoryProvider().toEncrypted(session, file);
         }
         // Add reference to decrypted file
         if(!file.getType().contains(Path.Type.encrypted)) {
@@ -208,7 +204,7 @@ public abstract class AbstractVault implements Vault {
             try {
                 final String cleartextFilename = this.getFileNameCryptor().decryptFilename(
                         this.getVersion() == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
-                        ciphertext, file.getParent().attributes().getDirectoryId());
+                        ciphertext, this.getDirectoryProvider().getOrCreateDirectoryId(session, file.getParent()));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
