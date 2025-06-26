@@ -34,7 +34,6 @@ import ch.cyberduck.core.transfer.download.PathPriorityComparator;
 
 import org.cryptomator.cryptolib.api.FileHeader;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -84,9 +83,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 if(!status.isExists()) {
                     switch(type) {
                         case upload:
-                            // Preset directory ID for new folders to avert lookup with not found failure in directory ID provider
-                            final byte[] directoryId = random.random().getBytes(StandardCharsets.US_ASCII);
-                            encrypted.put(new TransferItem(cryptomator.encrypt(session, file, directoryId, false), local), status);
+                            encrypted.put(new TransferItem(cryptomator.encrypt(session, file, false), local), status);
                             break;
                         default:
                             encrypted.put(new TransferItem(cryptomator.encrypt(session, file), local), status);

@@ -131,7 +131,7 @@ public class UVFVault extends AbstractVault {
                 // \
                 final String cleartextFilename = effectivefileNameCryptor.decryptFilename(
                         this.getVersion() == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
-                        ciphertext, file.getParent().attributes().getDirectoryId());
+                        ciphertext, directoryProvider.getOrCreateDirectoryId(session, file.getParent()));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
@@ -176,7 +176,8 @@ public class UVFVault extends AbstractVault {
         }
     }
 
-    public Path encrypt(Session<?> session, Path file, byte[] directoryId, boolean metadata) throws BackgroundException {
+    @Override
+    public Path encrypt(Session<?> session, Path file, boolean metadata) throws BackgroundException {
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {
@@ -191,18 +192,17 @@ public class UVFVault extends AbstractVault {
             final String filename;
             if(file.getType().contains(Path.Type.encrypted)) {
                 final Path decrypted = file.attributes().getDecrypted();
-                parent = this.getDirectoryProvider().toEncrypted(session, decrypted.getParent().attributes().getDirectoryId(), decrypted.getParent());
-                filename = this.getDirectoryProvider().toEncrypted(session, parent.attributes().getDirectoryId(), decrypted.getName(), decrypted.getType());
+                parent = this.getDirectoryProvider().toEncrypted(session, decrypted.getParent());
+                filename = this.getDirectoryProvider().toEncrypted(session, parent, decrypted.getName(), decrypted.getType());
             }
             else {
-                parent = this.getDirectoryProvider().toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
+                parent = this.getDirectoryProvider().toEncrypted(session, file.getParent());
                 // / diff to AbstractVault.encrypt
-                String filenameO = this.getDirectoryProvider().toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
+                String filenameO = this.getDirectoryProvider().toEncrypted(session, parent, file.getName(), file.getType());
                 filename = ((CryptoDirectoryUVFProvider) this.getDirectoryProvider()).toEncrypted(session, file.getParent(), file.getName());
                 // \ diff to AbstractVault.decrypt
             }
             final PathAttributes attributes = new PathAttributes(file.attributes());
-            attributes.setDirectoryId(null);
             if(!file.isFile() && !metadata) {
                 // The directory is different from the metadata file used to resolve the actual folder
                 attributes.setVersionId(null);
@@ -225,9 +225,9 @@ public class UVFVault extends AbstractVault {
                 return file;
             }
             if(file.getType().contains(Path.Type.vault)) {
-                return this.getDirectoryProvider().toEncrypted(session, this.getHome().attributes().getDirectoryId(), this.getHome());
+                return this.getDirectoryProvider().toEncrypted(session, this.getHome());
             }
-            encrypted = this.getDirectoryProvider().toEncrypted(session, directoryId, file);
+            encrypted = this.getDirectoryProvider().toEncrypted(session, file);
         }
         // Add reference to decrypted file
         if(!file.getType().contains(Path.Type.encrypted)) {
