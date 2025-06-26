@@ -190,7 +190,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         if(null == sender.selectedItem().representedObject()) {
             final PreferencesController controller = PreferencesControllerFactory.instance();
-            controller.window().makeKeyAndOrderFront(null);
+            controller.display();
             controller.setSelectedPanel(PreferencesController.PreferencesToolbarItem.profiles.name());
         }
         else {
@@ -499,6 +499,11 @@ public class BookmarkController extends SheetController implements CollectionLis
             }
         });
         super.setWindow(window);
+    }
+
+    @Override
+    public void display(final boolean key) {
+        super.display(key);
         cascade = this.cascade(cascade);
     }
 
@@ -621,21 +626,13 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Override
     public void collectionItemRemoved(Object item) {
         if(item.equals(bookmark)) {
-            final NSWindow window = window();
-            if(null != window) {
-                window.orderOut(null);
-            }
+            this.close();
         }
     }
 
     @Override
     public void collectionItemChanged(Object item) {
         this.update();
-    }
-
-    @Override
-    public void callback(final int returncode) {
-        //
     }
 
     public interface BookmarkObserver {

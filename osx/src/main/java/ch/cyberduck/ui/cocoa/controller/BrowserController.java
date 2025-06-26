@@ -20,7 +20,6 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -95,14 +94,12 @@ import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
-import ch.cyberduck.core.worker.DownloadShareWorker;
 import ch.cyberduck.core.worker.ListWorker;
 import ch.cyberduck.core.worker.LoadVaultWorker;
 import ch.cyberduck.core.worker.LockVaultWorker;
 import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.TouchWorker;
-import ch.cyberduck.core.worker.UploadShareWorker;
 import ch.cyberduck.ui.browser.BookmarkColumn;
 import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -127,8 +124,6 @@ import ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory;
 import ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarValidator;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
-import ch.cyberduck.ui.pasteboard.PasteboardService;
-import ch.cyberduck.ui.pasteboard.PasteboardServiceFactory;
 import ch.cyberduck.ui.quicklook.QuickLook;
 import ch.cyberduck.ui.quicklook.QuickLookFactory;
 
@@ -144,7 +139,6 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -315,10 +309,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.filenameFilter = SearchFilterFactory.HIDDEN_FILTER;
             this.showHiddenFiles = false;
         }
-    }
-
-    public BrowserController() {
-        this.loadBundle();
     }
 
     public static void updateBookmarkTableRowHeight() {
@@ -669,6 +659,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         super.setWindow(window);
         // Accept file promises from history tab
         window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
+    }
+
+    @Override
+    public void display(final boolean key) {
+        super.display(key);
         cascade = this.cascade(cascade);
     }
 
@@ -1904,7 +1899,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
-        c.window().makeKeyAndOrderFront(null);
+        c.display();
     }
 
     @Action
@@ -1953,7 +1948,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
         final BookmarkController c = BookmarkControllerFactory.create(bookmarks, item);
-        c.window().makeKeyAndOrderFront(null);
+        c.display();
     }
 
     @Action
@@ -2336,13 +2331,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void gotoButtonClicked(final ID sender) {
-        final GotoController sheet = new GotoController(this, cache);
-        sheet.beginSheet(this);
+        final AlertController sheet = new GotoController(this, cache);
+        this.alert(sheet);
     }
 
     @Action
     public void createFileButtonClicked(final ID sender) {
-        final CreateFileController sheet = new CreateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateFileController.Callback() {
+        final AlertController sheet = new CreateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateFileController.Callback() {
             @Override
             public void callback(final boolean edit, final Path file) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
@@ -2359,12 +2354,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
     public void createSymlinkButtonClicked(final ID sender) {
-        final CreateSymlinkController sheet = new CreateSymlinkController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateSymlinkController.Callback() {
+        final AlertController sheet = new CreateSymlinkController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateSymlinkController.Callback() {
             public void callback(final Path selected, final Path link) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected.getName()) {
                     @Override
@@ -2374,12 +2369,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }));
             }
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
     public void duplicateFileButtonClicked(final ID sender) {
-        final DuplicateFileController sheet = new DuplicateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new DuplicateFileController.Callback() {
+        final AlertController sheet = new DuplicateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new DuplicateFileController.Callback() {
             @Override
             public void callback(final Map<Path, Path> selected) {
                 new OverwriteController(BrowserController.this).overwrite(new ArrayList<>(selected.values()), new DefaultMainAction() {
@@ -2402,13 +2397,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 });
             }
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
-        final FolderController sheet = new FolderController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
+        final AlertController sheet = new FolderController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
                 feature != null ? feature.getLocations() : Collections.emptySet(), feature != null ? feature.getDefault() : Location.unknown, new FolderController.Callback() {
 
             @Override
@@ -2422,13 +2417,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         }));
             }
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
     public void createEncryptedVaultButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
-        final VaultController sheet = new VaultController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
+        final AlertController sheet = new VaultController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
                 feature != null ? feature.getLocations() : Collections.emptySet(), feature != null ? feature.getDefault() : Location.unknown, new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
@@ -2445,7 +2440,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 );
             }
         });
-        sheet.beginSheet(this);
+        this.alert(sheet);
     }
 
     @Action
@@ -2496,9 +2491,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void sendCustomCommandClicked(final ID sender) {
-        final CommandController controller = new CommandController(this, pool);
-        final SheetInvoker sheet = new SheetInvoker(controller, this, controller);
-        sheet.beginSheet();
+        final CommandController controller = new CommandController(pool);
+        this.alert(controller);
     }
 
     @Action
@@ -2558,8 +2552,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void infoButtonClicked(final ID sender) {
         if(this.getSelectionCount() > 0) {
-            InfoController c = InfoControllerFactory.create(this, this.getSelectedPaths());
-            c.window().makeKeyAndOrderFront(null);
+            final InfoController c = InfoControllerFactory.create(this, this.getSelectedPaths());
+            c.display();
         }
     }
 
@@ -2600,85 +2594,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void shareFileButtonClicked(final ID sender) {
         final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
         this.background(new WorkerBackgroundAction<>(this, pool,
-                        new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this)) {
-                            @Override
-                            public void cleanup(final DescriptiveUrl url) {
-                                if(null != url) {
-                                    // Display
-                                    final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
-                                            MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
-                                            LocaleFactory.localizedString("Continue", "Credentials"),
-                                            DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
-                                            null)) {
-                                        @Override
-                                        public void callback(final int returncode) {
-                                            switch(returncode) {
-                                                case SheetCallback.CANCEL_OPTION:
-                                                    PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
-                                            }
-                                        }
-
-                                        @Override
-                                        public NSView getAccessoryView(final NSAlert alert) {
-                                            if(null == url.getUrl()) {
-                                                return null;
-                                            }
-                                            final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
-                                            field.setEditable(false);
-                                            field.setSelectable(true);
-                                            field.cell().setWraps(false);
-                                            field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
-                                            return field;
-                                        }
-                                    };
-                                    alert.beginSheet(BrowserController.this);
-                                }
-                            }
-                        }
-                )
-        );
+                new AlertDownloadShareWorker<Void>(this, file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this))));
     }
 
     @Action
     public void requestFilesButtonClicked(final ID sender) {
         final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
         this.background(new WorkerBackgroundAction<>(this, pool,
-                        new UploadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this)) {
-                            @Override
-                            public void cleanup(final DescriptiveUrl url) {
-                                if(null != url) {
-                                    final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
-                                            MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
-                                            LocaleFactory.localizedString("Continue", "Credentials"),
-                                            DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
-                                            null)) {
-                                        @Override
-                                        public void callback(final int returncode) {
-                                            switch(returncode) {
-                                                case SheetCallback.CANCEL_OPTION:
-                                                    PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
-                                            }
-                                        }
-
-                                        @Override
-                                        public NSView getAccessoryView(final NSAlert alert) {
-                                            if(null == url.getUrl()) {
-                                                return null;
-                                            }
-                                            final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
-                                            field.setEditable(false);
-                                            field.setSelectable(true);
-                                            field.cell().setWraps(false);
-                                            field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
-                                            return field;
-                                        }
-                                    };
-                                    alert.beginSheet(BrowserController.this);
-                                }
-                            }
-                        }
-                )
-        );
+                new AlertUploadShareWorker<Void>(this, file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this))));
     }
 
     @Action
@@ -2804,10 +2727,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         uploadPanel.setAllowsMultipleSelection(true);
         uploadPanel.setPrompt(LocaleFactory.localizedString("Upload", "Transfer"));
         if(uploadPanel.respondsToSelector(Foundation.selector("setShowsHiddenFiles:"))) {
-            uploadPanelHiddenFilesCheckbox = NSButton.buttonWithFrame(new NSRect(0, 0));
-            uploadPanelHiddenFilesCheckbox.setTitle(LocaleFactory.localizedString("Show Hidden Files"));
-            uploadPanelHiddenFilesCheckbox.setTarget(this.id());
-            uploadPanelHiddenFilesCheckbox.setAction(Foundation.selector("uploadPanelSetShowHiddenFiles:"));
+            uploadPanelHiddenFilesCheckbox = NSButton.buttonWithTitleTargetAction(LocaleFactory.localizedString("Show Hidden Files"),
+                    this.id(), Foundation.selector("uploadPanelSetShowHiddenFiles:"));
             uploadPanelHiddenFilesCheckbox.setButtonType(NSButton.NSSwitchButton);
             uploadPanelHiddenFilesCheckbox.setState(NSCell.NSOffState);
             uploadPanelHiddenFilesCheckbox.sizeToFit();
@@ -2926,16 +2847,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void connectButtonClicked(final ID sender) {
         final ConnectionController controller = ConnectionControllerFactory.create(this);
-        final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
+        this.alert(controller, new SheetCallback() {
             @Override
             public void callback(final int returncode) {
-                if(returncode == SheetCallback.DEFAULT_OPTION) {
-                    mount(controller.getBookmark());
+                final Host bookmark = controller.getBookmark();
+                switch(returncode) {
+                    case DEFAULT_OPTION:
+                        mount(bookmark);
+                        break;
                 }
-                controller.callback(returncode);
             }
-        }, this, controller);
-        sheet.beginSheet();
+        });
     }
 
     @Action
@@ -3391,16 +3313,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 );
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                this.alert(alert, new SheetCallback() {
+                this.alert(alert, new SheetCallback.DelegatingSheetCallback(new SheetCallback() {
                     @Override
-                    public void callback(int returncode) {
+                    public void callback(final int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
                             // Never show again.
                             preferences.setProperty("browser.disconnect.confirm", false);
                         }
-                        callback.callback(returncode);
                     }
-                });
+                }, callback));
                 // No unmount yet
                 return false;
             }

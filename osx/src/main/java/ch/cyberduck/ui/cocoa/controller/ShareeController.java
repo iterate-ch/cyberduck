@@ -27,18 +27,13 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
-
 import java.util.Comparator;
 import java.util.Set;
 
 public class ShareeController extends AlertController {
 
     @Outlet
-    private NSView view;
-    @Outlet
-    private NSPopUpButton shareePopup;
+    private final NSPopUpButton shareePopup = NSPopUpButton.buttonPullsDown(false);
 
     private final Host host;
     private final Share.Type type;
@@ -53,7 +48,7 @@ public class ShareeController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(), 64));
@@ -65,13 +60,10 @@ public class ShareeController extends AlertController {
         alert.setInformativeText(LocaleFactory.localizedString("Send share to:", "Share"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "Share"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Share"));
-        super.loadBundle(alert);
+        return alert;
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
-        view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-        shareePopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
-        shareePopup.setFrameOrigin(new NSPoint(0, 0));
         shareePopup.addItemWithTitle(Share.Sharee.world.getDescription());
         shareePopup.menu().addItem(NSMenuItem.separatorItem());
         sharees.stream().sorted(Comparator.comparing(Share.Sharee::getDescription)).forEach(sharee -> {
@@ -82,9 +74,7 @@ public class ShareeController extends AlertController {
             }
         });
         shareePopup.selectItemAtIndex(shareePopup.indexOfItemWithRepresentedObject(Share.Sharee.world.getIdentifier()));
-        // Override accessory view with location menu added
-        view.addSubview(shareePopup);
-        return view;
+        return shareePopup;
     }
 
     @Override

@@ -45,7 +45,7 @@ public class DuplicateFileController extends FileController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Duplicate File", "Duplicate"));
@@ -54,12 +54,12 @@ public class DuplicateFileController extends FileController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Duplicate", "Duplicate"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Duplicate"));
         alert.setIcon(IconCacheFactory.<NSImage>get().fileIcon(selected, 64));
-        super.loadBundle(alert);
+        return alert;
     }
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
-        final NSView view = super.getAccessoryView(alert);
+        final NSView accessoryView = super.getAccessoryView(alert);
         final String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
                 UserDateFormatterFactory.get().getShortFormat(System.currentTimeMillis(), false)
@@ -67,7 +67,7 @@ public class DuplicateFileController extends FileController {
                         .replace(':', '.'),
                 StringUtils.isNotBlank(selected.getExtension()) ? String.format(".%s", selected.getExtension()) : StringUtils.EMPTY);
         this.updateField(inputField, proposal);
-        return view;
+        return accessoryView;
     }
 
     @Override

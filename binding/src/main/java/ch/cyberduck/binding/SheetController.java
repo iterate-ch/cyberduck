@@ -17,49 +17,34 @@ package ch.cyberduck.binding;
 
 import ch.cyberduck.binding.application.AlertSheetReturnCodeMapper;
 import ch.cyberduck.binding.application.AppKitFunctionsLibrary;
-import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.ui.InputValidator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Selector;
 
-public abstract class SheetController extends WindowController implements SheetCallback, InputValidator {
+import java.util.HashSet;
+import java.util.Set;
+
+public abstract class SheetController extends WindowController implements InputValidator, SheetCallback {
     private static final Logger log = LogManager.getLogger(SheetController.class);
 
-    private final NSApplication application = NSApplication.sharedApplication();
+    public static final Selector BUTTON_CLOSE_SELECTOR = Foundation.selector("closeSheet:");
 
-    private SheetCallback callback = new SheetCallback() {
-        @Override
-        public void callback(final int returncode) {
-            if(SheetCallback.CANCEL_OPTION == returncode) {
-                window.orderOut(null);
-            }
-        }
-    };
-    private InputValidator validator;
+    private final InputValidator validator;
+    private final Set<AlertRunner.CloseHandler> handlers = new HashSet<>();
 
     public SheetController() {
-        this(new InputValidator() {
-            @Override
-            public boolean validate(final int option) {
-                return true;
-            }
-        });
+        this(disabled);
     }
 
     public SheetController(final InputValidator callback) {
         this.validator = callback;
-    }
-
-    public void setValidator(final InputValidator validator) {
-        this.validator = validator;
-    }
-
-    public void setCallback(final SheetCallback callback) {
-        this.callback = callback;
     }
 
     @Override
@@ -69,31 +54,73 @@ public abstract class SheetController extends WindowController implements SheetC
 
     /**
      * This must be the target action for any button in the sheet dialog. Will validate the input
-     * and close the sheet; #sheetDidClose will be called afterwards
+     * and close the sheet
      *
      * @param sender A button in the sheet dialog
+     * @see SheetCallback#DEFAULT_OPTION
+     * @see SheetCallback#CANCEL_OPTION
+     * @see SheetCallback#ALTERNATE_OPTION
+     * @see SheetDidCloseReturnCodeDelegate#sheetDidClose_returnCode_contextInfo(NSWindow, int, ID)
      */
     @Action
     public void closeSheet(final NSButton sender) {
         log.debug("Close sheet with button {}", sender.title());
-        final int option = new AlertSheetReturnCodeMapper().getOption(sender);
-        this.closeSheetWithOption(option);
+        this.closeSheetWithOption(new AlertSheetReturnCodeMapper().getOption(sender));
     }
 
-    public void closeSheetWithOption(final int option) {
+    /**
+     * @param option Tag set on button
+     * @see SheetDidCloseReturnCodeDelegate#sheetDidClose_returnCode_contextInfo(NSWindow, int, ID)
+     */
+    public void closeSheetWithOption(int option) {
+        log.debug("Close sheet with option {}", option);
         window.endEditingFor(null);
         if(option == SheetCallback.DEFAULT_OPTION || option == SheetCallback.ALTERNATE_OPTION) {
             if(!this.validate(option)) {
+                log.warn("Failed validation with option {}", option);
                 AppKitFunctionsLibrary.beep();
                 return;
             }
         }
-        callback.callback(option);
-        application.endSheet(window, option);
+        handlers.forEach(h -> h.closed(window, option));
+        if(handlers.isEmpty()) {
+            log.warn("No close handlers for {}", this);
+            window.performClose(null);
+        }
+        handlers.clear();
     }
 
+    public void addHandler(final AlertRunner.CloseHandler handler) {
+        handlers.add(handler);
+    }
+
+    @Override
+    public void callback(final int returncode) {
+        log.warn("Return code {} not handled", returncode);
+    }
+
+    @Delegate
     // Handle keyboard esc event when not running as sheet
     public void cancel(ID sender) {
         this.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
+    }
+
+    /**
+     * Implementation with no bundle loaded but window reference only
+     */
+    public static class NoBundleSheetController extends SheetController {
+        public NoBundleSheetController(final NSWindow window) {
+            this(window, InputValidator.disabled);
+        }
+
+        public NoBundleSheetController(final NSWindow window, final InputValidator callback) {
+            super(callback);
+            this.setWindow(window);
+        }
+
+        @Override
+        protected String getBundleName() {
+            return null;
+        }
     }
 }

@@ -89,7 +89,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public final class TransferController extends WindowController implements TransferListener, NSToolbar.Delegate, NSMenu.Validation {
+public class TransferController extends WindowController implements TransferListener, NSToolbar.Delegate, NSMenu.Validation {
     private static final Logger log = LogManager.getLogger(TransferController.class);
 
     private final TransferToolbarValidator toolbarValidator = new TransferToolbarValidator(this);
@@ -204,11 +204,6 @@ public final class TransferController extends WindowController implements Transf
             window.setTabbingIdentifier(preferences.getProperty("queue.window.tabbing.identifier"));
         }
         super.setWindow(window);
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
     }
 
     @Override
@@ -604,7 +599,7 @@ public final class TransferController extends WindowController implements Transf
             public void init() throws BackgroundException {
                 super.init();
                 if(preferences.getBoolean("queue.window.open.transfer.start")) {
-                    window.makeKeyAndOrderFront(null);
+                    display();
                 }
             }
 
@@ -622,7 +617,7 @@ public final class TransferController extends WindowController implements Transf
                 if(transfer.isReset() && transfer.isComplete()) {
                     if(preferences.getBoolean("queue.window.open.transfer.stop")) {
                         if(!(collection.numberOfRunningTransfers() > 0)) {
-                            window.orderOut(null);
+                            close();
                         }
                     }
                 }

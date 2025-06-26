@@ -38,7 +38,7 @@ public class ChangedHostKeyAlertController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname));
@@ -48,7 +48,7 @@ public class ChangedHostKeyAlertController extends AlertController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Deny"));
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        super.loadBundle(alert);
+        return alert;
     }
 
     @Override

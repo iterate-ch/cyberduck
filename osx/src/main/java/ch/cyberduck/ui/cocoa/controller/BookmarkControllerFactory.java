@@ -42,7 +42,6 @@ public final class BookmarkControllerFactory {
                     }
                 };
                 c.addObserver(collection::collectionItemChanged);
-                c.loadBundle();
                 open.put(host, c);
             }
             final BookmarkController controller = open.get(host);

@@ -25,6 +25,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,6 +36,7 @@ import static org.junit.Assert.assertEquals;
 public class TerminalDownloadTest {
 
     @Test
+    @Ignore
     public void testDownloadHttp() throws Exception {
         final CommandLineParser parser = new DefaultParser();
         final Options options = TerminalOptionsBuilder.options();

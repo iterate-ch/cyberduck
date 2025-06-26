@@ -45,9 +45,24 @@ public class TaskController extends BundleController {
 
     public TaskController(final BackgroundAction task) {
         this.task = task;
-        this.loadBundle();
-        if(this.task.isRunning()) {
-            progress.startAnimation(null);
+    }
+
+    public void setName(NSTextField name) {
+        this.name = name;
+        this.name.setStringValue(task.getName());
+    }
+
+    public void setText(NSTextField text) {
+        this.text = text;
+        this.text.setStringValue(task.getActivity());
+    }
+
+    public void setProgress(NSProgressIndicator progress) {
+        this.progress = progress;
+        this.progress.setDisplayedWhenStopped(false);
+        this.progress.setIndeterminate(true);
+        if(task.isRunning()) {
+            this.progress.startAnimation(null);
         }
         this.task.addListener(new BackgroundActionListener() {
             public void start(BackgroundAction action) {
@@ -78,22 +93,6 @@ public class TaskController extends BundleController {
                 action.removeListener(this);
             }
         });
-    }
-
-    public void setName(NSTextField name) {
-        this.name = name;
-        this.name.setStringValue(task.getName());
-    }
-
-    public void setText(NSTextField text) {
-        this.text = text;
-        this.text.setStringValue(task.getActivity());
-    }
-
-    public void setProgress(NSProgressIndicator progress) {
-        this.progress = progress;
-        this.progress.setDisplayedWhenStopped(false);
-        this.progress.setIndeterminate(true);
     }
 
     public void setStopButton(NSButton stopButton) {

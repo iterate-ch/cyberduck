@@ -23,6 +23,7 @@ import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.StringAppender;
 
 public class InsecureLoginAlertController extends AlertController {
+
     private final String title;
     private final String message;
     private final String continueButton;
@@ -42,7 +43,7 @@ public class InsecureLoginAlertController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         alert.setMessageText(title);
@@ -52,7 +53,7 @@ public class InsecureLoginAlertController extends AlertController {
         alert.setShowsHelp(true);
         alert.setShowsSuppressionButton(enableSuppressionButton);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
-        super.loadBundle(alert);
+        return alert;
     }
 
     @Override

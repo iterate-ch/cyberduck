@@ -22,13 +22,11 @@ import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.EnumSet;
 
@@ -39,7 +37,7 @@ public abstract class FileController extends AlertController {
     private final Cache<Path> cache;
 
     @Outlet
-    protected NSTextField inputField;
+    protected NSTextField inputField = NSTextField.textFieldWithString(StringUtils.EMPTY);
 
     public FileController(final Path workdir, final Path selected, final Cache<Path> cache) {
         this.workdir = workdir;
@@ -48,15 +46,9 @@ public abstract class FileController extends AlertController {
     }
 
     @Override
-    public void loadBundle(final NSAlert alert) {
-        this.inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
-        this.inputField.cell().setWraps(false);
-        this.inputField.cell().setPlaceholderString(alert.informativeText());
-        super.loadBundle(alert);
-    }
-
-    @Override
     public NSView getAccessoryView(final NSAlert alert) {
+        inputField.cell().setWraps(false);
+        inputField.cell().setPlaceholderString(alert.informativeText());
         return inputField;
     }
 
@@ -92,14 +84,8 @@ public abstract class FileController extends AlertController {
             case DEFAULT_OPTION:
             case ALTERNATE_OPTION:
                 this.callback(returncode, new Path(directory, StringUtils.trim(inputField.stringValue()), EnumSet.of(Path.Type.file)));
-                break;
         }
     }
 
     public abstract void callback(final int returncode, final Path file);
-
-    @Override
-    protected String help() {
-        return ProviderHelpServiceFactory.get().help();
-    }
 }

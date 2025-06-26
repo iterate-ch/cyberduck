@@ -27,8 +27,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -36,9 +34,7 @@ import java.util.Set;
 public class RegionController extends AlertController {
 
     @Outlet
-    private NSView view;
-    @Outlet
-    private NSPopUpButton regionPopup;
+    private final NSPopUpButton regionPopup = NSPopUpButton.buttonPullsDown(false);
 
     private final Set<Location.Name> regions;
     private final Location.Name defaultRegion;
@@ -51,7 +47,7 @@ public class RegionController extends AlertController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Choose Region", "Folder"));
@@ -59,13 +55,10 @@ public class RegionController extends AlertController {
         alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Choose"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
-        super.loadBundle(alert);
+        return alert;
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
-        view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-        regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
-        regionPopup.setFrameOrigin(new NSPoint(0, 0));
         regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
             regionPopup.addItemWithTitle(region.toString());
             final NSMenuItem item = regionPopup.itemWithTitle(region.toString());
@@ -79,9 +72,7 @@ public class RegionController extends AlertController {
                 regionPopup.selectItem(regionPopup.lastItem());
             }
         });
-        // Override accessory view with location menu added
-        view.addSubview(regionPopup);
-        return view;
+        return regionPopup;
     }
 
     @Override
