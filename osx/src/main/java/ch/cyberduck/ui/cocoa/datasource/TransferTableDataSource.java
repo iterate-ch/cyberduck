@@ -162,7 +162,7 @@ public class TransferTableDataSource extends ListDataSource {
             if(StringUtils.isNotBlank(droppedText)) {
                 log.info("NSPasteboard.StringPboardType:{}", droppedText);
                 final DownloadController c = new DownloadController(droppedText);
-                c.beginSheet(TransferControllerFactory.get());
+                TransferControllerFactory.get().alert(c);
                 return true;
             }
             return false;
@@ -197,7 +197,6 @@ public class TransferTableDataSource extends ListDataSource {
     public ProgressController getController(final Transfer t) {
         if(!controllers.containsKey(t)) {
             final ProgressController controller = new ProgressController(t);
-            controller.loadBundle();
             controllers.put(t, controller);
         }
         return controllers.get(t);

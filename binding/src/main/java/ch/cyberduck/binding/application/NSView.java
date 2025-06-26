@@ -269,6 +269,16 @@ public abstract class NSView extends NSResponder {
      * Conversion Error : /// Original signature : <code>void resizeWithOldSuperviewSize(null)</code><br>
      * - (void)resizeWithOldSuperviewSize:(null)oldSize; (Argument oldSize cannot be converted)
      */
+
+    /**
+     * AppKit sets this property to the best size available for the view, considering all of the constraints it and
+     * its subviews hold and satisfying a preference to make the view as small as possible. The size values
+     * in this property are never negative.
+     *
+     * @return The minimum size of the view that satisfies the constraints it holds.
+     */
+    public abstract NSSize fittingSize();
+
     /**
      * Original signature : <code>void setAutoresizesSubviews(BOOL)</code><br>
      * <i>native declaration : :155</i>

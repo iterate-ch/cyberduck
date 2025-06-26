@@ -15,7 +15,7 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSPrintInfo;
@@ -34,6 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
@@ -41,19 +42,25 @@ import org.rococoa.cocoa.foundation.NSSize;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static final Logger log = LogManager.getLogger(WindowController.class);
 
     protected static final String DEFAULT = LocaleFactory.localizedString("Default");
 
-    private final Set<WindowListener> listeners
-            = Collections.synchronizedSet(new HashSet<WindowListener>());
+    protected final Set<WindowListener> listeners
+            = Collections.synchronizedSet(new HashSet<>());
     /**
      * The window this controller is owner of
      */
     @Outlet
     protected NSWindow window;
+
+    /**
+     * Main content view of window
+     */
+    protected NSView view;
 
     public WindowController() {
         super();
@@ -84,8 +91,9 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public void setWindow(final NSWindow window) {
         this.window = window;
+        this.view = window.contentView();
         this.window.recalculateKeyViewLoop();
-        this.window.setReleasedWhenClosed(!this.isSingleton());
+        this.window.setReleasedWhenClosed(true);
         this.window.setDelegate(this.id());
     }
 
@@ -94,14 +102,32 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     /**
-     * A singleton window is not released when closed and the controller is not invalidated
-     *
-     * @return Always false
-     * @see #invalidate()
-     * @see ch.cyberduck.binding.application.NSWindow#setReleasedWhenClosed(boolean)
+     * Order front window
      */
-    public boolean isSingleton() {
-        return false;
+    public void display() {
+        this.display(true);
+    }
+
+    /**
+     * Order front window
+     *
+     * @param key Make key window
+     */
+    public void display(final boolean key) {
+        this.loadBundle();
+        if(key) {
+            window.makeKeyAndOrderFront(null);
+        }
+        else {
+            window.orderFront(null);
+        }
+    }
+
+    /**
+     * Order out window
+     */
+    public void close() {
+        window.orderOut(null);
     }
 
     /**
@@ -179,10 +205,7 @@ public abstract class WindowController extends BundleController implements NSWin
         for(WindowListener listener : listeners.toArray(new WindowListener[listeners.size()])) {
             listener.windowWillClose();
         }
-        if(!this.isSingleton()) {
-            //If the window is closed it is assumed the controller object is no longer used
-            this.invalidate();
-        }
+        this.invalidate();
     }
 
     /**
@@ -195,22 +218,26 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * Resize window frame to fit the content view of the currently selected tab.
      */
-    protected void resize() {
+    public void resize() {
         final NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
         final double height = this.getMinWindowHeight();
         final NSRect frameRect = new NSRect(
                 new NSPoint(windowFrame.origin.x.doubleValue(), windowFrame.origin.y.doubleValue() + windowFrame.size.height.doubleValue() - height),
                 new NSSize(windowFrame.size.width.doubleValue(), height)
         );
+        log.debug("Resize window {} to {}", window, frameRect);
         window.setFrame_display_animate(NSWindow.frameRectForContentRect_styleMask(frameRect, window.styleMask()),
                 true, window.isVisible());
+        for(WindowListener listener : listeners) {
+            listener.windowDidResize(frameRect.size);
+        }
     }
 
     protected double getMinWindowHeight() {
         final NSRect contentRect = this.getContentRect();
         //Border top + toolbar
         return contentRect.size.height.doubleValue()
-                + 40 + toolbarHeightForWindow(window);
+                + 40 + toolbarHeightForWindow();
     }
 
     protected double getMinWindowWidth() {
@@ -218,16 +245,16 @@ public abstract class WindowController extends BundleController implements NSWin
         return contentRect.size.width.doubleValue();
     }
 
-    protected static double toolbarHeightForWindow(final NSWindow window) {
-        NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
-        return windowFrame.size.height.doubleValue() - window.contentView().frame().size.height.doubleValue();
+    protected double toolbarHeightForWindow() {
+        final NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
+        return windowFrame.size.height.doubleValue() - view.frame().size.height.doubleValue();
     }
 
     /**
      * @return Minimum size to fit content view of currently selected tab.
      */
     protected NSRect getContentRect() {
-        return window.contentView().frame();
+        return view.frame();
     }
 
     /**
@@ -241,22 +268,6 @@ public abstract class WindowController extends BundleController implements NSWin
             toggle.performClick(null);
         }
         toggle.setState(select ? NSCell.NSOnState : NSCell.NSOffState);
-    }
-
-    /**
-     * Display alert as sheet to the window of this controller
-     *
-     * @param alert    Sheet
-     * @param callback Dismissed notification
-     */
-    public void alert(final NSAlert alert, final SheetCallback callback) {
-        final AlertController c = new AlertController(alert) {
-            @Override
-            public void callback(final int returncode) {
-                callback.callback(returncode);
-            }
-        };
-        c.beginSheet(this);
     }
 
     @Action
@@ -279,6 +290,76 @@ public abstract class WindowController extends BundleController implements NSWin
     public void printOperationDidRun_success_contextInfo(NSPrintOperation op, boolean success, ID contextInfo) {
         if(!success) {
             log.warn("Printing failed for context {}", contextInfo);
+        }
+    }
+
+    @Override
+    protected AlertRunner alertFor(final SheetController sheet) {
+        final SheetAlertRunner handler = new SheetAlertRunner(window, sheet);
+        sheet.addHandler(handler);
+        return handler;
+    }
+
+    /**
+     * Display as sheet attached to window of parent controller
+     */
+    public static final class SheetAlertRunner implements AlertRunner, AlertRunner.CloseHandler {
+        private final NSWindow window;
+        private final SheetController controller;
+        private final AtomicReference<Proxy> reference = new AtomicReference<>();
+
+        /**
+         * @param window     Parent window
+         * @param controller Controller for sheet window
+         */
+        public SheetAlertRunner(final NSWindow window, final SheetController controller) {
+            this.window = window;
+            this.controller = controller;
+        }
+
+        @Override
+        public void closed(final NSWindow sheet, final int returncode) {
+            // Close window
+            sheet.orderOut(null);
+            // Ends a document modal session by specifying the sheet window
+            log.debug("End sheet window for {}", controller);
+            NSApplication.sharedApplication().endSheet(controller.window(), returncode);
+        }
+
+        /**
+         * Run sheet alert window
+         */
+        @Override
+        public void alert(final NSWindow sheet, final SheetCallback callback) {
+            final Proxy proxy = new SheetDidCloseReturnCodeDelegate(callback);
+            reference.set(proxy);
+            log.debug("Begin sheet {} for {}", sheet, controller);
+            NSApplication.sharedApplication().beginSheet(sheet, window,
+                    proxy.id(), SheetDidCloseReturnCodeDelegate.selector, null);
+        }
+    }
+
+    public static final class SheetDidCloseReturnCodeDelegate extends Proxy {
+        public static final Selector selector = Foundation.selector("sheetDidClose:returnCode:contextInfo:");
+
+        private final SheetCallback callback;
+
+        public SheetDidCloseReturnCodeDelegate(final SheetCallback callback) {
+            this.callback = callback;
+        }
+
+        /**
+         * Called by the runtime after a sheet has been dismissed. Ends any modal session and sends the returncode to the
+         * callback implementation. Also invalidates this controller to be garbage collected and notifies the lock object
+         *
+         * @param sheetWindow Sheet window
+         * @param returncode  Identifier for the button clicked by the user
+         * @param contextInfo Not used
+         */
+        @Delegate
+        public void sheetDidClose_returnCode_contextInfo(final NSWindow sheetWindow, final int returncode, final ID contextInfo) {
+            log.debug("Close with return code {}", returncode);
+            callback.callback(returncode);
         }
     }
 }

@@ -15,6 +15,8 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.Preferences;
@@ -26,7 +28,7 @@ import java.util.Map;
 
 public final class InfoControllerFactory {
 
-    private static final Map<BrowserController, InfoController> open
+    private static final Map<WindowController, InfoController> open
             = new HashMap<>();
 
     private static final Preferences preferences = PreferencesFactory.get();
@@ -35,29 +37,30 @@ public final class InfoControllerFactory {
         //
     }
 
-    public static InfoController create(final BrowserController controller, final List<Path> selected) {
-        if(preferences.getBoolean("browser.info.inspector")) {
-            if(open.containsKey(controller)) {
-                final InfoController c = open.get(controller);
-                c.setFiles(selected);
-                return c;
+    public static InfoController create(final BrowserController parent, final List<Path> selected) {
+        synchronized(NSApplication.sharedApplication()) {
+            if(preferences.getBoolean("browser.info.inspector")) {
+                if(open.containsKey(parent)) {
+                    final InfoController c = open.get(parent);
+                    c.setFiles(selected);
+                    return c;
+                }
             }
+            final InfoController info = new InfoController(parent, parent.getSession(), selected, new ReloadCallback() {
+                @Override
+                public void done(final List<Path> files) {
+                    parent.reload(parent.workdir(), selected, selected);
+                }
+            }) {
+                @Override
+                public void invalidate() {
+                    open.remove(parent);
+                    super.invalidate();
+                }
+            };
+            open.put(parent, info);
+            return info;
         }
-        final InfoController info = new InfoController(controller, controller.getSession(), selected, new ReloadCallback() {
-            @Override
-            public void done(final List<Path> files) {
-                controller.reload(controller.workdir(), selected, selected);
-            }
-        }) {
-            @Override
-            public void windowWillClose(final NSNotification notification) {
-                open.remove(controller);
-                super.windowWillClose(notification);
-            }
-        };
-        info.loadBundle();
-        open.put(controller, info);
-        return info;
     }
 
     /**

@@ -37,8 +37,13 @@ public final class TransferControllerFactory {
     public static TransferController get() {
         synchronized(NSApplication.sharedApplication()) {
             if(null == shared) {
-                shared = new TransferController();
-                shared.loadBundle();
+                shared = new TransferController() {
+                    @Override
+                    public void invalidate() {
+                        shared = null;
+                        super.invalidate();
+                    }
+                };
             }
             return shared;
         }

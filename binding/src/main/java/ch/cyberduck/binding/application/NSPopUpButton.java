@@ -33,8 +33,14 @@ public abstract class NSPopUpButton extends NSButton {
 
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPopUpButton", _Class.class);
 
-    public static NSPopUpButton buttonWithFrame(NSRect frameRect) {
-        return CLASS.alloc().initWithFrame_pullsDown(frameRect, false);
+    /**
+     * Returns an NSPopUpButton object initialized to the specified dimensions.
+     *
+     * @param flag true if you want the receiver to display a pull-down menu; otherwise, false if you want it to display a pop-up menu.
+     * @return An initialized NSPopUpButton object, or nil if the object could not be initialized.
+     */
+    public static NSPopUpButton buttonPullsDown(boolean flag) {
+        return CLASS.alloc().initWithFrame_pullsDown(new NSRect(0, 26), false);
     }
 
     public interface _Class extends ObjCClass {
@@ -135,6 +141,7 @@ public abstract class NSPopUpButton extends NSButton {
      * <i>native declaration : :55</i>
      */
     public abstract NSInteger indexOfItemWithTag(NSInteger tag);
+
     /**
      * Original signature : <code>NSInteger indexOfItemWithRepresentedObject(null)</code><br>
      * - (NSInteger)indexOfItemWithRepresentedObject:(null)obj; (Argument obj cannot be converted)

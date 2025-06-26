@@ -29,8 +29,20 @@ public abstract class NSSecureTextField extends NSTextField {
         return CLASS.alloc().initWithFrame(frameRect);
     }
 
+    public static NSSecureTextField textFieldWithString(final String stringValue) {
+        return CLASS.textFieldWithString(stringValue);
+    }
+
     public interface _Class extends ObjCClass {
         NSSecureTextField alloc();
+
+        /**
+         * Initializes a single-line editable text field for user input using the system default font and standard visual appearance.
+         *
+         * @param stringValue A string to use as the initial content of the editable text field.
+         * @return A single-line editable text field that displays the specified string.
+         */
+        NSSecureTextField textFieldWithString(String stringValue);
     }
 
     @Override

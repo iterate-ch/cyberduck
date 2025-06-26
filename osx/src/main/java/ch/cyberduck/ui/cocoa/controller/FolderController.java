@@ -31,8 +31,6 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -47,9 +45,7 @@ public class FolderController extends FileController {
     private final Callback callback;
 
     @Outlet
-    private NSView view;
-    @Outlet
-    private NSPopUpButton regionPopup;
+    private final NSPopUpButton regionPopup = NSPopUpButton.buttonPullsDown(false);
 
     public FolderController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
         super(workdir, selected, cache);
@@ -61,7 +57,7 @@ public class FolderController extends FileController {
     }
 
     @Override
-    public void loadBundle() {
+    public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create new folder", "Folder"));
@@ -70,13 +66,12 @@ public class FolderController extends FileController {
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "Folder"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("folderplus.tiff", 64));
-        super.loadBundle(alert);
+        return alert;
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
         if(this.hasLocation()) {
-            view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-            regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
+            final NSView accessoryView = NSView.create();
             regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
                 regionPopup.addItemWithTitle(region.toString());
                 final NSMenuItem item = regionPopup.itemWithTitle(region.toString());
@@ -90,12 +85,9 @@ public class FolderController extends FileController {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }
             });
-            // Override accessory view with location menu added
-            regionPopup.setFrameOrigin(new NSPoint(0, 0));
-            view.addSubview(regionPopup);
-            inputField.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-            view.addSubview(inputField);
-            return view;
+            this.addAccessorySubview(accessoryView, regionPopup);
+            this.addAccessorySubview(accessoryView, super.getAccessoryView(alert));
+            return accessoryView;
         }
         return super.getAccessoryView(alert);
     }

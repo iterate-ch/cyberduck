@@ -56,7 +56,6 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.TemporaryFileService;
@@ -338,20 +337,18 @@ public class InfoController extends ToolbarWindowController {
             window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStyleExpanded);
         }
         super.setWindow(window);
-        if(!preferences.getBoolean("browser.info.inspector")) {
-            cascade = this.cascade(cascade);
-        }
+    }
+
+    @Override
+    public void display(final boolean key) {
+        super.display(key);
+        cascade = this.cascade(cascade);
     }
 
     @Override
     public void windowWillClose(final NSNotification notification) {
         cascade = new NSPoint(this.window().frame().origin.x.doubleValue(), this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
         super.windowWillClose(notification);
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return preferences.getBoolean("browser.info.inspector");
     }
 
     @Override
@@ -2615,12 +2612,6 @@ public class InfoController extends ToolbarWindowController {
             sizeProgress.startAnimation(null);
         }
         return true;
-    }
-
-    @Override
-    @Action
-    public void helpButtonClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
     }
 
     private enum AclColumn {

@@ -16,7 +16,7 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
@@ -31,11 +31,11 @@ import ch.cyberduck.ui.cocoa.controller.BackgroundExceptionAlertController;
 
 public class PromptAlertCallback implements AlertCallback {
 
-    private final WindowController parent;
+    private final ProxyController controller;
     private final NotificationAlertCallback notification = new NotificationAlertCallback();
 
-    public PromptAlertCallback(final WindowController parent) {
-        this.parent = parent;
+    public PromptAlertCallback(final ProxyController controller) {
+        this.controller = controller;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class PromptAlertCallback implements AlertCallback {
                 notification.alert(host, failure);
                 // Run prompt
                 final AlertController alert = new BackgroundExceptionAlertController(failure, host);
-                switch(alert.beginSheet(parent)) {
+                switch(controller.alert(alert)) {
                     case SheetCallback.ALTERNATE_OPTION:
                         switch(type) {
                             case network:
