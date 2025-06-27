@@ -83,7 +83,7 @@
         <argLine />
         <jna-version>5.14.0</jna-version>
         <jersey-version>2.38</jersey-version>
-        <jackson-version>2.14.2</jackson-version>
+        <jackson-version>2.15.0</jackson-version>
         <slf4j-version>1.7.36</slf4j-version>
         <log4j-version>2.25.0</log4j-version>
         <bouncycastle-version>1.81</bouncycastle-version>
@@ -392,7 +392,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>31.0.1-jre</version>
+                <version>32.0.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.joyent.util</groupId>
