@@ -33,12 +33,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -105,35 +103,23 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         throw new NotfoundException(directory.getAbsolute());
     }
 
-    protected byte[] toDirectoryId(final Session<?> session, final Path directory, final byte[] directoryId) throws BackgroundException {
+    protected byte[] toDirectoryId(final Session<?> session, final Path directory) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
             return ROOT_DIR_ID;
         }
-        if(ArrayUtils.isEmpty(directoryId)) {
-            if(cache.contains(new SimplePathPredicate(directory))) {
-                return cache.get(new SimplePathPredicate(directory));
-            }
-            try {
-                log.debug("Acquire lock for {}", directory);
-                lock.lock();
-                final byte[] id = this.load(session, directory);
-                cache.put(new SimplePathPredicate(directory), id);
-                return id;
-            }
-            finally {
-                lock.unlock();
-            }
+        if(cache.contains(new SimplePathPredicate(directory))) {
+            return cache.get(new SimplePathPredicate(directory));
         }
-        if(!cache.contains(new SimplePathPredicate(directory))) {
-            cache.put(new SimplePathPredicate(directory), directoryId);
+        try {
+            log.debug("Acquire lock for {}", directory);
+            lock.lock();
+            final byte[] id = this.load(session, directory);
+            cache.put(new SimplePathPredicate(directory), id);
+            return id;
         }
-        else {
-            final byte[] existing = cache.get(new SimplePathPredicate(directory));
-            if(!Arrays.equals(existing, directoryId)) {
-                log.warn("Do not override already cached id {} with {}", existing, directoryId);
-            }
+        finally {
+            lock.unlock();
         }
-        return cache.get(new SimplePathPredicate(directory));
     }
 
     protected byte[] load(final Session<?> session, final Path directory) throws BackgroundException {
@@ -167,7 +153,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
             return file.attributes().getDirectoryId();
         }
         final Path decrypted = file.getType().contains(AbstractPath.Type.encrypted) ? file.attributes().getDecrypted() : file;
-        return this.toDirectoryId(session, decrypted.getType().contains(AbstractPath.Type.file) ? decrypted.getParent() : decrypted, null);
+        return this.toDirectoryId(session, decrypted.getType().contains(AbstractPath.Type.file) ? decrypted.getParent() : decrypted);
     }
 
     @Override
