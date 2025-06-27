@@ -76,7 +76,7 @@ public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<R
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write recovery metadata {} for folder {}", recoveryDirectoryMetadataFile, folder);
-        new ContentWriter(session).write(directoryMetadataFile, this.encryptDirectoryMetadataWithCurrentRevision(directoryId));
+        new ContentWriter(session).write(recoveryDirectoryMetadataFile, this.encryptDirectoryMetadataWithCurrentRevision(directoryId));
         // Implementation may return new copy of attributes without encryption attributes
 
         target.attributes().setDirectoryId(directoryId);
