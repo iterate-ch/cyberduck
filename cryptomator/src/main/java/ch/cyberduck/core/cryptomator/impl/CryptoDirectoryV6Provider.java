@@ -37,7 +37,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -104,18 +103,14 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         throw new NotfoundException(directory.getAbsolute());
     }
 
-    protected byte[] toDirectoryId(final Session<?> session, final Path directory, final byte[] directoryId) throws BackgroundException {
+    protected byte[] toDirectoryId(final Session<?> session, final Path directory) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
             return ROOT_DIR_ID;
         }
         try {
             lock.readLock().lock();
             if(cache.contains(new SimplePathPredicate(directory))) {
-                final byte[] existing = cache.get(new SimplePathPredicate(directory));
-                if(!Arrays.equals(existing, directoryId)) {
-                    log.warn("Do not override already cached id {} with {}", existing, directoryId);
-                }
-                return existing;
+                return cache.get(new SimplePathPredicate(directory));
             }
         }
         finally {
@@ -124,7 +119,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         try {
             log.debug("Acquire lock for {}", directory);
             lock.writeLock().lock();
-            final byte[] id = null != directoryId ? this.load(session, directory) : directoryId;
+            final byte[] id = this.load(session, directory);
             cache.put(new SimplePathPredicate(directory), id);
             return id;
         }
@@ -176,7 +171,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
             return file.attributes().getDirectoryId();
         }
         final Path decrypted = file.getType().contains(AbstractPath.Type.encrypted) ? file.attributes().getDecrypted() : file;
-        return this.toDirectoryId(session, decrypted.getType().contains(AbstractPath.Type.file) ? decrypted.getParent() : decrypted, null);
+        return this.toDirectoryId(session, decrypted.getType().contains(AbstractPath.Type.file) ? decrypted.getParent() : decrypted);
     }
 
     @Override
