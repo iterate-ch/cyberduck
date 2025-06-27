@@ -56,7 +56,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
 
     private final Lock lock = new ReentrantLock();
 
-    private final LRUCache<CacheReference<Path>, byte[]> cache = LRUCache.build(
+    protected final LRUCache<CacheReference<Path>, byte[]> cache = LRUCache.build(
             PreferencesFactory.get().getInteger("cryptomator.cache.size"));
 
     public static final byte[] ROOT_DIR_ID = new byte[0];
