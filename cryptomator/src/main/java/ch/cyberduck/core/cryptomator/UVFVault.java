@@ -198,8 +198,7 @@ public class UVFVault extends AbstractVault {
             else {
                 parent = this.getDirectoryProvider().toEncrypted(session, file.getParent());
                 // / diff to AbstractVault.encrypt
-                String filenameO = this.getDirectoryProvider().toEncrypted(session, parent, file.getName(), file.getType());
-                filename = ((CryptoDirectoryUVFProvider) this.getDirectoryProvider()).toEncrypted(session, file.getParent(), file.getName());
+                filename = this.getDirectoryProvider().toEncrypted(session, file.getParent(), file.getName(), file.getType());
                 // \ diff to AbstractVault.decrypt
             }
             final PathAttributes attributes = new PathAttributes(file.attributes());

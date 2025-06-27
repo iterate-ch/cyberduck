@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
@@ -60,15 +61,15 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
     }
 
     @Override
-    protected byte[] toDirectoryId(final Session<?> session, final Path directory, final byte[] directoryId) throws BackgroundException {
+    protected byte[] toDirectoryId(final Session<?> session, final Path directory) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
             return vault.getRootDirId();
         }
-        return super.toDirectoryId(session, directory, directoryId);
+        return super.toDirectoryId(session, directory);
     }
 
-    // interface mismatch: we need parent path to get dirId and revision from dir.uvf
-    public String toEncrypted(final Session<?> session, final Path parent, final String filename) throws BackgroundException {
+    @Override
+    public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         if(new SimplePathPredicate(home).test(parent)) {
             final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(), filename, vault.getRootDirId()) + vault.getRegularFileExtension();
             log.debug("Encrypted filename {} to {}", filename, ciphertextName);
@@ -121,7 +122,7 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
         }
         final Path parent = this.toEncrypted(session, directory.getParent());
         final String cleartextName = directory.getName();
-        final String ciphertextName = this.toEncrypted(session, parent, cleartextName, EnumSet.of(Path.Type.directory));
+        final String ciphertextName = this.toEncrypted(session, directory.getParent(), cleartextName, EnumSet.of(Path.Type.directory));
         final Path metadataParent = new Path(parent, ciphertextName, EnumSet.of(Path.Type.directory));
         // Read directory id from file
         try {
@@ -154,12 +155,9 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
     }
 
     protected int loadRevision(final Session<?> session, final Path directory) throws BackgroundException {
-        //TODO
-
-        /*
-        final Path parent = this.toEncrypted(session, directory.getParent().attributes().getDirectoryId(), directory.getParent());
+        final Path parent = this.toEncrypted(session, directory.getParent());
         final String cleartextName = directory.getName();
-        final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
+        final String ciphertextName = this.toEncrypted(session, directory.getParent(), cleartextName, EnumSet.of(Path.Type.directory));
         final Path metadataParent = new Path(parent, ciphertextName, EnumSet.of(Path.Type.directory));
         // Read directory id from file
         log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
@@ -174,7 +172,6 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
         ByteBuffer buffer = ByteBuffer.wrap(ciphertext);
         ByteBuffer headerBuf = buffer.duplicate();
         headerBuf.position(4).limit(headerSize);
-        return headerBuf.order(ByteOrder.BIG_ENDIAN).getInt();*/
-        return 0;
+        return headerBuf.order(ByteOrder.BIG_ENDIAN).getInt();
     }
 }
