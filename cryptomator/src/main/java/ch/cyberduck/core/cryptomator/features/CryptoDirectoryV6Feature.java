@@ -88,7 +88,7 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CryptoDirectoryFeature{");
+        final StringBuilder sb = new StringBuilder("CryptoDirectoryV6Feature{");
         sb.append("proxy=").append(delegate);
         sb.append('}');
         return sb.toString();
