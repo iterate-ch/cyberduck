@@ -16,9 +16,7 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
@@ -41,7 +39,6 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     private final Write<Reply> writer;
     private final Directory<Reply> delegate;
     private final AbstractVault vault;
-    private final RandomStringService random = new UUIDRandomStringService();
 
     public CryptoDirectoryV7Feature(final Session<?> session, final Directory<Reply> delegate,
                                     final Write<Reply> writer, final AbstractVault vault) {
@@ -54,7 +51,6 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         final byte[] directoryId = vault.getDirectoryProvider().createDirectoryId(folder);
-        final Path encrypt = vault.encrypt(session, folder, false);
         // Create metadata file for directory
         final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(vault.encrypt(session, folder, true),
                 new TransferStatus().setRegion(status.getRegion()));
@@ -63,6 +59,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
                 EnumSet.of(Path.Type.file));
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
         new ContentWriter(session).write(directoryMetadataFile, directoryId);
+        final Path encrypt = vault.encrypt(session, folder, false);
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(intermediate, new TransferStatus().setRegion(status.getRegion()));
@@ -94,7 +91,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CryptoDirectoryFeature{");
+        final StringBuilder sb = new StringBuilder("CryptoDirectoryV7Feature{");
         sb.append("proxy=").append(delegate);
         sb.append('}');
         return sb.toString();
