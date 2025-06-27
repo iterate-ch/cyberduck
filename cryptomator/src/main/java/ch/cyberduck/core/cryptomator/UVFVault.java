@@ -23,10 +23,13 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.cryptomator.features.CryptoDirectoryUVFFeature;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.logging.log4j.LogManager;
@@ -193,7 +196,7 @@ public class UVFVault extends AbstractVault {
             if(file.getType().contains(Path.Type.encrypted)) {
                 final Path decrypted = file.attributes().getDecrypted();
                 parent = this.getDirectoryProvider().toEncrypted(session, decrypted.getParent());
-                filename = this.getDirectoryProvider().toEncrypted(session, parent, decrypted.getName(), decrypted.getType());
+                filename = this.getDirectoryProvider().toEncrypted(session, decrypted.getParent(), decrypted.getName(), decrypted.getType());
             }
             else {
                 parent = this.getDirectoryProvider().toEncrypted(session, file.getParent());
@@ -359,6 +362,17 @@ public class UVFVault extends AbstractVault {
 
     public byte[] getRootDirId() {
         return rootDirId;
+    }
+
+    @Override
+    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
+
+        if(type == Directory.class) {
+            return (T) new CryptoDirectoryUVFFeature(session, (Directory) delegate, session._getFeature(Write.class), this
+            );
+        }
+
+        return super.getFeature(session, type, delegate);
     }
 
     @Override
