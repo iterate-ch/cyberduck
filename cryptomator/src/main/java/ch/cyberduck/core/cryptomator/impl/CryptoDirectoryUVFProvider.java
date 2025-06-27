@@ -17,14 +17,13 @@ package ch.cyberduck.core.cryptomator.impl;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptorCache;
+import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -34,7 +33,7 @@ import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.EnumSet;
 
 import com.google.common.io.BaseEncoding;
@@ -45,8 +44,8 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
     private final Path home;
     private final AbstractVault vault;
 
-    private final RandomStringService random
-            = new UUIDRandomStringService();
+    private final SecureRandom random
+            = FastSecureRandomProvider.get().provide();
     private final Path dataRoot;
     private final CryptorCache filenameCryptor;
     private final CryptoFilename filenameProvider;
@@ -150,7 +149,7 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
         }
         catch(NotfoundException e) {
             log.warn("Missing directory ID for folder {}", directory);
-            return random.random().getBytes(StandardCharsets.US_ASCII);
+            return this.getOrCreateDirectoryId(session, directory);
         }
     }
 
@@ -173,5 +172,15 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
         ByteBuffer headerBuf = buffer.duplicate();
         headerBuf.position(4).limit(headerSize);
         return headerBuf.order(ByteOrder.BIG_ENDIAN).getInt();
+    }
+
+    @Override
+    public byte[] createDirectoryId(final Path directory) {
+        final byte[] dirId = new byte[32];
+        random.nextBytes(dirId);
+        //TODO lock?
+        cache.put(new SimplePathPredicate(directory), dirId);
+        return dirId;
+
     }
 }
