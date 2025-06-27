@@ -20,6 +20,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
@@ -104,14 +105,14 @@ public class UVFIntegrationTest {
                     "    \"fileFormat\": \"AES-256-GCM-32k\",\n" +
                     "    \"nameFormat\": \"AES-SIV-512-B64URL\",\n" +
                     "    \"seeds\": {\n" +
-                    "        \"HDm38g\": \"ypeBEsobvcr6wjGzmiPcTaeG7/gUfE5yuYB3ha/uSLs=\",\n" +
-                    "        \"gBryKw\": \"PiPoFgA5WUoziU9lZOGxNIu9egCI1CxKy3PurtWcAJ0=\",\n" +
-                    "        \"QBsJFg\": \"Ln0sA6lQeuJl7PW1NWiFpTOTogKdJBOUmXJloaJa78Y=\"\n" +
+                    "        \"HDm38g\": \"ypeBEsobvcr6wjGzmiPcTaeG7_gUfE5yuYB3ha_uSLs\",\n" +
+                    "        \"gBryKw\": \"PiPoFgA5WUoziU9lZOGxNIu9egCI1CxKy3PurtWcAJ0\",\n" +
+                    "        \"QBsJFg\": \"Ln0sA6lQeuJl7PW1NWiFpTOTogKdJBOUmXJloaJa78Y\"\n" +
                     "    },\n" +
                     "    \"initialSeed\": \"HDm38i\",\n" +
                     "    \"latestSeed\": \"QBsJFo\",\n" +
                     "    \"kdf\": \"HKDF-SHA512\",\n" +
-                    "    \"kdfSalt\": \"NIlr89R7FhochyP4yuXZmDqCnQ0dBB3UZ2D+6oiIjr8=\",\n" +
+                    "    \"kdfSalt\": \"NIlr89R7FhochyP4yuXZmDqCnQ0dBB3UZ2D-6oiIjr8\",\n" +
                     "    \"org.example.customfield\": 42\n" +
                     "}";
 
@@ -187,18 +188,29 @@ public class UVFIntegrationTest {
                                     new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
                                     new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)))),
                             new HashSet<>(list.toList()));
-
                     assertEquals(new String(expected), readFile(storage, new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
+                }
+                {
+                    final Path mkdir = storage.getFeature(Directory.class).mkdir(new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new TransferStatus());
+                    final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
+                    storage.getFeature(ListService.class).list(bucket, new DisabledListProgressListener());
+                    assertEquals(
+                            new HashSet<>(Arrays.asList(
+                                    new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                                    new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                                    new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.decrypted)))),
+                            new HashSet<>(list.toList()));
                 }
                 {
                     storage.getFeature(Delete.class).delete(Collections.singletonList(new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))), new DisabledPasswordCallback(), new Delete.DisabledCallback());
                     final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
-                    assertEquals(1, list.size());
+                    assertEquals(2, list.size());
                     assertTrue(Arrays.toString(list.toArray()), list.contains(new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
                     assertEquals(
-                            new HashSet<>(Collections.singletonList(
-                                    new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))
-                            )),
+                            new HashSet<>(Arrays.asList(
+                                    new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                                    new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.decrypted)))
+                            ),
                             new HashSet<>(list.toList()));
                 }
                 {
@@ -212,7 +224,8 @@ public class UVFIntegrationTest {
                     assertEquals(
                             new HashSet<>(Arrays.asList(
                                     new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
-                                    new Path("/cyberduckbucket/subdir/Dave.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)))
+                                    new Path("/cyberduckbucket/subdir/Dave.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
+                                    new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.decrypted)))
                             ),
                             new HashSet<>(listSubDir.toList()));
                     final AttributedList<Path> listHome = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
