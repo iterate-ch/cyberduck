@@ -52,6 +52,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
@@ -191,7 +192,7 @@ public class UVFIntegrationTest {
                     assertEquals(new String(expected), readFile(storage, new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
                 }
                 {
-                    final Path mkdir = storage.getFeature(Directory.class).mkdir(new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new TransferStatus());
+                    storage.getFeature(Directory.class).mkdir(new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new TransferStatus());
                     final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
                     storage.getFeature(ListService.class).list(bucket, new DisabledListProgressListener());
                     assertEquals(
@@ -200,6 +201,16 @@ public class UVFIntegrationTest {
                                     new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)),
                                     new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.decrypted)))),
                             new HashSet<>(list.toList()));
+                }
+                {
+                    final byte[] expected = writeRandomFile(storage, new Path("/cyberduckbucket/subdir/subsubdir/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)), 5000);
+                    final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
+                    assertEquals(
+                            new HashSet<>(Collections.singletonList(
+                                    new Path("/cyberduckbucket/subdir/subsubdir/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted)))
+                            ),
+                            new HashSet<>(list.toList()));
+                    assertEquals(new String(expected), readFile(storage, new Path("/cyberduckbucket/subdir/subsubdir/foo.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
                 }
                 {
                     storage.getFeature(Delete.class).delete(Collections.singletonList(new Path("/cyberduckbucket/subdir/bar.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))), new DisabledPasswordCallback(), new Delete.DisabledCallback());
@@ -288,12 +299,10 @@ public class UVFIntegrationTest {
         return content;
     }
 
-    private static String readFile(final Session<?> session, final Path foo) throws IOException, BackgroundException {
-        final byte[] buf = new byte[300];
-        final TransferStatus status = new TransferStatus();
-        try(final InputStream inputStream = session.getFeature(Read.class).read(foo, status, new DisabledConnectionCallback())) {
-            int l = inputStream.read(buf);
-            return new String(Arrays.copyOfRange(buf, 0, l));
+    private static String readFile(final Session<?> session, final Path file) throws IOException, BackgroundException {
+        final Read read = session.getFeature(Read.class);
+        try(final InputStream in = read.read(file, new TransferStatus().setLength(file.attributes().getSize()), new DisabledConnectionCallback())) {
+            return IOUtils.toString(in, StandardCharsets.UTF_8);
         }
     }
 }
