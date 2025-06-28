@@ -102,7 +102,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
-    protected NSView view() {
+    public NSView view() {
         return view;
     }
 
