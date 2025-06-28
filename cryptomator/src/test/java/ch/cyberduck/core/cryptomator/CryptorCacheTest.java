@@ -19,10 +19,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.cryptomator.cryptolib.api.FileNameCryptor;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import com.google.common.io.BaseEncoding;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class CryptorCacheTest {
@@ -31,10 +32,10 @@ public class CryptorCacheTest {
     public void TestHashDirectoryId() {
         final FileNameCryptor mock = mock(FileNameCryptor.class);
         final CryptorCache cryptor = new CryptorCache(mock);
-        when(mock.hashDirectoryId(anyString())).thenReturn("hashed");
-        assertEquals("hashed", cryptor.hashDirectoryId("id"));
-        assertEquals("hashed", cryptor.hashDirectoryId("id"));
-        verify(mock, times(1)).hashDirectoryId(anyString());
+        when(mock.hashDirectoryId(any(byte[].class))).thenReturn("hashed");
+        assertEquals("hashed", cryptor.hashDirectoryId("id".getBytes(StandardCharsets.US_ASCII)));
+        assertEquals("hashed", cryptor.hashDirectoryId("id".getBytes(StandardCharsets.US_ASCII)));
+        verify(mock, times(1)).hashDirectoryId(any(byte[].class));
         verifyNoMoreInteractions(mock);
     }
 
