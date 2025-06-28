@@ -101,6 +101,11 @@ public abstract class WindowController extends BundleController implements NSWin
         return window;
     }
 
+    @Override
+    protected NSView view() {
+        return view;
+    }
+
     /**
      * Order front window
      */
