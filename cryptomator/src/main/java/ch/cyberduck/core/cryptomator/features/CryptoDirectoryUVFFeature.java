@@ -71,7 +71,6 @@ public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<R
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
         final Path target = delegate.withWriter(new CryptoWriteFeature<>(session, writer, vault)).mkdir(encrypt, status);
-        //TODO kopie von dir.uvf auch hier noch anlegen
         final Path recoveryDirectoryMetadataFile = new Path(target,
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));

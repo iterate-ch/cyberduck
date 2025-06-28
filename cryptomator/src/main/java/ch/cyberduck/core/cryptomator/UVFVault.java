@@ -129,6 +129,7 @@ public class UVFVault extends AbstractVault {
             try {
                 final CryptorCache effectivefileNameCryptor;
                 // / diff to AbstractVault.decrypt
+                //TODO lädt das recovery metadaten file anstatt normales
                 final int revision = loadRevision(session, file);
                 effectivefileNameCryptor = new CryptorCache(this.getCryptor().fileNameCryptor(revision));
                 // \
@@ -243,7 +244,7 @@ public class UVFVault extends AbstractVault {
 
     private int loadRevision(final Session<?> session, final Path directory) throws BackgroundException {
         // Read directory id from file
-        log.debug("Read directory ID  from {}", directory);
+        log.debug("Read directory ID from {}", directory);
         final Path metadataFile = new Path(directory.getParent(), this.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
         final byte[] ciphertext = new ContentReader(session).readBytes(metadataFile);
         // https://github.com/encryption-alliance/unified-vault-format/blob/develop/file%20name%20encryption/AES-SIV-512-B64URL.md#format-of-diruvf-and-symlinkuvf
