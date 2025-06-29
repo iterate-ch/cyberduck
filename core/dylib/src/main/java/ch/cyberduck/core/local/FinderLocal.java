@@ -54,9 +54,6 @@ public class FinderLocal extends Local {
         Native.load("core");
     }
 
-    private static final FilesystemBookmarkResolver<NSURL> resolver
-            = FilesystemBookmarkResolverFactory.get();
-
     public FinderLocal(final Local parent, final String name) {
         super(parent, name);
     }
@@ -156,7 +153,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public NSURL lock(final boolean interactive) throws AccessDeniedException {
-        return this.lock(interactive, resolver);
+        return this.lock(interactive, FilesystemBookmarkResolverFactory.get());
     }
 
     protected NSURL lock(final boolean interactive, final FilesystemBookmarkResolver<NSURL> resolver) throws AccessDeniedException {
