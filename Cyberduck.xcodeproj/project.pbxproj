@@ -16,8 +16,6 @@
 		4705DFF71C037AB5002466FA /* FinderSidebarService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFDD1C037AB5002466FA /* FinderSidebarService.m */; };
 		4705DFF81C037AB5002466FA /* FinderSidebarService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFDE1C037AB5002466FA /* FinderSidebarService.h */; };
 		4705DFF91C037AB5002466FA /* LaunchServicesApplicationFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFDF1C037AB5002466FA /* LaunchServicesApplicationFinder.m */; };
-		4705DFFE1C037AB5002466FA /* FinderLocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFE41C037AB5002466FA /* FinderLocal.h */; };
-		4705DFFF1C037AB5002466FA /* FinderLocal.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE51C037AB5002466FA /* FinderLocal.m */; };
 		4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */; };
 		4705E0031C037AB5002466FA /* IOKitSleepPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */; };
 		4705E0061C037AB5002466FA /* LaunchServicesApplicationFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFEC1C037AB5002466FA /* LaunchServicesApplicationFinder.h */; };
@@ -371,8 +369,6 @@
 		4705DFDD1C037AB5002466FA /* FinderSidebarService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FinderSidebarService.m; path = core/src/main/objc/FinderSidebarService.m; sourceTree = SOURCE_ROOT; };
 		4705DFDE1C037AB5002466FA /* FinderSidebarService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FinderSidebarService.h; path = core/src/main/objc/FinderSidebarService.h; sourceTree = SOURCE_ROOT; };
 		4705DFDF1C037AB5002466FA /* LaunchServicesApplicationFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LaunchServicesApplicationFinder.m; path = core/src/main/objc/LaunchServicesApplicationFinder.m; sourceTree = SOURCE_ROOT; };
-		4705DFE41C037AB5002466FA /* FinderLocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FinderLocal.h; path = core/src/main/objc/FinderLocal.h; sourceTree = SOURCE_ROOT; };
-		4705DFE51C037AB5002466FA /* FinderLocal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FinderLocal.m; path = core/src/main/objc/FinderLocal.m; sourceTree = SOURCE_ROOT; };
 		4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IOKitSleepPreventer.h; path = core/src/main/objc/IOKitSleepPreventer.h; sourceTree = SOURCE_ROOT; };
 		4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IOKitSleepPreventer.m; path = core/src/main/objc/IOKitSleepPreventer.m; sourceTree = SOURCE_ROOT; };
 		4705DFEC1C037AB5002466FA /* LaunchServicesApplicationFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LaunchServicesApplicationFinder.h; path = core/src/main/objc/LaunchServicesApplicationFinder.h; sourceTree = SOURCE_ROOT; };
@@ -1877,8 +1873,6 @@
 				4705DFDD1C037AB5002466FA /* FinderSidebarService.m */,
 				4705DFEC1C037AB5002466FA /* LaunchServicesApplicationFinder.h */,
 				4705DFDF1C037AB5002466FA /* LaunchServicesApplicationFinder.m */,
-				4705DFE41C037AB5002466FA /* FinderLocal.h */,
-				4705DFE51C037AB5002466FA /* FinderLocal.m */,
 				4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */,
 				4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */,
 				4705DFED1C037AB5002466FA /* LaunchServicesFileDescriptor.h */,
@@ -2128,7 +2122,6 @@
 				4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */,
 				4705DFF81C037AB5002466FA /* FinderSidebarService.h in Headers */,
 				473A8DD6287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h in Headers */,
-				4705DFFE1C037AB5002466FA /* FinderLocal.h in Headers */,
 				4705E0061C037AB5002466FA /* LaunchServicesApplicationFinder.h in Headers */,
 				4705E00D1C037AB5002466FA /* SystemConfigurationProxy.h in Headers */,
 				474B84411C15DB51004D562C /* Sandbox.h in Headers */,
@@ -2556,7 +2549,6 @@
 				4705E00E1C037AB5002466FA /* SystemConfigurationProxy.m in Sources */,
 				47820E3920B58426006D0501 /* SystemConfigurationReachability.m in Sources */,
 				4785285F2AD6B10A0008184B /* AutofillDisabledSecureTextField.m in Sources */,
-				4705DFFF1C037AB5002466FA /* FinderLocal.m in Sources */,
 				4705E0031C037AB5002466FA /* IOKitSleepPreventer.m in Sources */,
 				473A8DD7287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m in Sources */,
 			);
