@@ -116,6 +116,7 @@ public class ProgressController extends BundleController implements TransferList
 
     public ProgressController(final Transfer transfer) {
         this.transfer = transfer;
+        this.loadBundle();
     }
 
     // ----------------------------------------------------------
