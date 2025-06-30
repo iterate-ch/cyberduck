@@ -176,6 +176,9 @@
 		4799A6492C3BC93A00563133 /* Deepbox.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4799A6472C3BC93A00563133 /* Deepbox.strings */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479C63B022A167EA002CAA60 /* folderplus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479C63AF22A167EA002CAA60 /* folderplus.tiff */; };
+		47A0818D2DFF035E0074E7DC /* cyberduck-application-rect.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475B22EE25B0DB17005D7887 /* cyberduck-application-rect.icns */; };
+		47A0818E2DFF035E0074E7DC /* cyberduck-application.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A082B0167A169D004458C7 /* cyberduck-application.icns */; };
+		47A0818F2DFF08A90074E7DC /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D9E28C2DF9BB140088B042 /* main.swift */; };
 		47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A082B0167A169D004458C7 /* cyberduck-application.icns */; };
 		47A40B321DEF1C09004E6084 /* cryptomator.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47A40B311DEF1C09004E6084 /* cryptomator.tiff */; };
 		47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
@@ -223,6 +226,7 @@
 		47D93A151A2762A40006D4AE /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		47D93A161A2762A40006D4AE /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47D93A171A2762A40006D4AE /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
+		47D9E2902DF9BC850088B042 /* Cyberduck Dock Plugin.docktileplugin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47D9E2832DF9B98C0088B042 /* Cyberduck Dock Plugin.docktileplugin */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		47DE47952598F2D400B18BCB /* preferences-ftp.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE47892598F2D300B18BCB /* preferences-ftp.pdf */; };
 		47DE47962598F2D400B18BCB /* preferences-connection.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE478A2598F2D300B18BCB /* preferences-connection.pdf */; };
 		47DE47972598F2D400B18BCB /* preferences-browser.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47DE478B2598F2D300B18BCB /* preferences-browser.pdf */; };
@@ -267,6 +271,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		47D9E28A2DF9BA2B0088B042 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47D9E2822DF9B98C0088B042;
+			remoteInfo = "Cyberduck Dock Tile";
+		};
 		47FA2CEE1A28A10B0058614E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -314,6 +325,16 @@
 			dstPath = Profiles;
 			dstSubfolderSpec = 7;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		47D9E28F2DF9BB540088B042 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				47D9E2902DF9BC850088B042 /* Cyberduck Dock Plugin.docktileplugin in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1566,6 +1587,8 @@
 		47CF43D41508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ar; path = i18n/src/main/resources/ar.lproj/Transfer.strings; sourceTree = "<group>"; };
 		47D6FFE61CCFA54A005B01C5 /* CDToolbarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDToolbarItem.m; path = osx/src/main/objc/CDToolbarItem.m; sourceTree = "<group>"; };
 		47D6FFE71CCFA54A005B01C5 /* CDToolbarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDToolbarItem.h; path = osx/src/main/objc/CDToolbarItem.h; sourceTree = "<group>"; };
+		47D9E2832DF9B98C0088B042 /* Cyberduck Dock Plugin.docktileplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Cyberduck Dock Plugin.docktileplugin"; sourceTree = BUILT_PRODUCTS_DIR; };
+		47D9E28C2DF9BB140088B042 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		47DE47892598F2D300B18BCB /* preferences-ftp.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-ftp.pdf"; path = "toolbar/preferences-ftp.pdf"; sourceTree = "<group>"; };
 		47DE478A2598F2D300B18BCB /* preferences-connection.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-connection.pdf"; path = "toolbar/preferences-connection.pdf"; sourceTree = "<group>"; };
 		47DE478B2598F2D300B18BCB /* preferences-browser.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = "preferences-browser.pdf"; path = "toolbar/preferences-browser.pdf"; sourceTree = "<group>"; };
@@ -1808,6 +1831,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47D9E2802DF9B98C0088B042 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1817,6 +1847,7 @@
 				471D2C5505A2505600675163 /* Cyberduck.app */,
 				4739EF730856981400405FD3 /* libcore.dylib */,
 				47C2AD801A268C880047B67A /* duck.bundle */,
+				47D9E2832DF9B98C0088B042 /* Cyberduck Dock Plugin.docktileplugin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1827,6 +1858,7 @@
 				47FB79D51C2E9E67008D3B9C /* launcher.h */,
 				47FB79D61C2E9E67008D3B9C /* launcher.m */,
 				47FB79D71C2E9E67008D3B9C /* main.m */,
+				47D9E28D2DF9BB140088B042 /* docktile */,
 				47F85C1D1C0F102600FDA856 /* App */,
 				4741639206C4F58D00AC0BD2 /* Resources */,
 				474152D706C4F08A00AC0BD2 /* Core */,
@@ -2091,6 +2123,15 @@
 			name = toolbar;
 			sourceTree = "<group>";
 		};
+		47D9E28D2DF9BB140088B042 /* docktile */ = {
+			isa = PBXGroup;
+			children = (
+				47D9E28C2DF9BB140088B042 /* main.swift */,
+			);
+			name = docktile;
+			path = osx/docktile;
+			sourceTree = "<group>";
+		};
 		47F85C1D1C0F102600FDA856 /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -2162,11 +2203,13 @@
 				47C2724412E99D8600A13758 /* Frameworks */,
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
 				47C253691BF0D92800863EAF /* CopyFiles */,
+				47D9E28F2DF9BB540088B042 /* CopyFiles */,
 				47EFE4E11BED03E7009AC47B /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				47D9E28B2DF9BA2B0088B042 /* PBXTargetDependency */,
 			);
 			name = app;
 			productInstallPath = "$(USER_APPS_DIR)";
@@ -2212,6 +2255,25 @@
 			productReference = 47C2AD801A268C880047B67A /* duck.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
+		47D9E2822DF9B98C0088B042 /* docktile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 47D9E2862DF9B98C0088B042 /* Build configuration list for PBXNativeTarget "docktile" */;
+			buildPhases = (
+				47D9E27F2DF9B98C0088B042 /* Sources */,
+				47D9E2802DF9B98C0088B042 /* Frameworks */,
+				47D9E2812DF9B98C0088B042 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = docktile;
+			packageProductDependencies = (
+			);
+			productName = "Cyberduck Dock Tile";
+			productReference = 47D9E2832DF9B98C0088B042 /* Cyberduck Dock Plugin.docktileplugin */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -2229,6 +2291,10 @@
 					};
 					47C2AD7F1A268C880047B67A = {
 						CreatedOnToolsVersion = 6.1;
+						ProvisioningStyle = Manual;
+					};
+					47D9E2822DF9B98C0088B042 = {
+						CreatedOnToolsVersion = 16.4;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -2285,6 +2351,7 @@
 				471D2C0B05A2505500675163 /* app */,
 				4739EF670856981300405FD3 /* libcore */,
 				47C2AD7F1A268C880047B67A /* cli */,
+				47D9E2822DF9B98C0088B042 /* docktile */,
 			);
 		};
 /* End PBXProject section */
@@ -2500,6 +2567,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47D9E2812DF9B98C0088B042 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47A0818D2DFF035E0074E7DC /* cyberduck-application-rect.icns in Resources */,
+				47A0818E2DFF035E0074E7DC /* cyberduck-application.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -2578,9 +2654,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47D9E27F2DF9B98C0088B042 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47A0818F2DFF08A90074E7DC /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		47D9E28B2DF9BA2B0088B042 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47D9E2822DF9B98C0088B042 /* docktile */;
+			targetProxy = 47D9E28A2DF9BA2B0088B042 /* PBXContainerItemProxy */;
+		};
 		47FA2CEF1A28A10B0058614E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4739EF670856981300405FD3 /* libcore */;
@@ -4206,9 +4295,9 @@
 					"\"$(JAVA_HOME)/include\"/**",
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
+				SWIFT_VERSION = 5.0;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wno-four-char-constants",
@@ -4216,6 +4305,94 @@
 				);
 			};
 			name = Release;
+		};
+		47D9E2842DF9B98C0088B042 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Cyberduck Docktile Plugin";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "${COPYRIGHT}";
+				INFOPLIST_KEY_NSPrincipalClass = CDDockTilePlugin;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.sudo.cyberduck.docktile;
+				PRODUCT_NAME = "Cyberduck Dock Plugin";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = docktileplugin;
+			};
+			name = Release;
+		};
+		47D9E2852DF9B98C0088B042 /* Mac App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Cyberduck Docktile Plugin";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "${COPYRIGHT}";
+				INFOPLIST_KEY_NSPrincipalClass = CDDockTilePlugin;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.sudo.cyberduck.docktile;
+				PRODUCT_NAME = "Cyberduck Dock Plugin";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = docktileplugin;
+			};
+			name = "Mac App Store";
 		};
 		47EFE4D11BECFE81009AC47B /* Mac App Store */ = {
 			isa = XCBuildConfiguration;
@@ -4259,9 +4436,9 @@
 					"\"$(JAVA_HOME)/include\"/**",
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
+				SWIFT_VERSION = 5.0;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wno-four-char-constants",
@@ -4364,6 +4541,15 @@
 			buildConfigurations = (
 				47D286EF0855740D008142CF /* Release */,
 				47EFE4D11BECFE81009AC47B /* Mac App Store */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		47D9E2862DF9B98C0088B042 /* Build configuration list for PBXNativeTarget "docktile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				47D9E2842DF9B98C0088B042 /* Release */,
+				47D9E2852DF9B98C0088B042 /* Mac App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

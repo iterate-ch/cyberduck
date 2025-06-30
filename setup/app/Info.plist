@@ -413,5 +413,7 @@
         <string>Allow to download files</string>
         <key>ITSAppUsesNonExemptEncryption</key>
         <false/>
+        <key>NSDockTilePlugIn</key>
+        <string>Cyberduck Dock Plugin.docktileplugin</string>
     </dict>
 </plist>

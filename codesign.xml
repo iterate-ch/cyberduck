@@ -73,6 +73,7 @@
                 <include name="**/*.dylib"/>
             </fileset>
             <fileset dir="${bundle}/${bundle.plugins}">
+                <include name="*.docktileplugin"/>
                 <include name="*.jre"/>
             </fileset>
             <srcfile/>

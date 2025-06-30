@@ -86,15 +86,6 @@ public abstract class NSDockTile extends NSObject {
     public abstract boolean showsApplicationBadge();
 
     /**
-     * Assign an image to this property when you want to temporarily change the app icon in the dock app tile. The image
-     * you provide is scaled as needed so that it fits in the tile. To restore your app’s original icon, set this
-     * property to nil.
-     *
-     * @param image The image used for the app’s icon.
-     */
-    public abstract void setApplicationIconImage(NSImage image);
-
-    /**
      * Badge the dock icon with a localized string.  The badge appearance is system defined.  This is often used to show
      * an unread count in the application dock icon.<br> Original signature : <code>-(void)setBadgeLabel:(NSString*)</code><br>
      * <i>native declaration : NSDockTile.h:55</i>
