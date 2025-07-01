@@ -68,9 +68,7 @@ public class ActivityController extends WindowController {
         final BackgroundAction[] actions = registry.toArray(
                 new BackgroundAction[registry.size()]);
         for(final BackgroundAction action : actions) {
-            final TaskController c = new TaskController(action);
-            c.loadBundle();
-            tasks.put(action, c);
+            tasks.put(action, new TaskController(action));
         }
         this.reload();
     }
@@ -204,6 +202,7 @@ public class ActivityController extends WindowController {
                 if(null == controller) {
                     return null;
                 }
+                controller.loadBundle();
                 return controller.view();
             }
         }).id());
