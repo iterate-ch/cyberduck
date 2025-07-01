@@ -268,11 +268,11 @@ public class ProxyController extends AbstractController {
 
         @Override
         public void closed(final NSWindow sheet, final int returncode) {
-            // Close window
-            super.closed(sheet, returncode);
             log.debug("Stop modal with return code {}", returncode);
             // The result code you want returned from the runModalForWindow:
             NSApplication.sharedApplication().stopModalWithCode(returncode);
+            // Close window
+            sheet.close();
         }
 
         /**
@@ -286,11 +286,10 @@ public class ProxyController extends AbstractController {
         public void alert(final NSWindow sheet, final SheetCallback callback) {
             sheet.setPreventsApplicationTerminationWhenModal(false);
             sheet.setLevel(NSWindow.NSWindowLevel.NSModalPanelWindowLevel);
-            sheet.center();
-            super.alert(sheet, callback);
             // This method runs a modal event loop for the specified window synchronously. It displays the specified window, makes it key,
             // starts the run loop, and processes events for that window.
             log.debug("Run modal for window {} with callback {}", sheet, callback);
+            // You do not need to show the window yourself
             callback.callback(NSApplication.sharedApplication().runModalForWindow(sheet).intValue());
         }
     }
