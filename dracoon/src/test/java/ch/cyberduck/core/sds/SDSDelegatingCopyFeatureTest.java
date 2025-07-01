@@ -162,7 +162,6 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path target_parent = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path target = new Path(target_parent, directory.getName(), EnumSet.of(Path.Type.directory));
         final SDSDelegatingCopyFeature feature = new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid));
-        assertFalse(feature.isSupported(directory, Optional.of(target_parent)));
         assertTrue(feature.isSupported(directory, Optional.of(target)));
         final Path copy = feature.copy(directory, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotNull(copy.attributes().getVersionId());

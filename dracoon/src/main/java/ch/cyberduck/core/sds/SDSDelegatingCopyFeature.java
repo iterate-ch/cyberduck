@@ -62,9 +62,11 @@ public class SDSDelegatingCopyFeature implements Copy {
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         if(proxy.isSupported(source, target)) {
-            return;
+            proxy.preflight(source, target);
         }
-        copy.preflight(source, target);
+        else {
+            copy.preflight(source, target);
+        }
     }
 
     @Override
