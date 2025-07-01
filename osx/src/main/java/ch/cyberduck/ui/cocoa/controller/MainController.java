@@ -21,7 +21,6 @@ import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.SystemAlertController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
@@ -167,8 +166,6 @@ public class MainController extends BundleController implements NSApplication.De
      */
     private boolean displayDonationPrompt = true;
 
-    @Outlet
-    private SheetController donationController;
     @Outlet
     private NSMenu applicationMenu;
     @Outlet
@@ -1159,8 +1156,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
             // Make sure prompt is not loaded twice upon next quit event
             displayDonationPrompt = false;
-            donationController = new DonateAlertController(app);
-            this.alert(donationController);
+            this.alert(new DonateAlertController(app));
             // Delay application termination. Dismissing the donation dialog will reply to quit.
             return NSApplication.NSTerminateLater;
         }
