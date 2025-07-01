@@ -891,10 +891,6 @@ public class MainController extends BundleController implements NSApplication.De
         NSWindow.setAllowsAutomaticWindowTabbing(true);
         // Load main menu
         this.loadBundle();
-        if(preferences.getBoolean("queue.window.open.default")) {
-            final TransferController c = TransferControllerFactory.get();
-            c.display();
-        }
         final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
         final AbstractHostCollection sessions = SessionsCollection.defaultCollection();
         this.background(new AbstractBackgroundAction<Void>() {
@@ -947,6 +943,14 @@ public class MainController extends BundleController implements NSApplication.De
                 final TransferCollection transfers = TransferCollection.defaultCollection();
                 transfers.load();
                 return null;
+            }
+
+            @Override
+            public void cleanup() {
+                if(preferences.getBoolean("queue.window.open.default")) {
+                    final TransferController c = TransferControllerFactory.get();
+                    c.display();
+                }
             }
         });
         final Rendezvous bonjour = RendezvousFactory.instance();
