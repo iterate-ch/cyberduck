@@ -216,10 +216,10 @@ public class MainController extends BundleController implements NSApplication.De
                 browsers.remove(controller);
             }
         });
+        controller.display();
         if(StringUtils.isNotBlank(frame)) {
             controller.window().setFrameUsingName(frame);
         }
-        controller.display();
         browsers.add(controller);
         return controller;
     }
