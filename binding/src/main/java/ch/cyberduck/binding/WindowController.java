@@ -300,9 +300,7 @@ public abstract class WindowController extends BundleController implements NSWin
 
     @Override
     protected AlertRunner alertFor(final SheetController sheet) {
-        final SheetAlertRunner handler = new SheetAlertRunner(window, sheet);
-        sheet.addHandler(handler);
-        return handler;
+        return new SheetAlertRunner(window, sheet);
     }
 
     /**
@@ -320,6 +318,7 @@ public abstract class WindowController extends BundleController implements NSWin
         public SheetAlertRunner(final NSWindow window, final SheetController controller) {
             this.window = window;
             this.controller = controller;
+            this.controller.addHandler(this);
         }
 
         @Override

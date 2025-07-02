@@ -198,17 +198,16 @@ public class ProxyController extends AbstractController {
     }
 
     protected AlertRunner alertFor(final SheetController sheet) {
-        final ModalWindowAlertRunner runner = new ModalWindowAlertRunner(sheet);
-        sheet.addHandler(runner);
-        return runner;
+        return new ModalWindowAlertRunner(sheet);
     }
 
     public static class RegularWindowAlertRunner implements AlertRunner, AlertRunner.CloseHandler {
-        private final WindowController controller;
+        private final SheetController controller;
         private final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
 
-        public RegularWindowAlertRunner(final WindowController controller) {
+        public RegularWindowAlertRunner(final SheetController controller) {
             this.controller = controller;
+            this.controller.addHandler(this);
         }
 
         @Override
@@ -244,8 +243,8 @@ public class ProxyController extends AbstractController {
      * Floating window ordered front
      */
     public static class FloatingWindowAlertRunner extends RegularWindowAlertRunner {
-        public FloatingWindowAlertRunner(final WindowController sheet) {
-            super(sheet);
+        public FloatingWindowAlertRunner(final SheetController controller) {
+            super(controller);
         }
 
         @Override
@@ -262,8 +261,8 @@ public class ProxyController extends AbstractController {
      * Floating window in modal run loop
      */
     public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner implements AlertRunner.CloseHandler {
-        public ModalWindowAlertRunner(final WindowController sheet) {
-            super(sheet);
+        public ModalWindowAlertRunner(final SheetController controller) {
+            super(controller);
         }
 
         @Override
