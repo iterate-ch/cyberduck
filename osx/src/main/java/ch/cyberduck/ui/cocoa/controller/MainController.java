@@ -632,7 +632,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
 
                     }.id());
-                    alert.runModal();
+                    this.alert(alert);
                 }
                 return true;
             }
