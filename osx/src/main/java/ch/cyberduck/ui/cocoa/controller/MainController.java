@@ -884,6 +884,8 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public void applicationWillFinishLaunching(NSNotification notification) {
+        NSApplication.sharedApplication().setApplicationIconImage(
+                IconCacheFactory.<NSImage>get().iconNamed("cyberduck-application-rect"));
         // Opt-in of automatic window tabbing
         NSWindow.setAllowsAutomaticWindowTabbing(true);
         // Load main menu
