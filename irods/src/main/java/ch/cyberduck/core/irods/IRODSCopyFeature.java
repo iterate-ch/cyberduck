@@ -1,5 +1,16 @@
 package ch.cyberduck.core.irods;
 
+import java.io.IOException;
+import java.util.EnumSet;
+
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.vfs.CollectionEntry;
+import org.irods.irods4j.high_level.vfs.IRODSCollectionIterator;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
+import org.irods.irods4j.high_level.vfs.ObjectStatus;
+import org.irods.irods4j.low_level.api.IRODSApi.RcComm;
+import org.irods.irods4j.low_level.api.IRODSException;
+
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
  * http://cyberduck.ch/
@@ -22,17 +33,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
-
-import org.apache.commons.lang3.StringUtils;
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.DataTransferOperations;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.transfer.DefaultTransferControlBlock;
-import org.irods.jargon.core.transfer.TransferStatus;
-import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
-
-import java.util.EnumSet;
 
 public class IRODSCopyFeature implements Copy {
 
@@ -45,37 +45,49 @@ public class IRODSCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.getClient();
-            final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
-                .getDataTransferOperations(fs.getIRODSAccount());
-            transfer.copy(fs.getIRODSFileFactory().instanceIRODSFile(source.getAbsolute()),
-                fs.getIRODSFileFactory().instanceIRODSFile(target.getAbsolute()), new TransferStatusCallbackListener() {
-                    @Override
-                    public FileStatusCallbackResponse statusCallback(final TransferStatus transferStatus) {
-                        return FileStatusCallbackResponse.CONTINUE;
-                    }
+            final IRODSConnection conn = session.getClient();
+            final String from = source.getAbsolute();
+            final String to = target.getAbsolute();
+            if (source.isFile()) {
+                IRODSFilesystem.copyDataObject(conn.getRcComm(), from, to);
 
-                    @Override
-                    public void overallStatusCallback(final TransferStatus transferStatus) {
-                        switch(transferStatus.getTransferState()) {
-                            case OVERALL_COMPLETION:
-                                listener.sent(status.getLength());
-                        }
-                    }
-
-                    @Override
-                    public CallbackResponse transferAsksWhetherToForceOperation(final String irodsAbsolutePath, final boolean isCollection) {
-                        return CallbackResponse.YES_THIS_FILE;
-                    }
-                }, DefaultTransferControlBlock.instance(StringUtils.EMPTY,
-                            HostPreferencesFactory.get(session.getHost()).getInteger("connection.retry")));
+                if (listener != null && status.getLength() > 0) {
+                    listener.sent(status.getLength());
+                }
+            }
+            if(source.isDirectory()) {
+            	this.copyDirectoryRecursively(conn.getRcComm(), from, to);
+            }
             return target;
         }
-        catch(JargonException e) {
+        catch(IOException | IRODSException e) {
             throw new IRODSExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
+    
+    public static void copyDirectoryRecursively(RcComm rcComm, String source, String target) throws IOException, IRODSException {
+        // First, create the root of the target directory
+        if (!IRODSFilesystem.exists(rcComm, target)) {
+            IRODSFilesystem.createCollection(rcComm, target);
+        }
 
+        // Recursively iterate through the source collection
+        for (CollectionEntry entry : new IRODSCollectionIterator(rcComm, source)) {
+            String relative = entry.path().substring(source.length()); // relative path from source
+            String targetPath = target + relative;
+
+            ObjectStatus status = entry.status();
+
+            if (status.getType() == ObjectStatus.ObjectType.COLLECTION) {
+                // Create directory in target
+                IRODSFilesystem.createCollection(rcComm, targetPath);
+            } else if (status.getType() == ObjectStatus.ObjectType.DATA_OBJECT) {
+                // Copy file
+                IRODSFilesystem.copyDataObject(rcComm, entry.path(), targetPath);
+            }
+        }
+    }
+        
     @Override
     public EnumSet<Flags> features(final Path source, final Path target) {
         return EnumSet.of(Flags.recursive);
