@@ -18,14 +18,17 @@ package ch.cyberduck.binding;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.InputValidator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
@@ -70,6 +73,9 @@ public abstract class AlertController extends SheetController implements InputVa
     public void loadBundle() {
         alert = this.loadAlert();
         log.debug("Display alert {}", alert);
+        if(StringUtils.equals("NSApplicationIcon", alert.icon().name())) {
+            alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-application-rect"));
+        }
         alert.setShowsHelp(true);
         alert.setDelegate(this.id());
         if(alert.showsSuppressionButton()) {
