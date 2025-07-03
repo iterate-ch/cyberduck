@@ -1,0 +1,151 @@
+te that the info handling will manipulate aspects of the data profiler,
+# so by default some things are set to null to be turned on by the service depending on the view requested (e.g. acl, metadata, replicas) and should be left 'false' as a default,
+# but other aspects, such as metadata templating and mime type detection, can be globally turned on or off depending on the implmenetation.
+# controls access to features globally
+metalnx.enable.tickets=false
+# disable automatic detection and running of rules on upload
+metalnx.enable.upload.rules=false
+# download size limit in megabytes (6000=6GB)
+metalnx.download.limit=6000
+# show dashboard (off by default due to performance issues)
+metalnx.enable.dashboard=false
+######################################
+# info home page feature flags
+# this controls the behavior of the data profiler and what information it will gather
+irodsext.dataprofiler.retrieve.tickets=false
+# process starred or favorites
+irodsext.dataprofiler.retrieve.starred=true
+# process shared
+irodsext.dataprofiler.retrieve.shared=false
+# tags and comments
+irodsext.dataprofiler.retrieve.tags.and.comments=false
+# metadata templates (currently not implemented)
+irodsext.dataprofiler.retrieve.metadata.templates=false
+# save data type information for later use
+irodsext.datatyper.persist.data.types=false
+# perform a detailed versus a lightweight data typing, which may involve processing the file contents
+irodsext.datatyper.detailed.determination=false
+
+#############################
+# misc ui configuration niceties
+#############################
+# allow translation of iRODS auth types to user friendly names in login
+# in the form irodstype:displaytype|
+metalnx.auirods.host=172.20.0.2
+irods.port=1247
+irods.zoneName=tempZone
+
+# STANDARD | PAM AUTH
+irods.auth.scheme=STANDARD
+default.storage.resource=
+
+# sets jargon ssl negotiation policy for the client. Leaving to DONT_CARE defers to the server, and is recommended
+# NO_NEGOTIATION, CS_NEG_REFUSE, CS_NEG_REQUIRE, CS_NEG_DONT_CARE
+ssl.negotiation.policy=CS_NEG_REFUSE
+
+##########################################################
+# jargon properties settings
+utilize.packing.streams=true
+
+# jargon now supports checksum calculation for streaming uploads.  This does not currently verify, but does store if set to true
+compute.checksum=true
+
+######################################
+# other irods environment
+
+# HTTP connection for RMD
+rmd.connection.timeout=500
+rmd.connection.port=8000
+
+# Reverse DNS lookup on dashboard
+reverse.dns.lookup=false
+
+######################################
+# msi props
+populate.msi.enabled=false
+illumina.msi.enabled=true
+
+# MSI API version supported by this application
+msi.api.version=1.X.X
+
+msi.metalnx.list=libmsiget_illumina_meta.so,libmsiobjget_microservices.so,libmsiobjget_version.so,libmsiobjjpeg_extract.so,libmsiobjput_mdbam.so,libmsiobjput_mdbam.so,libmsiobjput_mdmanifest.so,libmsiobjput_mdvcf.so,libmsiobjput_populate.so
+
+msi.irods.list=libmsisync_to_archive.so,libmsi_update_unixfilesystem_resource_free_space.so,libmsiobjput_http.so,libmsiobjput_irods.so,libmsiobjget_irods.so,libmsiobjget_http.so,libmsiobjput_slink.so,libmsiobjget_slink.so
+
+msi.irods.42.list=libmsisync_to_archive.so,libmsi_update_unixfilesystem_resource_free_space.so
+
+msi.other.list=
+######################################
+# global feature flags that serve as defaults. Nothtype.mappings=PAM:PAM|STANDARD:Standard
+
+#############################
+# JWT configuration (necessary when using search and notification services). Otherwise can be left as-is and ignored
+#############################
+jwt.issuer=metalnx
+jwt.secret=thisisasecretthatisverysecretyouwillneverguessthiskey
+jwt.algo=HS384
+
+#############################
+# Pluggable search configuration. Turn on and off pluggable search globally, and configure search endpoints.
+# N.B. pluggable search also requires provisioning of the jwt.* information above 
+#############################
+# configured endpoints, comma delimited in form https://host.com/v1
+# Note the commented out URL which matches up to the irods-contrib/file-and-metadata-indexer docker compose assembly. In order to 
+# utilize this assembly you need to uncomment the URL and set pluggablesearch.enabled to true
+pluggablesearch.endpointRegistryList=
+# enable pluggable search globally and show the search GUI components
+pluggablesearch.enabled=false
+# display the older file and properties search in the menu, if you are running the elasticsearch standard plugin this is probably
+# a menu item to turn off
+classicsearch.enabled=true
+# JWT subject claim used to access search endpoint for data gathering. User searches will utilize the name of the individual
+pluggablesearch.endpointAccessSubject=metalnx
+# timeout for info/attribute gathering, set to 0 for no timeout
+pluggablesearch.info.timeout=0
+# timeout for actual search, set to 0 for no timeout
+pluggablesearch.search.timeout=0
+
+#############################
+# Pluggable shopping cart and export plugin configuration. 
+# Turn on and off pluggable shopping cart globally, and configure export endpoints.
+# N.B. plugins also requires provisioning of the jwt.* information above
+#############################
+
+# enable pluggable export globally and show the export GUI components
+pluggableshoppingcart.enabled=false
+
+# configured endpoints, comma delimited in form https://host.com/v1
+pluggablepublishing.endpointRegistryList=
+# timeout for info/attribute gathering, set to 0 for no timeout
+pluggablepublishing.info.timeout=0
+
+# timeout for actual publishing, set to 0 for no timeout
+pluggablepublishing.publishing.timeout=0
+
+# server rule engine instance that will provide the galleryview listing
+gallery_view.rule_engine_plugin.instance_name=irods_rule_engine_plugin-irods_rule_language-instance
+
+##########################################################
+# Metadata Masking Properties
+#
+# Excludes metadata when the attribute name starts with at least one prefix.
+# Multiple prefixes can be defined by separating them with the character sequence defined
+# by metalnx.metadata.mask.delimiter.
+#
+# For example, the configuration below will hide any metadata that contains an attribute
+# starting with "irods::", "metalnx-", or "_system_".
+#
+#     metalnx.metadata.mask.prefixes=irods::;metalnx-;_system_
+#     metalnx.metadata.mask.delimiter=;
+#
+# Use the iRODS Metadata Guard rule engine plugin to protect your metadata namespaces from
+# being modified.
+metalnx.metadata.mask.prefixes=
+metalnx.metadata.mask.delimiter=,
+
+
+##########################################################
+# Setting to enable/disable the "Public" sidebar link.
+# The default is "false" (hidden)
+##########################################################
+sidebar.show.public=false

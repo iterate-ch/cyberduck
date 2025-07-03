@@ -1,5 +1,9 @@
 package ch.cyberduck.core.irods;
 
+import java.util.EnumSet;
+
+import org.apache.commons.lang3.StringUtils;
+
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
@@ -19,10 +23,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.AbstractHomeFeature;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.EnumSet;
 
 public class IRODSHomeFinderService extends AbstractHomeFeature {
 
