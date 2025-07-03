@@ -1,5 +1,11 @@
 package ch.cyberduck.core.irods;
 
+import java.io.IOException;
+
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
+import org.irods.irods4j.low_level.api.IRODSException;
+
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
  * http://cyberduck.ch/
@@ -22,10 +28,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.pub.io.IRODSFile;
-
 public class IRODSFindFeature implements Find {
 
     private final IRODSSession session;
@@ -40,12 +42,12 @@ public class IRODSFindFeature implements Find {
             return true;
         }
         try {
-            final IRODSFileSystemAO fs = session.getClient();
-            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            return fs.isFileExists(f);
+            final IRODSConnection conn = session.getClient();
+            return IRODSFilesystem.exists(conn.getRcComm(), file.getAbsolute());
         }
-        catch(JargonException e) {
+        catch(IOException | IRODSException e) {
             throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+        
     }
 }
