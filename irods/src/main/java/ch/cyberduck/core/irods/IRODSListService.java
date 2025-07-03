@@ -1,5 +1,21 @@
 package ch.cyberduck.core.irods;
 
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.irods.irods4j.common.Versioning;
+import org.irods.irods4j.high_level.catalog.IRODSQuery;
+import org.irods.irods4j.high_level.catalog.IRODSQuery.GenQuery1QueryArgs;
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.vfs.CollectionEntry;
+import org.irods.irods4j.high_level.vfs.IRODSCollectionIterator;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
+import org.irods.irods4j.low_level.api.GenQuery1Columns;
+import org.irods.irods4j.low_level.api.IRODSException;
+
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
  * http://cyberduck.ch/
@@ -27,18 +43,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.lang3.StringUtils;
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.pub.domain.ObjStat;
-import org.irods.jargon.core.pub.io.IRODSFile;
-
-import java.io.File;
-import java.util.EnumSet;
-
 public class IRODSListService implements ListService {
 
     private final IRODSSession session;
@@ -51,32 +55,81 @@ public class IRODSListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final IRODSFileSystemAO fs = session.getClient();
-            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(directory.getAbsolute());
-            if(!f.exists()) {
-                throw new NotfoundException(directory.getAbsolute());
+            final IRODSConnection conn = session.getClient();
+            String path = directory.getAbsolute();
+            if (!IRODSFilesystem.exists(conn.getRcComm(), path)) {
+                throw new NotfoundException(path);
             }
-            for(File file : fs.getListInDirWithFileFilter(f, TrueFileFilter.TRUE)) {
-                final String normalized = PathNormalizer.normalize(file.getAbsolutePath(), true);
-                if(StringUtils.equals(normalized, directory.getAbsolute())) {
-                    continue;
-                }
-                final PathAttributes attributes = new PathAttributes();
-                final ObjStat stats = fs.getObjStat(file.getAbsolutePath());
-                attributes.setModificationDate(stats.getModifiedAt().getTime());
-                attributes.setCreationDate(stats.getCreatedAt().getTime());
-                attributes.setSize(stats.getObjSize());
-                attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(stats.getChecksum()))));
-                attributes.setOwner(stats.getOwnerName());
-                attributes.setGroup(stats.getOwnerZone());
-                children.add(new Path(directory, PathNormalizer.name(normalized),
-                        file.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
-                        attributes));
-                listener.chunk(directory, children);
+            final IRODSCollectionIterator iterator = new IRODSCollectionIterator(conn.getRcComm(), path);
+            
+            for (CollectionEntry entry : iterator) {
+            	final String normalized = PathNormalizer.normalize(entry.path(), true);
+            	if(StringUtils.equals(normalized, directory.getAbsolute())) {
+                  continue;
+            	}
+            	final PathAttributes attributes = new PathAttributes();
+            	String logicalPath = entry.path();
+            	String parentPath = FilenameUtils.getFullPathNoEndSeparator(logicalPath);
+            	String fileName = FilenameUtils.getName(logicalPath);
+            	String query = "";
+            	//check version
+            	if(Versioning.compareVersions(conn.getRcComm().relVersion.substring(4), "4.3.4") > 0) {
+            		query = String.format("select DATA_MODIFY_TIME, DATA_CREATE_TIME, DATA_SIZE, DATA_CHECKSUM, DATA_OWNER_NAME, DATA_OWNER_ZONE where COLL_NAME = '%s' and DATA_NAME = '%s'", parentPath, fileName);
+            		List<List<String>> rows = IRODSQuery.executeGenQuery2(conn.getRcComm(), query);
+                	List<String> row = rows.get(0);
+                	attributes.setModificationDate(Long.parseLong(row.get(0)) * 1000); // seconds to ms
+                	attributes.setCreationDate(Long.parseLong(row.get(1)) * 1000);
+                	attributes.setSize(Long.parseLong(row.get(2)));
+                	String checksum = row.get(3);
+                	if (!StringUtils.isEmpty(checksum)) {
+                	    attributes.setChecksum(Checksum.parse(checksum));
+                	}
+
+                	attributes.setOwner(row.get(4));
+                	attributes.setGroup(row.get(5));
+            	}else {
+            		//if older version, use GenQuery1
+            		GenQuery1QueryArgs input = new GenQuery1QueryArgs();
+
+        			// select COLL_NAME, DATA_NAME, DATA_ACCESS_TIME
+        			input.addColumnToSelectClause(GenQuery1Columns.COL_D_MODIFY_TIME);
+        			input.addColumnToSelectClause(GenQuery1Columns.COL_D_CREATE_TIME);
+        			input.addColumnToSelectClause(GenQuery1Columns.COL_DATA_SIZE);
+        			input.addColumnToSelectClause(GenQuery1Columns.COL_D_DATA_CHECKSUM);
+        			input.addColumnToSelectClause(GenQuery1Columns.COL_D_OWNER_NAME);
+        			input.addColumnToSelectClause(GenQuery1Columns.COL_D_OWNER_ZONE);
+        			
+
+        			// where COLL_NAME like '/tempZone/home/rods and DATA_NAME = 'atime.txt'
+        			String collNameCondStr = String.format("= '%s'", parentPath);
+        			String dataNameCondStr = String.format("= '%s'", fileName);
+        			input.addConditionToWhereClause(GenQuery1Columns.COL_COLL_NAME, collNameCondStr);
+        			input.addConditionToWhereClause(GenQuery1Columns.COL_DATA_NAME, dataNameCondStr);
+
+        			IRODSQuery.executeGenQuery1(conn.getRcComm(), input, row -> {
+                    	attributes.setModificationDate(Long.parseLong(row.get(0)) * 1000); // seconds to ms
+                    	attributes.setCreationDate(Long.parseLong(row.get(1)) * 1000);
+                    	attributes.setSize(Long.parseLong(row.get(2)));
+                    	String checksum = row.get(3);
+                    	if (!StringUtils.isEmpty(checksum)) {
+                    	    attributes.setChecksum(Checksum.parse(checksum));
+                    	}
+
+                    	attributes.setOwner(row.get(4));
+                    	attributes.setGroup(row.get(5));
+                    	return false;
+        			});
+            	}
+            	EnumSet<Path.Type> type = entry.isCollection()
+            		    ? EnumSet.of(Path.Type.directory)
+            		    : EnumSet.of(Path.Type.file);
+
+            	children.add(new Path(directory, PathNormalizer.name(normalized), type, attributes));
+            	listener.chunk(directory, children);
             }
             return children;
         }
-        catch(JargonException e) {
+        catch(IRODSException | IOException e) {
             throw new IRODSExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }

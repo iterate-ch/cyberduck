@@ -1,5 +1,15 @@
 package ch.cyberduck.core.irods;
 
+import java.text.MessageFormat;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.connection.QualifiedUsername;
+import org.irods.irods4j.low_level.api.IRODSApi.ConnectionOptions;
+
+
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
  * http://cyberduck.ch/
@@ -25,7 +35,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -49,23 +58,8 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.irods.jargon.core.connection.AuthScheme;
-import org.irods.jargon.core.connection.IRODSAccount;
-import org.irods.jargon.core.connection.SettableJargonProperties;
-import org.irods.jargon.core.connection.auth.AuthResponse;
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.IRODSAccessObjectFactory;
-import org.irods.jargon.core.pub.IRODSFileSystem;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.MessageFormat;
-
-public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
+public class IRODSSession extends SSLSession<IRODSConnection> {
     private static final Logger log = LogManager.getLogger(IRODSSession.class);
 
     public IRODSSession(final Host h) {
@@ -77,38 +71,33 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     }
 
     @Override
-    protected IRODSFileSystemAO connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected IRODSConnection connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            final IRODSFileSystem fs = this.configure(IRODSFileSystem.instance());
-            final IRODSAccessObjectFactory factory = fs.getIRODSAccessObjectFactory();
-            final String region = this.getRegion();
-            final String resource = this.getResource();
-            final Credentials credentials = host.getCredentials();
-            try {
-                return factory.getIRODSFileSystemAO(new URIEncodingIRODSAccount(credentials.getUsername(), credentials.getPassword(),
-                    new IRODSHomeFinderService(IRODSSession.this).find().getAbsolute(), region, resource));
-            }
-            catch(IllegalArgumentException e) {
-                throw new LoginFailureException(e.getMessage(), e);
-            }
-        }
-        catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map(e);
+            final String host = "localhost";
+            final int port = 1247;
+            final String zone = "tempZone";
+            
+            ConnectionOptions options=new ConnectionOptions();
+         
+            
+            IRODSConnection conn = new IRODSConnection(options);
+            conn.connect(host, port, new QualifiedUsername("rods", zone));
+            
+            
+            return conn;
+        } catch (Exception e) {
+        	String msg = String.format("exception=[%s], host=[%s], port=[%d], username=[%s], zone=[%s]", e.getMessage(), this.host.getHostname(),this.host.getPort(), this.host.getCredentials().getUsername(),getRegion());
+            throw new BackgroundException("Failed to connect to iRODS - "+ msg,e);
         }
     }
 
-    protected IRODSFileSystem configure(final IRODSFileSystem client) {
-        final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
-        properties.setEncoding(host.getEncoding());
-        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
-        properties.setIrodsSocketTimeout(timeout);
-        properties.setIrodsParallelSocketTimeout(timeout);
-        properties.setGetBufferSize(preferences.getInteger("connection.chunksize"));
-        properties.setPutBufferSize(preferences.getInteger("connection.chunksize"));
-        log.debug("Configure client {} with properties {}", client, properties);
-        client.getIrodsSession().setJargonProperties(properties);
-        client.getIrodsSession().setX509TrustManager(trust);
-        return client;
+    protected ConnectionOptions configure(final ConnectionOptions options) {
+    	//TODO update to use configure
+        final PreferencesReader preferences = HostPreferencesFactory.get(host);
+        options.tcpReceiveBufferSize=preferences.getInteger("connection.chunksize");
+        options.tcpSendBufferSize=preferences.getInteger("connection.chunksize");
+        
+    	return options;
     }
 
     protected String getRegion() {
@@ -127,30 +116,35 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        try {
-            final IRODSAccount account = client.getIRODSAccount();
+    	try {
             final Credentials credentials = host.getCredentials();
-            account.setUserName(credentials.getUsername());
-            account.setPassword(credentials.getPassword());
-            final AuthResponse response = client.getIRODSAccessObjectFactory().authenticateIRODSAccount(account);
-            log.debug("Connected to {}", response.getStartupResponse());
-            if(!response.isSuccessful()) {
-                throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
-            }
+            final String username = credentials.getUsername();
+            final String password = credentials.getPassword();
+            final String authScheme = StringUtils.defaultIfBlank(
+                host.getProtocol().getAuthorization(),
+                "native"
+            );
+            //irods4j authenticate
+            client.authenticate(authScheme, password);
+
+            log.debug("Authenticated to iRODS as {}", username);
         }
-        catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map(e);
+        catch (Exception e) {
+            throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
+                "Login {0} with username and password", "Credentials"),
+                BookmarkNameProvider.toString(host)), e);
         }
     }
 
     @Override
-    public void disconnect() throws BackgroundException {
-        try {
-            client.getIRODSSession().closeSession();
-        }
-        catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map(e);
+    protected void logout() throws BackgroundException {
+    	try {
+            if (client != null) {
+                client.disconnect();
+                client = null;
+            }
+        } catch (Exception e) {
+            throw new BackgroundException("Failed to disconnect from iRODS", e);
         }
         finally {
             super.disconnect();
@@ -196,50 +190,5 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         return super._getFeature(type);
     }
 
-    private final class URIEncodingIRODSAccount extends IRODSAccount {
-        public URIEncodingIRODSAccount(final String user, final String password, final String home, final String region, final String resource) {
-            super(host.getHostname(), host.getPort(), StringUtils.isBlank(user) ? StringUtils.EMPTY : user, password, home, region, resource);
-            this.setUserName(user);
-        }
 
-        @Override
-        public URI toURI(final boolean includePassword) throws JargonException {
-            try {
-                return new URI(String.format("irods://%s.%s%s@%s:%d%s",
-                    this.getUserName(),
-                    this.getZone(),
-                    includePassword ? String.format(":%s", this.getPassword()) : StringUtils.EMPTY,
-                    this.getHost(),
-                    this.getPort(),
-                    URIEncoder.encode(this.getHomeDirectory())));
-            }
-            catch(URISyntaxException e) {
-                throw new JargonException(e.getMessage());
-            }
-        }
-
-        @Override
-        public void setUserName(final String input) {
-            final String user;
-            final AuthScheme scheme;
-            if(StringUtils.contains(input, ':')) {
-                // Support non default auth scheme (PAM)
-                user = StringUtils.splitPreserveAllTokens(input, ':')[1];
-                // Defaults to standard if not found
-                scheme = AuthScheme.findTypeByString(StringUtils.splitPreserveAllTokens(input, ':')[0]);
-            }
-            else {
-                user = input;
-                if(StringUtils.isNotBlank(host.getProtocol().getAuthorization())) {
-                    scheme = AuthScheme.findTypeByString(host.getProtocol().getAuthorization());
-                }
-                else {
-                    // We can default to Standard if not specified
-                    scheme = AuthScheme.STANDARD;
-                }
-            }
-            super.setUserName(user);
-            this.setAuthenticationScheme(scheme);
-        }
-    }
 }
