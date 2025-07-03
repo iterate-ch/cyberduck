@@ -1,5 +1,11 @@
 package ch.cyberduck.core.irods;
 
+import java.io.IOException;
+
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
+import org.irods.irods4j.low_level.api.IRODSException;
+
 /*
  * Copyright (c) 2002-2015 David Kocher. All rights reserved.
  * http://cyberduck.ch/
@@ -22,9 +28,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.packinstr.DataObjInp;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
 public class IRODSTouchFeature implements Touch {
 
@@ -37,13 +40,17 @@ public class IRODSTouchFeature implements Touch {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.getClient();
-            final int descriptor = fs.createFile(file.getAbsolute(),
-                    DataObjInp.OpenFlags.WRITE_TRUNCATE, DataObjInp.DEFAULT_CREATE_MODE);
-            fs.fileClose(descriptor, false);
+
+            // Open and immediately close the file to create/truncate it
+        	final IRODSConnection conn=session.getClient();
+            try (IRODSDataObjectOutputStream out = new IRODSDataObjectOutputStream(conn.getRcComm(), file.getAbsolute(),
+                    true /* truncate if exists */, false /* don't append */)) {
+                // File is created or truncated by opening the stream
+            }
+
             return file;
         }
-        catch(JargonException e) {
+        catch(IOException|IRODSException e) {
             throw new IRODSExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
