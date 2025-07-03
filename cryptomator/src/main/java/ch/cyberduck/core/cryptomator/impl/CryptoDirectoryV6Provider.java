@@ -37,8 +37,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CryptoDirectoryV6Provider implements CryptoDirectory {
     private static final Logger log = LogManager.getLogger(CryptoDirectoryV6Provider.class);
@@ -51,12 +51,12 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     private final CryptoVault cryptomator;
 
     private final RandomStringService random
-        = new UUIDRandomStringService();
+            = new UUIDRandomStringService();
 
-    private final Lock lock = new ReentrantLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final LRUCache<CacheReference<Path>, String> cache = LRUCache.build(
-        PreferencesFactory.get().getInteger("cryptomator.cache.size"));
+            PreferencesFactory.get().getInteger("cryptomator.cache.size"));
 
     public CryptoDirectoryV6Provider(final Path vault, final CryptoVault cryptomator) {
         this.home = vault;
@@ -103,31 +103,31 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         if(new SimplePathPredicate(home).test(directory)) {
             return ROOT_DIR_ID;
         }
-        if(StringUtils.isBlank(directoryId)) {
+        try {
+            lock.readLock().lock();
             if(cache.contains(new SimplePathPredicate(directory))) {
-                return cache.get(new SimplePathPredicate(directory));
-            }
-            try {
-                log.debug("Acquire lock for {}", directory);
-                lock.lock();
-                final String id = this.load(session, directory);
-                cache.put(new SimplePathPredicate(directory), id);
-                return id;
-            }
-            finally {
-                lock.unlock();
+                final String existing = cache.get(new SimplePathPredicate(directory));
+                if(StringUtils.isNotBlank(directoryId)) {
+                    if(!existing.equals(directoryId)) {
+                        log.warn("Do not override already cached id {} with {}", existing, directoryId);
+                    }
+                }
+                return existing;
             }
         }
-        if(!cache.contains(new SimplePathPredicate(directory))) {
-            cache.put(new SimplePathPredicate(directory), directoryId);
+        finally {
+            lock.readLock().unlock();
         }
-        else {
-            final String existing = cache.get(new SimplePathPredicate(directory));
-            if(!existing.equals(directoryId)) {
-                log.warn("Do not override already cached id {} with {}", existing, directoryId);
-            }
+        try {
+            log.debug("Acquire lock for {}", directory);
+            lock.writeLock().lock();
+            final String id = StringUtils.isBlank(directoryId) ? this.load(session, directory) : directoryId;
+            cache.put(new SimplePathPredicate(directory), id);
+            return id;
         }
-        return cache.get(new SimplePathPredicate(directory));
+        finally {
+            lock.writeLock().unlock();
+        }
     }
 
     protected String load(final Session<?> session, final Path directory) throws BackgroundException {
@@ -147,11 +147,23 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     }
 
     public void delete(final Path directory) {
-        cache.remove(new SimplePathPredicate(directory));
+        try {
+            lock.writeLock().lock();
+            cache.remove(new SimplePathPredicate(directory));
+        }
+        finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public void destroy() {
-        cache.clear();
+        try {
+            lock.writeLock().lock();
+            cache.clear();
+        }
+        finally {
+            lock.writeLock().unlock();
+        }
     }
 }
