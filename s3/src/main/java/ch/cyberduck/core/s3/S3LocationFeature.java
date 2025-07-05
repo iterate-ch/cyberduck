@@ -71,14 +71,14 @@ public class S3LocationFeature implements Location {
 
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
-        if(StringUtils.isNotBlank(session.getHost().getRegion())) {
-            return new S3Region(session.getHost().getRegion());
-        }
         final Path bucket = containerService.getContainer(file);
         return this.getLocation(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
     }
 
     protected Name getLocation(final String bucketname) throws BackgroundException {
+        if(StringUtils.isNotBlank(session.getHost().getRegion())) {
+            return new S3Region(session.getHost().getRegion());
+        }
         try {
             if(cache.containsRegionForBucketName(bucketname)) {
                 return new S3Region(cache.getRegionForBucketName(bucketname));
