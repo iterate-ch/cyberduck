@@ -176,11 +176,15 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
 
     @Override
     public byte[] createDirectoryId(final Path directory) {
-        final byte[] dirId = new byte[32];
-        random.nextBytes(dirId);
-        //TODO lock?
-        cache.put(new SimplePathPredicate(directory), dirId);
-        return dirId;
-
+        lock.writeLock().lock();
+        try {
+            final byte[] dirId = new byte[32];
+            random.nextBytes(dirId);
+            cache.put(new SimplePathPredicate(directory), dirId);
+            return dirId;
+        }
+        finally {
+            lock.writeLock().unlock();
+        }
     }
 }

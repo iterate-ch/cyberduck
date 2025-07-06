@@ -54,7 +54,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     private final RandomStringService random
             = new UUIDRandomStringService();
 
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected final LRUCache<CacheReference<Path>, byte[]> cache = LRUCache.build(
             PreferencesFactory.get().getInteger("cryptomator.cache.size"));
@@ -107,8 +107,8 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         if(new SimplePathPredicate(home).test(directory)) {
             return ROOT_DIR_ID;
         }
+        lock.readLock().lock();
         try {
-            lock.readLock().lock();
             if(cache.contains(new SimplePathPredicate(directory))) {
                 return cache.get(new SimplePathPredicate(directory));
             }
@@ -145,8 +145,8 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     }
 
     public void delete(final Path directory) {
+        lock.writeLock().lock();
         try {
-            lock.writeLock().lock();
             cache.remove(new SimplePathPredicate(directory));
         }
         finally {
@@ -156,8 +156,8 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
 
     @Override
     public void destroy() {
+        lock.writeLock().lock();
         try {
-            lock.writeLock().lock();
             cache.clear();
         }
         finally {
@@ -176,9 +176,14 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
 
     @Override
     public byte[] createDirectoryId(final Path directory) {
-        final byte[] directoryId = random.random().getBytes(StandardCharsets.US_ASCII);
-        //TODO lock?
-        cache.put(new SimplePathPredicate(directory), directoryId);
-        return directoryId;
+        lock.writeLock().lock();
+        try {
+            final byte[] directoryId = random.random().getBytes(StandardCharsets.US_ASCII);
+            cache.put(new SimplePathPredicate(directory), directoryId);
+            return directoryId;
+        }
+        finally {
+            lock.writeLock().unlock();
+        }
     }
 }
