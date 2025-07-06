@@ -70,9 +70,9 @@ public interface AclPermission {
      * @param file Remote file
      * @return Default ACL to set for file
      */
-    default Acl getDefault(final Path type) throws BackgroundException {
+    default Acl getDefault(final Path file) throws BackgroundException {
         if(preferences.getBoolean("queue.upload.permissions.default")) {
-            if(type.getType().contains(Path.Type.file)) {
+            if(file.getType().contains(Path.Type.file)) {
                 return toAcl(new Permission(preferences.getInteger("queue.upload.permissions.file.default")));
             }
             else {
