@@ -128,6 +128,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         return this._getFeature(session, type, proxy);
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T _getFeature(final Session<?> session, final Class<T> type, final T proxy) {
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
