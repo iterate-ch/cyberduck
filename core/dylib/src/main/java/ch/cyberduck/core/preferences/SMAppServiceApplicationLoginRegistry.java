@@ -26,11 +26,17 @@ public class SMAppServiceApplicationLoginRegistry implements ApplicationLoginReg
 
     @Override
     public boolean register(final Application application) {
+        if(application.equals(new Application(PreferencesFactory.get().getProperty("application.identifier")))) {
+            return SMAppService.mainAppService().registerAndReturnError(null);
+        }
         return SMAppService.loginItemServiceWithIdentifier(application.getIdentifier()).registerAndReturnError(null);
     }
 
     @Override
     public boolean unregister(final Application application) {
+        if(application.equals(new Application(PreferencesFactory.get().getProperty("application.identifier")))) {
+            return SMAppService.mainAppService().unregisterAndReturnError(null);
+        }
         return SMAppService.loginItemServiceWithIdentifier(application.getIdentifier()).unregisterAndReturnError(null);
     }
 }
