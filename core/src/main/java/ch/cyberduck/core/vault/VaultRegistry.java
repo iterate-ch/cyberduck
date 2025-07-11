@@ -77,7 +77,16 @@ public interface VaultRegistry {
     /**
      * @return True if directory is registered as vault or is contained in vault
      */
-    boolean contains(Path directory);
+    default boolean contains(Path directory) {
+        return this.contains(directory, true);
+    }
+
+    /**
+     * @param directory Directory to check
+     * @param recursive When false only return true if directory is registered as vault root
+     * @return True if directory is registered as vault or is contained in vault
+     */
+    boolean contains(Path directory, boolean recursive);
 
     class DisabledVaultRegistry implements VaultRegistry {
         @Override
@@ -96,7 +105,7 @@ public interface VaultRegistry {
         }
 
         @Override
-        public boolean contains(final Path vault) {
+        public boolean contains(final Path directory, final boolean recursive) {
             return false;
         }
 

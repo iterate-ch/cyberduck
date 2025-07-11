@@ -72,13 +72,15 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public boolean contains(final Path directory) {
+    public boolean contains(final Path directory, final boolean recursive) {
         for(Vault vault : this) {
             if(directory.equals(vault.getHome())) {
                 return true;
             }
-            if(directory.isChild(vault.getHome())) {
-                return true;
+            if(recursive) {
+                if(directory.isChild(vault.getHome())) {
+                    return true;
+                }
             }
         }
         return false;
