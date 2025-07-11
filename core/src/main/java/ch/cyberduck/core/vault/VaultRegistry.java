@@ -30,7 +30,7 @@ public interface VaultRegistry {
      * @throws VaultUnlockCancelException Attempt to unlock vault was canceled by user
      * @see Vault#DISABLED
      */
-    default Vault find(final Session session, final Path file) throws VaultUnlockCancelException {
+    default Vault find(final Session<?> session, final Path file) throws VaultUnlockCancelException {
         return this.find(session, file, HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.vault.autoload"));
     }
 
@@ -41,7 +41,7 @@ public interface VaultRegistry {
      * @return Vault for file or disabled vault if file is not inside a vault
      * @throws VaultUnlockCancelException Attempt to unlock vault was canceled by user
      */
-    Vault find(Session session, Path file, boolean unlock) throws VaultUnlockCancelException;
+    Vault find(Session<?> session, Path file, boolean unlock) throws VaultUnlockCancelException;
 
     /**
      * Add vault to registry
@@ -81,7 +81,7 @@ public interface VaultRegistry {
 
     class DisabledVaultRegistry implements VaultRegistry {
         @Override
-        public Vault find(final Session session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
+        public Vault find(final Session<?> session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
             return Vault.DISABLED;
         }
 
