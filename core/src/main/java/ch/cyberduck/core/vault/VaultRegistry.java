@@ -30,7 +30,7 @@ public interface VaultRegistry {
      * @throws VaultUnlockCancelException Attempt to unlock vault was canceled by user
      * @see Vault#DISABLED
      */
-    default Vault find(final Session session, final Path file) throws VaultUnlockCancelException {
+    default Vault find(final Session<?> session, final Path file) throws VaultUnlockCancelException {
         return this.find(session, file, HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.vault.autoload"));
     }
 
@@ -41,7 +41,7 @@ public interface VaultRegistry {
      * @return Vault for file or disabled vault if file is not inside a vault
      * @throws VaultUnlockCancelException Attempt to unlock vault was canceled by user
      */
-    Vault find(Session session, Path file, boolean unlock) throws VaultUnlockCancelException;
+    Vault find(Session<?> session, Path file, boolean unlock) throws VaultUnlockCancelException;
 
     /**
      * Add vault to registry
@@ -77,11 +77,20 @@ public interface VaultRegistry {
     /**
      * @return True if directory is registered as vault or is contained in vault
      */
-    boolean contains(Path directory);
+    default boolean contains(Path directory) {
+        return this.contains(directory, true);
+    }
+
+    /**
+     * @param directory Directory to check
+     * @param recursive When false only return true if directory is registered as vault root
+     * @return True if directory is registered as vault or is contained in vault
+     */
+    boolean contains(Path directory, boolean recursive);
 
     class DisabledVaultRegistry implements VaultRegistry {
         @Override
-        public Vault find(final Session session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
+        public Vault find(final Session<?> session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
             return Vault.DISABLED;
         }
 
@@ -96,7 +105,7 @@ public interface VaultRegistry {
         }
 
         @Override
-        public boolean contains(final Path vault) {
+        public boolean contains(final Path directory, final boolean recursive) {
             return false;
         }
 

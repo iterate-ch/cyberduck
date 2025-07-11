@@ -87,6 +87,9 @@ public interface Vault {
 
     State getState();
 
+    /**
+     * @return Root directory of vault
+     */
     Path getHome();
 
     enum State {
