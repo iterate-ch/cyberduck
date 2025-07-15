@@ -15,31 +15,11 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
-
-import java.io.IOException;
-import java.util.Optional;
-
-import com.github.sardine.DavResource;
 
 public class OwncloudTimestampFeature extends DAVTimestampFeature {
 
-    private final OwncloudSession session;
-
     public OwncloudTimestampFeature(final OwncloudSession session) {
-        super(session);
-        this.session = session;
-    }
-
-    @Override
-    protected DavResource getResource(final Path file) throws BackgroundException, IOException {
-        final Optional<DavResource> optional = new OwncloudAttributesFinderFeature(session).list(file).stream().findFirst();
-        if(!optional.isPresent()) {
-            throw new NotfoundException(file.getAbsolute());
-        }
-        return optional.get();
+        super(session, new OwncloudAttributesFinderFeature(session));
     }
 }
