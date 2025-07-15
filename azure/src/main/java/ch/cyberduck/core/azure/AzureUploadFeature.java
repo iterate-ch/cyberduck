@@ -22,25 +22,22 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.blob.BlobType;
+import com.azure.storage.blob.models.BlobType;
 
 public class AzureUploadFeature extends DefaultUploadFeature {
 
     private final AzureSession session;
-    private final OperationContext context;
 
-    public AzureUploadFeature(final AzureSession session, final OperationContext context) {
-        super(new AzureWriteFeature(session, context));
+    public AzureUploadFeature(final AzureSession session) {
+        super(new AzureWriteFeature(session));
         this.session = session;
-        this.context = context;
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         final Write.Append append = new Write.Append(status.isExists()).withStatus(status);
         if(append.append) {
-            final PathAttributes attr = new AzureAttributesFinderFeature(session, context).find(file);
+            final PathAttributes attr = new AzureAttributesFinderFeature(session).find(file);
             if(BlobType.APPEND_BLOB == BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE))) {
                 return append;
             }
