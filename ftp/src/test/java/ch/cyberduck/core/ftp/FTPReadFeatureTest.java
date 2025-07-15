@@ -56,6 +56,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
     public void testRead() throws Exception {
         final Path home = new FTPWorkdirService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        assertThrows(NotfoundException.class, () -> new FTPReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()));
         new FTPTouchFeature(session).touch(test, new TransferStatus());
         final int length = 39865;
         final byte[] content = RandomUtils.nextBytes(length);
