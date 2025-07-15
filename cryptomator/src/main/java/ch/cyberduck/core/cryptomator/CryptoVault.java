@@ -220,23 +220,28 @@ public class CryptoVault implements Vault {
     }
 
     private VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
+        final MasterkeyFile masterkeyFile = this.readMasterkeyFile(session, masterkey);
         try {
-            final String token = new ContentReader(session).read(config);
-            return parseVaultConfigFromJWT(token).withMasterkeyFile(this.readMasterkeyFile(session, masterkey));
+            return parseVaultConfigFromJWT(new ContentReader(session).read(config))
+                    .withMasterkeyFile(masterkeyFile);
         }
         catch(NotfoundException e) {
-            log.debug("Ignore failure reading {}", config);
-            final MasterkeyFile mkfile = this.readMasterkeyFile(session, masterkey);
-            return new VaultConfig(mkfile.version,
-                    mkfile.version == VAULT_VERSION_DEPRECATED ?
-                            CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD :
-                            CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
-                    CryptorProvider.Scheme.SIV_CTRMAC, null, null).withMasterkeyFile(mkfile);
+            log.debug("Ignore failure reading vault configuration {}", config);
+            return parseVaultConfigFromMasterKey(masterkeyFile)
+                    .withMasterkeyFile(masterkeyFile);
         }
     }
 
+    private static VaultConfig parseVaultConfigFromMasterKey(final MasterkeyFile masterkeyFile) {
+        return new VaultConfig(masterkeyFile.version,
+                masterkeyFile.version == VAULT_VERSION_DEPRECATED ?
+                        CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD :
+                        CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
+                CryptorProvider.Scheme.SIV_CTRMAC, null, null);
+    }
 
-    public static VaultConfig parseVaultConfigFromJWT(final String token) {
+
+    private static VaultConfig parseVaultConfigFromJWT(final String token) {
         final DecodedJWT decoded = JWT.decode(token);
         return new VaultConfig(
                 decoded.getClaim(JSON_KEY_VAULTVERSION).asInt(),
@@ -245,13 +250,13 @@ public class CryptoVault implements Vault {
                 decoded.getAlgorithm(), decoded);
     }
 
-    private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path masterkey) throws BackgroundException {
-        log.debug("Read master key {}", masterkey);
-        try (Reader reader = new ContentReader(session).getReader(masterkey)) {
+    private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path file) throws BackgroundException {
+        log.debug("Read master key {}", file);
+        try(Reader reader = new ContentReader(session).getReader(file)) {
             return MasterkeyFile.read(reader);
         }
         catch(JsonParseException | IllegalArgumentException | IllegalStateException | IOException e) {
-            throw new VaultException(String.format("Failure reading vault master key file %s", masterkey.getName()), e);
+            throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
         }
     }
 
