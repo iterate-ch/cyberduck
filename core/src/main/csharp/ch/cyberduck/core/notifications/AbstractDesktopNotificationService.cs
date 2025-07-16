@@ -181,6 +181,8 @@ namespace Ch.Cyberduck.Core.Notifications
             }
 
             notifier.Show(toast);
+            GC.KeepAlive(notifier);
+            GC.KeepAlive(toast);
         }
 
         private void Toast_Activated(ToastNotification sender, object args)
