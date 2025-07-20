@@ -18,10 +18,10 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.azure.apache.ApacheHttpClient;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
@@ -38,31 +38,26 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
-import com.azure.core.http.HttpPipeline;
+import com.azure.core.http.HttpHeaderName;
 import com.azure.core.http.HttpPipelineBuilder;
 import com.azure.core.http.HttpPipelineCallContext;
 import com.azure.core.http.HttpPipelineNextPolicy;
+import com.azure.core.http.HttpPipelineNextSyncPolicy;
 import com.azure.core.http.HttpResponse;
 import com.azure.core.http.policy.AddDatePolicy;
 import com.azure.core.http.policy.AddHeadersPolicy;
 import com.azure.core.http.policy.AzureSasCredentialPolicy;
+import com.azure.core.http.policy.BearerTokenAuthenticationPolicy;
 import com.azure.core.http.policy.HttpPipelinePolicy;
 import com.azure.core.http.policy.RequestIdPolicy;
-import com.azure.storage.blob.BlobServiceAsyncClient;
+import com.azure.core.http.policy.UserAgentPolicy;
 import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceVersion;
-import com.azure.storage.blob.implementation.models.EncryptionScope;
+import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.AccountKind;
-import com.azure.storage.blob.models.BlobContainerEncryptionScope;
-import com.azure.storage.blob.models.CpkInfo;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import com.azure.storage.common.implementation.Constants;
 import com.azure.storage.common.policy.MetadataValidationPolicy;
@@ -87,37 +82,30 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     }
 
     @Override
-    protected BlobServiceClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected BlobServiceClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
-        final List<HttpPipelinePolicy> policies = new ArrayList<>();
-        policies.add(new RequestIdPolicy());
-        policies.add(new RequestRetryPolicy(new RequestRetryOptions()));
-        policies.add(new AddDatePolicy());
-        policies.add(new AddHeadersPolicy(new com.azure.core.http.HttpHeaders(
-                Collections.singletonMap(HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
-        ));
-        policies.add(new MetadataValidationPolicy());
-        policies.add(authenticator);
-        policies.add(new ResponseValidationPolicyBuilder()
-                .addOptionalEcho(Constants.HeaderConstants.CLIENT_REQUEST_ID)
-                .addOptionalEcho(Constants.HeaderConstants.ENCRYPTION_KEY_SHA256)
-                .build());
-        final HttpPipeline pipeline = new HttpPipelineBuilder()
-                .httpClient(new ApacheHttpClient(pool))
-                .policies(policies.toArray(new HttpPipelinePolicy[0]))
-                .build();
-        try {
-            final Constructor<BlobServiceAsyncClient> blobServiceAsyncClientConstructor = BlobServiceAsyncClient.class.getDeclaredConstructor(HttpPipeline.class, String.class, BlobServiceVersion.class, String.class, CpkInfo.class, EncryptionScope.class, BlobContainerEncryptionScope.class, boolean.class);
-            blobServiceAsyncClientConstructor.setAccessible(true);
-            final BlobServiceAsyncClient serviceAsyncClient = blobServiceAsyncClientConstructor.newInstance(pipeline, String.format("%s://%s", Scheme.https, host.getHostname()),
-                    BlobServiceVersion.getLatest(), null, null, null, null, false);
-            final Constructor<BlobServiceClient> blobServiceClientConstructor = BlobServiceClient.class.getDeclaredConstructor(BlobServiceAsyncClient.class);
-            blobServiceClientConstructor.setAccessible(true);
-            return blobServiceClientConstructor.newInstance(serviceAsyncClient);
-        }
-        catch(InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new BackgroundException(e);
-        }
+        return new BlobServiceClientBuilder()
+                .endpoint(new HostUrlProvider().withUsername(false).get(host))
+                .pipeline(new HttpPipelineBuilder()
+                        .httpClient(new ApacheHttpClient(pool))
+                        .policies(
+                                new EmptyAuthenticationPolicy(),
+                                new UserAgentPolicy(new PreferencesUseragentProvider().get()),
+                                new RequestIdPolicy(),
+                                new RequestRetryPolicy(new RequestRetryOptions()),
+                                new AddDatePolicy(),
+                                new AddHeadersPolicy(new com.azure.core.http.HttpHeaders(
+                                        Collections.singletonMap(HttpHeaders.USER_AGENT, new PreferencesUseragentProvider().get()))
+                                ),
+                                new MetadataValidationPolicy(),
+                                authenticator,
+                                new ResponseValidationPolicyBuilder()
+                                        .addOptionalEcho(HttpHeaderName.fromString(Constants.HeaderConstants.CLIENT_REQUEST_ID))
+                                        .addOptionalEcho(HttpHeaderName.fromString(Constants.HeaderConstants.ENCRYPTION_KEY_SHA256))
+                                        .build()
+                        )
+                        .build())
+                .buildClient();
     }
 
     private static final class CredentialsHttpPipelinePolicy implements HttpPipelinePolicy {
@@ -210,5 +198,21 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
             return (T) new AzureAclPermissionFeature(this);
         }
         return super._getFeature(type);
+    }
+
+    private static final class EmptyAuthenticationPolicy extends BearerTokenAuthenticationPolicy {
+        public EmptyAuthenticationPolicy() {
+            super(request -> Mono.empty());
+        }
+
+        @Override
+        public HttpResponse processSync(final HttpPipelineCallContext context, final HttpPipelineNextSyncPolicy next) {
+            return next.processSync();
+        }
+
+        @Override
+        public Mono<HttpResponse> process(final HttpPipelineCallContext context, final HttpPipelineNextPolicy next) {
+            return next.process();
+        }
     }
 }
