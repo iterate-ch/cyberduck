@@ -28,6 +28,7 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
@@ -50,7 +51,12 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     }
 
     static Optional<DescriptiveUrl> getWebUrl(final DriveItem.Metadata metadata) {
-        return Optional.of(new DescriptiveUrl(metadata.getWebUrl(), DescriptiveUrl.Type.http));
+        final String webUrl = metadata.getWebUrl();
+        if(StringUtils.isBlank(webUrl)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new DescriptiveUrl(webUrl, DescriptiveUrl.Type.http));
     }
 
     @Override
