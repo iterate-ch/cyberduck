@@ -424,11 +424,7 @@ public sealed partial class TransfersViewModel : ObservableObject, IDisposable
 
     private void OnRevealTransfer(TransferViewModel transfer)
     {
-        if (SelectedTransfers.Count is 0)
-        {
-            SelectedTransfer = transfer;
-        }
-        
+        SelectedTransfer = transfer;
         WeakReferenceMessenger.Default.Send(new BringIntoViewMessage(transfer));
     }
 
