@@ -53,6 +53,7 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -149,9 +150,11 @@ public class DeepboxReadFeature implements Read {
     }
 
     private Long getDelay(final long msPassed) {
-        return delays.keySet().stream()
-                .filter(l -> l >= msPassed)
-                .findFirst().orElse(0L);
+        final Optional<Long> d = delays.entrySet().stream()
+                .filter(e -> e.getKey() <= msPassed)
+                .map(Map.Entry::getValue)
+                .findFirst();
+        return d.isPresent() ? d.get() : 0;
     }
 
     @Override
