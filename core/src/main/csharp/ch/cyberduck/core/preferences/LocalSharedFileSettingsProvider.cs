@@ -37,7 +37,7 @@ public class LocalSharedFileSettingsProvider : SettingsProvider
             userConfigFile = new(Path.Combine(ApplicationData.Current.LocalCacheFolder.Path, userConfigFile.Name));
             try
             {
-                if (!userConfigFile.Exists)
+                if (!userConfigFile.Exists && sharedUserConfigFile.Exists)
                 {
                     userConfigFile.Directory.Create();
                     sharedUserConfigFile.CopyTo(userConfigFile.FullName);
