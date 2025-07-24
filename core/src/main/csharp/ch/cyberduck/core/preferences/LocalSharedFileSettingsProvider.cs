@@ -1,4 +1,5 @@
-﻿using System;
+﻿using org.apache.logging.log4j;
+using System;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
@@ -10,6 +11,8 @@ namespace Ch.Cyberduck.Core.Preferences;
 
 public class LocalSharedFileSettingsProvider : SettingsProvider
 {
+    private static readonly Logger Logger = LogManager.getLogger(typeof(LocalSharedFileSettingsProvider));
+
     private const string APPLICATIONSETTINGS_ELEMENT_NAME = "applicationSettings";
     private const string CONFIGURATION_ELEMENT_NAME = "configuration";
     private const string NAME_ATTRIBUTE_NAME = "name";
@@ -27,11 +30,26 @@ public class LocalSharedFileSettingsProvider : SettingsProvider
     {
         // store in Packaged cache folder (to ensure clearing after uninstall)
         // store in roaming app data, if not packaged
-        var configDirectory = EnvironmentInfo.Packaged
-            ? ApplicationData.Current.LocalCacheFolder.Path
-            : Path.Combine(EnvironmentInfo.AppDataPath, EnvironmentInfo.DataFolderName);
-        
-        userConfig = new(Path.Combine(configDirectory, $"{EnvironmentInfo.ProductName}.user.config"));
+        FileInfo userConfigFile = new(Path.Combine(EnvironmentInfo.AppDataPath, EnvironmentInfo.DataFolderName, $"{EnvironmentInfo.ProductName}.user.config"));
+        if (EnvironmentInfo.Packaged)
+        {
+            var sharedUserConfigFile = userConfigFile;
+            userConfigFile = new(Path.Combine(ApplicationData.Current.LocalCacheFolder.Path, userConfigFile.Name));
+            try
+            {
+                if (!userConfigFile.Exists && sharedUserConfigFile.Exists)
+                {
+                    userConfigFile.Directory.Create();
+                    sharedUserConfigFile.CopyTo(userConfigFile.FullName);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.error("Copying user.config", e);
+            }
+        }
+
+        userConfig = userConfigFile;
     }
 
     public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
