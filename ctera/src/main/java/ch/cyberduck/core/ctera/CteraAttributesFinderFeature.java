@@ -166,7 +166,13 @@ public class CteraAttributesFinderFeature extends DAVAttributesFinderFeature {
         final Acl acl = toAcl(customProps);
         final PathAttributes attributes = super.toAttributes(resource);
         if(customProps.containsKey(CTERA_GUID)) {
-            attributes.setFileId(customProps.get(CTERA_GUID));
+            final String guid = customProps.get(CTERA_GUID);
+            if("null:0".equals(guid)) {
+                log.warn("Skip setting GUID for {}", guid);
+            }
+            else {
+                attributes.setFileId(guid);
+            }
         }
         if(customProps.containsKey(CTERA_FILEID)) {
             attributes.setVersionId(customProps.get(CTERA_FILEID));
