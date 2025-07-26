@@ -78,6 +78,7 @@ public class S3CopyFeature implements Copy {
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn("Ignore failure {}", e.getMessage());
+                status.setAcl(acl.getDefault(target));
             }
         }
         final S3Object destination = new S3WriteFeature(session, acl).getDetails(target, status);
