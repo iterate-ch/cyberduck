@@ -392,10 +392,7 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
-        if(this.isUnlocked()) {
-            return new SimplePathPredicate(file).test(home) || file.isChild(home);
-        }
-        return false;
+        return new SimplePathPredicate(file).test(home) || file.isChild(home);
     }
 
     @Override
