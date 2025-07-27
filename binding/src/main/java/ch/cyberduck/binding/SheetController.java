@@ -83,10 +83,11 @@ public abstract class SheetController extends WindowController implements InputV
             }
         }
         handlers.forEach(h -> h.closed(window, option));
-        if(handlers.isEmpty()) {
-            log.warn("No close handlers for {}", this);
-            window.performClose(null);
-        }
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
         handlers.clear();
     }
 
