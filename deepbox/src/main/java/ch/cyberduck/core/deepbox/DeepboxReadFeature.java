@@ -52,11 +52,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -68,10 +72,16 @@ public class DeepboxReadFeature implements Read {
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
+    private final Map<Long, Long> delays;
 
     public DeepboxReadFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+        this.delays = new TreeMap<>(HostPreferencesFactory.get(session.getHost()).getMap("deepbox.download.interval.ms")
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(entry -> Long.parseLong(entry.getKey()),
+                        entry -> Long.parseLong(entry.getValue())))).descendingMap();
     }
 
     protected void poll(final String downloadId) throws BackgroundException {
@@ -88,32 +98,37 @@ public class DeepboxReadFeature implements Read {
         final long timeout = HostPreferencesFactory.get(session.getHost()).getLong("deepbox.download.interrupt.ms");
         final long start = System.currentTimeMillis();
         try {
-            final ScheduledFuture<?> f = scheduler.repeat(() -> {
-                try {
-                    if(System.currentTimeMillis() - start > timeout) {
-                        failure.set(new ConnectionCanceledException(String.format("Interrupt polling for download URL after %d", timeout)));
-                        signal.countDown();
-                        return;
-                    }
-                    // Poll status
-                    final DownloadRestControllerApi rest = new DownloadRestControllerApi(session.getClient());
-                    final Download.StatusEnum status = rest.downloadStatus(downloadId, null).getStatus();
-                    switch(status) {
-                        case READY:
-                        case READY_WITH_ISSUES:
+            final ScheduledFuture<?> f = scheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if(System.currentTimeMillis() - start > timeout) {
+                            failure.set(new ConnectionCanceledException(String.format("Interrupt polling for download URL after %d", timeout)));
                             signal.countDown();
                             return;
-                        default:
-                            log.warn("Wait for download URL to become ready with current status {}", status);
-                            break;
+                        }
+                        // Poll status
+                        final DownloadRestControllerApi rest = new DownloadRestControllerApi(session.getClient());
+                        final Download.StatusEnum status = rest.downloadStatus(downloadId, null).getStatus();
+                        switch(status) {
+                            case READY:
+                            case READY_WITH_ISSUES:
+                                signal.countDown();
+                                return;
+                            default:
+                                log.warn("Wait for download URL to become ready with current status {}", status);
+                                break;
+                        }
+                        // Reschedule with custom delay
+                        scheduler.schedule(this, getDelay(System.currentTimeMillis() - start), TimeUnit.MILLISECONDS);
+                    }
+                    catch(ApiException e) {
+                        log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()));
+                        failure.set(new DeepboxExceptionMappingService(fileid).map(e));
+                        signal.countDown();
                     }
                 }
-                catch(ApiException e) {
-                    log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()));
-                    failure.set(new DeepboxExceptionMappingService(fileid).map(e));
-                    signal.countDown();
-                }
-            }, HostPreferencesFactory.get(session.getHost()).getLong("deepbox.download.interval.ms"), TimeUnit.MILLISECONDS);
+            }, getDelay(0), TimeUnit.MILLISECONDS);
             while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
                 try {
                     if(f.isDone()) {
@@ -132,6 +147,14 @@ public class DeepboxReadFeature implements Read {
         finally {
             scheduler.shutdown(true);
         }
+    }
+
+    private Long getDelay(final long msPassed) {
+        final Optional<Long> d = delays.entrySet().stream()
+                .filter(e -> e.getKey() <= msPassed)
+                .map(Map.Entry::getValue)
+                .findFirst();
+        return d.isPresent() ? d.get() : 0;
     }
 
     @Override
