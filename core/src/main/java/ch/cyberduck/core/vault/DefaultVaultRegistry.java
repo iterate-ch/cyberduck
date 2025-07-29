@@ -92,14 +92,14 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public Vault find(final Session<?> session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
+    public Vault find(final Session<?> session, final Path file, final boolean autoload) throws VaultUnlockCancelException {
         for(Vault vault : this) {
             if(vault.contains(file)) {
                 log.debug("Found vault {} for file {}", vault, file);
                 return vault;
             }
         }
-        if(unlock) {
+        if(autoload) {
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
             if(file.attributes().getVault() != null) {
                 return listener.load(session, file.attributes().getVault(),

@@ -37,11 +37,11 @@ public interface VaultRegistry {
     /**
      * @param session Connection
      * @param file    File
-     * @param unlock  Attempt to unlock vault when not already registered but file has vault referenced in attributes
+     * @param autoload  Attempt to unlock vault when not already registered but file has vault referenced in attributes
      * @return Vault for file or disabled vault if file is not inside a vault
      * @throws VaultUnlockCancelException Attempt to unlock vault was canceled by user
      */
-    Vault find(Session<?> session, Path file, boolean unlock) throws VaultUnlockCancelException;
+    Vault find(Session<?> session, Path file, boolean autoload) throws VaultUnlockCancelException;
 
     /**
      * Add vault to registry
@@ -90,7 +90,7 @@ public interface VaultRegistry {
 
     class DisabledVaultRegistry implements VaultRegistry {
         @Override
-        public Vault find(final Session<?> session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
+        public Vault find(final Session<?> session, final Path file, final boolean autoload) throws VaultUnlockCancelException {
             return Vault.DISABLED;
         }
 
