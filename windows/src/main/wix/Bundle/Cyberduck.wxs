@@ -136,6 +136,9 @@
       <Component Id="IKVM.ByteCode.dll">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.ByteCode.dll" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="IKVM.CoreLib.dll">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.CoreLib.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="ikvm.dll">
         <File Source="$(var.cyberduck.TargetDir)/ikvm.dll" KeyPath="yes" Checksum="yes" />
       </Component>
@@ -147,6 +150,9 @@
       </Component>
       <Component Id="IKVM.Runtime.dll">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="IKVM.Reflection.dll">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.Reflection.dll" KeyPath="yes" Checksum="yes" />
       </Component>
 
       <Component Id="System.Buffers">
@@ -166,6 +172,15 @@
       </Component>
       <Component Id="System.ValueTuple">
         <File Source="$(var.cyberduck.TargetDir)/System.ValueTuple.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Text.Json">
+        <File Source="$(var.cyberduck.TargetDir)/System.Text.Json.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Collections.Immutable">
+        <File Source="$(var.cyberduck.TargetDir)/System.Collections.Immutable.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Reflection.Metadata">
+        <File Source="$(var.cyberduck.TargetDir)/System.Reflection.Metadata.dll" KeyPath="yes" Checksum="yes" />
       </Component>
 
       <!-- NuGet Dependencies -->
