@@ -17,16 +17,7 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
-
-//import org.irods.jargon.core.exception.AuthenticationException;
-//import org.irods.jargon.core.exception.CatNoAccessException;
-//import org.irods.jargon.core.exception.FileNotFoundException;
 import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
 
 public class IRODSExceptionMappingServiceTest {
 
