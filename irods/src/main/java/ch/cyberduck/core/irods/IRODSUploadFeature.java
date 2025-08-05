@@ -99,7 +99,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                 final PoolConnection conn = pool.getConnection();
                 IRODSDataObjectOutputStream stream = new IRODSDataObjectOutputStream();
                 stream.open(conn.getRcComm(), file.getAbsolute(),replicaToken,replicaNumber, truncate, append);
-                ChunkWorker worker = new ChunkWorker(
+                IRODSChunkWorker worker = new IRODSChunkWorker(
                     stream,
                     local.getAbsolute(),
                     start,

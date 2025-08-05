@@ -108,7 +108,7 @@ public class IRODSDownloadFeature implements Download {
                      final long start = i * chunkSize;
                      final PoolConnection conn = pool.getConnection();
                      IRODSDataObjectInputStream stream = new IRODSDataObjectInputStream(conn.getRcComm(), replicaToken, replicaNumber);
-                     ChunkWorker worker = new ChunkWorker(
+                     IRODSChunkWorker worker = new IRODSChunkWorker(
                     	        stream,
                     	        local.getAbsolute(),
                     	        start,
