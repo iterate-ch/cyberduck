@@ -41,7 +41,6 @@ import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-//import org.irods.jargon.core.pub.domain.ObjStat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -234,7 +233,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
 
             assertEquals(0L, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
-            final StatusOutputStream<List<String>> out = feature.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = feature.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -261,7 +260,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
             assertTrue(new IRODSUploadFeature(session).append(test, status).append);
             assertEquals(content.length, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
-            final StatusOutputStream<List<String>> out = feature.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = feature.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);

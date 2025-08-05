@@ -43,7 +43,6 @@ import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-//import org.irods.jargon.core.pub.domain.ObjStat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -138,8 +137,8 @@ public class IRODSReadFeatureTest extends VaultTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<List<String>>(new IRODSWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+        new DefaultUploadFeature<Void>(session).upload(
+                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();

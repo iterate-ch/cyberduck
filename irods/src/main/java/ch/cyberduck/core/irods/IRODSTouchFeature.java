@@ -1,14 +1,8 @@
 package ch.cyberduck.core.irods;
 
-import java.io.IOException;
-
-import org.irods.irods4j.high_level.connection.IRODSConnection;
-import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
-import org.irods.irods4j.low_level.api.IRODSException;
-
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,18 +13,28 @@ import org.irods.irods4j.low_level.api.IRODSException;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.low_level.api.IRODSApi;
+import org.irods.irods4j.low_level.api.IRODSException;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IRODSTouchFeature implements Touch {
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     private final IRODSSession session;
 
@@ -41,18 +45,30 @@ public class IRODSTouchFeature implements Touch {
     @Override
     public Path touch(final Write writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
+            final IRODSConnection conn = session.getClient();
 
-            // Open and immediately close the file to create/truncate it
-        	final IRODSConnection conn=session.getClient();
-            try (IRODSDataObjectOutputStream out = new IRODSDataObjectOutputStream(conn.getRcComm(), file.getAbsolute(),
-                    true /* truncate if exists */, false /* don't append */)) {
-                // File is created or truncated by opening the stream
+            Map<String, Object> input = new HashMap<>();
+            input.put("logical_path", file.getAbsolute());
+
+            String jsonInput = mapper.writeValueAsString(input);
+
+            int ec = IRODSApi.rcTouch(conn.getRcComm(), jsonInput);
+            if(ec < 0) {
+                throw new IRODSException(ec, "rcTouch error");
             }
 
             return file;
         }
-        catch(IOException|IRODSException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Cannot create {0}", e, file);
         }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
+        }
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir, final String filename) {
+        return true;
     }
 }
