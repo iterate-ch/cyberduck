@@ -1,16 +1,8 @@
 package ch.cyberduck.core.irods;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.irods.irods4j.high_level.io.IRODSDataObjectInputStream;
-import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
-import org.irods.irods4j.low_level.api.IRODSApi.RcComm;
-import org.irods.irods4j.low_level.api.IRODSException;
-
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,16 +13,23 @@ import org.irods.irods4j.low_level.api.IRODSException;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.irods.irods4j.high_level.io.IRODSDataObjectInputStream;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
+import org.irods.irods4j.low_level.api.IRODSApi.RcComm;
+import org.irods.irods4j.low_level.api.IRODSException;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class IRODSReadFeature implements Read {
 
@@ -42,28 +41,32 @@ public class IRODSReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-     	
-    		try {
-            	final RcComm rcComm = session.getClient().getRcComm();
-                final String logicalPath = file.getAbsolute(); // e.g., "/zone/home/user/file.txt"
-                
-                if (!IRODSFilesystem.exists(rcComm, logicalPath)) {
-                    throw new NotfoundException(logicalPath);
-                }
-                
-                // Open input stream
-                InputStream in = new IRODSDataObjectInputStream(rcComm,logicalPath);
+        try {
+            final RcComm rcComm = session.getClient().getRcComm();
+            final String logicalPath = file.getAbsolute(); // e.g. /tempZone/home/rods/data_object.txt
 
-                // If resuming from offset, skip ahead
-                if(status.isAppend() && status.getOffset() > 0) {
-                    in.skip(status.getOffset());
-                }
+            if(!IRODSFilesystem.exists(rcComm, logicalPath)) {
+                throw new NotfoundException(logicalPath);
+            }
 
-                return in;
+            IRODSDataObjectInputStream in = new IRODSDataObjectInputStream(rcComm, logicalPath);
+
+            if(status.isAppend() && status.getOffset() > 0) {
+                IRODSStreamUtils.seek(in, status.getOffset());
             }
-            catch(IOException | IRODSException e) {
-                throw new IRODSExceptionMappingService().map("Download {0} failed", e, file);
-            }
-        
+
+            return in;
+        }
+        catch(IRODSException e) {
+            throw new IRODSExceptionMappingService().map("Download of {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download of {0} failed", e, file);
+        }
+    }
+
+    @Override
+    public boolean offset(final Path file) {
+        return true;
     }
 }
