@@ -8,13 +8,13 @@ import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
 import org.irods.irods4j.high_level.io.IRODSDataObjectStream.SeekDirection;
 import org.irods.irods4j.low_level.api.IRODSException;
 
-public class ChunkWorker implements Runnable{
+public class IRODSChunkWorker implements Runnable{
 	private final Object stream;
     private final RandomAccessFile file;
     private final long offset;
     private final long chunkSize;
     private final byte[] buffer;
-	public ChunkWorker(Object stream, String localfilePath,long offset, long chunkSize, int bufferSize) throws IOException, IRODSException {
+	public IRODSChunkWorker(Object stream, String localfilePath, long offset, long chunkSize, int bufferSize) throws IOException, IRODSException {
 		this.stream= stream;
 		this.file=new RandomAccessFile(localfilePath,"rw");
 		this.offset=offset;
