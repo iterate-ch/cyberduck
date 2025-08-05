@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FileActionsApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileActionEntity;
@@ -59,7 +60,7 @@ public class BrickMoveFeature extends BrickFileMigrationFeature implements Move 
             if(entity.getFileMigrationId() != null) {
                 this.poll(client, entity);
             }
-            return new Path(target).withAttributes(file.attributes());
+            return new Path(target).withAttributes(new PathAttributes(file.attributes()).setVault(null));
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Cannot rename {0}", e, file);

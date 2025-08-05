@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -47,7 +48,7 @@ public class MantaMoveFeature implements Move {
         try {
             session.getClient().move(file.getAbsolute(), renamed.getAbsolute());
             // Copy original file attributes
-            return new Path(renamed).withAttributes(file.attributes());
+            return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).setVault(null));
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Cannot rename {0}", e, file);
