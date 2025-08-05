@@ -1,5 +1,13 @@
 # Changelog
 
+[9.2.0](https://github.com/iterate-ch/cyberduck/compare/release-9-1-7...release-9-2-0)
+
+* [Feature] Updated runtime (Windows) ([#16854](https://trac.cyberduck.io/ticket/16854))
+* [Feature] Add plugin to set application icon (macOS) ([#17170](https://trac.cyberduck.io/ticket/17170))
+* [Feature] Support for Mexico (Central) region (S3)
+* [Feature] Support for Asia Pacific (Thailand) region (S3)
+* [Feature] Support for Asia Pacific (Taipei) region (S3)
+
 [9.1.7](https://github.com/iterate-ch/cyberduck/compare/release-9-1-6...release-9-1-7)
 * [Bugfix] Timeout error when attempting to connect using public key authentication (SFTP) (Windows)
 * [Bugfix] Use SHA-2 thumbprints to save trusted server certificates (Windows)
