@@ -47,6 +47,10 @@ public class LocalSharedFileSettingsProvider : SettingsProvider
             {
                 Logger.error("Copying user.config", e);
             }
+            finally
+            {
+                userConfigFile.Refresh();
+            }
         }
 
         userConfig = userConfigFile;
