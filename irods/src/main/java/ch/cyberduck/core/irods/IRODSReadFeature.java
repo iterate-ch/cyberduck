@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.irods4j.high_level.io.IRODSDataObjectInputStream;
+import org.irods.irods4j.high_level.io.IRODSDataObjectStream;
 import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
 import org.irods.irods4j.low_level.api.IRODSApi.RcComm;
 import org.irods.irods4j.low_level.api.IRODSException;
@@ -40,7 +41,6 @@ public class IRODSReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-
         try {
             final RcComm rcComm = session.getClient().getRcComm();
             final String logicalPath = file.getAbsolute(); // e.g., "/zone/home/user/file.txt"
@@ -50,11 +50,27 @@ public class IRODSReadFeature implements Read {
             }
 
             // Open input stream
-            InputStream in = new IRODSDataObjectInputStream(rcComm, logicalPath);
+            IRODSDataObjectInputStream in;
+            String resource = session.getResource();
+            if(resource.isEmpty()) {
+                in = new IRODSDataObjectInputStream(rcComm, logicalPath);
+            }
+            else {
+                in = new IRODSDataObjectInputStream(rcComm, logicalPath, resource);
+            }
 
             // If resuming from offset, skip ahead
             if(status.isAppend() && status.getOffset() > 0) {
-                in.skip(status.getOffset());
+                long totalOffset = status.getOffset();
+                while(totalOffset > 0) {
+                    if(totalOffset >= Integer.MAX_VALUE) {
+                        totalOffset -= Integer.MAX_VALUE;
+                        in.seek(Integer.MAX_VALUE, IRODSDataObjectStream.SeekDirection.CURRENT);
+                    }
+                    else {
+                        in.seek((int) totalOffset, IRODSDataObjectStream.SeekDirection.CURRENT);
+                    }
+                }
             }
 
             return in;
@@ -62,6 +78,5 @@ public class IRODSReadFeature implements Read {
         catch(IOException | IRODSException e) {
             throw new IRODSExceptionMappingService().map("Download {0} failed", e, file);
         }
-
     }
 }

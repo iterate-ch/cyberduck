@@ -20,13 +20,19 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.irods.irods4j.high_level.connection.IRODSConnection;
-import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
+import org.irods.irods4j.low_level.api.IRODSApi;
 import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IRODSTouchFeature implements Touch {
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     private final IRODSSession session;
 
@@ -37,12 +43,16 @@ public class IRODSTouchFeature implements Touch {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-
-            // Open and immediately close the file to create/truncate it
             final IRODSConnection conn = session.getClient();
-            try(IRODSDataObjectOutputStream out = new IRODSDataObjectOutputStream(conn.getRcComm(), file.getAbsolute(),
-                    true /* truncate if exists */, false /* don't append */)) {
-                // File is created or truncated by opening the stream
+
+            Map<String, Object> input = new HashMap<>();
+            input.put("logical_path", file.getAbsolute());
+
+            String jsonInput = mapper.writeValueAsString(input);
+
+            int ec = IRODSApi.rcTouch(conn.getRcComm(), jsonInput);
+            if(ec < 0) {
+                throw new IRODSException(ec, "rcTouch error");
             }
 
             return file;

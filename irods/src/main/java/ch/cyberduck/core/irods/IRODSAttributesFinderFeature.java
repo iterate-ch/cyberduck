@@ -26,7 +26,6 @@ import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.irods.irods4j.common.Versioning;
 import org.irods.irods4j.high_level.catalog.IRODSQuery;
 import org.irods.irods4j.high_level.catalog.IRODSQuery.GenQuery1QueryArgs;
 import org.irods.irods4j.high_level.connection.IRODSConnection;
@@ -48,46 +47,42 @@ public class IRODSAttributesFinderFeature implements AttributesFinder, Attribute
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            final PathAttributes[] attributes = new PathAttributes[1];
             final IRODSConnection conn = session.getClient();
-            if(!IRODSFilesystem.exists(this.session.getClient().getRcComm(), file.getAbsolute())) {
+            final String logicalPath = file.getAbsolute();
+            if(!IRODSFilesystem.exists(session.getClient().getRcComm(), logicalPath)) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            String logicalPath = file.getAbsolute();
-            String parentPath = FilenameUtils.getFullPathNoEndSeparator(logicalPath);
-            String fileName = FilenameUtils.getName(logicalPath);
-            if(Versioning.compareVersions(conn.getRcComm().relVersion.substring(4), "4.3.4") > 0) {
-                String query = String.format("select DATA_MODIFY_TIME, DATA_CREATE_TIME, DATA_SIZE, DATA_CHECKSUM, DATA_OWNER_NAME, DATA_OWNER_ZONE where COLL_NAME = '%s' and DATA_NAME = '%s'", parentPath, fileName);
-                List<List<String>> rows = IRODSQuery.executeGenQuery2(conn.getRcComm(), query);
-                List<String> row = rows.get(0);
-                attributes[0] = toAttributes(row);
-            }
-            else {
-                GenQuery1QueryArgs input = new GenQuery1QueryArgs();
 
-                // select COLL_NAME, DATA_NAME, DATA_ACCESS_TIME
-                input.addColumnToSelectClause(GenQuery1Columns.COL_D_MODIFY_TIME);
-                input.addColumnToSelectClause(GenQuery1Columns.COL_D_CREATE_TIME);
-                input.addColumnToSelectClause(GenQuery1Columns.COL_DATA_SIZE);
-                input.addColumnToSelectClause(GenQuery1Columns.COL_D_DATA_CHECKSUM);
-                input.addColumnToSelectClause(GenQuery1Columns.COL_D_OWNER_NAME);
-                input.addColumnToSelectClause(GenQuery1Columns.COL_D_OWNER_ZONE);
+            GenQuery1QueryArgs input = new GenQuery1QueryArgs();
 
+            // select DATA_MODIFY_TIME, DATA_CREATE_TIME, DATA_SIZE, DATA_CHECKSUM ...
+            input.addColumnToSelectClause(GenQuery1Columns.COL_D_MODIFY_TIME);
+            input.addColumnToSelectClause(GenQuery1Columns.COL_D_CREATE_TIME);
+            input.addColumnToSelectClause(GenQuery1Columns.COL_DATA_SIZE);
+            input.addColumnToSelectClause(GenQuery1Columns.COL_D_DATA_CHECKSUM);
 
-                // where COLL_NAME like '/tempZone/home/rods and DATA_NAME = 'atime.txt'
-                String collNameCondStr = String.format("= '%s'", parentPath);
-                String dataNameCondStr = String.format("= '%s'", fileName);
-                input.addConditionToWhereClause(GenQuery1Columns.COL_COLL_NAME, collNameCondStr);
-                input.addConditionToWhereClause(GenQuery1Columns.COL_DATA_NAME, dataNameCondStr);
+            // where COLL_NAME = '<parent_path>' and DATA_NAME = '<filename>'
+            String collNameCondStr = String.format("= '%s'", FilenameUtils.getFullPathNoEndSeparator(logicalPath));
+            String dataNameCondStr = String.format("= '%s'", FilenameUtils.getName(logicalPath));
+            input.addConditionToWhereClause(GenQuery1Columns.COL_COLL_NAME, collNameCondStr);
+            input.addConditionToWhereClause(GenQuery1Columns.COL_DATA_NAME, dataNameCondStr);
 
-                StringBuilder output = new StringBuilder();
+            final PathAttributes attrs = new PathAttributes();
 
-                IRODSQuery.executeGenQuery1(conn.getRcComm(), input, row -> {
-                    attributes[0] = toAttributes(row);
-                    return false;
-                });
-            }
-            return attributes[0];
+            IRODSQuery.executeGenQuery1(conn.getRcComm(), input, row -> {
+                attrs.setModificationDate(Long.parseLong(row.get(0)) * 1000); // seconds to ms
+                attrs.setCreationDate(Long.parseLong(row.get(1)) * 1000);
+                attrs.setSize(Long.parseLong(row.get(2)));
+
+                String checksum = row.get(3);
+                if(!StringUtils.isEmpty(checksum)) {
+                    attrs.setChecksum(Checksum.parse(checksum));
+                }
+
+                return false;
+            });
+
+            return attrs;
         }
         catch(IOException | IRODSException e) {
             throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -98,16 +93,16 @@ public class IRODSAttributesFinderFeature implements AttributesFinder, Attribute
     public PathAttributes toAttributes(final List<String> row) {
         final IRODSConnection conn = session.getClient();
         final PathAttributes attributes = new PathAttributes();
+
         attributes.setModificationDate(Long.parseLong(row.get(0)) * 1000); // seconds to ms
         attributes.setCreationDate(Long.parseLong(row.get(1)) * 1000);
         attributes.setSize(Long.parseLong(row.get(2)));
+
         String checksum = row.get(3);
         if(!StringUtils.isEmpty(checksum)) {
             attributes.setChecksum(Checksum.parse(checksum));
         }
 
-        attributes.setOwner(conn.getRcComm().relVersion);
-        attributes.setGroup(row.get(5));
         return attributes;
     }
 }
