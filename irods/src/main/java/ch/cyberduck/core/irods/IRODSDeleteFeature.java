@@ -53,21 +53,27 @@ public class IRODSDeleteFeature implements Delete {
                     break;
                 }
             }
+
             if(skip) {
                 continue;
             }
+
+            // TODO Shouldn't these be updated after the operation?
             deleted.add(file);
             callback.delete(file);
-            final String absolute = file.getAbsolute();
+
             try {
-                if(!IRODSFilesystem.exists(this.session.getClient().getRcComm(), absolute)) {
+                String absolute = file.getAbsolute();
+                ObjectStatus status = IRODSFilesystem.status(this.session.getClient().getRcComm(), absolute);
+
+                if(!IRODSFilesystem.exists(status)) {
                     throw new NotfoundException(String.format("%s doesn't exist", absolute));
                 }
-                ObjectStatus status = IRODSFilesystem.status(this.session.getClient().getRcComm(), absolute);
-                if(status.equals(ObjectType.DATA_OBJECT)) {
+
+                if(status.getType() == ObjectType.DATA_OBJECT) {
                     IRODSFilesystem.remove(this.session.getClient().getRcComm(), absolute, RemoveOptions.NO_TRASH);
                 }
-                else if(status.equals(ObjectType.COLLECTION)) {
+                else if(status.getType() == ObjectType.COLLECTION) {
                     IRODSFilesystem.removeAll(this.session.getClient().getRcComm(), absolute, RemoveOptions.NO_TRASH);
                 }
             }

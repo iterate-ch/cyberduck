@@ -46,7 +46,7 @@ public class IRODSMoveFeature implements Move {
         try {
             final IRODSConnection conn = session.getClient();
             if(!IRODSFilesystem.exists(conn.getRcComm(), file.getAbsolute())) {
-                throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
+                throw new NotfoundException(String.format("[%s] doesn't exist", file.getAbsolute()));
             }
             if(status.isExists()) {
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);

@@ -39,10 +39,7 @@ public class IRODSDirectoryFeature implements Directory<Void> {
         try {
             final IRODSConnection conn = session.getClient();
             String path = folder.getAbsolute();
-            boolean created = IRODSFilesystem.createCollection(conn.getRcComm(), path);
-            if(!created) {
-                throw new IOException("Failed to create collection: " + path);
-            }
+            IRODSFilesystem.createCollection(conn.getRcComm(), path);
             return folder;
         }
         catch(IOException | IRODSFilesystemException e) {

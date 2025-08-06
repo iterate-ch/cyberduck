@@ -55,6 +55,7 @@ import org.irods.irods4j.low_level.api.IRODSApi.ConnectionOptions;
 import java.text.MessageFormat;
 
 public class IRODSSession extends SSLSession<IRODSConnection> {
+
     private static final Logger log = LogManager.getLogger(IRODSSession.class);
 
     public IRODSSession(final Host h) {
@@ -68,31 +69,32 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
     @Override
     protected IRODSConnection connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            final String host = "localhost";
-            final int port = 1247;
-            final String zone = "tempZone";
+            final String host = this.host.getHostname();
+            final int port = this.host.getPort();
+            final String username = this.host.getCredentials().getUsername();
+            final String zone = getRegion();
 
-            ConnectionOptions options = new ConnectionOptions();
-
-
-            IRODSConnection conn = new IRODSConnection(options);
-            conn.connect(host, port, new QualifiedUsername("rods", zone));
-
-
+            IRODSConnection conn = new IRODSConnection(configure());
+            conn.connect(host, port, new QualifiedUsername(username, zone));
             return conn;
         }
         catch(Exception e) {
-            String msg = String.format("exception=[%s], host=[%s], port=[%d], username=[%s], zone=[%s]", e.getMessage(), this.host.getHostname(), this.host.getPort(), this.host.getCredentials().getUsername(), getRegion());
-            throw new BackgroundException("Failed to connect to iRODS - " + msg, e);
+            final String host = this.host.getHostname();
+            final int port = this.host.getPort();
+            final String username = this.host.getCredentials().getUsername();
+            final String zone = this.host.getRegion();
+
+            String msg = String.format("Could not connect to iRODS server at [%s:%d] as [%s#%s]: %s",
+                    host, port, username, zone, e.getMessage());
+            throw new BackgroundException(msg, e);
         }
     }
 
-    protected ConnectionOptions configure(final ConnectionOptions options) {
-        //TODO update to use configure
+    protected ConnectionOptions configure() {
         final PreferencesReader preferences = HostPreferencesFactory.get(host);
-        options.tcpReceiveBufferSize = preferences.getInteger("connection.chunksize");
-        options.tcpSendBufferSize = preferences.getInteger("connection.chunksize");
-
+        ConnectionOptions options = new ConnectionOptions();
+//        options.tcpReceiveBufferSize = preferences.getInteger("connection.chunksize");
+//        options.tcpSendBufferSize = preferences.getInteger("connection.chunksize");
         return options;
     }
 
@@ -114,16 +116,14 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final Credentials credentials = host.getCredentials();
-            final String username = credentials.getUsername();
             final String password = credentials.getPassword();
+
+            // TODO Update for pam_password auth scheme.
             final String authScheme = StringUtils.defaultIfBlank(
                     host.getProtocol().getAuthorization(),
                     "native"
             );
-            //irods4j authenticate
             client.authenticate(authScheme, password);
-
-            log.debug("Authenticated to iRODS as {}", username);
         }
         catch(Exception e) {
             throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
@@ -134,6 +134,12 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
 
     @Override
     protected void logout() throws BackgroundException {
+        // iRODS does not provide a logout operation.
+        // It only supports connecting, authenticating, and disconnecting.
+    }
+
+    @Override
+    protected void disconnect() {
         try {
             if(client != null) {
                 client.disconnect();
@@ -141,7 +147,7 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
             }
         }
         catch(Exception e) {
-            throw new BackgroundException("Failed to disconnect from iRODS", e);
+            // Ignored.
         }
     }
 

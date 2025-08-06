@@ -39,6 +39,7 @@ public class IRODSFindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
+
         try {
             final IRODSConnection conn = session.getClient();
             return IRODSFilesystem.exists(conn.getRcComm(), file.getAbsolute());
@@ -46,6 +47,5 @@ public class IRODSFindFeature implements Find {
         catch(IOException | IRODSException e) {
             throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-
     }
 }

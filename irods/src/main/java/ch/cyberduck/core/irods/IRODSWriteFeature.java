@@ -23,7 +23,8 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.FilenameUtils;
-import org.irods.irods4j.common.Versioning;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.irods.irods4j.high_level.catalog.IRODSQuery;
 import org.irods.irods4j.high_level.catalog.IRODSQuery.GenQuery1QueryArgs;
 import org.irods.irods4j.high_level.connection.IRODSConnection;
@@ -37,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IRODSWriteFeature implements Write<List<String>> {
+
+    private static final Logger log = LogManager.getLogger(IRODSWriteFeature.class);
 
     private final IRODSSession session;
 
@@ -52,63 +55,39 @@ public class IRODSWriteFeature implements Write<List<String>> {
             boolean append = status.isAppend();
             boolean truncate = !append;
             final OutputStream out = new IRODSDataObjectOutputStream(conn.getRcComm(), file.getAbsolute(), truncate, append);
+
             // Step 2: Return a wrapped StatusOutputStream that provides file metadata on completion
             return new StatusOutputStream<List<String>>(out) {
                 @Override
                 public List<String> getStatus() throws BackgroundException {
                     // Step 3: Extract parent directory and filename from the logical path
-                    String logicalPath = file.getAbsolute();
-                    String parentPath = FilenameUtils.getFullPathNoEndSeparator(logicalPath);
-                    String fileName = FilenameUtils.getName(logicalPath);
                     final List<String> status = new ArrayList<>();
-                    ;
-                    // Step 4: Check iRODS version to decide which query mechanism to use
-                    if(Versioning.compareVersions(conn.getRcComm().relVersion.substring(4), "4.3.4") > 0) {
-                        String query = String.format("select DATA_MODIFY_TIME, DATA_CREATE_TIME, DATA_SIZE, DATA_CHECKSUM, DATA_OWNER_NAME, DATA_OWNER_ZONE where COLL_NAME = '%s' and DATA_NAME = '%s'", parentPath, fileName);
-                        List<List<String>> rows;
-                        try {
-                            // Step 5: Execute the query and add the first result row to the status list
-                            rows = IRODSQuery.executeGenQuery2(conn.getRcComm(), query);
-                            status.addAll(rows.get(0));
-                        }
-                        catch(IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        catch(IRODSException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+                    GenQuery1QueryArgs input = new GenQuery1QueryArgs();
+
+                    // select DATA_MODIFY_TIME, DATA_CREATE_TIME, DATA_SIZE, DATA_CHECKSUM ...
+                    input.addColumnToSelectClause(GenQuery1Columns.COL_D_MODIFY_TIME);
+                    input.addColumnToSelectClause(GenQuery1Columns.COL_D_CREATE_TIME);
+                    input.addColumnToSelectClause(GenQuery1Columns.COL_DATA_SIZE);
+                    input.addColumnToSelectClause(GenQuery1Columns.COL_D_DATA_CHECKSUM);
+
+                    // where COLL_NAME = '<parent_path>' and DATA_NAME = '<filename>'
+                    String logicalPath = file.getAbsolute();
+                    String collNameCondStr = String.format("= '%s'", FilenameUtils.getFullPathNoEndSeparator(logicalPath));
+                    String dataNameCondStr = String.format("= '%s'", FilenameUtils.getName(logicalPath));
+                    input.addConditionToWhereClause(GenQuery1Columns.COL_COLL_NAME, collNameCondStr);
+                    input.addConditionToWhereClause(GenQuery1Columns.COL_DATA_NAME, dataNameCondStr);
+
+                    try {
+                        IRODSQuery.executeGenQuery1(conn.getRcComm(), input, row -> {
+                            status.addAll(row);
+                            return false;
+                        });
                     }
-                    else {
-                        //if older version, use Query1
-                        GenQuery1QueryArgs input = new GenQuery1QueryArgs();
-
-                        // select COLL_NAME, DATA_NAME, DATA_ACCESS_TIME
-                        input.addColumnToSelectClause(GenQuery1Columns.COL_D_MODIFY_TIME);
-                        input.addColumnToSelectClause(GenQuery1Columns.COL_D_CREATE_TIME);
-                        input.addColumnToSelectClause(GenQuery1Columns.COL_DATA_SIZE);
-                        input.addColumnToSelectClause(GenQuery1Columns.COL_D_DATA_CHECKSUM);
-                        input.addColumnToSelectClause(GenQuery1Columns.COL_D_OWNER_NAME);
-                        input.addColumnToSelectClause(GenQuery1Columns.COL_D_OWNER_ZONE);
-
-
-                        // where COLL_NAME like '/tempZone/home/rods and DATA_NAME = 'atime.txt'
-                        String collNameCondStr = String.format("= '%s'", parentPath);
-                        String dataNameCondStr = String.format("= '%s'", fileName);
-                        input.addConditionToWhereClause(GenQuery1Columns.COL_COLL_NAME, collNameCondStr);
-                        input.addConditionToWhereClause(GenQuery1Columns.COL_DATA_NAME, dataNameCondStr);
-
-                        try {
-                            IRODSQuery.executeGenQuery1(conn.getRcComm(), input, row -> {
-                                status.addAll(row);
-                                return false;
-                            });
-                        }
-                        catch(IOException | IRODSException e) {
-                            e.printStackTrace();
-                        }
+                    catch(IOException | IRODSException e) {
+                        log.error("Could not retrieve status info using GenQuery1 for [{}]; {}",
+                                file.getAbsolute(), e.getMessage());
                     }
+
                     return status;
                 }
             };

@@ -15,85 +15,105 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
+import org.irods.irods4j.high_level.connection.IRODSConnectionPool;
 import org.irods.irods4j.high_level.io.IRODSDataObjectInputStream;
 import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
-import org.irods.irods4j.high_level.io.IRODSDataObjectStream.SeekDirection;
+import org.irods.irods4j.high_level.io.IRODSDataObjectStream;
 import org.irods.irods4j.low_level.api.IRODSException;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class IRODSChunkWorker implements Runnable {
-    private final Object stream;
-    private final RandomAccessFile file;
+
+    private final IRODSConnectionPool.PoolConnection conn;
+    private final InputStream in;
+    private final OutputStream out;
     private final long offset;
     private final long chunkSize;
     private final byte[] buffer;
 
-    public IRODSChunkWorker(Object stream, String localfilePath, long offset, long chunkSize, int bufferSize) throws IOException, IRODSException {
-        this.stream = stream;
-        this.file = new RandomAccessFile(localfilePath, "rw");
+    public IRODSChunkWorker(IRODSConnectionPool.PoolConnection conn, InputStream in, OutputStream out, long offset, long chunkSize, int bufferSize) throws IOException, IRODSException {
+        this.conn = conn;
+        this.in = in;
+        this.out = out;
         this.offset = offset;
         this.chunkSize = chunkSize;
         this.buffer = new byte[bufferSize];
-
-
-        file.seek(offset);
     }
 
     @Override
     public void run() {
         try {
-            if(stream instanceof IRODSDataObjectInputStream) {
-                IRODSDataObjectInputStream in = (IRODSDataObjectInputStream) (stream);
-                in.seek((int) offset, SeekDirection.CURRENT);
-                long remaining = chunkSize;
-                while(remaining > 0) {
-                    int readLength = (int) Math.min(buffer.length, remaining);
-                    int read = in.read(buffer, 0, readLength);
-                    file.write(buffer, 0, read);
-                    remaining -= read;
+            seek(in);
+            seek(out);
+
+            long remaining = chunkSize;
+            while(remaining > 0) {
+                int count = (int) Math.min(buffer.length, remaining);
+
+                int bytesRead = in.read(buffer, 0, count);
+                if(-1 == bytesRead) {
+                    break;
                 }
 
-            }
-            else if(stream instanceof IRODSDataObjectOutputStream) {
-                IRODSDataObjectOutputStream out = (IRODSDataObjectOutputStream) (stream);
-                out.seek((int) offset, SeekDirection.CURRENT);
-                long remaining = chunkSize;
-                while(remaining > 0) {
-                    int writeLength = (int) Math.min(buffer.length, remaining);
-                    int read = file.read(buffer, 0, writeLength);
-                    if(read == -1) {
-                        break;
-                    }
-                    out.write(buffer, 0, read);
-                    remaining -= read;
-                }
-            }
-            else {
-                throw new IllegalArgumentException("Unsupported stream type");
+                out.write(buffer, 0, bytesRead);
+                remaining -= bytesRead;
             }
         }
         catch(IOException | IRODSException e) {
-            e.printStackTrace();
+            // TODO Log error
         }
-        try {
-            close();
-        }
-        catch(IOException e) {
-            e.printStackTrace();
+        finally {
+            try {
+                in.close();
+            }
+            catch(Exception e) { /* Ignored */ }
+            try {
+                out.close();
+            }
+            catch(Exception e) { /* Ignored */ }
         }
     }
 
-    public void close() throws IOException {
-        file.close();
-        if(stream instanceof IRODSDataObjectInputStream) {
-            IRODSDataObjectInputStream in = (IRODSDataObjectInputStream) (stream);
-            in.close();
+    private void seek(InputStream in) throws IRODSException, IOException {
+        if(in instanceof IRODSDataObjectInputStream) {
+            IRODSDataObjectInputStream stream = (IRODSDataObjectInputStream) in;
+            long totalOffset = offset;
+            while(totalOffset > 0) {
+                if(totalOffset >= Integer.MAX_VALUE) {
+                    totalOffset -= Integer.MAX_VALUE;
+                    stream.seek(Integer.MAX_VALUE, IRODSDataObjectStream.SeekDirection.CURRENT);
+                }
+                else {
+                    stream.seek((int) totalOffset, IRODSDataObjectStream.SeekDirection.CURRENT);
+                }
+            }
         }
-        else if(stream instanceof IRODSDataObjectOutputStream) {
-            IRODSDataObjectOutputStream out = (IRODSDataObjectOutputStream) (stream);
-            out.close();
+        else if(in instanceof FileInputStream) {
+            ((FileInputStream) in).getChannel().position(offset);
+        }
+    }
+
+    private void seek(OutputStream out) throws IRODSException, IOException {
+        if(out instanceof IRODSDataObjectOutputStream) {
+            IRODSDataObjectOutputStream stream = (IRODSDataObjectOutputStream) out;
+            long totalOffset = offset;
+            while(totalOffset > 0) {
+                if(totalOffset >= Integer.MAX_VALUE) {
+                    totalOffset -= Integer.MAX_VALUE;
+                    stream.seek(Integer.MAX_VALUE, IRODSDataObjectStream.SeekDirection.CURRENT);
+                }
+                else {
+                    stream.seek((int) totalOffset, IRODSDataObjectStream.SeekDirection.CURRENT);
+                }
+            }
+        }
+        else if(out instanceof FileOutputStream) {
+            ((FileOutputStream) out).getChannel().position(offset);
         }
     }
 }
