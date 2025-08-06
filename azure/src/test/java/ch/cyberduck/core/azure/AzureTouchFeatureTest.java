@@ -36,14 +36,14 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
     public void testTouchFileStartWithDot() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, String.format(".%s.", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testPreflightFilename() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final AzureTouchFeature feature = new AzureTouchFeature(session, null);
+        final AzureTouchFeature feature = new AzureTouchFeature(session);
         feature.preflight(container, new AsciiRandomStringService().random());
         feature.preflight(container, new AlphanumericRandomStringService().random());
         feature.preflight(container, String.format("%s.suffix", new AlphanumericRandomStringService().random()));
