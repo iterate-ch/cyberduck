@@ -84,7 +84,7 @@ public final class Checksum {
                 }
                 break;
             case 36:
-                if(hash.matches("[a-fA-F0-9-]{36}")) {
+                if(hash.matches("^[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}$")) {
                     return new Checksum(HashAlgorithm.uuid, hash);
                 }
                 break;
