@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
@@ -38,6 +39,8 @@ import org.nuxeo.onedrive.client.types.Publication;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class GraphAttributesFinderFeature implements AttributesFinder, AttributesAdapter<DriveItem.Metadata> {
@@ -89,6 +92,10 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
+        final Matcher matcher = Pattern.compile("\"\\{([0-9A-Z-]+)\\},\\d+\"").matcher(metadata.getETag());
+        if(matcher.matches()) {
+            attributes.setChecksum(Checksum.parse(StringUtils.lowerCase(matcher.group(1))));
+        }
         Optional<DescriptiveUrl> webUrl = getWebUrl(metadata);
         if(metadata.isPackage()) {
             webUrl.ifPresent(url -> attributes.setSize(UrlFileWriterFactory.get().write(url).getBytes(Charset.defaultCharset()).length));

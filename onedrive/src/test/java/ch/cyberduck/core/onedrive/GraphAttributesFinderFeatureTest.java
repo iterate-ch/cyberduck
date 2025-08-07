@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
@@ -63,6 +64,8 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
+        assertNotNull(attributes.getChecksum());
+        assertEquals(HashAlgorithm.uuid, attributes.getChecksum().algorithm);
         assertNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         assertNotNull(attributes.getFileId());
@@ -79,6 +82,8 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
+        assertNotNull(attributes.getChecksum());
+        assertEquals(HashAlgorithm.uuid, attributes.getChecksum().algorithm);
         assertNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         assertNotNull(attributes.getFileId());
