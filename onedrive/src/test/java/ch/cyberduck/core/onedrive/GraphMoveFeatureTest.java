@@ -84,6 +84,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertEquals(attributes, target.attributes());
         assertEquals(attributes.getFileId(), target.attributes().getFileId());
         assertNotEquals(attributes.getETag(), attributesFinder.find(rename).getETag());
+        assertEquals(attributes.getChecksum(), attributesFinder.find(rename).getChecksum());
         assertEquals(target.attributes().getETag(), attributesFinder.find(rename).getETag());
         delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -112,6 +113,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertEquals(attributes, renamedAttributes);
         assertEquals(attributes.getFileId(), renamedAttributes.getFileId());
         assertNotEquals(attributes.getETag(), renamedAttributes.getETag());
+        assertEquals(attributes.getChecksum(), attributesFinder.find(rename).getChecksum());
         assertEquals(target.attributes().getETag(), renamedAttributes.getETag());
 
         delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());

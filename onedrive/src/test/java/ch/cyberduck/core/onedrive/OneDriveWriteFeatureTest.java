@@ -89,10 +89,13 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertNotNull(overwrite);
         assertEquals(content.length, IOUtils.copyLarge(new ByteArrayInputStream(content), overwrite));
         overwrite.close();
-        assertEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()), new GraphAttributesFinderFeature(session, fileid).find(file));
-        assertNotEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()), new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()));
-        assertEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()).getFileId(), new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()).getFileId());
-        assertNotEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()).getETag(), new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()).getETag());
+        final PathAttributes overwriteAttr = new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus());
+        assertEquals(overwriteAttr, new GraphAttributesFinderFeature(session, fileid).find(file));
+        final PathAttributes sourceAttr = new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus());
+        assertNotEquals(sourceAttr, overwriteAttr);
+        assertEquals(sourceAttr.getFileId(), overwriteAttr.getFileId());
+        assertNotEquals(sourceAttr.getETag(), overwriteAttr.getETag());
+        assertNotEquals(sourceAttr.getChecksum(), overwriteAttr.getChecksum());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
