@@ -37,7 +37,6 @@ import org.nuxeo.onedrive.client.types.Publication;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.time.Instant;
 import java.util.Optional;
 
 
@@ -109,7 +108,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
             else {
                 attributes.setModificationDate(info.getLastModifiedDateTime().toInstant().toEpochMilli());
             }
-            if(info.getCreatedDateTime().toInstant().toEpochMilli() <= Instant.ofEpochMilli(0).toEpochMilli()) {
+            if(info.getCreatedDateTime().toInstant().toEpochMilli() <= 0L) {
                 if(metadata.getCreatedDateTime().toInstant().toEpochMilli() >= 0L) {
                     attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
                 }
