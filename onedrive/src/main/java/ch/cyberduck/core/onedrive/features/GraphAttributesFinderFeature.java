@@ -100,22 +100,30 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
         webUrl.ifPresent(attributes::setLink);
         final FileSystemInfo info = metadata.getFacet(FileSystemInfo.class);
         if(null != info) {
-            if(-1L == info.getLastModifiedDateTime().toInstant().toEpochMilli()) {
-                attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+            if(info.getLastModifiedDateTime().toInstant().toEpochMilli() <= 0L) {
+                if(metadata.getLastModifiedDateTime().toInstant().toEpochMilli() >= 0L) {
+                    attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+                }
             }
             else {
                 attributes.setModificationDate(info.getLastModifiedDateTime().toInstant().toEpochMilli());
             }
-            if(-1 == info.getCreatedDateTime().toInstant().toEpochMilli()) {
-                attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+            if(info.getCreatedDateTime().toInstant().toEpochMilli() <= 0L) {
+                if(metadata.getCreatedDateTime().toInstant().toEpochMilli() >= 0L) {
+                    attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+                }
             }
             else {
                 attributes.setCreationDate(info.getCreatedDateTime().toInstant().toEpochMilli());
             }
         }
         else {
-            attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
-            attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+            if(metadata.getLastModifiedDateTime().toInstant().toEpochMilli() >= 0L) {
+                attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+            }
+            if(metadata.getCreatedDateTime().toInstant().toEpochMilli() >= 0L) {
+                attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+            }
         }
         final Publication publication = metadata.getPublication();
         if(null != publication && publication.getLevel() == Publication.State.checkout) {
