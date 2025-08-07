@@ -48,6 +48,8 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
 
+    private static final Pattern ETAG_PATTERN = Pattern.compile("\"\\{([0-9A-Z-]+)\\},\\d+\"");
+
     public GraphAttributesFinderFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
@@ -93,7 +95,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
         if(null != metadata.getETag()) {
-            final Matcher matcher = Pattern.compile("\"\\{([0-9A-Z-]+)\\},\\d+\"").matcher(metadata.getETag());
+            final Matcher matcher = ETAG_PATTERN.matcher(metadata.getETag());
             if(matcher.matches()) {
                 attributes.setChecksum(Checksum.parse(matcher.group(1)));
             }
