@@ -94,7 +94,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
         attributes.setETag(metadata.getETag());
         final Matcher matcher = Pattern.compile("\"\\{([0-9A-Z-]+)\\},\\d+\"").matcher(metadata.getETag());
         if(matcher.matches()) {
-            attributes.setChecksum(Checksum.parse(StringUtils.lowerCase(matcher.group(1))));
+            attributes.setChecksum(Checksum.parse(matcher.group(1)));
         }
         Optional<DescriptiveUrl> webUrl = getWebUrl(metadata);
         if(metadata.isPackage()) {
