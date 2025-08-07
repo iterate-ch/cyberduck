@@ -92,6 +92,9 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
         assertEquals(content.length, IOUtils.copyLarge(new ByteArrayInputStream(content), overwrite));
         overwrite.close();
         assertEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()), new GraphAttributesFinderFeature(session, fileid).find(file));
+        assertNotEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()), new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()));
+        assertEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()).getFileId(), new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()).getFileId());
+        assertNotEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()).getETag(), new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()).getETag());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -110,6 +110,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final PathAttributes renamedAttributes = attributesFinder.find(rename);
         assertNotNull(renamedAttributes);
         assertEquals(attributes, renamedAttributes);
+        assertEquals(attributes.getFileId(), renamedAttributes.getFileId());
         assertNotEquals(attributes.getETag(), renamedAttributes.getETag());
         assertEquals(target.attributes().getETag(), renamedAttributes.getETag());
 
