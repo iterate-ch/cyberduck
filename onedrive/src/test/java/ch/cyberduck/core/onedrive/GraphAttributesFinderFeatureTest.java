@@ -63,7 +63,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertNull(attributes.getVersionId());
+        assertNotNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         assertNotNull(attributes.getFileId());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -79,7 +79,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertNull(attributes.getVersionId());
+        assertNotNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         assertNotNull(attributes.getFileId());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

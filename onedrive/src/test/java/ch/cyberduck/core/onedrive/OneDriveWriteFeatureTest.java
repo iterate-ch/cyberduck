@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
@@ -75,7 +76,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertEquals(Protocol.DirectoryTimestamp.explicit, session.getHost().getProtocol().getDirectoryTimestamp());
         assertEquals(folderEtag, new GraphAttributesFinderFeature(session, fileid).find(folder).getETag());
         assertEquals(folderTimestamp, new GraphAttributesFinderFeature(session, fileid).find(folder).getModificationDate());
-        assertTrue(new DefaultFindFeature(session).find(file));
+        assertTrue(new GraphFindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -107,7 +108,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         in.close();
         out.close();
         assertNotNull(out.getStatus());
-        assertTrue(new DefaultFindFeature(session).find(file));
+        assertTrue(new GraphFindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -153,7 +154,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         in.close();
         out.close();
         assertNotNull(out.getStatus());
-        assertTrue(new DefaultFindFeature(session).find(file));
+        assertTrue(new GraphFindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
