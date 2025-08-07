@@ -27,7 +27,8 @@ public enum HashAlgorithm {
     sha512,
     crc32,
     cdash64,
-    dropbox_content_hash;
+    dropbox_content_hash,
+    uuid;
 
     @Override
     public String toString() {
