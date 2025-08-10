@@ -30,6 +30,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -75,10 +76,10 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
             }
             if(preferences.getBoolean(this.getConfiguration())) {
                 // Previously imported
-                final Checksum previous = new Checksum(HashAlgorithm.md5,
-                    preferences.getProperty(String.format("%s.checksum", this.getConfiguration())));
-                log.debug("Saved previous checksum {} for bookmark {}", previous, file);
-                if(StringUtils.isNotBlank(previous.hash)) {
+                try {
+                    final Checksum previous = new Checksum(HashAlgorithm.md5,
+                            preferences.getProperty(String.format("%s.checksum", this.getConfiguration())));
+                    log.debug("Saved previous checksum {} for bookmark {}", previous, file);
                     if(previous.equals(current)) {
                         log.info("Skip importing bookmarks from {} with previously saved checksum {}", file, previous);
                     }
@@ -87,8 +88,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
                         // Should filter existing bookmarks. Skip import
                     }
                 }
-                else {
-                    // Skip flagged
+                catch(UnsupportedException e) {
                     log.debug("Skip importing bookmarks from {}", file);
                 }
             }
@@ -155,7 +155,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
             if(credentials.isPublicKeyAuthentication()) {
                 try {
                     keychain.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
-                        credentials.getPassword());
+                            credentials.getPassword());
                 }
                 catch(LocalAccessDeniedException e) {
                     log.error("Failure {} saving credentials for {} in password store", e, bookmark);
@@ -164,7 +164,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
             else if(!credentials.isAnonymousLogin()) {
                 try {
                     keychain.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                        bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
+                            bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
                 }
                 catch(LocalAccessDeniedException e) {
                     log.error("Failure {} saving credentials for {} in password store", e, bookmark);

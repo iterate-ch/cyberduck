@@ -23,6 +23,7 @@ import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
@@ -129,7 +130,7 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
                         attributes.setChecksum(new Checksum(HashAlgorithm.valueOf(StringUtils.lowerCase(StringUtils.split(v, ":")[0])),
                                 StringUtils.lowerCase(StringUtils.split(v, ":")[1])));
                     }
-                    catch(IllegalArgumentException e) {
+                    catch(IllegalArgumentException | UnsupportedException e) {
                         log.warn("Unsupported checksum {}", v);
                     }
                 }

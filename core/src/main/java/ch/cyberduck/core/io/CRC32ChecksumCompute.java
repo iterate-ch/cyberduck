@@ -17,6 +17,7 @@ package ch.cyberduck.core.io;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -44,6 +45,11 @@ public class CRC32ChecksumCompute extends AbstractChecksumCompute {
         finally {
             IOUtils.closeQuietly(normalized);
         }
-        return new Checksum(HashAlgorithm.crc32, String.format("%08x", crc32.getValue()));
+        try {
+            return new Checksum(HashAlgorithm.crc32, String.format("%08x", crc32.getValue()));
+        }
+        catch(UnsupportedException e) {
+            return Checksum.NONE;
+        }
     }
 }

@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
@@ -86,7 +87,12 @@ public class DropboxAttributesFinderFeature implements AttributesFinder, Attribu
             if(file.getFileLockInfo() != null) {
                 attributes.setLockId(String.valueOf(file.getFileLockInfo().getIsLockholder()));
             }
-            attributes.setChecksum(new Checksum(HashAlgorithm.dropbox_content_hash, file.getContentHash()));
+            try {
+                attributes.setChecksum(new Checksum(HashAlgorithm.dropbox_content_hash, file.getContentHash()));
+            }
+            catch(UnsupportedException e) {
+                attributes.setChecksum(Checksum.NONE);
+            }
             attributes.setVersionId(file.getRev());
         }
         if(metadata instanceof FolderMetadata) {

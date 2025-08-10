@@ -20,6 +20,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -59,6 +60,11 @@ public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
         }
         digest.update(contentDigest);
         digest.update(intToBytes(length.intValue()));
-        return new Checksum(HashAlgorithm.cdash64, Base64.encodeBase64URLSafeString(digest.digest()));
+        try {
+            return new Checksum(HashAlgorithm.cdash64, Base64.encodeBase64URLSafeString(digest.digest()));
+        }
+        catch(UnsupportedException e) {
+            return Checksum.NONE;
+        }
     }
 }
