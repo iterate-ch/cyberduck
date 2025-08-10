@@ -18,6 +18,9 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.exception.UnsupportedException;
+
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -42,11 +45,16 @@ public final class Checksum {
         this.base64 = Base64.encodeBase64String(digest);
     }
 
-    public Checksum(final HashAlgorithm algorithm, final String hexString) {
+    public Checksum(final HashAlgorithm algorithm, final String hexString) throws UnsupportedException {
         this.algorithm = algorithm;
         this.hash = hexString;
         this.hex = hexString;
-        this.base64 = null;
+        try {
+            this.base64 = Base64.encodeBase64String(Hex.decodeHex(hexString));
+        }
+        catch(DecoderException e) {
+            throw new UnsupportedException(e);
+        }
     }
 
     public Checksum(final HashAlgorithm algorithm, final String hexString, final String base64String) {
@@ -65,41 +73,59 @@ public final class Checksum {
 
     @Override
     public String toString() {
-        return hash;
+        return hex;
     }
 
     public static Checksum parse(final String hash) {
         if(StringUtils.isBlank(hash)) {
             return Checksum.NONE;
         }
-        switch(hash.length()) {
-            case 8:
-                if(hash.matches("[a-fA-F0-9]{8}")) {
-                    return new Checksum(HashAlgorithm.crc32, hash);
-                }
-                break;
-            case 32:
-                if(hash.matches("[a-fA-F0-9]{32}")) {
-                    return new Checksum(HashAlgorithm.md5, hash);
-                }
-                break;
-            case 40:
-                if(hash.matches("[a-fA-F0-9]{40}")) {
-                    return new Checksum(HashAlgorithm.sha1, hash);
-                }
-                break;
-            case 64:
-                if(hash.matches("[A-Fa-f0-9]{64}")) {
-                    return new Checksum(HashAlgorithm.sha256, hash);
-                }
-                break;
-            case 128:
-                if(hash.matches("[A-Fa-f0-9]{128}")) {
-                    return new Checksum(HashAlgorithm.sha512, hash);
-                }
-                break;
-            default:
-                log.warn("Failure to detect algorithm for checksum {}", hash);
+        // Check for Base64 with propper padding
+        if(hash.matches("^[A-Za-z0-9+/]+=*$") && hash.length() % 4 == 0) {
+            final Checksum result = parseHex(Hex.encodeHexString(Base64.decodeBase64(hash)));
+            if(result != Checksum.NONE) {
+                return new Checksum(result.algorithm, result.hex, hash);
+            }
+            return Checksum.NONE;
+        }
+        // Parse as hex string
+        return parseHex(hash);
+    }
+
+    private static Checksum parseHex(final String hexString) {
+        try {
+            switch(hexString.length()) {
+                case 8:
+                    if(hexString.matches("[a-fA-F0-9]{8}")) {
+                        return new Checksum(HashAlgorithm.crc32, hexString);
+                    }
+                    break;
+                case 32:
+                    if(hexString.matches("[a-fA-F0-9]{32}")) {
+                        return new Checksum(HashAlgorithm.md5, hexString);
+                    }
+                    break;
+                case 40:
+                    if(hexString.matches("[a-fA-F0-9]{40}")) {
+                        return new Checksum(HashAlgorithm.sha1, hexString);
+                    }
+                    break;
+                case 64:
+                    if(hexString.matches("[A-Fa-f0-9]{64}")) {
+                        return new Checksum(HashAlgorithm.sha256, hexString);
+                    }
+                    break;
+                case 128:
+                    if(hexString.matches("[A-Fa-f0-9]{128}")) {
+                        return new Checksum(HashAlgorithm.sha512, hexString);
+                    }
+                    break;
+                default:
+                    log.warn("Failure to detect algorithm for checksum {}", hexString);
+            }
+        }
+        catch(UnsupportedException e) {
+            return Checksum.NONE;
         }
         return Checksum.NONE;
     }
@@ -116,7 +142,7 @@ public final class Checksum {
         if(algorithm != checksum.algorithm) {
             return false;
         }
-        if(!StringUtils.equalsIgnoreCase(hash, checksum.hash)) {
+        if(!StringUtils.equalsIgnoreCase(hex, checksum.hex)) {
             return false;
         }
         return true;
@@ -125,7 +151,7 @@ public final class Checksum {
     @Override
     public int hashCode() {
         int result = algorithm != null ? algorithm.hashCode() : 0;
-        result = 31 * result + (hash != null ? hash.hashCode() : 0);
+        result = 31 * result + (hex != null ? hex.hashCode() : 0);
         return result;
     }
 
