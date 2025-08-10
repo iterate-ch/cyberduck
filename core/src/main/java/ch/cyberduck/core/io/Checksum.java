@@ -86,7 +86,6 @@ public final class Checksum {
             if(result != Checksum.NONE) {
                 return new Checksum(result.algorithm, result.hex, hash);
             }
-            return Checksum.NONE;
         }
         // Parse as hex string
         return parseHex(hash);
