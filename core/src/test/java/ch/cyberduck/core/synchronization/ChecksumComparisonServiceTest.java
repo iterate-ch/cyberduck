@@ -12,12 +12,12 @@ import static org.junit.Assert.assertEquals;
 public class ChecksumComparisonServiceTest {
 
     @Test
-    public void testCompare() {
+    public void testCompare() throws Exception {
         ComparisonService s = new ChecksumComparisonService();
         assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes() {
                     @Override
                     public Checksum getChecksum() {
-                        return new Checksum(HashAlgorithm.md5, "a");
+                        return new Checksum(HashAlgorithm.md5, "a", null);
                     }
                 }, new PathAttributes().setChecksum(new Checksum(HashAlgorithm.md5, "a"))
         ));
@@ -25,7 +25,7 @@ public class ChecksumComparisonServiceTest {
         assertEquals(Comparison.notequal, s.compare(Path.Type.file, new PathAttributes() {
             @Override
             public Checksum getChecksum() {
-                return new Checksum(HashAlgorithm.md5, "b");
+                return new Checksum(HashAlgorithm.md5, "b", null);
             }
         }, new PathAttributes().setChecksum(new Checksum(HashAlgorithm.md5, "a"))));
     }

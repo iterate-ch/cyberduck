@@ -77,7 +77,7 @@ public class PathAttributesTest {
         acl.addAll(new Acl.CanonicalUser("user1"), new Acl.Role(Acl.Role.READ), new Acl.Role(Acl.Role.WRITE));
         acl.addAll(new Acl.CanonicalUser("user2"), new Acl.Role(Acl.Role.FULL));
         attributes.setAcl(acl);
-        attributes.setChecksum(new Checksum(HashAlgorithm.crc32, "abcdefab"));
+        attributes.setChecksum(new Checksum(HashAlgorithm.crc32, "abcdefab", null));
         attributes.setVersionId("v-1");
         attributes.setFileId("f-1");
         attributes.setDisplayname("d-1");

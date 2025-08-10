@@ -39,7 +39,7 @@ public class DefaultComparePathFilterTest {
                 return new PathAttributes() {
                     @Override
                     public Checksum getChecksum() {
-                        return new Checksum(HashAlgorithm.md5, "a");
+                        return new Checksum(HashAlgorithm.md5, "a", null);
                     }
                 };
             }
@@ -54,7 +54,7 @@ public class DefaultComparePathFilterTest {
         ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())), find, attributes) {
             @Override
             protected Checksum checksum(final HashAlgorithm algorithm, final Local local) {
-                return new Checksum(HashAlgorithm.md5, "a");
+                return new Checksum(HashAlgorithm.md5, "a", null);
             }
         };
         final String path = new AlphanumericRandomStringService().random();
@@ -166,7 +166,7 @@ public class DefaultComparePathFilterTest {
                 return new PathAttributes() {
                     @Override
                     public Checksum getChecksum() {
-                        return new Checksum(HashAlgorithm.md5, "b");
+                        return new Checksum(HashAlgorithm.md5, "b", null);
                     }
 
                     @Override
@@ -189,7 +189,7 @@ public class DefaultComparePathFilterTest {
         ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())), find, attributes) {
             @Override
             protected Checksum checksum(final HashAlgorithm algorithm, final Local local) {
-                return new Checksum(HashAlgorithm.md5, "a");
+                return new Checksum(HashAlgorithm.md5, "a", null);
             }
         };
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
