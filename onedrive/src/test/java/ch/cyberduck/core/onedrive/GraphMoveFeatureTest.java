@@ -104,7 +104,8 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(touchedFile, new TransferStatus().setMime("x-application/cyberduck"));
         final PathAttributes attributes = attributesFinder.find(touchedFile);
-
+        assertEquals("AAAAAAAAAAAAAAAAAAAAAAAAAAA=", attributes.getChecksum().base64);
+        assertEquals("0000000000000000000000000000000000000000", attributes.getChecksum().hex);
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
         final Path target = move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());

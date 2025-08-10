@@ -33,22 +33,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
+import org.nuxeo.onedrive.client.types.File;
 import org.nuxeo.onedrive.client.types.FileSystemInfo;
+import org.nuxeo.onedrive.client.types.Hashes;
 import org.nuxeo.onedrive.client.types.Publication;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class GraphAttributesFinderFeature implements AttributesFinder, AttributesAdapter<DriveItem.Metadata> {
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
-
-    private static final Pattern ETAG_PATTERN = Pattern.compile("\"\\{([0-9A-Z-]+)\\},\\d+\"");
 
     public GraphAttributesFinderFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
@@ -94,10 +92,11 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
-        if(null != metadata.getETag()) {
-            final Matcher matcher = ETAG_PATTERN.matcher(metadata.getETag());
-            if(matcher.matches()) {
-                attributes.setChecksum(Checksum.parse(matcher.group(1)));
+        final File file = metadata.getFile();
+        if(file != null) {
+            final Hashes hashes = file.getHashes();
+            if(hashes != null) {
+                attributes.setChecksum(Checksum.parse(hashes.getQuickXorHash()));
             }
         }
         Optional<DescriptiveUrl> webUrl = getWebUrl(metadata);
