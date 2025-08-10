@@ -83,11 +83,6 @@ public final class Checksum {
                     return new Checksum(HashAlgorithm.md5, hash);
                 }
                 break;
-            case 36:
-                if(hash.matches("^[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}$")) {
-                    return new Checksum(HashAlgorithm.uuid, hash);
-                }
-                break;
             case 40:
                 if(hash.matches("[a-fA-F0-9]{40}")) {
                     return new Checksum(HashAlgorithm.sha1, hash);
