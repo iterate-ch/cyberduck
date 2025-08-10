@@ -216,9 +216,10 @@ public class S3UrlProvider implements UrlProvider {
             }
             String region = session.getHost().getRegion();
             final Path bucket = containerService.getContainer(file);
+            final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();
             if(session.isConnected()) {
-                if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(bucket.getName())) {
-                    region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucket.getName());
+                if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(bucketname)) {
+                    region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucketname);
                 }
             }
             if(StringUtils.isBlank(region)) {
@@ -231,7 +232,7 @@ public class S3UrlProvider implements UrlProvider {
             }
             return new S3PresignedUrlProvider(session).create(
                     secret,
-                    bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(),
+                    bucketname,
                     region, containerService.getKey(file),
                     "GET", expiry.getTimeInMillis());
         }
