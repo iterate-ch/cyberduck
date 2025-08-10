@@ -82,7 +82,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         assertNotNull(attributes.getChecksum());
-        assertEquals(Checksum.NONE, attributes.getChecksum().algorithm);
+        assertEquals(Checksum.NONE, attributes.getChecksum());
         assertNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         assertNotNull(attributes.getFileId());
