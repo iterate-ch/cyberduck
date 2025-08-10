@@ -19,7 +19,7 @@ public class ChecksumComparisonServiceTest {
                     public Checksum getChecksum() {
                         return new Checksum(HashAlgorithm.md5, "a", null);
                     }
-                }, new PathAttributes().setChecksum(new Checksum(HashAlgorithm.md5, "a"))
+                }, new PathAttributes().setChecksum(new Checksum(HashAlgorithm.md5, "a", null))
         ));
 
         assertEquals(Comparison.notequal, s.compare(Path.Type.file, new PathAttributes() {
@@ -27,7 +27,7 @@ public class ChecksumComparisonServiceTest {
             public Checksum getChecksum() {
                 return new Checksum(HashAlgorithm.md5, "b", null);
             }
-        }, new PathAttributes().setChecksum(new Checksum(HashAlgorithm.md5, "a"))));
+        }, new PathAttributes().setChecksum(new Checksum(HashAlgorithm.md5, "a", null))));
     }
 
     @Test
