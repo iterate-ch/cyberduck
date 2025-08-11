@@ -238,7 +238,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             feature.write(file, status, new DisabledConnectionCallback());
         }
         catch(QuotaException e) {
-            assertEquals("LIMIT_MAX_RESOURCE_SIZE. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("RESOURCE_SIZE. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }
