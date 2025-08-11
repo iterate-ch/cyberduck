@@ -80,8 +80,8 @@ public final class Checksum {
         if(StringUtils.isBlank(hash)) {
             return Checksum.NONE;
         }
-        // Check for Base64 with propper padding
-        if(hash.matches("^[A-Za-z0-9+/]+=*$") && hash.length() % 4 == 0) {
+        // Check for Base64 with proper padding
+        if(hash.matches("^[A-Za-z0-9+/]+={0,2}$") && hash.length() % 4 == 0) {
             final Checksum result = parseHex(Hex.encodeHexString(Base64.decodeBase64(hash)));
             if(result != Checksum.NONE) {
                 return new Checksum(result.algorithm, result.hex, hash);
