@@ -44,6 +44,6 @@ public class GraphItemListService extends AbstractItemListService {
         log.debug("Return files for folder {}", folder);
         // getQuery(null): return new ODataQuery with default set of parameters
         // require listing Publication/VersionId
-        return Files.getFiles(folder, session.getQuery(null).top(HostPreferencesFactory.get(session.getHost()).getInteger("onedrive.listing.chunksize")));
+        return Files.getFiles(folder, session.select(null).top(HostPreferencesFactory.get(session.getHost()).getInteger("onedrive.listing.chunksize")));
     }
 }

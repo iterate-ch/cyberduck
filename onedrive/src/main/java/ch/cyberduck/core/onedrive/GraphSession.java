@@ -80,7 +80,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     public abstract String getFileId(final DriveItem.Metadata metadata);
 
-    public ODataQuery getQuery(ODataQuery query) {
+    public ODataQuery select(ODataQuery query) {
         if(query == null) {
             query = new ODataQuery();
         }
@@ -110,8 +110,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         return this.getItem(currentPath, true);
     }
 
-    public DriveItem.Metadata getMetadata(final DriveItem item, ODataQuery query) throws IOException {
-        return item.getMetadata(getQuery(query));
+    public DriveItem.Metadata getMetadata(final DriveItem item, final ODataQuery query) throws IOException {
+        return item.getMetadata(this.select(query));
     }
 
     public abstract DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException;

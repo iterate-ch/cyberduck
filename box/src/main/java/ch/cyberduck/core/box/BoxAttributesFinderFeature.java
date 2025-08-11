@@ -24,6 +24,7 @@ import ch.cyberduck.core.box.io.swagger.client.api.FoldersApi;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.Folder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
@@ -75,7 +76,12 @@ public class BoxAttributesFinderFeature implements AttributesFinder, AttributesA
             attrs.setSize(f.getSize());
         }
         attrs.setFileId(f.getId());
-        attrs.setChecksum(new Checksum(HashAlgorithm.sha1, f.getSha1()));
+        try {
+            attrs.setChecksum(new Checksum(HashAlgorithm.sha1, f.getSha1()));
+        }
+        catch(UnsupportedException e) {
+            attrs.setChecksum(Checksum.NONE);
+        }
         attrs.setETag(f.getEtag());
         return attrs;
     }

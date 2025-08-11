@@ -84,6 +84,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertEquals(attributes, target.attributes());
         assertEquals(attributes.getFileId(), target.attributes().getFileId());
         assertNotEquals(attributes.getETag(), attributesFinder.find(rename).getETag());
+        assertEquals(attributes.getChecksum(), attributesFinder.find(rename).getChecksum());
         assertEquals(target.attributes().getETag(), attributesFinder.find(rename).getETag());
         delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -103,14 +104,17 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(touchedFile, new TransferStatus().setMime("x-application/cyberduck"));
         final PathAttributes attributes = attributesFinder.find(touchedFile);
-
+        assertEquals("AAAAAAAAAAAAAAAAAAAAAAAAAAA=", attributes.getChecksum().base64);
+        assertEquals("0000000000000000000000000000000000000000", attributes.getChecksum().hex);
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
         final Path target = move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final PathAttributes renamedAttributes = attributesFinder.find(rename);
         assertNotNull(renamedAttributes);
         assertEquals(attributes, renamedAttributes);
+        assertEquals(attributes.getFileId(), renamedAttributes.getFileId());
         assertNotEquals(attributes.getETag(), renamedAttributes.getETag());
+        assertEquals(attributes.getChecksum(), attributesFinder.find(rename).getChecksum());
         assertEquals(target.attributes().getETag(), renamedAttributes.getETag());
 
         delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
@@ -32,7 +33,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
+import org.nuxeo.onedrive.client.types.File;
 import org.nuxeo.onedrive.client.types.FileSystemInfo;
+import org.nuxeo.onedrive.client.types.Hashes;
 import org.nuxeo.onedrive.client.types.Publication;
 
 import java.io.IOException;
@@ -89,6 +92,13 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
+        final File file = metadata.getFile();
+        if(file != null) {
+            final Hashes hashes = file.getHashes();
+            if(hashes != null) {
+                attributes.setChecksum(Checksum.parse(hashes.getQuickXorHash()));
+            }
+        }
         Optional<DescriptiveUrl> webUrl = getWebUrl(metadata);
         if(metadata.isPackage()) {
             webUrl.ifPresent(url -> attributes.setSize(UrlFileWriterFactory.get().write(url).getBytes(Charset.defaultCharset()).length));
