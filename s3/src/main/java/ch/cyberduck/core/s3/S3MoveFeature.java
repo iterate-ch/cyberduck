@@ -38,8 +38,6 @@ import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import java.util.Collections;
 import java.util.Optional;
 
-import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
-
 public class S3MoveFeature implements Move {
 
     private final S3Session session;
@@ -57,7 +55,7 @@ public class S3MoveFeature implements Move {
     @Override
     public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         Path target;
-        if(source.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {
+        if(source.attributes().isTrashed()) {
             // Delete marker, copy not supported but we have to retain the delete marker at the target
             target = new Path(renamed);
             target.attributes().setVersionId(null);
@@ -70,7 +68,7 @@ public class S3MoveFeature implements Move {
                         String.valueOf(Path.DELIMITER), 1, null, null, false);
                 if(marker.getItems().length == 1) {
                     final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
-                    target.attributes().setVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                    target.attributes().setVersionId(markerObject.getVersionId()).setTrashed(true);
                     delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
                 }
                 else {

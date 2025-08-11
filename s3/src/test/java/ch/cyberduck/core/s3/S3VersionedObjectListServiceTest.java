@@ -324,12 +324,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         if(null == found) {
             fail(MessageFormat.format("Path {0} not found", file));
         }
-        if(null == found.attributes().getVersionId()) {
-            return found.attributes().isDuplicate();
-        }
-        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(found);
-        assertEquals(found.attributes().getCustom(), attr.getCustom());
-        return found.attributes().isDuplicate();
+        return found.attributes().isDuplicate() || found.attributes().isTrashed();
     }
 
     @Test

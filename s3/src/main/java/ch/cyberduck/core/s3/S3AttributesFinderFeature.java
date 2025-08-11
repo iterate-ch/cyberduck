@@ -36,9 +36,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
-import java.util.Collections;
-
-import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 
 public class S3AttributesFinderFeature implements AttributesFinder {
     private static final Logger log = LogManager.getLogger(S3AttributesFinderFeature.class);
@@ -84,8 +81,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                         log.debug("Mark file {} as delete marker", file);
                         // Only DELETE method is allowed for delete markers
                         attr = new PathAttributes();
-                        attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                        attr.setDuplicate(true);
+                        attr.setTrashed(true);
                         return attr;
                 }
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);

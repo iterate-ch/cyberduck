@@ -190,7 +190,7 @@ public class S3VersioningFeature implements Versioning {
                 final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                         bucketname, containerService.getKey(file), bucketname, destination, false);
-                if(file.getParent().attributes().getCustom().containsKey(S3VersionedObjectListService.KEY_DELETE_MARKER)) {
+                if(file.getParent().attributes().isTrashed()) {
                     // revert placeholder
                     session.getClient().deleteVersionedObject(
                             file.getParent().attributes().getVersionId(),

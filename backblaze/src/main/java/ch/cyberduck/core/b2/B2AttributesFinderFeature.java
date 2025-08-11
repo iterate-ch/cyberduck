@@ -182,6 +182,8 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             switch(response.getAction()) {
                 case hide:
                     // File version marking the file as hidden, so that it will not show up in b2_list_file_names
+                    attributes.setTrashed(true);
+                    break;
                 case start:
                     // Large file has been started, but not finished or canceled
                     attributes.setHidden(true);

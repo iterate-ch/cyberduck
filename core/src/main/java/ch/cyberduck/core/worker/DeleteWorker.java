@@ -160,7 +160,7 @@ public class DeleteWorker extends Worker<List<Path>> {
         final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         if(file.isFile() || file.isSymbolicLink()) {
             if(null != file.attributes().getVersionId()) {
-                if(file.attributes().isDuplicate()) {
+                if(file.attributes().isDuplicate() || file.attributes().isTrashed()) {
                     // Delete previous versions or pending upload
                     log.warn("Delete version {}", file);
                 }
