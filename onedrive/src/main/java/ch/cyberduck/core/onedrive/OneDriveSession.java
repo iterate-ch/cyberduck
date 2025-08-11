@@ -67,9 +67,11 @@ public class OneDriveSession extends GraphSession {
                         remoteParent.getDriveId(), remoteMetadata.getId());
             }
         }
-        else {
+        else if(parent != null) {
             return String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId());
         }
+
+        return null;
     }
 
     @Override
