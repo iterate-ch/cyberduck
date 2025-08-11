@@ -100,12 +100,6 @@ public abstract class SheetController extends WindowController implements InputV
         log.warn("Return code {} not handled", returncode);
     }
 
-    @Delegate
-    // Handle keyboard esc event when not running as sheet
-    public void cancel(ID sender) {
-        this.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
-    }
-
     /**
      * Implementation with no bundle loaded but window reference only
      */
