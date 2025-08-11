@@ -511,6 +511,7 @@ public interface SecurityFunctions extends Library {
      * The item cannot be found.
      */
     int errSecItemNotFound = -25300;
+    int errSecUserCanceled = -128;
     /**
      * No error.
      */
