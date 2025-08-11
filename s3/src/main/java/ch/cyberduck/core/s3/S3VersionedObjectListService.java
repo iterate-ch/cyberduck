@@ -45,20 +45,16 @@ import org.jets3t.service.model.S3Version;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class S3VersionedObjectListService extends S3AbstractListService implements ListService {
     private static final Logger log = LogManager.getLogger(S3VersionedObjectListService.class);
-
-    public static final String KEY_DELETE_MARKER = "delete_marker";
 
     private final PathContainerService containerService;
     private final S3Session session;
@@ -127,9 +123,6 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     attr.setRevision(++revision);
                     attr.setDuplicate(!marker.isLatest());
                     attr.setTrashed(marker.isDeleteMarker());
-                    if(marker.isDeleteMarker()) {
-                        attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, String.valueOf(true)));
-                    }
                     attr.setModificationDate(marker.getLastModified().getTime());
                     attr.setRegion(bucket.attributes().getRegion());
                     if(marker instanceof S3Version) {
@@ -233,9 +226,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
                         if(URIEncoder.decode(version.getKey()).equals(prefix)) {
                             attr.setVersionId(version.getVersionId());
-                            if(version.isDeleteMarker()) {
-                                attr.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                            }
+                            attr.setTrashed(version.isDeleteMarker());
                         }
                         // No placeholder but objects inside; need to check if all of them are deleted
                         final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(
