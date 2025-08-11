@@ -96,7 +96,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
                 // Drive Item properties
                 DriveItem.Property.File, /*Usage: Determines File */
-                DriveItem.Property.CTag,
+                DriveItem.Property.CTag, /*Usage: File Checksum/Version Comparison */
                 DriveItem.Property.FileSystemInfo, /*Usage: FileSystemInfo like Created and Modified */
                 DriveItem.Property.Folder, /*Usage: Determines Folder */
                 DriveItem.Property.Package, /*Usage: Determines OneNote */
