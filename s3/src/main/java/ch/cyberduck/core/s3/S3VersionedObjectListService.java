@@ -125,7 +125,8 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         revision = 0L;
                     }
                     attr.setRevision(++revision);
-                    attr.setDuplicate(marker.isDeleteMarker() && marker.isLatest() || !marker.isLatest());
+                    attr.setDuplicate(!marker.isLatest());
+                    attr.setTrashed(marker.isDeleteMarker());
                     if(marker.isDeleteMarker()) {
                         attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, String.valueOf(true)));
                     }

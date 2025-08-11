@@ -114,14 +114,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         {
             final PathAttributes marker = new S3AttributesFinderFeature(session, acl).find(testWithVersionId);
-            assertTrue(marker.isDuplicate());
-            assertFalse(marker.getCustom().containsKey(KEY_DELETE_MARKER));
-            assertNotNull(marker.getVersionId());
-            assertEquals(versionId, marker.getVersionId());
-        }
-        {
-            final PathAttributes marker = new S3AttributesFinderFeature(session, acl).find(testWithVersionId);
-            assertTrue(marker.isDuplicate());
+            assertTrue(marker.isTrashed());
             assertFalse(marker.getCustom().containsKey(KEY_DELETE_MARKER));
             assertNotNull(marker.getVersionId());
             assertEquals(versionId, marker.getVersionId());
@@ -241,7 +234,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertFalse(new S3FindFeature(session, acl).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
         // Test reading delete marker itself
         final Path marker = new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        assertTrue(marker.attributes().isDuplicate());
+        assertTrue(marker.attributes().isTrashed());
         assertTrue(marker.attributes().getCustom().containsKey(KEY_DELETE_MARKER));
         assertTrue(new S3AttributesFinderFeature(session, acl).find(marker).getCustom().containsKey(KEY_DELETE_MARKER));
         assertTrue(new S3FindFeature(session, acl).find(marker));
