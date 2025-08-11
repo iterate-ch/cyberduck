@@ -89,6 +89,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
+        attributes.setVersionId(metadata.getcTag());
         Optional<DescriptiveUrl> webUrl = getWebUrl(metadata);
         if(metadata.isPackage()) {
             webUrl.ifPresent(url -> attributes.setSize(UrlFileWriterFactory.get().write(url).getBytes(Charset.defaultCharset()).length));
@@ -133,7 +134,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     }
 
     public PathAttributes toAttributes(final DriveItem.Metadata metadata, final DriveItemVersion version) {
-        final PathAttributes attributes = toAttributes(metadata);
+        final PathAttributes attributes = this.toAttributes(metadata);
         attributes.setVersionId(version.getId());
         attributes.setDuplicate(true);
         attributes.setSize(version.getSize());

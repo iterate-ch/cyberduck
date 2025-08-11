@@ -33,9 +33,9 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphMoveFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -171,7 +171,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Path test = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path temp = new GraphTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new GraphMoveFeature(session, fileid).move(temp, test, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        final Find find = new DefaultFindFeature(session);
+        final Find find = new GraphFindFeature(session, fileid);
         final AttributedList<Path> files = new GraphItemListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());
         assertFalse(find.find(temp));

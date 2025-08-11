@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -58,7 +59,7 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
         final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
         final Path test = new GraphTouchFeature(session, fileid).touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNull(test.attributes().getVersionId());
+        assertNotNull(test.attributes().getVersionId());
         final GraphVersioningFeature feature = new GraphVersioningFeature(session, fileid);
         assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());
         // Add initial content
@@ -74,6 +75,7 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
         assertEquals(test.attributes().getFileId(), new GraphAttributesFinderFeature(session, fileid).find(test).getFileId());
         assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());
         final PathAttributes initialAttributes = new PathAttributes(test.attributes());
+        assertNotNull(initialAttributes.getVersionId());
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -81,11 +83,14 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
         final GraphWriteFeature writer = new GraphWriteFeature(session, fileid);
         final StatusOutputStream<DriveItem.Metadata> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        assertNull(new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()).getVersionId());
+        final String ctag = new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()).getVersionId();
+        assertNotNull(ctag);
+        assertNotEquals(initialAttributes.getVersionId(), ctag);
         {
             final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
             assertEquals(1, versions.size());
             assertEquals(213, versions.get(0).attributes().getSize(), 0L);
+            assertNotEquals(ctag, versions.get(0).attributes().getVersionId());
             feature.revert(versions.get(0));
         }
         // Delete versions permanently
@@ -100,5 +105,6 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
             }
         }
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertThrows(NotfoundException.class, () -> feature.list(test, new DisabledListProgressListener()));
     }
 }
