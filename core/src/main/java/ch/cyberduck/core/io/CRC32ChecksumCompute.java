@@ -35,6 +35,7 @@ public class CRC32ChecksumCompute extends AbstractChecksumCompute {
             byte[] buffer = new byte[16384];
             int bytesRead;
             while((bytesRead = normalized.read(buffer, 0, buffer.length)) != -1) {
+                status.validate();
                 crc32.update(buffer, 0, bytesRead);
             }
         }
