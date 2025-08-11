@@ -44,6 +44,6 @@ public class CRC32ChecksumCompute extends AbstractChecksumCompute {
         finally {
             IOUtils.closeQuietly(normalized);
         }
-        return new Checksum(HashAlgorithm.crc32, Long.toHexString(crc32.getValue()));
+        return new Checksum(HashAlgorithm.crc32, String.format("%08x", crc32.getValue()));
     }
 }
