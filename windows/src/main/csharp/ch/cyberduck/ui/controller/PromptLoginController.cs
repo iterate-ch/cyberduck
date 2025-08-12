@@ -118,6 +118,9 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         private void InitPrivateKeys()
+
+        _keys.Clear();
+        
         {
             foreach (
                 Local key in
