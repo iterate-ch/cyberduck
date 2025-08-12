@@ -37,7 +37,7 @@ import org.apache.logging.log4j.Logger;
 public class CompareFilter extends AbstractUploadFilter {
     private static final Logger log = LogManager.getLogger(CompareFilter.class);
 
-    private final ComparePathFilter comparisonService;
+    private final ComparePathFilter filter;
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
@@ -48,23 +48,23 @@ public class CompareFilter extends AbstractUploadFilter {
     }
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
-                         final DefaultComparePathFilter comparisonService, final UploadFilterOptions options) {
-        this(symlinkResolver, session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class), comparisonService, options);
+                         final DefaultComparePathFilter filter, final UploadFilterOptions options) {
+        this(symlinkResolver, session, session.getFeature(Find.class), session.getFeature(AttributesFinder.class), filter, options);
     }
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute, final UploadFilterOptions options) {
         this(symlinkResolver, session, find, attribute, new DefaultComparePathFilter(find, attribute, session.getFeature(ComparisonService.class)), options);
     }
 
-    public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute, final DefaultComparePathFilter comparisonService, final UploadFilterOptions options) {
+    public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final Find find, final AttributesFinder attribute, final DefaultComparePathFilter filter, final UploadFilterOptions options) {
         super(symlinkResolver, session, find, attribute, options);
-        this.comparisonService = comparisonService;
+        this.filter = filter;
     }
 
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         if(super.accept(file, local, parent, progress)) {
-            final Comparison comparison = comparisonService.compare(file, local, progress);
+            final Comparison comparison = filter.compare(file, local, progress);
             switch(comparison) {
                 case local:
                     return true;
