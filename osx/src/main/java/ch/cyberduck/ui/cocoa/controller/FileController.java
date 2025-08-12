@@ -55,7 +55,6 @@ public abstract class FileController extends AlertController {
     @Override
     protected void focus(final NSAlert alert) {
         super.focus(alert);
-        alert.window().makeFirstResponder(inputField);
         inputField.selectText(null);
     }
 

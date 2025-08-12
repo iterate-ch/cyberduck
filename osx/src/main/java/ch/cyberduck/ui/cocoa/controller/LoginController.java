@@ -154,10 +154,10 @@ public class LoginController extends AlertController {
     protected void focus(final NSAlert alert) {
         super.focus(alert);
         if(options.user) {
-            window.makeFirstResponder(usernameField);
+            usernameField.selectText(null);
         }
         if(options.password && !StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
-            window.makeFirstResponder(passwordField);
+            passwordField.selectText(null);
         }
     }
 
