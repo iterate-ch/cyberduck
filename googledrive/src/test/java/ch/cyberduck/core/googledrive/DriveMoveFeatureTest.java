@@ -66,7 +66,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         assertFalse(find.find(test));
         assertTrue(find.find(target));
         final PathAttributes targetAttr = new DriveAttributesFinderFeature(session, fileid).find(target);
-        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), targetAttr));
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(target, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
