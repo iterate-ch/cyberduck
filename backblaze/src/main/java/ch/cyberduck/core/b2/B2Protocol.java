@@ -19,12 +19,13 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.synchronization.ChecksumComparisonService;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
-import ch.cyberduck.core.synchronization.VersionIdComparisonService;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import java.util.Comparator;
+
 import com.google.auto.service.AutoService;
 
 @AutoService(Protocol.class)
@@ -97,7 +98,7 @@ public class B2Protocol extends AbstractProtocol {
             return (T) new B2PathContainerService();
         }
         if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new VersionIdComparisonService(), ComparisonService.disabled);
+            return (T) new DefaultComparisonService(new ChecksumComparisonService(), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }
