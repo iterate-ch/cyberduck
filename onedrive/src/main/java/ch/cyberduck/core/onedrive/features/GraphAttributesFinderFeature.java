@@ -97,7 +97,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
         else if(null != metadata.getSize()) {
             attributes.setSize(metadata.getSize());
         }
-        setId(attributes, session.getFileId(metadata));
+        attributes.setFileId(session.getFileId(metadata));
         webUrl.ifPresent(attributes::setLink);
         final FileSystemInfo info = metadata.getFacet(FileSystemInfo.class);
         if(null != info) {
@@ -140,9 +140,5 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
         attributes.setSize(version.getSize());
         attributes.setModificationDate(version.getLastModifiedDateTime().toInstant().toEpochMilli());
         return attributes;
-    }
-
-    private void setId(final PathAttributes attributes, final String id) {
-        attributes.setFileId(id);
     }
 }
