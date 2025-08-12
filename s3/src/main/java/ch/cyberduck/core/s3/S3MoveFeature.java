@@ -81,7 +81,7 @@ public class S3MoveFeature implements Move {
         }
         else {
             try {
-                target = proxy.copy(source, renamed, status.setLength(source.attributes().getSize()), connectionCallback, new DisabledStreamListener());
+                target = proxy.copy(source, renamed, status, connectionCallback, new DisabledStreamListener());
                 // Copy source path and nullify version id to add a delete marker
                 delete.delete(Collections.singletonMap(new Path(source).withAttributes(new PathAttributes(source.attributes()).setVersionId(null)), status),
                         connectionCallback, callback);
@@ -89,7 +89,7 @@ public class S3MoveFeature implements Move {
             catch(NotfoundException e) {
                 if(source.getType().contains(Path.Type.placeholder)) {
                     // No placeholder object to copy, create a new one at the target
-                    target = session.getFeature(Directory.class).mkdir(renamed, new TransferStatus().setRegion(source.attributes().getRegion()));
+                    target = session.getFeature(Directory.class).mkdir(renamed, status);
                 }
                 else {
                     throw e;

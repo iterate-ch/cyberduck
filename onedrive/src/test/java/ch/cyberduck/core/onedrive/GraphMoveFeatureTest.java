@@ -80,9 +80,11 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(file, Optional.of(rename)));
         final TransferStatus status = new TransferStatus();
+        status.setModified(file.attributes().getModificationDate());
         final Path target = move.move(file, rename, status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(attributes, target.attributes());
         assertEquals(attributes.getFileId(), target.attributes().getFileId());
+        assertEquals(attributes.getModificationDate(), target.attributes().getModificationDate());
         assertEquals(attributes.getVersionId(), target.attributes().getVersionId());
         assertNotEquals(attributes.getETag(), attributesFinder.find(rename).getETag());
         assertEquals(target.attributes().getETag(), attributesFinder.find(rename).getETag());
@@ -107,11 +109,14 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
 
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
-        final Path target = move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final TransferStatus status = new TransferStatus();
+        status.setModified(touchedFile.attributes().getModificationDate());
+        final Path target = move.move(touchedFile, rename, status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final PathAttributes renamedAttributes = attributesFinder.find(rename);
         assertNotNull(renamedAttributes);
         assertEquals(attributes, renamedAttributes);
         assertNotEquals(attributes.getETag(), renamedAttributes.getETag());
+        assertEquals(attributes.getModificationDate(), renamedAttributes.getModificationDate());
         assertEquals(attributes.getVersionId(), renamedAttributes.getVersionId());
         assertEquals(target.attributes().getETag(), renamedAttributes.getETag());
 
