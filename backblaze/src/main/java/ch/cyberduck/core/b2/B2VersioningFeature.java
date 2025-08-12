@@ -77,7 +77,7 @@ public class B2VersioningFeature implements Versioning {
         return new B2ObjectListService(session, fileid).list(file, listener).filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path f) {
-                return f.attributes().isDuplicate();
+                return f.attributes().isDuplicate() || f.attributes().isTrashed();
             }
         });
     }

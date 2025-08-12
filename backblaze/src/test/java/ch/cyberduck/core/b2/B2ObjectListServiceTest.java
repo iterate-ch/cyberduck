@@ -221,7 +221,8 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
             assertEquals(3, list.size());
             for(Path f : list) {
-                assertTrue(f.attributes().isDuplicate());
+                assertTrue(f.attributes().isTrashed() || f.attributes().isDuplicate());
+                assertFalse(f.attributes().isTrashed() && f.attributes().isDuplicate());
             }
             assertTrue(new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()).list(bucket, new DisabledListProgressListener()).isEmpty());
         }

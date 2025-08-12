@@ -103,7 +103,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
                 response = this.findFileInfo(file, fileid.getVersionId(file));
             }
             final PathAttributes attr = this.toAttributes(response);
-            if(attr.isDuplicate()) {
+            if(attr.isTrashed()) {
                 // Throw failure if latest version has hide marker set and lookup was without explicit version
                 if(StringUtils.isBlank(file.attributes().getVersionId())) {
                     log.debug("Latest version of {} is duplicate", file);

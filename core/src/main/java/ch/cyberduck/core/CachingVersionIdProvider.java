@@ -71,6 +71,10 @@ public abstract class CachingVersionIdProvider implements VersionIdProvider {
                 log.warn("Skip caching for previous version {}", file);
                 return id;
             }
+            if(file.attributes().isTrashed()) {
+                log.warn("Skip caching for trashed version {}", file);
+                return id;
+            }
             cache.put(this.toPredicate(file), id);
             file.attributes().setVersionId(id);
         }
