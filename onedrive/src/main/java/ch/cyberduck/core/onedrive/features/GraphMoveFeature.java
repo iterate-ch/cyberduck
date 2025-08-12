@@ -77,9 +77,11 @@ public class GraphMoveFeature implements Move {
             patchOperation.move(moveTarget);
         }
         // Keep current timestamp set
-        final FileSystemInfo info = new FileSystemInfo();
-        info.setLastModifiedDateTime(Instant.ofEpochMilli(file.attributes().getModificationDate()).atOffset(ZoneOffset.UTC));
-        patchOperation.facet("fileSystemInfo", info);
+        if(null != status.getModified()) {
+            final FileSystemInfo info = new FileSystemInfo();
+            info.setLastModifiedDateTime(Instant.ofEpochMilli(status.getModified()).atOffset(ZoneOffset.UTC));
+            patchOperation.facet("fileSystemInfo", info);
+        }
         final DriveItem item = session.getItem(file);
         try {
             final DriveItem.Metadata metadata = Files.patch(item, patchOperation);

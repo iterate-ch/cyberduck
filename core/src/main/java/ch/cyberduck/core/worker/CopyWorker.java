@@ -92,6 +92,9 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                     else {
                         final TransferStatus status = new TransferStatus()
                                 .setMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                                .setRegion(r.getKey().attributes().getRegion())
+                                .setModified(r.getKey().attributes().getModificationDate())
+                                .setCreated(r.getKey().attributes().getCreationDate())
                                 .setAcl(r.getKey().attributes().getAcl())
                                 .setPermission(r.getKey().attributes().getPermission())
                                 .setEncryption(r.getKey().attributes().getEncryption())
