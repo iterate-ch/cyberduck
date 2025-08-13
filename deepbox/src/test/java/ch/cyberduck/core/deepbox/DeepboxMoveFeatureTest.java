@@ -55,20 +55,17 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String sourceId = test.attributes().getFileId();
         assertNotNull(sourceId);
-        test.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(test));
         assertNotEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
         assertNotEquals(-1L, test.attributes().getModificationDate());
-
+        assertEquals(test.attributes(), new DeepboxAttributesFinderFeature(session, fileid).find(test));
         final Path moved = new DeepboxMoveFeature(session, fileid).move(test,
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(sourceId, moved.attributes().getFileId());
-        moved.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(moved));
         assertFalse(new DeepboxFindFeature(session, fileid).find(new Path(test).withAttributes(new PathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(moved));
         assertEquals(test.attributes().getModificationDate(), moved.attributes().getModificationDate());
         assertEquals(test.attributes().getChecksum(), moved.attributes().getChecksum());
-        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, moved.attributes(), new DeepboxAttributesFinderFeature(session, fileid).find(moved)));
-
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), moved.attributes()));
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
