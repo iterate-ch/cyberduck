@@ -62,14 +62,18 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
 
     @Override
     public boolean close(final Path directory) {
-        return this.removeIf(vault -> {
-            if(new SimplePathPredicate(vault.getHome()).test(directory)) {
-                vault.close();
-                directory.attributes().setVault(null);
-                return true;
-            }
-            return false;
-        });
+        try {
+            return this.removeIf(vault -> {
+                if(new SimplePathPredicate(vault.getHome()).test(directory)) {
+                    vault.close();
+                    return true;
+                }
+                return false;
+            });
+        }
+        finally {
+            directory.attributes().setVault(null);
+        }
     }
 
     @Override
