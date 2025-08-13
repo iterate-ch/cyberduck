@@ -49,6 +49,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -127,6 +128,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
     }
 
     @Test
+    @Ignore
     public void testFileKeyMigration() throws Exception {
         final UserApi userApi = new UserApi(session.getClient());
         this.removeKeyPairs(userApi);

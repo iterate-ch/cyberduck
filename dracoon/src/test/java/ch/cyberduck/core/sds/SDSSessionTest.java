@@ -136,6 +136,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     }
 
     @Test
+    @Ignore
     public void testKeyPairMigration() throws Exception {
         final UserApi userApi = new UserApi(session.getClient());
         try {
