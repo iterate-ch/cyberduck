@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
@@ -49,8 +48,8 @@ public class B2MoveFeatureTest extends AbstractB2Test {
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
         assertFalse(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(target));
-        final PathAttributes targetAttr = new B2AttributesFinderFeature(session, fileid).find(target);
-        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), targetAttr));
+        assertEquals(target.attributes(), new B2AttributesFinderFeature(session, fileid).find(target));
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), target.attributes()));
         new B2DeleteFeature(session, fileid).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
