@@ -71,6 +71,9 @@ public class SDSDelegatingCopyFeature implements Copy {
 
     @Override
     public EnumSet<Flags> features(final Path source, final Path target) {
-        return proxy.features(source, target);
+        if(proxy.isSupported(source, Optional.of(target))) {
+            return proxy.features(source, target);
+        }
+        return copy.features(source, target);
     }
 }
