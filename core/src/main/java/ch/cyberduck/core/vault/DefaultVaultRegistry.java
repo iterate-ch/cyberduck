@@ -56,6 +56,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
 
     @Override
     public boolean add(final Vault vault) {
+        log.debug("Add vault {} to registry", vault);
         return super.add(vault);
     }
 
