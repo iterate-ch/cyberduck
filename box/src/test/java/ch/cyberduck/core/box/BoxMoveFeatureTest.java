@@ -53,7 +53,9 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
         assertTrue(new BoxFindFeature(session, fileid).find(target));
         assertEquals(test.attributes().getModificationDate(), target.attributes().getModificationDate());
         assertEquals(test.attributes().getChecksum(), target.attributes().getChecksum());
-        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), new BoxAttributesFinderFeature(session, fileid).find(target)));
+        assertNotEquals(test.attributes().getETag(), target.attributes().getETag());
+        assertEquals(target.attributes(), new BoxAttributesFinderFeature(session, fileid).find(target));
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), target.attributes()));
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
