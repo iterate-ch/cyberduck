@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class IRODSExceptionMappingService extends AbstractExceptionMappingService<Exception> {
+
     private static final Logger log = LogManager.getLogger(IRODSExceptionMappingService.class);
 
     @Override
@@ -32,5 +33,4 @@ public class IRODSExceptionMappingService extends AbstractExceptionMappingServic
         this.append(buffer, e.getMessage());
         return this.wrap(e, buffer);
     }
-
 }

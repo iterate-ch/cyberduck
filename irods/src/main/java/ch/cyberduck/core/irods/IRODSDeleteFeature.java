@@ -20,6 +20,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
@@ -37,9 +39,18 @@ import java.util.Map;
 public class IRODSDeleteFeature implements Delete {
 
     private final IRODSSession session;
+    private final RemoveOptions removeOptions;
 
     public IRODSDeleteFeature(IRODSSession session) {
         this.session = session;
+
+        PreferencesReader prefs = HostPreferencesFactory.get(session.getHost());
+        if("yes".equalsIgnoreCase(prefs.getProperty(IRODSProtocol.DELETE_OBJECTS_PERMANTENTLY))) {
+            removeOptions = RemoveOptions.NO_TRASH;
+        }
+        else {
+            removeOptions = RemoveOptions.NONE;
+        }
     }
 
     @Override
@@ -64,17 +75,17 @@ public class IRODSDeleteFeature implements Delete {
 
             try {
                 String absolute = file.getAbsolute();
-                ObjectStatus status = IRODSFilesystem.status(this.session.getClient().getRcComm(), absolute);
+                ObjectStatus status = IRODSFilesystem.status(session.getClient().getRcComm(), absolute);
 
                 if(!IRODSFilesystem.exists(status)) {
                     throw new NotfoundException(String.format("%s doesn't exist", absolute));
                 }
 
                 if(status.getType() == ObjectType.DATA_OBJECT) {
-                    IRODSFilesystem.remove(this.session.getClient().getRcComm(), absolute, RemoveOptions.NO_TRASH);
+                    IRODSFilesystem.remove(session.getClient().getRcComm(), absolute, removeOptions);
                 }
                 else if(status.getType() == ObjectType.COLLECTION) {
-                    IRODSFilesystem.removeAll(this.session.getClient().getRcComm(), absolute, RemoveOptions.NO_TRASH);
+                    IRODSFilesystem.removeAll(session.getClient().getRcComm(), absolute, removeOptions);
                 }
             }
             catch(IOException | IRODSException e) {

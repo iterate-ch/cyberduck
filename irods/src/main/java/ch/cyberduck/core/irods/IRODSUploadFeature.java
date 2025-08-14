@@ -23,135 +23,248 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.irods.irods4j.high_level.connection.IRODSConnection;
 import org.irods.irods4j.high_level.connection.IRODSConnectionPool;
 import org.irods.irods4j.high_level.connection.IRODSConnectionPool.PoolConnection;
-import org.irods.irods4j.high_level.connection.QualifiedUsername;
-import org.irods.irods4j.high_level.io.IRODSDataObjectInputStream;
 import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
-import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
-import org.irods.irods4j.low_level.api.IRODSApi;
-import org.irods.irods4j.low_level.api.IRODSApi.RcComm;
+import org.irods.irods4j.high_level.io.IRODSDataObjectStream;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-public class IRODSUploadFeature implements Upload<Checksum> {
+public class IRODSUploadFeature implements Upload<Void> {
+
     private static final Logger log = LogManager.getLogger(IRODSUploadFeature.class);
 
     private final IRODSSession session;
-    private int numThread = 3; // TODO Make configurable
-    private static final int BUFFER_SIZE = 4 * 1024 * 1024; // TODO Make configurable
 
     public IRODSUploadFeature(final IRODSSession session) {
         this.session = session;
     }
 
     @Override
-    public Checksum upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                           final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
-                           final ConnectionCallback callback) throws BackgroundException {
+    public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle,
+                       final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
+                       final ConnectionCallback callback) throws BackgroundException {
         try {
-            final RcComm primaryConn = session.getClient().getRcComm();
+            final PreferencesReader preferences = HostPreferencesFactory.get(session.getHost());
+
             final long fileSize = local.attributes().getSize();
             final String logicalPath = file.getAbsolute();
+            final String dstRootResource = preferences.getProperty(IRODSProtocol.DESTINATION_RESOURCE);
+
+            log.debug("status.getLength() = [{}]", status.getLength());
+            log.debug("fileSize           = [{}]", fileSize);
+            log.debug("local file         = [{}]", local.getAbsolute());
+            log.debug("logicalPath        = [{}]", logicalPath);
+            log.debug("dst root resource  = [{}]", dstRootResource);
 
             // Transfer the bytes over multiple connections if the size of the local file
             // exceeds a certain threshold - e.g. 32MB.
-            // TODO Consider making this configurable.
-            if(fileSize < 32 * 1024 * 1024) {
-                byte[] buffer = new byte[4 * 1024 * 1024];
+            final long threshold = preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_THRESHOLD);
+            if(fileSize < threshold) {
+                log.debug("local file is smaller than 32MB. performing single-threaded transfer.");
+
+                byte[] buffer = new byte[preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_BUFFER_SIZE)];
                 boolean truncate = true;
                 boolean append = false;
 
                 try(FileInputStream in = new FileInputStream(local.getAbsolute());
-                    IRODSDataObjectOutputStream out = new IRODSDataObjectOutputStream(primaryConn, logicalPath, truncate, append)) {
-                    while(true) {
-                        int bytesRead = in.read(buffer);
-                        if(bytesRead == -1) {
-                            break;
+                    IRODSConnection conn = IRODSConnectionUtils.newConnection(session)) {
+
+                    IRODSDataObjectOutputStream out;
+                    if(StringUtils.isNotBlank(dstRootResource)) {
+                        out = new IRODSDataObjectOutputStream(conn.getRcComm(), logicalPath, dstRootResource, truncate, append);
+                    }
+                    else {
+                        out = new IRODSDataObjectOutputStream(conn.getRcComm(), logicalPath, truncate, append);
+                    }
+
+                    try {
+                        while(true) {
+                            status.validate(); // Throws if transfer is cancelled.
+                            int bytesRead = in.read(buffer);
+                            if(bytesRead == -1) {
+                                return null;
+                            }
+                            streamListener.recv(bytesRead);
+                            out.write(buffer, 0, bytesRead);
+                            streamListener.sent(bytesRead);
                         }
-                        out.write(buffer, 0, bytesRead);
+                    }
+                    finally {
+                        out.close();
                     }
                 }
             }
 
-            // Step 1: Open one primary output stream to get token and replica info
-            try(IRODSDataObjectOutputStream primaryOut = new IRODSDataObjectOutputStream()) {
-                boolean truncate = true;
-                boolean append = false;
-                primaryOut.open(primaryConn, logicalPath, truncate, append);
-                final String replicaToken = primaryOut.getReplicaToken();
-                final long replicaNumber = primaryOut.getReplicaNumber();
+            //
+            // The data object is larger than the threshold so use parallel transfer.
+            //
 
-                // Step 2: Connection pool
-                try(final IRODSConnectionPool pool = new IRODSConnectionPool(numThread)) {
-                    pool.start(
-                            session.getHost().getHostname(),
-                            session.getHost().getPort(),
-                            new QualifiedUsername(session.getHost().getCredentials().getUsername(), session.getRegion()),
-                            conn -> {
-                                try {
-                                    // TODO Replace "native" with the scheme defined by the Authorization config property.
-                                    IRODSApi.rcAuthenticateClient(conn, "native", session.getHost().getCredentials().getPassword());
-                                    return true;
-                                }
-                                catch(Exception e) {
-                                    return false;
-                                }
-                            });
+            log.debug("local file is larger than 32MB. performing multi-threaded transfer.");
 
-                    // Step 3: Thread pool & chunking
-                    final long chunkSize = fileSize / numThread;
-                    final long remainChunkSize = fileSize % numThread;
-                    truncate = false;
+            // TODO Clamp the value so that users do not specify something ridiculous.
+            final int threadCount = preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_CONNECTIONS);
+            log.debug("thread count = [{}]; starting thread pool.", threadCount);
+            final ExecutorService executor = Executors.newFixedThreadPool(threadCount);
 
-                    final ExecutorService executor = Executors.newFixedThreadPool(numThread);
+            final long chunkSize = fileSize / threadCount;
+            final long remainingBytes = fileSize % threadCount;
+            log.debug("chunk size      = [{}]", chunkSize);
+            log.debug("remaining bytes = [{}]", remainingBytes);
+
+            final List<InputStream> localFileStreams = new ArrayList<>();
+            final List<IRODSDataObjectOutputStream> irodsStreams = new ArrayList<>();
+
+            log.debug("launching connection pool with [{}] connections.", threadCount);
+            try(IRODSConnectionPool pool = new IRODSConnectionPool(IRODSConnectionUtils.initConnectionOptions(session), threadCount)) {
+                status.validate(); // Throws if transfer is cancelled.
+
+                IRODSConnectionUtils.startIRODSConnectionPool(session, pool);
+                log.debug("connection pool started.");
+
+                try {
+                    // Initialize streams.
+                    String replicaToken = null;
+                    long replicaNumber = -1;
+
+                    for(int i = 0; i < threadCount; ++i) {
+                        // We cannot use Files.newInputStream() because the type information
+                        // is required to properly close the stream.
+                        localFileStreams.add(new FileInputStream(local.getAbsolute()));
+
+                        // The pooled connection will never be returned to the pool. This is
+                        // okay because after the transfer, no connection is reused.
+                        PoolConnection conn = pool.getConnection();
+
+                        if(0 == i) {
+                            log.debug("opened primary iRODS stream.");
+                            // The first iRODS output stream is the primary stream. The opened
+                            // replica is always truncated upon success.
+                            if(StringUtils.isNotBlank(dstRootResource)) {
+                                irodsStreams.add(new IRODSDataObjectOutputStream(
+                                        conn.getRcComm(), logicalPath, dstRootResource, true, false));
+                            }
+                            else {
+                                irodsStreams.add(new IRODSDataObjectOutputStream(
+                                        conn.getRcComm(), logicalPath, true, false));
+                            }
+                            replicaToken = irodsStreams.get(0).getReplicaToken();
+                            replicaNumber = irodsStreams.get(0).getReplicaNumber();
+                            log.debug("replica token  = [{}]", replicaToken);
+                            log.debug("replica number = [{}]", replicaNumber);
+                        }
+                        else {
+                            log.debug("opened secondary iRODS stream.");
+                            irodsStreams.add(new IRODSDataObjectOutputStream(
+                                    conn.getRcComm(), replicaToken, logicalPath, replicaNumber, false, false));
+                        }
+                    }
+
+                    status.validate(); // Throws if transfer is cancelled.
+
+                    // Holds handles to tasks running on the thread pool. This allows us to wait for
+                    // all tasks to complete before shutting down everything.
                     List<Future<?>> tasks = new ArrayList<>();
-                    for(int i = 0; i < numThread; i++) {
-                        final long start = i * chunkSize;
-                        final PoolConnection conn = pool.getConnection();
+
+                    // Launch remaining IO tasks.
+                    log.debug("launch parallel IO tasks.");
+                    for(int i = 0; i < threadCount; ++i) {
                         tasks.add(executor.submit(new IRODSChunkWorker(
-                                conn,
-                                new FileInputStream(local.getAbsolute()),
-                                new IRODSDataObjectOutputStream(conn.getRcComm(), file.getAbsolute(), replicaToken, replicaNumber, truncate, append),
-                                start,
-                                (i == numThread - 1) ? chunkSize + remainChunkSize : chunkSize,
-                                BUFFER_SIZE
+                                status,
+                                streamListener,
+                                localFileStreams.get(i),
+                                irodsStreams.get(i),
+                                i * chunkSize,
+                                (threadCount - 1 == i) ? chunkSize + remainingBytes : chunkSize,
+                                preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_BUFFER_SIZE)
                         )));
                     }
 
-                    for(Future<?> task : tasks) {
-                        task.get();
-                    }
-
-                    executor.shutdown();
+                    waitForTasksToComplete(tasks);
+                }
+                finally {
+                    closeOutputStreams(irodsStreams);
+                    closeInputStreams(localFileStreams);
                 }
             }
 
-            final String fingerprintValue = IRODSFilesystem.dataObjectChecksum(primaryConn, file.getAbsolute());
-            return Checksum.parse(fingerprintValue);
+            log.debug("shutting down thread pool executor.");
+            executor.shutdown();
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+            log.debug("done.");
+
+            return null;
         }
         catch(Exception e) {
             throw new IRODSExceptionMappingService().map(e);
         }
     }
 
-    @Override
-    public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Write.Append(status.isExists()).withStatus(status);
+    private static void closeOutputStreams(List<IRODSDataObjectOutputStream> streams) {
+        log.debug("closing output streams.");
+
+        final IRODSDataObjectStream.OnCloseSuccess closeInstructions = new IRODSDataObjectStream.OnCloseSuccess();
+        closeInstructions.updateSize = false;
+        closeInstructions.updateStatus = false;
+        closeInstructions.computeChecksum = false;
+        closeInstructions.sendNotifications = false;
+
+        for(int i = 1; i < streams.size(); ++i) {
+            try {
+                streams.get(i).close(closeInstructions);
+            }
+            catch(Exception e) {
+                log.error(e.getMessage());
+            }
+        }
+
+        try {
+            streams.get(0).close();
+        }
+        catch(Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private static void closeInputStreams(List<InputStream> streams) {
+        log.debug("closing input streams.");
+
+        streams.forEach(out -> {
+            try {
+                out.close();
+            }
+            catch(Exception e) {
+                log.error(e.getMessage());
+            }
+        });
+    }
+
+    private static void waitForTasksToComplete(List<Future<?>> tasks) {
+        log.debug("waiting for parallel IO tasks to finish.");
+        for(Future<?> task : tasks) {
+            try {
+                task.get();
+            }
+            catch(Exception e) {
+                log.error(e.getMessage());
+            }
+        }
+        log.debug("parallel IO tasks have finished.");
     }
 }

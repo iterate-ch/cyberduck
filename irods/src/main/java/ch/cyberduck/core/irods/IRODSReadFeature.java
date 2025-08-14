@@ -23,7 +23,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.irods4j.high_level.io.IRODSDataObjectInputStream;
-import org.irods.irods4j.high_level.io.IRODSDataObjectStream;
 import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
 import org.irods.irods4j.low_level.api.IRODSApi.RcComm;
 import org.irods.irods4j.low_level.api.IRODSException;
@@ -49,28 +48,10 @@ public class IRODSReadFeature implements Read {
                 throw new NotfoundException(logicalPath);
             }
 
-            // Open input stream
-            IRODSDataObjectInputStream in;
-            String resource = session.getResource();
-            if(resource.isEmpty()) {
-                in = new IRODSDataObjectInputStream(rcComm, logicalPath);
-            }
-            else {
-                in = new IRODSDataObjectInputStream(rcComm, logicalPath, resource);
-            }
+            IRODSDataObjectInputStream in = new IRODSDataObjectInputStream(rcComm, logicalPath);
 
-            // If resuming from offset, skip ahead
             if(status.isAppend() && status.getOffset() > 0) {
-                long totalOffset = status.getOffset();
-                while(totalOffset > 0) {
-                    if(totalOffset >= Integer.MAX_VALUE) {
-                        totalOffset -= Integer.MAX_VALUE;
-                        in.seek(Integer.MAX_VALUE, IRODSDataObjectStream.SeekDirection.CURRENT);
-                    }
-                    else {
-                        in.seek((int) totalOffset, IRODSDataObjectStream.SeekDirection.CURRENT);
-                    }
-                }
+                IRODSStreamUtils.seek(in, status.getOffset());
             }
 
             return in;
@@ -78,5 +59,10 @@ public class IRODSReadFeature implements Read {
         catch(IOException | IRODSException e) {
             throw new IRODSExceptionMappingService().map("Download {0} failed", e, file);
         }
+    }
+
+    @Override
+    public boolean offset(final Path file) {
+        return true;
     }
 }

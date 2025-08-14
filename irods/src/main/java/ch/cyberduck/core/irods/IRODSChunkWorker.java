@@ -15,105 +15,82 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
-import org.irods.irods4j.high_level.connection.IRODSConnectionPool;
-import org.irods.irods4j.high_level.io.IRODSDataObjectInputStream;
-import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
-import org.irods.irods4j.high_level.io.IRODSDataObjectStream;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.irods.irods4j.low_level.api.IRODSException;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public class IRODSChunkWorker implements Runnable {
 
-    private final IRODSConnectionPool.PoolConnection conn;
+    private static final Logger log = LogManager.getLogger(IRODSChunkWorker.class);
+
+    private final TransferStatus status;
+    private final StreamListener streamListener;
     private final InputStream in;
     private final OutputStream out;
     private final long offset;
     private final long chunkSize;
     private final byte[] buffer;
 
-    public IRODSChunkWorker(IRODSConnectionPool.PoolConnection conn, InputStream in, OutputStream out, long offset, long chunkSize, int bufferSize) throws IOException, IRODSException {
-        this.conn = conn;
+    public IRODSChunkWorker(TransferStatus status, StreamListener streamListener, InputStream in, OutputStream out, long offset, long chunkSize, int bufferSize) {
+        log.info("constructing iRODS chunk worker.");
+        log.info("offset      = [{}]", offset);
+        log.info("chunk size  = [{}]", chunkSize);
+        log.info("buffer size = [{}]", bufferSize);
+        this.status = status;
+        this.streamListener = streamListener;
         this.in = in;
         this.out = out;
         this.offset = offset;
         this.chunkSize = chunkSize;
         this.buffer = new byte[bufferSize];
+        log.info("iRODS chunk worker constructed.");
     }
 
     @Override
     public void run() {
         try {
-            seek(in);
-            seek(out);
+            IRODSStreamUtils.seek(in, offset);
+            IRODSStreamUtils.seek(out, offset);
 
             long remaining = chunkSize;
             while(remaining > 0) {
+                try {
+                    status.validate();
+                }
+                catch(ConnectionCanceledException e) {
+                    log.info("transfer cancelled.");
+                    return;
+                }
+
                 int count = (int) Math.min(buffer.length, remaining);
 
                 int bytesRead = in.read(buffer, 0, count);
+                log.info("read [{}] of [{}] requested bytes from input stream.", bytesRead, count);
                 if(-1 == bytesRead) {
                     break;
                 }
 
+                streamListener.recv(bytesRead);
                 out.write(buffer, 0, bytesRead);
+                log.info("wrote [{}] bytes to output stream.", bytesRead);
+                streamListener.sent(bytesRead);
                 remaining -= bytesRead;
             }
+
+            log.info("total bytes remaining = [{}]", remaining);
+            log.info("done. wrote [{}] of [{}] bytes to the replica.", chunkSize - remaining, chunkSize);
         }
         catch(IOException | IRODSException e) {
-            // TODO Log error
-        }
-        finally {
-            try {
-                in.close();
-            }
-            catch(Exception e) { /* Ignored */ }
-            try {
-                out.close();
-            }
-            catch(Exception e) { /* Ignored */ }
+            log.error(e.getMessage());
         }
     }
 
-    private void seek(InputStream in) throws IRODSException, IOException {
-        if(in instanceof IRODSDataObjectInputStream) {
-            IRODSDataObjectInputStream stream = (IRODSDataObjectInputStream) in;
-            long totalOffset = offset;
-            while(totalOffset > 0) {
-                if(totalOffset >= Integer.MAX_VALUE) {
-                    totalOffset -= Integer.MAX_VALUE;
-                    stream.seek(Integer.MAX_VALUE, IRODSDataObjectStream.SeekDirection.CURRENT);
-                }
-                else {
-                    stream.seek((int) totalOffset, IRODSDataObjectStream.SeekDirection.CURRENT);
-                }
-            }
-        }
-        else if(in instanceof FileInputStream) {
-            ((FileInputStream) in).getChannel().position(offset);
-        }
-    }
-
-    private void seek(OutputStream out) throws IRODSException, IOException {
-        if(out instanceof IRODSDataObjectOutputStream) {
-            IRODSDataObjectOutputStream stream = (IRODSDataObjectOutputStream) out;
-            long totalOffset = offset;
-            while(totalOffset > 0) {
-                if(totalOffset >= Integer.MAX_VALUE) {
-                    totalOffset -= Integer.MAX_VALUE;
-                    stream.seek(Integer.MAX_VALUE, IRODSDataObjectStream.SeekDirection.CURRENT);
-                }
-                else {
-                    stream.seek((int) totalOffset, IRODSDataObjectStream.SeekDirection.CURRENT);
-                }
-            }
-        }
-        else if(out instanceof FileOutputStream) {
-            ((FileOutputStream) out).getChannel().position(offset);
-        }
-    }
 }

@@ -73,6 +73,7 @@ public class IRODSListService implements ListService {
                 else if(entry.isDataObject()) {
                     attrs.setFileId(entry.id());
                     attrs.setSize(entry.dataSize());
+                    attrs.setChecksum(IRODSChecksumUtils.toChecksum(entry.checksum()));
                 }
 
                 children.add(new Path(directory, PathNormalizer.name(normalized), type, attrs));

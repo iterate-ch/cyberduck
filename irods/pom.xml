@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.irods</groupId>
             <artifactId>irods4j</artifactId>
-            <version>0.3.0-java8-SNAPSHOT</version>
+            <version>0.4.0-java8</version>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>

@@ -18,6 +18,7 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.irods4j.high_level.connection.IRODSConnection;
@@ -38,8 +39,7 @@ public class IRODSDirectoryFeature implements Directory<Void> {
     public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final IRODSConnection conn = session.getClient();
-            String path = folder.getAbsolute();
-            IRODSFilesystem.createCollection(conn.getRcComm(), path);
+            IRODSFilesystem.createCollection(conn.getRcComm(), folder.getAbsolute());
             return folder;
         }
         catch(IOException | IRODSFilesystemException e) {
