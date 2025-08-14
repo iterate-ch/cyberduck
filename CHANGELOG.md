@@ -1,5 +1,8 @@
 # Changelog
 
+[9.2.2](https://github.com/iterate-ch/cyberduck/compare/release-9-2-1...release-9-2-2)
+* [Bugfix] Remove Dock Tile Plugin (macOS, Mac App Store)
+
 [9.2.1](https://github.com/iterate-ch/cyberduck/compare/release-9-2-0...release-9-2-1)
 * [Bugfix] Unable to enter username in login prompt (macOS)
 
