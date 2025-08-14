@@ -63,6 +63,9 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
         if(StringUtils.isBlank(metadata.getId())) {
             return false;
         }
+        if(StringUtils.isBlank(metadata.getName())) {
+            return false;
+        }
         if(!session.isSingleSite() && directory.getParent().isRoot()) {
             if(metadata.getRoot() == null) {
                 return false;

@@ -52,19 +52,15 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
     protected Path toPath(final GroupItem.Metadata metadata, final Path directory) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setFileId(metadata.getId());
-        final String name;
-        if(StringUtils.isBlank(metadata.getDisplayName())) {
-            name = metadata.getId();
-        }
-        else {
-            name = metadata.getDisplayName();
-        }
-        return new Path(directory, name, EnumSet.of(Path.Type.volume, Path.Type.directory, Path.Type.placeholder), attributes);
+        return new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.volume, Path.Type.directory, Path.Type.placeholder), attributes);
     }
 
     @Override
     protected boolean filter(final Path directory, final GroupItem.Metadata metadata) {
         if(StringUtils.isBlank(metadata.getId())) {
+            return false;
+        }
+        if(StringUtils.isBlank(metadata.getDisplayName())) {
             return false;
         }
         return super.filter(directory, metadata);
