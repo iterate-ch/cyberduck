@@ -24,21 +24,21 @@ import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.irods4j.high_level.connection.IRODSConnectionPool;
 import org.irods.irods4j.high_level.connection.IRODSConnectionPool.PoolConnection;
-import org.irods.irods4j.high_level.connection.QualifiedUsername;
 import org.irods.irods4j.high_level.io.IRODSDataObjectInputStream;
 import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
-import org.irods.irods4j.low_level.api.IRODSApi;
 import org.irods.irods4j.low_level.api.IRODSApi.RcComm;
 
-import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
-import java.io.RandomAccessFile;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -49,8 +49,6 @@ import java.util.concurrent.TimeUnit;
 public class IRODSDownloadFeature implements Download {
 
     private final IRODSSession session;
-    private final int numThread = 3; // TODO Make this configurable
-    private static final int BUFFER_SIZE = 4 * 1024 * 1024; // TODO Make configurable
 
     public IRODSDownloadFeature(final IRODSSession session) {
         this.session = session;
@@ -61,6 +59,8 @@ public class IRODSDownloadFeature implements Download {
                          final StreamListener listener, final TransferStatus status,
                          final ConnectionCallback callback) throws BackgroundException {
         try {
+            final PreferencesReader preferences = HostPreferencesFactory.get(session.getHost());
+
             final RcComm primaryConn = session.getClient().getRcComm();
             final String logicalPath = file.getAbsolute();
 
@@ -72,9 +72,8 @@ public class IRODSDownloadFeature implements Download {
 
             // Transfer the bytes over multiple connections if the size of the data object
             // exceeds a certain threshold - e.g. 32MB.
-            // TODO Consider making this configurable.
-            if(dataObjectSize < 32 * 1024 * 1024) {
-                byte[] buffer = new byte[4 * 1024 * 1024];
+            if(dataObjectSize < 32 * 1024 * 1024) { //preferences.getInteger("irods.parallel_transfer.size_threshold")) {
+                byte[] buffer = new byte[4 * 1024 * 1024]; //preferences.getInteger("irods.parallel_transfer.rbuffer_size")];
 
                 try(IRODSDataObjectInputStream in = new IRODSDataObjectInputStream(primaryConn, logicalPath);
                     FileOutputStream out = new FileOutputStream(local.getAbsolute())) {
@@ -92,58 +91,77 @@ public class IRODSDownloadFeature implements Download {
             // The data object is larger than the threshold so use parallel transfer.
             //
 
-            // Step 1: Get replica token & number via primary stream
-            try(IRODSDataObjectInputStream primary = new IRODSDataObjectInputStream(primaryConn, logicalPath)) {
-                final String replicaToken = primary.getReplicaToken();
-                final long replicaNumber = primary.getReplicaNumber();
+            // TODO Clamp the value so that users do not specify something ridiculous.
+            final int threadCount = 3; //preferences.getInteger("irods.parallel_transfer.thread_count");
+            final ExecutorService executor = Executors.newFixedThreadPool(threadCount);
 
-                // Step 2: Setup connection pool
-                try(final IRODSConnectionPool pool = new IRODSConnectionPool(numThread)) {
-                    pool.start(
-                            session.getHost().getHostname(),
-                            session.getHost().getPort(),
-                            new QualifiedUsername(session.getHost().getCredentials().getUsername(), session.getRegion()),
-                            conn -> {
-                                try {
-                                    // TODO Needs to take the value of the Authorization profile value.
-                                    IRODSApi.rcAuthenticateClient(conn, "native", session.getHost().getCredentials().getPassword());
-                                    return true;
-                                }
-                                catch(Exception e) {
-                                    return false;
-                                }
-                            });
+            final long chunkSize = dataObjectSize / threadCount;
+            final long remainingBytes = dataObjectSize % threadCount;
 
-                    final long chunkSize = dataObjectSize / numThread;
-                    final long remainChunkSize = dataObjectSize % numThread;
+            final List<IRODSDataObjectInputStream> secondaryIrodsStreams = new ArrayList<>();
+            final List<OutputStream> localFileStreams = new ArrayList<>();
 
-                    // Step 3: Create empty target file
-                    try(RandomAccessFile out = new RandomAccessFile(local.getAbsolute(), "rw")) {
-                        out.setLength(dataObjectSize);
-                    }
+            // Open the primary iRODS input stream.
+            // TODO Needs to pass the target resource name if provided.
+            try(IRODSDataObjectInputStream primaryStream = new IRODSDataObjectInputStream(primaryConn, logicalPath)) {
+                // Initialize connections for secondary streams.
+                try(IRODSConnectionPool pool = new IRODSConnectionPool(threadCount - 1)) {
+                    IRODSConnectionUtils.startIRODSConnectionPool(session, pool);
 
-                    // Step 4: Parallel readers
-                    final ExecutorService executor = Executors.newFixedThreadPool(numThread);
+                    // Holds handles to tasks running on the thread pool. This allows us to wait for
+                    // all tasks to complete before shutting down everything.
                     List<Future<?>> tasks = new ArrayList<>();
-                    for(int i = 0; i < numThread; i++) {
-                        final PoolConnection conn = pool.getConnection();
-                        tasks.add(executor.submit(new IRODSChunkWorker(
-                                conn,
-                                new IRODSDataObjectInputStream(conn.getRcComm(), replicaToken, replicaNumber),
-                                new FileOutputStream(local.getAbsolute()),
-                                i * chunkSize,
-                                (numThread - 1 == i) ? chunkSize + remainChunkSize : chunkSize,
-                                BUFFER_SIZE
-                        )));
-                    }
 
-                    for(Future<?> task : tasks) {
-                        task.get();
-                    }
+                    // Open the first output stream for the local file and store it for processing.
+                    // This also guarantees the target file exists and is empty (i.e. truncated to zero
+                    // if it exists).
+                    final java.nio.file.Path localFilePath = Paths.get(local.getAbsolute());
+                    localFileStreams.add(Files.newOutputStream(localFilePath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING));
 
-                    executor.shutdown();
+                    // Launch the first IO task.
+                    tasks.add(executor.submit(new IRODSChunkWorker(
+                            primaryStream,
+                            localFileStreams.get(0),
+                            0,
+                            chunkSize,
+                            4 * 1024 * 1024//preferences.getInteger("irods.parallel_transfer.rbuffer_size")
+                    )));
+
+                    try {
+                        // Launch remaining IO tasks.
+                        for(int i = 1; i < threadCount; ++i) {
+                            PoolConnection conn = pool.getConnection();
+                            secondaryIrodsStreams.add(new IRODSDataObjectInputStream(conn.getRcComm(), logicalPath));
+                            localFileStreams.add(Files.newOutputStream(localFilePath, StandardOpenOption.WRITE));
+                            tasks.add(executor.submit(new IRODSChunkWorker(
+                                    secondaryIrodsStreams.get(secondaryIrodsStreams.size() - 1),
+                                    localFileStreams.get(localFileStreams.size() - 1),
+                                    i * chunkSize,
+                                    (threadCount - 1 == i) ? chunkSize + remainingBytes : chunkSize,
+                                    4 * 1024 * 1024//preferences.getInteger("irods.parallel_transfer.rbuffer_size")
+                            )));
+                        }
+
+                        // Wait for all tasks on the thread pool to complete.
+                        for(Future<?> task : tasks) {
+                            try {
+                                task.get();
+                            }
+                            catch(Exception e) { /* Ignored */ }
+                        }
+                    }
+                    finally {
+                        closeInputStreams(secondaryIrodsStreams);
+                    }
                 }
             }
+            finally {
+                closeOutputStreams(localFileStreams);
+            }
+
+            executor.shutdown();
+            // TODO Make this configurable.
+            executor.awaitTermination(5, TimeUnit.SECONDS);
         }
         catch(Exception e) {
             throw new IRODSExceptionMappingService().map("Download {0} failed", e);
@@ -158,5 +176,23 @@ public class IRODSDownloadFeature implements Download {
     @Override
     public Download withReader(final Read reader) {
         return this;
+    }
+
+    private static void closeInputStreams(List<IRODSDataObjectInputStream> streams) {
+        streams.forEach(in -> {
+            try {
+                in.close();
+            }
+            catch(Exception e) { /* Ignored */ }
+        });
+    }
+
+    private static void closeOutputStreams(List<OutputStream> streams) {
+        streams.forEach(out -> {
+            try {
+                out.close();
+            }
+            catch(Exception e) { /* Ignored */ }
+        });
     }
 }

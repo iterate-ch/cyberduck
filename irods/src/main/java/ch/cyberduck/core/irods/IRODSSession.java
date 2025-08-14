@@ -48,8 +48,10 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.irods.irods4j.authentication.AuthPlugin;
+import org.irods.irods4j.authentication.NativeAuthPlugin;
+import org.irods.irods4j.authentication.PamInteractiveAuthPlugin;
+import org.irods.irods4j.authentication.PamPasswordAuthPlugin;
 import org.irods.irods4j.high_level.connection.IRODSConnection;
 import org.irods.irods4j.high_level.connection.QualifiedUsername;
 import org.irods.irods4j.low_level.api.IRODSApi.ConnectionOptions;
@@ -57,8 +59,6 @@ import org.irods.irods4j.low_level.api.IRODSApi.ConnectionOptions;
 import java.text.MessageFormat;
 
 public class IRODSSession extends SSLSession<IRODSConnection> {
-
-    private static final Logger log = LogManager.getLogger(IRODSSession.class);
 
     public IRODSSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -95,6 +95,7 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
     protected ConnectionOptions configure() {
         final PreferencesReader preferences = HostPreferencesFactory.get(host);
         ConnectionOptions options = new ConnectionOptions();
+        // TODO Use preferences to configure the connection.
 //        options.tcpReceiveBufferSize = preferences.getInteger("connection.chunksize");
 //        options.tcpSendBufferSize = preferences.getInteger("connection.chunksize");
         return options;
@@ -120,12 +121,22 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
             final Credentials credentials = host.getCredentials();
             final String password = credentials.getPassword();
 
-            // TODO Update for pam_password auth scheme.
-            final String authScheme = StringUtils.defaultIfBlank(
-                    host.getProtocol().getAuthorization(),
-                    "native"
-            );
-            client.authenticate(authScheme, password);
+            final String authScheme = StringUtils.defaultIfBlank(host.getProtocol().getAuthorization(), "native");
+            AuthPlugin plugin = null;
+            if("native".equals(authScheme)) {
+                plugin = new NativeAuthPlugin();
+            }
+            else if("pam_password".equals(authScheme)) {
+                plugin = new PamPasswordAuthPlugin(true);
+            }
+            else if("pam_interactive".equals(authScheme)) {
+                plugin = new PamInteractiveAuthPlugin(true);
+            }
+            else {
+                throw new IllegalArgumentException(String.format("Authentication scheme not recognized: %s", authScheme));
+            }
+
+            client.authenticate(plugin, password);
         }
         catch(Exception e) {
             throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
@@ -135,7 +146,7 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    protected void logout() {
         // iRODS does not provide a logout operation.
         // It only supports connecting, authenticating, and disconnecting.
     }
@@ -156,6 +167,8 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        // TODO IRODSDownloadFeature and IRODSUploadFeature are not handled.
+        // TODO Download.class and Upload.class are handled by other protocol implementations.
         if(type == ListService.class) {
             return (T) new IRODSListService(this);
         }

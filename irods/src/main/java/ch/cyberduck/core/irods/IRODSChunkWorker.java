@@ -15,7 +15,6 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
-import org.irods.irods4j.high_level.connection.IRODSConnectionPool;
 import org.irods.irods4j.high_level.io.IRODSDataObjectInputStream;
 import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
 import org.irods.irods4j.high_level.io.IRODSDataObjectStream;
@@ -29,15 +28,13 @@ import java.io.OutputStream;
 
 public class IRODSChunkWorker implements Runnable {
 
-    private final IRODSConnectionPool.PoolConnection conn;
     private final InputStream in;
     private final OutputStream out;
     private final long offset;
     private final long chunkSize;
     private final byte[] buffer;
 
-    public IRODSChunkWorker(IRODSConnectionPool.PoolConnection conn, InputStream in, OutputStream out, long offset, long chunkSize, int bufferSize) throws IOException, IRODSException {
-        this.conn = conn;
+    public IRODSChunkWorker(InputStream in, OutputStream out, long offset, long chunkSize, int bufferSize) {
         this.in = in;
         this.out = out;
         this.offset = offset;
@@ -66,16 +63,6 @@ public class IRODSChunkWorker implements Runnable {
         }
         catch(IOException | IRODSException e) {
             // TODO Log error
-        }
-        finally {
-            try {
-                in.close();
-            }
-            catch(Exception e) { /* Ignored */ }
-            try {
-                out.close();
-            }
-            catch(Exception e) { /* Ignored */ }
         }
     }
 
