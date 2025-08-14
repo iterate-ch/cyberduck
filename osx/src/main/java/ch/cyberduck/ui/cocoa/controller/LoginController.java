@@ -190,7 +190,7 @@ public class LoginController extends AlertController {
     }
 
     @Action
-    public void usernameInputDidChange(final NSNotification sender) {
+    public void usernameFieldTextDidChange(final NSNotification notification) {
         bookmark.getCredentials().setUsername(StringUtils.trim(usernameField.stringValue()));
     }
 
