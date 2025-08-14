@@ -25,7 +25,6 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.types.DriveItem;
-import org.nuxeo.onedrive.client.types.DriveItem.Metadata;
 
 import java.util.EnumSet;
 
@@ -53,8 +52,9 @@ public abstract class AbstractItemListService extends AbstractListService<DriveI
     }
 
     @Override
-    protected boolean filter(final Path directory, final Metadata metadata) {
-        if(StringUtils.isBlank(metadata.getId())) {
+    protected boolean filter(final Path directory, final DriveItem.Metadata metadata) {
+        // Don't filter on Id, as it is generated in toPath() from Session.
+        if(StringUtils.isBlank(metadata.getName())) {
             return false;
         }
         return super.filter(directory, metadata);
