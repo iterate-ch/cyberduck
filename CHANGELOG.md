@@ -1,7 +1,9 @@
 # Changelog
 
-[9.2.0](https://github.com/iterate-ch/cyberduck/compare/release-9-1-7...release-9-2-0)
+[9.2.1](https://github.com/iterate-ch/cyberduck/compare/release-9-2-0...release-9-2-1)
+* [Bugfix] Unable to enter username in login prompt (macOS)
 
+[9.2.0](https://github.com/iterate-ch/cyberduck/compare/release-9-1-7...release-9-2-0)
 * [Feature] Updated runtime (Windows) ([#16854](https://trac.cyberduck.io/ticket/16854))
 * [Feature] Add plugin to set application icon (macOS) ([#17170](https://trac.cyberduck.io/ticket/17170))
 * [Feature] Support for Mexico (Central) region (S3)
