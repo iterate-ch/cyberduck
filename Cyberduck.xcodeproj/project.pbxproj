@@ -2205,6 +2205,7 @@
 				47C253691BF0D92800863EAF /* CopyFiles */,
 				47D9E28F2DF9BB540088B042 /* CopyFiles */,
 				47EFE4E11BED03E7009AC47B /* ShellScript */,
+				474E6E412E4E2CE200486097 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2592,6 +2593,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "find \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name info.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name classes.xib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name data.dependency \\) -type f -delete\n";
+		};
+		474E6E412E4E2CE200486097 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" == 'Mac App Store' ]\nthen\nrm -rf \"${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}/Cyberduck Dock Plugin.docktileplugin\"\nfi\n";
 		};
 		47EFE4E11BED03E7009AC47B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
