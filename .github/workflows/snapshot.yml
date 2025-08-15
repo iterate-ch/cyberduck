@@ -2,6 +2,7 @@ name: Publish Snapshot Artifacts
 on:
   workflow_dispatch:
   push:
+    tags: [ '*' ]
     branches:
       - master
 jobs:
@@ -26,7 +27,7 @@ jobs:
           java-version: 21
           cache: maven
       - name: Add msbuild to PATH
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
@@ -38,22 +39,54 @@ jobs:
           echo "NuGetPackageSourceCredentials_gh-ikvmnet=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
           echo "NuGetPackageSourceCredentials_gh-iterate-ch=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
       - name: Install Bonjour SDK
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: crazy-max/ghaction-chocolatey@v3
         with:
           args: install bonjour -y
       - name: Install WiX Toolset
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: crazy-max/ghaction-chocolatey@v3
         with:
           args: install wixtoolset -y
       - name: Install OpenSSL
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: crazy-max/ghaction-chocolatey@v3
         with:
           args: install openssl -y
+      - name: Copy Sparkle Updater Private Key (DSA)
+        run: ${{ env.SPARKLE_PRIVATE_KEY_DSA }} > www/update/private.pem
+        env:
+          SPARKLE_PRIVATE_KEY_DSA: ${{ secrets.SPARKLE_PRIVATE_KEY_DSA }}
+      - name: Copy Sparkle Updater Private Key (ED25519)
+        run: ${{ env.SPARKLE_PRIVATE_KEY_ED25519 }} > www/update/private-ed25519.pem
+        env:
+          SPARKLE_PRIVATE_KEY_ED25519: ${{ secrets.SPARKLE_PRIVATE_KEY_ED25519 }}
+      - name: Import Code-Signing Certificate
+        if: runner.os == 'macos'
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          keychain: 'codesign.keychain'
+          create-keychain: true
+          p12-file-base64: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_BASE64 }}
+          p12-password: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_PASSWORD }}
       - name: Build with Maven
-        run: mvn --batch-mode deploy -DskipTests -DskipITs -DskipSign -DskipNotarize
+        run: mvn --batch-mode deploy -Pinstaller -DskipTests -DskipITs -D"sparkle.feed=nightly"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          KEYCHAIN_PATH: 'codesign.keychain'
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snapshot Binaries
+          path: |-
+            osx/target/release/*.zip
+            osx/target/release/*.pkg
+            windows/target/release/*.exe
+            windows/target/release/*.msi
+            windows/target/release/*.appx          
+            cli/osx/target/release/*.pkg
+            cli/linux/target/release/*.deb
+            cli/linux/target/release/*.rpm
+            cli/windows/target/release/*.exe
+            cli/windows/target/release/*.msi
