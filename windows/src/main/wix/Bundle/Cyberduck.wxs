@@ -131,6 +131,12 @@
       <Component Id="jnidispatch">
         <File Source="$(var.cyberduck.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="vcruntime140">
+        <File Source="$(var.cyberduck.TargetDir)/vcruntime140.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="vcruntime140_1">
+        <File Source="$(var.cyberduck.TargetDir)/vcruntime140_1.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
 
       <!-- IKVM -->
       <Component Id="IKVM.ByteCode.dll">

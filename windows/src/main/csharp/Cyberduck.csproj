@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="$(TargetBuildDir)lib\jnidispatch.dll;$(TargetBuildDir)lib\winsparkle.dll">
+    <Content Include="$(TargetBuildDir)lib\jnidispatch.dll;$(TargetBuildDir)lib\winsparkle.dll;$(TargetBuildDir)lib\vcruntime140*.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>$(Filename)$(Extension)</Link>
     </Content>
