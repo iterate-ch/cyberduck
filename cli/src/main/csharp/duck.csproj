@@ -24,6 +24,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>$(Filename)$(Extension)</Link>
     </Content>
+    <Content Include="$(TargetBuildDir)lib\vcruntime140*.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>$(Filename)$(Extension)</Link>
+    </Content>
 
     <Content Include="$(CyberduckDir)bookmarks/*.duck">
       <Link>bookmarks/%(Filename)%(Extension)</Link>

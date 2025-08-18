@@ -92,6 +92,12 @@
       <Component Id="jnidispatch" Guid="B6621775-1A9A-461E-83B8-BB1EE34B5965">
         <File Source="$(var.CLI.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
+      <Component Id="vcruntime140">
+        <File Source="$(var.CLI.TargetDir)/vcruntime140.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="vcruntime140_1">
+        <File Source="$(var.CLI.TargetDir)/vcruntime140_1.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
 
       <Component Id="System.Buffers">
         <File Source="$(var.CLI.TargetDir)/System.Buffers.dll" KeyPath="yes" Checksum="yes" />
