@@ -1,5 +1,8 @@
 # Changelog
 
+[9.2.3](https://github.com/iterate-ch/cyberduck/compare/release-9-2-2...release-9-2-3)
+* [Bugfix] Failure opening application (Windows)
+
 [9.2.2](https://github.com/iterate-ch/cyberduck/compare/release-9-2-1...release-9-2-2)
 * [Bugfix] Remove Dock Tile Plugin (macOS, Mac App Store)
 
