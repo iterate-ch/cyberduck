@@ -245,7 +245,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="42">
                                 <rect key="frame" x="9" y="8" width="450" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Restore connections when opening application." id="43">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Відновити підключення під час запуску додатку." id="43">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -413,7 +413,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="85">
                                 <rect key="frame" x="10" y="61" width="441" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Використовувати підпружинені папки при перетягуванні файлів" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="86">
+                                <buttonCell key="cell" type="check" title="Використовувати підпружинені теки при перетягуванні файлів" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="86">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -463,7 +463,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="97">
                                 <rect key="frame" x="10" y="98" width="418" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Клавіша Return виділяє папку або файл дял перейменування" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
+                                <buttonCell key="cell" type="check" title="Клавіша Return виділяє теку або файл для перейменування" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -568,7 +568,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="109">
                                         <rect key="frame" x="10" y="158" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Папка Завантаження:" id="110">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Тека Завантаження:" id="110">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -594,7 +594,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="120">
                                         <rect key="frame" x="10" y="88" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Надсилання" id="121">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Вивантаження" id="121">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -654,7 +654,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="146">
                                         <rect key="frame" x="11" y="64" width="312" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Відвантажити з тимчасовити іменами файлів" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
+                                        <buttonCell key="cell" type="check" title="Вивантажити з тимчасовити іменами файлів" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -662,7 +662,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U8B-Wt-dfT">
                                         <rect key="frame" x="10" y="203" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Segmented downloads with multiple connections per file" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
+                                        <buttonCell key="cell" type="check" title="Сегментоване завантаження з декількома з'єднаннями на кожний файл" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -892,7 +892,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="202">
                                         <rect key="frame" x="48" y="134.5" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="radio" title="для дозволів локального файлу чи папки" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
+                                        <buttonCell key="cell" type="radio" title="для дозволів локального файлу чи теки" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -908,7 +908,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="206">
                                         <rect key="frame" x="48" y="276.5" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="radio" title="для дозволів віддаленого файлу чи папки" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
+                                        <buttonCell key="cell" type="radio" title="для дозволів віддаленого файлу чи теки" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -941,7 +941,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="214">
                                         <rect key="frame" x="9" y="183" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Відвантаження" id="215">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Вивантаження" id="215">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -956,7 +956,7 @@
                                             <menu key="menu" title="Інші види" id="218">
                                                 <items>
                                                     <menuItem title="для Файлів" state="on" id="219"/>
-                                                    <menuItem title="для Папок" tag="1" id="220"/>
+                                                    <menuItem title="для Тек" tag="1" id="220"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
@@ -970,7 +970,7 @@
                                             <menu key="menu" title="Інші види" id="223">
                                                 <items>
                                                     <menuItem title="для Файлів" state="on" id="224"/>
-                                                    <menuItem title="для Папок" tag="1" id="225"/>
+                                                    <menuItem title="для Тек" tag="1" id="225"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
@@ -1019,7 +1019,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="236">
                                         <rect key="frame" x="9" y="268" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Надсилання" id="237">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Вивантаження" id="237">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1036,7 +1036,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Buu-j0-hMk">
                                         <rect key="frame" x="10" y="243" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
+                                        <buttonCell key="cell" type="check" title="Перевірити чек-суму" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1044,7 +1044,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jvf-VY-vT3">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
+                                        <buttonCell key="cell" type="check" title="Перевірити чек-суму" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1069,7 +1069,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oCu-3p-Hmv">
                                         <rect key="frame" x="9" y="268" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Надсилання" id="OF7-e3-pIZ">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Вивантаження" id="OF7-e3-pIZ">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1103,7 +1103,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="244">
                                         <rect key="frame" x="9" y="195" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Надсилання" id="245">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Вивантаження" id="245">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1344,7 +1344,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Iv8-tk-Wkx">
                                 <rect key="frame" x="7" y="54" width="447" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Save passwords." id="58">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Зберегти паролі." id="58">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1375,7 +1375,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kiy-ac-4ub">
                                 <rect key="frame" x="7" y="9" width="440" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ask before closing connection." id="60">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Запитати перед закриттям з'єднання." id="60">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1549,7 +1549,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bhz-d7-jSQ">
                                 <rect key="frame" x="10" y="48" width="435" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Automatically download and install updates" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="NvW-EF-5oW">
+                                <buttonCell key="cell" type="check" title="Автоматично завантажувати та інсталювати оновлення" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="NvW-EF-5oW">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1608,7 +1608,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="333">
                                 <rect key="frame" x="9" y="41" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Відвантаження" id="334">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Вивантаження" id="334">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1693,7 +1693,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="354">
                                 <rect key="frame" x="9" y="40" width="447" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the algirithm to encrypt files with on upload." id="355">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Обрати алгоритм шифрування файлів під час вивантаження." id="355">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1759,7 +1759,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
+                <box fixedFrame="YES" title="ACL за замовченням" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Sgq-Kr-VcS">
@@ -1778,7 +1778,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dmt-yG-0WL">
                                 <rect key="frame" x="9" y="40" width="447" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="Qg3-4s-tpR">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Виберіть попередньо визначений набір гарантій та дозволів для застосування до нових кошиків та файлів." id="Qg3-4s-tpR">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1794,7 +1794,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="264"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Application" translatesAutoresizingMaskIntoConstraints="NO" id="369">
+                <box fixedFrame="YES" title="Додаток" translatesAutoresizingMaskIntoConstraints="NO" id="369">
                     <rect key="frame" x="17" y="114" width="473" height="130"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="HTA-ik-z0B">
@@ -1845,7 +1845,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vxi-AQ-7oH">
                                 <rect key="frame" x="9" y="35" width="446" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Keep previous version on server when saving file and allow restore in Info → Versions." id="x4Z-Bm-NiW">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Тримати попередні версії на сервері під час збереження файлів та дозволити відновлення в Інфо→Версії" id="x4Z-Bm-NiW">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1854,7 +1854,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kmk-j9-rmj">
                                 <rect key="frame" x="9" y="10" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Enable Versioning" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="IWt-2r-p5o">
+                                <buttonCell key="cell" type="check" title="Ввімкнути версійність" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="IWt-2r-p5o">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1994,7 +1994,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
+                <box fixedFrame="YES" title="ACL за замовченням" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wuK-Me-6mi">
@@ -2013,7 +2013,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lB4-Ql-F2I">
                                 <rect key="frame" x="9" y="40" width="447" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="4Yf-WE-fsN">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Виберіть попередньо визначений набір гарантій та дозволів для застосування до нових кошиків та файлів." id="4Yf-WE-fsN">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
