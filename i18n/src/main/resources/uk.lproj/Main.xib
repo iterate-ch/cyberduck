@@ -124,7 +124,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="249"/>
-                            <menuItem title="Нова Папка…" keyEquivalent="N" id="250">
+                            <menuItem title="Нова Тека…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
@@ -194,7 +194,7 @@
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Надіслати…" keyEquivalent="" id="266">
+                            <menuItem title="Вивантажити…" keyEquivalent="" id="266">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" target="-1" id="387"/>
@@ -254,7 +254,7 @@ CA
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Request files…" id="GnH-xE-vqc">
+                            <menuItem title="Запит файлів..." id="GnH-xE-vqc">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="requestFilesButtonClicked:" target="-1" id="Tw9-ZC-2SW"/>
