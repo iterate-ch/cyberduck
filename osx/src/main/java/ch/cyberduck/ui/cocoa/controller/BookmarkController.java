@@ -362,8 +362,8 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void setUsernameField(final NSTextField field) {
         this.usernameField = field;
         this.notificationCenter.addObserver(this.id(),
-                Foundation.selector("usernameInputDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
+                Foundation.selector("usernameFieldTextDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
                 field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
@@ -376,7 +376,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     }
 
     @Action
-    public void usernameInputDidChange(final NSNotification sender) {
+    public void usernameFieldTextDidEndEditing(final NSNotification sender) {
         bookmark.getCredentials().setUsername(StringUtils.trim(usernameField.stringValue()));
         this.update();
     }
