@@ -43,16 +43,15 @@ public abstract class AbstractDriveListService extends AbstractListService<Drive
                 attributes.setSize(used);
             }
         }
-        String name = metadata.getName();
-        if(StringUtils.isBlank(metadata.getName())) {
-            name = metadata.getId();
-        }
-        return new Path(directory, name, EnumSet.of(Path.Type.directory, Path.Type.volume), attributes);
+        return new Path(directory, metadata.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes);
     }
 
     @Override
     protected boolean filter(final Path directory, final Metadata metadata) {
         if(StringUtils.isBlank(metadata.getId())) {
+            return false;
+        }
+        if(StringUtils.isBlank(metadata.getName())) {
             return false;
         }
         return super.filter(directory, metadata);
