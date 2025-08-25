@@ -59,7 +59,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
                 .withExtension(TusCapabilities.Extension.checksum)
                 .withExtension(TusCapabilities.Extension.creation);
         final OcisUploadFeature feature = new OcisUploadFeature(session,
-                new TusWriteFeature(capabilities, session.getClient().getClient()), capabilities);
+                new TusWriteFeature(capabilities, session.getClient()), capabilities);
         final Path directory = new DAVDirectoryFeature(session).mkdir(new Path(new OwncloudHomeFeature(session.getHost()).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();

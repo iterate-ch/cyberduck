@@ -15,20 +15,13 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.tus.TusCapabilities;
 import ch.cyberduck.core.tus.TusUploadFeature;
 
-import org.apache.http.client.HttpClient;
-
 public class OcisUploadFeature extends TusUploadFeature {
 
     public OcisUploadFeature(final OwncloudSession session, final Write<Void> writer, final TusCapabilities capabilities) {
-        this(session.getHost(), session.getClient().getClient(), writer, capabilities);
-    }
-
-    public OcisUploadFeature(final Host host, final HttpClient client, final Write<Void> writer, final TusCapabilities capabilities) {
-        super(host, client, writer, capabilities);
+        super(session.getHost(), session.getClient(), writer, capabilities);
     }
 }

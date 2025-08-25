@@ -81,8 +81,8 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
         final TusCapabilities capabilities = new TusCapabilities().withHashAlgorithm(HashAlgorithm.sha1);
         final CryptoUploadFeature service = new CryptoUploadFeature<>(session,
                 new OcisUploadFeature(session,
-                        new TusWriteFeature(capabilities, session.getClient().getClient()), capabilities),
-                new TusWriteFeature(capabilities, session.getClient().getClient()), cryptomator);
+                        new TusWriteFeature(capabilities, session.getClient()), capabilities),
+                new TusWriteFeature(capabilities, session.getClient()), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(5242885);
         IOUtils.write(content, local.getOutputStream(false));
