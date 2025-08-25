@@ -155,7 +155,7 @@ public class OwncloudSession extends DAVSession {
         }
         if(type == Upload.class) {
             if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
-                return (T) new OcisUploadFeature(host, client.getClient(), new TusWriteFeature(tus, client.getClient()), tus);
+                return (T) new OcisUploadFeature(this, new TusWriteFeature(tus, client), tus);
             }
             else {
                 return (T) new HttpUploadFeature(new NextcloudWriteFeature(this));
@@ -166,7 +166,7 @@ public class OwncloudSession extends DAVSession {
                 @Override
                 public EnumSet<Flags> features(final Path file) {
                     if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
-                        return new TusWriteFeature(tus, client.getClient()).features(file);
+                        return new TusWriteFeature(tus, client).features(file);
                     }
                     return super.features(file);
                 }

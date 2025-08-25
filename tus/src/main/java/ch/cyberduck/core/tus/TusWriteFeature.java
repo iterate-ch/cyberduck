@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VoidAttributesAdapter;
+import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -34,7 +35,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPatch;
@@ -50,9 +50,9 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
     private static final Logger log = LogManager.getLogger(TusWriteFeature.class);
 
     private final TusCapabilities capabilities;
-    private final HttpClient client;
+    private final DAVClient client;
 
-    public TusWriteFeature(final TusCapabilities capabilities, final HttpClient client) {
+    public TusWriteFeature(final TusCapabilities capabilities, final DAVClient client) {
         super(new VoidAttributesAdapter());
         this.capabilities = capabilities;
         this.client = client;

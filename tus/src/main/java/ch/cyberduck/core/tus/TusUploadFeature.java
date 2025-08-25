@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.concurrency.Interruptibles;
+import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -48,7 +49,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpHead;
@@ -74,13 +74,13 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     public static final String UPLOAD_URL = "uploadUrl";
 
     private final Host host;
-    private final HttpClient client;
+    private final DAVClient client;
     private final Preferences preferences = PreferencesFactory.get();
 
     private Write<Void> writer;
     private final TusCapabilities capabilities;
 
-    public TusUploadFeature(final Host host, final HttpClient client, final Write<Void> writer, final TusCapabilities capabilities) {
+    public TusUploadFeature(final Host host, final DAVClient client, final Write<Void> writer, final TusCapabilities capabilities) {
         super(writer);
         this.host = host;
         this.client = client;
