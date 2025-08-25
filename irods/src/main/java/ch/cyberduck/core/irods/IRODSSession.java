@@ -1,8 +1,8 @@
 package ch.cyberduck.core.irods;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,19 +13,15 @@ package ch.cyberduck.core.irods;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -52,23 +48,17 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.irods.jargon.core.connection.AuthScheme;
-import org.irods.jargon.core.connection.IRODSAccount;
-import org.irods.jargon.core.connection.SettableJargonProperties;
-import org.irods.jargon.core.connection.auth.AuthResponse;
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.IRODSAccessObjectFactory;
-import org.irods.jargon.core.pub.IRODSFileSystem;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
+import org.irods.irods4j.authentication.AuthPlugin;
+import org.irods.irods4j.authentication.NativeAuthPlugin;
+import org.irods.irods4j.authentication.PamInteractiveAuthPlugin;
+import org.irods.irods4j.authentication.PamPasswordAuthPlugin;
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.connection.QualifiedUsername;
+import org.irods.irods4j.low_level.api.IRODSApi.ConnectionOptions;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
-public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
-    private static final Logger log = LogManager.getLogger(IRODSSession.class);
+public class IRODSSession extends SSLSession<IRODSConnection> {
 
     public IRODSSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -79,39 +69,36 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     }
 
     @Override
-    protected IRODSFileSystemAO connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    protected IRODSConnection connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            final IRODSFileSystem fs = this.configure(IRODSFileSystem.instance());
-            final IRODSAccessObjectFactory factory = fs.getIRODSAccessObjectFactory();
-            final String region = this.getRegion();
-            final String resource = this.getResource();
-            final Credentials credentials = host.getCredentials();
-            try {
-                return factory.getIRODSFileSystemAO(new URIEncodingIRODSAccount(credentials.getUsername(), credentials.getPassword(),
-                    new IRODSHomeFinderService(IRODSSession.this).find().getAbsolute(), region, resource));
-            }
-            catch(IllegalArgumentException e) {
-                throw new LoginFailureException(e.getMessage(), e);
-            }
+            final String host = this.host.getHostname();
+            final int port = this.host.getPort();
+            final String username = this.host.getCredentials().getUsername();
+            final String zone = getRegion();
+
+            IRODSConnection conn = new IRODSConnection(configure());
+            conn.connect(host, port, new QualifiedUsername(username, zone));
+            return conn;
         }
-        catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map(e);
+        catch(Exception e) {
+            final String host = this.host.getHostname();
+            final int port = this.host.getPort();
+            final String username = this.host.getCredentials().getUsername();
+            final String zone = this.host.getRegion();
+
+            String msg = String.format("Could not connect to iRODS server at [%s:%d] as [%s#%s]: %s",
+                    host, port, username, zone, e.getMessage());
+            throw new BackgroundException(msg, e);
         }
     }
 
-    protected IRODSFileSystem configure(final IRODSFileSystem client) {
-        final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
-        properties.setEncoding(host.getEncoding());
+    protected ConnectionOptions configure() {
         final PreferencesReader preferences = HostPreferencesFactory.get(host);
-        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
-        properties.setIrodsSocketTimeout(timeout);
-        properties.setIrodsParallelSocketTimeout(timeout);
-        properties.setGetBufferSize(preferences.getInteger("connection.chunksize"));
-        properties.setPutBufferSize(preferences.getInteger("connection.chunksize"));
-        log.debug("Configure client {} with properties {}", client, properties);
-        client.getIrodsSession().setJargonProperties(properties);
-        client.getIrodsSession().setX509TrustManager(trust);
-        return client;
+        ConnectionOptions options = new ConnectionOptions();
+        // TODO Use preferences to configure the connection.
+//        options.tcpReceiveBufferSize = preferences.getInteger("connection.chunksize");
+//        options.tcpSendBufferSize = preferences.getInteger("connection.chunksize");
+        return options;
     }
 
     protected String getRegion() {
@@ -131,35 +118,57 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            final IRODSAccount account = client.getIRODSAccount();
             final Credentials credentials = host.getCredentials();
-            account.setUserName(credentials.getUsername());
-            account.setPassword(credentials.getPassword());
-            final AuthResponse response = client.getIRODSAccessObjectFactory().authenticateIRODSAccount(account);
-            log.debug("Connected to {}", response.getStartupResponse());
-            if(!response.isSuccessful()) {
-                throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
+            final String password = credentials.getPassword();
+
+            final String authScheme = StringUtils.defaultIfBlank(host.getProtocol().getAuthorization(), "native");
+            AuthPlugin plugin = null;
+            if("native".equals(authScheme)) {
+                plugin = new NativeAuthPlugin();
             }
+            else if("pam_password".equals(authScheme)) {
+                plugin = new PamPasswordAuthPlugin(true);
+            }
+            else if("pam_interactive".equals(authScheme)) {
+                plugin = new PamInteractiveAuthPlugin(true);
+            }
+            else {
+                throw new IllegalArgumentException(String.format("Authentication scheme not recognized: %s", authScheme));
+            }
+
+            client.authenticate(plugin, password);
         }
-        catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map(e);
+        catch(Exception e) {
+            throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
+                            "Login {0} with username and password", "Credentials"),
+                    BookmarkNameProvider.toString(host)), e);
         }
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    protected void logout() {
+        // iRODS does not provide a logout operation.
+        // It only supports connecting, authenticating, and disconnecting.
+    }
+
+    @Override
+    protected void disconnect() {
         try {
-            client.getIRODSSession().closeSession();
+            if(client != null) {
+                client.disconnect();
+                client = null;
+            }
         }
-        catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map(e);
+        catch(Exception e) {
+            // Ignored.
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        // TODO IRODSDownloadFeature and IRODSUploadFeature are not handled.
+        // TODO Download.class and Upload.class are handled by other protocol implementations.
         if(type == ListService.class) {
             return (T) new IRODSListService(this);
         }
@@ -196,50 +205,5 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         return super._getFeature(type);
     }
 
-    private final class URIEncodingIRODSAccount extends IRODSAccount {
-        public URIEncodingIRODSAccount(final String user, final String password, final String home, final String region, final String resource) {
-            super(host.getHostname(), host.getPort(), StringUtils.isBlank(user) ? StringUtils.EMPTY : user, password, home, region, resource);
-            this.setUserName(user);
-        }
 
-        @Override
-        public URI toURI(final boolean includePassword) throws JargonException {
-            try {
-                return new URI(String.format("irods://%s.%s%s@%s:%d%s",
-                    this.getUserName(),
-                    this.getZone(),
-                    includePassword ? String.format(":%s", this.getPassword()) : StringUtils.EMPTY,
-                    this.getHost(),
-                    this.getPort(),
-                    URIEncoder.encode(this.getHomeDirectory())));
-            }
-            catch(URISyntaxException e) {
-                throw new JargonException(e.getMessage());
-            }
-        }
-
-        @Override
-        public void setUserName(final String input) {
-            final String user;
-            final AuthScheme scheme;
-            if(StringUtils.contains(input, ':')) {
-                // Support non default auth scheme (PAM)
-                user = StringUtils.splitPreserveAllTokens(input, ':')[1];
-                // Defaults to standard if not found
-                scheme = AuthScheme.findTypeByString(StringUtils.splitPreserveAllTokens(input, ':')[0]);
-            }
-            else {
-                user = input;
-                if(StringUtils.isNotBlank(host.getProtocol().getAuthorization())) {
-                    scheme = AuthScheme.findTypeByString(host.getProtocol().getAuthorization());
-                }
-                else {
-                    // We can default to Standard if not specified
-                    scheme = AuthScheme.STANDARD;
-                }
-            }
-            super.setUserName(user);
-            this.setAuthenticationScheme(scheme);
-        }
-    }
 }
