@@ -69,11 +69,6 @@ public class MoveWorkerTest {
                                 count.incrementAndGet();
                             }
                         }
-
-                        @Override
-                        public boolean isRecursive() {
-                            return false;
-                        }
                     };
                 }
                 if(type == Directory.class) {
