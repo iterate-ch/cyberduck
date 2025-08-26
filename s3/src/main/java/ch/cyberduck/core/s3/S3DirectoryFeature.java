@@ -56,7 +56,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
             service.create(folder, StringUtils.isBlank(status.getRegion()) ?
-                    new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getDefault().getIdentifier() : status.getRegion());
+                    new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getDefault(folder).getIdentifier() : status.getRegion());
             return folder;
         }
         else {

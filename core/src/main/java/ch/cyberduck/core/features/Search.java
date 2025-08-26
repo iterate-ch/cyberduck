@@ -33,18 +33,10 @@ public interface Search {
      * @return List of files found or empty list
      */
     AttributedList<Path> search(Path workdir, Filter<Path> regex, ListProgressListener listener) throws BackgroundException;
-
-    /**
-     * @return True if search is capable of recursively searching in folders
-     */
-    default boolean isRecursive() {
-        return this.features().contains(Flags.recursive);
-    }
-
     /**
      * @return Supported features
      */
-    default EnumSet<Flags> features() {
+    default EnumSet<Flags> features(final Path workdir) {
         return EnumSet.noneOf(Flags.class);
     }
 

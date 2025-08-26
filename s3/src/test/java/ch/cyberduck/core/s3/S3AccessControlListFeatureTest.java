@@ -204,8 +204,8 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     public void testRoles() {
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
-        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.CanonicalUser).findAny().isPresent());
-        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.EmailUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().filter(user -> user instanceof Acl.CanonicalUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().filter(user -> user instanceof Acl.EmailUser).findAny().isPresent());
     }
 
     @Test

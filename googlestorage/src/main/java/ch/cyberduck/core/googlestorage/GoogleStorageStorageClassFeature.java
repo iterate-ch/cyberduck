@@ -42,12 +42,12 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
     }
 
     @Override
-    public String getDefault() {
+    public String getDefault(final Path file) {
         return HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.storage.class");
     }
 
     @Override
-    public Set<String> getClasses() {
+    public Set<String> getClasses(final Path file) {
         return new LinkedHashSet<>(
                 PreferencesFactory.get().getList("googlestorage.storage.class.options"));
     }

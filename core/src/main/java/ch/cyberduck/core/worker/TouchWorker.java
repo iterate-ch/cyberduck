@@ -67,7 +67,7 @@ public class TouchWorker extends Worker<Path> {
         }
         final Redundancy redundancy = session.getFeature(Redundancy.class);
         if(redundancy != null) {
-            status.setStorageClass(redundancy.getDefault());
+            status.setStorageClass(redundancy.getDefault(file));
         }
         status.setModified(System.currentTimeMillis());
         if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {

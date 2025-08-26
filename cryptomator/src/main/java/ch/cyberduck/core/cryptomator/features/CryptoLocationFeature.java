@@ -36,13 +36,13 @@ public class CryptoLocationFeature implements Location {
     }
 
     @Override
-    public Name getDefault() {
-        return delegate.getDefault();
+    public Name getDefault(final Path file) {
+        return delegate.getDefault(file);
     }
 
     @Override
-    public Set<Name> getLocations() {
-        return delegate.getLocations();
+    public Set<Name> getLocations(final Path file) {
+        return delegate.getLocations(file);
     }
 
     @Override

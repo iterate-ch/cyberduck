@@ -224,11 +224,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                         status.setMetadata(feature.getMetadata(file));
                     }
                     catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                        status.setMetadata(feature.getDefault());
+                        status.setMetadata(feature.getDefault(file));
                     }
                 }
                 else {
-                    status.setMetadata(feature.getDefault());
+                    status.setMetadata(feature.getDefault(file));
                 }
             }
         }
@@ -261,11 +261,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                             status.setStorageClass(feature.getClass(file));
                         }
                         catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
-                            status.setStorageClass(feature.getDefault());
+                            status.setStorageClass(feature.getDefault(file));
                         }
                     }
                     else {
-                        status.setStorageClass(feature.getDefault());
+                        status.setStorageClass(feature.getDefault(file));
                     }
                 }
             }
