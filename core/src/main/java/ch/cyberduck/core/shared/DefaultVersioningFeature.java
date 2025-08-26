@@ -153,7 +153,7 @@ public class DefaultVersioningFeature implements Versioning {
     public void cleanup(final Path file, final ConnectionCallback callback) throws BackgroundException {
         final Delete delete = session.getFeature(Delete.class);
         if(file.isDirectory()) {
-            if(!delete.isRecursive()) {
+            if(!delete.features(file).contains(Delete.Flags.recursive)) {
                 return;
             }
         }

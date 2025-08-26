@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -101,6 +102,6 @@ public class SDSBatchDeleteFeatureTest extends AbstractSDSTest {
     @Test
     public void testIsRecursive() {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        assertTrue(new SDSBatchDeleteFeature(session, nodeid).isRecursive());
+        assertTrue(new SDSBatchDeleteFeature(session, nodeid).features(Home.root()).contains(Delete.Flags.recursive));
     }
 }

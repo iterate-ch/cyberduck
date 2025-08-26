@@ -86,11 +86,6 @@ public class CryptoBulkFeatureTest {
             public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
                 throw new UnsupportedOperationException();
             }
-
-            @Override
-            public boolean isRecursive() {
-                throw new UnsupportedOperationException();
-            }
         }, cryptomator);
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         final Path directory = new Path("/vault/directory", EnumSet.of(Path.Type.directory));
@@ -157,11 +152,6 @@ public class CryptoBulkFeatureTest {
         }, new Delete() {
             @Override
             public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean isRecursive() {
                 throw new UnsupportedOperationException();
             }
         }, cryptomator);

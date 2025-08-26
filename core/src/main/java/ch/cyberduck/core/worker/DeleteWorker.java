@@ -117,8 +117,15 @@ public class DeleteWorker extends Worker<List<Path>> {
             recursive.putAll(this.compile(delete, list, new WorkerListProgressListener(this, listener), file));
         }
         // Iterate again to delete any files that can be omitted when recursive operation is supported
-        if(delete.isRecursive()) {
-            recursive.keySet().removeIf(f -> !f.getType().contains(Path.Type.decrypted) && recursive.keySet().stream().anyMatch(f::isChild));
+        for(Iterator<Path> it = recursive.keySet().iterator(); it.hasNext(); ) {
+            final Path file = it.next();
+            if(delete.features(file).contains(Delete.Flags.recursive)) {
+                if(!file.getType().contains(Path.Type.decrypted)) {
+                    if(recursive.keySet().stream().anyMatch(file::isChild)) {
+                        it.remove();
+                    }
+                }
+            }
         }
         final HostPreferences preferences = HostPreferencesFactory.get(session.getHost());
         if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.delete.enable")) {
@@ -145,7 +152,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
                     callback.delete(file);
                     if(file.isDirectory()) {
-                        if(delete.isRecursive()) {
+                        if(delete.features(file).contains(Delete.Flags.recursive)) {
                             files.stream().filter(f -> f.isChild(file)).forEach(callback::delete);
                         }
                     }
@@ -178,7 +185,7 @@ public class DeleteWorker extends Worker<List<Path>> {
             recursive.put(file, new TransferStatus().setLockId(this.getLockId(file)));
         }
         else if(file.isDirectory()) {
-            if(!delete.isRecursive() || file.getType().contains(Path.Type.decrypted)) {
+            if(!delete.features(file).contains(Delete.Flags.recursive) || file.getType().contains(Path.Type.decrypted)) {
                 for(Path child : list.list(file, listener).filter(filter)) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();

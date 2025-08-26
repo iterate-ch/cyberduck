@@ -68,7 +68,7 @@ public class VaultRegistryTrashFeature implements Trash {
     @Override
     public void preflight(final Path file) throws BackgroundException {
         try {
-            registry.find(session, file, false).getFeature(session, Delete.class, proxy).preflight(file);
+            registry.find(session, file, false).getFeature(session, Trash.class, proxy).preflight(file);
         }
         catch(VaultUnlockCancelException e) {
             proxy.preflight(file);
@@ -76,8 +76,13 @@ public class VaultRegistryTrashFeature implements Trash {
     }
 
     @Override
-    public EnumSet<Flags> features() {
-        return proxy.features();
+    public EnumSet<Flags> features(final Path file) {
+        try {
+            return registry.find(session, file).getFeature(session, Trash.class, proxy).features(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.features(file);
+        }
     }
 
     @Override

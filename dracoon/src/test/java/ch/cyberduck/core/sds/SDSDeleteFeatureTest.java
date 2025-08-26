@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AntiVirusAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -132,7 +133,7 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
     @Test
     public void testIsRecursive() {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        assertTrue(new SDSDeleteFeature(session, nodeid).isRecursive());
+        assertTrue(new SDSDeleteFeature(session, nodeid).features(Home.root()).contains(Delete.Flags.recursive));
     }
 
     @Test
