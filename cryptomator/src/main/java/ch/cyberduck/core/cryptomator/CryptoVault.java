@@ -696,7 +696,7 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
             }
             if(type == Bulk.class) {
-                return (T) new CryptoBulkFeature(session, (Bulk) delegate, session._getFeature(Delete.class), this);
+                return (T) new CryptoBulkFeature(session, (Bulk) delegate, this);
             }
             if(type == UnixPermission.class) {
                 return (T) new CryptoUnixPermission(session, (UnixPermission) delegate, this);

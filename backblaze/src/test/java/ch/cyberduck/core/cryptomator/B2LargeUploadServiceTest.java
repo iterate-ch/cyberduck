@@ -118,7 +118,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final byte[] content = RandomUtils.nextBytes(length);
         writeStatus.setLength(content.length);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new B2DeleteFeature(session, fileid), cryptomator);
+        final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final CryptoUploadFeature service = new CryptoUploadFeature<>(session,
                 new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid), 5000000L, 5),

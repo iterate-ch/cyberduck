@@ -87,7 +87,7 @@ public class MoveWorkerTest extends AbstractDriveTest {
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new DriveDeleteFeature(session, fileid), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new DriveWriteFeature(session, fileid), cryptomator).write(source, status.setLength(content.length), new DisabledConnectionCallback()));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());

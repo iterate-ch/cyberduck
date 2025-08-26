@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.b2.AbstractB2Test;
-import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2DirectoryFeature;
 import ch.cyberduck.core.b2.B2FindFeature;
 import ch.cyberduck.core.b2.B2ReadFeature;
@@ -83,7 +82,7 @@ public class CopyWorkerTest extends AbstractB2Test {
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new B2DeleteFeature(session, fileid), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new B2WriteFeature(session, fileid), cryptomator).write(source, status.setLength(content.length), new DisabledConnectionCallback()));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());

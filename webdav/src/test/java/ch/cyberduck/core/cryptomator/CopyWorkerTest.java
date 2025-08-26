@@ -27,7 +27,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.dav.AbstractDAVTest;
-import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVReadFeature;
@@ -81,7 +80,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         session.withRegistry(registry);
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
-        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new DAVDeleteFeature(session), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator).write(source, status.setLength(content.length), new DisabledConnectionCallback()));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -244,7 +243,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new DAVDeleteFeature(session), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(encryptedFile), status), new DisabledConnectionCallback());
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(encryptedFile), status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator).write(encryptedFile, status, new DisabledConnectionCallback()));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move file outside vault

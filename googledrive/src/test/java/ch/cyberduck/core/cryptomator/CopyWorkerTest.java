@@ -29,7 +29,6 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
-import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFileIdProvider;
 import ch.cyberduck.core.googledrive.DriveFindFeature;
@@ -84,7 +83,7 @@ public class CopyWorkerTest extends AbstractDriveTest {
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new DriveDeleteFeature(session, fileid), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new DriveWriteFeature(session, fileid), cryptomator).write(source, status.setLength(content.length), new DisabledConnectionCallback()));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());

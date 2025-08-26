@@ -30,7 +30,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.openstack.AbstractSwiftTest;
-import ch.cyberduck.core.openstack.SwiftDeleteFeature;
 import ch.cyberduck.core.openstack.SwiftDirectoryFeature;
 import ch.cyberduck.core.openstack.SwiftFindFeature;
 import ch.cyberduck.core.openstack.SwiftReadFeature;
@@ -82,7 +81,7 @@ public class CopyWorkerTest extends AbstractSwiftTest {
         session.withRegistry(registry);
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
-        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new SwiftDeleteFeature(session), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).write(source, status.setLength(content.length), new DisabledConnectionCallback()));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
