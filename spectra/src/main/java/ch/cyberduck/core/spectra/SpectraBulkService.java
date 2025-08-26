@@ -75,7 +75,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private static final Logger log = LogManager.getLogger(SpectraBulkService.class);
 
     private final SpectraSession session;
-    private Delete delete;
     private final PathContainerService containerService;
 
     private static final String REQUEST_PARAMETER_JOBID_IDENTIFIER = "job";
@@ -83,14 +82,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
 
     public SpectraBulkService(final SpectraSession session) {
         this.session = session;
-        this.delete = new SpectraDeleteFeature(session);
         this.containerService = new S3PathContainerService(session.getHost());
-    }
-
-    @Override
-    public Bulk<Set<UUID>> withDelete(final Delete delete) {
-        this.delete = delete;
-        return this;
     }
 
     @Override
@@ -123,7 +115,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     case upload:
                         if(status.isExists()) {
                             log.warn("Delete existing file {}", file);
-                            delete.delete(Collections.singletonMap(file, status), callback, new Delete.DisabledCallback());
+                            session.getFeature(Delete.class).delete(Collections.singletonMap(file, status), callback, new Delete.DisabledCallback());
                         }
                         break;
                 }

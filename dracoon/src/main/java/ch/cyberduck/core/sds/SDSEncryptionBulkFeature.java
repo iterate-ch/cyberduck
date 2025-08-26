@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -107,10 +106,5 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                     }
                 }
         }
-    }
-
-    @Override
-    public Bulk<Void> withDelete(final Delete delete) {
-        return this;
     }
 }
