@@ -20,6 +20,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.Set;
 
@@ -36,13 +37,23 @@ public class VaultRegistryLocationFeature implements Location {
     }
 
     @Override
-    public Name getDefault() {
-        return proxy.getDefault();
+    public Name getDefault(final Path file) {
+        try {
+            return registry.find(session, file).getFeature(session, Location.class, proxy).getDefault(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getDefault(file);
+        }
     }
 
     @Override
-    public Set<Name> getLocations() {
-        return proxy.getLocations();
+    public Set<Name> getLocations(final Path file) {
+        try {
+            return registry.find(session, file).getFeature(session, Location.class, proxy).getLocations(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getLocations(file);
+        }
     }
 
     @Override

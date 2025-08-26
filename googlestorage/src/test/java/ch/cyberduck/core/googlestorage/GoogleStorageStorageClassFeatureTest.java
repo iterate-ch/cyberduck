@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -47,7 +48,7 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
                         "NEARLINE",
                         "COLDLINE",
                         "ARCHIVE").toArray(),
-                new GoogleStorageStorageClassFeature(session).getClasses().toArray());
+                new GoogleStorageStorageClassFeature(session).getClasses(Home.root()).toArray());
     }
 
     @Test(expected = NotfoundException.class)

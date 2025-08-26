@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.Map;
 
@@ -37,8 +38,13 @@ public class VaultRegistryHeadersFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault() {
-        return proxy.getDefault();
+    public Map<String, String> getDefault(final Path file) {
+        try {
+            return registry.find(session, file).getFeature(session, Headers.class, proxy).getDefault(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getDefault(file);
+        }
     }
 
     @Override

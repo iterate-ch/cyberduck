@@ -115,10 +115,10 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     @Test
     public void testRoles() {
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
-        final List<Acl.User> users = f.getAvailableAclUsers();
-        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.CanonicalUser).findAny().isPresent());
-        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.EmailUser).findAny().isPresent());
-        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.EmailGroupUser).findAny().isPresent());
-        assertTrue(f.getAvailableAclUsers().stream().filter(user -> user instanceof Acl.DomainUser).findAny().isPresent());
+        final List<Acl.User> users = f.getAvailableAclUsers(Collections.emptyList());
+        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().filter(user -> user instanceof Acl.CanonicalUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().filter(user -> user instanceof Acl.EmailUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().filter(user -> user instanceof Acl.EmailGroupUser).findAny().isPresent());
+        assertTrue(f.getAvailableAclUsers(Collections.emptyList()).stream().filter(user -> user instanceof Acl.DomainUser).findAny().isPresent());
     }
 }

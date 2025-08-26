@@ -55,12 +55,12 @@ public class S3LocationFeature implements Location {
     }
 
     @Override
-    public Name getDefault() {
+    public Name getDefault(final Path file) {
         return new S3Region(HostPreferencesFactory.get(session.getHost()).getProperty("s3.location"));
     }
 
     @Override
-    public Set<Name> getLocations() {
+    public Set<Name> getLocations(final Path file) {
         if(StringUtils.isNotEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
             log.debug("Return empty set for hostname {}", session.getHost());
             // Connected to single bucket

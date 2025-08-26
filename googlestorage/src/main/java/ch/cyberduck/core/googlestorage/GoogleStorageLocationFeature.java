@@ -35,12 +35,12 @@ public class GoogleStorageLocationFeature implements Location {
     }
 
     @Override
-    public Name getDefault() {
+    public Name getDefault(final Path file) {
         return new GoogleStorageRegion(HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.location"));
     }
 
     @Override
-    public Set<Name> getLocations() {
+    public Set<Name> getLocations(final Path file) {
         return session.getHost().getProtocol().getRegions();
     }
 

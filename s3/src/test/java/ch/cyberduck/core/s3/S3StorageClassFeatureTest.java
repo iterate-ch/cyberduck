@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -44,10 +45,10 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
     @Test
     public void testGetClasses() {
         assertArrayEquals(Collections.singletonList(S3Object.STORAGE_CLASS_STANDARD).toArray(),
-                new S3StorageClassFeature(new S3Session(new Host(new S3Protocol())), new S3AccessControlListFeature(session)).getClasses().toArray());
+                new S3StorageClassFeature(new S3Session(new Host(new S3Protocol())), new S3AccessControlListFeature(session)).getClasses(Home.root()).toArray());
         assertArrayEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, "INTELLIGENT_TIERING",
                         S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, "ONEZONE_IA", S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER, "GLACIER_IR", "DEEP_ARCHIVE").toArray(),
-                new S3StorageClassFeature(session, new S3AccessControlListFeature(session)).getClasses().toArray());
+                new S3StorageClassFeature(session, new S3AccessControlListFeature(session)).getClasses(Home.root()).toArray());
     }
 
     @Test(expected = NotfoundException.class)
