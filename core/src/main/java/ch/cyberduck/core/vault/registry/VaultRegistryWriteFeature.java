@@ -31,10 +31,10 @@ import java.util.EnumSet;
 public class VaultRegistryWriteFeature<T> implements Write<T> {
 
     private final Session<?> session;
-    private final Write proxy;
+    private final Write<T> proxy;
     private final VaultRegistry registry;
 
-    public VaultRegistryWriteFeature(final Session<?> session, final Write proxy, final VaultRegistry registry) {
+    public VaultRegistryWriteFeature(final Session<?> session, final Write<T> proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
