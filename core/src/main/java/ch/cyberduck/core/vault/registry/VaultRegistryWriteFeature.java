@@ -47,7 +47,12 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
 
     @Override
     public EnumSet<Flags> features(final Path file) {
-        return proxy.features(file);
+        try {
+            return registry.find(session, file).getFeature(session, Write.class, proxy).features(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.features(file);
+        }
     }
 
     @Override
