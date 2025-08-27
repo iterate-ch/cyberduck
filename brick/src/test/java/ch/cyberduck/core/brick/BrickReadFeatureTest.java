@@ -104,8 +104,8 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         out.close();
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
+        new BrickUploadFeature(session).upload(
+                new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -136,8 +136,8 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         out.close();
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
+        new BrickUploadFeature(session).upload(
+                new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

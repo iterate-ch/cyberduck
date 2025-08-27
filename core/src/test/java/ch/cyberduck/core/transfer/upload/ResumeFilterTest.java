@@ -8,7 +8,6 @@ import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullUploadFeature;
-import ch.cyberduck.core.NullWriteFeature;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
@@ -241,7 +240,7 @@ public class ResumeFilterTest {
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new DefaultUploadFeature<>(new NullWriteFeature()), new UploadFilterOptions(host).withTemporary(true));
+                new DefaultUploadFeature<>(session), new UploadFilterOptions(host).withTemporary(true));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {

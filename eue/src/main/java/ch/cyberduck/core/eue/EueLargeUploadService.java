@@ -27,7 +27,6 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -65,24 +64,20 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
     private final Integer concurrency;
     private final EueResourceIdProvider fileid;
 
-    private Write<EueWriteFeature.Chunk> writer;
-
-    public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Write<EueWriteFeature.Chunk> writer) {
-        this(session, fileid, writer, HostPreferencesFactory.get(session.getHost()).getLong("eue.upload.multipart.size"),
+    public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid) {
+        this(session, fileid, HostPreferencesFactory.get(session.getHost()).getLong("eue.upload.multipart.size"),
                 HostPreferencesFactory.get(session.getHost()).getInteger("eue.upload.multipart.concurrency"));
     }
 
-    public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Write<EueWriteFeature.Chunk> writer, final Long chunksize, final Integer concurrency) {
-        super(writer);
+    public EueLargeUploadService(final EueSession session, final EueResourceIdProvider fileid, final Long chunksize, final Integer concurrency) {
         this.session = session;
-        this.writer = writer;
         this.chunksize = chunksize;
         this.concurrency = concurrency;
         this.fileid = fileid;
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -104,7 +99,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             }
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(chunksize, remaining);
-                parts.add(this.submit(pool, file, local, throttle, streamListener, status,
+                parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
                         uploadUri, resourceId, partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
@@ -150,7 +145,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
         }
     }
 
-    private Future<EueWriteFeature.Chunk> submit(final ThreadPool pool, final Path file, final Local local,
+    private Future<EueWriteFeature.Chunk> submit(final ThreadPool pool, final Write<EueWriteFeature.Chunk> write, final Path file, final Local local,
                                                  final BandwidthThrottle throttle, final StreamListener listener,
                                                  final TransferStatus overall, final String url, final String resourceId,
                                                  final int partNumber, final long offset, final long length, final ConnectionCallback callback) throws ConnectionCanceledException {
@@ -170,19 +165,14 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                         .setParameters(parameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
+                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 status.setUrl(url);
                 final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.upload(
-                        file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", chunk, partNumber);
                 return chunk;
             }
         }, overall, counter));
     }
 
-    @Override
-    public Upload<EueWriteFeature.Chunk> withWriter(final Write<EueWriteFeature.Chunk> writer) {
-        this.writer = writer;
-        return super.withWriter(writer);
-    }
 }

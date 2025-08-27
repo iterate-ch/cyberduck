@@ -53,7 +53,7 @@ public class DAVLockFeatureTest extends AbstractDAVTest {
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
-        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         String lock = null;
         try {

@@ -54,7 +54,7 @@ public class BrickThresholdUploadFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(new BrickFindFeature(session).find(test));
@@ -80,7 +80,7 @@ public class BrickThresholdUploadFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());

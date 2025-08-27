@@ -71,15 +71,15 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new SDSReadFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true).setExists(true);
-            new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new SDSReadFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
@@ -111,8 +111,8 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         {
             final TransferStatus status = new TransferStatus().setLength(-1L);
             status.setExists(true);
-            new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new SDSReadFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }

@@ -78,8 +78,8 @@ public class DefaultDownloadFeatureTest extends AbstractS3Test {
             test.attributes().setVersionId(((S3Object) out.getStatus()).getVersionId());
             final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
             final TransferStatus readStatus = new TransferStatus().setLength(content.length);
-            new DefaultDownloadFeature(new S3ReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new S3ReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 readStatus,
                 new DisabledConnectionCallback());
             final byte[] buffer = new byte[content.length];

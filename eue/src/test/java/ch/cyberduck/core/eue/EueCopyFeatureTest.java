@@ -173,7 +173,8 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        final EueWriteFeature.Chunk upload = new EueSingleUploadService(session, fileid, new EueWriteFeature(session, fileid)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final EueWriteFeature.Chunk upload = new EueSingleUploadService(session, fileid).upload(new EueWriteFeature(session, fileid),
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertNotNull(upload.getResourceId());
         local.delete();

@@ -35,25 +35,20 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
     private final Upload<Reply> proxy;
     private final CryptoVault vault;
 
-    public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final Write<Reply> writer, final CryptoVault vault) {
+    public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final CryptoVault vault) {
         this.session = session;
-        this.proxy = delegate.withWriter(new CryptoWriteFeature<>(session, writer, vault));
+        this.proxy = delegate;
         this.vault = vault;
     }
 
     @Override
-    public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return proxy.upload(vault.encrypt(session, file), local, throttle, progress, streamListener, status.setDestinationLength(new CryptoTransferStatus(vault, status).getLength()), callback);
+    public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return proxy.upload(write, vault.encrypt(session, file), local, throttle, progress, streamListener, status.setDestinationLength(new CryptoTransferStatus(vault, status).getLength()), callback);
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return proxy.append(vault.encrypt(session, file), status.setDestinationLength(new CryptoTransferStatus(vault, status).getLength()));
-    }
-
-    @Override
-    public Upload<Reply> withWriter(final Write<Reply> writer) {
-        return this;
     }
 
     @Override

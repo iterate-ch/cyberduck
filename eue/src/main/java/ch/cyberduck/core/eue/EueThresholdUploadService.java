@@ -39,8 +39,6 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
     private final Long threshold;
     private final EueResourceIdProvider fileid;
 
-    private Write<EueWriteFeature.Chunk> writer;
-
     public EueThresholdUploadService(final EueSession session, final EueResourceIdProvider fileid, final VaultRegistry registry) {
         this(session, fileid, registry, HostPreferencesFactory.get(session.getHost()).getLong("eue.upload.multipart.threshold"));
     }
@@ -50,27 +48,20 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
         this.registry = registry;
         this.threshold = threshold;
         this.fileid = fileid;
-        this.writer = new EueWriteFeature(session, fileid);
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Path file, Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                         final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         if(status.getLength() >= threshold) {
             if(Vault.DISABLED == registry.find(session, file)) {
                 // Only allow concurrent write of chunks when not uploading to vault. Write with default feature multiple 4MB chunks in parallel
-                return new EueLargeUploadService(session, fileid, writer).upload(file, local, throttle, progress, streamListener, status, prompt);
+                return new EueLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, prompt);
             }
             // Write with multipart write feature for known file length sequentially 4MB chunks
-            return new EueUploadService(session, fileid, writer).upload(file, local, throttle, progress, streamListener, status, prompt);
+            return new EueUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, prompt);
         }
         // Write single chunk smaller than threshold
-        return new EueSingleUploadService(session, fileid, writer).upload(file, local, throttle, progress, streamListener, status, prompt);
-    }
-
-    @Override
-    public Upload<EueWriteFeature.Chunk> withWriter(final Write<EueWriteFeature.Chunk> writer) {
-        this.writer = writer;
-        return this;
+        return new EueSingleUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, prompt);
     }
 }

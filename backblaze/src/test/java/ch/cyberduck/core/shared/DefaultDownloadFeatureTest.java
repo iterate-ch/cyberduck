@@ -73,8 +73,8 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        new DefaultDownloadFeature(new B2ReadFeature(session, fileid)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+        new DefaultDownloadFeature(session).download(
+                new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
             new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
@@ -103,8 +103,8 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().setLength(-1L);
-            new DefaultDownloadFeature(new B2ReadFeature(session, fileid)).download(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                 new DisabledConnectionCallback());
         }

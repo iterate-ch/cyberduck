@@ -8,7 +8,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
@@ -56,7 +55,7 @@ public class ResumeFilterTest {
         final Host host = new Host(new TestProtocol());
         final NullSession session = new NullTransferSession(host);
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-                new DefaultDownloadFeature(session.getFeature(Read.class)) {
+                new DefaultDownloadFeature(session) {
                     @Override
                     public boolean offset(final Path file) {
                         return true;
@@ -96,7 +95,7 @@ public class ResumeFilterTest {
         final Host host = new Host(new TestProtocol());
         final NullSession session = new NullTransferSession(host);
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-                new DefaultDownloadFeature(session.getFeature(Read.class)) {
+                new DefaultDownloadFeature(session) {
                     @Override
                     public boolean offset(final Path file) {
                         return true;
@@ -128,7 +127,7 @@ public class ResumeFilterTest {
         final Host host = new Host(new TestProtocol());
         final NullSession session = new NullTransferSession(host);
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-                new DefaultDownloadFeature(session.getFeature(Read.class)) {
+                new DefaultDownloadFeature(session) {
                     @Override
                     public boolean offset(final Path file) {
                         return true;

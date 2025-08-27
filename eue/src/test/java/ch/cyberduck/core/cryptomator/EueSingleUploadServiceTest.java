@@ -83,9 +83,9 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
-                new EueSingleUploadService(session, fileid, new EueWriteFeature(session, fileid)),
-                new EueWriteFeature(session, fileid), cryptomator);
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null);
+                new EueSingleUploadService(session, fileid),
+                cryptomator);
+        feature.upload(new EueWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));

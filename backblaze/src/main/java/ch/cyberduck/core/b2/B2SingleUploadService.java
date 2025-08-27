@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -37,8 +36,7 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
 
     private final B2Session session;
 
-    public B2SingleUploadService(final B2Session session, final Write<BaseB2Response> writer) {
-        super(writer);
+    public B2SingleUploadService(final B2Session session) {
         this.session = session;
     }
 

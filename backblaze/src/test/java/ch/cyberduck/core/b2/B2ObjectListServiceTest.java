@@ -250,8 +250,8 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
     @Test
     public void testListRevisionsNoVersioning() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid,
-                new B2WriteFeature(session, fileid)).mkdir(new Path(
+        final Path bucket = new B2DirectoryFeature(session, fileid
+        ).mkdir(new Path(
                 String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = new AsciiRandomStringService().random();
         final Path file = new Path(bucket, name, EnumSet.of(Path.Type.file));

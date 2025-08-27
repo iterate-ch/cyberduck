@@ -38,7 +38,7 @@ public class BrickTouchFeature implements Touch<FileEntity> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final BrickUploadFeature upload = new BrickUploadFeature(session, new BrickWriteFeature(session));
+            final BrickUploadFeature upload = new BrickUploadFeature(session);
             final FileUploadPartEntity uploadPartEntity = upload.startUpload(file);
             status.setLength(0L).setOffset(0L);
             status.setUrl(uploadPartEntity.getUploadUri());
