@@ -67,15 +67,15 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
@@ -104,8 +104,8 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().setLength(-1L);
-            new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }

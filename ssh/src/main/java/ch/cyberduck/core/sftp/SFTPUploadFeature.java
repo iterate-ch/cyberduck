@@ -16,6 +16,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -23,12 +24,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public class SFTPUploadFeature extends DefaultUploadFeature<Void> {
 
-    public SFTPUploadFeature(final SFTPSession session) {
-        super(new SFTPWriteFeature(session));
-    }
-
-    public SFTPUploadFeature(final Write<Void> writer) {
-        super(writer);
+    public SFTPUploadFeature(final Session<?> session) {
+        super(session);
     }
 
     @Override

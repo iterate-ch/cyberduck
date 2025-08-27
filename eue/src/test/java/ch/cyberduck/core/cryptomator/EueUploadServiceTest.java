@@ -89,9 +89,9 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
-                new EueUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
-                new EueMultipartWriteFeature(session, fileid), cryptomator);
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
+                new EueUploadService(session),
+                cryptomator);
+        feature.upload(new EueMultipartWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));
@@ -125,9 +125,9 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
-                new EueUploadService(session, fileid, new EueMultipartWriteFeature(session, fileid)),
-                new EueMultipartWriteFeature(session, fileid), cryptomator);
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
+                new EueUploadService(session),
+                cryptomator);
+        feature.upload(new EueMultipartWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));

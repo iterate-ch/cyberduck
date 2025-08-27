@@ -152,8 +152,8 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(eicar.length);
-        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)));
-        final Node node = feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid);
+        final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);

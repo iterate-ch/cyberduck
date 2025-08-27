@@ -81,8 +81,8 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
         final TusCapabilities capabilities = new TusCapabilities().withHashAlgorithm(HashAlgorithm.sha1);
         final CryptoUploadFeature service = new CryptoUploadFeature<>(session,
                 new OcisUploadFeature(session,
-                        new TusWriteFeature(capabilities, session.getClient()), capabilities),
-                new TusWriteFeature(capabilities, session.getClient()), cryptomator);
+                        capabilities),
+                cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(5242885);
         IOUtils.write(content, local.getOutputStream(false));
@@ -92,7 +92,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
         writeStatus.setLength(content.length);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BytecountStreamListener counter = new BytecountStreamListener();
-        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
+        service.upload(new TusWriteFeature(capabilities, session.getClient()), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(test));

@@ -24,7 +24,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.azure.storage.blob.models.BlobType;
 
-public class AzureUploadFeature extends DefaultUploadFeature {
+public class AzureUploadFeature extends DefaultUploadFeature<Void> {
 
     private final AzureSession session;
 

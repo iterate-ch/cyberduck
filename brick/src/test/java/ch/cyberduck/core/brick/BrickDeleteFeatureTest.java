@@ -50,7 +50,7 @@ public class BrickDeleteFeatureTest extends AbstractBrickTest {
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         final String lock = new BrickLockFeature(session).lock(test);

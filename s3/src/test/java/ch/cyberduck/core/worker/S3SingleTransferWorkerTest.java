@@ -145,7 +145,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new S3MultipartUploadService(this, new S3WriteFeature(this, new S3AccessControlListFeature(this)), new S3AccessControlListFeature(this), 5 * 1024L * 1024L, 5) {
+                    return (T) new S3MultipartUploadService(this, new S3AccessControlListFeature(this), 5 * 1024L * 1024L, 5) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                             if(failed.get()) {
@@ -223,7 +223,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new S3SingleUploadService(this, new S3WriteFeature(this, new S3AccessControlListFeature(this))) {
+                    return (T) new S3SingleUploadService(this) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                             if(failed.get()) {

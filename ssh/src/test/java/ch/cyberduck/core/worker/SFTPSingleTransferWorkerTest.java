@@ -131,7 +131,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new SFTPUploadFeature(write);
+                    return (T) new SFTPUploadFeature(this);
                 }
                 return super._getFeature(type);
             }

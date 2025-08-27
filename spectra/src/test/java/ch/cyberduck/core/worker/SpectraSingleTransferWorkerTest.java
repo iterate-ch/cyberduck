@@ -143,7 +143,7 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
                     return (T) write;
                 }
                 if(type == Upload.class) {
-                    return (T) new SpectraUploadFeature(this, write, new SpectraBulkService(this));
+                    return (T) new SpectraUploadFeature(new SpectraBulkService(this));
                 }
                 return super._getFeature(type);
             }

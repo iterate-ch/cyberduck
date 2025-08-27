@@ -22,6 +22,7 @@ import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
+import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
@@ -79,7 +80,7 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         final Transfer download = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
@@ -112,7 +113,7 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         final AtomicBoolean failed = new AtomicBoolean();
         final Host host = new Host(session.getHost()) {
             @Override

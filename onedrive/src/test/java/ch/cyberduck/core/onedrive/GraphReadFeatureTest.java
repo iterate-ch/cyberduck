@@ -38,6 +38,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -90,8 +91,8 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+        new DefaultUploadFeature<DriveItem.Metadata>(session).upload(
+                new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
@@ -133,8 +134,8 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+        new DefaultUploadFeature<DriveItem.Metadata>(session).upload(
+                new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();

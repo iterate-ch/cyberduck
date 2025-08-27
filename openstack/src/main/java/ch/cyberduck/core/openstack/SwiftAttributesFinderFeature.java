@@ -110,7 +110,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
                     return PathAttributes.EMPTY;
                 }
                 // Try to find pending large file upload
-                final Write.Append append = new SwiftLargeObjectUploadFeature(session, regionService, new SwiftWriteFeature(session, regionService)).append(file, new TransferStatus());
+                final Write.Append append = new SwiftLargeObjectUploadFeature(session, regionService).append(file, new TransferStatus());
                 if(append.append) {
                     return new PathAttributes().setSize(append.offset);
                 }

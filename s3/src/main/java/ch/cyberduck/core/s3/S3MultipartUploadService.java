@@ -30,7 +30,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -75,31 +74,28 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private final S3MultipartService multipartService;
     private final S3AccessControlListFeature acl;
 
-    private Write<StorageObject> writer;
     /**
      * A split smaller than 5M is not allowed
      */
     private final Long partsize;
     private final Integer concurrency;
 
-    public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer, final S3AccessControlListFeature acl) {
-        this(session, writer, acl, HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.size"),
+    public S3MultipartUploadService(final S3Session session, final S3AccessControlListFeature acl) {
+        this(session, acl, HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.size"),
                 HostPreferencesFactory.get(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
     }
 
-    public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer, final S3AccessControlListFeature acl, final Long partsize, final Integer concurrency) {
-        super(writer);
+    public S3MultipartUploadService(final S3Session session, final S3AccessControlListFeature acl, final Long partsize, final Integer concurrency) {
         this.session = session;
         this.multipartService = new S3DefaultMultipartService(session);
         this.containerService = session.getFeature(PathContainerService.class);
-        this.writer = writer;
         this.acl = acl;
         this.partsize = Math.max(HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.partsize.minimum"), partsize);
         this.concurrency = concurrency;
     }
 
     @Override
-    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
@@ -156,7 +152,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     // Last part can be less than 5 MB. Adjust part size.
                     final long length = Math.min(Math.max((size / (S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(pool, file, local, throttle, streamListener, status, multipart, partNumber, offset, length, callback));
+                    parts.add(this.submit(pool, write, file, local, throttle, streamListener, status, multipart, partNumber, offset, length, callback));
                     remaining -= length;
                     offset += length;
                 }
@@ -210,7 +206,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         }
     }
 
-    private Future<MultipartPart> submit(final ThreadPool pool, final Path file, final Local local,
+    private Future<MultipartPart> submit(final ThreadPool pool, final Write<StorageObject> write, final Path file, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final MultipartUpload multipart,
                                          final int partNumber, final long offset, final long length, final ConnectionCallback callback) throws ConnectionCanceledException {
@@ -230,7 +226,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 status.setParameters(requestParameters);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                final Set<Checksum> checksum = writer.checksum(file, status).computeAll(local.getInputStream(), status);
+                final Set<Checksum> checksum = write.checksum(file, status).computeAll(local.getInputStream(), status);
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
                         checksum.stream().filter(v -> v.algorithm.equals(HashAlgorithm.sha256)).findFirst().ifPresent(status::setChecksum);
@@ -244,7 +240,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     status.setMetadata(metadata);
                 }
                 final StorageObject part = S3MultipartUploadService.this.upload(
-                        file, local, throttle, counter, status, overall, status, callback);
+                        write, file, local, throttle, counter, status, overall, status, callback);
                 log.info("Received response {} for part number {}", part, partNumber);
                 // Populate part with response data that is accessible via the object's metadata
                 return new MultipartPart(partNumber,
@@ -275,9 +271,4 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         return Write.override;
     }
 
-    @Override
-    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return super.withWriter(writer);
-    }
 }

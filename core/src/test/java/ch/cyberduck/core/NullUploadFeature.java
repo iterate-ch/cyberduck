@@ -23,14 +23,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class NullUploadFeature implements Upload<Void> {
 
     @Override
-    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         return null;
-    }
-
-    @Override
-    public Upload<Void> withWriter(final Write<Void> writer) {
-        return this;
     }
 
     @Override

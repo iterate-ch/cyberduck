@@ -44,7 +44,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
     @Test
     public void testUploadSimpleFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final EueSingleUploadService service = new EueSingleUploadService(session, fileid, new EueWriteFeature(session, fileid));
+        final EueSingleUploadService service = new EueSingleUploadService(session, fileid);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().setLength(0L));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -54,7 +54,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             IOUtils.write(content, local.getOutputStream(false));
             final TransferStatus status = new TransferStatus().setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
-            service.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+            service.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
             assertTrue(new EueFindFeature(session, fileid).find(file));
@@ -68,7 +68,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             IOUtils.write(content, local.getOutputStream(false));
             final TransferStatus status = new TransferStatus().setLength(content.length).setExists(true);
             final BytecountStreamListener count = new BytecountStreamListener();
-            service.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+            service.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
             assertTrue(new EueFindFeature(session, fileid).find(file));

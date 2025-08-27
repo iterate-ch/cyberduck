@@ -60,7 +60,6 @@ public class DefaultTouchFeature<T> implements Touch<T> {
         }
     }
 
-    @Override
     public DefaultTouchFeature<T> withWriter(final Write<T> write) {
         this.write = write;
         return this;

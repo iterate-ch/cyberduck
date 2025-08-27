@@ -90,8 +90,8 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new EueThresholdUploadService(session, fileid, registry),
-                new EueWriteFeature(session, fileid), cryptomator);
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
+                cryptomator);
+        feature.upload(new EueWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));
@@ -127,8 +127,8 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new EueThresholdUploadService(session, fileid, registry),
-                new EueWriteFeature(session, fileid), cryptomator);
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
+                cryptomator);
+        feature.upload(new EueWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));

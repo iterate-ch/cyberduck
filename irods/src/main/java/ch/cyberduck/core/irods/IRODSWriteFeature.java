@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -29,11 +30,10 @@ import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.exception.JargonRuntimeException;
 import org.irods.jargon.core.packinstr.DataObjInp;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.pub.domain.ObjStat;
 import org.irods.jargon.core.pub.io.IRODSFileOutputStream;
 import org.irods.jargon.core.pub.io.PackingIrodsOutputStream;
 
-public class IRODSWriteFeature implements Write<ObjStat> {
+public class IRODSWriteFeature implements Write<Void> {
 
     private final IRODSSession session;
 
@@ -42,24 +42,13 @@ public class IRODSWriteFeature implements Write<ObjStat> {
     }
 
     @Override
-    public StatusOutputStream<ObjStat> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             try {
                 final IRODSFileSystemAO fs = session.getClient();
                 final IRODSFileOutputStream out = fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
                         file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE);
-                return new StatusOutputStream<ObjStat>(new PackingIrodsOutputStream(out)) {
-                    @Override
-                    public ObjStat getStatus() throws BackgroundException {
-                        // No remote attributes from server returned after upload
-                        try {
-                            return fs.getObjStat(file.getAbsolute());
-                        }
-                        catch(JargonException e) {
-                            throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                        }
-                    }
-                };
+                return new VoidStatusOutputStream(new PackingIrodsOutputStream(out));
             }
             catch(JargonRuntimeException e) {
                 if(e.getCause() instanceof JargonException) {

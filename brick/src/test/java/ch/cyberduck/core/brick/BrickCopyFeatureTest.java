@@ -63,7 +63,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         assertTrue(new BrickFindFeature(session).find(test));
@@ -84,7 +84,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         assertTrue(new BrickFindFeature(session).find(test));
@@ -107,7 +107,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         local.delete();
         assertTrue(new BrickFindFeature(session).find(file));

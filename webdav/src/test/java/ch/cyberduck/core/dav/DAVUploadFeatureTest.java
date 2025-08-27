@@ -57,7 +57,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new Path("/dav/accessdenied", EnumSet.of(Path.Type.directory)), "nosuchname", EnumSet.of(Path.Type.file));
         try {
             new DAVUploadFeature(session).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                    new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
@@ -82,14 +82,14 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             new DAVUploadFeature(session).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                    new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             new DAVUploadFeature(session).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                    new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }

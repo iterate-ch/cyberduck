@@ -31,17 +31,14 @@ public class BrickThresholdUploadFeature implements Upload<FileEntity> {
 
     private final BrickSession session;
 
-    private Write<FileEntity> writer;
-
     public BrickThresholdUploadFeature(final BrickSession session) {
         this.session = session;
-        this.writer = new BrickWriteFeature(session);
     }
 
     @Override
-    public FileEntity upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(status.getLength() > 0) {
-            return new BrickUploadFeature(session, writer).upload(file, local, throttle, progress, streamListener, status, callback);
+            return new BrickUploadFeature(session).upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
         else {
             new BrickTouchFeature(session).touch(file, status);
@@ -51,12 +48,6 @@ public class BrickThresholdUploadFeature implements Upload<FileEntity> {
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new BrickUploadFeature(session, writer).append(file, status);
-    }
-
-    @Override
-    public Upload<FileEntity> withWriter(final Write<FileEntity> writer) {
-        this.writer = writer;
-        return this;
+        return new BrickUploadFeature(session).append(file, status);
     }
 }

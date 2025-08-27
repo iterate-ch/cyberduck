@@ -641,10 +641,10 @@ public class CryptoVault implements Vault {
                 );
             }
             if(type == Upload.class) {
-                return (T) new CryptoUploadFeature(session, (Upload) delegate, session._getFeature(Write.class), this);
+                return (T) new CryptoUploadFeature(session, (Upload) delegate, this);
             }
             if(type == Download.class) {
-                return (T) new CryptoDownloadFeature(session, (Download) delegate, session._getFeature(Read.class), this);
+                return (T) new CryptoDownloadFeature(session, (Download) delegate, this);
             }
             if(type == Read.class) {
                 return (T) new CryptoReadFeature(session, (Read) delegate, this);

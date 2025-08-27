@@ -45,7 +45,7 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
     @Test
     public void testUploadLargeFileInChunks() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final EueLargeUploadService s = new EueLargeUploadService(session, fileid, new EueWriteFeature(session, fileid));
+        final EueLargeUploadService s = new EueLargeUploadService(session, fileid);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
@@ -56,7 +56,7 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final EueWriteFeature.Chunk uploadResponse = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+        final EueWriteFeature.Chunk uploadResponse = s.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
         assertEquals(PathAttributes.EMPTY, status.getResponse());

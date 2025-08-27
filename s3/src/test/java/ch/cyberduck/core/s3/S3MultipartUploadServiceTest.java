@@ -50,7 +50,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadSinglePart() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 2);
+        final S3MultipartUploadService service = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = String.format(" %s.txt", UUID.randomUUID());
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -61,7 +61,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setLength(random.length);
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
-        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
@@ -85,7 +85,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadBucketInHostname() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final S3MultipartUploadService service = new S3MultipartUploadService(virtualhost, new S3WriteFeature(virtualhost, acl), acl, 5 * 1024L * 1024L, 2);
+        final S3MultipartUploadService service = new S3MultipartUploadService(virtualhost, acl, 5 * 1024L * 1024L, 2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = String.format(" %s.txt", UUID.randomUUID());
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -96,7 +96,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setLength(random.length);
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
-        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
@@ -120,7 +120,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test
     public void testUploadSinglePartEncrypted() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 2);
+        final S3MultipartUploadService service = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -133,7 +133,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setModified(System.currentTimeMillis());
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
-        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
@@ -153,19 +153,19 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 1);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 1);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus();
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null);
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null);
     }
 
     @Test
     public void testMultipleParts() throws Exception {
         // 5L * 1024L * 1024L
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 5);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -175,7 +175,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null);
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -189,7 +189,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     public void testMultiplePartsWithSHA256Checksum() throws Exception {
         // 5L * 1024L * 1024L
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 5);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -200,7 +200,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setLength(content.length);
         status.setModified(System.currentTimeMillis());
         final BytecountStreamListener count = new BytecountStreamListener();
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null);
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -227,17 +227,17 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final AtomicBoolean interrupt = new AtomicBoolean();
         final BytecountStreamListener count = new BytecountStreamListener();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3MultipartUploadService feature = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 10L * 1024L * 1024L, 1) {
+        final S3MultipartUploadService feature = new S3MultipartUploadService(session, acl, 10L * 1024L * 1024L, 1) {
             @Override
-            public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+            public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
                 if(status.getOffset() >= 10L * 1024L * 1024L) {
                     throw new ConnectionTimeoutException("Test");
                 }
-                return super.upload(file, local, throttle, listener, status, cancel, progress, callback);
+                return super.upload(write, file, local, throttle, listener, status, cancel, progress, callback);
             }
         };
         try {
-            feature.upload(test, new Local(System.getProperty("java.io.tmpdir"), name),
+            feature.upload(new S3WriteFeature(session, acl), test, new Local(System.getProperty("java.io.tmpdir"), name),
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status,
                     new DisabledLoginCallback());
         }
@@ -254,7 +254,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertTrue(upload.getType().contains(Path.Type.upload));
         assertEquals(10L * 1024L * 1024L, feature.append(upload, status).offset, 0L);
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(2L * 1024L * 1024L).setOffset(10L * 1024L * 1024L);
-        new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 10L * 1024L * 1024L, 1).upload(test, local,
+        new S3MultipartUploadService(session, acl, 10L * 1024L * 1024L, 1).upload(new S3WriteFeature(session, acl), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, append,
                 new DisabledConnectionCallback());
         assertEquals(12L * 1024L * 1024L, count.getSent());
@@ -287,7 +287,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final BytecountStreamListener count = new BytecountStreamListener();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         try {
-            new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 10485760L, 1).upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
+            new S3MultipartUploadService(session, acl, 10485760L, 1).upload(new S3WriteFeature(session, acl), test, new Local(System.getProperty("java.io.tmpdir"), name) {
                         @Override
                         public InputStream getInputStream() throws AccessDeniedException {
                             return new CountingInputStream(super.getInputStream()) {
@@ -312,8 +312,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertFalse(status.isComplete());
 
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(content.length);
-        new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 10485760L, 1).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new S3MultipartUploadService(session, acl, 10485760L, 1).upload(
+                new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, append,
                 new DisabledConnectionCallback());
         assertEquals(32769L, count.getSent());
@@ -333,7 +333,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test
     public void testAppendBelowLimit() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3MultipartUploadService feature = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 5);
+        final S3MultipartUploadService feature = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
         final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         assertFalse(append.append);
     }
@@ -341,7 +341,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     @Test
     public void testSize() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3MultipartUploadService feature = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 5);
+        final S3MultipartUploadService feature = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
         final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L).setRemote(new PathAttributes().setSize(3L)));
         assertFalse(append.append);
         assertEquals(0L, append.offset, 0L);
@@ -351,7 +351,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     public void testAppendNoMultipartFound() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3MultipartUploadService feature = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5 * 1024L * 1024L, 5);
+        final S3MultipartUploadService feature = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
         assertFalse(feature.append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(Long.MAX_VALUE)).append);
         assertEquals(Write.override, feature.append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(Long.MAX_VALUE)));
         assertEquals(Write.override, feature.append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L)));

@@ -96,9 +96,4 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
         }
     }
 
-    @Override
-    public Directory<StorageObject> withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return this;
-    }
 }

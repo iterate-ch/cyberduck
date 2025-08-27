@@ -66,15 +66,15 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            new DefaultDownloadFeature(new FTPReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new FTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            new DefaultDownloadFeature(new FTPReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new FTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }

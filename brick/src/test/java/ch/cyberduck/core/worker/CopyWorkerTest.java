@@ -58,7 +58,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         final byte[] random = RandomUtils.nextBytes(3247);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(source, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), source, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -78,7 +78,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         final byte[] random = RandomUtils.nextBytes(3247);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -104,7 +104,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         final byte[] random = RandomUtils.nextBytes(3247);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(folder));
         assertTrue(new BrickFindFeature(session).find(sourceFile));

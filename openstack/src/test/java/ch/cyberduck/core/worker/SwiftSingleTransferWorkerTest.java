@@ -36,7 +36,6 @@ import ch.cyberduck.core.openstack.SwiftLargeObjectUploadFeature;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.openstack.SwiftRegionService;
 import ch.cyberduck.core.openstack.SwiftSession;
-import ch.cyberduck.core.openstack.SwiftWriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -100,7 +99,7 @@ public class SwiftSingleTransferWorkerTest extends VaultTest {
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
                     final SwiftRegionService regionService = new SwiftRegionService(this);
-                    return (T) new SwiftLargeObjectUploadFeature(this, regionService, new SwiftWriteFeature(this, regionService), 1024L * 1024L, 5) {
+                    return (T) new SwiftLargeObjectUploadFeature(this, regionService, 1024L * 1024L, 5) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                             if(failed.get()) {

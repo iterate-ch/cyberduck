@@ -76,7 +76,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         // Unknown length in status
@@ -88,7 +88,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
                 return this;
             }
         };
-        new DefaultDownloadFeature(new CteraReadFeature(session)).download(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new DefaultDownloadFeature(session).download(new CteraReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals(923L, local.attributes().getSize());
         new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -124,7 +124,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
@@ -152,7 +152,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
