@@ -124,7 +124,7 @@ public class S3CopyFeature implements Copy {
         }
     }
 
-    static final class CopyResult {
+    protected static final class CopyResult {
         public final String versionId;
         public final String etag;
 
