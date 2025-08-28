@@ -22,7 +22,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.hierynomus.smbj.common.SMBRuntimeException;
 
-public class SMBDirectoryFeature implements Directory<Integer> {
+public class SMBDirectoryFeature implements Directory<Void> {
 
     private final SMBSession session;
 

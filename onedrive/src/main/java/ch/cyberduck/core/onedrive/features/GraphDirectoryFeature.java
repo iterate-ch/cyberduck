@@ -33,7 +33,7 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-public class GraphDirectoryFeature implements Directory<Void> {
+public class GraphDirectoryFeature implements Directory<DriveItem.Metadata> {
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;

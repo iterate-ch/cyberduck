@@ -28,8 +28,9 @@ import java.text.MessageFormat;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.CreateFolderResult;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.Metadata;
 
-public class DropboxDirectoryFeature implements Directory<String> {
+public class DropboxDirectoryFeature implements Directory<Metadata> {
 
     private final DropboxSession session;
     private final PathContainerService containerService;

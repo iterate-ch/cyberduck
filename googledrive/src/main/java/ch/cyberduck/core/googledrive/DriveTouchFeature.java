@@ -18,7 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
@@ -34,7 +33,7 @@ import java.util.Collections;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-public class DriveTouchFeature implements Touch<VersionId> {
+public class DriveTouchFeature implements Touch<File> {
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;

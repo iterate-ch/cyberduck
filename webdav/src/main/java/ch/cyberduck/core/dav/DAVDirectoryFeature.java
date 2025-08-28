@@ -28,7 +28,7 @@ import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-public class DAVDirectoryFeature implements Directory<String> {
+public class DAVDirectoryFeature implements Directory<Void> {
 
     private final DAVSession session;
 
