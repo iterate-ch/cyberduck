@@ -113,7 +113,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         {
             final PathAttributes marker = new S3AttributesFinderFeature(session, acl).find(testWithVersionId);
-            assertTrue(marker.isTrashed());
+            assertTrue(marker.isDuplicate());
             assertNotNull(marker.getVersionId());
             assertEquals(versionId, marker.getVersionId());
         }
