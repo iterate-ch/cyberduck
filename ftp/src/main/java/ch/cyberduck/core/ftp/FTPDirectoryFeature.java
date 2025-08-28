@@ -27,7 +27,7 @@ import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
 
-public class FTPDirectoryFeature implements Directory<Integer> {
+public class FTPDirectoryFeature implements Directory<Void> {
 
     private final FTPSession session;
 

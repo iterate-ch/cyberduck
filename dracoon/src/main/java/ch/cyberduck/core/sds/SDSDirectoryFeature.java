@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
@@ -39,7 +38,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 
-public class SDSDirectoryFeature implements Directory<VersionId> {
+public class SDSDirectoryFeature implements Directory<Node> {
     private static final Logger log = LogManager.getLogger(SDSDirectoryFeature.class);
 
     private final SDSSession session;
