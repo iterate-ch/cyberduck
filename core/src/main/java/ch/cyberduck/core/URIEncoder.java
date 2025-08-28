@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public final class URIEncoder {
@@ -63,9 +66,11 @@ public final class URIEncoder {
             }
             // Because URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
             // for proper URI percented encoding.
+            final Map<String, String> mapping = PreferencesFactory.get().getMap("http.uriencode.mapping");
             return StringUtils.replaceEach(b.toString(),
-                new String[]{"+", "*", "%7E", "%40"},
-                new String[]{"%20", "%2A", "~", "@"});
+                    mapping.keySet().stream().toArray(String[]::new),
+                    mapping.values().stream().toArray(String[]::new)
+            );
         }
         catch(UnsupportedEncodingException e) {
             log.warn("Failure {} encoding input {}", e, input);
