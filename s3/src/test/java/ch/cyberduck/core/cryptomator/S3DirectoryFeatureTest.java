@@ -72,8 +72,8 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
         assertNotNull(attributes.getVersionId());
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new CryptoListService(session, new S3ListService(session, acl), cryptomator).list(vault, new DisabledListProgressListener())
-                .toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty());
+        assertTrue(new CryptoListService(session, new S3ListService(session, acl), cryptomator).list(vault)
+                .toStream().filter(f -> !f.attributes().isDuplicate() && !f.attributes().isTrashed()).collect(Collectors.toList()).isEmpty());
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
