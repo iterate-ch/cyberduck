@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FTPStatListService implements ListService {
-    private static final Logger log = LogManager.getLogger(FTPListService.class);
+    private static final Logger log = LogManager.getLogger(FTPStatListService.class);
 
     private final FTPSession session;
     private final FTPDataResponseReader reader;

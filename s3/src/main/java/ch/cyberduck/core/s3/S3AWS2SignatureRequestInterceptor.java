@@ -39,7 +39,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor {
-    private static final Logger log = LogManager.getLogger(S3Session.class);
+    private static final Logger log = LogManager.getLogger(S3AWS2SignatureRequestInterceptor.class);
 
     private final S3Session session;
 

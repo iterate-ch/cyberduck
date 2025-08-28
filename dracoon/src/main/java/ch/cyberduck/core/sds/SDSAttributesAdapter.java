@@ -36,7 +36,7 @@ import java.util.Map;
 import static ch.cyberduck.core.sds.SDSAttributesFinderFeature.*;
 
 public class SDSAttributesAdapter implements AttributesAdapter<Node> {
-    private static final Logger log = LogManager.getLogger(SDSAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSAttributesAdapter.class);
 
     private final SDSSession session;
 

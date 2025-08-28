@@ -41,7 +41,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Comparator;
 
 public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path, BrowserColumn> {
-    private static final Logger log = LogManager.getLogger(AbstractTableDelegate.class);
+    private static final Logger log = LogManager.getLogger(AbstractPathTableDelegate.class);
 
     protected AbstractPathTableDelegate(final NSTableColumn selectedColumn) {
         super(selectedColumn);

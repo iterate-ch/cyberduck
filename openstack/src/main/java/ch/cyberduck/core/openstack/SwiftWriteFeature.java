@@ -47,7 +47,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
-    private static final Logger log = LogManager.getLogger(SwiftSession.class);
+    private static final Logger log = LogManager.getLogger(SwiftWriteFeature.class);
 
     private final PathContainerService containerService
             = new DefaultPathContainerService();

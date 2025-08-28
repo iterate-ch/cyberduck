@@ -33,7 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class TrashFilter extends AbstractDownloadFilter {
-    private static final Logger log = LogManager.getLogger(SkipFilter.class);
+    private static final Logger log = LogManager.getLogger(TrashFilter.class);
 
     private final Trash feature
             = LocalTrashFactory.get();

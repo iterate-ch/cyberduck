@@ -34,7 +34,7 @@ import java.text.MessageFormat;
 import java.util.EnumSet;
 
 public class CryptoUrlProvider implements UrlProvider {
-    private static final Logger log = LogManager.getLogger(DecryptingListProgressListener.class);
+    private static final Logger log = LogManager.getLogger(CryptoUrlProvider.class);
 
     private final Session<?> session;
     private final UrlProvider delegate;
