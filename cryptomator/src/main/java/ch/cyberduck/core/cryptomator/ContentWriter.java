@@ -47,7 +47,7 @@ public class ContentWriter {
         final Write<?> write = session._getFeature(Write.class);
         status.setLength(content.length);
         status.setChecksum(write.checksum(file, status).compute(new ByteArrayInputStream(content), status));
-        final Encryption encryption = session.getFeature(Encryption.class);
+        final Encryption encryption = session._getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(file));
         }
