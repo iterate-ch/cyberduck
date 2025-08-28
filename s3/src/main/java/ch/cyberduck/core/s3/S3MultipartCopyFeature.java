@@ -66,7 +66,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     }
 
     @Override
-    protected String copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
+    protected CopyResult copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
         try {
             final List<MultipartPart> completed = new ArrayList<>();
             // ID for the initiated multipart upload.
@@ -95,7 +95,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             // has been sent, it is important that you check the response body to determine whether the request succeeded.
             final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
             log.debug("Completed multipart upload for {} with checksum {}", complete.getObjectKey(), complete.getEtag());
-            return complete.getVersionId();
+            return new CopyResult(complete.getVersionId(), complete.getEtag());
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);

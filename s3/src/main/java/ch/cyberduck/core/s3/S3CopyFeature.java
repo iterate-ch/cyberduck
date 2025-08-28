@@ -38,6 +38,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.BaseStorageItem;
 import org.jets3t.service.model.S3Object;
 
 import java.text.MessageFormat;
@@ -86,12 +87,12 @@ public class S3CopyFeature implements Copy {
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));
-        final String versionId = this.copy(source, destination, status, listener);
+        final CopyResult result = this.copy(source, destination, status, listener);
         return new Path(target).withAttributes(new PathAttributes(source.attributes()).setVersionId(
-                HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable") ? versionId : null));
+                HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable") ? result.versionId : null).setETag(result.etag));
     }
 
-    protected String copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
+    protected CopyResult copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
         try {
             // Copying object applying the metadata of the original
             final Path bucket = containerService.getContainer(source);
@@ -101,7 +102,10 @@ public class S3CopyFeature implements Copy {
                     destination.getBucketName(), destination, false);
             listener.sent(status.getLength());
             final Map complete = (Map) stringObjectMap.get(Constants.KEY_FOR_COMPLETE_METADATA);
-            return (String) complete.get(Constants.AMZ_VERSION_ID);
+            return new CopyResult(
+                    (String) complete.get(Constants.AMZ_VERSION_ID),
+                    (String) complete.get(BaseStorageItem.METADATA_HEADER_ETAG)
+            );
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -117,6 +121,16 @@ public class S3CopyFeature implements Copy {
             if(containerService.isContainer(target.get())) {
                 throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
             }
+        }
+    }
+
+    protected static final class CopyResult {
+        public final String versionId;
+        public final String etag;
+
+        public CopyResult(final String versionId, final String length) {
+            this.versionId = versionId;
+            this.etag = length;
         }
     }
 }
