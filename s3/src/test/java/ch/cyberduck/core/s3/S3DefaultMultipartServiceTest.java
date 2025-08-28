@@ -75,7 +75,8 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
         assertFalse(service.find(directory).isEmpty());
         assertTrue(service.find(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))).isEmpty());
         assertEquals(first.getUploadId(), service.find(directory).iterator().next().getUploadId());
-        assertFalse(new S3FindFeature(session, acl).find(file));
+        // Depends on s3.upload.multipart.lookup=true
+        assertTrue(new S3FindFeature(session, acl).find(file));
         final Path upload = new S3ListService(session, acl).list(directory, new DisabledListProgressListener()).find(new SimplePathPredicate(file));
         assertNotNull(upload);
         assertTrue(new S3FindFeature(session, acl).find(upload));
