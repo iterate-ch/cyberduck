@@ -58,7 +58,7 @@ public class BoxLargeUploadServiceTest extends AbstractBoxTest {
         status.setChecksum(new SHA1ChecksumCompute().compute(local.getInputStream(), new TransferStatus()));
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final File response = s.upload(new BoxChunkedWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+        final File response = s.upload(new BoxWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
         assertTrue(status.isComplete());
         assertNotNull(response.getSha1());
         assertEquals(content.length, count.getSent());
