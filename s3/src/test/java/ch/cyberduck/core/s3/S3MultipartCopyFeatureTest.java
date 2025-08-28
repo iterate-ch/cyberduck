@@ -56,8 +56,7 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         // Set remote attributes
-        test.withAttributes(new S3AttributesFinderFeature(session, acl).find(test));
-        test.attributes().setSize(content.length);
+        test.withAttributes(status.getResponse());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, acl);
         final Path copied = feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
