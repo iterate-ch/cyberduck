@@ -52,13 +52,13 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
         final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("~%s.tmp", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         assertFalse(touch.isSupported(new DefaultHomeFinderService(session).find(), file.getName()));
-        touch.touch(file, new TransferStatus());
+        touch.touch(new DropboxWriteFeature(session), file, new TransferStatus());
     }
 
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(file, new TransferStatus());
+        new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -69,9 +69,9 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final Path container = new DefaultHomeFinderService(session).find();
         final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
         final Path file = new DropboxTouchFeature(session)
-                .touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+                .touch(new DropboxWriteFeature(session), new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         new DropboxTouchFeature(session)
-                .touch(new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+                .touch(new DropboxWriteFeature(session), new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         final byte[] content = RandomUtils.nextBytes(254);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);

@@ -51,12 +51,12 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final BoxWriteFeature feature = new BoxWriteFeature(session, fileid);
         final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
-                new Path(Home.root(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(Home.root(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long folderModification = new BoxAttributesFinderFeature(session, fileid).find(folder).getModificationDate();
         assertEquals(folderModification, folder.attributes().getModificationDate());
         // Makes sure to test overwrite
         final Path file = new BoxTouchFeature(session, fileid).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setCreated(1503654615002L));
+                new BoxWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setCreated(1503654615002L));
         final byte[] content = RandomUtils.nextBytes(2047);
         final TransferStatus status = new TransferStatus();
         status.setModified(1503654614004L); //GMT: Friday, 25. August 2017 09:50:14.004

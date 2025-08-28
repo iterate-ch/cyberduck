@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +65,7 @@ public class LocalFindFeatureTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature().find();
-        final Path file = new LocalTouchFeature(session).touch(new Path(home, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new LocalTouchFeature(session).touch(new LocalWriteFeature(session), new Path(home, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new LocalFindFeature(session).find(file));
         assertFalse(new LocalFindFeature(session).find(new Path(home, StringUtils.capitalize(file.getName()), EnumSet.of(Path.Type.file))));
         session.close();

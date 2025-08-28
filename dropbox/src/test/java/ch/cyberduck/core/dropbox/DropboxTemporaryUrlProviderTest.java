@@ -41,7 +41,7 @@ public class DropboxTemporaryUrlProviderTest extends AbstractDropboxTest {
     public void testToUrl() throws Exception {
         final DropboxTemporaryUrlProvider provider = new DropboxTemporaryUrlProvider(session);
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(file, new TransferStatus());
+        new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), file, new TransferStatus());
         assertNotNull(provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

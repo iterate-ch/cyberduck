@@ -44,10 +44,10 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
     public void testCreateDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        assertThrows(ConflictException.class, () -> new SDSDirectoryFeature(session, nodeid).mkdir(room, new TransferStatus()));
-        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertThrows(ConflictException.class, () -> new SDSDirectoryFeature(session, nodeid).mkdir(test, new TransferStatus()));
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        assertThrows(ConflictException.class, () -> new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), room, new TransferStatus()));
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertThrows(ConflictException.class, () -> new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), test, new TransferStatus()));
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
         // Replace directory on server with same name
@@ -59,7 +59,7 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
         final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
         assertNotEquals(test.attributes().getVersionId(), node.getId().toString());
         // Attempt to create subdirectory referencing previous node id
-        final Path subdir = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(test,
+        final Path subdir = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(test,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertEquals(node.getId().toString(), nodeid.getVersionId(test));
         assertEquals(test.attributes().getVersionId(), node.getId().toString());
@@ -70,7 +70,7 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
     public void testCreateDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertNotNull(room.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(room));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());

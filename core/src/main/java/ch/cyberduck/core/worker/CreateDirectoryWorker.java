@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -70,7 +71,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
             }
         }
         status.setRegion(region);
-        final Path result = feature.mkdir(folder, status);
+        final Path result = feature.mkdir(session.getFeature(Write.class), folder, status);
         if(PathAttributes.EMPTY.equals(result.attributes())) {
             return new Path(folder).withAttributes(session.getFeature(AttributesFinder.class).find(result));
         }

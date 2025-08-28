@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,7 +45,7 @@ public class DriveDirectoryFeature implements Directory<File> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<File> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(folder.getParent())) {
                 final TeamDrive execute = session.getClient().teamdrives().create(

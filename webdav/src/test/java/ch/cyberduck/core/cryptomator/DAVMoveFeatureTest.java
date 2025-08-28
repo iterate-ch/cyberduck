@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
@@ -33,6 +34,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -63,10 +65,11 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(folder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(
+                cryptomator.getFeature(session, Write.class, new DAVWriteFeature(session)), folder, new TransferStatus());
         final Path template = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path file = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session)),
-                new DAVWriteFeature(session), cryptomator).touch(template, new TransferStatus())
+        final Path file = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session),
+                cryptomator).touch(new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator), template, new TransferStatus())
                 .withAttributes(cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(template));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new DAVMoveFeature(session));

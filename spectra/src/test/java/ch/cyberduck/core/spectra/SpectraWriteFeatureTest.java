@@ -45,7 +45,7 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
     @Test
     public void testWriteOverwrite() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().setLength(content.length);
@@ -74,10 +74,10 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
     @Test
     public void testOverwriteZeroSized() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         // Make 0-byte file
-        new SpectraTouchFeature(session).touch(test, new TransferStatus());
+        new SpectraTouchFeature(session).touch(new SpectraWriteFeature(session), test, new TransferStatus());
         // Replace content
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().setLength(content.length);
@@ -94,7 +94,7 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
     @Test
     public void testSPECTRA69() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);

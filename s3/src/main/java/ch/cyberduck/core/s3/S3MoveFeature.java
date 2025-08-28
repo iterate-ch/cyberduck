@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -89,7 +90,7 @@ public class S3MoveFeature implements Move {
             catch(NotfoundException e) {
                 if(source.getType().contains(Path.Type.placeholder)) {
                     // No placeholder object to copy, create a new one at the target
-                    target = session.getFeature(Directory.class).mkdir(renamed, status);
+                    target = session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), renamed, status);
                 }
                 else {
                     throw e;

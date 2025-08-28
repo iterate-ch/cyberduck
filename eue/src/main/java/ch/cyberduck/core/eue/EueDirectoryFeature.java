@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +51,7 @@ public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<EueWriteFeature.Chunk> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final ResourceCreationRepresentationArrayInner resourceCreationRepresentation = new ResourceCreationRepresentationArrayInner();
             final String path = StringUtils.removeStart(folder.getAbsolute(), String.valueOf(Path.DELIMITER));

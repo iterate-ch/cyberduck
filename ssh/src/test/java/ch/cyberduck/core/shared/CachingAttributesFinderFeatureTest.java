@@ -17,6 +17,7 @@ import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPTouchFeature;
 import ch.cyberduck.core.sftp.SFTPUnixPermissionFeature;
+import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -52,7 +53,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractSFTPTest {
         final PathCache cache = new PathCache(1);
         final AttributesFinder f = new CachingAttributesFinderFeature(session, cache, new DefaultAttributesFinderFeature(session));
         final Path workdir = new SFTPHomeDirectoryService(session).find();
-        final Path file = new SFTPTouchFeature(session).touch(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission("-rw-rw-rw-"));
         final Attributes lookup = f.find(file);
         assertEquals(0L, lookup.getSize());

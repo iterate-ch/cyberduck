@@ -33,19 +33,19 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
     private final Write<StorageObject> writer;
 
     public SpectraDirectoryFeature(final SpectraSession session, final Write<StorageObject> writer) {
-        super(session, writer, new S3AccessControlListFeature(session));
+        super(session, new S3AccessControlListFeature(session));
         this.containerService = new S3PathContainerService(session.getHost());
         this.writer = writer;
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(folder)) {
-            return super.mkdir(folder, status);
+            return super.mkdir(writer, folder, status);
         }
         else {
-            status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
-            return super.mkdir(folder, status);
+            status.setChecksum(this.writer.checksum(folder, status).compute(new NullInputStream(0L), status));
+            return super.mkdir(writer, folder, status);
         }
     }
 }

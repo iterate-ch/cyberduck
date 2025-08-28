@@ -67,7 +67,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
     @Test
     public void testFindFile() throws Exception {
         final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(new NullInputStream(0L), new TransferStatus());
-        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVTouchFeature(session).touch(new NextcloudWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setChecksum(checksum));
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
@@ -95,7 +95,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
     public void testFindDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path directory = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new NextcloudWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(directory);
         assertNotNull(attributes.getFileId());
@@ -189,7 +189,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test
     public void testFindLock() throws Exception {
-        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVTouchFeature(session).touch(new NextcloudWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         assertNull(f.find(test).getLockId());

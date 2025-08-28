@@ -50,9 +50,9 @@ public class DropboxVersioningFeatureTest extends AbstractDropboxTest {
     @Test
     public void testRevert() throws Exception {
         final Path directory = new DropboxDirectoryFeature(session).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final DropboxAttributesFinderFeature f = new DropboxAttributesFinderFeature(session);
-        final Path test = new DropboxTouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(test.attributes().getVersionId(), new DropboxAttributesFinderFeature(session).find(test).getVersionId());
         final DropboxVersioningFeature feature = new DropboxVersioningFeature(session);
         assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());

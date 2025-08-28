@@ -29,6 +29,7 @@ import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPDirectoryFeature;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTouchFeature;
+import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -53,7 +54,7 @@ public class CopyWorkerTest extends AbstractFTPTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new FTPTouchFeature(session).touch(source, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), source, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(source));
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")));
         copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -69,11 +70,11 @@ public class CopyWorkerTest extends AbstractFTPTest {
     public void testCopyFileToDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new FTPTouchFeature(session).touch(sourceFile, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), sourceFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new FTPDirectoryFeature(session).mkdir(targetFolder, new TransferStatus());
+        new FTPDirectoryFeature(session).mkdir(new FTPWriteFeature(session), targetFolder, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(targetFolder));
         // copy file into vault
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")));
@@ -91,8 +92,8 @@ public class CopyWorkerTest extends AbstractFTPTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new FTPDirectoryFeature(session).mkdir(folder, new TransferStatus());
-        new FTPTouchFeature(session).touch(sourceFile, new TransferStatus());
+        new FTPDirectoryFeature(session).mkdir(new FTPWriteFeature(session), folder, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), sourceFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         // move directory into vault

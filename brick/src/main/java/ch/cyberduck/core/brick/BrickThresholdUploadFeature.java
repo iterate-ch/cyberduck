@@ -41,7 +41,7 @@ public class BrickThresholdUploadFeature implements Upload<FileEntity> {
             return new BrickUploadFeature(session).upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
         else {
-            new BrickTouchFeature(session).touch(file, status);
+            new BrickTouchFeature(session).touch(write, file, status);
             return null;
         }
     }

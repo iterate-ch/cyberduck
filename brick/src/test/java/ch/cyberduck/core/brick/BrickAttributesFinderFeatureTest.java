@@ -39,7 +39,7 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         final Path folder = new BrickDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BrickAttributesFinderFeature f = new BrickAttributesFinderFeature(session);
         try {
@@ -63,9 +63,9 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
         final Path root = new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final PathAttributes rootAttributes = f.find(root);
         final Path folder = new BrickDirectoryFeature(session).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long folderTimestamp = f.find(folder).getModificationDate();
-        final Path test = new BrickTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
+        final Path test = new BrickTouchFeature(session).touch(new BrickWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
                 new TransferStatus().setModified(1719480508000L));
         assertEquals(Protocol.DirectoryTimestamp.explicit, session.getHost().getProtocol().getDirectoryTimestamp());
         assertNotEquals(folderTimestamp, f.find(folder).getModificationDate());
@@ -90,8 +90,8 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path folder = new BrickDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new BrickDirectoryFeature(session).mkdir(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final BrickAttributesFinderFeature f = new BrickAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(-1L, attributes.getSize());

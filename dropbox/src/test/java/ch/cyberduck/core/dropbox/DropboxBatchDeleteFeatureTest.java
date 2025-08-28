@@ -46,9 +46,9 @@ public class DropboxBatchDeleteFeatureTest extends AbstractDropboxTest {
     @Test
     public void testDeleteFiles() throws Exception {
         final Path file1 = new DropboxTouchFeature(session).touch(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path file2 = new DropboxTouchFeature(session).touch(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DropboxBatchDeleteFeature(session).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DropboxFindFeature(session).find(file1));
         assertFalse(new DropboxFindFeature(session).find(file2));
@@ -58,11 +58,11 @@ public class DropboxBatchDeleteFeatureTest extends AbstractDropboxTest {
     @Test
     public void testDeleteDirectory() throws Exception {
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory)), new TransferStatus());
         final Path file1 = new DropboxTouchFeature(session).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path file2 = new DropboxTouchFeature(session).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DropboxBatchDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DropboxFindFeature(session).find(file1));
         assertFalse(new DropboxFindFeature(session).find(file2));

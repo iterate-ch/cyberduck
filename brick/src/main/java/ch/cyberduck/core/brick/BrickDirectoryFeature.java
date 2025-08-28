@@ -21,6 +21,7 @@ import ch.cyberduck.core.brick.io.swagger.client.api.FoldersApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +35,7 @@ public class BrickDirectoryFeature implements Directory<FileEntity> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<FileEntity> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             return new Path(folder).withAttributes(
                     new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(new BrickApiClient(session))

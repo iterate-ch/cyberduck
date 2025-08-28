@@ -27,6 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -58,6 +59,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import ch.iterate.openstack.swift.model.StorageObject;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -75,7 +78,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
+        final CryptoUploadFeature<StorageObject> service = new CryptoUploadFeature<>(session,
                 new SwiftLargeObjectUploadFeature(session, regionService, 5242880L, 5), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 5242885;
@@ -86,7 +89,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        m.upload(new SwiftWriteFeature(session, regionService), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null);
+        service.upload(new CryptoWriteFeature<>(session, new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertEquals(content.length, writeStatus.getResponse().getSize());

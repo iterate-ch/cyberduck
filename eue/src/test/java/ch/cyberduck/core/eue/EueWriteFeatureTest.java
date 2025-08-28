@@ -114,7 +114,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
     public void testWrite() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         long containerModification = new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         String resourceId;

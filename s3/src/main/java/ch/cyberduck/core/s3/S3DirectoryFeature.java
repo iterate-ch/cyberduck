@@ -42,17 +42,14 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     private final S3AccessControlListFeature acl;
     private final PathContainerService containerService;
 
-    private Write<StorageObject> writer;
-
-    public S3DirectoryFeature(final S3Session session, final Write<StorageObject> writer, final S3AccessControlListFeature acl) {
+    public S3DirectoryFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.writer = writer;
         this.containerService = session.getFeature(PathContainerService.class);
         this.acl = acl;
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
             service.create(folder, StringUtils.isBlank(status.getRegion()) ?
@@ -62,7 +59,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
         else {
             final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
-            return new S3TouchFeature(session, acl).withWriter(writer).touch(folder
+            return new S3TouchFeature(session, acl).touch(writer, folder
                     .withType(type), status
                     // Add placeholder object
                     .setMime(MIMETYPE)
@@ -84,9 +81,4 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
         }
     }
 
-    @Override
-    public S3DirectoryFeature withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return this;
-    }
 }

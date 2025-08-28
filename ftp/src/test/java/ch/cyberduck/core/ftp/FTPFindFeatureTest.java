@@ -30,7 +30,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class FTPFindFeatureTest extends AbstractFTPTest {
@@ -48,7 +49,7 @@ public class FTPFindFeatureTest extends AbstractFTPTest {
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new FTPTouchFeature(session).touch(file, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), file, new TransferStatus());
         assertTrue(new FTPFindFeature(session).find(file));
         assertFalse(new FTPFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

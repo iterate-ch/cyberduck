@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -48,7 +49,7 @@ public class DeepboxDirectoryFeature implements Directory<Node> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Node> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(new DeepboxFindFeature(session, fileid).find(folder)) {
                 throw new ConflictException(folder.getAbsolute());

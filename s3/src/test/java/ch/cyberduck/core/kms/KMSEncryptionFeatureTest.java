@@ -29,6 +29,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
+import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -50,7 +51,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
     public void testSetEncryptionKMSDefaultKeySignatureVersionV4() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3TouchFeature(session, acl).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3EncryptionFeature feature = new S3EncryptionFeature(session, acl);
         feature.setEncryption(test, KMSEncryptionFeature.SSE_KMS_DEFAULT);
         final Encryption.Algorithm value = feature.getEncryption(test);
@@ -70,7 +71,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
     public void testSetEncryptionKMSCustomKeySignatureVersionV4() throws Exception {
         final Path container = new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         final S3EncryptionFeature feature = new S3EncryptionFeature(session, new S3AccessControlListFeature(session));
         feature.setEncryption(test, new Encryption.Algorithm("aws:kms", "arn:aws:kms:eu-west-1:930717317329:key/015fa0af-f95e-483e-8fb6-abffb46fb783"));
         final Encryption.Algorithm value = feature.getEncryption(test);

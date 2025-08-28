@@ -51,11 +51,11 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new EueDirectoryFeature(session, fileid).mkdir(sourceFolder, new TransferStatus());
+        new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), sourceFolder, new TransferStatus());
         createFile(fileid, sourceFile, RandomUtils.nextBytes(1023));
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFolder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(AbstractPath.Type.file));
         final Path copy = new EueCopyFeature(session, fileid).copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
@@ -75,9 +75,9 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
     public void testCopyRecursive() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path testFolder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         createFile(fileid, sourceFile, RandomUtils.nextBytes(541));
         final Path targetFolder = new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -98,7 +98,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
     public void testCopyRecursiveToRoot() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         createFile(fileid, sourceFile, RandomUtils.nextBytes(541));
         final Path targetFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -119,7 +119,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
     public void testCopyFileToRoot() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         createFile(fileid, sourceFile, RandomUtils.nextBytes(541));
         final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
@@ -143,11 +143,11 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new EueDirectoryFeature(session, fileid).mkdir(sourceFolder, new TransferStatus());
+        new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), sourceFolder, new TransferStatus());
         createFile(fileid, sourceFile, RandomUtils.nextBytes(1023));
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFolder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
         final Path copy = new EueCopyFeature(session, fileid).copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
@@ -167,7 +167,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
     public void testCopyToExistingFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new EueDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
+        new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), test.getName());
         final byte[] random = RandomUtils.nextBytes(2547);
@@ -180,7 +180,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         local.delete();
         assertTrue(new EueFindFeature(session, fileid).find(test));
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new EueTouchFeature(session, fileid).touch(copy, new TransferStatus().setLength(0L));
+        new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), copy, new TransferStatus().setLength(0L));
         new EueCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));

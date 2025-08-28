@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoSymlinkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
@@ -63,8 +64,9 @@ public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final Path target = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)
-        ), new SFTPWriteFeature(session), cryptomator), new SFTPWriteFeature(session), cryptomator).touch(target, new TransferStatus());
+        new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
+                session), cryptomator), cryptomator).touch(
+                new CryptoWriteFeature<>(session, new SFTPWriteFeature(session), cryptomator), target, new TransferStatus());
         final Path link = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new CryptoSymlinkFeature(session, new SFTPSymlinkFeature(session), cryptomator).symlink(link, target.getName());
         assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(link));

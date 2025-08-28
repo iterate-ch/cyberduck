@@ -54,7 +54,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
     public void testRead() throws Exception {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final int length = 39865;
         final byte[] content = RandomUtils.nextBytes(length);
         {
@@ -81,7 +81,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
     public void testReadRange() throws Exception {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);
         {

@@ -50,7 +50,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         try {
-            final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), new TransferStatus());
+            final Path drive = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), randomDirectory(), new TransferStatus());
             new MantaReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
         catch(NotfoundException e) {
@@ -61,9 +61,9 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testReadInterrupt() throws Exception {
-        final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), new TransferStatus());
+        final Path drive = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), randomDirectory(), new TransferStatus());
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new MantaTouchFeature(session).touch(test, new TransferStatus());
+        new MantaTouchFeature(session).touch(new MantaWriteFeature(session), test, new TransferStatus());
         // Unknown length in status
         final TransferStatus status = new TransferStatus();
         // Read a single byte
@@ -83,9 +83,9 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), new TransferStatus());
+        final Path drive = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), randomDirectory(), new TransferStatus());
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new MantaTouchFeature(session).touch(test, new TransferStatus());
+        new MantaTouchFeature(session).touch(new MantaWriteFeature(session), test, new TransferStatus());
 
         final Local local = new Local(PROPERTIES.get("java.io.tmpdir"), new AlphanumericRandomStringService().random());
 
@@ -123,9 +123,9 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), new TransferStatus());
+        final Path drive = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), randomDirectory(), new TransferStatus());
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new MantaTouchFeature(session).touch(test, new TransferStatus());
+        new MantaTouchFeature(session).touch(new MantaWriteFeature(session), test, new TransferStatus());
 
         final Local local = new Local(PROPERTIES.get("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);

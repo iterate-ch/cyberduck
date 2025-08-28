@@ -43,7 +43,7 @@ public class DriveSearchListServiceTest extends AbstractDriveTest {
     @Test
     public void testQuery() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Drive.Files.Create insert = session.getClient().files().create(new File()
                 .setName(name)
@@ -52,7 +52,7 @@ public class DriveSearchListServiceTest extends AbstractDriveTest {
         execute.setVersion(1L);
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file), new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
         {
-            final Path subdirectory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+            final Path subdirectory = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
             assertTrue(new DriveSearchListService(session, fileid, name).list(subdirectory, new DisabledListProgressListener()).isEmpty());
             new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(subdirectory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         }

@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.openstack.AbstractSwiftTest;
 import ch.cyberduck.core.openstack.SwiftDeleteFeature;
 import ch.cyberduck.core.openstack.SwiftDirectoryFeature;
@@ -47,8 +48,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import ch.iterate.openstack.swift.model.StorageObject;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -66,8 +65,10 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final SwiftRegionService regionService = new SwiftRegionService(session);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session, regionService)).mkdir(folder, new TransferStatus());
-        new CryptoTouchFeature<StorageObject>(session, new SwiftTouchFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).touch(file, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session, regionService)).mkdir(
+                cryptomator.getFeature(session, Write.class, new SwiftWriteFeature(session, regionService)), folder, new TransferStatus());
+        new CryptoTouchFeature<>(session, new SwiftTouchFeature(session, regionService), cryptomator).touch(
+                cryptomator.getFeature(session, Write.class, new SwiftWriteFeature(session, regionService)), file, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new SwiftMoveFeature(session, regionService));
         // rename file

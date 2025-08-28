@@ -242,7 +242,7 @@ public class UploadTransfer extends Transfer {
             status.validate();
             progress.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), file.getName()));
             try {
-                mkdir.mkdir(file, status);
+                mkdir.mkdir(source.getFeature(Write.class), file, status);
                 // Post process of file
                 filter.complete(
                         status.getRename().remote != null ? status.getRename().remote : entry.getKey().remote,

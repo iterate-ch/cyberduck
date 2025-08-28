@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -237,7 +238,7 @@ public class CopyTransfer extends Transfer {
         if(source.isDirectory()) {
             if(!segment.isExists()) {
                 final Directory feature = destination.getFeature(Directory.class);
-                feature.mkdir(mapping.get(source), segment);
+                feature.mkdir(destination.getFeature(Write.class), mapping.get(source), segment);
                 segment.setComplete();
             }
         }

@@ -34,6 +34,7 @@ import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -63,6 +64,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 
+import synapticloop.b2.response.BaseB2Response;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -78,7 +81,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final CryptoUploadFeature service = new CryptoUploadFeature<>(session,
+        final CryptoUploadFeature<BaseB2Response> service = new CryptoUploadFeature<>(session,
                 new B2LargeUploadService(session, fileid, 5000000L, 5),
                 cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -90,7 +93,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         writeStatus.setLength(content.length);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BytecountStreamListener counter = new BytecountStreamListener();
-        service.upload(new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
+        service.upload(new CryptoWriteFeature<>(session, new B2WriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(test));
@@ -120,13 +123,13 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
-        final CryptoUploadFeature service = new CryptoUploadFeature<>(session,
+        final CryptoUploadFeature<BaseB2Response> service = new CryptoUploadFeature<>(session,
                 new B2LargeUploadService(session, fileid, 5000000L, 5),
                 cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         IOUtils.write(content, local.getOutputStream(false));
         final BytecountStreamListener counter = new BytecountStreamListener();
-        service.upload(new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
+        service.upload(new CryptoWriteFeature<>(session, new B2WriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(test));

@@ -40,10 +40,10 @@ public class StoregateTimestampFeatureTest extends AbstractStoregateTest {
     @Test
     public void testSetTimestamp() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
-        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(file, new TransferStatus().setMime("x-application/cyberduck"));
+        new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), file, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(new StoregateAttributesFinderFeature(session, nodeid).find(file));
         final long created = 1695161463630L;
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
@@ -63,10 +63,10 @@ public class StoregateTimestampFeatureTest extends AbstractStoregateTest {
     @Test
     public void testSetTimestampDirectory() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
-        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new StoregateDirectoryFeature(session, nodeid).mkdir(test, null);
+        new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), test, null);
         assertNotNull(new StoregateAttributesFinderFeature(session, nodeid).find(test));
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new StoregateTimestampFeature(session, nodeid).setTimestamp(test, modified);

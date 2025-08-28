@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
@@ -80,7 +81,7 @@ public class TouchWorker extends Worker<Path> {
                 status.setAcl(acl.getDefault(file));
             }
         }
-        final Path result = feature.touch(file, status);
+        final Path result = feature.touch(session.getFeature(Write.class), file, status);
         if(PathAttributes.EMPTY.equals(result.attributes())) {
             return result.withAttributes(session.getFeature(AttributesFinder.class).find(result));
         }

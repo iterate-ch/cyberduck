@@ -51,7 +51,7 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
     @Test
     public void tetsEmptyPlaceholder() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
             new SpectraObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
                     new DisabledListProgressListener());
@@ -72,9 +72,9 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
     @Test
     public void testListPlaceholder() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path placeholder = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new SpectraObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -84,10 +84,10 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
     @Ignore
     public void testVersioning() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         new SpectraVersioningFeature(session).setConfiguration(container, new DisabledPasswordCallback(), new VersioningConfiguration(true));
         final Path folder = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(folder, new TransferStatus());
+        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(new SpectraWriteFeature(session), folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().setLength(content.length);
@@ -131,9 +131,9 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
     @Test
     public void testListFilePlusCharacter() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new SpectraTouchFeature(session).touch(
-                new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -141,9 +141,9 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
     @Test
     public void testListFileDot() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new SpectraTouchFeature(session).touch(
-                new Path(container, ".", EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(container, ".", EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -151,9 +151,9 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
     @Test
     public void testListPlaceholderDot() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path placeholder = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -161,9 +161,9 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
     @Test
     public void testListPlaceholderPlusCharacter() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path placeholder = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
         assertTrue(new SpectraObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());

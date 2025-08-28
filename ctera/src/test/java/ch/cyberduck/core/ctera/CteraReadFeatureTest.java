@@ -96,7 +96,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testReadInterrupt() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         // Unknown length in status
         final TransferStatus status = new TransferStatus();
@@ -144,7 +144,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1023);
         final OutputStream out = local.getOutputStream(false);
@@ -172,7 +172,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testReadCloseReleaseEntity() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final TransferStatus status = new TransferStatus();
         final CountingInputStream in = new CountingInputStream(new CteraReadFeature(session).read(test, status, new DisabledConnectionCallback()));

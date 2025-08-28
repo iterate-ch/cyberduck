@@ -37,12 +37,12 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final String prefix = new AlphanumericRandomStringService().random();
         final Path other = new Path(container, String.format("%s.%s", prefix, new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(other, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), other, new TransferStatus());
         final Path file = new Path(container, prefix, EnumSet.of(Path.Type.file));
         final SwiftFindFeature feature = new SwiftFindFeature(session);
         assertFalse(feature.find(file));
         assertFalse(feature.find(new Path(file).withType(EnumSet.of(Path.Type.directory))));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), file, new TransferStatus());
         assertTrue(feature.find(file));
         assertFalse(feature.find(new Path(file).withType(EnumSet.of(Path.Type.directory))));
         assertFalse(feature.find(new Path(String.format("%s-", file.getAbsolute()), EnumSet.of(Path.Type.file))));
@@ -59,12 +59,12 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final String suffix = new AlphanumericRandomStringService().random();
         final Path other = new Path(container, String.format("%s.%s", new AlphanumericRandomStringService().random(), suffix), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(other, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), other, new TransferStatus());
         final Path file = new Path(container, suffix, EnumSet.of(Path.Type.file));
         final SwiftFindFeature feature = new SwiftFindFeature(session);
         assertFalse(feature.find(file));
         assertFalse(feature.find(new Path(file).withType(EnumSet.of(Path.Type.directory))));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), file, new TransferStatus());
         assertTrue(feature.find(file));
         assertFalse(feature.find(new Path(file).withType(EnumSet.of(Path.Type.directory))));
         assertFalse(feature.find(new Path(String.format("%s-", file.getAbsolute()), EnumSet.of(Path.Type.file))));
@@ -87,7 +87,7 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
-                new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                new SwiftWriteFeature(session, new SwiftRegionService(session)), new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                         new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));

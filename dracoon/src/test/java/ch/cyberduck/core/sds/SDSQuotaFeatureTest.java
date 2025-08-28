@@ -46,7 +46,7 @@ public class SDSQuotaFeatureTest extends AbstractSDSTest {
     public void testRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Quota.Space quota = new SDSQuotaFeature(session, nodeid).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);

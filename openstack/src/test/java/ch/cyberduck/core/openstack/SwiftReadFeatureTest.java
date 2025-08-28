@@ -45,7 +45,7 @@ public class SwiftReadFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final HttpResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
@@ -74,7 +74,7 @@ public class SwiftReadFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final HttpResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());

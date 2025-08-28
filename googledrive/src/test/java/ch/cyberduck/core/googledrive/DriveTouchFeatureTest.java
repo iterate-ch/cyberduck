@@ -39,15 +39,15 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
     public void testTouch() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new DriveTouchFeature(session, fileid).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("x-application/cyberduck"));
+                new DriveWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("x-application/cyberduck"));
         final String id = test.attributes().getFileId();
         assertNotNull(id);
         assertNull(test.attributes().getVersionId());
         assertEquals(test.attributes().getFileId(), new DriveAttributesFinderFeature(session, fileid).find(test).getFileId());
-        assertThrows(ConflictException.class, () -> new DriveTouchFeature(session, fileid).touch(test, new TransferStatus()));
-        assertThrows(ConflictException.class, () -> new DriveDirectoryFeature(session, fileid).mkdir(test, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), test, new TransferStatus()));
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertNull(test.attributes().getFileId());
         // Trashed

@@ -38,13 +38,13 @@ public class BrickTouchFeatureTest extends AbstractBrickTest {
 
     @Test
     public void testCaseSensitivity() throws Exception {
-        final Path container = new BrickDirectoryFeature(session).mkdir(new Path(
+        final Path container = new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
         final Path lowerCase = new BrickTouchFeature(session)
-                .touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+                .touch(new BrickWriteFeature(session), new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         final Path upperCase = new BrickTouchFeature(session)
-                .touch(new Path(container, StringUtils.capitalize(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+                .touch(new BrickWriteFeature(session), new Path(container, StringUtils.capitalize(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         assertTrue(new BrickFindFeature(session).find(lowerCase));
         assertTrue(new BrickFindFeature(session).find(upperCase));
         assertEquals(1, new BrickListService(session).list(container, new DisabledListProgressListener()).size());

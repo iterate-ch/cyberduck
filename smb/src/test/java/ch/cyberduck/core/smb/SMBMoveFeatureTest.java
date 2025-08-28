@@ -41,9 +41,9 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
     public void testRename() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new SMBTouchFeature(session).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
 
         // rename file
         final Path fileRenamed = new SMBMoveFeature(session).move(file, new Path(folder,
@@ -69,9 +69,9 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
     public void testRenameFileOverride() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path file = new SMBTouchFeature(session).touch(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new SMBTouchFeature(session).touch(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         // rename file
         final Path fileRenamed = new SMBMoveFeature(session).move(file, target, new TransferStatus().setExists(true),
                 new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -92,7 +92,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
     public void testRenameCaseOnly() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new SMBTouchFeature(session).touch(new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SMBTouchFeature(session).touch(new SMBWriteFeature(session), new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
         new SMBMoveFeature(session).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         new SMBDeleteFeature(session).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());

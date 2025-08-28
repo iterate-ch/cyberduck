@@ -45,7 +45,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
     public void testUploadSimpleFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueSingleUploadService service = new EueSingleUploadService(session, fileid);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().setLength(0L));
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().setLength(0L));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);

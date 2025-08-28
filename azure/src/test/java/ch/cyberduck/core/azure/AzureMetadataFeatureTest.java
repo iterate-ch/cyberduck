@@ -23,7 +23,7 @@ public class AzureMetadataFeatureTest extends AbstractAzureTest {
     public void testSetMetadata() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
         final String v = new AlphanumericRandomStringService().random();
         new AzureMetadataFeature(session).setMetadata(test, Collections.singletonMap("Test", v));
         final Map<String, String> metadata = new AzureMetadataFeature(session).getMetadata(test);
@@ -37,7 +37,7 @@ public class AzureMetadataFeatureTest extends AbstractAzureTest {
     public void testSetCacheControl() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
         final AzureMetadataFeature service = new AzureMetadataFeature(session);
         service.setMetadata(test, Collections.singletonMap("Cache-Control", "public, max-age=0"));
         final Map<String, String> metadata = service.getMetadata(test);

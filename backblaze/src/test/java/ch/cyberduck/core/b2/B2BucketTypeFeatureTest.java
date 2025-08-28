@@ -36,7 +36,7 @@ public class B2BucketTypeFeatureTest extends AbstractB2Test {
     @Test
     public void testAllPrivate() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new TransferStatus());
         assertEquals("allPrivate", new B2BucketTypeFeature(session, fileid).getLocation(bucket).getIdentifier());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -45,7 +45,7 @@ public class B2BucketTypeFeatureTest extends AbstractB2Test {
     @Test
     public void testAllPublic() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new TransferStatus().setRegion("allPublic"));
         assertEquals("allPublic", new B2BucketTypeFeature(session, fileid).getLocation(bucket).getIdentifier());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -29,7 +29,7 @@ public class AzureUploadFeature extends DefaultUploadFeature<Void> {
     private final AzureSession session;
 
     public AzureUploadFeature(final AzureSession session) {
-        super(new AzureWriteFeature(session));
+        super(session);
         this.session = session;
     }
 

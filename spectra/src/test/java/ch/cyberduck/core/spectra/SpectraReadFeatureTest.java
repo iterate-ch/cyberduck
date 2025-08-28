@@ -47,7 +47,7 @@ public class SpectraReadFeatureTest extends AbstractSpectraTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, "nosuchname", EnumSet.of(Path.Type.file));
         try {
             new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
@@ -63,7 +63,7 @@ public class SpectraReadFeatureTest extends AbstractSpectraTest {
     @Test
     public void testRead() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().setLength(content.length);

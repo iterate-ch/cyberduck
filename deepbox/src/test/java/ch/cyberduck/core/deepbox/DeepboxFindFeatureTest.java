@@ -58,7 +58,7 @@ public class DeepboxFindFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new DeepboxDirectoryFeature(session, nodeid).mkdir(
-                new Path(box, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DeepboxWriteFeature(session, nodeid), new Path(box, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(folder));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -69,7 +69,7 @@ public class DeepboxFindFeatureTest extends AbstractDeepboxTest {
         final Path box = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(box, StringUtils.lowerCase(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), file, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(new Path(box, StringUtils.upperCase(file.getName()), EnumSet.of(Path.Type.file))));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));

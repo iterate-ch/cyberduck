@@ -22,6 +22,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -36,32 +37,24 @@ import java.io.IOException;
 public class DefaultTouchFeature<T> implements Touch<T> {
     private static final Logger log = LogManager.getLogger(DefaultTouchFeature.class);
 
-    protected Write<T> write;
-
-    public DefaultTouchFeature(final Write<T> writer) {
-        this.write = writer;
+    public DefaultTouchFeature(final Session<?> session) {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<T> writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final StatusOutputStream<T> writer = write.write(file, status.setLength(
+            final StatusOutputStream<T> out = writer.write(file, status.setLength(
                     TransferStatus.UNKNOWN_LENGTH == status.getLength() ? 0L : status.getLength()), new DisabledConnectionCallback());
-            writer.close();
+            out.close();
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
                 log.debug("Received reply {} for creating file {}", status.getResponse(), file);
                 return new Path(file).withAttributes(status.getResponse());
             }
-            log.warn("Missing status from writer {}", writer);
+            log.warn("Missing status from writer {}", out);
             return file;
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
         }
-    }
-
-    public DefaultTouchFeature<T> withWriter(final Write<T> write) {
-        this.write = write;
-        return this;
     }
 }

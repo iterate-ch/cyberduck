@@ -37,7 +37,7 @@ public class SpectraDeleteFeatureTest extends AbstractSpectraTest {
     public void testDeleteContainer() throws Exception {
         final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
-        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(container, new TransferStatus());
+        new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(new SpectraWriteFeature(session), container, new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(container));
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
