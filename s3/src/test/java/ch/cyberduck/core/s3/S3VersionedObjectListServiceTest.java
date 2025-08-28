@@ -28,7 +28,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersioningConfiguration;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
@@ -260,7 +259,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         // Nullify version to add delete marker
         directory.attributes().setVersionId(null);
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(isDuplicate(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
+        assertTrue(isTrashed(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
     }
 
     /**
@@ -281,16 +280,18 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         // Nullify version to add delete marker
         child2.attributes().setVersionId(null);
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(child1), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(isDuplicate(child1, new S3VersionedObjectListService(session, acl).list(directory, new DisabledListProgressListener())));
+        assertTrue(isTrashed(child1, new S3VersionedObjectListService(session, acl).list(directory, new DisabledListProgressListener())));
+        assertFalse(isTrashed(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
         assertFalse(isDuplicate(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
         // Nullify version to add delete marker
         directory.attributes().setVersionId(null);
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         // No placeholder object but child object under this prefix should still be found
+        assertTrue(isTrashed(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
         assertFalse(isDuplicate(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(child2), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(isDuplicate(child2, new S3VersionedObjectListService(session, acl).list(directory, new DisabledListProgressListener())));
-        assertTrue(isDuplicate(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
+        assertTrue(isTrashed(child2, new S3VersionedObjectListService(session, acl).list(directory, new DisabledListProgressListener())));
+        assertTrue(isTrashed(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
     }
 
     /**
@@ -311,20 +312,28 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         // Nullify version to add delete marker
         child2.attributes().setVersionId(null);
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(child1), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(isDuplicate(child1, new S3VersionedObjectListService(session, acl).list(directory, new DisabledListProgressListener())));
-        assertFalse(isDuplicate(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
+        assertTrue(isTrashed(child1, new S3VersionedObjectListService(session, acl).list(directory, new DisabledListProgressListener())));
+        assertFalse(isTrashed(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(child2), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(isDuplicate(child2, new S3VersionedObjectListService(session, acl).list(directory, new DisabledListProgressListener())));
+        assertTrue(isTrashed(child2, new S3VersionedObjectListService(session, acl).list(directory, new DisabledListProgressListener())));
         // Prefix with only deleted files must be marked as hidden
         assertTrue(isDuplicate(directory, new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener())));
     }
 
-    private boolean isDuplicate(final Path file, final AttributedList<Path> list) throws BackgroundException {
+    private boolean isDuplicate(final Path file, final AttributedList<Path> list) {
         final Path found = list.find(new SimplePathPredicate(file));
         if(null == found) {
             fail(MessageFormat.format("Path {0} not found", file));
         }
-        return found.attributes().isDuplicate() || found.attributes().isTrashed();
+        return found.attributes().isDuplicate();
+    }
+
+    private boolean isTrashed(final Path file, final AttributedList<Path> list) {
+        final Path found = list.find(new SimplePathPredicate(file));
+        if(null == found) {
+            fail(MessageFormat.format("Path {0} not found", file));
+        }
+        return found.attributes().isTrashed();
     }
 
     @Test
