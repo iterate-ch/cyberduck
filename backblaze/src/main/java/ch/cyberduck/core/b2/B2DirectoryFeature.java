@@ -46,20 +46,14 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
-    private Write<BaseB2Response> writer;
 
     public B2DirectoryFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, new B2WriteFeature(session, fileid));
-    }
-
-    public B2DirectoryFeature(final B2Session session, final B2VersionIdProvider fileid, final B2WriteFeature writer) {
         this.session = session;
         this.fileid = fileid;
-        this.writer = writer;
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<BaseB2Response> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(folder).getName(),
@@ -71,7 +65,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
             else {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
-                return new B2TouchFeature(session, fileid).touch(folder.withType(type), status
+                return new B2TouchFeature(session, fileid).touch(writer, folder.withType(type), status
                         .setMime(MimeTypeService.DEFAULT_CONTENT_TYPE)
                         .setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
             }
@@ -106,12 +100,6 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 }
             }
         }
-    }
-
-    @Override
-    public B2DirectoryFeature withWriter(final Write<BaseB2Response> writer) {
-        this.writer = writer;
-        return this;
     }
 }
 

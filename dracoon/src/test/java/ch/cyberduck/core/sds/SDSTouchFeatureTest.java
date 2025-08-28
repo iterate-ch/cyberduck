@@ -62,7 +62,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testTouchFileRoot() throws Exception {
         try {
             final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-            new SDSTouchFeature(session, nodeid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+            new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Error -80001. Parent ID must be positive. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -74,12 +74,12 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testInvalidName() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
             final SDSTouchFeature feature = new SDSTouchFeature(session, nodeid);
             assertFalse(feature.isSupported(room, "?"));
             assertThrows(InvalidFilenameException.class, () -> feature.preflight(room, "?"));
-            feature.touch(new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
+            feature.touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Error -40755. Illegal file name='CON'. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -94,12 +94,12 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testInvalidCharacter() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
             final SDSTouchFeature feature = new SDSTouchFeature(session, nodeid);
             assertFalse(feature.isSupported(room, "?"));
             assertThrows(InvalidFilenameException.class, () -> feature.preflight(room, "?"));
-            feature.touch(new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
+            feature.touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Error -40755. Illegal file name='?'. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -114,9 +114,9 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testTouch() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(
-                new Path(room, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("text/plain"));
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("text/plain"));
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         assertEquals(test.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId());
@@ -127,7 +127,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testQuota() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final UpdateRoomRequest updateRoomRequest = new UpdateRoomRequest();
         final long quota = 1L + PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize");
         updateRoomRequest.setQuota(quota);

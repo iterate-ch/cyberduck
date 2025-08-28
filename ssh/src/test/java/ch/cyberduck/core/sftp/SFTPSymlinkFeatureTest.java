@@ -14,7 +14,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -25,7 +24,7 @@ public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
     public void testSymlink() throws Exception {
         final SFTPHomeDirectoryService workdir = new SFTPHomeDirectoryService(session);
         final Path target = new Path(workdir.find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(target, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), target, new TransferStatus());
         final Path link = new Path(workdir.find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new SFTPSymlinkFeature(session).symlink(link, target.getName());
         assertTrue(new SFTPFindFeature(session).find(link));

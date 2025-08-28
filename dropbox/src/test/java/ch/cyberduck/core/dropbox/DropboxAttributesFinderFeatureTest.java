@@ -39,12 +39,12 @@ public class DropboxAttributesFinderFeatureTest extends AbstractDropboxTest {
     @Test
     public void testFindFile() throws Exception {
         final Path root = new DefaultHomeFinderService(session).find();
-        final Path folder = new DropboxDirectoryFeature(session).mkdir(new Path(root,
+        final Path folder = new DropboxDirectoryFeature(session).mkdir(new DropboxWriteFeature(session), new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         final DropboxAttributesFinderFeature f = new DropboxAttributesFinderFeature(session);
         assertEquals(-1L, f.find(folder).getModificationDate());
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(file, new TransferStatus());
+        new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), file, new TransferStatus());
         final PathAttributes attr = f.find(file);
         assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", attr.getChecksum().hash);
         assertNotEquals(-1L, attr.getModificationDate());

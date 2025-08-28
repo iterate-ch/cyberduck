@@ -56,7 +56,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
             new SDSReadFeature(session, nodeid).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
@@ -72,7 +72,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         writeStatus.setLength(content.length);
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<Node> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
@@ -98,9 +98,9 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
     public void testReadRange() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1023);
         final OutputStream out = local.getOutputStream(false);
@@ -131,9 +131,9 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
     public void testReadRangeUnknownLength() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);
         final OutputStream out = local.getOutputStream(false);
@@ -168,7 +168,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         writeStatus.setLength(content.length);
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<Node> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
@@ -184,8 +184,8 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
     public void testChangedNodeId() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getVersionId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server

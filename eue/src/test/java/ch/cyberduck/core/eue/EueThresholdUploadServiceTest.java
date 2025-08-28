@@ -46,7 +46,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
     public void testUploadSimpleFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueThresholdUploadService service = new EueThresholdUploadService(session, fileid, VaultRegistry.DISABLED);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
@@ -72,7 +72,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
     public void testUploadLargeFileInChunks() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueThresholdUploadService service = new EueThresholdUploadService(session, fileid, VaultRegistry.DISABLED);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);

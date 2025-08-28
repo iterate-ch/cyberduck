@@ -58,7 +58,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testMove() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(PathAttributes.EMPTY, test.attributes());
         final TransferStatus status = new TransferStatus();
         new DAVTimestampFeature(session).setTimestamp(test, status.setModified(5000L));
@@ -78,7 +78,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
     @Test
     public void testMoveDirectory() throws Exception {
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new CteraDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final byte[] content = RandomUtils.nextBytes(3547);
@@ -107,11 +107,11 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
     @Test
     public void testMoveOverride() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new CteraTouchFeature(session).touch(test, new TransferStatus());
+        new CteraTouchFeature(session).touch(new CteraWriteFeature(session), test, new TransferStatus());
         final PathAttributes testAttributes = new CteraAttributesFinderFeature(session).find(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         Thread.sleep(1000L);
-        new CteraTouchFeature(session).touch(target, new TransferStatus());
+        new CteraTouchFeature(session).touch(new CteraWriteFeature(session), target, new TransferStatus());
         final PathAttributes targetAttributes = new CteraAttributesFinderFeature(session).find(target);
         assertThrows(ConflictException.class, () -> new CteraMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         Thread.sleep(1000L);

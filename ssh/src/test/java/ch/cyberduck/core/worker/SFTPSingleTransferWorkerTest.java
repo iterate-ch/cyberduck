@@ -31,7 +31,7 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
@@ -42,7 +42,6 @@ import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPDirectoryFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.sftp.SFTPUploadFeature;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -130,8 +129,8 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
-                if(type == Upload.class) {
-                    return (T) new SFTPUploadFeature(this);
+                if(type == Write.class) {
+                    return (T) write;
                 }
                 return super._getFeature(type);
             }
@@ -204,7 +203,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         final BytecountStreamListener counter = new BytecountStreamListener();
         final Path remotedirectory = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(),
                 EnumSet.of(Path.Type.directory));
-        new SFTPDirectoryFeature(session).mkdir(remotedirectory, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), remotedirectory, new TransferStatus());
         final Path remotefile = new Path(remotedirectory, local.getName(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(8576);

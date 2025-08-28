@@ -63,7 +63,7 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
     public void testSetClassBucket() throws Exception {
         final TransferStatus status = new TransferStatus();
         status.setStorageClass("MULTI_REGIONAL");
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory)),
+        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory)),
                 status);
         final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session);
         assertEquals("MULTI_REGIONAL", feature.getClass(test));
@@ -80,7 +80,7 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
     @Test
     public void testSetClassObject() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory));
-        final Path test = new GoogleStorageTouchFeature(session).touch(new Path(bucket,
+        final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session);
         assertEquals("STANDARD", feature.getClass(test));

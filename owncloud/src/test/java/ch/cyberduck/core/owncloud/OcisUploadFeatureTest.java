@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
+import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.tus.TusCapabilities;
 import ch.cyberduck.core.tus.TusWriteFeature;
@@ -59,7 +60,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
                 .withExtension(TusCapabilities.Extension.checksum)
                 .withExtension(TusCapabilities.Extension.creation);
         final OcisUploadFeature feature = new OcisUploadFeature(session, capabilities);
-        final Path directory = new DAVDirectoryFeature(session).mkdir(new Path(new OwncloudHomeFeature(session.getHost()).find(),
+        final Path directory = new DAVDirectoryFeature(session).mkdir(new NextcloudWriteFeature(session), new Path(new OwncloudHomeFeature(session.getHost()).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));

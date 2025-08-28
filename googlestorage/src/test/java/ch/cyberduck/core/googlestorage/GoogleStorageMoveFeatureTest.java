@@ -46,7 +46,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
     public void testMove() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageTouchFeature(session).touch(
-                new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMetadata(Collections.singletonMap("cyberduck", "set")));
+                new GoogleStorageWriteFeature(session), new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMetadata(Collections.singletonMap("cyberduck", "set")));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertFalse(new GoogleStorageMetadataFeature(session).getMetadata(test).isEmpty());
         final Path renamed = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -69,7 +69,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path placeholder = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageTouchFeature(session).touch(test, new TransferStatus());
+        new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), test, new TransferStatus());
         final Path renamed = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new GoogleStorageFindFeature(session).find(test));
@@ -92,7 +92,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         final GoogleStorageTouchFeature touch = new GoogleStorageTouchFeature(session);
         final TransferStatus status = new TransferStatus();
         status.setEncryption(new Encryption.Algorithm("AES256", null));
-        touch.touch(test, status);
+        touch.touch(new GoogleStorageWriteFeature(session), test, status);
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());

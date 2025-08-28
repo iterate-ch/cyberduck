@@ -47,7 +47,7 @@ public class BoxLargeUploadServiceTest extends AbstractBoxTest {
     public void testUploadLargeFileInChunks() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final BoxLargeUploadService s = new BoxLargeUploadService(session, fileid);
-        final Path container = new BoxDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path container = new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));

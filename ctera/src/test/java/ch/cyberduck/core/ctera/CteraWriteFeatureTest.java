@@ -45,7 +45,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         final String rootEtag = new CteraAttributesFinderFeature(session).find(root).getETag();
         // ETag is not constant for "My Files"
         // assertEquals(rootEtag, new CteraAttributesFinderFeature(session).find(root).getETag());
-        final Path folder = new CteraDirectoryFeature(session).mkdir(new Path(root,
+        final Path folder = new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String folderEtag = new CteraAttributesFinderFeature(session).find(folder).getETag();
         assertEquals(folderEtag, new CteraAttributesFinderFeature(session).find(folder).getETag());
@@ -86,7 +86,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
     @Test
     public void testReplaceContent() throws Exception {
         final Path root = new DefaultHomeFinderService(session).find();
-        final Path folder = new CteraDirectoryFeature(session).mkdir(new Path(root,
+        final Path folder = new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

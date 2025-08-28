@@ -30,7 +30,7 @@ public class SwiftTouchFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SwiftWriteFeature(session, new SwiftRegionService(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(test);
         assertEquals(test.attributes().getChecksum(), attributes.getChecksum());
         assertNotEquals(-1L, attributes.getModificationDate());

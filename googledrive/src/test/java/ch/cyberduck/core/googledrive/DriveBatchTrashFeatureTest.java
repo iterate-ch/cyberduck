@@ -48,7 +48,7 @@ public class DriveBatchTrashFeatureTest extends AbstractDriveTest {
     public void testDeleteFromTrash() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path file = new DriveTouchFeature(session, fileid).touch(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String fileId = file.attributes().getFileId();
         new DriveBatchTrashFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new DriveFindFeature(session, fileid).find(file));

@@ -47,7 +47,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
     @Test
     public void testCopyEmptyFile() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BrickTouchFeature(session).touch(test, new TransferStatus());
+        new BrickTouchFeature(session).touch(new BrickWriteFeature(session), test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BrickCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new BrickFindFeature(session).find(test));
@@ -78,7 +78,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
     @Test
     public void testCopyToExistingFile() throws Exception {
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new BrickDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), test.getName());
         final byte[] random = RandomUtils.nextBytes(2547);
@@ -89,7 +89,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         local.delete();
         assertTrue(new BrickFindFeature(session).find(test));
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BrickTouchFeature(session).touch(copy, new TransferStatus());
+        new BrickTouchFeature(session).touch(new BrickWriteFeature(session), copy, new TransferStatus());
         new BrickCopyFeature(session).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
@@ -102,7 +102,7 @@ public class BrickCopyFeatureTest extends AbstractBrickTest {
         final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
-        new BrickDirectoryFeature(session).mkdir(directory, new TransferStatus());
+        new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), directory, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), file.getName());
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));

@@ -50,9 +50,9 @@ public class DriveVersioningFeatureTest extends AbstractDriveTest {
     public void testList() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path room = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DriveAttributesFinderFeature attr = new DriveAttributesFinderFeature(session, fileid);
-        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(test.attributes().getVersionId(), attr.find(test).getVersionId());
         final DriveVersioningFeature feature = new DriveVersioningFeature(session, fileid);
         assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());

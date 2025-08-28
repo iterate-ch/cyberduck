@@ -128,7 +128,7 @@ public class IRODSReadFeatureTest extends VaultTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new IRODSTouchFeature(session).touch(test, new TransferStatus());
+        new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(2048);

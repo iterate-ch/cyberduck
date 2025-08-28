@@ -27,6 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.eue.AbstractEueSessionTest;
 import ch.cyberduck.core.eue.EueAttributesFinderFeature;
 import ch.cyberduck.core.eue.EueDeleteFeature;
@@ -36,6 +37,7 @@ import ch.cyberduck.core.eue.EueMultipartWriteFeature;
 import ch.cyberduck.core.eue.EueReadFeature;
 import ch.cyberduck.core.eue.EueResourceIdProvider;
 import ch.cyberduck.core.eue.EueUploadService;
+import ch.cyberduck.core.eue.EueWriteFeature;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -74,7 +76,7 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
     @Test
     public void testUploadVault() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().setLength(0L));
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().setLength(0L));
         final Path vault = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -88,10 +90,10 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
+        final CryptoUploadFeature<EueWriteFeature.Chunk> feature = new CryptoUploadFeature<>(session,
                 new EueUploadService(session),
                 cryptomator);
-        feature.upload(new EueMultipartWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
+        feature.upload(new CryptoWriteFeature<>(session, new EueMultipartWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));
@@ -108,7 +110,7 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
     @Test
     public void testUploadVaultWithBulkFeature() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().setLength(0L));
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus().setLength(0L));
         final Path vault = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -124,10 +126,10 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final BytecountStreamListener count = new BytecountStreamListener();
-        final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
+        final CryptoUploadFeature<EueWriteFeature.Chunk> feature = new CryptoUploadFeature<>(session,
                 new EueUploadService(session),
                 cryptomator);
-        feature.upload(new EueMultipartWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
+        feature.upload(new CryptoWriteFeature<>(session, new EueMultipartWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));

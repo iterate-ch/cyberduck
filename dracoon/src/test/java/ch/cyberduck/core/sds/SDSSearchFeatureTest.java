@@ -45,9 +45,9 @@ public class SDSSearchFeatureTest extends AbstractSDSTest {
         final String name = new NFDNormalizer().normalize(String.format("ä%s", new AlphanumericRandomStringService().random())).toString();
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path directory = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path directory = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final SDSSearchFeature feature = new SDSSearchFeature(session, nodeid);
         assertTrue(feature.search(room, new SearchFilter(name), new DisabledListProgressListener(), 1).contains(file));
         assertTrue(feature.search(room, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener(), 1).contains(file));
@@ -60,9 +60,9 @@ public class SDSSearchFeatureTest extends AbstractSDSTest {
         catch(NotfoundException e) {
             //
         }
-        final Path subdir = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path subdir = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener(), 1).find(new SimplePathPredicate(file)));
-        final Path filesubdir = new SDSTouchFeature(session, nodeid).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path filesubdir = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final AttributedList<Path> result = feature.search(directory, new SearchFilter(filesubdir.getName()), new DisabledListProgressListener(), 1);
             assertNotNull(result.find(new SimplePathPredicate(filesubdir)));

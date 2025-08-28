@@ -25,6 +25,7 @@ import ch.cyberduck.core.googlestorage.AbstractGoogleStorageTest;
 import ch.cyberduck.core.googlestorage.GoogleStorageDirectoryFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageFindFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageTouchFeature;
+import ch.cyberduck.core.googlestorage.GoogleStorageWriteFeature;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -46,7 +47,7 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageTouchFeature(session).touch(source, new TransferStatus());
+        new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), source, new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -59,11 +60,11 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
     public void testCopyFileToDirectory() throws Exception {
         final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageTouchFeature(session).touch(sourceFile, new TransferStatus());
+        new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), sourceFile, new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageDirectoryFeature(session).mkdir(targetFolder, new TransferStatus());
+        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), targetFolder, new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -78,8 +79,8 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageDirectoryFeature(session).mkdir(folder, new TransferStatus());
-        new GoogleStorageTouchFeature(session).touch(sourceFile, new TransferStatus());
+        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), folder, new TransferStatus());
+        new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), sourceFile, new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(folder));
         assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
         // move directory into vault

@@ -61,13 +61,13 @@ public class BrickDeleteFeatureTest extends AbstractBrickTest {
     @Test
     @Ignore
     public void testDeleteRecursively() throws Exception {
-        final Path room = new BrickDirectoryFeature(session).mkdir(new Path(
+        final Path room = new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path folder = new BrickDirectoryFeature(session).mkdir(new Path(room,
+        final Path folder = new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), new Path(room,
             new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new BrickFindFeature(session).find(folder));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BrickTouchFeature(session).touch(file, new TransferStatus());
+        new BrickTouchFeature(session).touch(new BrickWriteFeature(session), file, new TransferStatus());
         assertTrue(new BrickFindFeature(session).find(file));
         new BrickDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new BrickFindFeature(session).find(folder));

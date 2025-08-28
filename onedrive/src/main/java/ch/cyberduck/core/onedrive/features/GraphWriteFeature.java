@@ -161,7 +161,7 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
                     log.warn("Abort upload session {} with no completed parts", upload);
                     // Use touch feature for empty file upload
                     upload.cancelUpload();
-                    new GraphTouchFeature(session, fileid).touch(file, overall);
+                    new GraphTouchFeature(session, fileid).touch(GraphWriteFeature.this, file, overall);
                 }
             }
             catch(BackgroundException e) {

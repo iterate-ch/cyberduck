@@ -41,15 +41,12 @@ public class AzureDirectoryFeature implements Directory<Void> {
     private final PathContainerService containerService
             = new DirectoryDelimiterPathContainerService();
 
-    private Write<Void> writer;
-
     public AzureDirectoryFeature(final AzureSession session) {
         this.session = session;
-        this.writer = new AzureWriteFeature(session);
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 // Container name must be lower case.
@@ -59,7 +56,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
             else {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
-                return new AzureTouchFeature(session).withWriter(writer).touch(folder.withType(type),
+                return new AzureTouchFeature(session).touch(writer, folder.withType(type),
                         status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
             }
         }
@@ -96,11 +93,5 @@ public class AzureDirectoryFeature implements Directory<Void> {
             }
         }
         return true;
-    }
-
-    @Override
-    public Directory<Void> withWriter(final Write<Void> writer) {
-        this.writer = writer;
-        return this;
     }
 }

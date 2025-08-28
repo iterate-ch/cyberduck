@@ -168,7 +168,7 @@ public class CryptoVault implements Vault {
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
         }
-        final Path vault = directory.mkdir(home, status);
+        final Path vault = directory.mkdir(session._getFeature(Write.class), home, status);
         new ContentWriter(session).write(masterkey, mkArray.toByteArray());
         if(VAULT_VERSION == version) {
             // Create vaultconfig.cryptomator
@@ -191,9 +191,9 @@ public class CryptoVault implements Vault {
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         log.debug("Create vault root directory at {}", secondLevel);
-        directory.mkdir(dataDir, status);
-        directory.mkdir(firstLevel, status);
-        directory.mkdir(secondLevel, status);
+        directory.mkdir(session._getFeature(Write.class), dataDir, status);
+        directory.mkdir(session._getFeature(Write.class), firstLevel, status);
+        directory.mkdir(session._getFeature(Write.class), secondLevel, status);
         return vault;
     }
 
@@ -632,12 +632,12 @@ public class CryptoVault implements Vault {
             }
             if(type == Touch.class) {
                 // Use default touch feature because touch with remote implementation will not add encrypted file header
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Write.class)), session._getFeature(Write.class), this);
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
             }
             if(type == Directory.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class), this) :
-                        new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class), this)
+                        new CryptoDirectoryV6Feature(session, (Directory) delegate, this) :
+                        new CryptoDirectoryV7Feature(session, (Directory) delegate, this)
                 );
             }
             if(type == Upload.class) {

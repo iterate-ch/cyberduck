@@ -25,6 +25,7 @@ import ch.cyberduck.core.box.io.swagger.client.model.FoldersParent;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
@@ -41,7 +42,7 @@ public class BoxDirectoryFeature implements Directory<File> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<File> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             return new Path(folder).withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
                     new FoldersApi(new BoxApiClient(session.getClient())).postFolders(new FoldersBody()

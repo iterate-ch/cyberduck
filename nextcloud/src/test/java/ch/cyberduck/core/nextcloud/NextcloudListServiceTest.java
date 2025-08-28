@@ -56,7 +56,7 @@ public class NextcloudListServiceTest extends AbstractNextcloudTest {
 
     @Test(expected = NotfoundException.class)
     public void testListFileException() throws Exception {
-        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new DAVTouchFeature(session).touch(new NextcloudWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final AttributedList<Path> list = new NextcloudListService(session).list(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
@@ -70,12 +70,12 @@ public class NextcloudListServiceTest extends AbstractNextcloudTest {
     @Test
     public void testList() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path directory = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(new NextcloudWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final PathAttributes directoryAttributes = new DAVAttributesFinderFeature(session).find(directory);
         final String folderEtag = directoryAttributes.getETag();
         final long folderTimestamp = directoryAttributes.getModificationDate();
         Thread.sleep(1000L);
-        final Path test = new DAVTouchFeature(new NextcloudWriteFeature(session)).touch(new Path(directory,
+        final Path test = new DAVTouchFeature(session).touch(new NextcloudWriteFeature(session), new Path(directory,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(Protocol.DirectoryTimestamp.implicit, session.getHost().getProtocol().getDirectoryTimestamp());
         assertNotEquals(folderTimestamp, new DAVAttributesFinderFeature(session).find(directory).getModificationDate());

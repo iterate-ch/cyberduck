@@ -45,7 +45,7 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testRead() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(5423);
         createFile(fileid, file, content);
@@ -64,7 +64,7 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
     public void testReadRange() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1000);
         final Path test = createFile(fileid, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), content);
         final TransferStatus status = new TransferStatus();
@@ -87,7 +87,7 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = createFile(fileid, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), content);
         // Unknown length in status
         final TransferStatus readStatus = new TransferStatus();

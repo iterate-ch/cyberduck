@@ -44,16 +44,13 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
-    private Write<StorageObject> writer;
-
     public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
         this.session = session;
         this.containerService = new GoogleStoragePathContainerService();
-        this.writer = new GoogleStorageWriteFeature(session);
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 final Storage.Buckets.Insert request = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
@@ -70,7 +67,7 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 // Add placeholder object
-                return new GoogleStorageTouchFeature(session).withWriter(writer).touch(folder.withType(type),
+                return new GoogleStorageTouchFeature(session).touch(writer, folder.withType(type),
                         status.setMime(MIMETYPE));
             }
         }

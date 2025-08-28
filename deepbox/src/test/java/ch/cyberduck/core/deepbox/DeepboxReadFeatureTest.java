@@ -60,7 +60,7 @@ public class DeepboxReadFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxDirectoryFeature(session, nodeid).mkdir(
-                new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DeepboxWriteFeature(session, nodeid), new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertThrows(NotfoundException.class, () -> new DeepboxReadFeature(session, nodeid).read(new Path(test, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

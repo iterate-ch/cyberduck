@@ -52,7 +52,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acl).touch(test, new TransferStatus()
+        new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus()
                 .setMetadata(Collections.singletonMap("app", "cyberduck"))
                 .setMime("text/plain"));
         final S3MetadataFeature feature = new S3MetadataFeature(session, acl);
@@ -75,7 +75,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session, acl).touch(
-                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3MetadataFeature feature = new S3MetadataFeature(session, acl);
         final Map<String, String> metadata = feature.getMetadata(test);
 
@@ -106,7 +106,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acls = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acls).touch(test, new TransferStatus());
+        new S3TouchFeature(session, acls).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         final S3MetadataFeature feature = new S3MetadataFeature(session, acls);
         final Map<String, String> reference = feature.getMetadata(test);
 
@@ -150,7 +150,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acl).touch(test, new TransferStatus());
+        new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         final S3MetadataFeature feature = new S3MetadataFeature(session, acl);
         assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
         feature.setMetadata(test, Collections.singletonMap("Content-type", "text/plain"));

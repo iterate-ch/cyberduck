@@ -31,7 +31,7 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
     @Test
     public void testDeleteFile() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new CteraTouchFeature(session).touch(test, new TransferStatus());
+        new CteraTouchFeature(session).touch(new CteraWriteFeature(session), test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
         new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
@@ -40,7 +40,7 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
     @Test(expected = RetriableAccessDeniedException.class)
     public void testDeleteFileWithLock() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new CteraTouchFeature(session).touch(test, new TransferStatus());
+        new CteraTouchFeature(session).touch(new CteraWriteFeature(session), test, new TransferStatus());
         String lock = null;
         try {
             lock = new DAVLockFeature(session).lock(test);
@@ -56,9 +56,9 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
     @Test
     public void testDeleteDirectory() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new CteraDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
-        new CteraTouchFeature(session).touch(new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }

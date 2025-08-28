@@ -13,6 +13,7 @@ import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPTouchFeature;
 import ch.cyberduck.core.sftp.SFTPUnixPermissionFeature;
+import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -38,7 +39,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSFTPTest {
         final AttributesFinder f = new DefaultAttributesFinderFeature(session);
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(file, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), file, new TransferStatus());
         new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission("-rw-rw-rw-"));
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());

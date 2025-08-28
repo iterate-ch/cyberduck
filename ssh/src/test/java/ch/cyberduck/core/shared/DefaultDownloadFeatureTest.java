@@ -54,7 +54,7 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
     @Test
     public void testTransferAppend() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test, new TransferStatus());
+        session.getFeature(Touch.class).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {
@@ -91,7 +91,7 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
     @Test
     public void testTransferUnknownSize() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test, new TransferStatus());
+        session.getFeature(Touch.class).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final byte[] content = new byte[1];
         new Random().nextBytes(content);
         {

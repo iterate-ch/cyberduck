@@ -141,7 +141,7 @@ public class OwncloudSession extends DAVSession {
             return (T) new DAVDirectoryFeature(this, new OwncloudAttributesFinderFeature(this));
         }
         if(type == Touch.class) {
-            return (T) new DAVTouchFeature(new NextcloudWriteFeature(this));
+            return (T) new DAVTouchFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new OwncloudAttributesFinderFeature(this);

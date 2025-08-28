@@ -45,7 +45,7 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
     public void testUploadLargeFileInChunks() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueUploadService s = new EueUploadService(session);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.file));

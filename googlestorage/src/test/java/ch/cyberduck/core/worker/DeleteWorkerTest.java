@@ -28,6 +28,7 @@ import ch.cyberduck.core.googlestorage.GoogleStorageDeleteFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageDirectoryFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageFindFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageTouchFeature;
+import ch.cyberduck.core.googlestorage.GoogleStorageWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -48,10 +49,10 @@ public class DeleteWorkerTest extends AbstractGoogleStorageTest {
     public void testDelete() throws Exception {
         final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new GoogleStorageDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new GoogleStorageWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(folder));
         final Path file = new GoogleStorageTouchFeature(session).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new GoogleStorageWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
         assertTrue(new GoogleStorageFindFeature(session).find(file));
         final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener());

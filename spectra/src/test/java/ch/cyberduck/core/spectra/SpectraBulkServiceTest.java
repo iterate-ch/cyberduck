@@ -48,8 +48,8 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
     public void testPreUploadSingleFile() throws Exception {
         final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         files.put(new TransferItem(file), status.setLength(1L));
         final SpectraBulkService bulk = new SpectraBulkService(session);
@@ -63,8 +63,8 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
     @Test
     public void testPreUploadDirectoryFile() throws Exception {
         final Map<TransferItem, TransferStatus> files = new HashMap<>();
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path directory = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final TransferStatus directoryStatus = new TransferStatus().setLength(0L);
         files.put(new TransferItem(directory), directoryStatus);
@@ -97,8 +97,8 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
     public void testPreUploadLargeFile() throws Exception {
         final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         files.put(new TransferItem(file),
                 // 11GB
@@ -129,8 +129,8 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
     public void testPreUploadMultipleLargeFile() throws Exception {
         final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         files.put(new TransferItem(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))),
             // 11GB
                 status.setLength(118111600640L)

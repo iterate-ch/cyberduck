@@ -29,7 +29,7 @@ import java.text.MessageFormat;
 public class BoxTouchFeature extends DefaultTouchFeature<File> {
 
     public BoxTouchFeature(final BoxSession session, final BoxFileidProvider fileid) {
-        super(new BoxWriteFeature(session, fileid));
+        super(session);
     }
 
     @Override

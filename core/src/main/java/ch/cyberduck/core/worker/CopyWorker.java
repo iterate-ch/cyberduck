@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -86,7 +87,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                     if(r.getKey().isDirectory() && !copy.isRecursive(r.getKey(), r.getValue())) {
                         // Create directory unless copy implementation is recursive
                         final Directory directory = session.getFeature(Directory.class);
-                        result.put(r.getKey(), directory.mkdir(r.getValue(),
+                        result.put(r.getKey(), directory.mkdir(session.getFeature(Write.class), r.getValue(),
                                 new TransferStatus().setLength(0L).setRegion(r.getKey().attributes().getRegion())));
                     }
                     else {

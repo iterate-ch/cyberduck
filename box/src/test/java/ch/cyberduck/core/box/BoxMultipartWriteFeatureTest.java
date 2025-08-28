@@ -51,7 +51,7 @@ public class BoxMultipartWriteFeatureTest extends AbstractBoxTest {
         final BoxMultipartWriteFeature feature = new BoxMultipartWriteFeature(session, fileid);
         // Makes sure to test overwrite
         final Path file = new BoxTouchFeature(session, fileid).touch(
-                new Path(Home.root(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(Home.root(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(21 * 1024 * 1024);
         final TransferStatus status = new TransferStatus()
                 .setRemote(file.attributes())

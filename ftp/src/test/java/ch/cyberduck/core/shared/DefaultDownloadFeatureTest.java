@@ -53,7 +53,7 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
     @Test
     public void testTransferAppend() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new FTPTouchFeature(session).touch(test, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {

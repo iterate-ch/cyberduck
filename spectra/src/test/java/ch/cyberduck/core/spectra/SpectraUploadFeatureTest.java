@@ -54,8 +54,8 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
         final SpectraBulkService bulk = new SpectraBulkService(session);
@@ -96,8 +96,8 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
             out.close();
             status2 = new TransferStatus().setLength(content.length);
         }
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test1 = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path test2 = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SpectraBulkService bulk = new SpectraBulkService(session);

@@ -105,7 +105,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
     @Test
     public void testAppendZeroBytes() throws Exception {
         final DAVUploadFeature feature = new DAVUploadFeature(session);
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(feature.append(test, new TransferStatus().setExists(true).setLength(0L).setRemote(new DAVAttributesFinderFeature(session).find(test))).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

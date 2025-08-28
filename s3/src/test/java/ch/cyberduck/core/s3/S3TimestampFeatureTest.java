@@ -44,7 +44,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket,
+        final Path test = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
                         new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
                 status.setCreated(1695159781972L).setModified(1530305150672L));
         final String versionId = test.attributes().getVersionId();

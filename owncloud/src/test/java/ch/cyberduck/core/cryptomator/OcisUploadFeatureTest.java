@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.owncloud.AbstractOcisTest;
 import ch.cyberduck.core.owncloud.OcisUploadFeature;
 import ch.cyberduck.core.owncloud.OwncloudAttributesFinderFeature;
@@ -72,7 +73,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
     @Test
     public void testUploadVault() throws Exception {
         // 5L * 1024L * 1024L
-        final Path directory = new DAVDirectoryFeature(session).mkdir(new Path(new OwncloudHomeFeature(session.getHost()).find(),
+        final Path directory = new DAVDirectoryFeature(session).mkdir(new NextcloudWriteFeature(session), new Path(new OwncloudHomeFeature(session.getHost()).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final CryptoVault cryptomator = new CryptoVault(
                 new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));

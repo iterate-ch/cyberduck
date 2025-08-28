@@ -26,7 +26,14 @@ import java.text.MessageFormat;
 @Optional
 public interface Touch<Reply> {
 
-    Path touch(Path file, TransferStatus status) throws BackgroundException;
+    /**
+     *
+     * @param writer Write feature used in default implementations for placeholder files
+     * @param file   File
+     * @param status Transfer status
+     * @return File including latest attributes from server
+     */
+    Path touch(Write<Reply> writer, Path file, TransferStatus status) throws BackgroundException;
 
     /**
      * @param workdir  Working directory
@@ -41,10 +48,6 @@ public interface Touch<Reply> {
         catch(BackgroundException e) {
             return false;
         }
-    }
-
-    default Touch<Reply> withWriter(Write<Reply> writer) {
-        return this;
     }
 
     /**

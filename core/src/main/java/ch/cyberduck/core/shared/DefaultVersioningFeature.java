@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.FilenameComparator;
@@ -110,7 +111,7 @@ public class DefaultVersioningFeature implements Versioning {
         final Path directory = version.getParent();
         if(!session.getFeature(Find.class).find(directory)) {
             log.debug("Create directory {} for versions", directory);
-            session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+            session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), directory, new TransferStatus());
         }
         log.debug("Rename existing file {} to {}", file, version);
         feature.move(file, version,

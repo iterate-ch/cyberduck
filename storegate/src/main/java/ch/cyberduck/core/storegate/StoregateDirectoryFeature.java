@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFolderRequest;
@@ -39,7 +40,7 @@ public class StoregateDirectoryFeature implements Directory<File> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<File> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
             final CreateFolderRequest request = new CreateFolderRequest();

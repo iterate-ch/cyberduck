@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,7 +45,7 @@ public class DriveTouchFeature implements Touch<File> {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<File> writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
             try {
                 if(!new DriveAttributesFinderFeature(session, fileid).find(file).isTrashed()) {

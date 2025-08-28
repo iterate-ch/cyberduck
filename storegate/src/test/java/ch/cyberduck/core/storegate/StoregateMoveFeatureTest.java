@@ -44,10 +44,10 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
     public void testMove() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final TransferStatus status = new TransferStatus();
-        final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final Path test = new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final String fileid = test.attributes().getFileId();
         final Path target = new StoregateMoveFeature(session, nodeid).move(test, new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(fileid, target.attributes().getFileId());
@@ -63,9 +63,9 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
     public void testMoveWithLock() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String fileid = test.attributes().getFileId();
         final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -81,13 +81,13 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
     public void testMoveToDifferentFolder() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path folder1 = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path folder2 = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(folder1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(test, new TransferStatus());
+        new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), test, new TransferStatus());
         final Path target = new Path(folder2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DefaultFindFeature(session).find(test));
@@ -100,11 +100,11 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
     public void testMoveDirectory() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String foldername = new AlphanumericRandomStringService().random();
-        final Path test = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room, foldername, EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path testsub = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(room, foldername, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path testsub = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -117,12 +117,12 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
     public void testMoveOverride() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
-        final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(target, new TransferStatus());
+        new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), target, new TransferStatus());
         new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DefaultFindFeature(session).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new DefaultFindFeature(session).find(target));
@@ -133,12 +133,12 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
     public void testMoveToDifferentParentAndRename() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
-        final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(target, new TransferStatus());
+        new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), target, new TransferStatus());
         new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DefaultFindFeature(session).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new DefaultFindFeature(session).find(target));

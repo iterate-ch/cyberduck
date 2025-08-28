@@ -52,7 +52,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
 
     @Test
     public void testReadChunk() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(65536);
         final OutputStream out = local.getOutputStream(false);

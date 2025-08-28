@@ -57,7 +57,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final AttributesFinder f = new DefaultAttributesFinderFeature(session);
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new DriveTouchFeature(session, fileid).touch(new Path(
+        final Path file = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(
                 DriveHomeFinderService.MYDRIVE_FOLDER, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String initialFileid = file.attributes().getFileId();
         assertNotNull(initialFileid);

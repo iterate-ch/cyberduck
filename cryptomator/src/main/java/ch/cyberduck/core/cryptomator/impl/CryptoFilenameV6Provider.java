@@ -24,6 +24,7 @@ import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -93,13 +94,13 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
         final Directory mkdir = session._getFeature(Directory.class);
         final Find find = session._getFeature(Find.class);
         if(!find.find(metadataRoot)) {
-            mkdir.mkdir(metadataRoot, new TransferStatus());
+            mkdir.mkdir(session._getFeature(Write.class), metadataRoot, new TransferStatus());
         }
         if(!find.find(firstLevel)) {
-            mkdir.mkdir(firstLevel, new TransferStatus());
+            mkdir.mkdir(session._getFeature(Write.class), firstLevel, new TransferStatus());
         }
         if(!find.find(secondLevel)) {
-            mkdir.mkdir(secondLevel, new TransferStatus());
+            mkdir.mkdir(session._getFeature(Write.class), secondLevel, new TransferStatus());
         }
         if(!find.find(metadataFile)) {
             new ContentWriter(session).write(metadataFile, longFileNameBytes);

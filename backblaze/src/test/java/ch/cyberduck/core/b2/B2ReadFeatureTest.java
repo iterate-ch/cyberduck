@@ -120,7 +120,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(1000);
@@ -152,7 +152,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(1000);
@@ -200,8 +200,8 @@ public class B2ReadFeatureTest extends AbstractB2Test {
     public void testChangedNodeId() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getVersionId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server

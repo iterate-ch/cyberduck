@@ -37,8 +37,8 @@ public class BrickDirectoryFeatureTest extends AbstractBrickTest {
     @Test
     public void testMakeDirectory() throws Exception {
         final Path directory = new BrickDirectoryFeature(session).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertThrows(ConflictException.class, () -> new BrickDirectoryFeature(session).mkdir(directory, new TransferStatus()));
+                new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertThrows(ConflictException.class, () -> new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), directory, new TransferStatus()));
         new BrickDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

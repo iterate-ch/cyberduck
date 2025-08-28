@@ -51,25 +51,25 @@ public class EueTouchFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testConflict() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path file = new EueTouchFeature(session, fileid).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+        final Path file = new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         // Create conflict
-        assertThrows(ConflictException.class, () -> new EueTouchFeature(session, fileid).touch(file, new TransferStatus().setLength(0L)));
+        assertThrows(ConflictException.class, () -> new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), file, new TransferStatus().setLength(0L)));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testCaseSensitivity() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
         final Path file = new EueTouchFeature(session, fileid)
-                .touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+                .touch(new EueWriteFeature(session, fileid), new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         // Create conflict
         assertThrows(ConflictException.class, () -> new EueTouchFeature(session, fileid)
-                .touch(new Path(container, StringUtils.capitalize(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L)));
+                .touch(new EueWriteFeature(session, fileid), new Path(container, StringUtils.capitalize(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L)));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
