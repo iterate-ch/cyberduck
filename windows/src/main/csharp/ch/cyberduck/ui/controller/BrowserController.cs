@@ -358,10 +358,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_LockUnlockVault()
         {
             Path directory = new UploadTargetFinder(Workdir).find(SelectedPath);
-            if (directory.attributes().getVault() != null)
+            if (directory.attributes().getVaultMetadata() != null)
             {
                 // Lock and remove all open vaults
-                LockVaultAction lockVault = new LockVaultAction(this, Pool.getVaultRegistry(), directory.attributes().getVault());
+                LockVaultAction lockVault = new LockVaultAction(this, Pool.getVaultRegistry(), directory.attributes().getVaultMetadata().root);
                 Background(lockVault);
             }
             else
@@ -2069,7 +2069,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewVault()
         {
             return IsMounted() && Pool.getVaultRegistry() != VaultRegistry.DISABLED &&
-                   null == Workdir.attributes().getVault() &&
+                   null == Workdir.attributes().getVaultMetadata() &&
                    ((Directory)Pool.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }

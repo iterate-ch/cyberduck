@@ -48,6 +48,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
 import ch.cyberduck.core.worker.AttributesWorker;
@@ -247,7 +248,7 @@ public class Terminal {
                 log.debug("Attempting to load vault from {}", vault);
                 try {
                     this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVaultRegistry(),
-                            new TerminalPasswordCallback()), vault)));
+                            new TerminalPasswordCallback()), new VaultMetadata(vault, VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default"))))));
                 }
                 catch(TerminalBackgroundException e) {
                     return Exit.failure;

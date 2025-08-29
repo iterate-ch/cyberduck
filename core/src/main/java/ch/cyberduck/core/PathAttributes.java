@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -145,6 +146,11 @@ public class PathAttributes extends Attributes implements Serializable {
      * Cryptomator vault
      */
     private Path vault;
+
+    /**
+     * Cryptomator vault metadata
+     */
+    private VaultMetadata vaultMetadata;
     /**
      * Cryptomator decrypted path
      */
@@ -199,6 +205,7 @@ public class PathAttributes extends Attributes implements Serializable {
         custom = new HashMap<>(copy.custom);
         verdict = copy.verdict;
         vault = copy.vault;
+        vaultMetadata = copy.vaultMetadata;
         decrypted = copy.decrypted;
         encrypted = copy.encrypted;
         directoryId = copy.directoryId;
@@ -285,6 +292,16 @@ public class PathAttributes extends Attributes implements Serializable {
             }
             else {
                 dict.setObjectForKey(vault, "Vault");
+            }
+        }
+        if(vaultMetadata != null) {
+            if(vaultMetadata.root != null) {
+                if(vaultMetadata.root.attributes() == this) {
+                    log.debug("Skip serializing vault metadata root attribute {} to avoid recursion", vaultMetadata.root);
+                }
+                else {
+                    dict.setObjectForKey(vaultMetadata, "Vault Metadata");
+                }
             }
         }
         if(!custom.isEmpty()) {
@@ -532,6 +549,15 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public Path getVault() {
         return vault;
+    }
+
+    public PathAttributes setVaultMetadata(final VaultMetadata vaultMetadata) {
+        this.vaultMetadata = vaultMetadata;
+        return this;
+    }
+
+    public VaultMetadata getVaultMetadata() {
+        return vaultMetadata;
     }
 
     /**
