@@ -19,7 +19,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -82,6 +82,9 @@ public class VaultRegistryTrashFeature implements Trash {
         }
         catch(VaultUnlockCancelException e) {
             return proxy.features(file);
+        }
+        catch(UnsupportedException e) {
+            return EnumSet.noneOf(Flags.class);
         }
     }
 

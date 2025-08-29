@@ -19,6 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
@@ -64,6 +65,9 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
         catch(VaultUnlockCancelException e) {
             return proxy.getAvailableAclUsers(files);
         }
+        catch(UnsupportedException e) {
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -77,6 +81,9 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
         }
         catch(VaultUnlockCancelException e) {
             return proxy.getAvailableAclRoles(files);
+        }
+        catch(UnsupportedException e) {
+            return Collections.emptyList();
         }
     }
 

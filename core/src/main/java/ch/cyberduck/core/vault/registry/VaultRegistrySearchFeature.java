@@ -21,6 +21,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -51,6 +52,9 @@ public class VaultRegistrySearchFeature implements Search {
         }
         catch(VaultUnlockCancelException e) {
             return proxy.features(workdir);
+        }
+        catch(UnsupportedException e) {
+            return EnumSet.noneOf(Flags.class);
         }
     }
 

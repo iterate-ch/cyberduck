@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -56,6 +57,9 @@ public class VaultRegistryVersioningFeature implements Versioning {
             return registry.find(session, file, false).getFeature(session, Versioning.class, proxy).features(file);
         }
         catch(VaultUnlockCancelException e) {
+            return proxy.features(file);
+        }
+        catch(UnsupportedException e) {
             return EnumSet.noneOf(Flags.class);
         }
     }
