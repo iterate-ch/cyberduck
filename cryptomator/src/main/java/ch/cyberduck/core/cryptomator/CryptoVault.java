@@ -28,9 +28,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV6Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
-import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV6Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -195,8 +193,9 @@ public class CryptoVault extends AbstractVault {
             this.open(parseVaultConfigFromJWT(conf).withMasterkeyFile(masterkeyFile), passphrase);
         }
         else {
-            this.open(new VaultConfig(version, CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
-                    CryptorProvider.Scheme.SIV_CTRMAC, null, null).withMasterkeyFile(masterkeyFile), passphrase);
+            //TODO
+            //this.open(new VaultConfig(version, CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
+            // CryptorProvider.Scheme.SIV_CTRMAC, null, null).withMasterkeyFile(masterkeyFile), passphrase);
         }
         final Path secondLevel = directoryProvider.toEncrypted(session, home);
         final Path firstLevel = secondLevel.getParent();
@@ -245,8 +244,12 @@ public class CryptoVault extends AbstractVault {
 
     private static VaultConfig parseVaultConfigFromMasterKey(final MasterkeyFile masterkeyFile) {
         return new VaultConfig(masterkeyFile.version,
+                //TODO
+//                masterkeyFile.version == VAULT_VERSION_DEPRECATED ?
+//                        CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD :
+//                        CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
                 masterkeyFile.version == VAULT_VERSION_DEPRECATED ?
-                        CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD :
+                        CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD :
                         CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
                 CryptorProvider.Scheme.SIV_CTRMAC, null, null);
     }
@@ -323,7 +326,8 @@ public class CryptoVault extends AbstractVault {
     protected CryptoFilename createFilenameProvider(final VaultConfig vaultConfig) {
         switch(vaultConfig.version) {
             case VAULT_VERSION_DEPRECATED:
-                return new CryptoFilenameV6Provider(vault);
+                //TODO
+                //return new CryptoFilenameV6Provider(vault);
             default:
                 return new CryptoFilenameV7Provider(vaultConfig.getShorteningThreshold());
         }
@@ -332,7 +336,8 @@ public class CryptoVault extends AbstractVault {
     protected CryptoDirectory createDirectoryProvider(final VaultConfig vaultConfig, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
         switch(vaultConfig.version) {
             case VAULT_VERSION_DEPRECATED:
-                return new CryptoDirectoryV6Provider(vault, filenameProvider, filenameCryptor);
+                //TODO
+                //return new CryptoDirectoryV6Provider(vault, filenameProvider, filenameCryptor);
             default:
                 return new CryptoDirectoryV7Provider(this, filenameProvider, filenameCryptor);
         }
@@ -446,7 +451,7 @@ public class CryptoVault extends AbstractVault {
 
     @Override
     public byte[] getRootDirId() {
-        return CryptoDirectoryV6Provider.ROOT_DIR_ID;
+        return CryptoDirectoryV7Provider.ROOT_DIR_ID;
     }
 
     @Override
