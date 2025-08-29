@@ -18,10 +18,12 @@ package ch.cyberduck.core.vault.registry;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class VaultRegistryLocationFeature implements Location {
@@ -44,6 +46,9 @@ public class VaultRegistryLocationFeature implements Location {
         catch(VaultUnlockCancelException e) {
             return proxy.getDefault(file);
         }
+        catch(UnsupportedException e) {
+            return Location.unknown;
+        }
     }
 
     @Override
@@ -53,6 +58,9 @@ public class VaultRegistryLocationFeature implements Location {
         }
         catch(VaultUnlockCancelException e) {
             return proxy.getLocations(file);
+        }
+        catch(UnsupportedException e) {
+            return Collections.emptySet();
         }
     }
 

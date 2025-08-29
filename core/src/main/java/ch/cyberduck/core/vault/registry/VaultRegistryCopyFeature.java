@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.io.StreamListener;
@@ -71,6 +72,9 @@ public class VaultRegistryCopyFeature implements Copy {
         }
         catch(VaultUnlockCancelException e) {
             return proxy.features(source, copy);
+        }
+        catch(UnsupportedException e) {
+            return EnumSet.noneOf(Flags.class);
         }
     }
 
