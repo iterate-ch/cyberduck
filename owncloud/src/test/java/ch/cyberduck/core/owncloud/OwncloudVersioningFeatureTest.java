@@ -49,12 +49,12 @@ public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
 
     @Test
     public void testRevert() throws Exception {
-        final Path directory = new DAVDirectoryFeature(session).mkdir(new Path(
+        final NextcloudWriteFeature writer = new NextcloudWriteFeature(session);
+        final Path directory = new DAVDirectoryFeature(session).mkdir(writer, new Path(
                 new OwncloudHomeFeature(session.getHost()).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        final NextcloudWriteFeature writer = new NextcloudWriteFeature(session);
         final byte[] initialContent = RandomUtils.nextBytes(32769);
         {
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(initialContent), writer.write(test, status.setLength(initialContent.length), new DisabledConnectionCallback()));

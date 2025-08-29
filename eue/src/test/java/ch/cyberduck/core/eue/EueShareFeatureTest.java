@@ -43,7 +43,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
     @Test(expected = InteroperabilityException.class)
     public void testInvalidPin() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final EueShareFeature feature = new EueShareFeature(session, fileid);
         try {
             feature.toDownloadUrl(sourceFolder, Share.Sharee.world, null, new DisabledPasswordCallback() {
@@ -65,7 +65,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testDownloadUrlForContainer() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final EueShareFeature feature = new EueShareFeature(session, fileid);
         final DescriptiveUrl url = feature.toDownloadUrl(sourceFolder, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
@@ -88,7 +88,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testDownloadUrlForFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         createFile(fileid, file, RandomUtils.nextBytes(0));
         assertTrue(new EueFindFeature(session, fileid).find(file));
@@ -114,7 +114,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testUploadUrlForContainer() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final EueShareFeature feature = new EueShareFeature(session, fileid);
         final DescriptiveUrl url = feature.toUploadUrl(sourceFolder, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override

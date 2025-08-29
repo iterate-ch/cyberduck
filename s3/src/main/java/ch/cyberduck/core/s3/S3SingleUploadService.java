@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -47,34 +46,31 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     private static final Logger log = LogManager.getLogger(S3SingleUploadService.class);
 
     private final S3Session session;
-    private Write<StorageObject> writer;
 
-    public S3SingleUploadService(final S3Session session, final Write<StorageObject> writer) {
-        super(writer);
+    public S3SingleUploadService(final S3Session session) {
         this.session = session;
-        this.writer = writer;
     }
 
     @Override
-    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
+    public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle,
                                 final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion = session.getSignatureVersion();
         switch(signatureVersion) {
             case AWS4HMACSHA256:
                 if(!HashAlgorithm.sha256.equals(status.getChecksum().algorithm)) {
                     // Checksum not set in upload filter
-                    status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
+                    status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 }
                 break;
         }
         try {
-            return super.upload(file, local, throttle, progress, streamListener, status, callback);
+            return super.upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
         catch(InteroperabilityException e) {
             if(!session.getSignatureVersion().equals(signatureVersion)) {
                 // Retry if upload fails with Header "x-amz-content-sha256" set to the hex-encoded SHA256 hash of the
                 // request payload is required for AWS Version 4 request signing
-                return this.upload(file, local, throttle, progress, streamListener, status, callback);
+                return this.upload(write, file, local, throttle, progress, streamListener, status, callback);
             }
             throw e;
         }
@@ -112,11 +108,5 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
             return;
         }
         this.verify(file, digest, Checksum.parse(response.getETag()));
-    }
-
-    @Override
-    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return super.withWriter(writer);
     }
 }

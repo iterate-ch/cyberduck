@@ -31,7 +31,7 @@ import ch.iterate.openstack.swift.model.StorageObject;
 public class SwiftTouchFeature extends DefaultTouchFeature<StorageObject> {
 
     public SwiftTouchFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        super(new SwiftWriteFeature(session, regionService));
+        super(session);
     }
 
     @Override

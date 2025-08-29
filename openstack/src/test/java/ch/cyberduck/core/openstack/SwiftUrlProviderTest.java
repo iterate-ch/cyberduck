@@ -60,7 +60,7 @@ public class SwiftUrlProviderTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         container.attributes().setRegion("IAD");
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), file, new TransferStatus());
         final DescriptiveUrlBag list = provider.toUrl(file);
         final DescriptiveUrl signed = list.find(DescriptiveUrl.Type.signed);
         assertNotNull(signed);

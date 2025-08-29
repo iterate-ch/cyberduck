@@ -15,16 +15,11 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 public class DAVTouchFeature extends DefaultTouchFeature<Void> {
 
     public DAVTouchFeature(final DAVSession session) {
-        super(new DAVWriteFeature(session));
-    }
-
-    public DAVTouchFeature(final Write<Void> writer) {
-        super(writer);
+        super(session);
     }
 }

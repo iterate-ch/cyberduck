@@ -173,7 +173,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                     return;
                 }
                 if(null == ref) {
-                    new BrickTouchFeature(session).touch(file, new TransferStatus());
+                    new BrickTouchFeature(session).touch(writer, file, new TransferStatus());
                 }
                 else {
                     try {

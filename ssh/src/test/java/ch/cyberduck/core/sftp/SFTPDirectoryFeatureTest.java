@@ -40,9 +40,9 @@ public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
     @Test
     public void testMakeDirectory() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SFTPDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), test, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(test));
-        assertThrows(ConflictException.class, () -> new SFTPDirectoryFeature(session).mkdir(test, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), test, new TransferStatus()));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

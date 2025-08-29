@@ -27,6 +27,7 @@ import ch.cyberduck.core.box.BoxDirectoryFeature;
 import ch.cyberduck.core.box.BoxFileidProvider;
 import ch.cyberduck.core.box.BoxFindFeature;
 import ch.cyberduck.core.box.BoxReadFeature;
+import ch.cyberduck.core.box.BoxWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
@@ -62,7 +63,7 @@ public class BufferWriteFeatureTest extends AbstractBoxTest {
     @Test
     public void testWriteVault() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        final Path container = new BoxDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path container = new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path vault = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);

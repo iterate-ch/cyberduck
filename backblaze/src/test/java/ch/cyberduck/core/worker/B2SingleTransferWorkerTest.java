@@ -34,7 +34,6 @@ import ch.cyberduck.core.b2.B2LargeUploadService;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2Session;
 import ch.cyberduck.core.b2.B2VersionIdProvider;
-import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.Checksum;
@@ -108,8 +107,8 @@ public class B2SingleTransferWorkerTest extends VaultTest {
         final B2Session session = new B2Session(host.withCredentials(new Credentials(
                 PROPERTIES.get("b2.user"), PROPERTIES.get("b2.password")
         )), new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
-            final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this),
-                    new B2WriteFeature(this, new B2VersionIdProvider(this))) {
+            final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)
+            ) {
                 @Override
                 protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                     if(failed.get()) {

@@ -50,16 +50,13 @@ public class AzureDirectoryFeature implements Directory<Void> {
     private final AzureSession session;
     private final OperationContext context;
 
-    private Write<Void> writer;
-
     public AzureDirectoryFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
         this.context = context;
-        this.writer = new AzureWriteFeature(session, context);
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final BlobRequestOptions options = new BlobRequestOptions();
             if(containerService.isContainer(folder)) {
@@ -71,7 +68,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
             else {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
-                return new AzureTouchFeature(session, context).withWriter(writer).touch(folder.withType(type),
+                return new AzureTouchFeature(session, context).touch(writer, folder.withType(type),
                         status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
             }
         }
@@ -108,11 +105,5 @@ public class AzureDirectoryFeature implements Directory<Void> {
             }
         }
         return true;
-    }
-
-    @Override
-    public Directory<Void> withWriter(final Write<Void> writer) {
-        this.writer = writer;
-        return this;
     }
 }

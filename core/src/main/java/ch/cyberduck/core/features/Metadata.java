@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Optional
 public interface Metadata {
-    Map<String, String> getDefault();
+    Map<String, String> getDefault(Path file);
 
     Map<String, String> getMetadata(Path file) throws BackgroundException;
 

@@ -46,10 +46,10 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testSetTimestampFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new EueTouchFeature(session, fileid)
-                .touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+                .touch(new EueWriteFeature(session, fileid), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
         assertNotEquals(PathAttributes.EMPTY, attr);
         assertNotNull(attr.getETag());
@@ -66,17 +66,17 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testSetTimestampDirectory() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final long containerModification = new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate();
-        final Path folder = new EueDirectoryFeature(session, fileid).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
+        final Path folder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         final long folderModification = new EueAttributesFinderFeature(session, fileid).find(folder).getModificationDate();
         assertNotNull(new EueAttributesFinderFeature(session, fileid).find(folder));
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new EueTimestampFeature(session, fileid).setTimestamp(folder, modified);
         assertEquals(modified, new EueAttributesFinderFeature(session, fileid).find(folder).getModificationDate());
         // Write file to directory and see if timestamp changes
-        final Path file = new EueTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(modified, new EueAttributesFinderFeature(session, fileid).find(folder).getModificationDate());
         assertEquals(containerModification, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
         final byte[] content = RandomUtils.nextBytes(8235);

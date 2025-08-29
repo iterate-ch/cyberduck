@@ -258,11 +258,11 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
         final Path receipts = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(receipts, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
         try {
             final int numFiles = chunkSize * 2;
             for(int i = 0; i < numFiles; ++i) {
-                new DeepboxTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
             }
             final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
             assertEquals(numFiles, listing.size());
@@ -280,11 +280,11 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
         final Path receipts = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(receipts, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
         try {
             final int numFiles = (int) Math.floor(chunkSize * 2.5);
             for(int i = 0; i < numFiles; ++i) {
-                new DeepboxTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
             }
             final AttributedList<Path> listing = new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener());
             assertEquals(numFiles, listing.size());
@@ -300,7 +300,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
 
         final Path auditing = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Invoices : Receipts/", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(auditing, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
 
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         for(int i = 0; i < 2; i++) {
@@ -338,9 +338,9 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), file, new TransferStatus());
 
         final NodeCopy body = new NodeCopy();
         body.setTargetParentNodeId(nodeid.getFileId(folder));
@@ -358,9 +358,9 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path virtualFolder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(virtualFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DeepboxDirectoryFeature(session, nodeid).mkdir(folder, new TransferStatus());
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DeepboxDirectoryFeature(session, nodeid).mkdir(test, new TransferStatus());
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), test, new TransferStatus());
 
         // /api/v1/nodes/{nodeId}/copy does not work for folders
         final Folder body = new Folder();

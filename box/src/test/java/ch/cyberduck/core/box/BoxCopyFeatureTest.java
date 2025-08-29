@@ -45,7 +45,7 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
     public void testCopyFile() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BoxTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BoxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new BoxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
@@ -58,11 +58,11 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
     public void testCopyOverride() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new BoxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
+        new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BoxTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path existing = new BoxTouchFeature(session, fileid).touch(copy, new TransferStatus());
+        final Path existing = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), copy, new TransferStatus());
         new BoxCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true).setRemote(existing.attributes()), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
@@ -73,10 +73,10 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
     @Test
     public void testCopyDirectory() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        final Path directory = new BoxDirectoryFeature(session, fileid).mkdir(new Path(new DefaultHomeFinderService(session).find(),
+        final Path directory = new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new BoxTouchFeature(session, fileid).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new BoxCopyFeature(session, fileid).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new BoxFindFeature(session, fileid).find(file));

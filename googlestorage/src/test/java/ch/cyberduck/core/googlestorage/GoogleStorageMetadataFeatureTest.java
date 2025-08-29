@@ -47,7 +47,7 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         final Path test = new GoogleStorageTouchFeature(session).touch(
-                new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.setMime("text/plain"));
+                new GoogleStorageWriteFeature(session), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.setMime("text/plain"));
         final GoogleStorageMetadataFeature feature = new GoogleStorageMetadataFeature(session);
         assertTrue(feature.getMetadata(test).isEmpty());
         final Map<String, String> set = Collections.singletonMap("k", "v");
@@ -65,7 +65,7 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
     @Test
     public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageTouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String v = UUID.randomUUID().toString();
         final GoogleStorageStorageClassFeature storage = new GoogleStorageStorageClassFeature(session);
         storage.setClass(test, "NEARLINE");

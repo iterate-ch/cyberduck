@@ -38,7 +38,7 @@ public class SpectraDirectoryFeatureTest extends AbstractSpectraTest {
     public void testCreateBucket() throws Exception {
         final SpectraDirectoryFeature feature = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session));
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        feature.mkdir(test, new TransferStatus());
+        feature.mkdir(new SpectraWriteFeature(session), test, new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(test));
         new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -48,9 +48,9 @@ public class SpectraDirectoryFeatureTest extends AbstractSpectraTest {
         final String bucketname = new AlphanumericRandomStringService().random();
         final String name = new AlphanumericRandomStringService().random();
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(bucketname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(bucketname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-            new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());

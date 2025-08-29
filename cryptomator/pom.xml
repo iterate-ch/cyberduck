@@ -19,13 +19,13 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>9.2.4-SNAPSHOT</version>
+        <version>10.0.0.uvfdraft-SNAPSHOT</version>
     </parent>
     <artifactId>cryptomator</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <cryptolib.version>2.1.2.1</cryptolib.version>
+        <cryptolib.version>2.3.0.uvfdraft-SNAPSHOT</cryptolib.version>
     </properties>
 
     <dependencies>

@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class SFTPTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<Void> writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final FileAttributes attrs;
             if(Permission.EMPTY != status.getPermission()) {

@@ -43,9 +43,9 @@ public class LocalDirectoryFeatureTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());
         assertTrue(Files.exists(session.toPath(folder)));
-        assertThrows(ConflictException.class, () -> new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus()));
         new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(Files.exists(session.toPath(folder)));
     }
@@ -56,8 +56,8 @@ public class LocalDirectoryFeatureTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
-        new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());
         new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

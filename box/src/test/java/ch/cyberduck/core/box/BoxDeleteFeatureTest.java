@@ -50,7 +50,7 @@ public class BoxDeleteFeatureTest extends AbstractBoxTest {
     @Test
     public void testDeleteFolder() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        final Path directory = new BoxDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path directory = new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         assertTrue(new BoxFindFeature(session, fileid).find(directory, new DisabledListProgressListener()));
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -60,9 +60,9 @@ public class BoxDeleteFeatureTest extends AbstractBoxTest {
     @Test
     public void testDeleteMultipleFiles() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        final Path file1 = new BoxTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path file2 = new BoxTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path file1 = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file2 = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new BoxFindFeature(session, fileid).find(file1));
         assertTrue(new BoxFindFeature(session, fileid).find(file2));
         new BoxDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());

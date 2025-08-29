@@ -43,7 +43,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Test
     public void testLockNotShared() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = touch.touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = touch.touch(new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxLockFeature f = new DropboxLockFeature(session);
         try {
             final String lock = f.lock(file);
@@ -58,7 +58,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Test(expected = InteroperabilityException.class)
     public void testLock() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = touch.touch(new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().setFileId("7581509952")),
+        final Path file = touch.touch(new DropboxWriteFeature(session), new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().setFileId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxLockFeature f = new DropboxLockFeature(session);
         final String lock = f.lock(file);
@@ -80,7 +80,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Test
     public void testLockNotfound() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = touch.touch(new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.shared)).withAttributes(new PathAttributes().setFileId("7581509952")),
+        final Path file = touch.touch(new DropboxWriteFeature(session), new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.shared)).withAttributes(new PathAttributes().setFileId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxLockFeature f = new DropboxLockFeature(session);
         f.unlock(file, "l");

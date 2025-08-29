@@ -2098,8 +2098,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Location feature = (Location)Pool.getFeature(typeof(Location));
             FolderController fc = new FolderController(ObjectFactory.GetInstance<INewFolderPromptView>(), this,
                 feature != null
-                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations())
-                    : new List<Location.Name>(), feature != null ? feature.getDefault() : Location.unknown);
+                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations(Workdir))
+                    : new List<Location.Name>(), feature != null ? feature.getDefault(Workdir) : Location.unknown);
             fc.Show();
         }
 
@@ -2108,8 +2108,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Location feature = (Location)Pool.getFeature(typeof(Location));
             FolderController fc = new VaultController(ObjectFactory.GetInstance<INewVaultPromptView>(), this,
                 feature != null
-                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations())
-                    : new List<Location.Name>(), feature != null ? feature.getDefault() : Location.unknown);
+                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations(Workdir))
+                    : new List<Location.Name>(), feature != null ? feature.getDefault(Workdir) : Location.unknown);
             fc.Show();
         }
 

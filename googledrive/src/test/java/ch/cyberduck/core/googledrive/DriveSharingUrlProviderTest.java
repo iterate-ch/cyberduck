@@ -40,7 +40,7 @@ public class DriveSharingUrlProviderTest extends AbstractDriveTest {
     public void toDownloadUrl() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new DriveTouchFeature(session, fileid).touch(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("x-application/cyberduck"));
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("x-application/cyberduck"));
         final DriveSharingUrlProvider provider = new DriveSharingUrlProvider(session, fileid);
         // Set web view link
         test.setAttributes(new DriveAttributesFinderFeature(session, fileid).find(test));

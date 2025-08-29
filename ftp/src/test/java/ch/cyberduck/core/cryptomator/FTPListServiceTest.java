@@ -66,8 +66,8 @@ public class FTPListServiceTest extends AbstractFTPTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new FTPListService(session), cryptomator).list(vault).isEmpty());
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)
-        ), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
+                session), cryptomator).touch(new FTPWriteFeature(session), test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new FTPListService(session), cryptomator).list(vault, new DisabledListProgressListener() {
             @Override
             public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {

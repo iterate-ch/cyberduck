@@ -20,6 +20,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Read;
@@ -34,16 +35,16 @@ import java.io.OutputStream;
 
 public class DefaultDownloadFeature implements Download {
 
-    private Read reader;
+    private final Session<?> session;
 
-    public DefaultDownloadFeature(final Read reader) {
-        this.reader = reader;
+    public DefaultDownloadFeature(final Session<?> session) {
+        this.session = session;
     }
 
     @Override
-    public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public void download(final Read read, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final InputStream in = reader.read(file, status, callback);
+        final InputStream in = read.read(file, status, callback);
         final OutputStream out = local.getOutputStream(!status.isSegment() && status.isAppend());
         new StreamCopier(status, status)
                 .withOffset(0L)
@@ -54,12 +55,6 @@ public class DefaultDownloadFeature implements Download {
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        return reader.offset(file);
-    }
-
-    @Override
-    public Download withReader(final Read reader) {
-        this.reader = reader;
-        return this;
+        return session.getFeature(Read.class).offset(file);
     }
 }

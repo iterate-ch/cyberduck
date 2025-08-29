@@ -25,13 +25,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.blob.BlobType;
 
-public class AzureUploadFeature extends DefaultUploadFeature {
+public class AzureUploadFeature extends DefaultUploadFeature<Void> {
 
     private final AzureSession session;
     private final OperationContext context;
 
     public AzureUploadFeature(final AzureSession session, final OperationContext context) {
-        super(new AzureWriteFeature(session, context));
+        super(session);
         this.session = session;
         this.context = context;
     }

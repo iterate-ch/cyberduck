@@ -42,9 +42,9 @@ public class SMBDeleteFeatureTest extends AbstractSMBTest {
     public void testDeleteFile() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new SMBTouchFeature(session).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SMBListService(session).list(folder, new DisabledListProgressListener()).contains(file));
         new SMBDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
@@ -55,7 +55,7 @@ public class SMBDeleteFeatureTest extends AbstractSMBTest {
     public void testDeleteFolder() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SMBListService(session).list(home, new DisabledListProgressListener()).contains(folder));
         new SMBDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
@@ -65,9 +65,9 @@ public class SMBDeleteFeatureTest extends AbstractSMBTest {
     public void testDeleteFileAndFolder() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new SMBTouchFeature(session).touch(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SMBFindFeature(session).find(file));
         new SMBDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new SMBFindFeature(session).find(file));

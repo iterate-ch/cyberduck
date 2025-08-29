@@ -48,10 +48,10 @@ public class B2DeleteFeatureTest extends AbstractB2Test {
     @Test
     public void testDeleteFileHide() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        new B2TouchFeature(session, fileid).touch(test, status);
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), test, status);
         final String versionId = status.getResponse().getVersionId();
         assertNotNull(versionId);
         // Hide
@@ -67,9 +67,9 @@ public class B2DeleteFeatureTest extends AbstractB2Test {
     @Test
     public void testDelete() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new Path(bucket, String.format("%s %s", new AlphanumericRandomStringService().random(), "1"), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), file, new TransferStatus());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new B2FindFeature(session, fileid).find(file));
         assertFalse(new B2FindFeature(session, fileid).find(bucket));
@@ -78,9 +78,9 @@ public class B2DeleteFeatureTest extends AbstractB2Test {
     @Test
     public void testHideAlreadyDeleted() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new Path(bucket, String.format("%s %s", new AlphanumericRandomStringService().random(), "1"), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), file, new TransferStatus());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new B2FindFeature(session, fileid).find(file));
         try {
@@ -96,9 +96,9 @@ public class B2DeleteFeatureTest extends AbstractB2Test {
     @Test
     public void testHide() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new Path(bucket, String.format("%s %s", new AlphanumericRandomStringService().random(), "1"), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), file, new TransferStatus());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new B2FindFeature(session, fileid).find(file));
         assertFalse(new DefaultFindFeature(session).find(file));
@@ -109,8 +109,8 @@ public class B2DeleteFeatureTest extends AbstractB2Test {
     @Test
     public void testDeletePlaceholder() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, String.format("%s %s", new AlphanumericRandomStringService().random(), "1"), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(bucket, String.format("%s %s", new AlphanumericRandomStringService().random(), "1"), EnumSet.of(Path.Type.directory)), new TransferStatus());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new B2FindFeature(session, fileid).find(directory));
         assertFalse(new B2FindFeature(session, fileid).find(bucket));

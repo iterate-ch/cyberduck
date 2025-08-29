@@ -28,6 +28,7 @@ import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFileIdProvider;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
+import ch.cyberduck.core.googledrive.DriveWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -53,9 +54,9 @@ public class ListWorkerTest extends AbstractDriveTest {
         final String f2 = new AlphanumericRandomStringService().random();
         final DriveFileIdProvider fileidProvider = new DriveFileIdProvider(session);
         final Path parent = new DriveDirectoryFeature(session, fileidProvider).mkdir(
-            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, fileidProvider), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory)), new TransferStatus());
         Path folder = new DriveDirectoryFeature(session, fileidProvider).mkdir(
-            new Path(parent, f2, EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, fileidProvider), new Path(parent, f2, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         {
             // trash folder and recreate it
@@ -63,7 +64,7 @@ public class ListWorkerTest extends AbstractDriveTest {
             final File body = new File();
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();
-            folder = new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, new TransferStatus());
+            folder = new DriveDirectoryFeature(session, fileidProvider).mkdir(new DriveWriteFeature(session, fileidProvider), folder, new TransferStatus());
             final PathCache cache = new PathCache(10);
             final ListWorker worker = new ListWorker(cache, parent, new CachingListProgressListener(cache, new DisabledListProgressListener()));
             final AttributedList<Path> list = worker.run(session);

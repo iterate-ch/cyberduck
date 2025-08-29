@@ -48,7 +48,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), file, new TransferStatus());
         final String nodeId = new DeepboxAttributesFinderFeature(session, nodeid).find(file).getFileId();
         new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null); // assert no fail
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
@@ -75,13 +75,13 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new DeepboxDirectoryFeature(session, nodeid).mkdir(new Path(documents, String.format(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path folder = new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), new Path(documents, String.format(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String nodeId = nodeid.getFileId(folder);
         new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null); // assert no fail
-        final Path subfolderWithContent = new DeepboxDirectoryFeature(session, nodeid).mkdir(new Path(folder, new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path subfolderWithContent = new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), new Path(folder, new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(subfolderWithContent));
         final Path file = new Path(subfolderWithContent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), file, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
         new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes())));
@@ -197,7 +197,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(Path.Type.file));
 
-        new DeepboxTouchFeature(session, nodeid).touch(test, new TransferStatus());
+        new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), test, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
@@ -238,7 +238,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(Path.Type.directory));
 
-        new DeepboxDirectoryFeature(session, nodeid).mkdir(test, new TransferStatus());
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), test, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
@@ -281,7 +281,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(Path.Type.file));
 
-        new DeepboxTouchFeature(session, nodeid).touch(test, new TransferStatus());
+        new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), test, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
@@ -302,7 +302,7 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path test = new Path(parentFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(Path.Type.directory));
 
-        new DeepboxDirectoryFeature(session, nodeid).mkdir(test, new TransferStatus());
+        new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), test, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));

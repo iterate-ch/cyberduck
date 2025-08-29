@@ -58,7 +58,7 @@ public class LocalWriteFeatureTest {
             session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
             final Path workdir = new LocalHomeFinderFeature().find();
             final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-            new LocalTouchFeature(session).touch(target, new TransferStatus());
+            new LocalTouchFeature(session).touch(new LocalWriteFeature(session), target, new TransferStatus());
             assertTrue(new LocalFindFeature(session).find(target));
             final String name = UUID.randomUUID().toString();
             final Path symlink = new Path(workdir, name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));

@@ -37,6 +37,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -108,7 +109,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
                         log.warn("Move operation is not recursive. Create directory {}", r.getValue());
                         // Create directory unless copy implementation is recursive
-                        result.put(r.getKey(), session.getFeature(Directory.class).mkdir(r.getValue(),
+                        result.put(r.getKey(), session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), r.getValue(),
                                 new TransferStatus().setLength(0L).setRegion(r.getKey().attributes().getRegion())));
                     }
                     else {
@@ -156,7 +157,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                                 final Path directory = target.getParent();
                                                 if(!new CachingFindFeature(session, cache).find(directory)) {
                                                     log.debug("Create directory {} for versions", directory);
-                                                    session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+                                                    session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), directory, new TransferStatus());
                                                 }
                                                 if(version.isDirectory()) {
                                                     if(!session.getFeature(Move.class).isRecursive(version, target)) {

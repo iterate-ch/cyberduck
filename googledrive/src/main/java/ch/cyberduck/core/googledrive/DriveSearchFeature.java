@@ -46,7 +46,7 @@ public class DriveSearchFeature implements Search {
     }
 
     @Override
-    public EnumSet<Flags> features() {
+    public EnumSet<Flags> features(final Path workdir) {
         return EnumSet.of(Flags.recursive);
     }
 

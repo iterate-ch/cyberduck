@@ -61,8 +61,8 @@ public class B2SingleUploadServiceTest extends AbstractB2Test {
         final Checksum checksum = new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus());
         status.setChecksum(checksum);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final B2SingleUploadService upload = new B2SingleUploadService(session, new B2WriteFeature(session, fileid));
-        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+        final B2SingleUploadService upload = new B2SingleUploadService(session);
+        upload.upload(new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         assertEquals(checksum, new B2AttributesFinderFeature(session, fileid).find(test).getChecksum());
         status.validate();

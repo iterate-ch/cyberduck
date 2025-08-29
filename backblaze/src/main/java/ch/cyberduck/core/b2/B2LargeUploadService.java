@@ -26,7 +26,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -80,24 +79,20 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     private final Long partSize;
     private final Integer concurrency;
 
-    private Write<BaseB2Response> writer;
-
-    public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Write<BaseB2Response> writer) {
-        this(session, fileid, writer, HostPreferencesFactory.get(session.getHost()).getLong("b2.upload.largeobject.size"),
+    public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid) {
+        this(session, fileid, HostPreferencesFactory.get(session.getHost()).getLong("b2.upload.largeobject.size"),
                 HostPreferencesFactory.get(session.getHost()).getInteger("b2.upload.largeobject.concurrency"));
     }
 
-    public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Write<BaseB2Response> writer, final Long partSize, final Integer concurrency) {
-        super(writer);
+    public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Long partSize, final Integer concurrency) {
         this.session = session;
         this.fileid = fileid;
-        this.writer = writer;
         this.partSize = partSize;
         this.concurrency = concurrency;
     }
 
     @Override
-    public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle,
+    public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle,
                                  final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final long partSize;
         if(file.getType().contains(Path.Type.encrypted)) {
@@ -107,11 +102,11 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         else {
             partSize = this.partSize;
         }
-        return this.upload(file, local, throttle, progress, streamListener, status, callback,
+        return this.upload(write, file, local, throttle, progress, streamListener, status, callback,
                 partSize < status.getLength() ? partSize : PreferencesFactory.get().getLong("b2.upload.largeobject.size.minimum"));
     }
 
-    public BaseB2Response upload(final Path file, final Local local,
+    public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local,
                                  final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
                                  final ConnectionCallback callback, final Long partSize) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("largeupload", concurrency);
@@ -175,7 +170,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 if(!skip) {
                     final long length = Math.min(Math.max((size / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(pool, file, local, throttle, streamListener, status, fileId, partNumber, offset, length, callback));
+                    parts.add(this.submit(pool, write, file, local, throttle, streamListener, status, fileId, partNumber, offset, length, callback));
                     log.debug("Part {} submitted with size {} and offset {}", partNumber, length, offset);
                     remaining -= length;
                     offset += length;
@@ -212,7 +207,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         }
     }
 
-    private Future<B2UploadPartResponse> submit(final ThreadPool pool, final Path file, final Local local,
+    private Future<B2UploadPartResponse> submit(final ThreadPool pool, final Write<BaseB2Response> write, final Path file, final Local local,
                                                 final BandwidthThrottle throttle, final StreamListener listener,
                                                 final TransferStatus overall,
                                                 final String fileId, final int partNumber,
@@ -231,10 +226,10 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 requestParameters.put("fileId", fileId);
                 status.setParameters(requestParameters);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
+                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 status.setPart(partNumber);
-                return (B2UploadPartResponse) B2LargeUploadService.this.upload(file, local, throttle, counter, status, overall, status, callback);
+                return (B2UploadPartResponse) B2LargeUploadService.this.upload(write, file, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }
@@ -253,9 +248,4 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         return new Write.Append(false).withStatus(status);
     }
 
-    @Override
-    public Upload<BaseB2Response> withWriter(final Write<BaseB2Response> writer) {
-        this.writer = writer;
-        return super.withWriter(writer);
-    }
 }

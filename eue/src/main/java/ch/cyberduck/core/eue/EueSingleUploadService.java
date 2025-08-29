@@ -22,7 +22,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -39,17 +38,13 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
     private final EueSession session;
     private final EueResourceIdProvider fileid;
 
-    private Write<EueWriteFeature.Chunk> writer;
-
-    public EueSingleUploadService(final EueSession session, final EueResourceIdProvider fileid, final Write<EueWriteFeature.Chunk> writer) {
-        super(writer);
+    public EueSingleUploadService(final EueSession session, final EueResourceIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
-        this.writer = writer;
     }
 
     @Override
-    public EueWriteFeature.Chunk upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadUri;
         final String resourceId;
@@ -66,13 +61,8 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
         }
         status.setParameters(Collections.singletonMap(RESOURCE_ID, resourceId));
         status.setUrl(uploadUri);
-        status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
-        return super.upload(file, local, throttle, progress, streamListener, status, callback);
+        status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
+        return super.upload(write, file, local, throttle, progress, streamListener, status, callback);
     }
 
-    @Override
-    public Upload<EueWriteFeature.Chunk> withWriter(final Write<EueWriteFeature.Chunk> writer) {
-        this.writer = writer;
-        return super.withWriter(writer);
-    }
 }

@@ -38,10 +38,10 @@ public class StoregateLockFeatureTest extends AbstractStoregateTest {
     @Test
     public void testLock() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
-        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
+        new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
         final String lock = new StoregateLockFeature(session, nodeid).lock(fileInRoom);
         assertNotNull(lock);

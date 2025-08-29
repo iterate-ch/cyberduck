@@ -37,7 +37,6 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
-    private Write<BaseB2Response> writer;
     private final Long threshold;
 
     public B2ThresholdUploadService(final B2Session session, final B2VersionIdProvider fileid) {
@@ -47,33 +46,26 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
     public B2ThresholdUploadService(final B2Session session, final B2VersionIdProvider fileid, final Long threshold) {
         this.session = session;
         this.fileid = fileid;
-        this.writer = new B2WriteFeature(session, fileid);
         this.threshold = threshold;
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         if(this.threshold(status)) {
-            return new B2LargeUploadService(session, fileid, writer).append(file, status);
+            return new B2LargeUploadService(session, fileid).append(file, status);
         }
         return new Write.Append(false).withStatus(status);
     }
 
     @Override
-    public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                  final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status)) {
-            return new B2LargeUploadService(session, fileid, writer).upload(file, local, throttle, progress, streamListener, status, callback);
+            return new B2LargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
         else {
-            return new B2SingleUploadService(session, writer).upload(file, local, throttle, progress, streamListener, status, callback);
+            return new B2SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
-    }
-
-    @Override
-    public Upload<BaseB2Response> withWriter(final Write<BaseB2Response> writer) {
-        this.writer = writer;
-        return this;
     }
 
     protected boolean threshold(final TransferStatus status) {

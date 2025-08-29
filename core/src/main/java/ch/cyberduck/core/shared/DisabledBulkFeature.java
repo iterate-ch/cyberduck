@@ -32,11 +32,6 @@ public class DisabledBulkFeature implements Bulk<Map<TransferItem, TransferStatu
     }
 
     @Override
-    public Bulk<Map<TransferItem, TransferStatus>> withDelete(final Delete delete) {
-        return this;
-    }
-
-    @Override
     public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         //
     }

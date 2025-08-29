@@ -27,12 +27,10 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -282,10 +280,10 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
-            return (T) new DefaultUploadFeature(this.getFeature(Write.class));
+            return (T) new DefaultUploadFeature(this);
         }
         if(type == Download.class) {
-            return (T) new DefaultDownloadFeature(this.getFeature(Read.class));
+            return (T) new DefaultDownloadFeature(this);
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();

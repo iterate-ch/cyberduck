@@ -18,11 +18,12 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.hierynomus.smbj.common.SMBRuntimeException;
 
-public class SMBDirectoryFeature implements Directory<Integer> {
+public class SMBDirectoryFeature implements Directory<Void> {
 
     private final SMBSession session;
 
@@ -31,7 +32,7 @@ public class SMBDirectoryFeature implements Directory<Integer> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         final SMBSession.DiskShareWrapper share = session.openShare(folder);
         try {
             share.get().mkdir(new SMBPathContainerService(session).getKey(folder));

@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class DisabledHeadersFeature implements Headers {
     @Override
-    public Map<String, String> getDefault() {
+    public Map<String, String> getDefault(final Path file) {
         return Collections.emptyMap();
     }
 

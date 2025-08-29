@@ -49,11 +49,11 @@ public class DriveTrashFeatureTest extends AbstractDriveTest {
     @Test
     public void testTrashFolder() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER,
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER,
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(directory, new DisabledListProgressListener()));
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session, fileid).touch(file, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), file, new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file, new DisabledListProgressListener()));
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new DriveFindFeature(session, fileid).find(directory, new DisabledListProgressListener())));
@@ -63,7 +63,7 @@ public class DriveTrashFeatureTest extends AbstractDriveTest {
     public void testDeleteFromTrash() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path file = new DriveTouchFeature(session, fileid).touch(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String fileId = file.attributes().getFileId();
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new DriveFindFeature(session, fileid).find(file));

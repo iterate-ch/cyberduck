@@ -63,8 +63,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         final BytecountStreamListener listener = new BytecountStreamListener();
         try {
-            new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-                1 * 1024L * 1024L, 1).upload(test, new Local(System.getProperty("java.io.tmpdir"), name) {
+            new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session),
+                    1 * 1024L * 1024L, 1).upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new Local(System.getProperty("java.io.tmpdir"), name) {
                 @Override
                 public InputStream getInputStream() throws AccessDeniedException {
                     return new CountingInputStream(super.getInputStream()) {
@@ -88,8 +88,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
 
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(content.length);
-        new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-                1 * 1024L * 1024L, 1).upload(test, local,
+        new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session),
+                1 * 1024L * 1024L, 1).upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertEquals(content.length, append.getResponse().getSize());
@@ -120,21 +120,21 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final SwiftLargeObjectUploadFeature feature = new SwiftLargeObjectUploadFeature(session, regionService, new SwiftWriteFeature(session, regionService),
+        final SwiftLargeObjectUploadFeature feature = new SwiftLargeObjectUploadFeature(session, regionService,
                 1024L * 1024L, 1) {
             @Override
-            public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+            public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
                 if(!interrupt.get()) {
                     if(status.getOffset() >= 1L * 1024L * 1024L) {
                         throw new ConnectionTimeoutException("Test");
                     }
                 }
-                return super.upload(file, local, throttle, listener, status, cancel, progress, callback);
+                return super.upload(write, file, local, throttle, listener, status, cancel, progress, callback);
             }
         };
         final BytecountStreamListener listener = new BytecountStreamListener();
         try {
-            feature.upload(test, new Local(System.getProperty("java.io.tmpdir"), name),
+            feature.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new Local(System.getProperty("java.io.tmpdir"), name),
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, status, new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
@@ -150,7 +150,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(1 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
 
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(1024L * 1024L).setOffset(1024L * 1024L);
-        feature.upload(test, local,
+        feature.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, append,
             new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, listener.getSent());
@@ -193,10 +193,10 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                     regionService,
                     new SwiftObjectListService(session, regionService),
                     new SwiftSegmentService(session, ".segments-test/"),
-                    new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
+                    (long) (content.length / 2), 4);
 
             final BytecountStreamListener count = new BytecountStreamListener();
-            final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
+            final StorageObject object = upload.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
                     status, new DisabledConnectionCallback());
             assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
             assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
@@ -246,10 +246,10 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                     regionService,
                     new SwiftObjectListService(session, regionService),
                     new SwiftSegmentService(session, ".segments-test/"),
-                    new SwiftWriteFeature(session, regionService), 1048576L, 4);
+                    1048576L, 4);
 
             final BytecountStreamListener count = new BytecountStreamListener();
-            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
+            upload.upload(new SwiftWriteFeature(session, regionService), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
                     status, new DisabledConnectionCallback());
 
             assertTrue(status.isComplete());
@@ -284,8 +284,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final Write.Append append = new SwiftLargeObjectUploadFeature(session, regionService,
-                new SwiftWriteFeature(session, regionService))
+        final Write.Append append = new SwiftLargeObjectUploadFeature(session, regionService)
                 .append(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertFalse(append.append);
         assertEquals(Write.override, append);

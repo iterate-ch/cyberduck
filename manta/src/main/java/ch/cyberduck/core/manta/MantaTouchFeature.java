@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ import com.joyent.manta.client.MantaObjectResponse;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 
-public class MantaTouchFeature implements Touch {
+public class MantaTouchFeature implements Touch<Void> {
 
     private final MantaSession session;
 
@@ -39,7 +40,7 @@ public class MantaTouchFeature implements Touch {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<Void> writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(!session.getClient().existsAndIsAccessible(file.getParent().getAbsolute())) {
                 session.getClient().putDirectory(file.getParent().getAbsolute());

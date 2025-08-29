@@ -329,7 +329,7 @@ public class S3AccessControlListFeature implements AclPermission {
     }
 
     @Override
-    public List<Acl.User> getAvailableAclUsers() {
+    public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
         return new ArrayList<>(Arrays.asList(
                 new Acl.CanonicalUser(),
                 new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED, false) {

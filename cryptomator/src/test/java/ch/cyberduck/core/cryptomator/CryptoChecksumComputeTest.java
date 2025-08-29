@@ -22,6 +22,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoChecksumCompute;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -47,7 +48,7 @@ public class CryptoChecksumComputeTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final TransferStatus status) {
+                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(vault) || folder.isChild(vault));
                             return folder;
                         }

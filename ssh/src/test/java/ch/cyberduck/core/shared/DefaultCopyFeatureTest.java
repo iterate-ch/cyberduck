@@ -56,7 +56,7 @@ public class DefaultCopyFeatureTest extends AbstractSFTPTest {
     public void testCopy() throws Exception {
         final Path source = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(source, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         final OutputStream out = new SFTPWriteFeature(session).write(source, status, new DisabledConnectionCallback());

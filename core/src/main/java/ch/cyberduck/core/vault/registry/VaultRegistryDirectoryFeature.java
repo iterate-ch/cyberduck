@@ -38,8 +38,8 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
-        return registry.find(session, folder).getFeature(session, Directory.class, proxy).mkdir(folder, status);
+    public Path mkdir(final Write<Reply> writer, final Path folder, final TransferStatus status) throws BackgroundException {
+        return registry.find(session, folder).getFeature(session, Directory.class, proxy).mkdir(writer, folder, status);
     }
 
     @Override
@@ -50,11 +50,6 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
         catch(VaultUnlockCancelException e) {
             proxy.preflight(workdir, filename);
         }
-    }
-
-    @Override
-    public Directory<Reply> withWriter(final Write<Reply> writer) {
-        return proxy.withWriter(writer);
     }
 
     @Override

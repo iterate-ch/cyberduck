@@ -44,7 +44,7 @@ public class MantaListServiceTest extends AbstractMantaTest {
 
     @Test
     public void testListEmptyFolder() throws Exception {
-        final Path folder = new MantaDirectoryFeature(session).mkdir(new Path(
+        final Path folder = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), new Path(
             testPathPrefix, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new MantaListService(session).list(folder, new DisabledListProgressListener()).isEmpty());
         new MantaDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());

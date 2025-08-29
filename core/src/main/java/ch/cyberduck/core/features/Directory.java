@@ -34,14 +34,16 @@ public interface Directory<Reply> {
     /**
      * Create new folder on server
      *
+     * @param writer Write feature used in default implementations for placeholder files
      * @param folder Directory
      * @param status Transfer status
+     * @return File including latest attributes from server
      */
-    Path mkdir(Path folder, TransferStatus status) throws BackgroundException;
+    Path mkdir(Write<Reply> writer, Path folder, TransferStatus status) throws BackgroundException;
 
     /**
-     * @param workdir Working directory in browser
-     * @param filename    Folder name or null if unknown
+     * @param workdir  Working directory in browser
+     * @param filename Folder name or null if unknown
      * @return True if creating directory is supported in the working directory
      */
     default boolean isSupported(final Path workdir, final String filename) {
@@ -52,13 +54,6 @@ public interface Directory<Reply> {
         catch(BackgroundException e) {
             return false;
         }
-    }
-
-    /**
-     * Retrieve write implementation for implementations using placeholder files for folders
-     */
-    default Directory<Reply> withWriter(Write<Reply> writer) {
-        return this;
     }
 
     /**

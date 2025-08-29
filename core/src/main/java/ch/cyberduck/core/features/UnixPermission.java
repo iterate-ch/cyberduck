@@ -42,10 +42,11 @@ public interface UnixPermission {
     Preferences preferences = PreferencesFactory.get();
 
     /**
-     * @param type File or folder
+     * @param workdir Parent folder
+     * @param type    File or folder
      * @return Default mask for new file or folder
      */
-    default Permission getDefault(final EnumSet<Path.Type> type) {
+    default Permission getDefault(final Path workdir, final EnumSet<Path.Type> type) {
         if(preferences.getBoolean("queue.upload.permissions.default")) {
             if(type.contains(Path.Type.file)) {
                 return new Permission(preferences.getInteger("queue.upload.permissions.file.default"));

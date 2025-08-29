@@ -28,11 +28,7 @@ import java.security.MessageDigest;
 public class DAVUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
 
     public DAVUploadFeature(final DAVSession session) {
-        super(new DAVWriteFeature(session));
-    }
 
-    public DAVUploadFeature(final Write<Void> writer) {
-        super(writer);
     }
 
     @Override

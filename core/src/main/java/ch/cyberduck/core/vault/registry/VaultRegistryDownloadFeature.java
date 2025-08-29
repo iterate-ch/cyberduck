@@ -40,19 +40,14 @@ public class VaultRegistryDownloadFeature implements Download {
     }
 
     @Override
-    public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        registry.find(session, file).getFeature(session, Download.class, proxy).download(file, local, throttle, listener, status, callback);
+    public void download(final Read read, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        registry.find(session, file).getFeature(session, Download.class, proxy).download(
+                read, file, local, throttle, listener, status, callback);
     }
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Download.class, proxy).offset(file);
-    }
-
-    @Override
-    public Download withReader(final Read reader) {
-        proxy.withReader(reader);
-        return this;
     }
 
     @Override

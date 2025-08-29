@@ -25,6 +25,7 @@ import ch.cyberduck.core.brick.BrickDeleteFeature;
 import ch.cyberduck.core.brick.BrickDirectoryFeature;
 import ch.cyberduck.core.brick.BrickListService;
 import ch.cyberduck.core.brick.BrickWriteFeature;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
@@ -52,7 +53,7 @@ public class BrickListServiceTest extends AbstractBrickTest {
 
     @Test
     public void testListCryptomator() throws Exception {
-        final Path home = new BrickDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(),
+        final Path home = new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -60,7 +61,7 @@ public class BrickListServiceTest extends AbstractBrickTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new BrickListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new BrickWriteFeature(session)), new BrickWriteFeature(session), cryptomator), new BrickWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<FileEntity>(session), cryptomator).touch(new BrickWriteFeature(session), test, new TransferStatus());
         Assert.assertEquals(test, new CryptoListService(session, new BrickListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         cryptomator.getFeature(session, Delete.class, new BrickDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

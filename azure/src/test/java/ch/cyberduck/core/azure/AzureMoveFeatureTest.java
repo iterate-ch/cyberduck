@@ -25,7 +25,7 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
     @Test
     public void testMove() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new AzureTouchFeature(session, null).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new AzureTouchFeature(session, null).touch(new AzureWriteFeature(session, null), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(test));
         final Path target = new AzureMoveFeature(session, null).move(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new AzureFindFeature(session, null).find(test));

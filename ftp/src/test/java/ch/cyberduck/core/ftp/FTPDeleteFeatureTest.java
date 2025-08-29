@@ -52,7 +52,7 @@ public class FTPDeleteFeatureTest extends AbstractFTPTest {
     @Test
     public void testDeleteDirectory() throws Exception {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new FTPDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new FTPDirectoryFeature(session).mkdir(new FTPWriteFeature(session), test, new TransferStatus());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

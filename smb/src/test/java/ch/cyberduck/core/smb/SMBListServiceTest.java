@@ -48,11 +48,11 @@ public class SMBListServiceTest extends AbstractSMBTest {
     public void testList() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path testFolder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path testFile = new SMBTouchFeature(session).touch(new Path(testFolder,
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path testFile = new SMBTouchFeature(session).touch(new SMBWriteFeature(session), new Path(testFolder,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path innerFolder = new SMBDirectoryFeature(session).mkdir(
-                new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> result = new SMBListService(session).list(testFolder, new DisabledListProgressListener());
         assertEquals(2, result.size());
         assertTrue(result.contains(testFile));
@@ -64,7 +64,7 @@ public class SMBListServiceTest extends AbstractSMBTest {
     public void testListEmptyFolder() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path emptyFolder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> result = new SMBListService(session).list(emptyFolder, new DisabledListProgressListener());
         assertEquals(0, result.size());
         new SMBDeleteFeature(session).delete(Collections.singletonList(emptyFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
