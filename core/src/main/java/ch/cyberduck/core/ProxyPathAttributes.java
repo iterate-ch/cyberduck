@@ -19,6 +19,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import java.util.Map;
 
@@ -156,12 +157,12 @@ public class ProxyPathAttributes implements PathAttributes {
     }
 
     @Override
-    public String getDirectoryId() {
+    public byte[] getDirectoryId() {
         return proxy.getDirectoryId();
     }
 
     @Override
-    public PathAttributes setDirectoryId(final String directoryId) {
+    public PathAttributes setDirectoryId(final byte[] directoryId) {
         return proxy.setDirectoryId(directoryId);
     }
 
@@ -203,6 +204,16 @@ public class ProxyPathAttributes implements PathAttributes {
     @Override
     public Path getVault() {
         return proxy.getVault();
+    }
+
+    @Override
+    public VaultMetadata getVaultMetadata() {
+        return proxy.getVaultMetadata();
+    }
+
+    @Override
+    public PathAttributes setVaultMetadata(final VaultMetadata vaultMetadata) {
+        return proxy.setVaultMetadata(vaultMetadata);
     }
 
     @Override
