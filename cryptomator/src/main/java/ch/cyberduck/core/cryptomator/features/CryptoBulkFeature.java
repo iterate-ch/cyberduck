@@ -82,6 +82,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 if(!status.isExists()) {
                     switch(type) {
                         case upload:
+                            cryptomator.getDirectoryProvider().createDirectoryId(file);
                             encrypted.put(new TransferItem(cryptomator.encrypt(session, file, false), local), status);
                             break;
                         default:

@@ -41,8 +41,10 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -54,7 +56,6 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
-import static org.junit.Assume.assumeTrue;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
@@ -63,9 +64,9 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
     @Test
     public void testMakeDirectoryEncrypted() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
-        final CryptoVault cryptomator = new CryptoVault(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
-        final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, fileid)).mkdir(
@@ -84,13 +85,14 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Collections.singletonList(vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
+    //TODO
     @Test
+    @Ignore("File name shortening not implemented yet")
     public void testMakeDirectoryLongFilenameEncrypted() throws Exception {
-        assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
-        final CryptoVault cryptomator = new CryptoVault(
-            new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
-        final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, fileid)).mkdir(

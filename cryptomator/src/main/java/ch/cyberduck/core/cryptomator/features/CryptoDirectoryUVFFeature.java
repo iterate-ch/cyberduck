@@ -28,9 +28,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cryptomator.cryptolib.api.DirectoryMetadata;
 import org.cryptomator.cryptolib.api.FileHeader;
 
-import java.nio.ByteBuffer;
 import java.util.EnumSet;
 
 public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<Reply> {
@@ -47,9 +47,10 @@ public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<R
         this.vault = vault;
     }
 
+    //TODO check if we can merge this implementation with the one in the superclass. Here we additionally write the recovery metadata file.
     @Override
     public Path mkdir(final Write<Reply> writer, final Path folder, final TransferStatus status) throws BackgroundException {
-        final byte[] directoryId = vault.getDirectoryProvider().createDirectoryId(folder);
+        final DirectoryMetadata dirMetadata = vault.getDirectoryProvider().createDirectoryId(folder);
         // Create metadata file for directory
         final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(
                 session._getFeature(Write.class), vault.encrypt(session, folder, true), new TransferStatus().setRegion(status.getRegion()));
@@ -57,13 +58,15 @@ public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<R
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
-        new ContentWriter(session).write(directoryMetadataFile, this.encryptDirectoryMetadataWithCurrentRevision(directoryId));
+        final byte[] encryptedMetadata = this.vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(dirMetadata);
+        new ContentWriter(session).write(directoryMetadataFile, encryptedMetadata);
         final Path encrypt = vault.encrypt(session, folder, false);
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(
                     session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
         }
+
         // Write metadata
         final FileHeader header = vault.getFileHeaderCryptor().create();
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
@@ -73,28 +76,15 @@ public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<R
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write recovery metadata {} for folder {}", recoveryDirectoryMetadataFile, folder);
-        new ContentWriter(session).write(recoveryDirectoryMetadataFile, this.encryptDirectoryMetadataWithCurrentRevision(directoryId));
+        new ContentWriter(session).write(recoveryDirectoryMetadataFile, this.vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(dirMetadata));
         // Implementation may return new copy of attributes without encryption attributes
-
-        target.attributes().setDirectoryId(directoryId);
+        target.attributes().setDirectoryId(encryptedMetadata);
         target.attributes().setDecrypted(folder);
         // Make reference of encrypted path in attributes of decrypted file point to metadata file
         final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));
         decrypt.attributes().setFileId(directoryMetadataFolder.attributes().getFileId());
         decrypt.attributes().setVersionId(directoryMetadataFolder.attributes().getVersionId());
         return decrypt;
-    }
-
-    // TODO replace with DirectoryContentCryptor#encryptDirectoryMetadata once we have access to dirId
-    private byte[] encryptDirectoryMetadataWithCurrentRevision(final byte[] dirId) {
-        final ByteBuffer cleartextBuf = ByteBuffer.wrap(dirId);
-        final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
-        final ByteBuffer headerBuf = vault.getCryptor().fileHeaderCryptor().encryptHeader(header);
-        final ByteBuffer contentBuf = vault.getCryptor().fileContentCryptor().encryptChunk(cleartextBuf, 0, header);
-        final byte[] result = new byte[headerBuf.remaining() + contentBuf.remaining()];
-        headerBuf.get(result, 0, headerBuf.remaining());
-        contentBuf.get(result, headerBuf.limit(), contentBuf.remaining());
-        return result;
     }
 
     @Override

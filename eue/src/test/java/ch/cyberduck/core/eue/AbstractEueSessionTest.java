@@ -16,7 +16,6 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.CreateShareApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationRequestModel;
@@ -29,6 +28,7 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -48,7 +48,7 @@ public class AbstractEueSessionTest extends VaultTest {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+        return new Object[]{VaultMetadata.Type.V8, VaultMetadata.Type.UVF};
     }
 
     @Parameterized.Parameter
