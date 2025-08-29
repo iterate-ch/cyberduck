@@ -19,6 +19,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.cryptomator.cryptolib.api.DirectoryMetadata;
+
 import java.util.EnumSet;
 
 public interface CryptoDirectory {
@@ -49,7 +51,7 @@ public interface CryptoDirectory {
 
     void destroy();
 
-    byte[] getOrCreateDirectoryId(Session<?> session, Path directory) throws BackgroundException;
+    DirectoryMetadata getOrCreateDirectoryId(Session<?> session, Path directory) throws BackgroundException;
 
-    byte[] createDirectoryId(final Path directory);
+    DirectoryMetadata createDirectoryId(final Path directory);
 }

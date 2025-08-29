@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.cryptomator.impl.uvf;
 
 /*
  * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
@@ -20,9 +20,11 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.cryptomator.AbstractVault;
+import ch.cyberduck.core.cryptomator.CryptoDirectory;
+import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryUVFFeature;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
@@ -30,30 +32,30 @@ import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.DirectoryMetadata;
 import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
+import org.cryptomator.cryptolib.api.RevolvingMasterkey;
 import org.cryptomator.cryptolib.api.UVFMasterkey;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.io.BaseEncoding;
+import com.google.auto.service.AutoService;
 
-public class UVFVault extends AbstractVault {
-
-    private static final Logger log = LogManager.getLogger(UVFVault.class);
+@AutoService(Vault.class)
+public class CryptoVault extends AbstractVault {
+    private static final Logger log = LogManager.getLogger(CryptoVault.class);
 
     private static final String REGULAR_FILE_EXTENSION = ".uvf";
     private static final String FILENAME_DIRECTORYID = "dir";
@@ -61,37 +63,34 @@ public class UVFVault extends AbstractVault {
     private static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
     private static final String BACKUP_DIRECTORY_METADATA_FILENAME = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
 
-    private static final Pattern BASE64URL_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)" + REGULAR_FILE_EXTENSION);
-
-    // copied from AbstractVault
-    private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
+    private static final Pattern FILENAME_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)" + REGULAR_FILE_EXTENSION);
 
     /**
      * Root of vault directory
      */
     private final Path home;
 
+    private RevolvingMasterkey masterKey;
+
     private Cryptor cryptor;
-    private CryptorCache fileNameCryptor;
     private CryptoFilename filenameProvider;
     private CryptoDirectory directoryProvider;
 
     private int nonceSize;
-    private byte[] rootDirId;
 
-    public UVFVault(final Path home) {
+    public CryptoVault(final Path home) {
         this.home = home;
     }
 
     @Override
-    public Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         throw new UnsupportedOperationException();
     }
 
     // load -> unlock -> open
     @Override
-    public UVFVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
-        final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(prompt.prompt(session.getHost(),
+    public CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
+        masterKey = UVFMasterkey.fromDecryptedPayload(prompt.prompt(session.getHost(),
                 LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName()),
                 new LoginOptions()
@@ -103,81 +102,10 @@ public class UVFVault extends AbstractVault {
         final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
         log.debug("Initialized crypto provider {}", provider);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
-        this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor(masterKey.firstRevision())); // TODO revision eventually depends on location - safe?
         this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE);
-        this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider, fileNameCryptor);
+        this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
         this.nonceSize = 12;
-        this.rootDirId = masterKey.rootDirId();
         return this;
-    }
-
-    @Override
-    public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
-        if(file.getType().contains(Path.Type.decrypted)) {
-            log.warn("Skip file {} because it is already marked as an defcrypted path", file);
-            return file;
-        }
-        if(file.getType().contains(Path.Type.vault)) {
-            log.warn("Skip file {} because it is marked as an internal vault path", file);
-            return file;
-        }
-        final Path inflated = this.inflate(session, file);
-        final Pattern pattern = this.getVersion() == VAULT_VERSION_DEPRECATED ? BASE32_PATTERN : this.getBase64URLPattern();
-        final Matcher m = pattern.matcher(inflated.getName());
-        if(m.matches()) {
-            final String ciphertext = m.group(1);
-            try {
-                final CryptorCache effectivefileNameCryptor;
-                // / diff to AbstractVault.decrypt
-                //TODO lädt das recovery metadaten file anstatt normales
-                final int revision = loadRevision(session, file);
-                effectivefileNameCryptor = new CryptorCache(this.getCryptor().fileNameCryptor(revision));
-                // \
-                final String cleartextFilename = effectivefileNameCryptor.decryptFilename(
-                        this.getVersion() == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
-                        ciphertext, directoryProvider.getOrCreateDirectoryId(session, file.getParent()));
-                final PathAttributes attributes = new PathAttributes(file.attributes());
-                if(this.isDirectory(inflated)) {
-                    if(Permission.EMPTY != attributes.getPermission()) {
-                        final Permission permission = new Permission(attributes.getPermission());
-                        permission.setUser(permission.getUser().or(Permission.Action.execute));
-                        permission.setGroup(permission.getGroup().or(Permission.Action.execute));
-                        permission.setOther(permission.getOther().or(Permission.Action.execute));
-                        attributes.setPermission(permission);
-                    }
-                    // Reset size for folders
-                    attributes.setSize(-1L);
-                    attributes.setVersionId(null);
-                    attributes.setFileId(null);
-                }
-                else {
-                    // Translate file size
-                    attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
-                }
-                // Add reference to encrypted file
-                attributes.setEncrypted(file);
-                // Add reference for vault
-                attributes.setVault(this.getHome());
-                final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-                type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
-                type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
-                type.remove(Path.Type.encrypted);
-                type.add(Path.Type.decrypted);
-                final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
-                if(type.contains(Path.Type.symboliclink)) {
-                    decrypted.setSymlinkTarget(file.getSymlinkTarget());
-                }
-                return decrypted;
-            }
-            catch(AuthenticationFailedException e) {
-                throw new CryptoAuthenticationException(
-                        "Failure to decrypt due to an unauthentic ciphertext", e);
-            }
-        }
-        else {
-            throw new CryptoFilenameMismatchException(
-                    String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern));
-        }
     }
 
     @Override
@@ -214,10 +142,6 @@ public class UVFVault extends AbstractVault {
             // Translate file size
             attributes.setSize(this.toCiphertextSize(0L, file.attributes().getSize()));
             final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-            if(metadata && this.getVersion() == VAULT_VERSION_DEPRECATED) {
-                type.remove(Path.Type.directory);
-                type.add(Path.Type.file);
-            }
             type.remove(Path.Type.decrypted);
             type.add(Path.Type.encrypted);
             encrypted = new Path(parent, filename, type, attributes);
@@ -237,45 +161,9 @@ public class UVFVault extends AbstractVault {
             encrypted.attributes().setDecrypted(file);
         }
         // Add reference for vault
-        file.attributes().setVault(this.getHome());
-        encrypted.attributes().setVault(this.getHome());
+        file.attributes().setVaultMetadata(this.getMetadata());
+        encrypted.attributes().setVaultMetadata(this.getMetadata());
         return encrypted;
-    }
-
-    private int loadRevision(final Session<?> session, final Path directory) throws BackgroundException {
-        // Read directory id from file
-        log.debug("Read directory ID from {}", directory);
-        final Path metadataFile = new Path(directory.getParent(), this.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
-        final byte[] ciphertext = new ContentReader(session).readBytes(metadataFile);
-        // https://github.com/encryption-alliance/unified-vault-format/blob/develop/file%20name%20encryption/AES-SIV-512-B64URL.md#format-of-diruvf-and-symlinkuvf
-        // TODO can we not use org.cryptomator.cryptolib.v3.DirectoryContentCryptorImpl.decryptDirectoryMetadata()? DirectoryMetadataImpl is not visible and DirectoryMetadata is empty interface, so we cannot access dirId attribute.
-        if(ciphertext.length != 128) {
-            throw new IllegalArgumentException("Invalid dir.uvf length: " + ciphertext.length);
-        }
-        int headerSize = this.getCryptor().fileHeaderCryptor().headerSize();
-        ByteBuffer buffer = ByteBuffer.wrap(ciphertext);
-        ByteBuffer headerBuf = buffer.duplicate();
-        headerBuf.position(4).limit(headerSize);
-        return headerBuf.order(ByteOrder.BIG_ENDIAN).getInt();
-    }
-
-
-    // copied from AbstractVault
-    private boolean isDirectory(final Path p) {
-        if(this.getVersion() == VAULT_VERSION_DEPRECATED) {
-            return p.getName().startsWith(DIR_PREFIX);
-        }
-        return p.isDirectory();
-    }
-
-    // copied from AbstractVault
-    private Path inflate(final Session<?> session, final Path file) throws BackgroundException {
-        final String fileName = file.getName();
-        if(this.getFilenameProvider().isDeflated(fileName)) {
-            final String filename = this.getFilenameProvider().inflate(session, fileName);
-            return new Path(file.getParent(), filename, EnumSet.of(Path.Type.file), file.attributes());
-        }
-        return file;
     }
 
     @Override
@@ -285,9 +173,14 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public Path getMasterkey() {
+    public Path getMasterkeyPath() {
         //TODO: implement
         return null;
+    }
+
+    @Override
+    public RevolvingMasterkey getMasterkey() {
+        return masterKey;
     }
 
     @Override
@@ -312,11 +205,6 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public CryptorCache getFileNameCryptor() {
-        return fileNameCryptor;
-    }
-
-    @Override
     public CryptoFilename getFilenameProvider() {
         return filenameProvider;
     }
@@ -337,8 +225,8 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public int getVersion() {
-        return VAULT_VERSION;
+    public Pattern getFilenamePattern() {
+        return FILENAME_PATTERN;
     }
 
     @Override
@@ -356,13 +244,13 @@ public class UVFVault extends AbstractVault {
         return BACKUP_DIRECTORY_METADATA_FILENAME;
     }
 
-    @Override
-    public Pattern getBase64URLPattern() {
-        return BASE64URL_PATTERN;
+    public DirectoryMetadata getRootDirId() {
+        return this.cryptor.directoryContentCryptor().rootDirectoryMetadata();
     }
 
-    public byte[] getRootDirId() {
-        return rootDirId;
+    @Override
+    public VaultMetadata getMetadata() {
+        return new VaultMetadata(this.getHome(), VaultMetadata.Type.UVF);
     }
 
     @Override
@@ -378,10 +266,10 @@ public class UVFVault extends AbstractVault {
         if(this == o) {
             return true;
         }
-        if(!(o instanceof UVFVault)) {
+        if(!(o instanceof CryptoVault)) {
             return false;
         }
-        final UVFVault that = (UVFVault) o;
+        final CryptoVault that = (CryptoVault) o;
         return new SimplePathPredicate(home).test(that.home);
     }
 
