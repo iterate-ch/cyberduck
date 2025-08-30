@@ -255,6 +255,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
             final byte[] newcontent = RandomUtils.nextBytes(10);
 
             final TransferStatus status = new TransferStatus();
+            status.setExists(true);
             status.setAppend(false);
             status.setLength(newcontent.length);
             status.setRemote(new IRODSAttributesFinderFeature(session).find(test));
@@ -329,6 +330,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
         final byte[] content_append = RandomUtils.nextBytes(100);
 
         final TransferStatus status_append = new TransferStatus();
+        status_append.setExists(true);
         status_append.setAppend(true);
         status_append.setLength(content_append.length);
         status_append.setRemote(new IRODSAttributesFinderFeature(session).find(test));
