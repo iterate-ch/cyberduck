@@ -106,6 +106,10 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
         return this;
     }
 
+    public VaultRegistry getRegistry() {
+        return registry;
+    }
+
     public enum State {
         opening,
         open,
