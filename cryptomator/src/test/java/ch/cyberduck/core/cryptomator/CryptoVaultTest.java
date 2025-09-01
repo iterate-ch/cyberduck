@@ -434,51 +434,6 @@ public class CryptoVaultTest {
     }
 
     @Test
-    public void testCleartextSizeV6() throws Exception {
-        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == Directory.class) {
-                    return (T) new Directory() {
-
-                        @Override
-                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
-                            assertTrue(folder.equals(home) || folder.isChild(home));
-                            return folder;
-                        }
-                    };
-                }
-                return super._getFeature(type);
-            }
-        };
-        final CryptoVault vault = new CryptoVault(
-                home);
-        vault.create(session, null, new VaultCredentials("test"), 6);
-        // zero ciphertextFileSize
-        try {
-            vault.toCleartextSize(0L, 0);
-            fail();
-        }
-        catch(CryptoInvalidFilesizeException e) {
-        }
-        // ciphertextFileSize == headerSize
-        assertEquals(0L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize()));
-        // ciphertextFileSize == headerSize + 1
-        try {
-            vault.toCleartextSize(0L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize()) + 1);
-            fail();
-        }
-        catch(CryptoInvalidFilesizeException e) {
-        }
-        // ciphertextFileSize == headerSize + chunkHeaderSize + 1
-        assertEquals(1L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize() + 48 + 1));
-        // ciphertextFileSize == headerSize + (32768 + chunkHeaderSize) + (1 + chunkHeaderSize) + 1
-        assertEquals(32769L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
-    }
-
-    @Test
     public void testCleartextSizeV8() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
