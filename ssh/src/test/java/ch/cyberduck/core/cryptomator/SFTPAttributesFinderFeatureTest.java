@@ -74,7 +74,7 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
         cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SFTPFindFeature(session).find(vault));
         assertFalse(new SFTPFindFeature(session).find(cryptomator.getHome()));
-        assertFalse(new SFTPFindFeature(session).find(cryptomator.getMasterkey()));
+        assertFalse(new SFTPFindFeature(session).find(cryptomator.getMasterkeyPath()));
         assertFalse(new SFTPFindFeature(session).find(cryptomator.getConfig()));
     }
 
