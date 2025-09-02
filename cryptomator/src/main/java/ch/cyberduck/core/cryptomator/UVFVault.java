@@ -59,7 +59,7 @@ public class UVFVault extends AbstractVault {
     /**
      * Root of vault directory
      */
-    private final Path home;
+    protected final Path home;
 
     private RevolvingMasterkey masterKey;
 
