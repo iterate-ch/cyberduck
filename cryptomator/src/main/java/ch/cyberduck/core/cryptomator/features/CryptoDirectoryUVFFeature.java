@@ -28,24 +28,22 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cryptomator.cryptolib.api.DirectoryContentCryptor;
+import org.cryptomator.cryptolib.api.DirectoryMetadata;
 import org.cryptomator.cryptolib.api.FileHeader;
 
-import java.nio.ByteBuffer;
 import java.util.EnumSet;
 
 public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<Reply> {
     private static final Logger log = LogManager.getLogger(CryptoDirectoryUVFFeature.class);
 
     private final Session<?> session;
-    private final Write<Reply> writer;
     private final Directory<Reply> delegate;
     private final AbstractVault vault;
 
-    public CryptoDirectoryUVFFeature(final Session<?> session, final Directory<Reply> delegate,
-                                     final Write<Reply> writer, final AbstractVault vault) {
-        super(session, delegate, writer, vault);
+    public CryptoDirectoryUVFFeature(final Session<?> session, final Directory<Reply> delegate, final AbstractVault vault) {
+        super(session, delegate, vault);
         this.session = session;
-        this.writer = writer;
         this.delegate = delegate;
         this.vault = vault;
     }
@@ -87,16 +85,10 @@ public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<R
         return decrypt;
     }
 
-    // TODO replace with DirectoryContentCryptor#encryptDirectoryMetadata once we have access to dirId
     private byte[] encryptDirectoryMetadataWithCurrentRevision(final byte[] dirId) {
-        final ByteBuffer cleartextBuf = ByteBuffer.wrap(dirId);
-        final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
-        final ByteBuffer headerBuf = vault.getCryptor().fileHeaderCryptor().encryptHeader(header);
-        final ByteBuffer contentBuf = vault.getCryptor().fileContentCryptor().encryptChunk(cleartextBuf, 0, header);
-        final byte[] result = new byte[headerBuf.remaining() + contentBuf.remaining()];
-        headerBuf.get(result, 0, headerBuf.remaining());
-        contentBuf.get(result, headerBuf.limit(), contentBuf.remaining());
-        return result;
+        final DirectoryContentCryptor directoryContentCryptor = vault.getCryptor().directoryContentCryptor();
+        final DirectoryMetadata directoryMetadata = directoryContentCryptor.newDirectoryMetadata(dirId);
+        return directoryContentCryptor.encryptDirectoryMetadata(directoryMetadata);
     }
 
     @Override
@@ -106,6 +98,4 @@ public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<R
         sb.append('}');
         return sb.toString();
     }
-
-
 }

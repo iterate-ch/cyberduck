@@ -19,10 +19,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
-import ch.cyberduck.core.cryptomator.CryptorCache;
+import ch.cyberduck.core.cryptomator.UVFVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -42,17 +41,15 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
     private static final Logger log = LogManager.getLogger(CryptoDirectoryUVFProvider.class);
 
     private final Path home;
-    private final AbstractVault vault;
+    private final UVFVault vault;
 
     private final SecureRandom random
             = FastSecureRandomProvider.get().provide();
     private final Path dataRoot;
-    private final CryptorCache filenameCryptor;
     private final CryptoFilename filenameProvider;
 
-    public CryptoDirectoryUVFProvider(final AbstractVault vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
-        super(vault, filenameProvider, filenameCryptor);
-        this.filenameCryptor = filenameCryptor;
+    public CryptoDirectoryUVFProvider(final UVFVault vault, final CryptoFilename filenameProvider) {
+        super(vault, filenameProvider);
         this.filenameProvider = filenameProvider;
         this.home = vault.getHome();
         this.vault = vault;
@@ -69,12 +66,6 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
 
     @Override
     public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
-        if(new SimplePathPredicate(home).test(parent)) {
-            final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(), filename, vault.getRootDirId()) + vault.getRegularFileExtension();
-            log.debug("Encrypted filename {} to {}", filename, ciphertextName);
-            return filenameProvider.deflate(session, ciphertextName);
-
-        }
         final byte[] directoryId = load(session, parent);
         final String ciphertextName = vault.getCryptor().fileNameCryptor(loadRevision(session, parent)).encryptFilename(BaseEncoding.base64Url(), filename, directoryId) + vault.getRegularFileExtension();
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
@@ -97,13 +88,7 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
             attributes.setDirectoryId(id);
             attributes.setDecrypted(directory);
             final String directoryIdHash;
-            if(new SimplePathPredicate(home).test(directory)) {
-                // TODO hard-coded to initial seed in UVFVault
-                directoryIdHash = filenameCryptor.hashDirectoryId(id);
-            }
-            else {
-                directoryIdHash = vault.getCryptor().fileNameCryptor(loadRevision(session, directory)).hashDirectoryId(id);
-            }
+            directoryIdHash = vault.getCryptor().fileNameCryptor(loadRevision(session, directory)).hashDirectoryId(id);
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
             // Add encrypted type
@@ -154,6 +139,9 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV7Provider {
     }
 
     protected int loadRevision(final Session<?> session, final Path directory) throws BackgroundException {
+        if(new SimplePathPredicate(home).test(directory)) {
+            return this.vault.getMasterkey().firstRevision();
+        }
         final Path parent = this.toEncrypted(session, directory.getParent());
         final String cleartextName = directory.getName();
         final String ciphertextName = this.toEncrypted(session, directory.getParent(), cleartextName, EnumSet.of(Path.Type.directory));

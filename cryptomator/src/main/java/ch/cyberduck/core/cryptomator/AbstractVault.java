@@ -33,14 +33,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
+import org.cryptomator.cryptolib.api.DirectoryContentCryptor;
+import org.cryptomator.cryptolib.api.DirectoryMetadata;
 import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
+import org.cryptomator.cryptolib.api.Masterkey;
 
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.io.BaseEncoding;
 
 public abstract class AbstractVault implements Vault {
 
@@ -53,7 +54,9 @@ public abstract class AbstractVault implements Vault {
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
 
-    public abstract Path getMasterkey();
+    public abstract Path getMasterkeyPath();
+
+    public abstract Masterkey getMasterkey();
 
     public abstract Path getConfig();
 
@@ -62,8 +65,6 @@ public abstract class AbstractVault implements Vault {
     public abstract FileHeaderCryptor getFileHeaderCryptor();
 
     public abstract FileContentCryptor getFileContentCryptor();
-
-    public abstract CryptorCache getFileNameCryptor();
 
     public abstract CryptoFilename getFilenameProvider();
 
@@ -202,9 +203,10 @@ public abstract class AbstractVault implements Vault {
         if(m.matches()) {
             final String ciphertext = m.group(1);
             try {
-                final String cleartextFilename = this.getFileNameCryptor().decryptFilename(
-                        this.getVersion() == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
-                        ciphertext, this.getDirectoryProvider().getOrCreateDirectoryId(session, file.getParent()));
+                //TODO lädt das recovery metadaten file anstatt normales
+                final DirectoryContentCryptor.Decrypting decrypting = this.getFilenameDecryptor(session, file);
+                //TODO hier hatten wir caching via CryptorCache
+                final String cleartextFilename = decrypting.decrypt(ciphertext);
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
@@ -247,6 +249,15 @@ public abstract class AbstractVault implements Vault {
             throw new CryptoFilenameMismatchException(
                     String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern));
         }
+    }
+
+    private DirectoryContentCryptor.Decrypting getFilenameDecryptor(final Session<?> session, final Path directory) throws BackgroundException {
+        // Read directory id from file
+        log.debug("Read directory ID from {}", directory);
+        final Path metadataFile = new Path(directory.getParent(), this.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
+        final byte[] ciphertext = new ContentReader(session).readBytes(metadataFile);
+        final DirectoryMetadata metadata = this.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(ciphertext);
+        return this.getCryptor().directoryContentCryptor().fileNameDecryptor(metadata);
     }
 
     private boolean isDirectory(final Path p) {
@@ -315,7 +326,7 @@ public abstract class AbstractVault implements Vault {
             }
             if(type == Directory.class) {
                 //TODO
-                return (T) new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class), this);
+                return (T) new CryptoDirectoryV7Feature(session, (Directory) delegate, this);
 //                return (T) (this.getVersion() == VAULT_VERSION_DEPRECATED ?
 //                        new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class), this) :
 //                        new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class), this)

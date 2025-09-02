@@ -28,7 +28,6 @@ import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
-import ch.cyberduck.core.cryptomator.CryptorCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -54,7 +53,6 @@ public class CryptoDirectoryV7Provider implements CryptoDirectory {
     private final Path dataRoot;
     private final Path home;
     private final CryptoFilename filenameProvider;
-    private final CryptorCache filenameCryptor;
 
     private final RandomStringService random
             = new UUIDRandomStringService();
@@ -64,17 +62,16 @@ public class CryptoDirectoryV7Provider implements CryptoDirectory {
             PreferencesFactory.get().getInteger("cryptomator.cache.size"));
 
 
-    public CryptoDirectoryV7Provider(final AbstractVault vault, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
+    public CryptoDirectoryV7Provider(final AbstractVault vault, final CryptoFilename filenameProvider) {
         this.home = vault.getHome();
         this.dataRoot = new Path(vault.getHome(), DATA_DIR_NAME, vault.getHome().getType());
         this.filenameProvider = filenameProvider;
-        this.filenameCryptor = filenameCryptor;
         this.vault = vault;
     }
 
     @Override
     public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
-        final String ciphertextName = filenameCryptor.encryptFilename(BaseEncoding.base64Url(), filename, this.getOrCreateDirectoryId(session, parent)) + vault.getRegularFileExtension();
+        final String ciphertextName = this.vault.getCryptor().fileNameCryptor().encryptFilename(BaseEncoding.base64Url(), filename, this.getOrCreateDirectoryId(session, parent)) + vault.getRegularFileExtension();
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return filenameProvider.deflate(session, ciphertextName);
     }
@@ -94,7 +91,8 @@ public class CryptoDirectoryV7Provider implements CryptoDirectory {
             log.debug("Use directory ID '{}' for folder {}", id, directory);
             attributes.setDirectoryId(id);
             attributes.setDecrypted(directory);
-            final String directoryIdHash = filenameCryptor.hashDirectoryId(id);
+            //TODO generalize whole method but must extract fileNameCryptor too
+            final String directoryIdHash = this.vault.getCryptor().fileNameCryptor().hashDirectoryId(id);
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
             // Add encrypted type

@@ -24,7 +24,6 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
@@ -104,22 +103,21 @@ public class CryptoVault extends AbstractVault {
      * Root of vault directory
      */
     private final Path home;
-    private final Path masterkey;
+    private final Path masterkeyPath;
 
     private final Path config;
-    private final Path vault;
     private int vaultVersion;
     private int nonceSize;
 
     private final PasswordStore keychain = PasswordStoreFactory.get();
     private final Preferences preferences = PreferencesFactory.get();
     private Cryptor cryptor;
-    private CryptorCache fileNameCryptor;
 
     private CryptoFilename filenameProvider;
     private CryptoDirectory directoryProvider;
 
     private final byte[] pepper;
+    private Masterkey masterkey;
 
     public CryptoVault(final Path home) {
         this(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_VAULTCONFIG_FILE_NAME, VAULT_PEPPER);
@@ -127,19 +125,13 @@ public class CryptoVault extends AbstractVault {
 
     public CryptoVault(final Path home, final String masterkey, final String config, final byte[] pepper) {
         this.home = home;
-        this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
+        this.masterkeyPath = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
         this.config = new Path(home, config, EnumSet.of(Path.Type.file, Path.Type.vault));
 
         this.pepper = pepper;
         // New vault home with vault flag set for internal use
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
         type.add(Path.Type.vault);
-        if(home.isRoot()) {
-            this.vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
-        }
-        else {
-            this.vault = new Path(home.getParent(), home.getName(), type, new PathAttributes(home.attributes()));
-        }
     }
 
     public synchronized Path create(final Session<?> session, final VaultCredentials credentials, final int version) throws BackgroundException {
@@ -151,7 +143,7 @@ public class CryptoVault extends AbstractVault {
         if(credentials.isSaved()) {
             try {
                 keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                        new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
             }
             catch(LocalAccessDeniedException e) {
                 log.error("Failure {} saving credentials for {} in password store", e, bookmark);
@@ -169,7 +161,7 @@ public class CryptoVault extends AbstractVault {
         catch(IOException e) {
             throw new VaultException("Failure creating master key", e);
         }
-        log.debug("Write master key to {}", masterkey);
+        log.debug("Write master key to {}", masterkeyPath);
         // Obtain non encrypted directory writer
         final Directory<?> directory = session._getFeature(Directory.class);
         final TransferStatus status = new TransferStatus().setRegion(region);
@@ -178,13 +170,13 @@ public class CryptoVault extends AbstractVault {
             status.setEncryption(encryption.getDefault(home));
         }
         final Path vault = directory.mkdir(session._getFeature(Write.class), home, status);
-        new ContentWriter(session).write(masterkey, mkArray.toByteArray());
+        new ContentWriter(session).write(masterkeyPath, mkArray.toByteArray());
         if(VAULT_VERSION == version) {
             // Create vaultconfig.cryptomator
             final Algorithm algorithm = Algorithm.HMAC256(mk.getEncoded());
             final String conf = JWT.create()
                     .withJWTId(new UUIDRandomStringService().random())
-                    .withKeyId(String.format("masterkeyfile:%s", masterkey.getName()))
+                    .withKeyId(String.format("masterkeyfile:%s", masterkeyPath.getName()))
                     .withClaim(JSON_KEY_VAULTVERSION, version)
                     .withClaim(JSON_KEY_CIPHERCONFIG, CryptorProvider.Scheme.SIV_GCM.toString())
                     .withClaim(JSON_KEY_SHORTENING_THRESHOLD, CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD)
@@ -220,17 +212,17 @@ public class CryptoVault extends AbstractVault {
         }
         final Host bookmark = session.getHost();
         String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
+                new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
         if(null == passphrase) {
             // Legacy
             passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
+                    new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
         }
         return this.unlock(session, prompt, bookmark, passphrase);
     }
 
     private VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
-        final MasterkeyFile masterkeyFile = this.readMasterkeyFile(session, masterkey);
+        final MasterkeyFile masterkeyFile = this.readMasterkeyFile(session, masterkeyPath);
         try {
             return parseVaultConfigFromJWT(new ContentReader(session).read(config))
                     .withMasterkeyFile(masterkeyFile);
@@ -304,10 +296,10 @@ public class CryptoVault extends AbstractVault {
         try {
             this.open(vaultConfig, credentials.getPassword());
             if(credentials.isSaved()) {
-                log.info("Save passphrase for {}", masterkey);
+                log.info("Save passphrase for {}", masterkeyPath);
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                        new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
             }
         }
         catch(CryptoAuthenticationException e) {
@@ -320,7 +312,6 @@ public class CryptoVault extends AbstractVault {
     public synchronized void close() {
         super.close();
         cryptor = null;
-        fileNameCryptor = null;
     }
 
     protected CryptoFilename createFilenameProvider(final VaultConfig vaultConfig) {
@@ -333,13 +324,13 @@ public class CryptoVault extends AbstractVault {
         }
     }
 
-    protected CryptoDirectory createDirectoryProvider(final VaultConfig vaultConfig, final CryptoFilename filenameProvider, final CryptorCache filenameCryptor) {
+    protected CryptoDirectory createDirectoryProvider(final VaultConfig vaultConfig, final CryptoFilename filenameProvider) {
         switch(vaultConfig.version) {
             case VAULT_VERSION_DEPRECATED:
                 //TODO
                 //return new CryptoDirectoryV6Provider(vault, filenameProvider, filenameCryptor);
             default:
-                return new CryptoDirectoryV7Provider(this, filenameProvider, filenameCryptor);
+                return new CryptoDirectoryV7Provider(this, filenameProvider);
         }
     }
 
@@ -361,10 +352,10 @@ public class CryptoVault extends AbstractVault {
         final CryptorProvider provider = CryptorProvider.forScheme(vaultConfig.getCipherCombo());
         log.debug("Initialized crypto provider {}", provider);
         vaultConfig.verify(masterKey.getEncoded(), VAULT_VERSION);
+        this.masterkey = masterKey;
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
-        this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
         this.filenameProvider = this.createFilenameProvider(vaultConfig);
-        this.directoryProvider = this.createDirectoryProvider(vaultConfig, this.filenameProvider, this.fileNameCryptor);
+        this.directoryProvider = this.createDirectoryProvider(vaultConfig, this.filenameProvider);
         this.nonceSize = vaultConfig.getNonceSize();
     }
 
@@ -380,7 +371,11 @@ public class CryptoVault extends AbstractVault {
     }
 
     @Override
-    public Path getMasterkey() {
+    public Path getMasterkeyPath() {
+        return masterkeyPath;
+    }
+
+    public Masterkey getMasterkey() {
         return masterkey;
     }
 
@@ -402,11 +397,6 @@ public class CryptoVault extends AbstractVault {
     @Override
     public FileContentCryptor getFileContentCryptor() {
         return cryptor.fileContentCryptor();
-    }
-
-    @Override
-    public CryptorCache getFileNameCryptor() {
-        return fileNameCryptor;
     }
 
     @Override
