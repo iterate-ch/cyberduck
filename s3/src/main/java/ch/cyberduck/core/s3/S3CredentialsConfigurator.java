@@ -400,8 +400,6 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
     }
 
     protected AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
-        final ClientConfiguration configuration = new CustomClientConfiguration(host,
-                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
         return AWSSecurityTokenServiceClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new AWSCredentials() {
                     @Override
@@ -429,7 +427,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         return sessionToken;
                     }
                 }))
-                .withClientConfiguration(configuration)
+                .withClientConfiguration(new CustomClientConfiguration(host,
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key))
                 .withRegion(StringUtils.isNotBlank(region) ? Regions.fromName(region) : Regions.DEFAULT_REGION).build();
     }
 
