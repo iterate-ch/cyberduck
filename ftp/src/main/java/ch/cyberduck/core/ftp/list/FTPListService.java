@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp.list;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -218,6 +220,14 @@ public class FTPListService implements ListService {
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
+        }
+    }
+
+    @Override
+    public void preflight(final Path directory) throws BackgroundException {
+        if(!directory.attributes().getPermission().isExecutable() || !directory.attributes().getPermission().isReadable()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Listing directory {0} failed", "Error"),
+                    directory.getName())).withFile(directory);
         }
     }
 }
