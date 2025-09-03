@@ -50,15 +50,12 @@ import com.amazonaws.DnsResolver;
 public class CustomClientConfiguration extends ClientConfiguration {
 
     public CustomClientConfiguration(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
-        this.setDnsResolver(new DnsResolver() {
-            @Override
-            public InetAddress[] resolve(final String host) throws UnknownHostException {
-                try {
-                    return new Resolver().resolve(host, new DisabledCancelCallback());
-                }
-                catch(ResolveFailedException | ResolveCanceledException e) {
-                    throw new UnknownHostException(e.getDetail(false));
-                }
+        this.setDnsResolver(hostname -> {
+            try {
+                return new Resolver().resolve(hostname, new DisabledCancelCallback());
+            }
+            catch(ResolveFailedException | ResolveCanceledException e) {
+                throw new UnknownHostException(e.getDetail(false));
             }
         });
         final int timeout = ConnectionTimeoutFactory.get(host).getTimeout() * 1000;
