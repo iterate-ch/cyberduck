@@ -332,12 +332,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
                 if(client.isAuthenticatedConnection()) {
-                    final CustomClientConfiguration configuration = new CustomClientConfiguration(host,
-                            new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
                     final AWSSecurityTokenServiceClientBuilder builder = AWSSecurityTokenServiceClientBuilder.standard()
                             .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(host.getProtocol().getSTSEndpoint(), null))
                             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(client.getProviderCredentials()))
-                            .withClientConfiguration(configuration);
+                            .withClientConfiguration(new CustomClientConfiguration(host,
+                                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key));
                     final AWSSecurityTokenService service = builder.build();
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
