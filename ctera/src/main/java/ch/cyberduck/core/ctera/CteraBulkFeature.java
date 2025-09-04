@@ -80,7 +80,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                                 }
                                 segment.setUrl(metadata.chunks.get(i).url);
                                 final Map<String, String> parameters = new HashMap<>(segment.getParameters());
-                                parameters.put("wrapped_key", metadata.wrapped_key);
+                                parameters.put(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY, metadata.wrapped_key);
                                 segment.setParameters(parameters);
                             }
                         }
@@ -92,7 +92,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                         if(0L == status.getOffset()) {
                             status.setUrl(metadata.chunks.get(0).url);
                             final Map<String, String> parameters = new HashMap<>(status.getParameters());
-                            parameters.put("wrapped_key", metadata.wrapped_key);
+                            parameters.put(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY, metadata.wrapped_key);
                             status.setParameters(parameters);
                         }
                         else {
