@@ -152,7 +152,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     public void testEmptyThirdPartyProvider() {
         final Host host = new Host(new S3Protocol(), "mys3");
         final S3Session session = new S3Session(host);
-        assertTrue(new S3LocationFeature(session).getLocations().isEmpty());
+        assertTrue(new S3LocationFeature(session).getLocations(Home.root()).isEmpty());
     }
 
     @Test
@@ -162,12 +162,12 @@ public class S3LocationFeatureTest extends AbstractS3Test {
                 this.getClass().getResourceAsStream("/Wasabi (us-central-1).cyberduckprofile"));
         final S3Session session = new S3Session(new Host(profile, profile.getDefaultHostname()));
         final S3LocationFeature feature = new S3LocationFeature(session);
-        assertFalse(feature.getLocations().isEmpty());
-        assertTrue(feature.getLocations().contains(new Location.Name("us-central-1")));
+        assertFalse(feature.getLocations(Home.root()).isEmpty());
+        assertTrue(feature.getLocations(Home.root()).contains(new Location.Name("us-central-1")));
     }
 
     @Test
     public void testVirtualhost() {
-        assertTrue(new S3LocationFeature(virtualhost, virtualhost.getClient().getRegionEndpointCache()).getLocations().isEmpty());
+        assertTrue(new S3LocationFeature(virtualhost, virtualhost.getClient().getRegionEndpointCache()).getLocations(Home.root()).isEmpty());
     }
 }

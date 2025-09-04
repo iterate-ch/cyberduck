@@ -45,14 +45,14 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     public void testTouchRoot() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, fileid).preflight(Home.root(), new AlphanumericRandomStringService().random()));
-        assertThrows(NotfoundException.class, () -> new DeepboxTouchFeature(session, fileid).touch(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus()));
+        assertThrows(NotfoundException.class, () -> new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus()));
     }
 
     @Test
     public void testNoDuplicates() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DeepboxTouchFeature(session, fileid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(documents)), test.getName());
         assertTrue(new DeepboxFindFeature(session, fileid).find(test));
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -62,7 +62,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     public void testAccents() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Insurance", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new DeepboxTouchFeature(session, fileid).touch(new Path(documents, new AlphanumericRandomStringService().random() + "éf", EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), new Path(documents, new AlphanumericRandomStringService().random() + "éf", EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, fileid).find(documents));
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -193,7 +193,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(parent, folder.getName()));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).touch(folder, new TransferStatus()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
     @Test
@@ -202,6 +202,6 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
         final Path file = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(parent, file.getName()));
-        assertThrows(NotfoundException.class, () -> new DeepboxTouchFeature(session, nodeid).touch(file, new TransferStatus()));
+        assertThrows(NotfoundException.class, () -> new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), file, new TransferStatus()));
     }
 }

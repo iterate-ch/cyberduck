@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVTouchFeature;
+import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -49,7 +50,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
     public void testAttributes() throws Exception {
         final AttributesFinder f = new DefaultAttributesFinderFeature(session);
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         // Test wrong type

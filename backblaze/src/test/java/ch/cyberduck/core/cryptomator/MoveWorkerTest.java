@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2DirectoryFeature;
+import ch.cyberduck.core.b2.B2FindFeature;
 import ch.cyberduck.core.b2.B2TouchFeature;
 import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2WriteFeature;
@@ -32,6 +33,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,7 +64,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(clearFile, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), clearFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(clearFile));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -69,7 +72,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(encryptedFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(new B2WriteFeature(session, fileid), encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         // move file into vault
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
@@ -87,8 +90,8 @@ public class MoveWorkerTest extends AbstractB2Test {
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2DirectoryFeature(session, fileid).mkdir(clearFolder, new TransferStatus());
-        new B2TouchFeature(session, fileid).touch(clearFile, new TransferStatus());
+        new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), clearFolder, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), clearFile, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(clearFolder));
         assertTrue(new DefaultFindFeature(session).find(clearFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -114,16 +117,18 @@ public class MoveWorkerTest extends AbstractB2Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2DirectoryFeature(session, fileid).mkdir(clearFolder, new TransferStatus());
+        new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), clearFolder, new TransferStatus());
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(encryptedFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(
+                cryptomator.getFeature(session, Write.class, new B2WriteFeature(session, fileid)), encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<>(session, new B2TouchFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).touch(encryptedFile, new TransferStatus());
+        cryptomator.getFeature(session, Touch.class, new B2TouchFeature(session, fileid)).touch(
+                cryptomator.getFeature(session, Write.class, new B2WriteFeature(session, fileid)), encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move file outside vault
         final Path fileRenamed = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -147,19 +152,21 @@ public class MoveWorkerTest extends AbstractB2Test {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(encryptedFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(
+                cryptomator.getFeature(session, Write.class, new B2WriteFeature(session, fileid)), encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<>(session, new B2TouchFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<>(session, new B2TouchFeature(session, fileid), cryptomator).touch(
+                cryptomator.getFeature(session, Write.class, new B2WriteFeature(session, fileid)), encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move directory outside vault
         final Path directoryRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
-        assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        assertThrows(NotfoundException.class, () -> cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
-        assertTrue(new DefaultFindFeature(session).find(directoryRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(encryptedFolder));
+        assertThrows(NotfoundException.class, () -> cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(encryptedFile));
+        assertTrue(new B2FindFeature(session, fileid).find(directoryRenamed));
         final Path fileRenamed = new Path(directoryRenamed, encryptedFile.getName(), EnumSet.of(Path.Type.file));
-        assertTrue(new DefaultFindFeature(session).find(fileRenamed));
+        assertTrue(new B2FindFeature(session, fileid).find(fileRenamed));
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Collections.singletonList(vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(fileRenamed, directoryRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         registry.clear();

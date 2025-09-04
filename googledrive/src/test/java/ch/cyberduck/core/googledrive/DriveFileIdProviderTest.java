@@ -52,7 +52,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
     public void testGetFileid() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertNotNull(fileid.getFileId(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -61,7 +61,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
     public void testGetFileidAccentCharacter() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%sà", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertNotNull(fileid.getFileId(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -70,7 +70,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
     public void testGetFileidSingleQuoteCharacter() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s'", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider driveFileIdProvider = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, driveFileIdProvider).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, driveFileIdProvider).touch(new DriveWriteFeature(session, driveFileIdProvider), test, new TransferStatus());
         assertNotNull(driveFileIdProvider.getFileId(test));
         new DriveDeleteFeature(session, driveFileIdProvider).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -79,7 +79,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
     public void testGetFileidBackslashCharacter() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s\\", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertNotNull(fileid.getFileId(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -88,7 +88,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
     public void testGetFileidDoubleBackslashCharacter() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s\\\\", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertNotNull(fileid.getFileId(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -98,11 +98,11 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final String filename = new AlphanumericRandomStringService().random();
         final Path test1 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path p1 = new DriveTouchFeature(session, fileid).touch(test1, new TransferStatus());
+        final Path p1 = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test1, new TransferStatus());
         assertEquals(p1.attributes().getFileId(), fileid.getFileId(test1));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test1), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         final Path test2 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
-        final Path p2 = new DriveTouchFeature(session, fileid).touch(test2, new TransferStatus());
+        final Path p2 = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test2, new TransferStatus());
         assertEquals(p2.attributes().getFileId(), fileid.getFileId(test2));
         session.getClient().files().delete(p2.attributes().getFileId());
     }
@@ -111,15 +111,15 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
     public void testFileIdCollision() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
-            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
 
         final Path path2R = new Path(directory, "2R", EnumSet.of(Path.Type.directory));
         final Path path33 = new Path(directory, "33", EnumSet.of(Path.Type.directory));
 
         final Directory directoryFeature = new DriveDirectoryFeature(session, fileid);
-        final Path path2RWithId = directoryFeature.mkdir(path2R, new TransferStatus());
+        final Path path2RWithId = directoryFeature.mkdir(new DriveWriteFeature(session, fileid), path2R, new TransferStatus());
         assertNotNull(path2RWithId.attributes().getFileId());
-        final Path path33WithId = directoryFeature.mkdir(path33, new TransferStatus());
+        final Path path33WithId = directoryFeature.mkdir(new DriveWriteFeature(session, fileid), path33, new TransferStatus());
         assertNotNull(path33WithId.attributes().getFileId());
         assertNotEquals(path2RWithId.attributes().getFileId(), path33WithId.attributes().getFileId());
 

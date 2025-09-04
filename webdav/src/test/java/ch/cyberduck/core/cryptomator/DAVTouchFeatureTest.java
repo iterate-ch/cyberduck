@@ -62,8 +62,8 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final Path template = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session)
-        ), new DAVWriteFeature(session), cryptomator).touch(template, new TransferStatus())
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
+                session), cryptomator).touch(new DAVWriteFeature(session), template, new TransferStatus())
                 .withAttributes(cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(template));
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(test));
         assertEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(test));
@@ -79,8 +79,8 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session)
-        ), new DAVWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
+                session), cryptomator).touch(new DAVWriteFeature(session), test, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -94,12 +94,12 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session)
-        ), new DAVWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
+                session), cryptomator).touch(new DAVWriteFeature(session), test, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session)
-        ), new DAVWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
+                session), cryptomator).touch(new DAVWriteFeature(session), test, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -38,7 +38,7 @@ public class AzureDeleteFeatureTest extends AbstractAzureTest {
     @Test
     public void testDeletePlaceholder() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new AzureDirectoryFeature(session, null).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new AzureDirectoryFeature(session, null).mkdir(new AzureWriteFeature(session, null), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(test));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(test));
@@ -47,9 +47,9 @@ public class AzureDeleteFeatureTest extends AbstractAzureTest {
     @Test
     public void testDeleteKey() throws Exception {
         final Path container = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new AzureDirectoryFeature(session, null).mkdir(container, new TransferStatus());
+        new AzureDirectoryFeature(session, null).mkdir(new AzureWriteFeature(session, null), container, new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
+        new AzureTouchFeature(session, null).touch(new AzureWriteFeature(session, null), test, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(test));
         new AzureDeleteFeature(session, null).delete(Arrays.asList(container, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(test));

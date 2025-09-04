@@ -46,6 +46,4 @@ public interface Bulk<R> {
      * @param callback Callback to user
      */
     void post(Transfer.Type type, Map<TransferItem, TransferStatus> files, ConnectionCallback callback) throws BackgroundException;
-
-    Bulk<R> withDelete(Delete delete);
 }

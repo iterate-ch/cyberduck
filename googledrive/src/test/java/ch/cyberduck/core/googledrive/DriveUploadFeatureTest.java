@@ -56,8 +56,8 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         status.setLength(content.length);
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final DriveUploadFeature upload = new DriveUploadFeature(session, fileid);
-        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+        final DriveUploadFeature upload = new DriveUploadFeature(session);
+        upload.upload(new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
             status, new DisabledConnectionCallback());
         test.attributes().setFileId(fileid.getFileId(test));
         assertTrue(session.getFeature(Find.class).find(test));

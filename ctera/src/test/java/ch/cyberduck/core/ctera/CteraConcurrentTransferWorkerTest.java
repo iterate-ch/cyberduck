@@ -51,7 +51,7 @@ public class CteraConcurrentTransferWorkerTest extends AbstractCteraDirectIOTest
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         final Transfer download = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
@@ -79,7 +79,7 @@ public class CteraConcurrentTransferWorkerTest extends AbstractCteraDirectIOTest
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         final Transfer download = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());

@@ -40,12 +40,12 @@ public class BoxDirectoryFeatureTest extends AbstractBoxTest {
     public void testCreateDirectory() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         assertTrue(new BoxFindFeature(session, fileid).find(folder));
         assertEquals(0L, folder.attributes().getSize());
         assertNotEquals(-1L, folder.attributes().getModificationDate());
-        assertThrows(ConflictException.class, () -> new BoxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), folder, new TransferStatus()));
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder));
     }

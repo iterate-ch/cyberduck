@@ -15,6 +15,8 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -28,6 +30,6 @@ public class SDSThresholdDeleteFeatureTest extends AbstractSDSTest {
     @Test
     public void testIsRecursive() {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        assertTrue(new SDSThresholdDeleteFeature(session, nodeid).isRecursive());
+        assertTrue(new SDSThresholdDeleteFeature(session, nodeid).features(Home.root()).contains(Delete.Flags.recursive));
     }
 }

@@ -40,7 +40,7 @@ public class DriveUrlProviderTest extends AbstractDriveTest {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertNotNull(provider.toUrl(test));
         assertTrue(provider.toUrl(test).isEmpty());
-        new DriveTouchFeature(session, new DriveFileIdProvider(session)).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, new DriveFileIdProvider(session)).touch(new DriveWriteFeature(session, new DriveFileIdProvider(session)), test, new TransferStatus());
 //        assertFalse(provider.toDownloadUrl(test).isEmpty());
         new DriveDeleteFeature(session, new DriveFileIdProvider(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

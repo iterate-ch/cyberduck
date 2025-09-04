@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
+import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -58,7 +59,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -78,7 +79,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
         manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
         assertThrows(InteroperabilityException.class, () -> new DAVUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback()));
         local.delete();
@@ -97,7 +98,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
         manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
         new DAVUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -43,10 +43,10 @@ public class SFTPTouchFeatureTest extends AbstractSFTPTest {
     public void testTouch() throws Exception {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         new SFTPUnixPermissionFeature(session).setUnixPermission(test, new Permission("664"));
         // Test override
-        new SFTPTouchFeature(session).touch(test, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test));
         assertEquals("664", list.get(test).attributes().getPermission().getMode());

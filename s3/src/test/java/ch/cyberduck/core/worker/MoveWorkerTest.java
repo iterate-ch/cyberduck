@@ -56,7 +56,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(source, new TransferStatus());
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), source, new TransferStatus());
         new S3AccessControlListFeature(session).setPermission(source, new Acl(
                 new Acl.UserAndRole(
                         new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)
@@ -85,17 +85,17 @@ public class MoveWorkerTest extends AbstractS3Test {
     public void testMoveVersionedDirectory() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path sourceDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket,
+        final Path sourceDirectory = new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path targetDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket,
+        final Path targetDirectory = new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final S3TouchFeature touch = new S3TouchFeature(session, acl);
-        Path test = touch.touch(new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        Path test = touch.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session, acl);
         delete.delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session, acl).find(test));
-        test = touch.touch(test, new TransferStatus());
+        test = touch.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
         final S3VersionedObjectListService list = new S3VersionedObjectListService(session, acl);
         final AttributedList<Path> versioned = list.list(sourceDirectory, new DisabledListProgressListener());

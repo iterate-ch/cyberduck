@@ -23,7 +23,6 @@ import com.google.api.services.drive.model.File;
 
 public class DriveUploadFeature extends HttpUploadFeature<File, MessageDigest> {
 
-    public DriveUploadFeature(final DriveSession session, final DriveFileIdProvider fileid) {
-        super(new DriveWriteFeature(session, fileid));
+    public DriveUploadFeature(final DriveSession session) {
     }
 }

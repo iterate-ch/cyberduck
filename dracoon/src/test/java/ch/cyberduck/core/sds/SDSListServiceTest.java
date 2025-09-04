@@ -57,7 +57,7 @@ public class SDSListServiceTest extends AbstractSDSTest {
     public void testList() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final AtomicBoolean callback = new AtomicBoolean();
         assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener() {
             @Override
@@ -68,16 +68,16 @@ public class SDSListServiceTest extends AbstractSDSTest {
         }).isEmpty());
         assertTrue(callback.get());
         final String filename = String.format("%s%s", new AlphanumericRandomStringService().random(), new NFDNormalizer().normalize("ä"));
-        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1);
         assertEquals(1, (list.size()));
         assertNotNull(list.find(new DefaultPathPredicate(file)));
         // Not preserving Unicode normalization
         assertNotEquals(filename, list.find(new DefaultPathPredicate(file)).getName());
-        new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(2, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1).size()));
         assertEquals(2, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).size()));
-        new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(3, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1).size()));
         assertEquals(3, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).size()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -87,11 +87,11 @@ public class SDSListServiceTest extends AbstractSDSTest {
     public void testListAlphanumeric() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).isEmpty());
-        new SDSTouchFeature(session, nodeid).touch(new Path(room, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
-        new SDSTouchFeature(session, nodeid).touch(new Path(room, "0a", EnumSet.of(Path.Type.file)), new TransferStatus());
-        new SDSTouchFeature(session, nodeid).touch(new Path(room, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, "0a", EnumSet.of(Path.Type.file)), new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new SDSListService(session, nodeid).list(room, new DisabledListProgressListener());
         assertEquals(3, list.size());
         assertEquals("0a", list.get(0).getName());

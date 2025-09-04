@@ -52,8 +52,8 @@ public class LocalListServiceTest {
         final Path home = new LocalHomeFinderFeature().find();
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(directory, new TransferStatus());
-        new LocalTouchFeature(session).touch(file, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), directory, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
         final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(file));
         assertTrue(list.contains(directory));
@@ -90,7 +90,7 @@ public class LocalListServiceTest {
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
-        new LocalTouchFeature(session).touch(file, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
         new LocalSymlinkFeature(session).symlink(symlinkRelative, file.getName());
         new LocalSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
         final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());

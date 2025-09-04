@@ -64,11 +64,11 @@ public class IRODSMoveFeatureTest extends VaultTest {
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new IRODSDirectoryFeature(session).mkdir(source, new TransferStatus());
+        new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), source, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
-        new IRODSTouchFeature(session).touch(new Path(source, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
+        new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), new Path(source, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(new Path(source, filename, EnumSet.of(Path.Type.file))));
-        new IRODSDirectoryFeature(session).mkdir(destination, new TransferStatus());
+        new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), destination, new TransferStatus());
         new IRODSMoveFeature(session).move(source, destination, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(session.getFeature(Find.class).find(source));
         assertFalse(session.getFeature(Find.class).find(new Path(source, filename, EnumSet.of(Path.Type.file))));
@@ -94,8 +94,8 @@ public class IRODSMoveFeatureTest extends VaultTest {
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new IRODSTouchFeature(session).touch(source, new TransferStatus());
-        new IRODSTouchFeature(session).touch(destination, new TransferStatus());
+        new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), source, new TransferStatus());
+        new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), destination, new TransferStatus());
         new IRODSMoveFeature(session).move(source, destination, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(destination));

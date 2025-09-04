@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
+import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -60,7 +61,7 @@ public class MicrosoftIISDAVLockFeatureTest extends AbstractMicrosoftIISDAVTest 
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
-        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         final String lock = new DAVLockFeature(session).lock(test);
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));

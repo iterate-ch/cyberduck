@@ -53,11 +53,11 @@ public class SFTPDeleteFeatureTest extends AbstractSFTPTest {
     @Test
     public void testDeleteFolder() throws Exception {
         final Path folder = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SFTPDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), folder, new TransferStatus());
         final Path file = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(file, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), file, new TransferStatus());
         final Path subdir = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SFTPDirectoryFeature(session).mkdir(subdir, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), subdir, new TransferStatus());
         new SFTPDeleteFeature(session).delete(Arrays.asList(subdir, file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

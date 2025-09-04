@@ -156,7 +156,7 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
                 return new VaultCredentials("test");
             }
         }));
-        final Path dir1 = cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path dir1 = cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(new DAVWriteFeature(session), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final Path file1 = new Path(dir1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();

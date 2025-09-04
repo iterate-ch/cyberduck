@@ -28,7 +28,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -62,9 +61,9 @@ public class IRODSDeleteFeatureTest extends VaultTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path folder = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new IRODSDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), folder, new TransferStatus());
         final Path file = new Path(folder, "f", EnumSet.of(Path.Type.file));
-        new IRODSTouchFeature(session).touch(file, new TransferStatus());
+        new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), file, new TransferStatus());
         assertTrue(new IRODSFindFeature(session).find(folder));
         assertTrue(new IRODSFindFeature(session).find(file));
         new IRODSDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());

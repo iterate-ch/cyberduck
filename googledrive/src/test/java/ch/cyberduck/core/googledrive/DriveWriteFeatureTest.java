@@ -54,7 +54,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
     public void testWrite() throws Exception {
         final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
         final Path folder = new DriveDirectoryFeature(session, idProvider).mkdir(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, idProvider), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         String fileid;
         {
@@ -107,7 +107,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
     public void testWriteSameFilename() throws Exception {
         final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
         final Path folder = new DriveDirectoryFeature(session, idProvider).mkdir(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, idProvider), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final byte[] content = RandomUtils.nextBytes(2048);
@@ -179,8 +179,8 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
     public void testWritePreviouslyTrashed() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String id = test.attributes().getFileId();
         assertNotNull(id);
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
@@ -192,7 +192,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isTrashed());
         // Files with duplicate flag (trashed) are filtered
         assertFalse(new DefaultFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
-        final Path upload = new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        final Path upload = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertEquals(upload.attributes(), new DriveAttributesFinderFeature(session, fileid).find(upload));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }

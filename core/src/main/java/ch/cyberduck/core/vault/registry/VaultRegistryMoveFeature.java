@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -80,6 +81,9 @@ public class VaultRegistryMoveFeature implements Move {
         }
         catch(VaultUnlockCancelException e) {
             return proxy.features(source, target);
+        }
+        catch(UnsupportedException e) {
+            return EnumSet.noneOf(Flags.class);
         }
     }
 

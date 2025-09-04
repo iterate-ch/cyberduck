@@ -19,6 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -34,15 +35,15 @@ public class SpectraTouchFeature extends DefaultTouchFeature<StorageObject> {
     private final SpectraSession session;
 
     public SpectraTouchFeature(final SpectraSession session) {
-        super(new SpectraWriteFeature(session));
+        super(session);
         this.session = session;
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<StorageObject> writer, final Path file, final TransferStatus status) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), status), new DisabledConnectionCallback());
-        return super.touch(file, status);
+        return super.touch(writer, file, status);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
 
     @Test
     public void testUploadSmallPart() throws Exception {
-        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5 * 1024L * 1024L, 2);
+        final BrickUploadFeature feature = new BrickUploadFeature(session, 5 * 1024L * 1024L, 2);
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
@@ -56,7 +56,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         status.setLength(content.length);
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
@@ -73,7 +73,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
 
     @Test
     public void testUploadSinglePart() throws Exception {
-        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5 * 1024L * 1024L, 2);
+        final BrickUploadFeature feature = new BrickUploadFeature(session, 5 * 1024L * 1024L, 2);
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
@@ -85,7 +85,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         status.setLength(content.length);
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
@@ -103,7 +103,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
     @Test
     public void testUploadMultipleParts() throws Exception {
         // 5L * 1024L * 1024L
-        final BrickUploadFeature feature = new BrickUploadFeature(session, new BrickWriteFeature(session), 5 * 1024L * 1024L, 5);
+        final BrickUploadFeature feature = new BrickUploadFeature(session, 5 * 1024L * 1024L, 5);
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -113,7 +113,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+        feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());

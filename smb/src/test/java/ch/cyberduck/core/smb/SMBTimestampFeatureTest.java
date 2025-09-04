@@ -82,7 +82,7 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
         final TransferStatus status = new TransferStatus();
         final Path home = new DefaultHomeFinderService(session).find();
         final Path f = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         // make sure timestamps are different
         long oldTime = new SMBAttributesFinderFeature(session).find(f).getModificationDate();
         status.setModified(oldTime + 2000);

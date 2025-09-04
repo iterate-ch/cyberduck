@@ -59,7 +59,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
     public void testWrite() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session, fileid);
         final Path container = new OneDriveHomeFinderService().find();
-        final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final PathAttributes folderAttributes = new GraphAttributesFinderFeature(session, fileid).find(folder);
         final String folderEtag = folderAttributes.getETag();
         final long folderTimestamp = folderAttributes.getModificationDate();
@@ -67,7 +67,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final String id = new GraphTouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getFileId();
+        final String id = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), file, new TransferStatus()).attributes().getFileId();
         final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(out.getStatus());

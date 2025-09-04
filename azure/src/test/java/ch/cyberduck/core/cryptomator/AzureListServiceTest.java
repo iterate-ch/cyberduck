@@ -65,7 +65,7 @@ public class AzureListServiceTest extends AbstractAzureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(new CryptoListService(session, new AzureObjectListService(session, null), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new AzureWriteFeature(session, null)), new AzureWriteFeature(session, null), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(new AzureWriteFeature(session, null), test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new AzureObjectListService(session, null), cryptomator).list(vault, new DisabledListProgressListener() {
             @Override
             public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {

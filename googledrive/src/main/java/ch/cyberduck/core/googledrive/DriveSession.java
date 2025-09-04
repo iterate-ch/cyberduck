@@ -26,7 +26,6 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
@@ -67,7 +66,7 @@ public class DriveSession extends HttpSession<Drive> {
     }
 
     @Override
-    protected Drive connect(final ProxyFinder proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException, ConnectionCanceledException {
+    protected Drive connect(final ProxyFinder proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
@@ -130,7 +129,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveWriteFeature(this, fileid);
         }
         if(type == Upload.class) {
-            return (T) new DriveUploadFeature(this, fileid);
+            return (T) new DriveUploadFeature(this);
         }
         if(type == Directory.class) {
             return (T) new DriveDirectoryFeature(this, fileid);

@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -44,19 +45,17 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
 
 
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        super(new SDSDelegatingWriteFeature(session, nodeid,
-                HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.s3.enable") ?
-                        new SDSDirectS3MultipartWriteFeature(session, nodeid) : new SDSMultipartWriteFeature(session, nodeid)));
+        super(session);
         this.session = session;
         this.nodeid = nodeid;
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<Node> writer, final Path file, final TransferStatus status) throws BackgroundException {
         if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
             status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
         }
-        return super.touch(file, status);
+        return super.touch(writer, file, status);
     }
 
     @Override

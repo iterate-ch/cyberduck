@@ -29,6 +29,7 @@ public interface Download {
     /**
      * Copy file from server to disk
      *
+     * @param read     Feature
      * @param file     File on server
      * @param local    File on local disk
      * @param throttle Bandwidth management
@@ -36,7 +37,7 @@ public interface Download {
      * @param status   Transfer status holder
      * @param callback Prompt
      */
-    void download(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
+    void download(Read read, Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
                   TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
     /**
@@ -46,6 +47,4 @@ public interface Download {
      * @return True if reading with offset is supported
      */
     boolean offset(Path file) throws BackgroundException;
-
-    Download withReader(Read reader);
 }

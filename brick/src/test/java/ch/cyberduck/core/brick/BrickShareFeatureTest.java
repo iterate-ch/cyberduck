@@ -36,10 +36,10 @@ public class BrickShareFeatureTest extends AbstractBrickTest {
 
     @Test
     public void toDownloadUrl() throws Exception {
-        final Path directory = new BrickDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(),
+        final Path directory = new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(),
             EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new BrickTouchFeature(session).touch(
-            new Path(directory, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(directory, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new BrickShareFeature(session).toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         new BrickDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }

@@ -18,15 +18,12 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,16 +38,13 @@ import java.util.Map;
 
 public class CryptoBulkFeature<R> implements Bulk<R> {
 
-    private final RandomStringService random
-            = new UUIDRandomStringService();
-
     private final Session<?> session;
     private final Bulk<R> delegate;
-    private final CryptoVault cryptomator;
+    private final AbstractVault cryptomator;
 
-    public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVault cryptomator) {
+    public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final AbstractVault cryptomator) {
         this.session = session;
-        this.delegate = delegate.withDelete(cryptomator.getFeature(session, Delete.class, delete));
+        this.delegate = delegate;
         this.cryptomator = cryptomator;
     }
 
@@ -83,9 +77,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 if(!status.isExists()) {
                     switch(type) {
                         case upload:
-                            // Preset directory ID for new folders to avert lookup with not found failure in directory ID provider
-                            final String directoryId = random.random();
-                            encrypted.put(new TransferItem(cryptomator.encrypt(session, file, directoryId, false), local), status);
+                            encrypted.put(new TransferItem(cryptomator.encrypt(session, file, false), local), status);
                             break;
                         default:
                             encrypted.put(new TransferItem(cryptomator.encrypt(session, file), local), status);
@@ -101,12 +93,6 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
             }
         }
         return delegate.pre(type, encrypted, callback);
-    }
-
-    @Override
-    public Bulk<R> withDelete(final Delete delete) {
-        delegate.withDelete(cryptomator.getFeature(session, Delete.class, delete));
-        return this;
     }
 
     @Override

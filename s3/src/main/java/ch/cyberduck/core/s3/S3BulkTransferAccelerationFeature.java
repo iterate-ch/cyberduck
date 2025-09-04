@@ -65,11 +65,6 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
         this.configure(files, callback, false);
     }
 
-    @Override
-    public Bulk<Void> withDelete(final Delete delete) {
-        return this;
-    }
-
     private void configure(final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback, final boolean enabled) throws BackgroundException {
         final Set<Path> buckets = new HashSet<>();
         for(TransferItem file : files.keySet()) {

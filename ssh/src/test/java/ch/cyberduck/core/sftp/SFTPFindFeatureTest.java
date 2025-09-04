@@ -33,7 +33,7 @@ public class SFTPFindFeatureTest extends AbstractSFTPTest {
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(file, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), file, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(file));
         assertFalse(new SFTPFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new SFTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -44,9 +44,9 @@ public class SpectraTouchFeatureTest extends AbstractSpectraTest {
     @Test
     public void testTouch() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random() + ".txt", EnumSet.of(Path.Type.file));
-        new SpectraTouchFeature(session).touch(test, new TransferStatus());
+        new SpectraTouchFeature(session).touch(new SpectraWriteFeature(session), test, new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(test));
         new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SpectraFindFeature(session).find(test));

@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
@@ -235,6 +236,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == Versioning.class) {
             return (T) new VaultRegistryVersioningFeature(session, (Versioning) proxy, this);
+        }
+        if(type == PathContainerService.class) {
+            return (T) new VaultRegistryPathContainerService(session, (PathContainerService)proxy, this);
         }
         return proxy;
     }

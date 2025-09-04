@@ -25,7 +25,7 @@ public class AzureUrlProviderTest extends AbstractAzureTest {
     public void testGet() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "f g", EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
+        new AzureTouchFeature(session, null).touch(new AzureWriteFeature(session, null), test, new TransferStatus());
         assertEquals(5, new AzureUrlProvider(session).toUrl(test).filter(DescriptiveUrl.Type.signed).size());
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

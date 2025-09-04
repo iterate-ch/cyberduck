@@ -44,8 +44,8 @@ public class CryptoSearchFeature implements Search {
     }
 
     @Override
-    public EnumSet<Flags> features() {
-        return delegate.features();
+    public EnumSet<Flags> features(final Path workdir) {
+        return delegate.features(workdir);
     }
 
     @Override

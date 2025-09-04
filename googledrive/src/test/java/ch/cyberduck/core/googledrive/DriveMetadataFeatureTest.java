@@ -43,7 +43,7 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final TransferStatus status = new TransferStatus();
-        new DriveTouchFeature(session, fileid).touch(test, status);
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, status);
         final DriveMetadataFeature feature = new DriveMetadataFeature(session, fileid);
         assertEquals(Collections.emptyMap(), feature.getMetadata(test));
         feature.setMetadata(test, Collections.singletonMap("test", "t"));
@@ -60,8 +60,8 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
     public void testChangedFileId() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path room = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestfileid = test.attributes().getFileId();
         assertNotNull(latestfileid);
         // Assume previously seen but changed on server

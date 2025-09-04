@@ -43,7 +43,7 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
     @Test
     public void testMove() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        final Path test = new BoxTouchFeature(session, fileid).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getFileId());
         assertEquals(0L, test.attributes().getSize());
         assertNotEquals(-1L, test.attributes().getModificationDate());
@@ -63,7 +63,7 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
     public void testMoveDirectory() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new BoxDirectoryFeature(session, fileid).mkdir(test, new TransferStatus());
+        new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new BoxMoveFeature(session, fileid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new BoxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
@@ -75,9 +75,9 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
     public void testMoveOverride() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new BoxTouchFeature(session, fileid).touch(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new BoxTouchFeature(session, fileid).touch(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path override = new BoxMoveFeature(session, fileid).move(test, target,
                 new TransferStatus().setExists(true).setRemote(target.attributes()), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new BoxFindFeature(session, fileid).find(test));
@@ -98,7 +98,7 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
     public void testRenameCaseOnly() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new BoxTouchFeature(session, fileid).touch(new Path(new DefaultHomeFinderService(session).find(), StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), new Path(new DefaultHomeFinderService(session).find(), StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(new DefaultHomeFinderService(session).find(), StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
         new BoxMoveFeature(session, fileid).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());

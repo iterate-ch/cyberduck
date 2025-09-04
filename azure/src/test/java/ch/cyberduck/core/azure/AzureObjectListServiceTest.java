@@ -36,7 +36,7 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
     @Test
     public void testListEmptyFolder() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new AzureDirectoryFeature(session, null).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new AzureDirectoryFeature(session, null).mkdir(new AzureWriteFeature(session, null), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AtomicBoolean callback = new AtomicBoolean();
         assertTrue(new AzureObjectListService(session, null).list(folder, new DisabledListProgressListener() {
             @Override
@@ -58,10 +58,10 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
     @Test
     public void testList() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new AzureDirectoryFeature(session, null).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new AzureDirectoryFeature(session, null).mkdir(new AzureWriteFeature(session, null), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener()).isEmpty());
-        new AzureTouchFeature(session, null).touch(file, new TransferStatus());
+        new AzureTouchFeature(session, null).touch(new AzureWriteFeature(session, null), file, new TransferStatus());
         final AttributedList<Path> list = new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(1, list.size());
@@ -75,13 +75,13 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
     public void testListLexicographicSortOrderAssumption() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path directory = new AzureDirectoryFeature(session, null).mkdir(
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new AzureWriteFeature(session, null), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener()).isEmpty());
         final List<String> files = Arrays.asList(
                 "Z", "aa", "0a", "a", "AAA", "B", "~$a", ".c"
         );
         for(String f : files) {
-            new AzureTouchFeature(session, null).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
+            new AzureTouchFeature(session, null).touch(new AzureWriteFeature(session, null), new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         files.sort(session.getHost().getProtocol().getListComparator());
         final AttributedList<Path> list = new AzureObjectListService(session, null).list(directory, new IndexedListProgressListener() {

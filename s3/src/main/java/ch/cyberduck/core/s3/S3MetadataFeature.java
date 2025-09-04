@@ -56,7 +56,7 @@ public class S3MetadataFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault() {
+    public Map<String, String> getDefault(final Path file) {
         return HostPreferencesFactory.get(session.getHost()).getMap("s3.metadata.default");
     }
 

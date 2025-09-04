@@ -7,6 +7,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -36,7 +37,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractSwiftTest {
     @Test
     public void testDeleteMultiple() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        for(Location.Name region : new SwiftLocationFeature(session).getLocations()) {
+        for(Location.Name region : new SwiftLocationFeature(session).getLocations(Home.root())) {
             container.attributes().setRegion(region.getIdentifier());
             new SwiftListService(session, new SwiftRegionService(session)).list(container, new ListProgressListener() {
                 @Override

@@ -45,6 +45,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -63,11 +64,11 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(folder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(new GraphWriteFeature(session, fileid), folder, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
-        final Path file = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)
-        ), new GraphWriteFeature(session, fileid), cryptomator).touch(
-                new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new CryptoTouchFeature<>(session, new DefaultTouchFeature<DriveItem.Metadata>(
+                session), cryptomator).touch(
+                new GraphWriteFeature(session, fileid), new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new GraphMoveFeature(session, fileid));
         // rename file

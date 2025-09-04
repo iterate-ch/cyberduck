@@ -352,7 +352,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             AclPermission feature = (AclPermission)_controller.Pool.getFeature(typeof(AclPermission));
             IDictionary<string, SyncDelegate> mapping = new Dictionary<string, SyncDelegate>();
-            List aclUsers = feature.getAvailableAclUsers();
+            List aclUsers = feature.getAvailableAclUsers(Utils.ConvertToJavaList(Files));
             for (int i = 0; i < aclUsers.size(); i++)
             {
                 Acl.User user = (Acl.User)aclUsers.get(i);
@@ -1387,7 +1387,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Redundancy redundancyFeature = (Redundancy)session.getFeature(typeof(Redundancy));
                 if (redundancyFeature != null)
                 {
-                    Iterator iter = redundancyFeature.getClasses().iterator();
+                    Iterator iter = redundancyFeature.getClasses(_container).iterator();
                     while (iter.hasNext())
                     {
                         string redundancy = (string)iter.next();

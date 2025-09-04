@@ -19,6 +19,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPAttributesFinderFeature;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
@@ -131,8 +132,8 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                             @Override
                             @SuppressWarnings("unchecked")
                             public <T> T _getFeature(final Class<T> type) {
-                                if(type == Upload.class) {
-                                    return (T) new FTPUploadFeature(write);
+                                if(type == Write.class) {
+                                    return (T) write;
                                 }
                                 return super._getFeature(type);
                             }

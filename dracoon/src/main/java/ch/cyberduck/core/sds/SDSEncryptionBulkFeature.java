@@ -108,9 +108,4 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 }
         }
     }
-
-    @Override
-    public Bulk<Void> withDelete(final Delete delete) {
-        return this;
-    }
 }

@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AntiVirusAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -53,9 +54,9 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
     @Test
     public void testDeleteNotFound() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionId = file.attributes().getVersionId();
         assertNotNull(versionId);
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -72,10 +73,10 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
     @Test
     public void testDeleteFile() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(fileInRoom));
@@ -86,11 +87,11 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
     public void testDeleteRecursively() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final Path file = new SDSTouchFeature(session, nodeid).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SDSFindFeature(session, nodeid).find(file));
         assertNotNull(nodeid.getVersionId(file));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -115,13 +116,13 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
     @Test
     public void testDeleteFolderRoomWithContent() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room,
+        final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room,
                 new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), file, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder));
@@ -132,14 +133,14 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
     @Test
     public void testIsRecursive() {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        assertTrue(new SDSDeleteFeature(session, nodeid).isRecursive());
+        assertTrue(new SDSDeleteFeature(session, nodeid).features(Home.root()).contains(Delete.Flags.recursive));
     }
 
     @Test
     @Ignore
     public void testDeleteEicar() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         new NodesApi(session.getClient()).setRoomPolicies(new RoomPoliciesRequest().virusProtectionEnabled(true),
                 Long.valueOf(nodeid.getVersionId(room)), StringUtils.EMPTY);
@@ -151,8 +152,8 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(eicar.length);
-        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)));
-        final Node node = feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid);
+        final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);

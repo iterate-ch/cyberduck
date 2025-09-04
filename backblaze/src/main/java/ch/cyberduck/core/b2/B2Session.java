@@ -162,7 +162,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return (T) new B2AttributesFinderFeature(this, fileid);
         }
         if(type == AclPermission.class) {
-            return (T) new B2BucketTypeFeature(this, fileid);
+            return (T) new B2BucketTypeAclFeature(this, fileid);
         }
         if(type == Location.class) {
             return (T) new B2BucketTypeFeature(this, fileid);

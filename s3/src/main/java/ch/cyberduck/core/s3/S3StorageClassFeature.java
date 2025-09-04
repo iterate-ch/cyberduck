@@ -46,12 +46,12 @@ public class S3StorageClassFeature implements Redundancy {
     }
 
     @Override
-    public String getDefault() {
+    public String getDefault(final Path file) {
         return HostPreferencesFactory.get(session.getHost()).getProperty("s3.storage.class");
     }
 
     @Override
-    public Set<String> getClasses() {
+    public Set<String> getClasses(final Path file) {
         return new LinkedHashSet<>(HostPreferencesFactory.get(session.getHost()).getList("s3.storage.class.options"));
     }
 

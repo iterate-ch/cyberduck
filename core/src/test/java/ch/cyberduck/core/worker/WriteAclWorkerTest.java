@@ -47,7 +47,7 @@ public class WriteAclWorkerTest {
                         }
 
                         @Override
-                        public List<Acl.User> getAvailableAclUsers() {
+                        public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
                             throw new UnsupportedOperationException();
                         }
 
@@ -90,7 +90,7 @@ public class WriteAclWorkerTest {
                         }
 
                         @Override
-                        public List<Acl.User> getAvailableAclUsers() {
+                        public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
                             throw new UnsupportedOperationException();
                         }
 
@@ -135,7 +135,7 @@ public class WriteAclWorkerTest {
                                    }
 
                                    @Override
-                                   public List<Acl.User> getAvailableAclUsers() {
+                                   public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
                                        throw new UnsupportedOperationException();
                                    }
 

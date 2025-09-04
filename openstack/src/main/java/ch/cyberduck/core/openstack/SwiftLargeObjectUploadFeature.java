@@ -33,7 +33,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -71,16 +70,14 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private final Long segmentSize;
     private final Integer concurrency;
 
-    private Write<StorageObject> writer;
-
-    public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer) {
-        this(session, regionService, writer, HostPreferencesFactory.get(session.getHost()).getLong("openstack.upload.largeobject.size"),
+    public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService) {
+        this(session, regionService, HostPreferencesFactory.get(session.getHost()).getLong("openstack.upload.largeobject.size"),
                 HostPreferencesFactory.get(session.getHost()).getInteger("openstack.upload.largeobject.concurrency"));
     }
 
-    public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer,
+    public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService,
                                          final Long segmentSize, final Integer concurrency) {
-        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), writer,
+        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService),
                 segmentSize, concurrency);
     }
 
@@ -88,12 +85,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                          final SwiftRegionService regionService,
                                          final SwiftObjectListService listService,
                                          final SwiftSegmentService segmentService,
-                                         final Write<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
-        super(writer);
         this.session = session;
         this.regionService = regionService;
-        this.writer = writer;
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
         this.listService = listService;
@@ -101,7 +95,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     }
 
     @Override
-    public StorageObject upload(final Path file, final Local local,
+    public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local,
                                 final BandwidthThrottle throttle,
                                 final ProgressListener progress, final StreamListener streamListener,
                                 final TransferStatus status,
@@ -152,7 +146,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             else {
                 // Submit to queue
-                segments.add(this.submit(pool, segment, local, throttle, streamListener, status, offset, length, callback));
+                segments.add(this.submit(pool, write, segment, local, throttle, streamListener, status, offset, length, callback));
                 log.debug("Segment {} submitted with size {} and offset {}", segment, length, offset);
                 remaining -= length;
                 offset += length;
@@ -195,7 +189,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
     }
 
-    private Future<StorageObject> submit(final ThreadPool pool, final Path segment, final Local local,
+    private Future<StorageObject> submit(final ThreadPool pool, final Write<StorageObject> write, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) throws ConnectionCanceledException {
         overall.validate();
@@ -209,10 +203,10 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                         .setLength(length)
                         .setOffset(offset);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(writer.checksum(segment, status).compute(local.getInputStream(), status));
+                status.setChecksum(write.checksum(segment, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 return SwiftLargeObjectUploadFeature.this.upload(
-                        segment, local, throttle, counter, status, overall, status, callback);
+                        write, segment, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }
@@ -237,9 +231,4 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         return new Write.Append(true).withStatus(status).withOffset(size);
     }
 
-    @Override
-    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return super.withWriter(writer);
-    }
 }

@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -61,8 +62,8 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)), new GraphWriteFeature(session, fileid), cryptomator).touch(
-                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<DriveItem.Metadata>(session), cryptomator).touch(
+                new GraphWriteFeature(session, fileid), new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());
         assertNotNull(test.attributes().getVault());
@@ -82,8 +83,8 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)), new GraphWriteFeature(session, fileid), cryptomator).touch(
-                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<DriveItem.Metadata>(session), cryptomator).touch(
+                new GraphWriteFeature(session, fileid), new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());
         assertNotNull(test.attributes().getVault());

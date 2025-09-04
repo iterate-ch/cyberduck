@@ -47,7 +47,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMove() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
         final TransferStatus status = new TransferStatus();
         new DAVTimestampFeature(session).setTimestamp(test, status.setModified(5000L));
@@ -63,7 +63,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMoveWithLock() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertThrows(InteroperabilityException.class, () -> new DAVLockFeature(session).lock(test));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -71,7 +71,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
     @Test
     public void testMoveDirectory() throws Exception {
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final byte[] content = RandomUtils.nextBytes(3547);
@@ -99,9 +99,9 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
     @Test
     public void testMoveOverride() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVTouchFeature(session).touch(test, new TransferStatus());
+        new DAVTouchFeature(session).touch(new DAVWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVTouchFeature(session).touch(target, new TransferStatus());
+        new DAVTouchFeature(session).touch(new DAVWriteFeature(session), target, new TransferStatus());
         assertThrows(ConflictException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DAVFindFeature(session).find(test));

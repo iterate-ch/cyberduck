@@ -19,12 +19,11 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -33,17 +32,17 @@ public class CryptoDownloadFeature implements Download {
 
     private final Session<?> session;
     private final Download proxy;
-    private final Vault vault;
+    private final AbstractVault vault;
 
-    public CryptoDownloadFeature(final Session<?> session, final Download proxy, final Read reader, final CryptoVault vault) {
+    public CryptoDownloadFeature(final Session<?> session, final Download proxy, final AbstractVault vault) {
         this.session = session;
-        this.proxy = proxy.withReader(new CryptoReadFeature(session, reader, vault));
+        this.proxy = proxy;
         this.vault = vault;
     }
 
     @Override
-    public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        proxy.download(vault.encrypt(session, file), local, throttle, listener, status, callback);
+    public void download(final Read read, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        proxy.download(read, vault.encrypt(session, file), local, throttle, listener, status, callback);
     }
 
     @Override
@@ -54,11 +53,6 @@ public class CryptoDownloadFeature implements Download {
         catch(NotfoundException e) {
             return false;
         }
-    }
-
-    @Override
-    public Download withReader(final Read reader) {
-        return this;
     }
 
     @Override

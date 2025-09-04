@@ -53,7 +53,7 @@ public class AzureFindFeatureTest extends AbstractAzureTest {
     public void testFindDirectory() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new AzureDirectoryFeature(session, null).mkdir(
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new AzureWriteFeature(session, null), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(folder));
         assertFalse(new AzureFindFeature(session, null).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -63,7 +63,7 @@ public class AzureFindFeatureTest extends AbstractAzureTest {
     public void testFindFile() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(file, new TransferStatus());
+        new AzureTouchFeature(session, null).touch(new AzureWriteFeature(session, null), file, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(file));
         assertFalse(new AzureFindFeature(session, null).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -75,7 +75,7 @@ public class AzureFindFeatureTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path intermediate = new Path(container, prefix, EnumSet.of(Path.Type.directory));
-        final Path test = new AzureTouchFeature(session, null).touch(new Path(intermediate, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new AzureTouchFeature(session, null).touch(new AzureWriteFeature(session, null), new Path(intermediate, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(test));
         assertFalse(new AzureFindFeature(session, null).find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
         assertTrue(new AzureFindFeature(session, null).find(intermediate));

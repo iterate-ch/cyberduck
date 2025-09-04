@@ -39,7 +39,7 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
 
     @Test
     public void testMkdir() throws Exception {
-        final Path target = new MantaDirectoryFeature(session).mkdir(randomDirectory(), null);
+        final Path target = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), randomDirectory(), null);
         final PathAttributes found = new MantaAttributesFinderFeature(session).find(target);
         assertNotEquals(Permission.EMPTY, found.getPermission());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -50,7 +50,7 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path target = new MantaDirectoryFeature(session)
             .mkdir(
-                new Path(
+                    new MantaWriteFeature(session), new Path(
                     testPathPrefix,
                     String.format("%s %s", randomStringService.random(), randomStringService.random()),
                     EnumSet.of(Path.Type.directory)

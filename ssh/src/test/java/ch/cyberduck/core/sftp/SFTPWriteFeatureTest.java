@@ -70,7 +70,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testWrite() throws Exception {
-        final Path folder = new SFTPDirectoryFeature(session).mkdir(new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long folderModification = new SFTPAttributesFinderFeature(session).find(folder).getModificationDate();
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         // Only seconds in modification date
@@ -108,7 +108,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
     public void testWriteSymlink() throws Exception {
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path target = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(target, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), target, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(target));
         final String name = new AlphanumericRandomStringService().random();
         final Path symlink = new Path(workdir, name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));

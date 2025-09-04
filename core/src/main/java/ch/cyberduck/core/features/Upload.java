@@ -30,6 +30,7 @@ public interface Upload<Reply> {
     /**
      * Copy file on disk to server
      *
+     * @param write          Write feature
      * @param file           File on server
      * @param local          File on local disk
      * @param throttle       Bandwidth management
@@ -39,7 +40,7 @@ public interface Upload<Reply> {
      * @param callback       Prompt
      * @see AttributesAdapter#toAttributes(Reply)
      */
-    Reply upload(Path file, Local local, BandwidthThrottle throttle, final ProgressListener progress, StreamListener streamListener,
+    Reply upload(Write<Reply> write, Path file, Local local, BandwidthThrottle throttle, final ProgressListener progress, StreamListener streamListener,
                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
     /**
@@ -52,6 +53,4 @@ public interface Upload<Reply> {
     default Write.Append append(Path file, TransferStatus status) throws BackgroundException {
         return new Write.Append(false).withStatus(status);
     }
-
-    Upload<Reply> withWriter(Write<Reply> writer);
 }

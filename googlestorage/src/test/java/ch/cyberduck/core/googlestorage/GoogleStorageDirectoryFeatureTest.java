@@ -46,18 +46,18 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     public void testMakeBucket() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(),
                 new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus().setRegion("us"));
+        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), test, new TransferStatus().setRegion("us"));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
-        assertThrows(ConflictException.class, () -> new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), test, new TransferStatus()));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testDirectoryDeleteWithVersioning() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path parent = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
+        final Path parent = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(parent,
+        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(parent,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         // Only placeholder is found in list output with no version id set
@@ -78,7 +78,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     @Test
     public void testDirectoryWhitespace() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
+        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(bucket,
                 String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
@@ -88,7 +88,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     @Test
     public void testCreatePlaceholderVersioningDelete() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
@@ -101,7 +101,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     @Test
     public void testCreatePlaceholderVersioningDeleteWithMarker() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));

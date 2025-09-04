@@ -75,8 +75,8 @@ public class AzureAclPermissionFeature implements AclPermission {
     }
 
     @Override
-    public List<Acl.User> getAvailableAclUsers() {
-        return new ArrayList<Acl.User>(Collections.singletonList(
+    public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
+        return new ArrayList<>(Collections.singletonList(
                 new Acl.GroupUser(Acl.GroupUser.EVERYONE, false))
         );
     }

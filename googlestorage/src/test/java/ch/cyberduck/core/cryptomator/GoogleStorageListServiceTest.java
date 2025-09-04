@@ -58,19 +58,19 @@ public class GoogleStorageListServiceTest extends AbstractGoogleStorageTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(vault).isEmpty());
         final CryptoDirectoryV7Feature<StorageObject> mkdir = new CryptoDirectoryV7Feature<>(session, new GoogleStorageDirectoryFeature(session),
-                new GoogleStorageWriteFeature(session), cryptomator);
+                cryptomator);
         final Path directory1 = mkdir.mkdir(
-                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new GoogleStorageWriteFeature(session), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(vault)
                 .find(new SimplePathPredicate(directory1)));
         final CryptoTouchFeature<StorageObject> touch = new CryptoTouchFeature<>(session, new GoogleStorageTouchFeature(session),
-                new GoogleStorageWriteFeature(session), cryptomator);
+                cryptomator);
         final Path test = touch.touch(
-                new Path(directory1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new GoogleStorageWriteFeature(session), new Path(directory1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(directory1)
                 .find(new SimplePathPredicate(test)));
         final Path directory2 = mkdir.mkdir(
-                new Path(directory1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new GoogleStorageWriteFeature(session), new Path(directory1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(directory1)
                 .find(new SimplePathPredicate(directory2)));
         cryptomator.getFeature(session, Delete.class, new GoogleStorageDeleteFeature(session))

@@ -50,7 +50,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     public void testWrite() throws Exception {
         final DistributionConfiguration configuration = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Path bucket = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(bucket, new TransferStatus());
+        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), bucket, new TransferStatus());
         configuration.write(bucket, new Distribution(Distribution.WEBSITE, null, true), new DisabledLoginCallback());
         final Distribution distribution = configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginCallback());
         assertTrue(distribution.isEnabled());

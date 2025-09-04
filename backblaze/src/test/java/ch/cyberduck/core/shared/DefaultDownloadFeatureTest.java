@@ -60,7 +60,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path test = new B2TouchFeature(session, fileid).touch(
-            new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new B2WriteFeature(session, fileid), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {
@@ -73,8 +73,8 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         }
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        new DefaultDownloadFeature(new B2ReadFeature(session, fileid)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+        new DefaultDownloadFeature(session).download(
+                new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
             new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
@@ -90,7 +90,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), test, new TransferStatus());
         final byte[] content = new byte[1];
         new Random().nextBytes(content);
         {
@@ -103,8 +103,8 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().setLength(-1L);
-            new DefaultDownloadFeature(new B2ReadFeature(session, fileid)).download(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                 new DisabledConnectionCallback());
         }

@@ -45,16 +45,16 @@ public class DropboxDeleteFeatureTest extends AbstractDropboxTest {
     @Test
     public void testDeleteFile() throws Exception {
         final Path file = new DropboxTouchFeature(session).touch(
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testDeleteDirectory() throws Exception {
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory)), new TransferStatus());
         final Path file = new DropboxTouchFeature(session).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DropboxFindFeature(session).find(file));
     }

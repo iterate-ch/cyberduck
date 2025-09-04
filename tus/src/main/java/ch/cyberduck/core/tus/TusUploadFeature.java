@@ -28,7 +28,6 @@ import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -77,19 +76,16 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     private final DAVClient client;
     private final Preferences preferences = PreferencesFactory.get();
 
-    private Write<Void> writer;
     private final TusCapabilities capabilities;
 
-    public TusUploadFeature(final Host host, final DAVClient client, final Write<Void> writer, final TusCapabilities capabilities) {
-        super(writer);
+    public TusUploadFeature(final Host host, final DAVClient client, final TusCapabilities capabilities) {
         this.host = host;
         this.client = client;
-        this.writer = writer;
         this.capabilities = capabilities;
     }
 
     @Override
-    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // In order to achieve parallel upload the Concatenation extension MAY be used.
         try {
@@ -143,7 +139,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             }
             while(remaining > 0) {
                 final long length = Math.min(preferences.getInteger("tus.chunk.size"), remaining);
-                chunks.add(this.submit(file, local, throttle, streamListener, status,
+                chunks.add(this.submit(write, file, local, throttle, streamListener, status,
                         uploadUrl, offset, length, callback));
                 remaining -= length;
                 offset += length;
@@ -163,7 +159,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         }
     }
 
-    private Future<Void> submit(final Path file, final Local local,
+    private Future<Void> submit(final Write<Void> write, final Path file, final Local local,
                                 final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus overall, final String uploadUrl,
                                 final long offset, final long length, final ConnectionCallback callback) throws BackgroundException {
@@ -178,12 +174,12 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                         .setOffset(offset)
                         .setLength(length);
                 status.setHeader(overall.getHeader());
-                status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
+                status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(UPLOAD_URL, uploadUrl);
                 status.setParameters(parameters);
                 final Void response = TusUploadFeature.this.upload(
-                        file, local, throttle, listener, status, overall, status, callback);
+                        write, file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response {}", response);
                 return null;
             }
@@ -239,9 +235,4 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 null == status.getChecksum() ? StringUtils.EMPTY : String.format(":%s", status.getChecksum().base64));
     }
 
-    @Override
-    public Upload<Void> withWriter(final Write<Void> writer) {
-        this.writer = writer;
-        return super.withWriter(writer);
-    }
 }

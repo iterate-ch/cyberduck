@@ -40,7 +40,7 @@ public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxTouchFeature(session, fileid).touch(
-                new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DeepboxWriteFeature(session, fileid), new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DeepboxShareFeature feature = new DeepboxShareFeature(session, fileid);
             assertTrue(feature.isSupported(test, Share.Type.download));

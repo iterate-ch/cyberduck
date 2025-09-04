@@ -43,6 +43,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.AlgorithmVersionInfoList;
 import ch.cyberduck.core.sds.io.swagger.client.model.ClassificationPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneralSettingsInfo;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.SystemDefaults;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
@@ -603,9 +604,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Upload.class) {
             if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
-                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
+                return (T) new SDSDirectS3UploadFeature(this, nodeid);
             }
-            return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
+            return (T) new DefaultUploadFeature<Node>(this);
         }
         if(type == Write.class || type == MultipartWrite.class) {
             if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
