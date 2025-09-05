@@ -33,8 +33,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -50,9 +48,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.storage.Storage;
 
 public class GoogleStorageSession extends HttpSession<Storage> {
-
-    private final PreferencesReader preferences
-            = HostPreferencesFactory.get(host);
 
     private ApacheHttpTransport transport;
     private OAuth2RequestInterceptor authorizationService;

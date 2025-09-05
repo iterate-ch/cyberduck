@@ -38,8 +38,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -81,8 +79,6 @@ import com.google.gson.JsonParser;
 
 public class EueSession extends HttpSession<CloseableHttpClient> {
     private static final Logger log = LogManager.getLogger(EueSession.class);
-
-    private final HostPreferences preferences = HostPreferencesFactory.get(host);
 
     private OAuth2RequestInterceptor authorizationService;
 

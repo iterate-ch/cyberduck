@@ -34,7 +34,6 @@ import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
@@ -69,7 +68,7 @@ public class MantaSession extends HttpSession<MantaClient> {
                 new StandardConfigContext()
                         .setNoAuth(true)
                         .setMantaKeyPath(null)
-                        .setHttpsProtocols(HostPreferencesFactory.get(host).getProperty("connection.ssl.protocols"))
+                        .setHttpsProtocols(preferences.getProperty("connection.ssl.protocols"))
                         .setDisableNativeSignatures(true)
                         .setMantaUser(host.getCredentials().getUsername())
                         .setMantaURL(String.format("%s://%s", host.getProtocol().getScheme().name(), host.getHostname()))

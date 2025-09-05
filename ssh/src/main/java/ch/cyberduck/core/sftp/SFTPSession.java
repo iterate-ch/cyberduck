@@ -29,8 +29,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.auth.SFTPAgentAuthentication;
@@ -95,8 +93,6 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = LogManager.getLogger(SFTPSession.class);
-
-    private final PreferencesReader preferences = HostPreferencesFactory.get(host);
 
     private SFTPEngine sftp;
     private StateDisconnectListener disconnectListener;

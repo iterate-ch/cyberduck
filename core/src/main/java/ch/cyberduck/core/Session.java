@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -59,6 +60,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
      * Encapsulating all the information of the remote host
      */
     protected final Host host;
+    protected final HostPreferences preferences;
 
     private Metrics metrics = new DisabledMetrics();
 
@@ -115,6 +117,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
 
     protected Session(final Host h) {
         this.host = h;
+        this.preferences = HostPreferencesFactory.get(host);
     }
 
     /**
@@ -175,6 +178,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
             }
         }
         finally {
+            preferences.clear();
             state = State.closed;
             log.debug("Connection did close to {}", host);
         }

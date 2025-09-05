@@ -45,8 +45,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -99,9 +97,6 @@ import static com.amazonaws.services.s3.Headers.*;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = LogManager.getLogger(S3Session.class);
-
-    private final HostPreferences preferences
-            = HostPreferencesFactory.get(host);
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
 
