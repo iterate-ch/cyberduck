@@ -36,7 +36,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -83,9 +82,9 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
-        if(HostPreferencesFactory.get(host).getBoolean("dropbox.limit.requests.enable")) {
+        if(preferences.getBoolean("dropbox.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-                    HostPreferencesFactory.get(host).getInteger("dropbox.limit.requests.second")
+                    preferences.getInteger("dropbox.limit.requests.second")
             )));
         }
         final CloseableHttpClient client = configuration.build();

@@ -52,7 +52,6 @@ import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -91,7 +90,6 @@ public class DAVSession extends HttpSession<DAVClient> {
     private static final Logger log = LogManager.getLogger(DAVSession.class);
 
     private final RedirectCallback redirect;
-    private final PreferencesReader preferences = HostPreferencesFactory.get(host);
     private final HttpCapabilities capabilities = new HttpCapabilities(preferences);
 
     private OAuth2RequestInterceptor authorizationService;
@@ -152,7 +150,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             }
             else {
                 username = credentials.getUsername();
-                domain = HostPreferencesFactory.get(host).getProperty("webdav.ntlm.domain");
+                domain = preferences.getProperty("webdav.ntlm.domain");
             }
             for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
                 client.setCredentials(

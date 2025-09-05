@@ -30,7 +30,6 @@ import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -104,8 +103,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
 
     private OAuth2RequestInterceptor authorizationService;
-
-    private final HostPreferences preferences = HostPreferencesFactory.get(host);
 
     private final ExpiringObjectHolder<UserAccountWrapper> userAccount
             = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));

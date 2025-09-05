@@ -52,8 +52,6 @@ import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -81,7 +79,6 @@ import java.io.IOException;
 public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private static final Logger log = LogManager.getLogger(DeepboxSession.class);
 
-    private final HostPreferences preferences = HostPreferencesFactory.get(host);
     private final DeepboxIdProvider fileid = new DeepboxIdProvider(this);
 
     private DeepcloudApiClient deepcloudClient;

@@ -34,8 +34,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.idna.PunycodeConverter;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
@@ -66,9 +64,6 @@ import java.util.Locale;
 
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = LogManager.getLogger(FTPSession.class);
-
-    private final PreferencesReader preferences
-            = HostPreferencesFactory.get(host);
 
     private final FTPListService list = new FTPListService(this);
     private final FTPReadFeature read = new FTPReadFeature(this);

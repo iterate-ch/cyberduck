@@ -28,7 +28,6 @@ import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
@@ -84,7 +83,7 @@ public class CteraSession extends DAVSession {
     protected DAVClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.disableRedirectHandling();
-        if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+        if(preferences.getBoolean("ctera.download.directio.enable")) {
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                     new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt),
                             directio = new CteraDirectIOInterceptor(this))));
@@ -239,7 +238,7 @@ public class CteraSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == VersionIdProvider.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+            if(preferences.getBoolean("ctera.download.directio.enable")) {
                 return (T) versionid;
             }
             return null;
@@ -275,7 +274,7 @@ public class CteraSession extends DAVSession {
             return (T) new CteraListService(this);
         }
         if(type == Read.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+            if(preferences.getBoolean("ctera.download.directio.enable")) {
                 return (T) new CteraDelegatingReadFeature(this);
             }
             return (T) new CteraReadFeature(this);
@@ -293,7 +292,7 @@ public class CteraSession extends DAVSession {
             return (T) new DisabledQuotaFeature();
         }
         if(type == Bulk.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("ctera.download.directio.enable")) {
+            if(preferences.getBoolean("ctera.download.directio.enable")) {
                 return (T) new CteraBulkFeature(this, versionid);
             }
             return (T) new DisabledBulkFeature();

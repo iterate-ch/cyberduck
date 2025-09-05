@@ -40,6 +40,13 @@ public class HostPreferences implements PreferencesReader {
         this.proxy = proxy;
     }
 
+    /**
+     * Delete cached properties.
+     */
+    public void clear() {
+        cache.clear();
+    }
+
     @Override
     public String getProperty(final String key) {
         final String value = cache.get(key);
