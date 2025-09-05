@@ -125,6 +125,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             final String tokenCode;
             if(basicProfile.getProperties().containsKey("mfa_serial")) {
                 try {
+                    log.debug("Prompt for MFA token for profile {}", basicProfile);
                     tokenCode = prompt.prompt(
                             host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                             String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
@@ -141,6 +142,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 }
             }
             else {
+                log.warn("No MFA configuration for profile {}", basicProfile);
                 tokenCode = null;
             }
             final Integer durationSeconds;
