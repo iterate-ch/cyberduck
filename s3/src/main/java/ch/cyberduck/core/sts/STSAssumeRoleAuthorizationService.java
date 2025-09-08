@@ -55,6 +55,7 @@ public class STSAssumeRoleAuthorizationService {
     private final AWSSecurityTokenService service;
     private final LoginCallback prompt;
     private final Host bookmark;
+    private final HostPreferences preferences;
 
     public STSAssumeRoleAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         this(bookmark, AWSSecurityTokenServiceClientBuilder
@@ -70,11 +71,11 @@ public class STSAssumeRoleAuthorizationService {
         this.bookmark = bookmark;
         this.service = service;
         this.prompt = prompt;
+        this.preferences = HostPreferencesFactory.get(bookmark);
     }
 
     public TemporaryAccessTokens authorize(final String sAMLAssertion) throws BackgroundException {
         final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(sAMLAssertion);
-        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
             request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
         }
@@ -105,7 +106,6 @@ public class STSAssumeRoleAuthorizationService {
         log.debug("Assume role with OIDC Id token for {}", bookmark);
         final String webIdentityToken = this.getWebIdentityToken(oauth);
         request.setWebIdentityToken(webIdentityToken);
-        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
         if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
             request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
         }
