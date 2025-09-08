@@ -277,31 +277,27 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     new S3AuthenticationResponseInterceptor(this, interceptor)));
             return interceptor;
         }
-        else {
-            if(S3Session.isAwsHostname(host.getHostname())) {
-                final S3AuthenticationResponseInterceptor interceptor;
-                // Try auto-configure
-                if(Scheme.isURL(host.getProtocol().getContext())) {
-                    // Fetch temporary session token from instance metadata
-                    interceptor = new S3AuthenticationResponseInterceptor(this,
-                            new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext())
-                    );
-                }
-                else {
-                    final Credentials credentials = new S3CredentialsConfigurator(
-                            new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
-                    // Fetch temporary session token from AWS CLI configuration
-                    interceptor = new S3AuthenticationResponseInterceptor(this, () -> credentials);
-                }
-                configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                        new ExecutionCountServiceUnavailableRetryStrategy(interceptor)));
-                return interceptor;
+        if(S3Session.isAwsHostname(host.getHostname())) {
+            final S3AuthenticationResponseInterceptor interceptor;
+            // Try auto-configure
+            if(Scheme.isURL(host.getProtocol().getContext())) {
+                // Fetch temporary session token from instance metadata
+                interceptor = new S3AuthenticationResponseInterceptor(this,
+                        new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext())
+                );
             }
             else {
-                final Credentials credentials = new Credentials(host.getCredentials());
-                return () -> credentials;
+                final Credentials credentials = new S3CredentialsConfigurator(
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
+                // Fetch temporary session token from AWS CLI configuration
+                interceptor = new S3AuthenticationResponseInterceptor(this, () -> credentials);
             }
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new ExecutionCountServiceUnavailableRetryStrategy(interceptor)));
+            return interceptor;
         }
+        final Credentials credentials = new Credentials(host.getCredentials());
+        return () -> credentials;
     }
 
     @Override
