@@ -34,13 +34,11 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import com.amazonaws.auth.AWSSessionCredentials;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -169,6 +167,7 @@ public class STSAssumeRoleAuthorizationService {
             }
         }
         if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY))) {
+            request.setSerialNumber(preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY));
             log.debug("Prompt for MFA token code");
             final String tokenCode = prompt.prompt(
                     bookmark, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -179,7 +178,7 @@ public class STSAssumeRoleAuthorizationService {
                             .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
                             .keychain(false)
             ).getPassword();
-            request.setSerialNumber(tokenCode);
+            request.setTokenCode(tokenCode);
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY))) {
             request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY));
