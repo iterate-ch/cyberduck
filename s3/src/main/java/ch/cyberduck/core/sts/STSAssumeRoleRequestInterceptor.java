@@ -96,6 +96,6 @@ public class STSAssumeRoleRequestInterceptor extends STSAssumeRoleAuthorizationS
     @Override
     public Credentials get() throws BackgroundException {
         // Get temporary credentials from STS using static long-lived credentials
-        return new Credentials().withTokens(this.refresh(tokens));
+        return new Credentials().withTokens(this.refresh(credentials));
     }
 }
