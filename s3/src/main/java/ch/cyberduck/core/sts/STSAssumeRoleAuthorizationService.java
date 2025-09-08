@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -33,16 +34,21 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import com.amazonaws.auth.AWSSessionCredentials;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
+import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
+import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithSAMLRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithSAMLResult;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
@@ -110,6 +116,82 @@ public class STSAssumeRoleAuthorizationService {
                     result.getCredentials().getExpiration().getTime());
             credentials.setTokens(tokens);
             return tokens;
+        }
+        catch(AWSSecurityTokenServiceException e) {
+            throw new STSExceptionMappingService().map(e);
+        }
+    }
+
+    /**
+     * Assume role with long-lived AWS credentials
+     * <p>
+     * - Prompts for ARN for role to assume when missing
+     * - Prompts for MFA token code when required
+     *
+     * @param credentials AWS static or session token credentials
+     */
+    public TemporaryAccessTokens authorize(final TemporaryAccessTokens credentials) throws BackgroundException {
+        final AssumeRoleRequest request = new AssumeRoleRequest()
+                .withRequestCredentialsProvider(new AWSStaticCredentialsProvider(new AWSSessionCredentials() {
+                    @Override
+                    public String getAWSAccessKeyId() {
+                        return credentials.getAccessKeyId();
+                    }
+
+                    @Override
+                    public String getAWSSecretKey() {
+                        return credentials.getSecretAccessKey();
+                    }
+
+                    @Override
+                    public String getSessionToken() {
+                        return credentials.getSessionToken();
+                    }
+                }));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY))) {
+            request.setDurationSeconds(PreferencesReader.toInteger(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY)));
+        }
+        if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY))) {
+            request.setRoleArn(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY));
+        }
+        else {
+            if(StringUtils.EMPTY.equals(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY))) {
+                // When defined in connection profile but with empty value
+                log.debug("Prompt for Role ARN");
+                final Credentials input = prompt.prompt(bookmark,
+                        LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        new LoginOptions().icon(bookmark.getProtocol().disk()));
+                if(input.isSaved()) {
+                    preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
+                }
+                request.setRoleArn(input.getPassword());
+            }
+        }
+        if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY))) {
+            log.debug("Prompt for MFA token code");
+            final String tokenCode = prompt.prompt(
+                    bookmark, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                            preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY)),
+                    new LoginOptions(bookmark.getProtocol())
+                            .password(true)
+                            .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                            .keychain(false)
+            ).getPassword();
+            request.setSerialNumber(tokenCode);
+        }
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY))) {
+            request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY));
+        }
+        log.debug("Request {} from {}", request, service);
+        try {
+            final AssumeRoleResult result = service.assumeRole(request);
+            log.debug("Received assume role identity result {}", result);
+            return new TemporaryAccessTokens(result.getCredentials().getAccessKeyId(),
+                    result.getCredentials().getSecretAccessKey(),
+                    result.getCredentials().getSessionToken(),
+                    result.getCredentials().getExpiration().getTime());
         }
         catch(AWSSecurityTokenServiceException e) {
             throw new STSExceptionMappingService().map(e);
