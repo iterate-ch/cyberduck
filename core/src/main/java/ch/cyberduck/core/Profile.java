@@ -65,6 +65,18 @@ public class Profile implements Protocol {
     public static final String OAUTH_PKCE_KEY = "OAuth PKCE";
     public static final String SCOPES_KEY = "Scopes";
     public static final String STS_ENDPOINT_KEY = "STS Endpoint";
+    /**
+     * A constant key used to define the Amazon Resource Name (ARN) for AWS Security Token Service (STS)
+     */
+    public static final String STS_ROLE_ARN_PROPERTY_KEY = "role_arn";
+    public static final String STS_ROLE_SESSION_NAME_PROPERTY_KEY = "role_session_name";
+    public static final String STS_DURATION_SECONDS_PROPERTY_KEY = "duration_seconds";
+    /**
+     * A constant key used to define the Amazon Resource Name (ARN) for Multi-Factor Authentication (MFA)
+     * in AWS Security Token Service (STS) profiles. This key is typically utilized to specify or retrieve
+     * the ARN for an MFA device required during authentication processes involving STS.
+     */
+    public static final String STS_MFA_ARN_PROPERTY_KEY = "mfa_serial";
 
     public static final String DISK_KEY = "Disk";
     public static final String ICON_KEY = "Icon";
