@@ -27,6 +27,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
@@ -55,6 +56,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.sts.STSAssumeRoleRequestInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityRequestInterceptor;
 import ch.cyberduck.core.sts.STSExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -272,6 +274,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.addInterceptorLast(oauth);
             final STSAssumeRoleWithWebIdentityRequestInterceptor interceptor
                     = new STSAssumeRoleWithWebIdentityRequestInterceptor(oauth, this, trust, key, prompt);
+            configuration.addInterceptorLast(interceptor);
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new S3AuthenticationResponseInterceptor(this, interceptor)));
+            return interceptor;
+        }
+        if(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY) != null) {
+            final STSAssumeRoleRequestInterceptor interceptor = new STSAssumeRoleRequestInterceptor(this, trust, key, prompt);
             configuration.addInterceptorLast(interceptor);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                     new S3AuthenticationResponseInterceptor(this, interceptor)));
