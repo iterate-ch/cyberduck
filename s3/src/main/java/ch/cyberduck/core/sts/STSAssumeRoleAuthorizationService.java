@@ -86,6 +86,20 @@ public class STSAssumeRoleAuthorizationService {
         if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
             request.setRoleArn(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"));
         }
+        else {
+            if(StringUtils.EMPTY.equals(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
+                // When defined in connection profile but with empty value
+                log.debug("Prompt for Role ARN");
+                final Credentials input = prompt.prompt(bookmark,
+                        LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        new LoginOptions().icon(bookmark.getProtocol().disk()));
+                if(input.isSaved()) {
+                    preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
+                }
+                request.setRoleArn(input.getPassword());
+            }
+        }
         try {
             final AssumeRoleWithSAMLResult result = service.assumeRoleWithSAML(request);
             log.debug("Received assume role identity result {}", result);
