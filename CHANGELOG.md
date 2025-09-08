@@ -1,5 +1,12 @@
 # Changelog
 
+[9.2.4](https://github.com/iterate-ch/cyberduck/compare/release-9-2-3...release-9-2-4)
+
+* [Bugfix] Unable to close connection window with "Cancel" (macOS) (#17366)
+* [Bugfix] Choose "Cancel" in upload prompt continues transfer (macOS) (#17358)
+* [Bugfix] Change button styles for bottom bar of window (macOS) (#17407)
+* [Bugfix] Resumable uploads fail with Basic authentication (ownCloud)
+
 [9.2.3](https://github.com/iterate-ch/cyberduck/compare/release-9-2-2...release-9-2-3)
 * [Bugfix] Failure opening application (Windows)
 
