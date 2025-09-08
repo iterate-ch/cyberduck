@@ -56,7 +56,10 @@ public class HostPreferences implements PreferencesReader {
             return value;
         }
         for(String key : keys) {
-            return proxy.getProperty(key);
+            final String value = proxy.getProperty(key);
+            if(value != null) {
+                return value;
+            }
         }
         return null;
     }
