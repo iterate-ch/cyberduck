@@ -45,8 +45,8 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 /**
  * Swap OIDC Id token for temporary security credentials
  */
-public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAuthorizationService implements S3CredentialsStrategy, HttpRequestInterceptor {
-    private static final Logger log = LogManager.getLogger(STSAssumeRoleCredentialsRequestInterceptor.class);
+public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRoleAuthorizationService implements S3CredentialsStrategy, HttpRequestInterceptor {
+    private static final Logger log = LogManager.getLogger(STSAssumeRoleWithWebIdentityRequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -61,16 +61,16 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
     private final OAuth2RequestInterceptor oauth;
     private final S3Session session;
 
-    public STSAssumeRoleCredentialsRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
-                                                      final X509TrustManager trust, final X509KeyManager key,
-                                                      final LoginCallback prompt) {
+    public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
+                                                          final X509TrustManager trust, final X509KeyManager key,
+                                                          final LoginCallback prompt) {
         super(session.getHost(), trust, key, prompt);
         this.oauth = oauth;
         this.session = session;
     }
 
-    public STSAssumeRoleCredentialsRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
-                                                      final AWSSecurityTokenService service, final LoginCallback prompt) {
+    public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
+                                                          final AWSSecurityTokenService service, final LoginCallback prompt) {
         super(session.getHost(), service, prompt);
         this.oauth = oauth;
         this.session = session;
