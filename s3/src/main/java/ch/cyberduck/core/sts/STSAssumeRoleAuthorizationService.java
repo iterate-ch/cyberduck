@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -76,14 +77,14 @@ public class STSAssumeRoleAuthorizationService {
 
     public TemporaryAccessTokens authorize(final String sAMLAssertion) throws BackgroundException {
         final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(sAMLAssertion);
-        if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
-            request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY))) {
+            request.setDurationSeconds(PreferencesReader.toInteger(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY)));
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.policy"))) {
             request.setPolicy(preferences.getProperty("s3.assumerole.policy"));
         }
-        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolearn"))) {
-            request.setRoleArn(preferences.getProperty("s3.assumerole.rolearn"));
+        if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
+            request.setRoleArn(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"));
         }
         try {
             final AssumeRoleWithSAMLResult result = service.assumeRoleWithSAML(request);
@@ -106,17 +107,17 @@ public class STSAssumeRoleAuthorizationService {
         log.debug("Assume role with OIDC Id token for {}", bookmark);
         final String webIdentityToken = this.getWebIdentityToken(oauth);
         request.setWebIdentityToken(webIdentityToken);
-        if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
-            request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY))) {
+            request.setDurationSeconds(PreferencesReader.toInteger(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY)));
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.policy"))) {
             request.setPolicy(preferences.getProperty("s3.assumerole.policy"));
         }
-        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolearn"))) {
-            request.setRoleArn(preferences.getProperty("s3.assumerole.rolearn"));
+        if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
+            request.setRoleArn(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"));
         }
         else {
-            if(StringUtils.EMPTY.equals(preferences.getProperty("s3.assumerole.rolearn"))) {
+            if(StringUtils.EMPTY.equals(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
                 // When defined in connection profile but with empty value
                 log.debug("Prompt for Role ARN");
                 final Credentials input = prompt.prompt(bookmark,
@@ -124,7 +125,7 @@ public class STSAssumeRoleAuthorizationService {
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         new LoginOptions().icon(bookmark.getProtocol().disk()));
                 if(input.isSaved()) {
-                    preferences.setProperty("s3.assumerole.rolearn", input.getPassword());
+                    preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
                 }
                 request.setRoleArn(input.getPassword());
             }
@@ -137,8 +138,8 @@ public class STSAssumeRoleAuthorizationService {
             log.warn("Failure {} decoding JWT {}", e, webIdentityToken);
             throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
         }
-        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname"))) {
-            request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY))) {
+            request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY));
         }
         else {
             if(StringUtils.isNotBlank(sub)) {
