@@ -27,7 +27,6 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
@@ -279,7 +278,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     new S3AuthenticationResponseInterceptor(this, interceptor)));
             return interceptor;
         }
-        if(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY) != null) {
+        if(host.getProtocol().isTokenConfigurable()) {
             final STSAssumeRoleRequestInterceptor interceptor = new STSAssumeRoleRequestInterceptor(this, trust, key, prompt);
             configuration.addInterceptorLast(interceptor);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
