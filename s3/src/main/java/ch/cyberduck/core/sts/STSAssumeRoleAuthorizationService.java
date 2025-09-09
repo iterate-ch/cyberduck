@@ -97,7 +97,7 @@ public class STSAssumeRoleAuthorizationService {
                 final Credentials input = prompt.prompt(bookmark,
                         LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().icon(bookmark.getProtocol().disk()));
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false));
                 if(input.isSaved()) {
                     preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
                 }
@@ -159,7 +159,7 @@ public class STSAssumeRoleAuthorizationService {
                 final Credentials input = prompt.prompt(bookmark,
                         LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().icon(bookmark.getProtocol().disk()));
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false));
                 if(input.isSaved()) {
                     preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
                 }
@@ -218,7 +218,7 @@ public class STSAssumeRoleAuthorizationService {
                 final Credentials input = prompt.prompt(bookmark,
                         LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().icon(bookmark.getProtocol().disk()));
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false));
                 if(input.isSaved()) {
                     preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
                 }
