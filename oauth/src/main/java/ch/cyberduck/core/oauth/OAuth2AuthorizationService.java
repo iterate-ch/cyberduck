@@ -387,7 +387,7 @@ public class OAuth2AuthorizationService {
         if(null == value) {
             final Credentials input = prompt.prompt(bookmark, message,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    new LoginOptions().icon(bookmark.getProtocol().disk()));
+                    new LoginOptions().icon(bookmark.getProtocol().disk()).password(false));
             if(input.isSaved()) {
                 HostPreferencesFactory.get(bookmark).setProperty(property, input.getPassword());
             }
