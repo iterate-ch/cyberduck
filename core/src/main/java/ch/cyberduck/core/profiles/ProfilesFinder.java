@@ -41,8 +41,4 @@ public interface ProfilesFinder {
             return description;
         };
     }
-
-    default void cleanup() {
-        //
-    }
 }

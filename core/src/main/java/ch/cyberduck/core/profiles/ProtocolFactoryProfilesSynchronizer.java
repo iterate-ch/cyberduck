@@ -116,8 +116,6 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
                 }
             }
         });
-        local.cleanup();
-        remote.cleanup();
         return result;
     }
 }
