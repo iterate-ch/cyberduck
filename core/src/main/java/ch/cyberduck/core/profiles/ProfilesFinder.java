@@ -29,12 +29,7 @@ public interface ProfilesFinder {
     interface Visitor {
         ProfileDescription visit(ProfileDescription description);
 
-        Visitor Noop = new Visitor() {
-            @Override
-            public ProfileDescription visit(final ProfileDescription description) {
-                return description;
-            }
-        };
+        Visitor Noop = description -> description;
 
         /**
          * Download and parse profile
