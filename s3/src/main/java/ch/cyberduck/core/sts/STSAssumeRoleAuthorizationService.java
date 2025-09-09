@@ -97,7 +97,8 @@ public class STSAssumeRoleAuthorizationService {
                 final Credentials input = prompt.prompt(bookmark,
                         LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false));
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                .passwordPlaceholder(LocaleFactory.localizedString("ARN", "S3")));
                 if(input.isSaved()) {
                     preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
                 }
@@ -159,7 +160,8 @@ public class STSAssumeRoleAuthorizationService {
                 final Credentials input = prompt.prompt(bookmark,
                         LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false));
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                .passwordPlaceholder(LocaleFactory.localizedString("ARN", "S3")));
                 if(input.isSaved()) {
                     preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
                 }
@@ -218,7 +220,8 @@ public class STSAssumeRoleAuthorizationService {
                 final Credentials input = prompt.prompt(bookmark,
                         LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false));
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                .passwordPlaceholder(LocaleFactory.localizedString("ARN", "S3")));
                 if(input.isSaved()) {
                     preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
                 }
