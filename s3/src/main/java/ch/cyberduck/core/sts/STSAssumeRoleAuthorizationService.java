@@ -202,6 +202,9 @@ public class STSAssumeRoleAuthorizationService {
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY))) {
             request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY));
         }
+        else {
+            request.setRoleSessionName(new AsciiRandomStringService().random());
+        }
         log.debug("Request {} from {}", request, service);
         try {
             final AssumeRoleResult result = service.assumeRole(request);
