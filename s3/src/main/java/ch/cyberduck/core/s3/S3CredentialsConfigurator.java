@@ -47,9 +47,9 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.auth.profile.internal.AbstractProfilesConfigFileScanner;
 import com.amazonaws.auth.profile.internal.AllProfiles;
 import com.amazonaws.auth.profile.internal.BasicProfile;
@@ -402,32 +402,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
 
     protected AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
         return AWSSecurityTokenServiceClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new AWSCredentials() {
-                    @Override
-                    public String getAWSAccessKeyId() {
-                        return accessKey;
-                    }
-
-                    @Override
-                    public String getAWSSecretKey() {
-                        return secretKey;
-                    }
-                } : new AWSSessionCredentials() {
-                    @Override
-                    public String getAWSAccessKeyId() {
-                        return accessKey;
-                    }
-
-                    @Override
-                    public String getAWSSecretKey() {
-                        return secretKey;
-                    }
-
-                    @Override
-                    public String getSessionToken() {
-                        return sessionToken;
-                    }
-                }))
+                .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new BasicAWSCredentials(accessKey, secretKey) :
+                        new BasicSessionCredentials(accessKey, secretKey, sessionToken)))
                 .withClientConfiguration(new CustomClientConfiguration(host,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key))
                 .withRegion(StringUtils.isNotBlank(region) ? Regions.fromName(region) : Regions.DEFAULT_REGION).build();
