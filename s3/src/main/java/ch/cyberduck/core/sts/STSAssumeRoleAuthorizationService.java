@@ -24,12 +24,14 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
+import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -38,9 +40,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
@@ -51,6 +54,8 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleWithSAMLRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithSAMLResult;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityRequest;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityResult;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
@@ -77,6 +82,22 @@ public class STSAssumeRoleAuthorizationService {
         this.service = service;
         this.prompt = prompt;
         this.preferences = HostPreferencesFactory.get(bookmark);
+    }
+
+    /**
+     * Validate credentials by requesting caller identity
+     *
+     * @param session AWS credentials
+     */
+    public void authorize(final S3Session session) throws BackgroundException {
+        try {
+            final GetCallerIdentityResult identity = service.getCallerIdentity(new GetCallerIdentityRequest()
+                    .withRequestCredentialsProvider(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials())));
+            log.debug("Successfully verified credentials for {}", identity);
+        }
+        catch(AWSSecurityTokenServiceException e) {
+            throw new STSExceptionMappingService().map(e);
+        }
     }
 
     public TemporaryAccessTokens authorize(final String sAMLAssertion) throws BackgroundException {
@@ -131,22 +152,9 @@ public class STSAssumeRoleAuthorizationService {
      */
     public TemporaryAccessTokens authorize(final TemporaryAccessTokens credentials) throws BackgroundException {
         final AssumeRoleRequest request = new AssumeRoleRequest()
-                .withRequestCredentialsProvider(new AWSStaticCredentialsProvider(new AWSSessionCredentials() {
-                    @Override
-                    public String getAWSAccessKeyId() {
-                        return credentials.getAccessKeyId();
-                    }
-
-                    @Override
-                    public String getAWSSecretKey() {
-                        return credentials.getSecretAccessKey();
-                    }
-
-                    @Override
-                    public String getSessionToken() {
-                        return credentials.getSessionToken();
-                    }
-                }));
+                .withRequestCredentialsProvider(new AWSStaticCredentialsProvider(
+                        StringUtils.isBlank(credentials.getSessionToken()) ? new BasicAWSCredentials(credentials.getAccessKeyId(), credentials.getSecretAccessKey()) :
+                                new BasicSessionCredentials(credentials.getAccessKeyId(), credentials.getSecretAccessKey(), credentials.getSessionToken())));
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY))) {
             request.setDurationSeconds(PreferencesReader.toInteger(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY)));
         }
