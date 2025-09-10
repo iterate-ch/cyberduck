@@ -42,6 +42,9 @@ public class BrickShareFeature implements Share {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
+        if(file.isRoot()) {
+            return false;
+        }
         return type == Type.download;
     }
 

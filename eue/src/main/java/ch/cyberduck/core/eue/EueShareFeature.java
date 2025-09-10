@@ -62,6 +62,9 @@ public class EueShareFeature implements Share<ShareCreationRequestModel, ShareCr
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
+        if(file.isRoot()) {
+            return false;
+        }
         if(StringUtils.equals(EueResourceIdProvider.TRASH, file.attributes().getFileId())) {
             return false;
         }
