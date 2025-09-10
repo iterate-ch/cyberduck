@@ -82,19 +82,22 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
             final Optional<ProfileDescription> match = matcher.compare(available, l);
             if(match.isPresent()) {
                 // Found matching checksum for profile in remote list which is not marked as latest version
-                log.warn("Override {} with latest profile verison {}", l, match);
-                // Remove previous version
-                l.getProfile().ifPresent(registry::unregister);
-                // Register updated profile by copying temporary file to application support
-                match.get().getFile().ifPresent(value -> {
-                    final Local copy = registry.register(value);
-                    if(null != copy) {
-                        final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
-                        log.debug("Add synched profile {}", d);
-                        result.add(d);
-                        visitor.visit(d);
-                    }
-                });
+                final ProfileDescription latest = match.get();
+                if(latest.isLatest()) {
+                    log.warn("Override {} with latest profile version {}", l, latest);
+                    // Remove previous version
+                    l.getProfile().ifPresent(registry::unregister);
+                    // Register updated profile by copying temporary file to application support
+                    latest.getFile().ifPresent(value -> {
+                        final Local copy = registry.register(value);
+                        if(null != copy) {
+                            final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
+                            log.debug("Add synched profile {}", d);
+                            result.add(d);
+                            visitor.visit(d);
+                        }
+                    });
+                }
             }
             else {
                 log.debug("Add local only profile {}", l);
@@ -113,8 +116,6 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
                 }
             }
         });
-        local.cleanup();
-        remote.cleanup();
         return result;
     }
 }
