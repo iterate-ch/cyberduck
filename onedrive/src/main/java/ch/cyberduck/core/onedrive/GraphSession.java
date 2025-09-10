@@ -43,7 +43,9 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -140,7 +142,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
      *
      * @param file The file path for which the container details should be retrieved.
      * @return An instance of {@code ContainerItem} representing the container details of the specified file path.
-     *         Returns {@code ContainerItem.EMPTY} if no container details are found.
+     * Returns {@code ContainerItem.EMPTY} if no container details are found.
      */
     public abstract ContainerItem getContainer(Path file);
 
@@ -166,6 +168,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                 .withParameter("prompt", "select_account");
         configuration.addInterceptorLast(authorizationService);
+        configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request
+                .addHeader(new BasicHeader("Prefer", "Include-Feature=AddToOneDrive")));
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
         final RequestExecutor executor = new GraphCommonsHttpRequestExecutor(configuration.build()) {
