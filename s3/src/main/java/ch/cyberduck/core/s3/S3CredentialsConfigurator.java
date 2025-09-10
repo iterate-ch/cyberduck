@@ -357,7 +357,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 log.warn("Missing file {} with cached SSO credentials.", cachedCredentialsFile.getAbsolute());
                 return null;
             }
-            try (InputStream in = cachedCredentialsFile.getInputStream()) {
+            try(InputStream in = cachedCredentialsFile.getInputStream()) {
                 final CachedCredentials cached = mapper.readValue(in, CachedCredentials.class);
                 if(null == cached.credentials) {
                     log.warn("Failure parsing SSO credentials.");
@@ -452,7 +452,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 return new LinkedHashMap<>();
             }
             log.debug("Reading AWS file {}", file);
-            try (InputStream inputStream = file.getInputStream(); Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
+            try(InputStream inputStream = file.getInputStream(); Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
                 run(scanner);
                 return new LinkedHashMap<>(allProfileProperties);
             }
