@@ -170,6 +170,23 @@ public class STSAssumeRoleAuthorizationService {
         }
         if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY))) {
             request.setSerialNumber(preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY));
+        }
+        else {
+            if(StringUtils.EMPTY.equals(preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY))) {
+                // When defined in connection profile but with empty value
+                log.debug("Prompt for MFA ARN");
+                final Credentials input = prompt.prompt(bookmark,
+                        LocaleFactory.localizedString("MFA Amazon Resource Name (ARN)", "Credentials"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                .passwordPlaceholder(LocaleFactory.localizedString("ARN", "S3")));
+                if(input.isSaved()) {
+                    preferences.setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, input.getPassword());
+                }
+                request.setSerialNumber(input.getPassword());
+            }
+        }
+        if(request.getSerialNumber() != null) {
             log.debug("Prompt for MFA token code");
             final String tokenCode = prompt.prompt(
                     bookmark, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
