@@ -22,6 +22,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -40,6 +42,7 @@ public class Credentials implements Comparable<Credentials> {
     private String password = StringUtils.EMPTY;
     private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
     private OAuthTokens oauth = OAuthTokens.EMPTY;
+    private final Map<String, String> properties = new HashMap<>();
 
     /**
      * Private key identity for SSH public key authentication.
@@ -271,6 +274,15 @@ public class Credentials implements Comparable<Credentials> {
             return false;
         }
         return true;
+    }
+
+    public Credentials withProperty(final String key, final String value) {
+        properties.put(key, value);
+        return this;
+    }
+
+    public String getProperty(final String key) {
+        return properties.get(key);
     }
 
     /**

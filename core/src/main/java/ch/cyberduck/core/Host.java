@@ -532,6 +532,9 @@ public class Host implements Serializable, Comparable<Host> {
         if(overrides.containsKey(key)) {
             return overrides.get(key);
         }
+        if(credentials.getProperty(key) != null) {
+            return credentials.getProperty(key);
+        }
         return protocol.getProperties().get(key);
     }
 

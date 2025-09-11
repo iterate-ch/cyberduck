@@ -33,7 +33,11 @@ public final class TemporaryAccessTokens {
     private final Long expiryInMilliseconds;
 
     public TemporaryAccessTokens(final String sessionToken) {
-        this(null, null, sessionToken, -1L);
+        this(null, null, sessionToken);
+    }
+
+    public TemporaryAccessTokens(final String accessKeyId, final String secretAccessKey, final String sessionToken) {
+        this(accessKeyId, secretAccessKey, sessionToken, -1L);
     }
 
     public TemporaryAccessTokens(final String accessKeyId, final String secretAccessKey, final String sessionToken, final Long expiryInMilliseconds) {
