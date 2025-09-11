@@ -88,12 +88,14 @@ public class STSAssumeRoleAuthorizationService {
      * Validate credentials by requesting caller identity
      *
      * @param session AWS credentials
+     * @return User ID
      */
-    public void authorize(final S3Session session) throws BackgroundException {
+    public String authorize(final S3Session session) throws BackgroundException {
         try {
             final GetCallerIdentityResult identity = service.getCallerIdentity(new GetCallerIdentityRequest()
                     .withRequestCredentialsProvider(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials())));
             log.debug("Successfully verified credentials for {}", identity);
+            return identity.getUserId();
         }
         catch(AWSSecurityTokenServiceException e) {
             throw new STSExceptionMappingService().map(e);
