@@ -33,6 +33,8 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.AWSSessionCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
 
 public class AWSCredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(AWSCredentialsConfigurator.class);
@@ -80,42 +82,18 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
 
     public static AWSCredentialsProvider toAWSCredentialsProvider(final ProviderCredentials credentials) {
         return credentials instanceof org.jets3t.service.security.AWSSessionCredentials ?
-            new AWSSessionCredentialsProvider() {
-                @Override
-                public AWSSessionCredentials getCredentials() {
-                    return new AWSSessionCredentials() {
-                        @Override
-                        public String getSessionToken() {
-                            return ((org.jets3t.service.security.AWSSessionCredentials) credentials).getSessionToken();
-                        }
+                new AWSSessionCredentialsProvider() {
+                    @Override
+                    public AWSSessionCredentials getCredentials() {
+                        return new BasicSessionCredentials(credentials.getAccessKey(), credentials.getSecretKey(),
+                                ((org.jets3t.service.security.AWSSessionCredentials) credentials).getSessionToken());
+                    }
 
-                        @Override
-                        public String getAWSAccessKeyId() {
-                            return credentials.getAccessKey();
-                        }
-
-                        @Override
-                        public String getAWSSecretKey() {
-                            return credentials.getSecretKey();
-                        }
-                    };
-                }
-
-                @Override
-                public void refresh() {
-                    // Not supported
-                }
-            } :
-            new AWSStaticCredentialsProvider(new AWSCredentials() {
-                @Override
-                public String getAWSAccessKeyId() {
-                    return credentials.getAccessKey();
-                }
-
-                @Override
-                public String getAWSSecretKey() {
-                    return credentials.getSecretKey();
-                }
-            });
+                    @Override
+                    public void refresh() {
+                        // Not supported
+                    }
+                } :
+                new AWSStaticCredentialsProvider(new BasicAWSCredentials(credentials.getAccessKey(), credentials.getSecretKey()));
     }
 }
