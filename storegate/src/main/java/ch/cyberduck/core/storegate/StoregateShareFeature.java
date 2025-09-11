@@ -43,6 +43,9 @@ public class StoregateShareFeature implements Share<Void, Void> {
     public boolean isSupported(final Path file, final Type type) {
         switch(type) {
             case upload:
+                if(file.isRoot()) {
+                    return false;
+                }
                 return file.isDirectory();
         }
         return true;
