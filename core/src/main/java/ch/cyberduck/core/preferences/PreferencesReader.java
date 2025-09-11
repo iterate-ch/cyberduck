@@ -28,6 +28,17 @@ import java.util.Map;
 public interface PreferencesReader {
     Logger log = LogManager.getLogger(PreferencesReader.class);
 
+    default String getProperty(final String... keys) {
+        for(String key : keys) {
+            final String value = this.getProperty(key);
+            if(null == value) {
+                continue;
+            }
+            return value;
+        }
+        return null;
+    }
+
     /**
      * Give value in user settings or default value if not customized.
      *
