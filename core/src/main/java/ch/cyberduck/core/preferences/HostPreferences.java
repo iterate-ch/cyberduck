@@ -66,7 +66,11 @@ public class HostPreferences implements PreferencesReader {
 
     @Override
     public String getProperty(final String key) {
-        return this.getProperty(new String[]{key});
+        final String value = cache.get(key);
+        if(StringUtils.equals(MISSING_PROPERTY, value)) {
+            return proxy.getProperty(key);
+        }
+        return value;
     }
 
     public void setProperty(final String key, final String value) {
