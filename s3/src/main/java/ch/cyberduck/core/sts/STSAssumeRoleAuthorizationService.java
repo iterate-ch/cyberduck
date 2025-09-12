@@ -292,6 +292,12 @@ public class STSAssumeRoleAuthorizationService {
         }
     }
 
+    /**
+     * Get web identity token from OIDC tokens in JWT format
+     *
+     * @param oauth OIDC tokens
+     * @return OIDC Id token value
+     */
     protected String getWebIdentityToken(final OAuthTokens oauth) {
         return oauth.getIdToken();
     }
