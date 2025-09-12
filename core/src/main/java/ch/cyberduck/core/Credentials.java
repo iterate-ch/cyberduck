@@ -40,14 +40,26 @@ public class Credentials implements Comparable<Credentials> {
      * The login password
      */
     private String password = StringUtils.EMPTY;
+    /**
+     * Temporary access tokens
+     */
     private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
+    /**
+     * OIDC tokens
+     */
     private OAuthTokens oauth = OAuthTokens.EMPTY;
+    /**
+     * Custom protocol dependent properties related to authentication
+     */
     private final Map<String, String> properties = new HashMap<>();
 
     /**
      * Private key identity for SSH public key authentication.
      */
     private Local identity;
+    /**
+     * Passphrase for private key identity for SSH public key authentication.
+     */
     private String identityPassphrase = StringUtils.EMPTY;
 
     /**
