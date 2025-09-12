@@ -445,42 +445,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         ctx.updateLoggers();
     }
 
-    @Override
-    public List<String> getList(final String property) {
-        final String value = this.getProperty(property);
-        return PreferencesReader.toList(value);
-    }
-
-    @Override
-    public int getInteger(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toInteger(v);
-    }
-
-    @Override
-    public float getFloat(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toFloat(v);
-    }
-
-    @Override
-    public long getLong(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toLong(v);
-    }
-
-    @Override
-    public double getDouble(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toDouble(v);
-    }
-
-    @Override
-    public boolean getBoolean(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toBoolean(v);
-    }
-
     protected void setFactories() {
         this.setDefault("factory.autoserviceloader.class", AnnotationAutoServiceLoader.class.getName());
         this.setDefault("factory.serializer.class", PlistSerializer.class.getName());

@@ -47,11 +47,30 @@ public interface PreferencesReader {
      */
     String getProperty(String key);
 
-    /**
-     * @param property The property to query.
-     * @return The configured values determined by a whitespace separator.
-     */
-    List<String> getList(String property);
+    default List<String> getList(final String key) {
+        return PreferencesReader.toList(this.getProperty(key));
+    }
+
+    default int getInteger(final String key) {
+        return PreferencesReader.toInteger(this.getProperty(key));
+    }
+
+    default float getFloat(final String key) {
+        return PreferencesReader.toFloat(this.getProperty(key));
+    }
+
+    default long getLong(final String key) {
+        return PreferencesReader.toLong(this.getProperty(key));
+    }
+
+    default double getDouble(final String key) {
+        return PreferencesReader.toDouble(this.getProperty(key));
+    }
+
+    default boolean getBoolean(final String key) {
+        return PreferencesReader.toBoolean(this.getProperty(key));
+    }
+
 
     default Map<String, String> getMap(final String property) {
         final List<String> list = this.getList(property);
@@ -87,8 +106,6 @@ public interface PreferencesReader {
         return Arrays.asList(value.split("(?<!\\\\)\\p{javaWhitespace}+"));
     }
 
-    int getInteger(String property);
-
     static int toInteger(final String v) {
         if(null == v) {
             return -1;
@@ -100,8 +117,6 @@ public interface PreferencesReader {
             return (int) toDouble(v);
         }
     }
-
-    float getFloat(String property);
 
     static float toFloat(final String v) {
         if(null == v) {
@@ -115,8 +130,6 @@ public interface PreferencesReader {
         }
     }
 
-    long getLong(String property);
-
     static long toLong(final String v) {
         if(null == v) {
             return -1;
@@ -129,8 +142,6 @@ public interface PreferencesReader {
         }
     }
 
-    double getDouble(String property);
-
     static double toDouble(final String v) {
         if(null == v) {
             return -1;
@@ -142,8 +153,6 @@ public interface PreferencesReader {
             return -1;
         }
     }
-
-    boolean getBoolean(String property);
 
     static boolean toBoolean(final String v) {
         if(null == v) {
