@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,7 +30,7 @@ import java.util.Objects;
 /**
  * Stores the login credentials
  */
-public class Credentials implements Comparable<Credentials> {
+public class Credentials implements Comparable<Credentials>, PreferencesReader {
 
     /**
      * The login name
@@ -293,6 +294,7 @@ public class Credentials implements Comparable<Credentials> {
         return this;
     }
 
+    @Override
     public String getProperty(final String key) {
         return properties.get(key);
     }
