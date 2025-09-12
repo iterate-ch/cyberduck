@@ -303,22 +303,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = authentication.get();
-        if(credentials.isAnonymousLogin()) {
-            log.debug("Connect non-authenticated with no credentials for {}", host);
-            client.setProviderCredentials(null);
-        }
-        else {
-            if(credentials.getTokens().validate()) {
-                log.debug("Connect with session token for {}", host);
-                client.setProviderCredentials(new AWSSessionCredentials(
-                        credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
-                        credentials.getTokens().getSessionToken()));
-            }
-            else {
-                log.debug("Connect with static keys for {}", host);
-                client.setProviderCredentials(new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
-            }
-        }
         final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {

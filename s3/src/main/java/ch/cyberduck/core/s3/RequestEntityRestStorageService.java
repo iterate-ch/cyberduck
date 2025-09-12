@@ -104,6 +104,11 @@ public class RequestEntityRestStorageService extends RestS3Service {
         this.setHttpClient(configuration.build());
     }
 
+    @Override
+    public boolean isAuthenticatedConnection() {
+        return true;
+    }
+
     public Jets3tProperties getConfiguration() {
         return properties;
     }

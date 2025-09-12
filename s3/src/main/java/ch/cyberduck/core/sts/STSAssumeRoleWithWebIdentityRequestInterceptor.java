@@ -33,7 +33,6 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
@@ -99,8 +98,6 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRol
                 try {
                     this.refresh(oauth.getTokens());
                     log.info("Authorizing service request with STS tokens {}", tokens);
-                    session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
-                            tokens.getSessionToken()));
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure {} refreshing STS tokens {}", e, tokens);

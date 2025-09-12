@@ -15,6 +15,8 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +27,6 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -49,59 +50,65 @@ public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws IOException {
-        if(!session.getClient().isAuthenticatedConnection()) {
-            log.warn("Skip authentication request {}", request);
-            return;
-        }
-        final ProviderCredentials credentials = session.getClient().getProviderCredentials();
-        final String bucketName;
-        if(context.getAttribute("bucket") == null) {
-            log.warn("No bucket name in context {}", context);
-            bucketName = StringUtils.EMPTY;
-        }
-        else {
-            bucketName = context.getAttribute("bucket").toString();
-        }
-        log.debug("Use bucket name {} from context", bucketName);
-        final URI uri;
         try {
-            uri = new URI(request.getRequestLine().getUri());
+            final Credentials credentials = session.getAuthentication().get();
+            if(credentials.isAnonymousLogin()) {
+                log.warn("Skip authentication request {}", request);
+                return;
+            }
+            final String bucketName;
+            if(context.getAttribute("bucket") == null) {
+                log.warn("No bucket name in context {}", context);
+                bucketName = StringUtils.EMPTY;
+            }
+            else {
+                bucketName = context.getAttribute("bucket").toString();
+            }
+            log.debug("Use bucket name {} from context", bucketName);
+            final URI uri;
+            try {
+                uri = new URI(request.getRequestLine().getUri());
+            }
+            catch(URISyntaxException e) {
+                throw new IOException(e);
+            }
+            String path = uri.getRawPath();
+            // If the request specifies a bucket using the HTTP Host header (virtual hosted-style), append
+            // the bucket name preceded by a "/"
+            if(!StringUtils.startsWith(path, String.format("/%s", bucketName))) {
+                path = String.format("/%s%s", bucketName, path);
+            }
+            final String queryString = uri.getRawQuery();
+            if(StringUtils.isNotBlank(queryString)) {
+                path += String.format("?%s", queryString);
+            }
+            // Generate a canonical string representing the operation.
+            final String canonicalString = RestUtils.makeServiceCanonicalString(
+                    request.getRequestLine().getMethod(),
+                    path,
+                    this.getHeaders(request),
+                    null,
+                    session.getRestHeaderPrefix(),
+                    session.getClient().getResourceParameterNames());
+            // Sign the canonical string.
+            final String signedCanonical = ServiceUtils.signWithHmacSha1(
+                    credentials.isTokenAuthentication() ? credentials.getTokens().getSecretAccessKey() : credentials.getPassword(), canonicalString);
+            // Add encoded authorization to connection as HTTP Authorization header.
+            final String authorizationString = session.getSignatureIdentifier() + " "
+                    + (credentials.isTokenAuthentication() ? credentials.getTokens().getAccessKeyId() : credentials.getUsername()) + ":" + signedCanonical;
+            request.setHeader(HttpHeaders.AUTHORIZATION, authorizationString);
         }
-        catch(URISyntaxException e) {
+        catch(BackgroundException e) {
+            log.warn("Error {} retrieving credentials", e.toString());
             throw new IOException(e);
         }
-        String path = uri.getRawPath();
-        // If the request specifies a bucket using the HTTP Host header (virtual hosted-style), append
-        // the bucket name preceded by a "/"
-        if(!StringUtils.startsWith(path, String.format("/%s", bucketName))) {
-            path = String.format("/%s%s", bucketName, path);
-        }
-        final String queryString = uri.getRawQuery();
-        if(StringUtils.isNotBlank(queryString)) {
-            path += String.format("?%s", queryString);
-        }
-        // Generate a canonical string representing the operation.
-        final String canonicalString = RestUtils.makeServiceCanonicalString(
-                request.getRequestLine().getMethod(),
-                path,
-                this.getHeaders(request),
-                null,
-                session.getRestHeaderPrefix(),
-                session.getClient().getResourceParameterNames());
-        // Sign the canonical string.
-        final String signedCanonical = ServiceUtils.signWithHmacSha1(
-                credentials.getSecretKey(), canonicalString);
-        // Add encoded authorization to connection as HTTP Authorization header.
-        final String authorizationString = session.getSignatureIdentifier() + " "
-                + credentials.getAccessKey() + ":" + signedCanonical;
-        request.setHeader(HttpHeaders.AUTHORIZATION, authorizationString);
     }
 
     final class HttpHeaderFilter implements Predicate<Header> {
         @Override
         public boolean test(final Header header) {
-            return !HostPreferencesFactory.get(session.getHost()).getList("s3.signature.headers.exclude").stream()
-                    .filter(s -> StringUtils.equalsIgnoreCase(s, header.getName())).findAny().isPresent();
+            return HostPreferencesFactory.get(session.getHost()).getList("s3.signature.headers.exclude").stream()
+                    .noneMatch(s -> StringUtils.equalsIgnoreCase(s, header.getName()));
         }
     }
 

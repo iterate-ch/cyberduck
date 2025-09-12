@@ -79,8 +79,6 @@ public class STSAssumeRoleRequestInterceptor extends STSAssumeRoleAuthorizationS
                 try {
                     this.refresh(credentials);
                     log.info("Authorizing service request with STS tokens {}", tokens);
-                    session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
-                            tokens.getSessionToken()));
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure {} refreshing STS tokens {}", e, tokens);
