@@ -16,7 +16,6 @@ package ch.cyberduck.core.auth;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
@@ -27,7 +26,6 @@ import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.proxy.ProxyFactory;
@@ -68,32 +66,6 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
         this.trust = trust;
         this.key = key;
         this.url = url;
-    }
-
-    public static class Configurator implements CredentialsConfigurator {
-        private final AWSSessionCredentialsRetriever retriever;
-        private final String url;
-
-        public Configurator(final X509TrustManager trust, final X509KeyManager key, final String url) {
-            this.url = url;
-            this.retriever = new AWSSessionCredentialsRetriever(trust, key, url);
-        }
-
-        @Override
-        public Configurator reload() throws LoginCanceledException {
-            return this;
-        }
-
-        @Override
-        public Credentials configure(final Host host) {
-            try {
-                return retriever.get();
-            }
-            catch(BackgroundException e) {
-                log.warn("Ignore failure {} retrieving credentials from {}", e, url);
-                return host.getCredentials();
-            }
-        }
     }
 
     @Override
