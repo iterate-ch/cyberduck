@@ -68,18 +68,14 @@ public class STSAssumeRoleAuthorizationService {
     private final HostPreferences preferences;
 
     public STSAssumeRoleAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
-        this(bookmark, AWSSecurityTokenServiceClientBuilder
+        this.bookmark = bookmark;
+        this.service = AWSSecurityTokenServiceClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(bookmark.getProtocol().getSTSEndpoint(), null))
                 .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
                 .withClientConfiguration(new CustomClientConfiguration(bookmark,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getProtocol().getSTSEndpoint()), key))
-                .build(), prompt);
-    }
-
-    public STSAssumeRoleAuthorizationService(final Host bookmark, final AWSSecurityTokenService service, final LoginCallback prompt) {
-        this.bookmark = bookmark;
-        this.service = service;
+                .build();
         this.prompt = prompt;
         this.preferences = HostPreferencesFactory.get(bookmark);
     }

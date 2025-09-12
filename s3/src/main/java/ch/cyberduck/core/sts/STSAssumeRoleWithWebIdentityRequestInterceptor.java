@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
@@ -58,21 +57,12 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRol
      * Handle authentication with OpenID connect retrieving token for STS
      */
     private final OAuth2RequestInterceptor oauth;
-    private final S3Session session;
 
     public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
                                                           final X509TrustManager trust, final X509KeyManager key,
                                                           final LoginCallback prompt) {
         super(session.getHost(), trust, key, prompt);
         this.oauth = oauth;
-        this.session = session;
-    }
-
-    public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
-                                                          final AWSSecurityTokenService service, final LoginCallback prompt) {
-        super(session.getHost(), service, prompt);
-        this.oauth = oauth;
-        this.session = session;
     }
 
     public TemporaryAccessTokens refresh(final OAuthTokens oidc) throws BackgroundException {
