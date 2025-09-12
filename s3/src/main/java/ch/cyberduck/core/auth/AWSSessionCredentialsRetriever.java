@@ -35,11 +35,9 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -78,22 +76,19 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
                 new DisabledTranscriptListener(), new DisabledLoginCallback());
         try (CloseableHttpClient client = configuration.build()) {
             final HttpRequestBase resource = new HttpGet(new HostUrlProvider().withUsername(false).withPath(true).get(address));
-            return client.execute(resource, new ResponseHandler<Credentials>() {
-                @Override
-                public Credentials handleResponse(final HttpResponse response) throws IOException {
-                    switch(response.getStatusLine().getStatusCode()) {
-                        case HttpStatus.SC_OK:
-                            final HttpEntity entity = response.getEntity();
-                            if(entity == null) {
-                                log.warn("Missing response entity in {}", response);
-                                throw new ClientProtocolException("Empty response");
-                            }
-                            else {
-                                return parse(entity.getContent());
-                            }
-                    }
-                    throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+            return client.execute(resource, response -> {
+                switch(response.getStatusLine().getStatusCode()) {
+                    case HttpStatus.SC_OK:
+                        final HttpEntity entity = response.getEntity();
+                        if(entity == null) {
+                            log.warn("Missing response entity in {}", response);
+                            throw new ClientProtocolException("Empty response");
+                        }
+                        else {
+                            return parse(entity.getContent());
+                        }
                 }
+                throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
             });
         }
         catch(IOException e) {
