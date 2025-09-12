@@ -36,6 +36,10 @@ public final class TemporaryAccessTokens {
         this(null, null, sessionToken);
     }
 
+    public TemporaryAccessTokens(final String accessKeyId, final String secretAccessKey) {
+        this(accessKeyId, secretAccessKey, null);
+    }
+
     public TemporaryAccessTokens(final String accessKeyId, final String secretAccessKey, final String sessionToken) {
         this(accessKeyId, secretAccessKey, sessionToken, -1L);
     }
@@ -45,6 +49,13 @@ public final class TemporaryAccessTokens {
         this.secretAccessKey = secretAccessKey;
         this.sessionToken = sessionToken;
         this.expiryInMilliseconds = expiryInMilliseconds;
+    }
+
+    public TemporaryAccessTokens(final TemporaryAccessTokens tokens) {
+        this.accessKeyId = tokens.accessKeyId;
+        this.secretAccessKey = tokens.secretAccessKey;
+        this.sessionToken = tokens.sessionToken;
+        this.expiryInMilliseconds = tokens.expiryInMilliseconds;
     }
 
     public boolean validate() {
