@@ -29,9 +29,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
-import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
@@ -55,8 +53,9 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptor;
-import ch.cyberduck.core.sts.STSExceptionMappingService;
+import ch.cyberduck.core.sts.STSAssumeRoleAuthorizationService;
+import ch.cyberduck.core.sts.STSAssumeRoleRequestInterceptor;
+import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityRequestInterceptor;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -85,13 +84,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
-import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
-import com.amazonaws.services.securitytoken.model.GetCallerIdentityRequest;
-import com.amazonaws.services.securitytoken.model.GetCallerIdentityResult;
 
 import static com.amazonaws.services.s3.Headers.*;
 
@@ -187,7 +179,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     protected RequestEntityRestStorageService connect(final ProxyFinder proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authentication = this.configureCredentialsStrategy(proxy, configuration, prompt);
+        authentication = this.configureCredentialsStrategy(configuration, prompt);
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             final String header = HTTP.EXPECT_DIRECTIVE;
             log.debug("Add request handler for {}", header);
@@ -261,7 +253,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         return client;
     }
 
-    protected S3CredentialsStrategy configureCredentialsStrategy(final ProxyFinder proxy, final HttpClientBuilder configuration,
+    protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt) throws LoginCanceledException {
         if(host.getProtocol().isOAuthConfigurable()) {
             final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
@@ -270,38 +262,42 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 oauth.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             }
             configuration.addInterceptorLast(oauth);
-            final STSAssumeRoleCredentialsRequestInterceptor interceptor
-                    = new STSAssumeRoleCredentialsRequestInterceptor(oauth, this, trust, key, prompt);
+            final STSAssumeRoleWithWebIdentityRequestInterceptor interceptor
+                    = new STSAssumeRoleWithWebIdentityRequestInterceptor(oauth, this, trust, key, prompt);
             configuration.addInterceptorLast(interceptor);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                     new S3AuthenticationResponseInterceptor(this, interceptor)));
             return interceptor;
         }
-        else {
-            if(S3Session.isAwsHostname(host.getHostname())) {
-                final S3AuthenticationResponseInterceptor interceptor;
-                // Try auto-configure
-                if(Scheme.isURL(host.getProtocol().getContext())) {
-                    // Fetch temporary session token from instance metadata
-                    interceptor = new S3AuthenticationResponseInterceptor(this,
-                            new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext())
-                    );
-                }
-                else {
-                    final Credentials credentials = new S3CredentialsConfigurator(
-                            new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
-                    // Fetch temporary session token from AWS CLI configuration
-                    interceptor = new S3AuthenticationResponseInterceptor(this, () -> credentials);
-                }
-                configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                        new ExecutionCountServiceUnavailableRetryStrategy(interceptor)));
-                return interceptor;
+        if(host.getProtocol().isTokenConfigurable()) {
+            final STSAssumeRoleRequestInterceptor interceptor = new STSAssumeRoleRequestInterceptor(this, trust, key, prompt);
+            configuration.addInterceptorLast(interceptor);
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new S3AuthenticationResponseInterceptor(this, interceptor)));
+            return interceptor;
+        }
+        if(S3Session.isAwsHostname(host.getHostname())) {
+            final S3AuthenticationResponseInterceptor interceptor;
+            // Try auto-configure
+            if(Scheme.isURL(host.getProtocol().getContext())) {
+                // Fetch temporary session token from instance metadata
+                interceptor = new S3AuthenticationResponseInterceptor(this,
+                        new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext())
+                );
             }
             else {
-                final Credentials credentials = new Credentials(host.getCredentials());
-                return () -> credentials;
+                final Credentials credentials = new S3CredentialsConfigurator(
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
+                credentials.isTokenAuthentication();
+                // Fetch temporary session token from AWS CLI configuration
+                interceptor = new S3AuthenticationResponseInterceptor(this, () -> credentials);
             }
+            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                    new ExecutionCountServiceUnavailableRetryStrategy(interceptor)));
+            return interceptor;
         }
+        final Credentials credentials = new Credentials(host.getCredentials());
+        return () -> credentials;
     }
 
     @Override
@@ -327,22 +323,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
                 if(client.isAuthenticatedConnection()) {
-                    final AWSSecurityTokenServiceClientBuilder builder = AWSSecurityTokenServiceClientBuilder.standard()
-                            .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(host.getProtocol().getSTSEndpoint(), null))
-                            .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(client.getProviderCredentials()))
-                            .withClientConfiguration(new CustomClientConfiguration(host,
-                                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key));
-                    final AWSSecurityTokenService service = builder.build();
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
-                    try {
-                        final GetCallerIdentityResult identity = service.getCallerIdentity(new GetCallerIdentityRequest());
-                        log.debug("Successfully verified credentials for {}", identity);
-                        return;
-                    }
-                    catch(AWSSecurityTokenServiceException e) {
-                        throw new STSExceptionMappingService().map(e);
-                    }
+                    new STSAssumeRoleAuthorizationService(host, trust, key, prompt).authorize(this);
+                    return;
                 }
             }
         }

@@ -22,12 +22,16 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
+import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -38,14 +42,20 @@ import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
+import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
+import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithSAMLRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithSAMLResult;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityRequest;
+import com.amazonaws.services.securitytoken.model.GetCallerIdentityResult;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
@@ -55,6 +65,7 @@ public class STSAssumeRoleAuthorizationService {
     private final AWSSecurityTokenService service;
     private final LoginCallback prompt;
     private final Host bookmark;
+    private final HostPreferences preferences;
 
     public STSAssumeRoleAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         this(bookmark, AWSSecurityTokenServiceClientBuilder
@@ -70,19 +81,50 @@ public class STSAssumeRoleAuthorizationService {
         this.bookmark = bookmark;
         this.service = service;
         this.prompt = prompt;
+        this.preferences = HostPreferencesFactory.get(bookmark);
+    }
+
+    /**
+     * Validate credentials by requesting caller identity
+     *
+     * @param session AWS credentials
+     */
+    public void authorize(final S3Session session) throws BackgroundException {
+        try {
+            final GetCallerIdentityResult identity = service.getCallerIdentity(new GetCallerIdentityRequest()
+                    .withRequestCredentialsProvider(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials())));
+            log.debug("Successfully verified credentials for {}", identity);
+        }
+        catch(AWSSecurityTokenServiceException e) {
+            throw new STSExceptionMappingService().map(e);
+        }
     }
 
     public TemporaryAccessTokens authorize(final String sAMLAssertion) throws BackgroundException {
         final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(sAMLAssertion);
-        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
-        if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
-            request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY))) {
+            request.setDurationSeconds(PreferencesReader.toInteger(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY)));
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.policy"))) {
             request.setPolicy(preferences.getProperty("s3.assumerole.policy"));
         }
-        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolearn"))) {
-            request.setRoleArn(preferences.getProperty("s3.assumerole.rolearn"));
+        if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
+            request.setRoleArn(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"));
+        }
+        else {
+            if(StringUtils.EMPTY.equals(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
+                // When defined in connection profile but with empty value
+                log.debug("Prompt for Role ARN");
+                final Credentials input = prompt.prompt(bookmark,
+                        LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                .passwordPlaceholder(LocaleFactory.localizedString("Amazon Resource Name (ARN)", "S3")));
+                if(input.isSaved()) {
+                    preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
+                }
+                request.setRoleArn(input.getPassword());
+            }
         }
         try {
             final AssumeRoleWithSAMLResult result = service.assumeRoleWithSAML(request);
@@ -100,31 +142,116 @@ public class STSAssumeRoleAuthorizationService {
         }
     }
 
+    /**
+     * Assume role with long-lived AWS credentials
+     * <p>
+     * - Prompts for ARN for role to assume when missing
+     * - Prompts for MFA token code when required
+     *
+     * @param credentials AWS static or session token credentials
+     */
+    public TemporaryAccessTokens authorize(final TemporaryAccessTokens credentials) throws BackgroundException {
+        final AssumeRoleRequest request = new AssumeRoleRequest()
+                .withRequestCredentialsProvider(new AWSStaticCredentialsProvider(
+                        StringUtils.isBlank(credentials.getSessionToken()) ? new BasicAWSCredentials(credentials.getAccessKeyId(), credentials.getSecretAccessKey()) :
+                                new BasicSessionCredentials(credentials.getAccessKeyId(), credentials.getSecretAccessKey(), credentials.getSessionToken())));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY))) {
+            request.setDurationSeconds(PreferencesReader.toInteger(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY)));
+        }
+        if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY))) {
+            request.setRoleArn(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY));
+        }
+        else {
+            if(StringUtils.EMPTY.equals(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY))) {
+                // When defined in connection profile but with empty value
+                log.debug("Prompt for Role ARN");
+                final Credentials input = prompt.prompt(bookmark,
+                        LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "S3"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                .passwordPlaceholder(LocaleFactory.localizedString("Amazon Resource Name (ARN)", "S3")));
+                if(input.isSaved()) {
+                    preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
+                }
+                request.setRoleArn(input.getPassword());
+            }
+        }
+        if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY))) {
+            request.setSerialNumber(preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY));
+        }
+        else {
+            if(StringUtils.EMPTY.equals(preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY))) {
+                // When defined in connection profile but with empty value
+                log.debug("Prompt for MFA ARN");
+                final Credentials input = prompt.prompt(bookmark,
+                        LocaleFactory.localizedString("MFA Device Identifier", "S3"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                .passwordPlaceholder(LocaleFactory.localizedString("Serial Number or Amazon Resource Name (ARN)", "S3")));
+                if(input.isSaved()) {
+                    preferences.setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, input.getPassword());
+                }
+                request.setSerialNumber(input.getPassword());
+            }
+        }
+        if(request.getSerialNumber() != null) {
+            log.debug("Prompt for MFA token code");
+            final String tokenCode = prompt.prompt(
+                    bookmark, String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                            preferences.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY)),
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    new LoginOptions(bookmark.getProtocol())
+                            .password(true)
+                            .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                            .keychain(false)
+            ).getPassword();
+            request.setTokenCode(tokenCode);
+        }
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY))) {
+            request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY));
+        }
+        else {
+            request.setRoleSessionName(new AsciiRandomStringService().random());
+        }
+        log.debug("Request {} from {}", request, service);
+        try {
+            final AssumeRoleResult result = service.assumeRole(request);
+            log.debug("Received assume role identity result {}", result);
+            return new TemporaryAccessTokens(result.getCredentials().getAccessKeyId(),
+                    result.getCredentials().getSecretAccessKey(),
+                    result.getCredentials().getSessionToken(),
+                    result.getCredentials().getExpiration().getTime());
+        }
+        catch(AWSSecurityTokenServiceException e) {
+            throw new STSExceptionMappingService().map(e);
+        }
+    }
+
     public TemporaryAccessTokens authorize(final OAuthTokens oauth) throws BackgroundException {
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
         log.debug("Assume role with OIDC Id token for {}", bookmark);
         final String webIdentityToken = this.getWebIdentityToken(oauth);
         request.setWebIdentityToken(webIdentityToken);
-        final HostPreferences preferences = HostPreferencesFactory.get(bookmark);
-        if(preferences.getInteger("s3.assumerole.durationseconds") != -1) {
-            request.setDurationSeconds(preferences.getInteger("s3.assumerole.durationseconds"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY))) {
+            request.setDurationSeconds(PreferencesReader.toInteger(preferences.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY)));
         }
         if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.policy"))) {
             request.setPolicy(preferences.getProperty("s3.assumerole.policy"));
         }
-        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolearn"))) {
-            request.setRoleArn(preferences.getProperty("s3.assumerole.rolearn"));
+        if(StringUtils.isNotBlank(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
+            request.setRoleArn(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"));
         }
         else {
-            if(StringUtils.EMPTY.equals(preferences.getProperty("s3.assumerole.rolearn"))) {
+            if(StringUtils.EMPTY.equals(preferences.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
                 // When defined in connection profile but with empty value
                 log.debug("Prompt for Role ARN");
                 final Credentials input = prompt.prompt(bookmark,
                         LocaleFactory.localizedString("Role Amazon Resource Name (ARN)", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().icon(bookmark.getProtocol().disk()));
+                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                .passwordPlaceholder(LocaleFactory.localizedString("Amazon Resource Name (ARN)", "S3")));
                 if(input.isSaved()) {
-                    preferences.setProperty("s3.assumerole.rolearn", input.getPassword());
+                    preferences.setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, input.getPassword());
                 }
                 request.setRoleArn(input.getPassword());
             }
@@ -137,8 +264,8 @@ public class STSAssumeRoleAuthorizationService {
             log.warn("Failure {} decoding JWT {}", e, webIdentityToken);
             throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
         }
-        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname"))) {
-            request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY))) {
+            request.setRoleSessionName(preferences.getProperty("s3.assumerole.rolesessionname", Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY));
         }
         else {
             if(StringUtils.isNotBlank(sub)) {

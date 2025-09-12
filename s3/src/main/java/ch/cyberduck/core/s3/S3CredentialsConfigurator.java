@@ -47,9 +47,9 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.auth.profile.internal.AbstractProfilesConfigFileScanner;
 import com.amazonaws.auth.profile.internal.AllProfiles;
 import com.amazonaws.auth.profile.internal.BasicProfile;
@@ -357,7 +357,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 log.warn("Missing file {} with cached SSO credentials.", cachedCredentialsFile.getAbsolute());
                 return null;
             }
-            try (InputStream in = cachedCredentialsFile.getInputStream()) {
+            try(InputStream in = cachedCredentialsFile.getInputStream()) {
                 final CachedCredentials cached = mapper.readValue(in, CachedCredentials.class);
                 if(null == cached.credentials) {
                     log.warn("Failure parsing SSO credentials.");
@@ -402,32 +402,8 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
 
     protected AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
         return AWSSecurityTokenServiceClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new AWSCredentials() {
-                    @Override
-                    public String getAWSAccessKeyId() {
-                        return accessKey;
-                    }
-
-                    @Override
-                    public String getAWSSecretKey() {
-                        return secretKey;
-                    }
-                } : new AWSSessionCredentials() {
-                    @Override
-                    public String getAWSAccessKeyId() {
-                        return accessKey;
-                    }
-
-                    @Override
-                    public String getAWSSecretKey() {
-                        return secretKey;
-                    }
-
-                    @Override
-                    public String getSessionToken() {
-                        return sessionToken;
-                    }
-                }))
+                .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new BasicAWSCredentials(accessKey, secretKey) :
+                        new BasicSessionCredentials(accessKey, secretKey, sessionToken)))
                 .withClientConfiguration(new CustomClientConfiguration(host,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key))
                 .withRegion(StringUtils.isNotBlank(region) ? Regions.fromName(region) : Regions.DEFAULT_REGION).build();
@@ -452,7 +428,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 return new LinkedHashMap<>();
             }
             log.debug("Reading AWS file {}", file);
-            try (InputStream inputStream = file.getInputStream(); Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
+            try(InputStream inputStream = file.getInputStream(); Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
                 run(scanner);
                 return new LinkedHashMap<>(allProfileProperties);
             }
