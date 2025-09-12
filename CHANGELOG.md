@@ -6,6 +6,9 @@
 * [Bugfix] Choose "Cancel" in upload prompt continues transfer (macOS) (#17358)
 * [Bugfix] Change button styles for bottom bar of window (macOS) (#17407)
 * [Bugfix] Resumable uploads fail with Basic authentication (ownCloud)
+* [Bugfix] Include "Add to My Files" shortcuts (OneDrive)
+* [Bugfix] Exclude non-accessible "Personal Vault" (OneDrive) (#17318)
+* [Bugfix] Cache connection profiles loaded in Preferences → Profiles (#17432)
 
 [9.2.3](https://github.com/iterate-ch/cyberduck/compare/release-9-2-2...release-9-2-3)
 * [Bugfix] Failure opening application (Windows)
