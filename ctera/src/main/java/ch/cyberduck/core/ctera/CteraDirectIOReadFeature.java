@@ -42,6 +42,8 @@ import java.util.List;
 public class CteraDirectIOReadFeature implements Read {
     private static final Logger log = LogManager.getLogger(CteraDirectIOReadFeature.class);
 
+    public static final String CTERA_WRAPPEDKEY = "wrapped_key";
+
     private final CteraSession session;
 
     public CteraDirectIOReadFeature(final CteraSession session) {
@@ -51,7 +53,7 @@ public class CteraDirectIOReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final EncryptInfo key = new EncryptInfo(status.getParameters().get("wrapped_key"), session.getOrCreateAPIKeys().secretKey);
+            final EncryptInfo key = new EncryptInfo(status.getParameters().get(CTERA_WRAPPEDKEY), session.getOrCreateAPIKeys().secretKey);
             final List<DirectIO.Chunk> chunks = new ArrayList<>();
             final DirectIO.Chunk chunk = new DirectIO.Chunk();
             chunk.url = status.getUrl();
