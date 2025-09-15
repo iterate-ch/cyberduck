@@ -219,7 +219,8 @@ public class LoginController extends AlertController {
         }
     }
 
-    public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
+    @Action
+    public void privateKeyPanelDidEnprivateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
                 final NSObject url = privateKeyOpenPanel.URLs().lastObject();
