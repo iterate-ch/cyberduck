@@ -46,11 +46,11 @@ public class VaultController extends FolderController {
     private final Callback callback;
 
     @Outlet
-    private final NSSecureTextField passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+    private NSSecureTextField passwordField;
     @Outlet
-    private final NSSecureTextField confirmField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+    private NSSecureTextField confirmField;
     @Outlet
-    private final NSLevelIndicator strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(0, 18));
+    private NSLevelIndicator strengthIndicator;
 
     private final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
@@ -87,15 +87,17 @@ public class VaultController extends FolderController {
 
     public NSView getAccessoryView(final NSAlert alert) {
         final NSView accessoryView = NSView.create();
+        confirmField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
         confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
         this.addAccessorySubview(accessoryView, confirmField);
 
+        strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(0, 18));
         strengthIndicator.setTickMarkPosition(1);
         if(strengthIndicator.respondsToSelector(Foundation.selector("setLevelIndicatorStyle:"))) {
             strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
         }
         this.addAccessorySubview(accessoryView, strengthIndicator);
-
+        passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
         passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),

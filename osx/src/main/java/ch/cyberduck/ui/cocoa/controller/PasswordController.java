@@ -41,11 +41,12 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
+import org.rococoa.Rococoa;
 
 public class PasswordController extends AlertController {
 
     @Outlet
-    private final NSTextField inputField;
+    private NSTextField inputField;
 
     private final Host bookmark;
     private final Credentials credentials;
@@ -59,12 +60,6 @@ public class PasswordController extends AlertController {
         this.title = title;
         this.reason = reason;
         this.options = options;
-        if(options.password) {
-            this.inputField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
-        }
-        else {
-            this.inputField = NSTextField.textFieldWithString(StringUtils.EMPTY);
-        }
     }
 
     @Override
@@ -106,6 +101,12 @@ public class PasswordController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
+        if(options.password) {
+            inputField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+        }
+        else {
+            inputField = NSTextField.textFieldWithString(StringUtils.EMPTY);
+        }
         final NSView accessoryView = NSView.create();
         inputField.cell().setPlaceholderString(options.getPasswordPlaceholder());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
@@ -117,7 +118,7 @@ public class PasswordController extends AlertController {
     }
 
     public void setPasswordFieldText(final String input) {
-        inputField.setStringValue(input);
+        credentials.setPassword(input);
     }
 
     @Override
