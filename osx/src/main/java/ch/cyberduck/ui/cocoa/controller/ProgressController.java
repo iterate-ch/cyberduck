@@ -34,6 +34,7 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -336,7 +337,26 @@ public class ProgressController extends BundleController implements TransferList
 
     public void setIconImageView(final NSImageView iconImageView) {
         this.iconImageView = iconImageView;
-        this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed(String.format("transfer-%s.tiff", transfer.getType().name()), 32));
+        if(!Factory.Platform.osversion.matches("(10)\\..*")) {
+            switch(transfer.getType()) {
+                case download:
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("square.and.arrow.down.fill", 64));
+                    break;
+                case upload:
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("square.and.arrow.up.fill", 64));
+                    break;
+                case sync:
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("arrow.up.and.down.square.fill", 64));
+                    break;
+                case copy:
+                case move:
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("arrow.left.and.right.square.fill", 64));
+                    break;
+            }
+        }
+        else {
+            this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed(String.format("transfer-%s.tiff", transfer.getType().name()), 32));
+        }
     }
 
     public void setProgressView(final NSView v) {
