@@ -37,7 +37,7 @@ public abstract class FileController extends AlertController {
     private final Cache<Path> cache;
 
     @Outlet
-    protected NSTextField inputField = NSTextField.textFieldWithString(StringUtils.EMPTY);
+    protected NSTextField inputField;
 
     public FileController(final Path workdir, final Path selected, final Cache<Path> cache) {
         this.workdir = workdir;
@@ -47,6 +47,7 @@ public abstract class FileController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
+        inputField = NSTextField.textFieldWithString(StringUtils.EMPTY);
         inputField.cell().setWraps(false);
         inputField.cell().setPlaceholderString(alert.informativeText());
         return inputField;

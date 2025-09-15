@@ -61,14 +61,13 @@ public class LoginController extends AlertController {
     private final LoginOptions options;
 
     @Outlet
-    private final NSTextField usernameField = NSTextField.textFieldWithString(StringUtils.EMPTY);
+    private NSTextField usernameField;
     @Outlet
-    private final NSTextField passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+    private NSTextField passwordField;
     @Outlet
-    private final NSPopUpButton privateKeyPopup = NSPopUpButton.buttonPullsDown(false);
+    private NSPopUpButton privateKeyPopup;
     @Outlet
     private NSOpenPanel privateKeyOpenPanel;
-
 
     public LoginController(final Host bookmark, final String title, final String reason, final LoginOptions options) {
         super(new LoginInputValidator(bookmark, options));
@@ -102,6 +101,7 @@ public class LoginController extends AlertController {
     public NSView getAccessoryView(final NSAlert alert) {
         final NSView accessoryView = NSView.create();
         if(options.publickey) {
+            privateKeyPopup = NSPopUpButton.buttonPullsDown(false);
             privateKeyPopup.setTarget(this.id());
             privateKeyPopup.setAction(Foundation.selector("privateKeyPopupClicked:"));
             privateKeyPopup.removeAllItems();
@@ -130,6 +130,7 @@ public class LoginController extends AlertController {
             this.addAccessorySubview(accessoryView, privateKeyPopup);
         }
         if(options.password) {
+            passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
             this.updateField(passwordField, bookmark.getCredentials().getPassword());
             passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
             NSNotificationCenter.defaultCenter().addObserver(this.id(),
@@ -139,6 +140,7 @@ public class LoginController extends AlertController {
             this.addAccessorySubview(accessoryView, passwordField);
         }
         if(options.user) {
+            usernameField = NSTextField.textFieldWithString(StringUtils.EMPTY);
             this.updateField(usernameField, bookmark.getCredentials().getUsername());
             usernameField.cell().setPlaceholderString(options.getUsernamePlaceholder());
             NSNotificationCenter.defaultCenter().addObserver(this.id(),
