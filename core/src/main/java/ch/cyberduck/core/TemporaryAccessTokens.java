@@ -25,7 +25,7 @@ import java.util.Objects;
 public final class TemporaryAccessTokens {
 
     public static final TemporaryAccessTokens EMPTY
-            = new TemporaryAccessTokens(null, null, null, Long.MAX_VALUE);
+            = new TemporaryAccessTokens(null, null, null);
 
     private final String accessKeyId;
     private final String secretAccessKey;

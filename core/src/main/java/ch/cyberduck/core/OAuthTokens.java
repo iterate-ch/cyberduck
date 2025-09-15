@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Objects;
 
 public final class OAuthTokens {
-    public static final OAuthTokens EMPTY = new OAuthTokens(null, null, Long.MAX_VALUE, null);
+    public static final OAuthTokens EMPTY = new OAuthTokens(null, null, -1L, null);
 
     private final String accessToken;
     private final String refreshToken;
