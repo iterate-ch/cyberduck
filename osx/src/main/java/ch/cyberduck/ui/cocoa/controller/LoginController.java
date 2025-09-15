@@ -61,9 +61,9 @@ public class LoginController extends AlertController {
     private final LoginOptions options;
 
     @Outlet
-    private final NSTextField usernameField = NSTextField.textFieldWithString(StringUtils.EMPTY);
+    private NSTextField usernameField;
     @Outlet
-    private final NSTextField passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+    private NSTextField passwordField;
     @Outlet
     private final NSPopUpButton privateKeyPopup = NSPopUpButton.buttonPullsDown(false);
     @Outlet
@@ -130,6 +130,10 @@ public class LoginController extends AlertController {
             this.addAccessorySubview(accessoryView, privateKeyPopup);
         }
         if(options.password) {
+            // Create password field on main thread when the accessory view is requested
+            if(passwordField == null) {
+                passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+            }
             this.updateField(passwordField, bookmark.getCredentials().getPassword());
             passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
             NSNotificationCenter.defaultCenter().addObserver(this.id(),
@@ -139,6 +143,10 @@ public class LoginController extends AlertController {
             this.addAccessorySubview(accessoryView, passwordField);
         }
         if(options.user) {
+            // Create username field on main thread when the accessory view is requested
+            if(usernameField == null) {
+                usernameField = NSTextField.textFieldWithString(StringUtils.EMPTY);
+            }
             this.updateField(usernameField, bookmark.getCredentials().getUsername());
             usernameField.cell().setPlaceholderString(options.getUsernamePlaceholder());
             NSNotificationCenter.defaultCenter().addObserver(this.id(),
@@ -153,10 +161,10 @@ public class LoginController extends AlertController {
     @Override
     protected void focus(final NSAlert alert) {
         super.focus(alert);
-        if(options.user) {
+        if(options.user && usernameField != null) {
             usernameField.selectText(null);
         }
-        if(options.password && !StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+        if(options.password && !StringUtils.isBlank(bookmark.getCredentials().getUsername()) && passwordField != null) {
             passwordField.selectText(null);
         }
     }
@@ -191,12 +199,16 @@ public class LoginController extends AlertController {
 
     @Action
     public void usernameFieldTextDidChange(final NSNotification notification) {
-        bookmark.getCredentials().setUsername(StringUtils.trim(usernameField.stringValue()));
+        if(usernameField != null) {
+            bookmark.getCredentials().setUsername(StringUtils.trim(usernameField.stringValue()));
+        }
     }
 
     @Action
     public void passwordFieldTextDidChange(final NSNotification notification) {
-        bookmark.getCredentials().setPassword(StringUtils.trim(passwordField.stringValue()));
+        if(passwordField != null) {
+            bookmark.getCredentials().setPassword(StringUtils.trim(passwordField.stringValue()));
+        }
     }
 
     @Action
