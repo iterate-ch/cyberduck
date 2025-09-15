@@ -340,17 +340,17 @@ public class ProgressController extends BundleController implements TransferList
         if(!Factory.Platform.osversion.matches("(10)\\..*")) {
             switch(transfer.getType()) {
                 case download:
-                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("square.and.arrow.down.fill", 64));
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("square.and.arrow.down", 64));
                     break;
                 case upload:
-                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("square.and.arrow.up.fill", 64));
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("square.and.arrow.up", 64));
                     break;
                 case sync:
-                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("arrow.up.and.down.square.fill", 64));
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("arrow.up.and.down.square", 64));
                     break;
                 case copy:
                 case move:
-                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("arrow.left.and.right.square.fill", 64));
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("arrow.left.and.right.square", 64));
                     break;
             }
         }
