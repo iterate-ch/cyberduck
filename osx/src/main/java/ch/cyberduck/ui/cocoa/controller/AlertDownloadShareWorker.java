@@ -12,11 +12,13 @@ import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSThread;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Share;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.worker.DownloadShareWorker;
 import ch.cyberduck.ui.pasteboard.PasteboardService;
 import ch.cyberduck.ui.pasteboard.PasteboardServiceFactory;
@@ -37,33 +39,48 @@ public final class AlertDownloadShareWorker<Options> extends DownloadShareWorker
     @Override
     public void cleanup(final DescriptiveUrl url) {
         if(null != url) {
-            final AlertController alert = new SystemAlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
-                    MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
-                    LocaleFactory.localizedString("Continue", "Credentials"),
-                    DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
-                    null)) {
-                @Override
-                public NSView getAccessoryView(final NSAlert alert) {
-                    if(DescriptiveUrl.EMPTY == url) {
-                        return null;
+            // Ensure alert creation and display happens on main thread
+            if(NSThread.isMainThread()) {
+                this.showAlert(url);
+            } else {
+                controller.invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        showAlert(url);
                     }
-                    final NSTextField field = NSTextField.textFieldWithString(url.getUrl());
-                    field.setEditable(false);
-                    field.setSelectable(true);
-                    field.cell().setWraps(false);
-                    field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
-                    return field;
-                }
-            };
-            controller.alert(alert, new SheetCallback() {
-                @Override
-                public void callback(final int returncode) {
-                    switch(returncode) {
-                        case SheetCallback.CANCEL_OPTION:
-                            PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
-                    }
-                }
-            });
+                });
+            }
         }
+    }
+    
+    private void showAlert(final DescriptiveUrl url) {
+        final AlertController alert = new SystemAlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
+                MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
+                LocaleFactory.localizedString("Continue", "Credentials"),
+                DescriptiveUrl.EMPTY != url ? LocaleFactory.localizedString("Copy", "Main") : null,
+                null)) {
+            @Override
+            public NSView getAccessoryView(final NSAlert alert) {
+                if(DescriptiveUrl.EMPTY == url) {
+                    return null;
+                }
+                // Text field creation is now guaranteed to be on main thread
+                final NSTextField field = NSTextField.textFieldWithString(url.getUrl());
+                field.setEditable(false);
+                field.setSelectable(true);
+                field.cell().setWraps(false);
+                field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                return field;
+            }
+        };
+        controller.alert(alert, new SheetCallback() {
+            @Override
+            public void callback(final int returncode) {
+                switch(returncode) {
+                    case SheetCallback.CANCEL_OPTION:
+                        PasteboardServiceFactory.get().add(PasteboardService.Type.url, url.getUrl());
+                }
+            }
+        });
     }
 }

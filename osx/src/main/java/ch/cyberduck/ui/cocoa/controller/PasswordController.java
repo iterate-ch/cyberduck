@@ -59,12 +59,8 @@ public class PasswordController extends AlertController {
         this.title = title;
         this.reason = reason;
         this.options = options;
-        if(options.password) {
-            this.inputField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
-        }
-        else {
-            this.inputField = NSTextField.textFieldWithString(StringUtils.EMPTY);
-        }
+        // Defer text field creation until getAccessoryView is called on main thread
+        this.inputField = null;
     }
 
     @Override
@@ -101,11 +97,22 @@ public class PasswordController extends AlertController {
 
     @Action
     public void passwordFieldTextDidChange(final NSNotification notification) {
-        credentials.setPassword(StringUtils.trim(inputField.stringValue()));
+        if(inputField != null) {
+            credentials.setPassword(StringUtils.trim(inputField.stringValue()));
+        }
     }
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
+        // Create text field on main thread when the accessory view is requested
+        if(inputField == null) {
+            if(options.password) {
+                this.inputField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+            }
+            else {
+                this.inputField = NSTextField.textFieldWithString(StringUtils.EMPTY);
+            }
+        }
         final NSView accessoryView = NSView.create();
         inputField.cell().setPlaceholderString(options.getPasswordPlaceholder());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
@@ -117,13 +124,17 @@ public class PasswordController extends AlertController {
     }
 
     public void setPasswordFieldText(final String input) {
-        inputField.setStringValue(input);
+        if(inputField != null) {
+            inputField.setStringValue(input);
+        }
     }
 
     @Override
     protected void focus(final NSAlert alert) {
         super.focus(alert);
-        inputField.selectText(null);
+        if(inputField != null) {
+            inputField.selectText(null);
+        }
     }
 
     @Override
