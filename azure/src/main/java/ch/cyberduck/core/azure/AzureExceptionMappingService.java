@@ -41,6 +41,9 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
                         this.append(buffer, messages.get("Message").toString());
                     }
                 }
+                else {
+                    this.append(buffer, failure.getMessage());
+                }
                 return new LoginFailureException(buffer.toString(), failure);
         }
         this.append(buffer, failure.getMessage());
