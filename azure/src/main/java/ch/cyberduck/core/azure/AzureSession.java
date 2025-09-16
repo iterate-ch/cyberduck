@@ -118,11 +118,13 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
         @Override
         public Mono<HttpResponse> process(final HttpPipelineCallContext context, final HttpPipelineNextPolicy next) {
             if(credentials.isTokenAuthentication()) {
-                return new AzureSasCredentialPolicy(new AzureSasCredential(
-                        credentials.getToken())).process(context, next);
+                return new AzureSasCredentialPolicy(new AzureSasCredential(credentials.getToken())).process(context, next);
             }
-            return new StorageSharedKeyCredentialPolicy(new StorageSharedKeyCredential(
-                    credentials.getUsername(), credentials.getPassword())).process(context, next);
+            if(credentials.isPasswordAuthentication()) {
+                return new StorageSharedKeyCredentialPolicy(new StorageSharedKeyCredential(
+                        credentials.getUsername(), credentials.getPassword())).process(context, next);
+            }
+            return next.process();
         }
     }
 
