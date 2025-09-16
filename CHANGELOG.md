@@ -5,6 +5,7 @@
 * [Feature] Connect with Multi-Bucket Application Keys that grant access to a specific group of buckets within an
   account, including the option to limit access based on a single file prefix (
   B2) ([#17139](https://trac.cyberduck.io/ticket/17139))
+* [Feature] Support for Liquid Glass (macOS) ([#17459](https://trac.cyberduck.io/ticket/17459))
 * [Feature] Connect with connection profile obtaining temporary credentials from AWS Security Token Service (STS) by
   assuming role with optional Multi-Factor Authentication (MFA) input (
   S3) ([#17437](https://trac.cyberduck.io/ticket/17437))
