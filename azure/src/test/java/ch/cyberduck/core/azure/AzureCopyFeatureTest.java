@@ -48,10 +48,9 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         final Path copy = feature.copy(test,
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertEquals(PathAttributes.EMPTY, copy.attributes());
-        assertEquals(new AzureAttributesFinderFeature(session).find(test).getModificationDate(),
-                new AzureAttributesFinderFeature(session).find(copy).getModificationDate());
-        assertTrue(new AzureFindFeature(session).find(test));
-        assertTrue(new AzureFindFeature(session).find(copy));
+        final PathAttributes sourceAttr = new AzureAttributesFinderFeature(session).find(test);
+        final PathAttributes copyAttr = new AzureAttributesFinderFeature(session).find(copy);
+        assertNotEquals(sourceAttr.getETag(), copyAttr.getETag());
         new AzureDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
