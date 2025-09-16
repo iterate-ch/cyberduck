@@ -55,7 +55,7 @@ public class AzureSessionTest extends AbstractAzureTest {
         final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
                 PROPERTIES.get("azure.user"), null, PROPERTIES.get("azure.token")
         ));
-        AzureSession session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final AzureSession session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
@@ -74,7 +74,7 @@ public class AzureSessionTest extends AbstractAzureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
         final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                null, null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=invalidbMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D"));
+                null, null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=invalid"));
         final AzureSession session = new AzureSession(host);
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
@@ -84,7 +84,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                     throw new LoginCanceledException();
                 }
                 try {
-                    return new Credentials(StringUtils.EMPTY, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=bMKAZ3tXmX%2B56%2Bb5JhHAeWnMOpMp%2BoYlHDIAZVAjHzE%3D");
+                    return new Credentials(StringUtils.EMPTY, PROPERTIES.get("azure.token"));
                 }
                 finally {
                     prompt.set(true);
