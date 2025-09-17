@@ -83,6 +83,12 @@ public abstract class AlertController extends SheetController implements InputVa
         this.focus(alert);
     }
 
+    @Override
+    public void setWindow(final NSWindow window) {
+        super.setWindow(window);
+        window.setReleasedWhenClosed(false);
+    }
+
     protected void focus(final NSAlert alert) {
         log.debug("Focus alert {}", alert);
         final NSEnumerator buttons = alert.buttons().objectEnumerator();
