@@ -312,7 +312,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 if(client.isAuthenticatedConnection()) {
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
-                    new STSAssumeRoleAuthorizationService(host, trust, key, prompt).authorize(this);
+                    new STSAssumeRoleAuthorizationService(host, trust, key, prompt).validate(credentials);
                     return;
                 }
             }
