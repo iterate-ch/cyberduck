@@ -20,18 +20,13 @@ package ch.cyberduck.core.sparkle;
 
 import ch.cyberduck.core.library.Native;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public final class Sandbox {
-    private static final Logger log = LogManager.getLogger(Sandbox.class);
 
     static {
         Native.load("core");
     }
 
     public static Sandbox get() {
-        log.debug("Obtain sandbox environment with requirement com.apple.security.app-sandbox");
         return new Sandbox();
     }
 
