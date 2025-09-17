@@ -42,7 +42,7 @@ public abstract class AlertController extends SheetController implements InputVa
     private boolean suppressed = false;
 
     @Outlet
-    protected NSAlert alert;
+    private NSAlert alert;
 
     public AlertController() {
         super();
@@ -65,6 +65,10 @@ public abstract class AlertController extends SheetController implements InputVa
     }
 
     public abstract NSAlert loadAlert();
+
+    public NSAlert alert() {
+        return alert;
+    }
 
     @Override
     public void loadBundle() {

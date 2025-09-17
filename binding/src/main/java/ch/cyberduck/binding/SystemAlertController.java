@@ -20,7 +20,7 @@ import ch.cyberduck.binding.application.NSAlert;
 public class SystemAlertController extends AlertController {
 
     @Outlet
-    protected NSAlert alert;
+    private NSAlert alert;
 
     public SystemAlertController(final NSAlert alert) {
         this.alert = alert;
@@ -28,6 +28,11 @@ public class SystemAlertController extends AlertController {
 
     @Override
     public NSAlert loadAlert() {
+        return alert;
+    }
+
+    @Override
+    public NSAlert alert() {
         return alert;
     }
 }
