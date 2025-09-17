@@ -261,9 +261,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(host.getProtocol().getAuthorization() != null) {
                 oauth.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             }
+            log.debug("Add interceptor {}", oauth);
             configuration.addInterceptorLast(oauth);
             final STSAssumeRoleWithWebIdentityRequestInterceptor interceptor
                     = new STSAssumeRoleWithWebIdentityRequestInterceptor(oauth, this, trust, key, prompt);
+            log.debug("Add interceptor {}", interceptor);
             configuration.addInterceptorLast(interceptor);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                     new S3AuthenticationResponseInterceptor(this, interceptor)));
@@ -280,6 +282,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             final S3AuthenticationResponseInterceptor interceptor;
             // Try auto-configure
             if(Scheme.isURL(host.getProtocol().getContext())) {
+                log.debug("Auto-configure credentials from instance metadata {}", host.getProtocol().getContext());
                 // Fetch temporary session token from instance metadata
                 interceptor = new S3AuthenticationResponseInterceptor(this,
                         new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext())
