@@ -27,6 +27,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
@@ -38,11 +39,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -50,7 +51,6 @@ import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSAssumeRoleAuthorizationService;
@@ -75,7 +75,6 @@ import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
-import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.SignatureUtils;
@@ -180,6 +179,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected RequestEntityRestStorageService connect(final ProxyFinder proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authentication = this.configureCredentialsStrategy(configuration, prompt);
+        log.debug("Configured authentication strategy {}", authentication);
+        configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
+                new S3AuthenticationResponseInterceptor(authentication)));
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             final String header = HTTP.EXPECT_DIRECTIVE;
             log.debug("Add request handler for {}", header);
@@ -231,15 +233,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 request.setHeader(S3_ALTERNATE_DATE, SignatureUtils.formatAwsFlavouredISO8601Date(client.getCurrentTimeWithOffset()));
             }
         });
-        configuration.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) {
-                final ProviderCredentials credentials = client.getProviderCredentials();
-                if(credentials instanceof AWSSessionCredentials) {
-                    request.setHeader(SECURITY_TOKEN, ((AWSSessionCredentials) credentials).getSessionToken());
-                }
-            }
-        });
         switch(authenticationHeaderSignatureVersion) {
             case AWS4HMACSHA256:
                 configuration.addInterceptorLast(new S3AWS4SignatureRequestInterceptor(this));
@@ -264,41 +257,27 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             log.debug("Add interceptor {}", oauth);
             configuration.addInterceptorLast(oauth);
             final STSAssumeRoleWithWebIdentityRequestInterceptor interceptor
-                    = new STSAssumeRoleWithWebIdentityRequestInterceptor(oauth, this, trust, key, prompt);
+                    = new STSAssumeRoleWithWebIdentityRequestInterceptor(oauth, host, trust, key, prompt);
             log.debug("Add interceptor {}", interceptor);
             configuration.addInterceptorLast(interceptor);
-            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new S3AuthenticationResponseInterceptor(this, interceptor)));
-            return interceptor;
-        }
-        if(host.getProtocol().isTokenConfigurable()) {
-            final STSAssumeRoleRequestInterceptor interceptor = new STSAssumeRoleRequestInterceptor(this, trust, key, prompt);
-            configuration.addInterceptorLast(interceptor);
-            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new S3AuthenticationResponseInterceptor(this, interceptor)));
             return interceptor;
         }
         if(S3Session.isAwsHostname(host.getHostname())) {
-            final S3AuthenticationResponseInterceptor interceptor;
             // Try auto-configure
             if(Scheme.isURL(host.getProtocol().getContext())) {
                 log.debug("Auto-configure credentials from instance metadata {}", host.getProtocol().getContext());
                 // Fetch temporary session token from instance metadata
-                interceptor = new S3AuthenticationResponseInterceptor(this,
-                        new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext())
-                );
+                return new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext());
             }
-            else {
-                final Credentials credentials = new S3CredentialsConfigurator(
-                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
-                credentials.isTokenAuthentication();
-                // Fetch temporary session token from AWS CLI configuration
-                interceptor = new S3AuthenticationResponseInterceptor(this, () -> credentials);
-            }
-            configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new ExecutionCountServiceUnavailableRetryStrategy(interceptor)));
+        }
+        if(new ProxyPreferencesReader(host, host.getCredentials()).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY) != null
+                || new ProxyPreferencesReader(host, host.getCredentials()).getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY) != null) {
+            final STSAssumeRoleRequestInterceptor interceptor = new STSAssumeRoleRequestInterceptor(host, trust, key, prompt);
+            log.debug("Add interceptor {}", interceptor);
+            configuration.addInterceptorLast(interceptor);
             return interceptor;
         }
+        // Keep copy of credentials
         final Credentials credentials = new Credentials(host.getCredentials());
         return () -> credentials;
     }
@@ -309,7 +288,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
-                if(client.isAuthenticatedConnection()) {
+                if(!credentials.isAnonymousLogin()) {
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
                     new STSAssumeRoleAuthorizationService(host, trust, key, prompt).validate(credentials);

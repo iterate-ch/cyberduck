@@ -171,14 +171,4 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
         super.withParameter(key, value);
         return this;
     }
-
-    public OAuthTokens getTokens() {
-        lock.lock();
-        try {
-            return tokens;
-        }
-        finally {
-            lock.unlock();
-        }
-    }
 }

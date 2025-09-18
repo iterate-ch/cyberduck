@@ -16,14 +16,13 @@ package ch.cyberduck.core.sts;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -37,9 +36,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-
 /**
  * Swap OIDC Id token for temporary security credentials
  */
@@ -47,6 +43,8 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRol
     private static final Logger log = LogManager.getLogger(STSAssumeRoleWithWebIdentityRequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
+
+    private final Credentials basic;
 
     /**
      * Currently valid tokens
@@ -58,22 +56,23 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRol
      */
     private final OAuth2RequestInterceptor oauth;
 
-    public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
+    public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final Host host,
                                                           final X509TrustManager trust, final X509KeyManager key,
                                                           final LoginCallback prompt) {
-        super(session.getHost(), trust, key, prompt);
+        super(host, trust, key, prompt);
         this.oauth = oauth;
+        this.basic = host.getCredentials();
     }
 
-    public TemporaryAccessTokens refresh(final OAuthTokens oidc) throws BackgroundException {
+    public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
-            return this.tokens = this.authorize(oidc);
+            return tokens = this.assumeRoleWithWebIdentity(credentials.withOauth(oauth.validate().getOauth()));
         }
         catch(LoginFailureException e) {
             // Expired STS tokens
             log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
-            return this.tokens = this.authorize(oauth.refresh(oidc));
+            return this.tokens = this.assumeRoleWithWebIdentity(credentials.withOauth(oauth.authorize()));
         }
         finally {
             lock.unlock();
@@ -86,7 +85,7 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRol
         try {
             if(tokens.isExpired()) {
                 try {
-                    this.refresh(oauth.getTokens());
+                    this.refresh(basic);
                     log.info("Authorizing service request with STS tokens {}", tokens);
                 }
                 catch(BackgroundException e) {
@@ -102,20 +101,6 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRol
 
     @Override
     public Credentials get() throws BackgroundException {
-        // Get temporary credentials from STS using Web Identity (OIDC) token
-        final Credentials credentials = oauth.validate();
-        final OAuthTokens identity = credentials.getOauth();
-        final String token = this.getWebIdentityToken(identity);
-        final String sub;
-        try {
-            sub = JWT.decode(token).getSubject();
-        }
-        catch(JWTDecodeException e) {
-            throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
-        }
-        final TemporaryAccessTokens tokens = this.refresh(identity);
-        return credentials
-                .withUsername(sub)
-                .withTokens(tokens);
+        return basic.withTokens(tokens.isExpired() ? this.refresh(basic) : tokens);
     }
 }

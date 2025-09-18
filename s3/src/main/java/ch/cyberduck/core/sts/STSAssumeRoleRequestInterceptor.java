@@ -16,11 +16,13 @@ package ch.cyberduck.core.sts;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -30,7 +32,6 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
@@ -44,27 +45,39 @@ public class STSAssumeRoleRequestInterceptor extends STSAssumeRoleAuthorizationS
     private final ReentrantLock lock = new ReentrantLock();
 
     /**
-     * Currently valid tokens
+     * Currently valid tokens obtained from token service
      */
     private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
 
-    private final S3Session session;
-    private final TemporaryAccessTokens credentials;
+    /**
+     * Static long-lived credentials
+     */
+    private final Credentials basic;
+    private final Host host;
 
-    public STSAssumeRoleRequestInterceptor(final S3Session session,
-                                           final X509TrustManager trust, final X509KeyManager key,
-                                           final LoginCallback prompt) {
-        super(session.getHost(), trust, key, prompt);
-        this.session = session;
-        // Keep copy of credentials
-        this.credentials = new TemporaryAccessTokens(session.getHost().getCredentials().getUsername(),
-                session.getHost().getCredentials().getPassword(), session.getHost().getCredentials().getToken(), -1L);
+    public STSAssumeRoleRequestInterceptor(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
+        super(host, trust, key, prompt);
+        this.basic = host.getCredentials();
+        this.host = host;
     }
 
-    public TemporaryAccessTokens refresh(final TemporaryAccessTokens credentials) throws BackgroundException {
+    public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
-            return this.tokens = this.authorize(credentials);
+            final String roleArn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY);
+            if(roleArn != null) {
+                log.debug("Retrieve temporary credentials from STS by assuming role {}", roleArn);
+                // AssumeRoleRequest
+                return tokens = this.assumeRole(credentials);
+            }
+            final String mfaArn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY);
+            if(mfaArn != null) {
+                log.debug("Retrieve temporary credentials from STS using MFA {}", mfaArn);
+                // GetSessionToken
+                return tokens = this.getSessionToken(credentials);
+            }
+            log.warn("Skip STS request, no role ARN or MFA ARN defined in profile");
+            return TemporaryAccessTokens.EMPTY;
         }
         finally {
             lock.unlock();
@@ -77,7 +90,7 @@ public class STSAssumeRoleRequestInterceptor extends STSAssumeRoleAuthorizationS
         try {
             if(tokens.isExpired()) {
                 try {
-                    this.refresh(credentials);
+                    this.refresh(basic);
                     log.info("Authorizing service request with STS tokens {}", tokens);
                 }
                 catch(BackgroundException e) {
@@ -94,6 +107,6 @@ public class STSAssumeRoleRequestInterceptor extends STSAssumeRoleAuthorizationS
     @Override
     public Credentials get() throws BackgroundException {
         // Get temporary credentials from STS using static long-lived credentials
-        return new Credentials().withTokens(this.refresh(credentials));
+        return basic.withTokens(tokens.isExpired() ? this.refresh(basic) : tokens);
     }
 }

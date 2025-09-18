@@ -62,8 +62,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Credentials credentials = host.getCredentials();
-        assertNotEquals("rouser", credentials.getUsername());
-        assertNotEquals(StringUtils.EMPTY, credentials.getPassword());
+        assertEquals("rouser", credentials.getUsername());
+        assertEquals("rouser", credentials.getPassword());
 
         assertNotNull(credentials.getTokens().getAccessKeyId());
         assertNotNull(credentials.getTokens().getSecretAccessKey());

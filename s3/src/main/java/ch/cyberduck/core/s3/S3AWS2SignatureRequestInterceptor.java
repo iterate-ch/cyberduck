@@ -39,6 +39,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.amazonaws.services.s3.Headers.SECURITY_TOKEN;
+
 public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(S3AWS2SignatureRequestInterceptor.class);
 
@@ -55,6 +57,9 @@ public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor
             if(credentials.isAnonymousLogin()) {
                 log.warn("Skip authentication request {}", request);
                 return;
+            }
+            if(credentials.isTokenAuthentication()) {
+                request.setHeader(SECURITY_TOKEN, credentials.getToken());
             }
             final String bucketName;
             if(context.getAttribute("bucket") == null) {

@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import com.amazonaws.auth.internal.SignerConstants;
 
 import static com.amazonaws.services.s3.Headers.S3_ALTERNATE_DATE;
+import static com.amazonaws.services.s3.Headers.SECURITY_TOKEN;
 
 public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(S3AWS4SignatureRequestInterceptor.class);
@@ -62,6 +63,9 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
             if(credentials.isAnonymousLogin()) {
                 log.warn("Skip authentication request {}", request);
                 return;
+            }
+            if(credentials.isTokenAuthentication()) {
+                request.setHeader(SECURITY_TOKEN, credentials.getToken());
             }
             final String bucketName;
             if(context.getAttribute("bucket") == null) {
