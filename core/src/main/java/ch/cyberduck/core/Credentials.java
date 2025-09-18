@@ -363,6 +363,7 @@ public class Credentials implements Comparable<Credentials>, PreferencesReader {
         sb.append(", tokens='").append(tokens).append('\'');
         sb.append(", oauth='").append(oauth).append('\'');
         sb.append(", identity=").append(identity);
+        sb.append(", properties=").append(properties);
         sb.append('}');
         return sb.toString();
     }
