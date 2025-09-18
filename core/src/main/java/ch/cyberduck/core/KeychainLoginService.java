@@ -93,7 +93,7 @@ public class KeychainLoginService implements LoginService {
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
-            final CredentialsConfigurator configurator = bookmark.getProtocol().getFeature(CredentialsConfigurator.class);
+            final CredentialsConfigurator configurator = CredentialsConfiguratorFactory.get(bookmark.getProtocol());
             log.debug("Auto configure credentials with {}", configurator);
             bookmark.setCredentials(configurator.configure(bookmark));
         }
