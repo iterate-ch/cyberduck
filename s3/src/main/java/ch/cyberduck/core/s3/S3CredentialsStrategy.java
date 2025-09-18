@@ -33,9 +33,9 @@ public interface S3CredentialsStrategy {
             return new AWSStaticCredentialsProvider(new AnonymousAWSCredentials());
         }
         return new AWSStaticCredentialsProvider(
-                StringUtils.isNotBlank(credentials.getTokens().getSessionToken()) ?
+                credentials.getTokens().validate() ?
                         new BasicSessionCredentials(credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(), credentials.getTokens().getSessionToken()) :
-                        new BasicAWSCredentials(credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey()));
+                        new BasicAWSCredentials(credentials.getUsername(), credentials.getPassword()));
     }
 
     /**
