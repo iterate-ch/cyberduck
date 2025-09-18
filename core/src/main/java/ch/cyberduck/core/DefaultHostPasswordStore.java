@@ -41,17 +41,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             return null;
         }
         final Credentials credentials = bookmark.getCredentials();
-        if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn("Missing username in {}", bookmark);
-            return null;
-        }
         log.info("Fetching login password from keychain for {}", bookmark);
         final String password;
         try {
             password = this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
                     bookmark.getHostname(), StringUtils.isEmpty(credentials.getUsername()) ?
-                            bookmark.getProtocol().getPasswordPlaceholder() :
-                            credentials.getUsername());
+                            bookmark.getProtocol().getPasswordPlaceholder() : credentials.getUsername());
         }
         catch(LocalAccessDeniedException e) {
             log.warn("Failure {} searching in keychain", e.getMessage());
@@ -268,12 +263,9 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             this.deletePassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath());
         }
         if(protocol.isPasswordConfigurable()) {
-            if(StringUtils.isEmpty(credentials.getUsername())) {
-                log.warn("No username in credentials for bookmark {}", bookmark.getHostname());
-                return;
-            }
             this.deletePassword(protocol.getScheme(), bookmark.getPort(), bookmark.getHostname(),
-                    credentials.getUsername());
+                    StringUtils.isEmpty(credentials.getUsername()) ?
+                            bookmark.getProtocol().getPasswordPlaceholder() : credentials.getUsername());
         }
         if(protocol.isTokenConfigurable()) {
             this.deletePassword(protocol.getScheme(), bookmark.getPort(), bookmark.getHostname(),
