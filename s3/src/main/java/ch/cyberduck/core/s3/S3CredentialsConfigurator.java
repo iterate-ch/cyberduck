@@ -36,7 +36,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Scanner;
 
 import com.amazonaws.auth.profile.internal.AbstractProfilesConfigFileScanner;
@@ -62,6 +61,10 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(S3CredentialsConfigurator.class);
 
     private final Local directory;
+
+    /**
+     * Profiles by name
+     */
     private final Map<String, BasicProfile> profiles = new LinkedHashMap<>();
 
     public S3CredentialsConfigurator() {
@@ -75,37 +78,31 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
     @Override
     public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
-        final String profile = credentials.getUsername();
-        final Optional<Map.Entry<String, BasicProfile>> optional = profiles.entrySet().stream().filter(entry -> {
-            final String profileName = entry.getKey();
-            final BasicProfile basicProfile = entry.getValue();
-            final String awsAccessIdKey = basicProfile.getAwsAccessIdKey();
+        final BasicProfile profile = profiles.entrySet().stream().filter(entry -> {
             // Matching access key or profile name
-            if(StringUtils.equals(profileName, profile)) {
-                log.debug("Found matching profile {} for profile name {}", profile, profileName);
+            if(StringUtils.equals(entry.getKey(), credentials.getUsername())) {
+                log.debug("Found matching profile {} for profile name {}", credentials.getUsername(), entry.getKey());
                 return true;
             }
-            else if(StringUtils.equals(awsAccessIdKey, profile)) {
-                log.debug("Found matching profile {} for access key {}", profile, awsAccessIdKey);
+            else if(StringUtils.equals(entry.getValue().getAwsAccessIdKey(), credentials.getUsername())) {
+                log.debug("Found matching profile {} for access key {}", credentials.getUsername(), entry.getValue().getAwsAccessIdKey());
                 return true;
             }
             return false;
-        }).findFirst();
-        if(optional.isPresent()) {
-            final Map.Entry<String, BasicProfile> entry = optional.get();
-            final BasicProfile basicProfile = entry.getValue();
-            if(basicProfile.isRoleBasedProfile()) {
-                log.debug("Configure credentials from role based profile {}", basicProfile.getProfileName());
-                if(StringUtils.isBlank(basicProfile.getRoleSourceProfile())) {
-                    log.warn("Missing source profile reference in profile {}", basicProfile.getProfileName());
+        }).map(Map.Entry::getValue).findFirst().orElse(profiles.get("default"));
+        if(null != profile) {
+            if(profile.isRoleBasedProfile()) {
+                log.debug("Configure credentials from role based profile {}", profile.getProfileName());
+                if(StringUtils.isBlank(profile.getRoleSourceProfile())) {
+                    log.warn("Missing source profile reference in profile {}", profile.getProfileName());
                     return credentials;
                 }
-                else if(!profiles.containsKey(basicProfile.getRoleSourceProfile())) {
-                    log.warn("Missing source profile with name {}", basicProfile.getRoleSourceProfile());
+                else if(!profiles.containsKey(profile.getRoleSourceProfile())) {
+                    log.warn("Missing source profile with name {}", profile.getRoleSourceProfile());
                     return credentials;
                 }
                 else {
-                    final BasicProfile sourceProfile = profiles.get(basicProfile.getRoleSourceProfile());
+                    final BasicProfile sourceProfile = profiles.get(profile.getRoleSourceProfile());
                     if(sourceProfile.getProperties().containsKey("sso_start_url")) {
                         log.debug("Set credentials from cached AWS CLI cache for {}", sourceProfile.getProfileName());
                         // Read cached SSO credentials
@@ -121,17 +118,17 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         // If a profile defines the role_arn property then the profile is treated as an assume role profile
                         return credentials.withTokens(new TemporaryAccessTokens(
                                         sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken()))
-                                .withProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, basicProfile.getRoleArn())
-                                .withProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, basicProfile.getPropertyValue("mfa_serial"));
+                                .withProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
+                                .withProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
                     }
                 }
             }
             else {
-                log.debug("Configure credentials from basic profile {}", basicProfile.getProfileName());
-                final Map<String, String> profileProperties = basicProfile.getProperties();
+                log.debug("Configure credentials from basic profile {}", profile.getProfileName());
+                final Map<String, String> profileProperties = profile.getProperties();
                 if(profileProperties.containsKey("sso_start_url") || profileProperties.containsKey("sso_session")) {
                     // Read cached SSO credentials
-                    log.debug("Set credentials from cached AWS CLI cache for {}", basicProfile.getProfileName());
+                    log.debug("Set credentials from cached AWS CLI cache for {}", profile.getProfileName());
                     final CachedCredential cached = this.fetchSsoCredentials(profileProperties);
                     if(null == cached) {
                         return credentials;
@@ -139,14 +136,14 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     return credentials.withTokens(new TemporaryAccessTokens(
                             cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
                 }
-                log.debug("Set credentials from profile {}", basicProfile.getProfileName());
+                log.debug("Set credentials from profile {}", profile.getProfileName());
                 return credentials
                         .withTokens(new TemporaryAccessTokens(
-                                basicProfile.getAwsAccessIdKey(),
-                                basicProfile.getAwsSecretAccessKey(),
-                                basicProfile.getAwsSessionToken()))
-                        .withProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, basicProfile.getRoleArn())
-                        .withProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, basicProfile.getPropertyValue("mfa_serial"));
+                                profile.getAwsAccessIdKey(),
+                                profile.getAwsSecretAccessKey(),
+                                profile.getAwsSessionToken()))
+                        .withProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
+                        .withProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
             }
         }
         else {
