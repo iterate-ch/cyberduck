@@ -85,6 +85,7 @@ public class Credentials implements Comparable<Credentials>, PreferencesReader {
         this.password = copy.password;
         this.tokens = copy.tokens;
         this.oauth = copy.oauth;
+        this.properties.putAll(copy.properties);
         this.identity = copy.identity;
         this.identityPassphrase = copy.identityPassphrase;
         this.certificate = copy.certificate;
