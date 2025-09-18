@@ -348,6 +348,7 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
     }
 
     public void setCredentials(final Credentials credentials) {
+        log.debug("Setting credentials for {} to {}", this, credentials);
         this.credentials = credentials;
     }
 
