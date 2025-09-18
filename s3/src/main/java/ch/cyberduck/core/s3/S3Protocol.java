@@ -24,7 +24,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -45,7 +44,7 @@ import com.google.auto.service.AutoService;
 public class S3Protocol extends AbstractProtocol {
     private static final Logger log = LogManager.getLogger(S3Protocol.class);
 
-    private final AWSCredentialsConfigurator credentials = new AWSCredentialsConfigurator();
+    private final CredentialsConfigurator credentials = new S3CredentialsConfigurator();
 
     @Override
     public String getName() {
@@ -171,6 +170,7 @@ public class S3Protocol extends AbstractProtocol {
             return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
         }
         if(type == CredentialsConfigurator.class) {
+            // Fetching configuration from AWS CLI
             return (T) credentials;
         }
         return super.getFeature(type);
