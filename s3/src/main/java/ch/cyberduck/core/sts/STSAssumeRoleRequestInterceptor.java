@@ -18,10 +18,8 @@ package ch.cyberduck.core.sts;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -64,15 +62,13 @@ public class STSAssumeRoleRequestInterceptor extends STSAssumeRoleAuthorizationS
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
-            final String roleArn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY);
-            if(roleArn != null) {
-                log.debug("Retrieve temporary credentials from STS by assuming role {}", roleArn);
+            if(host.getProtocol().isRoleConfigurable()) {
+                log.debug("Retrieve temporary credentials from STS by assuming role for {}", host);
                 // AssumeRoleRequest
                 return tokens = this.assumeRole(credentials);
             }
-            final String mfaArn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY);
-            if(mfaArn != null) {
-                log.debug("Retrieve temporary credentials from STS using MFA {}", mfaArn);
+            if(host.getProtocol().isMultiFactorConfigurable()) {
+                log.debug("Retrieve temporary credentials from STS using MFA for {}", host);
                 // GetSessionToken
                 return tokens = this.getSessionToken(credentials);
             }

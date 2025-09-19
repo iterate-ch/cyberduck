@@ -293,6 +293,16 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isRoleConfigurable() {
+        return false;
+    }
+
+    @Override
+    public boolean isMultiFactorConfigurable() {
+        return false;
+    }
+
+    @Override
     public boolean isUTCTimezone() {
         return true;
     }

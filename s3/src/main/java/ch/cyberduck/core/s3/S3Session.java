@@ -27,7 +27,6 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
@@ -43,7 +42,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -75,8 +73,6 @@ import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
-import org.jets3t.service.security.AWSSessionCredentials;
-import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.SignatureUtils;
 
 import java.util.HashSet;
@@ -84,7 +80,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.amazonaws.services.s3.Headers.*;
+import static com.amazonaws.services.s3.Headers.REQUESTER_PAYS_HEADER;
+import static com.amazonaws.services.s3.Headers.S3_ALTERNATE_DATE;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = LogManager.getLogger(S3Session.class);
@@ -270,8 +267,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 return new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext());
             }
         }
-        if(new ProxyPreferencesReader(host, host.getCredentials()).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY) != null
-                || new ProxyPreferencesReader(host, host.getCredentials()).getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY) != null) {
+        if(host.getProtocol().isRoleConfigurable() || host.getProtocol().isMultiFactorConfigurable()) {
             final STSAssumeRoleRequestInterceptor interceptor = new STSAssumeRoleRequestInterceptor(host, trust, key, prompt);
             log.debug("Add interceptor {}", interceptor);
             configuration.addInterceptorLast(interceptor);

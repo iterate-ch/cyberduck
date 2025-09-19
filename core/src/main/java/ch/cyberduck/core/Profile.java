@@ -113,6 +113,8 @@ public class Profile implements Protocol {
     public static final String OAUTH_CONFIGURABLE_KEY = "OAuth Configurable";
     public static final String CERTIFICATE_CONFIGURABLE_KEY = "Certificate Configurable";
     public static final String PRIVATE_KEY_CONFIGURABLE_KEY = "Private Key Configurable";
+    public static final String ROLE_KEY_CONFIGURABLE_KEY = "Role Configurable";
+    public static final String MULTIFACTOR_KEY_CONFIGURABLE_KEY = "Multi Factor Configurable";
 
     public static final String PROPERTIES_KEY = "Properties";
     public static final String DEPRECATED_KEY = "Deprecated";
@@ -552,6 +554,24 @@ public class Profile implements Protocol {
         final Boolean v = this.bool(PRIVATE_KEY_CONFIGURABLE_KEY);
         if(null == v) {
             return parent.isPrivateKeyConfigurable();
+        }
+        return v;
+    }
+
+    @Override
+    public boolean isRoleConfigurable() {
+        final Boolean v = this.bool(ROLE_KEY_CONFIGURABLE_KEY);
+        if(null == v) {
+            return parent.isRoleConfigurable();
+        }
+        return v;
+    }
+
+    @Override
+    public boolean isMultiFactorConfigurable() {
+        final Boolean v = this.bool(MULTIFACTOR_KEY_CONFIGURABLE_KEY);
+        if(null == v) {
+            return parent.isMultiFactorConfigurable();
         }
         return v;
     }
