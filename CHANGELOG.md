@@ -1,7 +1,8 @@
 # Changelog
+[9.3.0](https://github.com/iterate-ch/cyberduck/compare/release-9-2-4...release-9-3-0)
+* [Feature] Support for Liquid Glass (macOS) ([#17459](https://trac.cyberduck.io/ticket/17459))
 
 [9.2.4](https://github.com/iterate-ch/cyberduck/compare/release-9-2-3...release-9-2-4)
-
 * [Bugfix] Unable to close connection window with "Cancel" (macOS) (#17366)
 * [Bugfix] Choose "Cancel" in upload prompt continues transfer (macOS) (#17358)
 * [Bugfix] Change button styles for bottom bar of window (macOS) (#17407)
