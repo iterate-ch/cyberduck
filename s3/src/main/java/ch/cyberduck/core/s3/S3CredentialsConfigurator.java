@@ -89,7 +89,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 return true;
             }
             return false;
-        }).map(Map.Entry::getValue).findFirst().orElse(profiles.get("default"));
+        }).map(Map.Entry::getValue).findFirst().orElse(StringUtils.isBlank(host.getCredentials().getUsername()) ? profiles.get("default") : null);
         if(null != profile) {
             if(profile.isRoleBasedProfile()) {
                 log.debug("Configure credentials from role based profile {}", profile.getProfileName());
