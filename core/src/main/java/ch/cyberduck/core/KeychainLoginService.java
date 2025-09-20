@@ -182,7 +182,7 @@ public class KeychainLoginService implements LoginService {
                     c.initCause(e);
                 }
                 catch(IllegalArgumentException | IllegalStateException r) {
-                    log.warn("Ignore error {} initializing faiulre {} with cause {}", r, e, c);
+                    log.warn("Ignore error {} initializing failure {} with cause {}", r, e, c);
                 }
                 throw c;
             }
