@@ -81,6 +81,10 @@ public interface Protocol extends FeatureFactory, Comparable<Protocol>, Serializ
 
     boolean isPrivateKeyConfigurable();
 
+    boolean isRoleConfigurable();
+
+    boolean isMultiFactorConfigurable();
+
     /**
      * @return False if the hostname to connect is static.
      */

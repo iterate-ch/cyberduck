@@ -20,8 +20,6 @@ import ch.cyberduck.core.cache.LRUCache;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-
 public class HostPreferences implements PreferencesReader {
 
     private final LRUCache<String, String> cache = LRUCache.usingLoader(this::loadProperty, 1000);
@@ -61,61 +59,7 @@ public class HostPreferences implements PreferencesReader {
         bookmark.setProperty(key, value);
     }
 
-    @Override
-    public List<String> getList(final String key) {
-        final String value = cache.get(key);
-        if(StringUtils.equals(MISSING_PROPERTY, value)) {
-            return proxy.getList(key);
-        }
-        return PreferencesReader.toList(value);
-    }
-
-    @Override
-    public int getInteger(final String key) {
-        final String value = cache.get(key);
-        if(StringUtils.equals(MISSING_PROPERTY, value)) {
-            return proxy.getInteger(key);
-        }
-        return PreferencesReader.toInteger(value);
-    }
-
-    @Override
-    public float getFloat(final String key) {
-        final String value = cache.get(key);
-        if(StringUtils.equals(MISSING_PROPERTY, value)) {
-            return proxy.getFloat(key);
-        }
-        return PreferencesReader.toFloat(value);
-    }
-
-    @Override
-    public long getLong(final String key) {
-        final String value = cache.get(key);
-        if(StringUtils.equals(MISSING_PROPERTY, value)) {
-            return proxy.getLong(key);
-        }
-        return PreferencesReader.toLong(value);
-    }
-
-    @Override
-    public double getDouble(final String key) {
-        final String value = cache.get(key);
-        if(StringUtils.equals(MISSING_PROPERTY, value)) {
-            return proxy.getDouble(key);
-        }
-        return PreferencesReader.toDouble(value);
-    }
-
-    @Override
-    public boolean getBoolean(final String key) {
-        final String value = cache.get(key);
-        if(StringUtils.equals(MISSING_PROPERTY, value)) {
-            return proxy.getBoolean(key);
-        }
-        return PreferencesReader.toBoolean(value);
-    }
-
-    private String loadProperty(String key) {
+    private String loadProperty(final String key) {
         final String value = bookmark.getProperty(key);
         if(null == value) {
             return MISSING_PROPERTY;

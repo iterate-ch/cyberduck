@@ -65,6 +65,18 @@ public class Profile implements Protocol {
     public static final String OAUTH_PKCE_KEY = "OAuth PKCE";
     public static final String SCOPES_KEY = "Scopes";
     public static final String STS_ENDPOINT_KEY = "STS Endpoint";
+    /**
+     * A constant key used to define the Amazon Resource Name (ARN) for AWS Security Token Service (STS)
+     */
+    public static final String STS_ROLE_ARN_PROPERTY_KEY = "role_arn";
+    public static final String STS_ROLE_SESSION_NAME_PROPERTY_KEY = "role_session_name";
+    public static final String STS_DURATION_SECONDS_PROPERTY_KEY = "duration_seconds";
+    /**
+     * A constant key used to define the Amazon Resource Name (ARN) for Multi-Factor Authentication (MFA)
+     * in AWS Security Token Service (STS) profiles. This key is typically utilized to specify or retrieve
+     * the ARN for an MFA device required during authentication processes involving STS.
+     */
+    public static final String STS_MFA_ARN_PROPERTY_KEY = "mfa_serial";
 
     public static final String DISK_KEY = "Disk";
     public static final String ICON_KEY = "Icon";
@@ -101,6 +113,8 @@ public class Profile implements Protocol {
     public static final String OAUTH_CONFIGURABLE_KEY = "OAuth Configurable";
     public static final String CERTIFICATE_CONFIGURABLE_KEY = "Certificate Configurable";
     public static final String PRIVATE_KEY_CONFIGURABLE_KEY = "Private Key Configurable";
+    public static final String ROLE_KEY_CONFIGURABLE_KEY = "Role Configurable";
+    public static final String MULTIFACTOR_KEY_CONFIGURABLE_KEY = "Multi Factor Configurable";
 
     public static final String PROPERTIES_KEY = "Properties";
     public static final String DEPRECATED_KEY = "Deprecated";
@@ -540,6 +554,24 @@ public class Profile implements Protocol {
         final Boolean v = this.bool(PRIVATE_KEY_CONFIGURABLE_KEY);
         if(null == v) {
             return parent.isPrivateKeyConfigurable();
+        }
+        return v;
+    }
+
+    @Override
+    public boolean isRoleConfigurable() {
+        final Boolean v = this.bool(ROLE_KEY_CONFIGURABLE_KEY);
+        if(null == v) {
+            return parent.isRoleConfigurable();
+        }
+        return v;
+    }
+
+    @Override
+    public boolean isMultiFactorConfigurable() {
+        final Boolean v = this.bool(MULTIFACTOR_KEY_CONFIGURABLE_KEY);
+        if(null == v) {
+            return parent.isMultiFactorConfigurable();
         }
         return v;
     }

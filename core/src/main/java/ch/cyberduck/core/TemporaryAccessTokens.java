@@ -25,7 +25,7 @@ import java.util.Objects;
 public final class TemporaryAccessTokens {
 
     public static final TemporaryAccessTokens EMPTY
-            = new TemporaryAccessTokens(null, null, null, Long.MAX_VALUE);
+            = new TemporaryAccessTokens(null, null, null);
 
     private final String accessKeyId;
     private final String secretAccessKey;
@@ -33,7 +33,15 @@ public final class TemporaryAccessTokens {
     private final Long expiryInMilliseconds;
 
     public TemporaryAccessTokens(final String sessionToken) {
-        this(null, null, sessionToken, -1L);
+        this(null, null, sessionToken);
+    }
+
+    public TemporaryAccessTokens(final String accessKeyId, final String secretAccessKey) {
+        this(accessKeyId, secretAccessKey, null);
+    }
+
+    public TemporaryAccessTokens(final String accessKeyId, final String secretAccessKey, final String sessionToken) {
+        this(accessKeyId, secretAccessKey, sessionToken, -1L);
     }
 
     public TemporaryAccessTokens(final String accessKeyId, final String secretAccessKey, final String sessionToken, final Long expiryInMilliseconds) {
@@ -41,6 +49,13 @@ public final class TemporaryAccessTokens {
         this.secretAccessKey = secretAccessKey;
         this.sessionToken = sessionToken;
         this.expiryInMilliseconds = expiryInMilliseconds;
+    }
+
+    public TemporaryAccessTokens(final TemporaryAccessTokens tokens) {
+        this.accessKeyId = tokens.accessKeyId;
+        this.secretAccessKey = tokens.secretAccessKey;
+        this.sessionToken = tokens.sessionToken;
+        this.expiryInMilliseconds = tokens.expiryInMilliseconds;
     }
 
     public boolean validate() {

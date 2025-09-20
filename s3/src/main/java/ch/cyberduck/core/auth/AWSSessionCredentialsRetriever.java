@@ -16,7 +16,6 @@ package ch.cyberduck.core.auth;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
@@ -27,7 +26,6 @@ import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.proxy.ProxyFactory;
@@ -37,11 +35,9 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -70,32 +66,6 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
         this.url = url;
     }
 
-    public static class Configurator implements CredentialsConfigurator {
-        private final AWSSessionCredentialsRetriever retriever;
-        private final String url;
-
-        public Configurator(final X509TrustManager trust, final X509KeyManager key, final String url) {
-            this.url = url;
-            this.retriever = new AWSSessionCredentialsRetriever(trust, key, url);
-        }
-
-        @Override
-        public Configurator reload() throws LoginCanceledException {
-            return this;
-        }
-
-        @Override
-        public Credentials configure(final Host host) {
-            try {
-                return retriever.get();
-            }
-            catch(BackgroundException e) {
-                log.warn("Ignore failure {} retrieving credentials from {}", e, url);
-                return host.getCredentials();
-            }
-        }
-    }
-
     @Override
     public Credentials get() throws BackgroundException {
         log.debug("Configure credentials from {}", url);
@@ -106,22 +76,19 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
                 new DisabledTranscriptListener(), new DisabledLoginCallback());
         try (CloseableHttpClient client = configuration.build()) {
             final HttpRequestBase resource = new HttpGet(new HostUrlProvider().withUsername(false).withPath(true).get(address));
-            return client.execute(resource, new ResponseHandler<Credentials>() {
-                @Override
-                public Credentials handleResponse(final HttpResponse response) throws IOException {
-                    switch(response.getStatusLine().getStatusCode()) {
-                        case HttpStatus.SC_OK:
-                            final HttpEntity entity = response.getEntity();
-                            if(entity == null) {
-                                log.warn("Missing response entity in {}", response);
-                                throw new ClientProtocolException("Empty response");
-                            }
-                            else {
-                                return parse(entity.getContent());
-                            }
-                    }
-                    throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+            return client.execute(resource, response -> {
+                switch(response.getStatusLine().getStatusCode()) {
+                    case HttpStatus.SC_OK:
+                        final HttpEntity entity = response.getEntity();
+                        if(entity == null) {
+                            log.warn("Missing response entity in {}", response);
+                            throw new ClientProtocolException("Empty response");
+                        }
+                        else {
+                            return parse(entity.getContent());
+                        }
                 }
+                throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
             });
         }
         catch(IOException e) {
@@ -161,6 +128,9 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
             }
         }
         reader.endObject();
-        return new Credentials().withTokens(new TemporaryAccessTokens(key, secret, token, expiration != null ? expiration.getTime() : -1L));
+        final Credentials credentials = new Credentials().withTokens(new TemporaryAccessTokens(
+                key, secret, token, expiration != null ? expiration.getTime() : -1L));
+        log.debug("Received session credentials {}", credentials);
+        return credentials;
     }
 }

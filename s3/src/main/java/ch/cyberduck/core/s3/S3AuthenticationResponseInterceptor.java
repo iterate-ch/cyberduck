@@ -25,8 +25,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.security.AWSCredentials;
-import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
 
@@ -36,11 +34,9 @@ import java.io.IOException;
 public class S3AuthenticationResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements S3CredentialsStrategy {
     private static final Logger log = LogManager.getLogger(S3AuthenticationResponseInterceptor.class);
 
-    private final S3Session session;
     private final S3CredentialsStrategy authenticator;
 
-    public S3AuthenticationResponseInterceptor(final S3Session session, final S3CredentialsStrategy authenticator) {
-        this.session = session;
+    public S3AuthenticationResponseInterceptor(final S3CredentialsStrategy authenticator) {
         this.authenticator = authenticator;
     }
 
@@ -64,15 +60,6 @@ public class S3AuthenticationResponseInterceptor extends DisabledServiceUnavaila
                         log.warn("Handle failure {} from response {}", failure, response);
                         final Credentials credentials = authenticator.get();
                         log.debug("Reconfigure client with credentials {}", credentials);
-                        if(credentials.getTokens().validate()) {
-                            session.getClient().setProviderCredentials(new AWSSessionCredentials(
-                                    credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
-                                    credentials.getTokens().getSessionToken()));
-                        }
-                        else {
-                            session.getClient().setProviderCredentials(new AWSCredentials(
-                                    credentials.getUsername(), credentials.getPassword()));
-                        }
                         return true;
                     }
                 }

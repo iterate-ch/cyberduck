@@ -61,8 +61,7 @@ public class KeychainLoginService implements LoginService {
                     if(StringUtils.isNotBlank(password)) {
                         log.info("Fetched password from keychain for {}", bookmark);
                         // No need to reinsert found password to the keychain.
-                        credentials.setSaved(false);
-                        credentials.setPassword(password);
+                        credentials.withPassword(password).setSaved(false);
                     }
                 }
             }
@@ -72,8 +71,7 @@ public class KeychainLoginService implements LoginService {
                     if(StringUtils.isNotBlank(token)) {
                         log.info("Fetched token from keychain for {}", bookmark);
                         // No need to reinsert found token to the keychain.
-                        credentials.setSaved(false);
-                        credentials.setToken(token);
+                        credentials.withToken(token).setSaved(false);
                     }
                 }
             }
@@ -82,8 +80,7 @@ public class KeychainLoginService implements LoginService {
                 if(StringUtils.isNotBlank(passphrase)) {
                     log.info("Fetched private key passphrase from keychain for {}", bookmark);
                     // No need to reinsert found token to the keychain.
-                    credentials.setSaved(false);
-                    credentials.setIdentityPassphrase(passphrase);
+                    credentials.withIdentityPassphrase(passphrase).setSaved(false);
                 }
             }
             if(options.oauth) {
@@ -91,13 +88,12 @@ public class KeychainLoginService implements LoginService {
                 if(tokens.validate()) {
                     log.info("Fetched OAuth token from keychain for {}", bookmark);
                     // No need to reinsert found token to the keychain.
-                    credentials.setSaved(tokens.isExpired());
-                    credentials.setOauth(tokens);
+                    credentials.withOauth(tokens).setSaved(tokens.isExpired());
                 }
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
-            final CredentialsConfigurator configurator = bookmark.getProtocol().getFeature(CredentialsConfigurator.class);
+            final CredentialsConfigurator configurator = CredentialsConfiguratorFactory.get(bookmark.getProtocol());
             log.debug("Auto configure credentials with {}", configurator);
             bookmark.setCredentials(configurator.configure(bookmark));
         }

@@ -16,14 +16,13 @@ package ch.cyberduck.core.sts;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -33,22 +32,19 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-
 /**
  * Swap OIDC Id token for temporary security credentials
  */
-public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAuthorizationService implements S3CredentialsStrategy, HttpRequestInterceptor {
-    private static final Logger log = LogManager.getLogger(STSAssumeRoleCredentialsRequestInterceptor.class);
+public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRoleAuthorizationService implements S3CredentialsStrategy, HttpRequestInterceptor {
+    private static final Logger log = LogManager.getLogger(STSAssumeRoleWithWebIdentityRequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
+
+    private final Credentials basic;
 
     /**
      * Currently valid tokens
@@ -59,32 +55,24 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
      * Handle authentication with OpenID connect retrieving token for STS
      */
     private final OAuth2RequestInterceptor oauth;
-    private final S3Session session;
 
-    public STSAssumeRoleCredentialsRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
-                                                      final X509TrustManager trust, final X509KeyManager key,
-                                                      final LoginCallback prompt) {
-        super(session.getHost(), trust, key, prompt);
+    public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final Host host,
+                                                          final X509TrustManager trust, final X509KeyManager key,
+                                                          final LoginCallback prompt) {
+        super(host, trust, key, prompt);
         this.oauth = oauth;
-        this.session = session;
+        this.basic = host.getCredentials();
     }
 
-    public STSAssumeRoleCredentialsRequestInterceptor(final OAuth2RequestInterceptor oauth, final S3Session session,
-                                                      final AWSSecurityTokenService service, final LoginCallback prompt) {
-        super(session.getHost(), service, prompt);
-        this.oauth = oauth;
-        this.session = session;
-    }
-
-    public TemporaryAccessTokens refresh(final OAuthTokens oidc) throws BackgroundException {
+    public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
-            return this.tokens = this.authorize(oidc);
+            return tokens = this.assumeRoleWithWebIdentity(credentials.withOauth(oauth.validate().getOauth()));
         }
         catch(LoginFailureException e) {
             // Expired STS tokens
             log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
-            return this.tokens = this.authorize(oauth.refresh(oidc));
+            return this.tokens = this.assumeRoleWithWebIdentity(credentials.withOauth(oauth.authorize()));
         }
         finally {
             lock.unlock();
@@ -97,10 +85,8 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
         try {
             if(tokens.isExpired()) {
                 try {
-                    this.refresh(oauth.getTokens());
+                    this.refresh(basic);
                     log.info("Authorizing service request with STS tokens {}", tokens);
-                    session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKeyId(), tokens.getSecretAccessKey(),
-                            tokens.getSessionToken()));
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure {} refreshing STS tokens {}", e, tokens);
@@ -115,20 +101,6 @@ public class STSAssumeRoleCredentialsRequestInterceptor extends STSAssumeRoleAut
 
     @Override
     public Credentials get() throws BackgroundException {
-        // Get temporary credentials from STS using Web Identity (OIDC) token
-        final Credentials credentials = oauth.validate();
-        final OAuthTokens identity = credentials.getOauth();
-        final String token = this.getWebIdentityToken(identity);
-        final String sub;
-        try {
-            sub = JWT.decode(token).getSubject();
-        }
-        catch(JWTDecodeException e) {
-            throw new LoginFailureException("Invalid JWT or JSON format in authentication token", e);
-        }
-        final TemporaryAccessTokens tokens = this.refresh(identity);
-        return credentials
-                .withUsername(sub)
-                .withTokens(tokens);
+        return basic.withTokens(tokens.isExpired() ? this.refresh(basic) : tokens);
     }
 }
