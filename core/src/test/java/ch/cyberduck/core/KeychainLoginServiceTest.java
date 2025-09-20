@@ -28,7 +28,7 @@ public class KeychainLoginServiceTest {
         };
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         LoginService l = new KeychainLoginService(new DisabledPasswordStore());
-        l.authenticate(new DisabledProxyFinder(), session, new ProgressListener() {
+        l.authenticate(session, new ProgressListener() {
             int i = 0;
 
             @Override
