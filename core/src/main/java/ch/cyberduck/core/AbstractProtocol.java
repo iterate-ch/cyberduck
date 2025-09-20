@@ -35,7 +35,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -458,16 +457,17 @@ public abstract class AbstractProtocol implements Protocol {
             switch(this.getType()) {
                 case ftp:
                 case dav:
-                    return Objects.nonNull(credentials.getPassword());
+                    // Allow blank password
+                    return credentials.isPasswordAuthentication(true);
                 case sftp:
                     // SFTP agent auth requires no password and no private key selection
                     return true;
                 default:
-                    return StringUtils.isNotBlank(credentials.getPassword());
+                    return credentials.isPasswordAuthentication();
             }
         }
         if(options.oauth) {
-            // Always refresh tokens in login
+            // Always authentication with no tokens preset
             return true;
         }
         if(options.token) {

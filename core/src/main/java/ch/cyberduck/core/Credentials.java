@@ -216,6 +216,17 @@ public class Credentials implements Comparable<Credentials>, PreferencesReader {
     }
 
     public boolean isPasswordAuthentication() {
+        return this.isPasswordAuthentication(false);
+    }
+
+    /**
+     * @param allowblank Allow blank password
+     */
+    public boolean isPasswordAuthentication(final boolean allowblank) {
+        if(allowblank) {
+            // Allow blank password
+            return Objects.nonNull(password);
+        }
         return StringUtils.isNotBlank(password);
     }
 
