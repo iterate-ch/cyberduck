@@ -111,16 +111,12 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                             return credentials;
                         }
                         // No further token exchange required
-                        return credentials
-                                .withUsername(cached.accessKey).withPassword(cached.secretKey)
-                                .withTokens(new TemporaryAccessTokens(
-                                        cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
+                        return credentials.withTokens(new TemporaryAccessTokens(
+                                cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
                     }
                     else {
                         // If a profile defines the role_arn property then the profile is treated as an assume role profile
-                        return credentials
-                                .withUsername(sourceProfile.getAwsAccessIdKey()).withPassword(sourceProfile.getAwsSecretAccessKey())
-                                .withTokens(new TemporaryAccessTokens(
+                        return credentials.withTokens(new TemporaryAccessTokens(
                                         sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken()))
                                 .withProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
                                 .withProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
@@ -137,14 +133,11 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     if(null == cached) {
                         return credentials;
                     }
-                    return credentials
-                            .withUsername(cached.accessKey).withPassword(cached.secretKey)
-                            .withTokens(new TemporaryAccessTokens(
-                                    cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
+                    return credentials.withTokens(new TemporaryAccessTokens(
+                            cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
                 }
                 log.debug("Set credentials from profile {}", profile.getProfileName());
                 return credentials
-                        .withUsername(profile.getAwsAccessIdKey()).withPassword(profile.getAwsSecretAccessKey())
                         .withTokens(new TemporaryAccessTokens(
                                 profile.getAwsAccessIdKey(),
                                 profile.getAwsSecretAccessKey(),

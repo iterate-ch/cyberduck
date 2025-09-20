@@ -28,6 +28,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
 import ch.cyberduck.core.cdn.Distribution;
@@ -274,7 +275,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return interceptor;
         }
         // Keep copy of credentials
-        final Credentials credentials = new Credentials(host.getCredentials());
+        final Credentials credentials = new Credentials(host.getCredentials())
+                .withTokens(new TemporaryAccessTokens(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         return () -> credentials;
     }
 

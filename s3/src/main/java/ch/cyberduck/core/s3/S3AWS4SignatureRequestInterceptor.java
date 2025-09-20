@@ -124,14 +124,14 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
                     timestampISO8601, region);
             // Signing key
             final byte[] signingKey = SignatureUtils.awsV4BuildSigningKey(
-                    credentials.isTokenAuthentication() ? credentials.getTokens().getSecretAccessKey() : credentials.getPassword(), timestampISO8601, region);
+                    credentials.getTokens().getSecretAccessKey(), timestampISO8601, region);
             // Request signature
             final String signature = ServiceUtils.toHex(ServiceUtils.hmacSHA256(
                     signingKey, ServiceUtils.stringToBytes(stringToSign)));
             // Authorization header value
             final String authorizationHeaderValue =
                     SignatureUtils.awsV4BuildAuthorizationHeaderValue(
-                            credentials.isTokenAuthentication() ? credentials.getTokens().getAccessKeyId() : credentials.getUsername(), signature,
+                            credentials.getTokens().getAccessKeyId(), signature,
                             session.getSignatureVersion().toString(), canonicalRequestString,
                             timestampISO8601, region);
             message.setHeader(HttpHeaders.AUTHORIZATION, authorizationHeaderValue);

@@ -97,10 +97,10 @@ public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor
                     session.getClient().getResourceParameterNames());
             // Sign the canonical string.
             final String signedCanonical = ServiceUtils.signWithHmacSha1(
-                    credentials.isTokenAuthentication() ? credentials.getTokens().getSecretAccessKey() : credentials.getPassword(), canonicalString);
+                    credentials.getTokens().getSecretAccessKey(), canonicalString);
             // Add encoded authorization to connection as HTTP Authorization header.
             final String authorizationString = session.getSignatureIdentifier() + " "
-                    + (credentials.isTokenAuthentication() ? credentials.getTokens().getAccessKeyId() : credentials.getUsername()) + ":" + signedCanonical;
+                    + credentials.getTokens().getAccessKeyId() + ":" + signedCanonical;
             request.setHeader(HttpHeaders.AUTHORIZATION, authorizationString);
         }
         catch(BackgroundException e) {
