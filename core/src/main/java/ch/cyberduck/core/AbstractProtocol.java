@@ -474,7 +474,7 @@ public abstract class AbstractProtocol implements Protocol {
             return true;
         }
         if(options.token) {
-            return StringUtils.isNotBlank(credentials.getToken());
+            return credentials.isTokenAuthentication();
         }
         return true;
     }
