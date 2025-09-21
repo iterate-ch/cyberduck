@@ -275,8 +275,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return interceptor;
         }
         // Keep copy of credentials
-        final Credentials credentials = new Credentials(host.getCredentials())
-                .withTokens(new TemporaryAccessTokens(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        final Credentials credentials = new Credentials(host.getCredentials());
+        if(credentials.isTokenAuthentication()) {
+            return () -> credentials;
+        }
+        credentials.setTokens(new TemporaryAccessTokens(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         return () -> credentials;
     }
 
