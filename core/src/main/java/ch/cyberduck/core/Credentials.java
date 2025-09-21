@@ -231,11 +231,11 @@ public class Credentials implements Comparable<Credentials>, PreferencesReader {
     }
 
     public boolean isTokenAuthentication() {
-        return StringUtils.isNotBlank(tokens.getSessionToken());
+        return tokens != TemporaryAccessTokens.EMPTY;
     }
 
     public boolean isOAuthAuthentication() {
-        return oauth.validate();
+        return oauth != OAuthTokens.EMPTY;
     }
 
     /**
