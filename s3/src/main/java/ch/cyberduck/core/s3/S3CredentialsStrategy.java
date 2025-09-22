@@ -18,13 +18,13 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.BasicSessionCredentials;
-
-import org.apache.commons.lang3.StringUtils;
 
 public interface S3CredentialsStrategy {
 
@@ -32,10 +32,13 @@ public interface S3CredentialsStrategy {
         if(credentials.isAnonymousLogin()) {
             return new AWSStaticCredentialsProvider(new AnonymousAWSCredentials());
         }
-        return new AWSStaticCredentialsProvider(
-                StringUtils.isNotBlank(credentials.getTokens().getSessionToken()) ?
-                        new BasicSessionCredentials(credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(), credentials.getTokens().getSessionToken()) :
-                        new BasicAWSCredentials(credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey()));
+        if(credentials.isTokenAuthentication()) {
+            return new AWSStaticCredentialsProvider(
+                    StringUtils.isNotBlank(credentials.getTokens().getSessionToken()) ?
+                            new BasicSessionCredentials(credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(), credentials.getTokens().getSessionToken()) :
+                            new BasicAWSCredentials(credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey()));
+        }
+        return new AWSStaticCredentialsProvider(new BasicAWSCredentials(credentials.getUsername(), credentials.getPassword()));
     }
 
     /**
