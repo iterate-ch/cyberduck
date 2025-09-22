@@ -26,6 +26,7 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -101,38 +102,57 @@ public class STSAuthorizationService {
     public TemporaryAccessTokens getSessionToken(final Credentials credentials) throws BackgroundException {
         final PreferencesReader settings = new ProxyPreferencesReader(bookmark, credentials);
         //  The purpose of the sts:GetSessionToken operation is to authenticate the user using MFA.
-        final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest()
+        final GetSessionTokenRequest request = new GetSessionTokenRequest()
                 .withRequestCredentialsProvider(S3CredentialsStrategy.toCredentialsProvider(credentials));
         final String mfaArn = settings.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY);
         if(StringUtils.isNotBlank(mfaArn)) {
             log.debug("Found MFA ARN {} for {}", mfaArn, bookmark);
-            sessionTokenRequest.setSerialNumber(mfaArn);
-            log.debug("Prompt for MFA token code");
-            final String tokenCode = prompt.prompt(
-                    bookmark, String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                            mfaArn),
-                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    new LoginOptions(bookmark.getProtocol())
-                            .password(true)
-                            .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                            .keychain(false)
-            ).getPassword();
-            sessionTokenRequest.setTokenCode(tokenCode);
-            log.debug("Request {} from {}", sessionTokenRequest, service);
-            try {
-                final GetSessionTokenResult sessionTokenResult = service.getSessionToken(sessionTokenRequest);
-                log.debug("Set credentials from {}", sessionTokenResult);
-                return new TemporaryAccessTokens(
-                        sessionTokenResult.getCredentials().getAccessKeyId(),
-                        sessionTokenResult.getCredentials().getSecretAccessKey(),
-                        sessionTokenResult.getCredentials().getSessionToken(),
-                        sessionTokenResult.getCredentials().getExpiration().getTime());
-            }
-            catch(AWSSecurityTokenServiceException e) {
-                throw new STSExceptionMappingService().map(e);
+            request.setSerialNumber(mfaArn);
+        }
+        else {
+            if(bookmark.getProtocol().isMultiFactorConfigurable()) {
+                // When defined in connection profile but with empty value
+                log.debug("Prompt for MFA ARN");
+                try {
+                    final Credentials input = prompt.prompt(bookmark,
+                            LocaleFactory.localizedString("MFA Device Identifier", "S3"),
+                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                            new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                    .passwordPlaceholder(LocaleFactory.localizedString("Serial Number or Amazon Resource Name (ARN)", "S3")));
+                    if(input.isSaved()) {
+                        preferences.setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, input.getPassword());
+                    }
+                    request.setSerialNumber(input.getPassword());
+                }
+                catch(LoginCanceledException e) {
+                    log.warn("Canceled MFA ARN input for {}", bookmark);
+                }
             }
         }
-        return TemporaryAccessTokens.EMPTY;
+        log.debug("Prompt for MFA token code");
+        final String tokenCode = prompt.prompt(
+                bookmark, String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                        mfaArn),
+                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                new LoginOptions(bookmark.getProtocol())
+                        .password(true)
+                        .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                        .keychain(false)
+        ).getPassword();
+        request.setTokenCode(tokenCode);
+        log.debug("Request {} from {}", request, service);
+        try {
+            final GetSessionTokenResult result = service.getSessionToken(request);
+            log.debug("Set credentials from {}", result);
+            return new TemporaryAccessTokens(
+                    result.getCredentials().getAccessKeyId(),
+                    result.getCredentials().getSecretAccessKey(),
+                    result.getCredentials().getSessionToken(),
+                    result.getCredentials().getExpiration().getTime());
+        }
+        catch(AWSSecurityTokenServiceException e) {
+            throw new STSExceptionMappingService().map(e);
+        }
     }
 
     /**
@@ -181,15 +201,20 @@ public class STSAuthorizationService {
             if(StringUtils.EMPTY.equals(mfaArn)) {
                 // When defined in connection profile but with empty value
                 log.debug("Prompt for MFA ARN");
-                final Credentials input = prompt.prompt(bookmark,
-                        LocaleFactory.localizedString("MFA Device Identifier", "S3"),
-                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
-                                .passwordPlaceholder(LocaleFactory.localizedString("Serial Number or Amazon Resource Name (ARN)", "S3")));
-                if(input.isSaved()) {
-                    preferences.setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, input.getPassword());
+                try {
+                    final Credentials input = prompt.prompt(bookmark,
+                            LocaleFactory.localizedString("MFA Device Identifier", "S3"),
+                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                            new LoginOptions().icon(bookmark.getProtocol().disk()).password(false)
+                                    .passwordPlaceholder(LocaleFactory.localizedString("Serial Number or Amazon Resource Name (ARN)", "S3")));
+                    if(input.isSaved()) {
+                        preferences.setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, input.getPassword());
+                    }
+                    request.setSerialNumber(input.getPassword());
                 }
-                request.setSerialNumber(input.getPassword());
+                catch(LoginCanceledException e) {
+                    log.warn("Canceled MFA ARN input for {}", bookmark);
+                }
             }
         }
         if(request.getSerialNumber() != null) {
