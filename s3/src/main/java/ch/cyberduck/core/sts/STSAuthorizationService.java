@@ -178,7 +178,7 @@ public class STSAuthorizationService {
             request.setRoleArn(roleArn);
         }
         else {
-            if(StringUtils.EMPTY.equals(roleArn)) {
+            if(bookmark.getProtocol().isRoleConfigurable()) {
                 // When defined in connection profile but with empty value
                 log.debug("Prompt for Role ARN");
                 final Credentials input = prompt.prompt(bookmark,
@@ -198,7 +198,7 @@ public class STSAuthorizationService {
             request.setSerialNumber(mfaArn);
         }
         else {
-            if(StringUtils.EMPTY.equals(mfaArn)) {
+            if(bookmark.getProtocol().isMultiFactorConfigurable()) {
                 // When defined in connection profile but with empty value
                 log.debug("Prompt for MFA ARN");
                 try {
@@ -296,7 +296,7 @@ public class STSAuthorizationService {
             request.setRoleArn(roleArn);
         }
         else {
-            if(StringUtils.EMPTY.equals(roleArn)) {
+            if(bookmark.getProtocol().isRoleConfigurable()) {
                 // When defined in connection profile but with empty value
                 log.debug("Prompt for Role ARN");
                 final Credentials input = prompt.prompt(bookmark,
