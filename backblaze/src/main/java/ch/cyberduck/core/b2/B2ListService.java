@@ -21,38 +21,32 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import java.util.Collections;
-
 public class B2ListService implements ListService {
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
 
-    private Path bucket;
+    private final AttributedList<Path> buckets;
 
     public B2ListService(final B2Session session, final B2VersionIdProvider fileid) {
+        this(session, fileid, AttributedList.EMPTY);
+    }
+
+    public B2ListService(final B2Session session, final B2VersionIdProvider fileid, final AttributedList<Path> buckets) {
         this.session = session;
         this.fileid = fileid;
+        this.buckets = buckets;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            if(bucket != null) {
-                final AttributedList<Path> buckets = new AttributedList<>(Collections.singleton(bucket));
-                listener.chunk(directory, buckets);
-                return buckets;
+            if(buckets.isEmpty()) {
+                return new B2BucketListService(session, fileid).list(directory, listener);
             }
-            return new B2BucketListService(session, fileid).list(directory, listener);
+            listener.chunk(directory, buckets);
+            return buckets;
         }
         return new B2ObjectListService(session, fileid).list(directory, listener);
-    }
-
-    /**
-     * @param bucket When present, access is restricted to one bucket.
-     */
-    public B2ListService withBucket(final Path bucket) {
-        this.bucket = bucket;
-        return this;
     }
 }
