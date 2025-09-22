@@ -40,20 +40,20 @@ public class PreferencesUseragentProvider implements UseragentProvider {
     }
 
     private static String sanitizeApplicationName(final String application) {
-        final char[] rfc2616TokenSeparators = new char[]{
-                '(', ')', '<', '>', '@',
-                ',', ';', ':', '\\', '"',
-                '/', '[', ']', '?', '=',
-                '{', '}', ' ', '\t'
+        final char[] httpHeaderTokenSeparators = new char[]{
+                ' ', '\t', '"', '(', ')',
+                ',', '/', ':', ';', '<',
+                '=', '>', '?', '@', '[',
+                '\\', ']', '{', '}'
         };
-        if(StringUtils.indexOfAny(application, rfc2616TokenSeparators) == -1) {
+        if(StringUtils.indexOfAny(application, httpHeaderTokenSeparators) == -1) {
             return application;
         }
 
         final StringBuilder builder = new StringBuilder(application.length() - 1);
         for(int i = 0; i < application.length(); i++) {
             final char token = application.charAt(i);
-            if(ArrayUtils.indexOf(rfc2616TokenSeparators, token) != -1) {
+            if(ArrayUtils.indexOf(httpHeaderTokenSeparators, token) != -1) {
                 continue;
             }
 
