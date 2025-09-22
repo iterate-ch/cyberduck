@@ -19,9 +19,9 @@ import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
@@ -63,11 +63,11 @@ public class STSAuthorizationService {
     private static final Logger log = LogManager.getLogger(STSAuthorizationService.class);
 
     private final AWSSecurityTokenService service;
-    private final LoginCallback prompt;
+    private final PasswordCallback prompt;
     private final Host bookmark;
     private final HostPreferences preferences;
 
-    public STSAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
+    public STSAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
         this.bookmark = bookmark;
         this.service = AWSSecurityTokenServiceClientBuilder
                 .standard()
