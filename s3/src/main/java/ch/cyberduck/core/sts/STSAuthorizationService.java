@@ -129,17 +129,19 @@ public class STSAuthorizationService {
                 }
             }
         }
-        log.debug("Prompt for MFA token code");
-        final String tokenCode = prompt.prompt(
-                bookmark, String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                        mfaArn),
-                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                new LoginOptions(bookmark.getProtocol())
-                        .password(true)
-                        .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                        .keychain(false)
-        ).getPassword();
-        request.setTokenCode(tokenCode);
+        if(request.getSerialNumber() != null) {
+            log.debug("Prompt for MFA token code");
+            final String tokenCode = prompt.prompt(
+                    bookmark, String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                            mfaArn),
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    new LoginOptions(bookmark.getProtocol())
+                            .password(true)
+                            .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                            .keychain(false)
+            ).getPassword();
+            request.setTokenCode(tokenCode);
+        }
         log.debug("Request {} from {}", request, service);
         try {
             final GetSessionTokenResult result = service.getSessionToken(request);
