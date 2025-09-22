@@ -21,18 +21,47 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
 public class PreferencesUseragentProvider implements UseragentProvider {
 
-    private static final Preferences preferences
-            = PreferencesFactory.get();
+    private static final String ua = buildUserAgent();
 
-    private static final String ua = String.format("%s/%s.%s (%s/%s) (%s)",
-            preferences.getProperty("application.name"),
-            preferences.getProperty("application.version"),
-            preferences.getProperty("application.revision"),
-            preferences.getProperty("os.name"),
-            preferences.getProperty("os.version"),
-            preferences.getProperty("os.arch"));
+    private static String buildUserAgent() {
+        final Preferences preferences = PreferencesFactory.get();
+        return String.format("%s/%s.%s (%s/%s) (%s)",
+                sanitizeApplicationName(preferences.getProperty("application.name")),
+                preferences.getProperty("application.version"),
+                preferences.getProperty("application.revision"),
+                preferences.getProperty("os.name"),
+                preferences.getProperty("os.version"),
+                preferences.getProperty("os.arch"));
+    }
+
+    private static String sanitizeApplicationName(final String application) {
+        final char[] rfc2616TokenSeparators = new char[]{
+                '(', ')', '<', '>', '@',
+                ',', ';', ':', '\\', '"',
+                '/', '[', ']', '?', '=',
+                '{', '}', ' ', '\t'
+        };
+        if(StringUtils.indexOfAny(application, rfc2616TokenSeparators) == -1) {
+            return application;
+        }
+
+        final StringBuilder builder = new StringBuilder(application.length() - 1);
+        for(int i = 0; i < application.length(); i++) {
+            final char token = application.charAt(i);
+            if(ArrayUtils.indexOf(rfc2616TokenSeparators, token) != -1) {
+                continue;
+            }
+
+            builder.append(token);
+        }
+
+        return builder.toString();
+    }
 
     @Override
     public String get() {
