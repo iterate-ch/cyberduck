@@ -36,14 +36,14 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Swap static access key id and secret access key with temporary credentials obtained from STS AssumeRole
  */
-public class STSAssumeRoleRequestInterceptor extends STSRequestInterceptor implements S3CredentialsStrategy, HttpRequestInterceptor {
-    private static final Logger log = LogManager.getLogger(STSAssumeRoleRequestInterceptor.class);
+public class STSGetSessionTokenRequestInterceptor extends STSRequestInterceptor implements S3CredentialsStrategy, HttpRequestInterceptor {
+    private static final Logger log = LogManager.getLogger(STSGetSessionTokenRequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
 
     private final Host host;
 
-    public STSAssumeRoleRequestInterceptor(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
+    public STSGetSessionTokenRequestInterceptor(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         super(host, trust, key, prompt);
         this.host = host;
     }
@@ -52,10 +52,10 @@ public class STSAssumeRoleRequestInterceptor extends STSRequestInterceptor imple
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
-            if(StringUtils.isNotBlank(new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
+            if(StringUtils.isNotBlank(new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY))) {
                 log.debug("Retrieve temporary credentials with {}", credentials);
-                // AssumeRoleRequest
-                return tokens = this.assumeRole(credentials);
+                // GetSessionToken
+                return tokens = this.getSessionToken(credentials);
             }
             log.warn("Skip requesting tokens from token service for {}", credentials);
             return TemporaryAccessTokens.EMPTY;

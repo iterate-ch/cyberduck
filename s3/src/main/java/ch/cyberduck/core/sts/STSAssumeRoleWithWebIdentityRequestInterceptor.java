@@ -26,30 +26,19 @@ import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Swap OIDC Id token for temporary security credentials
  */
-public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRoleAuthorizationService implements S3CredentialsStrategy, HttpRequestInterceptor {
+public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestInterceptor implements S3CredentialsStrategy, HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(STSAssumeRoleWithWebIdentityRequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
-
-    private final Credentials basic;
-
-    /**
-     * Currently valid tokens
-     */
-    private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
 
     /**
      * Handle authentication with OpenID connect retrieving token for STS
@@ -61,9 +50,9 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRol
                                                           final LoginCallback prompt) {
         super(host, trust, key, prompt);
         this.oauth = oauth;
-        this.basic = host.getCredentials();
     }
 
+    @Override
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
@@ -77,30 +66,5 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSAssumeRol
         finally {
             lock.unlock();
         }
-    }
-
-    @Override
-    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        lock.lock();
-        try {
-            if(tokens.isExpired()) {
-                try {
-                    this.refresh(basic);
-                    log.info("Authorizing service request with STS tokens {}", tokens);
-                }
-                catch(BackgroundException e) {
-                    log.warn("Failure {} refreshing STS tokens {}", e, tokens);
-                    // Follow-up error 401 handled in error interceptor
-                }
-            }
-        }
-        finally {
-            lock.unlock();
-        }
-    }
-
-    @Override
-    public Credentials get() throws BackgroundException {
-        return basic.withTokens(tokens.isExpired() ? this.refresh(basic) : tokens);
     }
 }

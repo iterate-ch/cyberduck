@@ -52,9 +52,11 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.sts.STSAssumeRoleAuthorizationService;
 import ch.cyberduck.core.sts.STSAssumeRoleRequestInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityRequestInterceptor;
+import ch.cyberduck.core.sts.STSAuthorizationService;
+import ch.cyberduck.core.sts.STSGetSessionTokenRequestInterceptor;
+import ch.cyberduck.core.sts.STSRequestInterceptor;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -268,8 +270,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 return new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext());
             }
         }
-        if(host.getProtocol().isRoleConfigurable() || host.getProtocol().isMultiFactorConfigurable()) {
-            final STSAssumeRoleRequestInterceptor interceptor = new STSAssumeRoleRequestInterceptor(host, trust, key, prompt);
+        if(host.getProtocol().isRoleConfigurable()) {
+            final STSRequestInterceptor interceptor = new STSAssumeRoleRequestInterceptor(host, trust, key, prompt);
+            log.debug("Add interceptor {}", interceptor);
+            configuration.addInterceptorLast(interceptor);
+            return interceptor;
+        }
+        if(host.getProtocol().isMultiFactorConfigurable()) {
+            final STSRequestInterceptor interceptor = new STSGetSessionTokenRequestInterceptor(host, trust, key, prompt);
             log.debug("Add interceptor {}", interceptor);
             configuration.addInterceptorLast(interceptor);
             return interceptor;
@@ -292,7 +300,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 if(!credentials.isAnonymousLogin()) {
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
-                    new STSAssumeRoleAuthorizationService(host, trust, key, prompt).validate(credentials);
+                    new STSAuthorizationService(host, trust, key, prompt).validate(credentials);
                     return;
                 }
             }

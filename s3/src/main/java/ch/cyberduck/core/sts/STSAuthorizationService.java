@@ -59,15 +59,15 @@ import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
-public class STSAssumeRoleAuthorizationService {
-    private static final Logger log = LogManager.getLogger(STSAssumeRoleAuthorizationService.class);
+public class STSAuthorizationService {
+    private static final Logger log = LogManager.getLogger(STSAuthorizationService.class);
 
     private final AWSSecurityTokenService service;
     private final LoginCallback prompt;
     private final Host bookmark;
     private final HostPreferences preferences;
 
-    public STSAssumeRoleAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
+    public STSAuthorizationService(final Host bookmark, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         this.bookmark = bookmark;
         this.service = AWSSecurityTokenServiceClientBuilder
                 .standard()
