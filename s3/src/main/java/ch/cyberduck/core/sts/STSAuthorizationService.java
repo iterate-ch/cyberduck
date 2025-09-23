@@ -140,7 +140,9 @@ public class STSAuthorizationService {
                             .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
                             .keychain(false)
             ).getPassword();
-            request.setTokenCode(tokenCode);
+            if(StringUtils.isNotBlank(tokenCode)) {
+                request.setTokenCode(tokenCode);
+            }
         }
         log.debug("Request {} from {}", request, service);
         try {
@@ -230,7 +232,9 @@ public class STSAuthorizationService {
                             .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
                             .keychain(false)
             ).getPassword();
-            request.setTokenCode(tokenCode);
+            if(StringUtils.isNotBlank(tokenCode)) {
+                request.setTokenCode(tokenCode);
+            }
         }
         if(StringUtils.isNotBlank(settings.getProperty(Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY, "s3.assumerole.rolesessionname"))) {
             request.setRoleSessionName(settings.getProperty(Profile.STS_ROLE_SESSION_NAME_PROPERTY_KEY, "s3.assumerole.rolesessionname"));
