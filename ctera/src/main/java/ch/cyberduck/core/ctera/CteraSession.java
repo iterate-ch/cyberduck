@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -85,13 +84,12 @@ public class CteraSession extends DAVSession {
         configuration.disableRedirectHandling();
         if(preferences.getBoolean("ctera.download.directio.enable")) {
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt),
-                            directio = new CteraDirectIOInterceptor(this))));
+                    authentication = new CteraAuthenticationHandler(this, prompt), directio = new CteraDirectIOInterceptor(this)));
             configuration.addInterceptorFirst(directio);
         }
         else {
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new ExecutionCountServiceUnavailableRetryStrategy(authentication = new CteraAuthenticationHandler(this, prompt))));
+                    authentication = new CteraAuthenticationHandler(this, prompt)));
         }
         configuration.addInterceptorFirst(new CteraCookieInterceptor());
         final DAVClient client = new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);

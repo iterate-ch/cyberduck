@@ -31,7 +31,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -113,7 +112,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         // Force login even if browser session already exists
         authorizationService.withParameter("prompt", "login");
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
         final StoregateApiClient client = new StoregateApiClient(apache);

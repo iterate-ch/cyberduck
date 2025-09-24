@@ -44,7 +44,6 @@ import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
@@ -119,7 +118,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             }
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+                    new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         }
         configuration.setRedirectStrategy(new DAVRedirectStrategy(redirect));
         configuration.addInterceptorLast(new MicrosoftIISPersistentAuthResponseInterceptor());
