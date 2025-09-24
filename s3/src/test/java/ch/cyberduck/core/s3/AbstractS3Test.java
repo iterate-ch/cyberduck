@@ -88,7 +88,6 @@ public abstract class AbstractS3Test extends VaultTest {
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
-        session.getHost().getCredentials().setPassword(PROPERTIES.get("s3.secret"));
     }
 
     @Before
@@ -109,7 +108,6 @@ public abstract class AbstractS3Test extends VaultTest {
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(virtualhost, new DisabledCancelCallback());
-        virtualhost.getHost().getCredentials().setPassword(PROPERTIES.get("s3.secret"));
     }
 
     @Before
@@ -128,6 +126,5 @@ public abstract class AbstractS3Test extends VaultTest {
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(cloudfront, new DisabledCancelCallback());
-        cloudfront.getHost().getCredentials().setPassword(PROPERTIES.get("s3.secret"));
     }
 }

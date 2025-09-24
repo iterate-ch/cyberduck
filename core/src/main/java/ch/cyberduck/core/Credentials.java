@@ -19,15 +19,18 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * Stores the login credentials
  */
-public class Credentials implements Comparable<Credentials> {
+public class Credentials implements Comparable<Credentials>, PreferencesReader {
 
     /**
      * The login name
@@ -38,13 +41,26 @@ public class Credentials implements Comparable<Credentials> {
      * The login password
      */
     private String password = StringUtils.EMPTY;
+    /**
+     * Temporary access tokens
+     */
     private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
+    /**
+     * OIDC tokens
+     */
     private OAuthTokens oauth = OAuthTokens.EMPTY;
+    /**
+     * Custom protocol dependent properties related to authentication
+     */
+    private final Map<String, String> properties = new HashMap<>();
 
     /**
      * Private key identity for SSH public key authentication.
      */
     private Local identity;
+    /**
+     * Passphrase for private key identity for SSH public key authentication.
+     */
     private String identityPassphrase = StringUtils.EMPTY;
 
     /**
@@ -69,6 +85,7 @@ public class Credentials implements Comparable<Credentials> {
         this.password = copy.password;
         this.tokens = copy.tokens;
         this.oauth = copy.oauth;
+        this.properties.putAll(copy.properties);
         this.identity = copy.identity;
         this.identityPassphrase = copy.identityPassphrase;
         this.certificate = copy.certificate;
@@ -199,15 +216,26 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     public boolean isPasswordAuthentication() {
+        return this.isPasswordAuthentication(false);
+    }
+
+    /**
+     * @param allowblank Allow blank password
+     */
+    public boolean isPasswordAuthentication(final boolean allowblank) {
+        if(allowblank) {
+            // Allow blank password
+            return Objects.nonNull(password);
+        }
         return StringUtils.isNotBlank(password);
     }
 
     public boolean isTokenAuthentication() {
-        return StringUtils.isNotBlank(tokens.getSessionToken());
+        return tokens != TemporaryAccessTokens.EMPTY;
     }
 
     public boolean isOAuthAuthentication() {
-        return oauth.validate();
+        return oauth != OAuthTokens.EMPTY;
     }
 
     /**
@@ -271,6 +299,16 @@ public class Credentials implements Comparable<Credentials> {
             return false;
         }
         return true;
+    }
+
+    public Credentials withProperty(final String key, final String value) {
+        properties.put(key, value);
+        return this;
+    }
+
+    @Override
+    public String getProperty(final String key) {
+        return properties.get(key);
     }
 
     /**
@@ -337,6 +375,7 @@ public class Credentials implements Comparable<Credentials> {
         sb.append(", tokens='").append(tokens).append('\'');
         sb.append(", oauth='").append(oauth).append('\'');
         sb.append(", identity=").append(identity);
+        sb.append(", properties=").append(properties);
         sb.append('}');
         return sb.toString();
     }

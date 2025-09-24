@@ -151,7 +151,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Login
         try {
-            this.authenticate(proxy, session, cancel);
+            this.authenticate(session, cancel);
         }
         catch(BackgroundException e) {
             this.close(session);
@@ -159,11 +159,11 @@ public class LoginConnectionService implements ConnectionService {
         }
     }
 
-    private void authenticate(final ProxyFinder proxy, final Session session, final CancelCallback callback) throws BackgroundException {
-        if(!login.authenticate(proxy, session, listener, prompt, callback)) {
+    private void authenticate(final Session<?> session, final CancelCallback callback) throws BackgroundException {
+        if(!login.authenticate(session, listener, prompt, callback)) {
             if(session.isConnected()) {
                 // Next attempt with updated credentials but cancel when prompt is dismissed
-                this.authenticate(proxy, session, callback);
+                this.authenticate(session, callback);
             }
             else {
                 // Reconnect and next attempt with updated credentials

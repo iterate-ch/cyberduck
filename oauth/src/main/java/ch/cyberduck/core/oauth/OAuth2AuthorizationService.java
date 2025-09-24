@@ -105,7 +105,7 @@ public class OAuth2AuthorizationService {
         this.authorizationServerUrl = authorizationServerUrl;
         this.prompt = prompt;
         this.clientid = prompt(host, prompt, Profile.OAUTH_CLIENT_ID_KEY, LocaleFactory.localizedString(
-                Profile.OAUTH_CLIENT_ID_KEY, "Credentials"), clientid);
+                Profile.OAUTH_CLIENT_ID_KEY, "Credentials"), StringUtils.isBlank(clientid) ? null : clientid);
         this.clientsecret = prompt(host, prompt, Profile.OAUTH_CLIENT_SECRET_KEY, LocaleFactory.localizedString(
                 Profile.OAUTH_CLIENT_SECRET_KEY, "Credentials"), clientsecret);
         this.scopes = scopes;
@@ -387,7 +387,8 @@ public class OAuth2AuthorizationService {
         if(null == value) {
             final Credentials input = prompt.prompt(bookmark, message,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    new LoginOptions().icon(bookmark.getProtocol().disk()));
+                    new LoginOptions().icon(bookmark.getProtocol().disk())
+                            .passwordPlaceholder(message).password(false));
             if(input.isSaved()) {
                 HostPreferencesFactory.get(bookmark).setProperty(property, input.getPassword());
             }

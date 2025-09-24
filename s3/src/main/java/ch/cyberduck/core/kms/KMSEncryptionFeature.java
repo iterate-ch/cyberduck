@@ -20,7 +20,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -28,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
+import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -130,10 +130,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     private AWSKMS client(final Path container) throws BackgroundException {
         final AWSKMSClientBuilder builder = AWSKMSClientBuilder.standard()
-                .withClientConfiguration(configuration);
-        if(session.getClient().isAuthenticatedConnection()) {
-            builder.withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()));
-        }
+                .withClientConfiguration(configuration)
+                .withCredentials(S3CredentialsStrategy.toCredentialsProvider(session.getAuthentication().get()));
         final Location.Name region = location.getLocation(container);
         if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             if(Location.unknown.equals(region)) {
@@ -145,7 +143,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         }
         else {
             builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
-                new HostUrlProvider(false).get(session.getHost()), region.getIdentifier()));
+                    new HostUrlProvider(false).get(session.getHost()), region.getIdentifier()));
         }
         return builder.build();
     }

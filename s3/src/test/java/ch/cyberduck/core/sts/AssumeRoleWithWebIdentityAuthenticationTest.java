@@ -62,8 +62,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Credentials credentials = host.getCredentials();
-        assertNotEquals("rouser", credentials.getUsername());
-        assertNotEquals(StringUtils.EMPTY, credentials.getPassword());
+        assertEquals("rouser", credentials.getUsername());
+        assertEquals("rouser", credentials.getPassword());
 
         assertNotNull(credentials.getTokens().getAccessKeyId());
         assertNotNull(credentials.getTokens().getSecretAccessKey());
@@ -170,9 +170,6 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.getClient().setProviderCredentials(new AWSSessionCredentials(
-                credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
-                credentials.getTokens().getSessionToken()));
         new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());

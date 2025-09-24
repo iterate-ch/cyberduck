@@ -15,6 +15,7 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -22,8 +23,8 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -51,7 +52,8 @@ public class RemoteProfilesFinderTest {
                 return true;
             }
         }));
-        final Session session = new S3Session(new HostParser(protocols).get("s3:/profiles.cyberduck.io"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final Session session = new S3Session(new HostParser(protocols).get("s3:/profiles.cyberduck.io")
+                .withCredentials(new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name"))), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final Set<ProfileDescription> stream = finder.find();

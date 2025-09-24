@@ -20,12 +20,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 
 public class STSExceptionMappingService implements ExceptionMappingService<AWSSecurityTokenServiceException> {
+    private static final Logger log = LogManager.getLogger(STSExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final AWSSecurityTokenServiceException e) {
+        log.warn("Map failure {}", e.toString());
         if("RequestExpired".equals(e.getErrorCode())) {
             // The web identity token that was passed is expired or is not valid. Get a new identity token from the identity
             // provider and then retry the request.

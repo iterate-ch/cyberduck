@@ -252,15 +252,6 @@ public class S3SessionTest extends AbstractS3Test {
         session.close();
     }
 
-    @Test(expected = LoginFailureException.class)
-    public void testConnectCn_North_1() throws Exception {
-        final Host host = new Host(new S3Protocol(), "s3.cn-north-1.amazonaws.com.cn", new Credentials("AWS-QWEZUKJHGVCVBJHG", "uztfjkjnbvcf"));
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.close();
-    }
-
     @Test
     public void testAwsHostnames() {
         assertFalse(S3Session.isAwsHostname("play.min.io"));

@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-public class Host implements Serializable, Comparable<Host> {
+public class Host implements Serializable, Comparable<Host>, PreferencesReader {
 
     /**
      * The credentials to authenticate with for the CDN
@@ -347,6 +348,7 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     public void setCredentials(final Credentials credentials) {
+        log.debug("Setting credentials for {} to {}", this, credentials);
         this.credentials = credentials;
     }
 
@@ -527,10 +529,14 @@ public class Host implements Serializable, Comparable<Host> {
      * @param key Property name
      * @return Value for property key
      */
+    @Override
     public String getProperty(final String key) {
         final Map<String, String> overrides = this.getCustom();
         if(overrides.containsKey(key)) {
             return overrides.get(key);
+        }
+        if(credentials.getProperty(key) != null) {
+            return credentials.getProperty(key);
         }
         return protocol.getProperties().get(key);
     }

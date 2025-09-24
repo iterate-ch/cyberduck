@@ -22,7 +22,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,8 +60,7 @@ public class KeychainLoginService implements LoginService {
                     if(StringUtils.isNotBlank(password)) {
                         log.info("Fetched password from keychain for {}", bookmark);
                         // No need to reinsert found password to the keychain.
-                        credentials.setSaved(false);
-                        credentials.setPassword(password);
+                        credentials.withPassword(password).setSaved(false);
                     }
                 }
             }
@@ -72,8 +70,7 @@ public class KeychainLoginService implements LoginService {
                     if(StringUtils.isNotBlank(token)) {
                         log.info("Fetched token from keychain for {}", bookmark);
                         // No need to reinsert found token to the keychain.
-                        credentials.setSaved(false);
-                        credentials.setToken(token);
+                        credentials.withToken(token).setSaved(false);
                     }
                 }
             }
@@ -82,8 +79,7 @@ public class KeychainLoginService implements LoginService {
                 if(StringUtils.isNotBlank(passphrase)) {
                     log.info("Fetched private key passphrase from keychain for {}", bookmark);
                     // No need to reinsert found token to the keychain.
-                    credentials.setSaved(false);
-                    credentials.setIdentityPassphrase(passphrase);
+                    credentials.withIdentityPassphrase(passphrase).setSaved(false);
                 }
             }
             if(options.oauth) {
@@ -91,17 +87,19 @@ public class KeychainLoginService implements LoginService {
                 if(tokens.validate()) {
                     log.info("Fetched OAuth token from keychain for {}", bookmark);
                     // No need to reinsert found token to the keychain.
-                    credentials.setSaved(tokens.isExpired());
-                    credentials.setOauth(tokens);
+                    credentials.withOauth(tokens).setSaved(tokens.isExpired());
                 }
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
-            final CredentialsConfigurator configurator = bookmark.getProtocol().getFeature(CredentialsConfigurator.class);
+            final CredentialsConfigurator configurator = CredentialsConfiguratorFactory.get(bookmark.getProtocol());
             log.debug("Auto configure credentials with {}", configurator);
-            bookmark.setCredentials(configurator.configure(bookmark));
-        }
-        if(!credentials.validate(bookmark.getProtocol(), options)) {
+            final Credentials configuration = configurator.configure(bookmark);
+            if(configuration.validate(bookmark.getProtocol(), options)) {
+                bookmark.setCredentials(configuration);
+                log.info("Auto configured credentials {} for {}", configuration, bookmark);
+                return;
+            }
             final StringAppender message = new StringAppender();
             if(options.password) {
                 message.append(MessageFormat.format(LocaleFactory.localizedString(
@@ -157,7 +155,7 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public boolean authenticate(final ProxyFinder proxy, final Session session, final ProgressListener listener,
+    public boolean authenticate(final Session<?> session, final ProgressListener listener,
                                 final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         final Credentials credentials = bookmark.getCredentials();
@@ -187,7 +185,7 @@ public class KeychainLoginService implements LoginService {
                     c.initCause(e);
                 }
                 catch(IllegalArgumentException | IllegalStateException r) {
-                    log.warn("Ignore error {} initializing faiulre {} with cause {}", r, e, c);
+                    log.warn("Ignore error {} initializing failure {} with cause {}", r, e, c);
                 }
                 throw c;
             }
