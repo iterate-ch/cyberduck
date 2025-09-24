@@ -58,7 +58,7 @@ public class S3AWS2SignatureRequestInterceptor implements HttpRequestInterceptor
                 log.warn("Skip authentication request {}", request);
                 return;
             }
-            if(credentials.isTokenAuthentication()) {
+            if(StringUtils.isNotBlank(credentials.getToken())) {
                 request.setHeader(SECURITY_TOKEN, credentials.getToken());
             }
             final String bucketName;
