@@ -54,7 +54,8 @@ public class CryptoFilenameV7Provider implements CryptoFilename {
         if(this.isBelowThreshold(filename)) {
             return filename;
         }
-        throw new CryptoInvalidFilenameException(String.format("Filename length %d exceeds maximum length %d", filename.length(), DEFAULT_NAME_SHORTENING_THRESHOLD));
+        throw new CryptoInvalidFilenameException(String.format("Filename %s with length %d exceeds maximum of %d characters",
+                filename, filename.length(), DEFAULT_NAME_SHORTENING_THRESHOLD));
     }
 
     @Override
