@@ -49,17 +49,14 @@ public class PreferencesUseragentProvider implements UseragentProvider {
         if(StringUtils.indexOfAny(application, httpHeaderTokenSeparators) == -1) {
             return application;
         }
-
-        final StringBuilder builder = new StringBuilder(application.length() - 1);
+        final StringBuilder builder = new StringBuilder();
         for(int i = 0; i < application.length(); i++) {
             final char token = application.charAt(i);
             if(ArrayUtils.indexOf(httpHeaderTokenSeparators, token) != -1) {
                 continue;
             }
-
             builder.append(token);
         }
-
         return builder.toString();
     }
 
