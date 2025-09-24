@@ -278,6 +278,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             }
             context = new AuthenticationContext(username, credentials.getPassword().toCharArray(), domain);
         }
+        log.debug("Login with context {}", context);
         try {
             shares = new SMBRootListService(this, prompt, session = client.authenticate(context));
         }
