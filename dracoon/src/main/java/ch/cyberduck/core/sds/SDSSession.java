@@ -23,7 +23,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
@@ -187,9 +186,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-
-                new ExecutionCountServiceUnavailableRetryStrategy(new PreconditionFailedResponseInterceptor(host, authorizationService, prompt),
-                        new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+                new PreconditionFailedResponseInterceptor(host, authorizationService, prompt),
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         if(HostPreferencesFactory.get(host).getBoolean("sds.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
                     HostPreferencesFactory.get(host).getInteger("sds.limit.requests.second")
