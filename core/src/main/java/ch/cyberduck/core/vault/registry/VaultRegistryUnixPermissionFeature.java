@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.EnumSet;
 

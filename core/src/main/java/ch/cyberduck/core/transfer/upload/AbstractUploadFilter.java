@@ -171,7 +171,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
                 else {
                     if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.permissions.default")) {
-                        status.setPermission(feature.getDefault(file.getType()));
+                        status.setPermission(feature.getDefault(file.getParent(), file.getType()));
                     }
                     else {
                         // Read permissions from local file
