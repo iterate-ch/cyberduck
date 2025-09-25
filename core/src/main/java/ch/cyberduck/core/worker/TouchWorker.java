@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -62,23 +63,24 @@ public class TouchWorker extends Worker<Path> {
                 .setLength(0L)
                 .setMime(new MappingMimeTypeService().getMime(file.getName()))
                 .setLockId(this.getLockId(file));
+        final Path container = session.getFeature(PathContainerService.class).getContainer(file);
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
-            status.setEncryption(encryption.getDefault(file));
+            status.setEncryption(encryption.getDefault(container));
         }
         final Redundancy redundancy = session.getFeature(Redundancy.class);
         if(redundancy != null) {
-            status.setStorageClass(redundancy.getDefault(file));
+            status.setStorageClass(redundancy.getDefault(container));
         }
         status.setModified(System.currentTimeMillis());
         if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {
             final UnixPermission permission = session.getFeature(UnixPermission.class);
             if(permission != null) {
-                status.setPermission(permission.getDefault(EnumSet.of(Path.Type.file)));
+                status.setPermission(permission.getDefault(file.getParent(), EnumSet.of(Path.Type.file)));
             }
             final AclPermission acl = session.getFeature(AclPermission.class);
             if(acl != null) {
-                status.setAcl(acl.getDefault(file));
+                status.setAcl(acl.getDefault(container));
             }
         }
         final Path result = feature.touch(session.getFeature(Write.class), file, status);
