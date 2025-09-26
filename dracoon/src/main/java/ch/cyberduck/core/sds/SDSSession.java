@@ -631,7 +631,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSTimestampFeature(this, nodeid);
         }
         if(type == Move.class) {
-            return (T) new SDSDelegatingMoveFeature(this, nodeid, new SDSMoveFeature(this, nodeid));
+            return (T) new SDSDelegatingMoveFeature(this, nodeid, new SDSMoveFeature(this, nodeid),
+                    new SDSDelegatingCopyFeature(this, nodeid, new SDSCopyFeature(this, nodeid)));
         }
         if(type == Copy.class) {
             return (T) new SDSDelegatingCopyFeature(this, nodeid, new SDSCopyFeature(this, nodeid));
