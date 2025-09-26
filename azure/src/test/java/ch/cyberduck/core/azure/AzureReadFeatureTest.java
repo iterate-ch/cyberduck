@@ -40,7 +40,7 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
     public void testReadZeroLength() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
         final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus().setLength(0L), new DisabledConnectionCallback());
         assertNotNull(in);
         in.close();
@@ -51,7 +51,7 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
     public void testReadRange() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
         final OutputStream out = new AzureWriteFeature(session).write(test, new TransferStatus().setExists(true).setLength(content.length), new DisabledConnectionCallback());
         assertNotNull(out);

@@ -121,7 +121,7 @@ public class ReadWriteMetadataWorkerTest {
                     return (T) new Metadata() {
 
                         @Override
-                        public Map<String, String> getDefault() {
+                        public Map<String, String> getDefault(final Path file) {
                             return Collections.emptyMap();
                         }
 

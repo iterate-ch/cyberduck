@@ -51,7 +51,7 @@ public class BoxFindFeatureTest extends AbstractBoxTest {
     public void testFindDirectory() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new BoxFindFeature(session, fileid).find(folder));
         assertFalse(new BoxFindFeature(session, fileid).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -61,7 +61,7 @@ public class BoxFindFeatureTest extends AbstractBoxTest {
     public void testFindFile() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BoxTouchFeature(session, fileid).touch(file, new TransferStatus());
+        new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), file, new TransferStatus());
         assertTrue(new BoxFindFeature(session, fileid).find(file));
         assertFalse(new BoxFindFeature(session, fileid).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

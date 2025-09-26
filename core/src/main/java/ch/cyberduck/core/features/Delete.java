@@ -67,13 +67,6 @@ public interface Delete {
     }
 
     /**
-     * @return True if the implementation supports deleting folders recursively
-     */
-    default boolean isRecursive() {
-        return this.features().contains(Flags.recursive);
-    }
-
-    /**
      * Callback for every file deleted
      */
     interface Callback {
@@ -94,7 +87,7 @@ public interface Delete {
     /**
      * @return Supported features
      */
-    default EnumSet<Flags> features() {
+    default EnumSet<Flags> features(final Path file) {
         return EnumSet.noneOf(Flags.class);
     }
 

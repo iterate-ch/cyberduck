@@ -29,12 +29,13 @@ public interface Redundancy {
     /**
      * @return Default storage class for new files
      */
-    String getDefault();
+    String getDefault(final Path file);
 
     /**
+     * @param file File
      * @return List of supported redundancy settings
      */
-    Set<String> getClasses();
+    Set<String> getClasses(Path file);
 
     /**
      * @param file       File

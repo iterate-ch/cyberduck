@@ -27,7 +27,7 @@ import java.text.MessageFormat;
 public class StoregateTouchFeature extends DefaultTouchFeature<File> {
 
     public StoregateTouchFeature(final StoregateSession session, final StoregateIdProvider fileid) {
-        super(new StoregateWriteFeature(session, fileid));
+        super(session);
     }
 
     @Override

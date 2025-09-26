@@ -39,7 +39,7 @@ public class BoxReadFeatureTest extends AbstractBoxTest {
     public void testReadZeroLength() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BoxTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), test, new TransferStatus());
         final InputStream in = new BoxReadFeature(session, fileid).read(test, new TransferStatus().setLength(0L), new DisabledConnectionCallback());
         assertNotNull(in);
         in.close();

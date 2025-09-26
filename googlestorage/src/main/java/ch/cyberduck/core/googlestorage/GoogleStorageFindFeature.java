@@ -26,8 +26,8 @@ public class GoogleStorageFindFeature implements Find {
 
     private final GoogleStorageAttributesFinderFeature attributes;
 
-    public GoogleStorageFindFeature(final GoogleStorageSession session) {
-        this.attributes = new GoogleStorageAttributesFinderFeature(session);
+    public GoogleStorageFindFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
+        this.attributes = new GoogleStorageAttributesFinderFeature(session, versioning);
     }
 
     @Override

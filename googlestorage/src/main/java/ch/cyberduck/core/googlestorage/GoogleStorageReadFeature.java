@@ -41,9 +41,11 @@ public class GoogleStorageReadFeature implements Read {
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
+    private final Versioning versioning;
 
-    public GoogleStorageReadFeature(final GoogleStorageSession session) {
+    public GoogleStorageReadFeature(final GoogleStorageSession session, final Versioning versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -58,10 +60,8 @@ public class GoogleStorageReadFeature implements Read {
             if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
-            final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                    containerService.getContainer(file)
-            ) : VersioningConfiguration.empty();
-            if(versioning.isEnabled()) {
+            final VersioningConfiguration config = null != versioning ? versioning.getConfiguration(containerService.getContainer(file)) : VersioningConfiguration.empty();
+            if(config.isEnabled()) {
                 if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
                     request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
                 }

@@ -28,7 +28,7 @@ import java.text.MessageFormat;
 public class EueTouchFeature extends DefaultTouchFeature<EueWriteFeature.Chunk> {
 
     public EueTouchFeature(final EueSession session, final EueResourceIdProvider fileid) {
-        super(new EueWriteFeature(session, fileid));
+        super(session);
     }
 
     @Override

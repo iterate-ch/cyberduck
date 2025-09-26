@@ -1,7 +1,6 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
@@ -179,7 +178,7 @@ public class DownloadTransferTest {
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> d, final TransferAction action, final ProgressListener listener) {
                 return new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                        new NullTransferSession(new Host(new TestProtocol())), new DefaultDownloadFeature(source.getFeature(Read.class)) {
+                        new NullTransferSession(new Host(new TestProtocol())), new DefaultDownloadFeature(session) {
                     @Override
                     public boolean offset(final Path file) {
                         return true;

@@ -42,7 +42,7 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
     public void testFind() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
@@ -53,7 +53,7 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
     @Test
     public void testFindContainer() throws Exception {
         final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new AzureDirectoryFeature(session).mkdir(container, new TransferStatus());
+        new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), container, new TransferStatus());
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(container);
         assertNotEquals(PathAttributes.EMPTY, attributes);
@@ -64,13 +64,13 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
     @Test
     public void testMissingPlaceholder() throws Exception {
         final Path container = new AzureDirectoryFeature(session).mkdir(
-                new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new AzureWriteFeature(session), new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String prefix = new AlphanumericRandomStringService().random();
         final Path intermediate = new Path(container, prefix, EnumSet.of(Path.Type.directory));
-        final Path directory = new AzureDirectoryFeature(session).mkdir(new Path(intermediate, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), new Path(intermediate, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureFindFeature(session).find(directory));
         final Path test = new AzureTouchFeature(session).touch(
-                new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new AzureWriteFeature(session), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(container);
         assertNotEquals(PathAttributes.EMPTY, attributes);

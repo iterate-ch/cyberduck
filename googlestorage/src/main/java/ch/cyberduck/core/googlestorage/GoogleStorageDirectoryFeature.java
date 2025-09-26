@@ -43,17 +43,16 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
+    private final GoogleStorageVersioningFeature versioning;
 
-    private Write<StorageObject> writer;
-
-    public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
+    public GoogleStorageDirectoryFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
-        this.writer = new GoogleStorageWriteFeature(session);
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 final Storage.Buckets.Insert request = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
@@ -64,13 +63,13 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
                 final Bucket bucket = request.execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
-                return new Path(folder).withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
+                return new Path(folder).withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session, versioning).toAttributes(bucket));
             }
             else {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 // Add placeholder object
-                return new GoogleStorageTouchFeature(session).withWriter(writer).touch(folder.withType(type),
+                return new GoogleStorageTouchFeature(session).touch(writer, folder.withType(type),
                         status.setMime(MIMETYPE));
             }
         }
@@ -96,9 +95,4 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
         }
     }
 
-    @Override
-    public Directory<StorageObject> withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return this;
-    }
 }

@@ -84,16 +84,15 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
     public void testReadRange() throws Exception {
         final Path drive = new DefaultHomeFinderService(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(test, new TransferStatus());
-
+        new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<>(new DropboxWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+        new DefaultUploadFeature<Metadata>(session).upload(
+                new DropboxWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
@@ -120,7 +119,7 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
         final Path directory = new DropboxDirectoryFeature(session).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DropboxWriteFeature writer = new DropboxWriteFeature(session);
         final HttpResponseOutputStream<Metadata> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
@@ -137,7 +136,7 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         final byte[] content = RandomUtils.nextBytes(1645);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         final Path directory = new DropboxDirectoryFeature(session).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DropboxWriteFeature writer = new DropboxWriteFeature(session);
         final HttpResponseOutputStream<Metadata> out = writer.write(test, status, new DisabledConnectionCallback());

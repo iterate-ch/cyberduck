@@ -27,6 +27,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
@@ -66,8 +67,8 @@ public class FTPListServiceTest extends AbstractFTPTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new FTPListService(session), cryptomator).list(vault).isEmpty());
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)
-        ), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
+                session), cryptomator).touch(new CryptoWriteFeature<>(session, new FTPWriteFeature(session), cryptomator), test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new FTPListService(session), cryptomator).list(vault, new DisabledListProgressListener() {
             @Override
             public void cleanup(final Path directory, final AttributedList<Path> list, final Optional<BackgroundException> e) {

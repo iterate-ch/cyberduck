@@ -64,13 +64,14 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testMove() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionId = test.attributes().getVersionId();
-        final Path target = new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test,
+        final SDSDelegatingMoveFeature feature = new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid), new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid)));
+        final Path target = feature.move(test,
                 new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertThrows(NotfoundException.class, () -> new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertThrows(NotfoundException.class, () -> feature.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         assertEquals(versionId, target.attributes().getVersionId());
         assertEquals(versionId, new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
         assertFalse(new SDSFindFeature(session, nodeid).find(test));
@@ -83,12 +84,12 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testRenameCaseChangeOnly() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionId = test.attributes().getVersionId();
         final Path target = new Path(room, test.getName().toUpperCase(), EnumSet.of(Path.Type.file));
-        final Path result = new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target,
+        final Path result = new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid), new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid))).move(test, target,
                 new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(versionId, result.attributes().getVersionId());
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -98,14 +99,14 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testMoveDifferentDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room1 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room1 = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), test, new TransferStatus());
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid), new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid))).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         test.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(session, nodeid).find(test));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
@@ -116,16 +117,16 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testMoveWithRenameDifferentDataRoomSameFilename() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room1 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room1 = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test1 = new Path(room1, "A", EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(test1, new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), test1, new TransferStatus());
         final Path test2 = new Path(room2, "A", EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(test2, new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), test2, new TransferStatus());
         final Path target = new Path(room2, "A (2)", EnumSet.of(Path.Type.file));
-        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test1, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid), new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid))).move(test1, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         test1.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(session, nodeid).find(test1));
         assertTrue(new SDSFindFeature(session, nodeid).find(test2));
@@ -140,20 +141,20 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
-        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid, new SDSMissingFileKeysSchedulerFeature(session, nodeid));
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().setLength(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback() {
+        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid), new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid))).move(test, target, new TransferStatus().setLength(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
                 //
@@ -191,7 +192,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
-        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2));
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -202,7 +203,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().setLength(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid), new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid))).move(test, target, new TransferStatus().setLength(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new SDSFindFeature(session, nodeid).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
         final byte[] compare = new byte[content.length];
@@ -229,7 +230,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
-        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
         new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room2)), StringUtils.EMPTY, null);
@@ -238,13 +239,13 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid, new SDSMissingFileKeysSchedulerFeature(session, nodeid));
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().setLength(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback() {
+        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid), new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid))).move(test, target, new TransferStatus().setLength(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
                 //
@@ -280,16 +281,16 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final String roomName = new AlphanumericRandomStringService().random();
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
         new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), StringUtils.EMPTY, null);
         final AttributedList<Path> list = new SDSListService(session, nodeid).list(room.getParent(), new DisabledListProgressListener());
         final Path encrypted = list.get(room);
         // create file inside encrypted room
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(encrypted, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid), new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid))).move(encrypted, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertFalse(new SDSFindFeature(session, nodeid).find(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(new SDSFindFeature(session, nodeid).find(renamed));

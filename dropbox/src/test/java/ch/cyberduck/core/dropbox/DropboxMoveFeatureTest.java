@@ -53,7 +53,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
     @Test
     public void testMoveFile() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path file = new DropboxTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
         final Path target = new DropboxMoveFeature(session).move(file, new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -72,9 +72,9 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
     public void testMoveOverride() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(test, new TransferStatus());
+        new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(target, new TransferStatus());
+        new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), target, new TransferStatus());
         assertThrows(ConflictException.class, () -> new DropboxMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         new DropboxMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DropboxFindFeature(session).find(test));
@@ -85,7 +85,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
     @Test
     public void testMoveDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path directory = new DropboxDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DropboxDirectoryFeature(session).mkdir(new DropboxWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(directory));
         assertTrue(new DefaultFindFeature(session).find(directory));
         final Path target = new DropboxMoveFeature(session).move(directory, new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -100,13 +100,13 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
     public void testMoveToExistingFile() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
-            new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         final Path test = new DropboxTouchFeature(session).touch(
-            new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(test));
         final Path temp = new DropboxTouchFeature(session).touch(
-            new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(temp));
         new DropboxMoveFeature(session).move(temp, test, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final AttributedList<Path> files = new DropboxListService(session).list(folder, new DisabledListProgressListener());
@@ -120,13 +120,13 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
     public void testMoveCaseSensitive() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         final Path test = new DropboxTouchFeature(session).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(test));
         final Path temp = new DropboxTouchFeature(session).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(temp));
         new DropboxMoveFeature(session).move(temp, new Path(folder, StringUtils.upperCase(test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final AttributedList<Path> list = new DropboxListService(session).list(folder, new DisabledListProgressListener());
@@ -140,7 +140,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
     public void testMoveInvalidFilename() throws Exception {
         final DropboxMoveFeature feature = new DropboxMoveFeature(session);
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path file = new DropboxTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(home, "~$f", EnumSet.of(Path.Type.file));
         assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, Optional.of(target)));
         assertThrows(AccessDeniedException.class, () -> feature.move(file, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
@@ -159,7 +159,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
     public void testRenameCaseOnly() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new DropboxTouchFeature(session).touch(new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
         assertThrows(InvalidFilenameException.class, () -> new DropboxMoveFeature(session).preflight(file, Optional.of(rename)));
         assertThrows(ConflictException.class, () -> new DropboxMoveFeature(session).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback()));

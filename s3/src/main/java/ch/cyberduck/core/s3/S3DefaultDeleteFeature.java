@@ -52,7 +52,7 @@ public class S3DefaultDeleteFeature implements Delete {
         this.session = session;
         this.multipartService = multipartService;
         this.versioningService = versioningService;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {

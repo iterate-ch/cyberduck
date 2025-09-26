@@ -15,17 +15,21 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
-import java.util.EnumSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class VaultRegistryAclPermissionFeature implements AclPermission {
 
@@ -50,18 +54,42 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
     }
 
     @Override
-    public List<Acl.User> getAvailableAclUsers() {
-        return proxy.getAvailableAclUsers();
+    public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
+        try {
+            final Set<Acl.User> users = new HashSet<>();
+            for(Path file : files) {
+                users.addAll(registry.find(session, file).getFeature(session, AclPermission.class, proxy).getAvailableAclUsers(Collections.singletonList(file)));
+            }
+            return new ArrayList<>(users);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getAvailableAclUsers(files);
+        }
+        catch(UnsupportedException e) {
+            return Collections.emptyList();
+        }
     }
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-        return proxy.getAvailableAclRoles(files);
+        try {
+            final Set<Acl.Role> users = new HashSet<>();
+            for(Path file : files) {
+                users.addAll(registry.find(session, file).getFeature(session, AclPermission.class, proxy).getAvailableAclRoles(Collections.singletonList(file)));
+            }
+            return new ArrayList<>(users);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getAvailableAclRoles(files);
+        }
+        catch(UnsupportedException e) {
+            return Collections.emptyList();
+        }
     }
 
     @Override
     public Acl getDefault(final Path file) throws BackgroundException {
-        return proxy.getDefault(file);
+        return registry.find(session, file).getFeature(session, AclPermission.class, proxy).getDefault(file);
     }
 
     @Override

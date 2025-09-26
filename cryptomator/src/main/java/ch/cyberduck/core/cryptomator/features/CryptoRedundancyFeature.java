@@ -36,13 +36,13 @@ public class CryptoRedundancyFeature implements Redundancy {
     }
 
     @Override
-    public String getDefault() {
-        return delegate.getDefault();
+    public String getDefault(final Path file) {
+        return delegate.getDefault(file);
     }
 
     @Override
-    public Set<String> getClasses() {
-        return delegate.getClasses();
+    public Set<String> getClasses(final Path file) {
+        return delegate.getClasses(file);
     }
 
     @Override

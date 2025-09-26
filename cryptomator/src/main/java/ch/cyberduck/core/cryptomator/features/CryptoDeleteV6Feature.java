@@ -93,7 +93,7 @@ public class CryptoDeleteV6Feature implements Delete, Trash {
             if(f.equals(vault.getHome())) {
                 log.warn("Recursively delete vault {}", f);
                 final List<Path> metadata = new ArrayList<>();
-                if(!proxy.isRecursive()) {
+                if(!proxy.features(f).contains(Delete.Flags.recursive)) {
                     final Find find = session._getFeature(Find.class);
                     final Path dataRoot = new Path(f, "d", f.getType());
                     if(find.find(dataRoot)) {
@@ -128,8 +128,8 @@ public class CryptoDeleteV6Feature implements Delete, Trash {
     }
 
     @Override
-    public EnumSet<Flags> features() {
-        return proxy.features();
+    public EnumSet<Flags> features(final Path file) {
+        return proxy.features(file);
     }
 
     @Override

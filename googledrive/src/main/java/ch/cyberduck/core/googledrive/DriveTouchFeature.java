@@ -18,12 +18,12 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -34,7 +34,7 @@ import java.util.Collections;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-public class DriveTouchFeature implements Touch<VersionId> {
+public class DriveTouchFeature implements Touch<File> {
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
@@ -45,7 +45,7 @@ public class DriveTouchFeature implements Touch<VersionId> {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<File> writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
             try {
                 if(!new DriveAttributesFinderFeature(session, fileid).find(file).isTrashed()) {

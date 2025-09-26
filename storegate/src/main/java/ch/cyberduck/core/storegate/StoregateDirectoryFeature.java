@@ -17,10 +17,10 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFolderRequest;
@@ -29,7 +29,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 
-public class StoregateDirectoryFeature implements Directory<VersionId> {
+public class StoregateDirectoryFeature implements Directory<File> {
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
@@ -40,7 +40,7 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<File> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
             final CreateFolderRequest request = new CreateFolderRequest();

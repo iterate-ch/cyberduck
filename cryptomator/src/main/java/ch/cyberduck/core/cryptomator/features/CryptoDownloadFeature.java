@@ -35,15 +35,15 @@ public class CryptoDownloadFeature implements Download {
     private final Download proxy;
     private final Vault vault;
 
-    public CryptoDownloadFeature(final Session<?> session, final Download proxy, final Read reader, final CryptoVault vault) {
+    public CryptoDownloadFeature(final Session<?> session, final Download proxy, final CryptoVault vault) {
         this.session = session;
-        this.proxy = proxy.withReader(new CryptoReadFeature(session, reader, vault));
+        this.proxy = proxy;
         this.vault = vault;
     }
 
     @Override
-    public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        proxy.download(vault.encrypt(session, file), local, throttle, listener, status, callback);
+    public void download(final Read read, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        proxy.download(read, vault.encrypt(session, file), local, throttle, listener, status, callback);
     }
 
     @Override
@@ -54,11 +54,6 @@ public class CryptoDownloadFeature implements Download {
         catch(NotfoundException e) {
             return false;
         }
-    }
-
-    @Override
-    public Download withReader(final Read reader) {
-        return this;
     }
 
     @Override

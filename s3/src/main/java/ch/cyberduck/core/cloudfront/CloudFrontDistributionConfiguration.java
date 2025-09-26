@@ -25,7 +25,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
@@ -44,6 +43,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -113,7 +113,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     @Override
     public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
-        final Path container = session.getFeature(PathContainerService.class).getContainer(file);
+        final Path container = new S3PathContainerService(session.getHost()).getContainer(file);
         try {
             log.debug("List {} distributions", method);
             final AmazonCloudFront client = this.client(container);
@@ -171,7 +171,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     @Override
     public void write(final Path file, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
-        final Path container = session.getFeature(PathContainerService.class).getContainer(file);
+        final Path container = new S3PathContainerService(session.getHost()).getContainer(file);
         try {
             if(null == distribution.getId()) {
                 // No existing configuration
@@ -242,17 +242,17 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             if(d.isEnabled()) {
                 final List<String> keys = new ArrayList<>();
                 for(Path file : files) {
-                    if(session.getFeature(PathContainerService.class).isContainer(file)) {
+                    if(new S3PathContainerService(session.getHost()).isContainer(file)) {
                         // To invalidate all of the objects in a distribution
                         keys.add(String.format("%s*", Path.DELIMITER));
                     }
                     else {
                         if(file.isDirectory()) {
                             // The *, which replaces 0 or more characters, must be the last character in the invalidation path
-                            keys.add(String.format("/%s*", session.getFeature(PathContainerService.class).getKey(file)));
+                            keys.add(String.format("/%s*", new S3PathContainerService(session.getHost()).getKey(file)));
                         }
                         else {
-                            keys.add(String.format("/%s", session.getFeature(PathContainerService.class).getKey(file)));
+                            keys.add(String.format("/%s", new S3PathContainerService(session.getHost()).getKey(file)));
                         }
                     }
                 }

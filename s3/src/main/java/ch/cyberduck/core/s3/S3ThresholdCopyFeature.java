@@ -47,7 +47,7 @@ public class S3ThresholdCopyFeature implements Copy {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
         this.multipartThreshold = HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.required.threshold");
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {

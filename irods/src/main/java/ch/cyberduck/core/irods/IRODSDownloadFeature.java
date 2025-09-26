@@ -51,7 +51,7 @@ public class IRODSDownloadFeature implements Download {
     }
 
     @Override
-    public void download(final Path file, final Local local, final BandwidthThrottle throttle,
+    public void download(final Read read, final Path file, final Local local, final BandwidthThrottle throttle,
                          final StreamListener listener, final TransferStatus status,
                          final ConnectionCallback callback) throws BackgroundException {
         try {
@@ -86,10 +86,5 @@ public class IRODSDownloadFeature implements Download {
     @Override
     public boolean offset(final Path file) {
         return false;
-    }
-
-    @Override
-    public Download withReader(final Read reader) {
-        return this;
     }
 }

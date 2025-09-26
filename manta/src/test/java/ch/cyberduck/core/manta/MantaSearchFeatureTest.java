@@ -46,7 +46,7 @@ public class MantaSearchFeatureTest extends AbstractMantaTest {
 
         final String emptyDirectoryName = new AlphanumericRandomStringService().random();
         final Path emptyDirectory = new Path(testPathPrefix, emptyDirectoryName, EnumSet.of(AbstractPath.Type.directory));
-        new MantaDirectoryFeature(session).mkdir(emptyDirectory, null);
+        new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), emptyDirectory, null);
 
         final MantaSearchFeature s = new MantaSearchFeature(session);
         final AttributedList<Path> search = s.search(emptyDirectory, new NullFilter<>(), new DisabledListProgressListener());
@@ -61,8 +61,8 @@ public class MantaSearchFeatureTest extends AbstractMantaTest {
         final String newDirectoryName = new AlphanumericRandomStringService().random();
         final Path newDirectory = new Path(testPathPrefix, newDirectoryName, TYPE_DIRECTORY);
         final String newFileName = new AlphanumericRandomStringService().random();
-        new MantaDirectoryFeature(session).mkdir(newDirectory, null);
-        new MantaTouchFeature(session).touch(new Path(newDirectory, newFileName, TYPE_FILE), null);
+        new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), newDirectory, null);
+        new MantaTouchFeature(session).touch(new MantaWriteFeature(session), new Path(newDirectory, newFileName, TYPE_FILE), null);
 
         final MantaSearchFeature s = new MantaSearchFeature(session);
         final AttributedList<Path> search = s.search(newDirectory, new NullFilter<>(), new DisabledListProgressListener());
@@ -82,10 +82,10 @@ public class MantaSearchFeatureTest extends AbstractMantaTest {
 
         final Path newDirectory = new Path(testPathPrefix, newDirectoryName, TYPE_DIRECTORY);
         final Path intermediateDirectory = new Path(newDirectory, intermediateDirectoryName, TYPE_DIRECTORY);
-        new MantaDirectoryFeature(session).mkdir(newDirectory, null);
-        new MantaDirectoryFeature(session).mkdir(intermediateDirectory, null);
-        new MantaTouchFeature(session).touch(new Path(newDirectory, intermediateFileName, TYPE_FILE), null);
-        new MantaTouchFeature(session).touch(new Path(intermediateDirectory, nestedFileName, TYPE_FILE), null);
+        new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), newDirectory, null);
+        new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), intermediateDirectory, null);
+        new MantaTouchFeature(session).touch(new MantaWriteFeature(session), new Path(newDirectory, intermediateFileName, TYPE_FILE), null);
+        new MantaTouchFeature(session).touch(new MantaWriteFeature(session), new Path(intermediateDirectory, nestedFileName, TYPE_FILE), null);
 
         final MantaSearchFeature s = new MantaSearchFeature(session);
         final AttributedList<Path> search = s.search(newDirectory, new NullFilter<>(), new DisabledListProgressListener());

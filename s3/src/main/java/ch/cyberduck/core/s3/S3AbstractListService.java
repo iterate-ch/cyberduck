@@ -26,7 +26,7 @@ public abstract class S3AbstractListService implements ListService {
     private final PathContainerService containerService;
 
     public S3AbstractListService(final S3Session session) {
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     protected String createPrefix(final Path directory) {

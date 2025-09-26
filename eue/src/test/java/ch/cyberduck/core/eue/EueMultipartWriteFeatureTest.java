@@ -49,7 +49,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
     public void testWriteZeroLength() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueMultipartWriteFeature feature = new EueMultipartWriteFeature(session, fileid);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus().setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -72,7 +72,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         // Uploading a file via the Upload Resource, using the chunked upload method, is only allowed for documents bigger than the chunksize (4MiB)
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueMultipartWriteFeature feature = new EueMultipartWriteFeature(session, fileid);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(100072);
         // Multipart
@@ -102,7 +102,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         // Uploading a file via the Upload Resource, using the chunked upload method, is only allowed for documents bigger than the chunksize (4MiB)
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueMultipartWriteFeature feature = new EueMultipartWriteFeature(session, fileid);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(512000);
         final long ts = System.currentTimeMillis();
@@ -134,7 +134,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
     public void testMultipartWrite() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueMultipartWriteFeature feature = new EueMultipartWriteFeature(session, fileid);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final long timestamp = System.currentTimeMillis();
         {

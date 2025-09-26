@@ -41,7 +41,7 @@ public class StoregateIdProviderTest extends AbstractStoregateTest {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path home = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = String.format("%s", new AlphanumericRandomStringService().random());
-        final Path file = new StoregateTouchFeature(session, nodeid).touch(new Path(home, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), new Path(home, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         nodeid.clear();
         final String nodeId = nodeid.getFileId(new Path(home, name, EnumSet.of(Path.Type.file)));
         assertNotNull(nodeId);

@@ -53,7 +53,7 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path room = new BrickDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
             new BrickReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
@@ -68,7 +68,7 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
         final Path room = new BrickDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BrickMultipartWriteFeature writer = new BrickMultipartWriteFeature(session);
         final HttpResponseOutputStream<FileEntity> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
@@ -93,9 +93,9 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
     @Test
     public void testReadRange() throws Exception {
         final Path room = new BrickDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BrickTouchFeature(session).touch(test, new TransferStatus());
+        new BrickTouchFeature(session).touch(new BrickWriteFeature(session), test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1023);
         final OutputStream out = local.getOutputStream(false);
@@ -104,8 +104,8 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         out.close();
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
+        new BrickUploadFeature(session).upload(
+                new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -125,9 +125,9 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
     @Test
     public void testReadRangeUnknownLength() throws Exception {
         final Path room = new BrickDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BrickTouchFeature(session).touch(test, new TransferStatus());
+        new BrickTouchFeature(session).touch(new BrickWriteFeature(session), test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);
         final OutputStream out = local.getOutputStream(false);
@@ -136,8 +136,8 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         out.close();
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
+        new BrickUploadFeature(session).upload(
+                new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -161,7 +161,7 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
         final Path room = new BrickDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BrickMultipartWriteFeature writer = new BrickMultipartWriteFeature(session);
         final HttpResponseOutputStream<FileEntity> out = writer.write(test, writeStatus, new DisabledConnectionCallback());

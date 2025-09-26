@@ -42,7 +42,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
+        new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(fileInRoom));
@@ -53,7 +53,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
+        new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), fileInRoom, new TransferStatus());
         final String lock = new StoregateLockFeature(session, nodeid).lock(fileInRoom);
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonMap(fileInRoom, new TransferStatus().setLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -63,13 +63,13 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
     @Test
     public void testDeleteFolderRoomWithContent() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
-        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
+        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room,
+        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(room,
             new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), file, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder));

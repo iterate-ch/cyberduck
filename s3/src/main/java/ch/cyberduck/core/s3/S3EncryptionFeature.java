@@ -43,7 +43,7 @@ public class S3EncryptionFeature implements Encryption {
 
     public S3EncryptionFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
     }
 

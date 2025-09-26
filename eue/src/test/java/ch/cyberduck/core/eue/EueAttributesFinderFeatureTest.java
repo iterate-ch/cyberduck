@@ -60,7 +60,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
     public void testFindIfNoneMatch() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature writer = new EueWriteFeature(session, fileid);
-        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final EueAttributesFinderFeature feature = new EueAttributesFinderFeature(session, fileid);
         final long ts = feature.find(container).getModificationDate();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -104,18 +104,18 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final String rootEtag = feature.find(new Path("/", EnumSet.of(Path.Type.directory))).getETag();
         assertNotNull(rootEtag);
         final long rootModificationDate = feature.find(new Path("/", EnumSet.of(Path.Type.directory))).getModificationDate();
-        final Path firstlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path firstlevel = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String firstLevelEtag = feature.find(firstlevel).getETag();
         final Long firstLevelRevision = feature.find(firstlevel).getRevision();
         assertNull(firstLevelRevision);
         final long firstLevelModificationDate = feature.find(firstlevel).getModificationDate();
         assertNotNull(firstLevelEtag);
-        final Path secondlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path secondlevel = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String secondLevelEtag = feature.find(secondlevel).getETag();
         assertNotNull(secondLevelEtag);
-        final Path secondlevelSibling = new EueDirectoryFeature(session, fileid).mkdir(new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path secondlevelSibling = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(secondlevelSibling);
-        final Path file = new EueTouchFeature(session, fileid).touch(new Path(secondlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), new Path(secondlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String secondLevelSiblingEtag = feature.find(secondlevelSibling).getETag();
         assertNotEquals(secondLevelEtag, feature.find(secondlevel).getETag());
         assertNotEquals(firstLevelEtag, feature.find(firstlevel).getETag());
@@ -129,7 +129,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testFindFeatureForSharedFolder() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path folder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final ShareCreationResponseEntry shareCreationResponseEntry = createShare(fileid, folder);
         final String shareName = shareCreationResponseEntry.getEntity().getName();
         final EueAttributesFinderFeature feature = new EueAttributesFinderFeature(session, fileid);
@@ -142,7 +142,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testFindFeatureForSharedFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         createFile(fileid, file, RandomUtils.nextBytes(0));
         assertTrue(new EueFindFeature(session, fileid).find(file));

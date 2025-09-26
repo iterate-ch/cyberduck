@@ -26,7 +26,6 @@ import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -48,9 +47,9 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     private final Bulk<R> delegate;
     private final CryptoVault cryptomator;
 
-    public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVault cryptomator) {
+    public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final CryptoVault cryptomator) {
         this.session = session;
-        this.delegate = delegate.withDelete(cryptomator.getFeature(session, Delete.class, delete));
+        this.delegate = delegate;
         this.cryptomator = cryptomator;
     }
 
@@ -101,12 +100,6 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
             }
         }
         return delegate.pre(type, encrypted, callback);
-    }
-
-    @Override
-    public Bulk<R> withDelete(final Delete delete) {
-        delegate.withDelete(cryptomator.getFeature(session, Delete.class, delete));
-        return this;
     }
 
     @Override

@@ -58,7 +58,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
         super(session);
         this.session = session;
         this.attributes = new S3AttributesFinderFeature(session, acl);
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.metadata = metadata;
     }
 

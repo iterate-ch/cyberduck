@@ -19,6 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -29,7 +30,7 @@ import java.text.MessageFormat;
 public class AzureTouchFeature extends DefaultTouchFeature<Void> {
 
     public AzureTouchFeature(final AzureSession session) {
-        super(new AzureWriteFeature(session));
+        super(session);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class AzureTouchFeature extends DefaultTouchFeature<Void> {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        return super.touch(file, status.setChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
+    public Path touch(final Write<Void> writer, final Path file, final TransferStatus status) throws BackgroundException {
+        return super.touch(writer, file, status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status)));
     }
 }

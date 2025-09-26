@@ -46,7 +46,7 @@ public class B2FindFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), file, new TransferStatus());
         assertTrue(new B2FindFeature(session, fileid).find(file));
         assertFalse(new B2FindFeature(session, fileid).find(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -70,7 +70,7 @@ public class B2FindFeatureTest extends AbstractB2Test {
         assertTrue(new B2FindFeature(session, fileid).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path intermediate = new Path(container, prefix, EnumSet.of(Path.Type.directory));
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(intermediate, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), new Path(intermediate, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new B2FindFeature(session, fileid).find(test));
         assertFalse(new B2FindFeature(session, fileid).find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
         assertTrue(new B2FindFeature(session, fileid).find(intermediate));

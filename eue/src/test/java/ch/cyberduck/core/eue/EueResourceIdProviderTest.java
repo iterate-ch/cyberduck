@@ -57,7 +57,7 @@ public class EueResourceIdProviderTest extends AbstractEueSessionTest {
     @Test
     public void testFindCaseInsensitive() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path folder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path folder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         folder.withAttributes(new EueAttributesFinderFeature(session, fileid).find(folder));
         assertEquals(folder.attributes().getFileId(), fileid.getFileId(folder));
         assertEquals(folder.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.lowerCase(folder.getAbsolute()), folder.getType())));

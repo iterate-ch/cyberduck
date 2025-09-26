@@ -123,7 +123,7 @@ public class DriveBatchTrashFeature implements Trash {
     }
 
     @Override
-    public EnumSet<Flags> features() {
+    public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.recursive);
     }
 }

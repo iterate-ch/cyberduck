@@ -43,9 +43,11 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageWebsiteDistributionConfiguration(final GoogleStorageSession session) {
+    public GoogleStorageWebsiteDistributionConfiguration(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -88,7 +90,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             if(logging != null) {
                 distribution.setLogging(logging.getLogObjectPrefix() != null);
                 distribution.setLoggingContainer(logging.getLogBucket());
-                distribution.setContainers(new GoogleStorageBucketListService(session).list(
+                distribution.setContainers(new GoogleStorageBucketListService(session, versioning).list(
                     new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()).toList());
             }
             return distribution;
@@ -131,7 +133,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             return (T) this;
         }
         if(type == DistributionLogging.class) {
-            return (T) new GoogleStorageLoggingFeature(session);
+            return (T) new GoogleStorageLoggingFeature(session, versioning);
         }
         return null;
     }

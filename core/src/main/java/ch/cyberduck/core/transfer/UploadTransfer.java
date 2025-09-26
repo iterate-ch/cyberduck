@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -241,7 +242,7 @@ public class UploadTransfer extends Transfer {
             status.validate();
             progress.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), file.getName()));
             try {
-                mkdir.mkdir(file, status);
+                mkdir.mkdir(source.getFeature(Write.class), file, status);
                 // Post process of file
                 filter.complete(
                         status.getRename().remote != null ? status.getRename().remote : entry.getKey().remote,
@@ -320,8 +321,8 @@ public class UploadTransfer extends Transfer {
             progress.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             // Transfer
-            final Upload upload = source.getFeature(Upload.class);
-            final Object reply = upload.upload(file, local, bandwidth, progress, listener, segment, prompt);
+            source.getFeature(Upload.class).upload(source.getFeature(Write.class),
+                    file, local, bandwidth, progress, listener, segment, prompt);
         }
     }
 

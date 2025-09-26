@@ -39,9 +39,9 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
     @Test
     public void testFindFile() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SpectraTouchFeature(session).touch(test, new TransferStatus());
+        new SpectraTouchFeature(session).touch(new SpectraWriteFeature(session), test, new TransferStatus());
         final SpectraAttributesFinderFeature f = new SpectraAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
@@ -62,7 +62,7 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
     @Test
     public void testFindBucket() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final PathAttributes attributes = new SpectraAttributesFinderFeature(session).find(container);
         assertEquals(-1L, attributes.getSize());
         assertNull(attributes.getRegion());
@@ -81,8 +81,8 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
     @Test
     public void testFindPlaceholder() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(new SpectraWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final PathAttributes attributes = new SpectraAttributesFinderFeature(session).find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals(Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"), attributes.getChecksum());
@@ -94,10 +94,10 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
     @Test
     public void testReadTildeInKey() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         container.attributes().setRegion("us-east-1");
         final Path file = new Path(container, String.format("%s~", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new SpectraTouchFeature(session).touch(file, new TransferStatus());
+        new SpectraTouchFeature(session).touch(new SpectraWriteFeature(session), file, new TransferStatus());
         new SpectraAttributesFinderFeature(session).find(file);
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -105,10 +105,10 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
     @Test
     public void testReadAtSignInKey() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         container.attributes().setRegion("us-east-1");
         final Path file = new Path(container, String.format("%s@", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new SpectraTouchFeature(session).touch(file, new TransferStatus());
+        new SpectraTouchFeature(session).touch(new SpectraWriteFeature(session), file, new TransferStatus());
         new SpectraAttributesFinderFeature(session).find(file);
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

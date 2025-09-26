@@ -58,7 +58,7 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
         final ListService list = new SharepointListService(session, fileid);
         final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
-        final Path test = new GraphTouchFeature(session, fileid).touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         final GraphVersioningFeature feature = new GraphVersioningFeature(session, fileid);
         assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());

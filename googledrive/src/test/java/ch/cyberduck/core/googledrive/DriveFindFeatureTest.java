@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -49,7 +48,7 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
     public void testFindDirectory() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(folder));
         assertFalse(new DriveFindFeature(session, fileid).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -59,7 +58,7 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
     public void testFindFile() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path file = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session, fileid).touch(file, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), file, new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file));
         assertFalse(new DriveFindFeature(session, fileid).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -69,9 +68,9 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
     public void testFind() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String id = file.attributes().getFileId();
         assertTrue(new DriveFindFeature(session, fileid).find(file));
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -84,7 +83,7 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
         assertTrue(new DefaultFindFeature(session).find(trashed));
         assertTrue(new DriveFindFeature(session, fileid).find(trashed));
         // Recreate file
-        final Path version2 = new DriveTouchFeature(session, fileid).touch(file, new TransferStatus());
+        final Path version2 = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), file, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(version2));
         assertTrue(new DriveFindFeature(session, fileid).find(version2));
         assertEquals(version2.attributes(), new DriveAttributesFinderFeature(session, fileid).find(version2));

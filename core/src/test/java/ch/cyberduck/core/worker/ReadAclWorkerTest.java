@@ -60,7 +60,7 @@ public class ReadAclWorkerTest {
                                 }
 
                                 @Override
-                                public List<Acl.User> getAvailableAclUsers() {
+                                public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
                                     throw new UnsupportedOperationException();
                                 }
 

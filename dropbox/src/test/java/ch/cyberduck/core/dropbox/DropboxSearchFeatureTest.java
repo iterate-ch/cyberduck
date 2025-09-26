@@ -48,7 +48,7 @@ public class DropboxSearchFeatureTest extends AbstractDropboxTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path workdir = new DefaultHomeFinderService(session).find();
         final Path file = new Path(workdir, name, EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(file, new TransferStatus());
+        new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), file, new TransferStatus());
         final DropboxSearchFeature feature = new DropboxSearchFeature(session);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         // Supports prefix matching only
@@ -62,9 +62,9 @@ public class DropboxSearchFeatureTest extends AbstractDropboxTest {
             //
         }
         final Path subdir = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DropboxDirectoryFeature(session).mkdir(subdir, new TransferStatus());
+        new DropboxDirectoryFeature(session).mkdir(new DropboxWriteFeature(session), subdir, new TransferStatus());
         assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        final Path filesubdir = new DropboxTouchFeature(session).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path filesubdir = new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final AttributedList<Path> result = feature.search(workdir, new SearchFilter(filesubdir.getName()), new DisabledListProgressListener());
             assertTrue(result.contains(filesubdir));

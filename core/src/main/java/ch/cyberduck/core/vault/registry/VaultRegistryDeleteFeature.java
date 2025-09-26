@@ -19,6 +19,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -75,8 +76,16 @@ public class VaultRegistryDeleteFeature implements Delete {
     }
 
     @Override
-    public EnumSet<Flags> features() {
-        return proxy.features();
+    public EnumSet<Flags> features(final Path file) {
+        try {
+            return registry.find(session, file).getFeature(session, Delete.class, proxy).features(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.features(file);
+        }
+        catch(UnsupportedException e) {
+            return EnumSet.noneOf(Flags.class);
+        }
     }
 
     @Override

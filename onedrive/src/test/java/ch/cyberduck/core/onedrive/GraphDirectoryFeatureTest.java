@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -44,11 +45,11 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testMkdir() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
+        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
         final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).find(target);
         assertNotNull(attributes.getETag());
         assertEquals(target.attributes().getFileId(), attributes.getFileId());
-        assertThrows(ConflictException.class, () -> new GraphDirectoryFeature(session, fileid).mkdir(target, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), target, new TransferStatus()));
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -56,7 +57,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
     public void testWhitespaceMkdir() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final String name = String.format("%s %s", randomStringService.random(), randomStringService.random());
-        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new Path(new OneDriveHomeFinderService().find(), name, EnumSet.of(Path.Type.directory)), null);
+        final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), new Path(new OneDriveHomeFinderService().find(), name, EnumSet.of(Path.Type.directory)), null);
         assertEquals(name, target.getName());
         final AttributedList<Path> list = new GraphItemListService(session, fileid).list(new OneDriveHomeFinderService().find(), new DisabledListProgressListener());
         assertTrue(list.contains(target));

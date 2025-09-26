@@ -44,7 +44,7 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final TransferStatus status = new TransferStatus();
-        new DriveTouchFeature(session, fileid).touch(test, status);
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, status);
         final Path copy = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(test.attributes().getFileId(), target.attributes().getFileId());
@@ -58,12 +58,12 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
     public void testCopyToExistingFile() throws Exception {
         final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
+        new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), folder, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        new DriveTouchFeature(session, fileid).touch(copy, status);
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), copy, status);
         final Path target = new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(test.attributes().getFileId(), target.attributes().getFileId());
         final Find find = new DefaultFindFeature(session);

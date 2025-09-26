@@ -35,26 +35,28 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageStorageClassFeature(final GoogleStorageSession session) {
+    public GoogleStorageStorageClassFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
     @Override
-    public String getDefault() {
+    public String getDefault(final Path file) {
         return HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.storage.class");
     }
 
     @Override
-    public Set<String> getClasses() {
+    public Set<String> getClasses(final Path file) {
         return new LinkedHashSet<>(
                 PreferencesFactory.get().getList("googlestorage.storage.class.options"));
     }
 
     @Override
     public String getClass(final Path file) throws BackgroundException {
-        return new GoogleStorageAttributesFinderFeature(session).find(file).getStorageClass();
+        return new GoogleStorageAttributesFinderFeature(session, versioning).find(file).getStorageClass();
     }
 
     @Override

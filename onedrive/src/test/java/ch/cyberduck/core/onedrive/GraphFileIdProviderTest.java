@@ -12,6 +12,7 @@ import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -46,9 +47,9 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
             //
         }
         final Directory directoryFeature = new GraphDirectoryFeature(session, fileid);
-        final Path path2RWithId = directoryFeature.mkdir(path2R, new TransferStatus());
+        final Path path2RWithId = directoryFeature.mkdir(new GraphWriteFeature(session, fileid), path2R, new TransferStatus());
         assertNotNull(path2RWithId.attributes().getFileId());
-        final Path path33WithId = directoryFeature.mkdir(path33, new TransferStatus());
+        final Path path33WithId = directoryFeature.mkdir(new GraphWriteFeature(session, fileid), path33, new TransferStatus());
         assertNotNull(path33WithId.attributes().getFileId());
         assertNotEquals(path2RWithId.attributes().getFileId(), path33WithId.attributes().getFileId());
 
@@ -66,7 +67,7 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
         final GraphFileIdProvider nodeid = new GraphFileIdProvider(session);
         final Path home = new OneDriveHomeFinderService().find();
         final String name = String.format("%s", new AlphanumericRandomStringService().random());
-        final Path file = new GraphTouchFeature(session, nodeid).touch(new Path(home, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new GraphTouchFeature(session, nodeid).touch(new GraphWriteFeature(session, fileid), new Path(home, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         nodeid.clear();
         final String nodeId = nodeid.getFileId(new Path(home, name, EnumSet.of(Path.Type.file)));
         assertNotNull(nodeId);

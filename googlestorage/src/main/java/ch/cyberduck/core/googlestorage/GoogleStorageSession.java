@@ -51,7 +51,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     private ApacheHttpTransport transport;
     private OAuth2RequestInterceptor authorizationService;
 
-    private final Versioning versioning =
+    private final GoogleStorageVersioningFeature versioning =
             preferences.getBoolean("s3.versioning.enable") ? new GoogleStorageVersioningFeature(this) : null;
 
     public GoogleStorageSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -96,73 +96,73 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new GoogleStorageListService(this);
+            return (T) new GoogleStorageListService(this, versioning);
         }
         if(type == Touch.class) {
             return (T) new GoogleStorageTouchFeature(this);
         }
         if(type == Read.class) {
-            return (T) new GoogleStorageReadFeature(this);
+            return (T) new GoogleStorageReadFeature(this, versioning);
         }
         if(type == Write.class) {
-            return (T) new GoogleStorageWriteFeature(this);
+            return (T) new GoogleStorageWriteFeature(this, versioning);
         }
         if(type == Find.class) {
-            return (T) new GoogleStorageFindFeature(this);
+            return (T) new GoogleStorageFindFeature(this, versioning);
         }
         if(type == AttributesFinder.class) {
-            return (T) new GoogleStorageAttributesFinderFeature(this);
+            return (T) new GoogleStorageAttributesFinderFeature(this, versioning);
         }
         if(type == AclPermission.class) {
-            return (T) new GoogleStorageAccessControlListFeature(this);
+            return (T) new GoogleStorageAccessControlListFeature(this, versioning);
         }
         if(type == Delete.class) {
-            return (T) new GoogleStorageDeleteFeature(this);
+            return (T) new GoogleStorageDeleteFeature(this, versioning);
         }
         if(type == Directory.class) {
-            return (T) new GoogleStorageDirectoryFeature(this);
+            return (T) new GoogleStorageDirectoryFeature(this, versioning);
         }
         if(type == Move.class) {
-            return (T) new GoogleStorageMoveFeature(this);
+            return (T) new GoogleStorageMoveFeature(this, versioning);
         }
         if(type == Headers.class) {
-            return (T) new GoogleStorageMetadataFeature(this);
+            return (T) new GoogleStorageMetadataFeature(this, versioning);
         }
         if(type == Metadata.class) {
-            return (T) new GoogleStorageMetadataFeature(this);
+            return (T) new GoogleStorageMetadataFeature(this, versioning);
         }
         if(type == Copy.class) {
-            return (T) new GoogleStorageCopyFeature(this);
+            return (T) new GoogleStorageCopyFeature(this, versioning);
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new GoogleStorageWebsiteDistributionConfiguration(this);
+            return (T) new GoogleStorageWebsiteDistributionConfiguration(this, versioning);
         }
         if(type == Logging.class) {
-            return (T) new GoogleStorageLoggingFeature(this);
+            return (T) new GoogleStorageLoggingFeature(this, versioning);
         }
         if(type == UrlProvider.class) {
             return (T) new GoogleStorageUrlProvider(this);
         }
         if(type == Share.class) {
-            return (T) new GoogleStoragePublicUrlProvider(this);
+            return (T) new GoogleStoragePublicUrlProvider(this, versioning);
         }
         if(type == Search.class) {
-            return (T) new GoogleStorageSearchFeature(this);
+            return (T) new GoogleStorageSearchFeature(this, versioning);
         }
         if(type == Versioning.class) {
             return (T) versioning;
         }
         if(type == Location.class) {
-            return (T) new GoogleStorageLocationFeature(this);
+            return (T) new GoogleStorageLocationFeature(this, versioning);
         }
         if(type == Lifecycle.class) {
             return (T) new GoogleStorageLifecycleFeature(this);
         }
         if(type == Redundancy.class) {
-            return (T) new GoogleStorageStorageClassFeature(this);
+            return (T) new GoogleStorageStorageClassFeature(this, versioning);
         }
         if(type == Timestamp.class) {
-            return (T) new GoogleStorageTimestampFeature(this);
+            return (T) new GoogleStorageTimestampFeature(this, versioning);
         }
         return super._getFeature(type);
     }

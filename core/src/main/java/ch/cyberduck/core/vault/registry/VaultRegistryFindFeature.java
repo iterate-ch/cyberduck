@@ -39,8 +39,7 @@ public class VaultRegistryFindFeature implements Find {
     private final Find proxy;
     private final VaultRegistry registry;
     private final VaultLookupListener lookup;
-
-    private boolean autodetect;
+    private final boolean autodetect;
 
     public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry, final VaultLookupListener lookup) {
         this.session = session;
@@ -79,11 +78,6 @@ public class VaultRegistryFindFeature implements Find {
             }
         }
         return vault.getFeature(session, Find.class, proxy).find(file, listener);
-    }
-
-    public VaultRegistryFindFeature withAutodetect(final boolean autodetect) {
-        this.autodetect = autodetect && HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.enable");
-        return this;
     }
 
     @Override

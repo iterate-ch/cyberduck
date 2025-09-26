@@ -50,7 +50,7 @@ public class SMBFindFeatureTest extends AbstractSMBTest {
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SMBTouchFeature(session).touch(file, new TransferStatus());
+        new SMBTouchFeature(session).touch(new SMBWriteFeature(session), file, new TransferStatus());
         assertTrue(new SMBFindFeature(session).find(file));
         assertFalse(new SMBFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new SMBDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

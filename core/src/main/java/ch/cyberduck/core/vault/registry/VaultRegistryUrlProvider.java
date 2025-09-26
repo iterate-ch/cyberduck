@@ -20,6 +20,7 @@ import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
@@ -44,6 +45,9 @@ public class VaultRegistryUrlProvider implements UrlProvider {
         }
         catch(VaultUnlockCancelException e) {
             return proxy.toUrl(file, types);
+        }
+        catch(UnsupportedException e) {
+            return DescriptiveUrlBag.empty();
         }
     }
 

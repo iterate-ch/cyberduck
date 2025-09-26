@@ -20,13 +20,12 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,7 +54,7 @@ public class CryptoBulkFeatureTest {
                 if(type == Directory.class) {
                     return (T) new Directory() {
                         @Override
-                        public Path mkdir(final Path folder, final TransferStatus status) {
+                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
                             return folder;
                         }
                     };
@@ -74,22 +73,6 @@ public class CryptoBulkFeatureTest {
             @Override
             public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
                 //
-            }
-
-            @Override
-            public Bulk<Map<TransferItem, TransferStatus>> withDelete(final Delete delete) {
-                return this;
-            }
-
-        }, new Delete() {
-            @Override
-            public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean isRecursive() {
-                throw new UnsupportedOperationException();
             }
         }, cryptomator);
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
@@ -128,7 +111,7 @@ public class CryptoBulkFeatureTest {
                 if(type == Directory.class) {
                     return (T) new Directory() {
                         @Override
-                        public Path mkdir(final Path folder, final TransferStatus status) {
+                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
                             return folder;
                         }
                     };
@@ -147,22 +130,6 @@ public class CryptoBulkFeatureTest {
             @Override
             public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
                 //
-            }
-
-            @Override
-            public Bulk<Map<TransferItem, TransferStatus>> withDelete(final Delete delete) {
-                return this;
-            }
-
-        }, new Delete() {
-            @Override
-            public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean isRecursive() {
-                throw new UnsupportedOperationException();
             }
         }, cryptomator);
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();

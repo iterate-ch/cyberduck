@@ -41,9 +41,11 @@ public class GoogleStorageLoggingFeature implements Logging, DistributionLogging
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageLoggingFeature(final GoogleStorageSession session) {
+    public GoogleStorageLoggingFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -65,7 +67,7 @@ public class GoogleStorageLoggingFeature implements Logging, DistributionLogging
             final LoggingConfiguration configuration = new LoggingConfiguration(
                     status.getLogObjectPrefix() != null, status.getLogBucket());
             try {
-                configuration.setContainers(new GoogleStorageBucketListService(session).list(
+                configuration.setContainers(new GoogleStorageBucketListService(session, versioning).list(
                         new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                         new DisabledListProgressListener()).toList());
             }

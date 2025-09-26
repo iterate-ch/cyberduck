@@ -31,6 +31,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -69,18 +70,13 @@ public class MoveWorkerTest {
                                 count.incrementAndGet();
                             }
                         }
-
-                        @Override
-                        public boolean isRecursive() {
-                            return false;
-                        }
                     };
                 }
                 if(type == Directory.class) {
                     return (T) new Directory<Void>() {
 
                         @Override
-                        public Path mkdir(final Path folder, final TransferStatus status) {
+                        public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) {
                             return folder;
                         }
                     };

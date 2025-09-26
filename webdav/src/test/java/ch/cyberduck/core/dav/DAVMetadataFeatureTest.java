@@ -40,7 +40,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     public void testSetMetadataFile() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final String v = new AlphanumericRandomStringService().random();
         final DAVMetadataFeature feature = new DAVMetadataFeature(session);
         feature.setMetadata(test, status.setMetadata(Collections.singletonMap("Test", v)));
@@ -58,7 +58,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     @Test
     public void testSetMetadataFolder() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
+        final Path test = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
         final String v = new AlphanumericRandomStringService().random();
         final DAVMetadataFeature feature = new DAVMetadataFeature(session);
         feature.setMetadata(test, status.setMetadata(Collections.singletonMap("Test", v)));

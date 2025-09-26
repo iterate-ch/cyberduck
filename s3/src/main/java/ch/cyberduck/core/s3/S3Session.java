@@ -356,7 +356,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ThresholdUploadService(this, acl);
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this, acl), acl);
+            return (T) new S3DirectoryFeature(this, acl);
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this, acl);
@@ -452,7 +452,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == PathContainerService.class) {
-            return (T) S3PathContainerServiceFactory.get(host);
+            return (T) new S3PathContainerService(host);
         }
         return super._getFeature(type);
     }

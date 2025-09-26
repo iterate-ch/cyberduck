@@ -37,8 +37,8 @@ public class CryptoHeadersFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault() {
-        return delegate.getDefault();
+    public Map<String, String> getDefault(final Path file) {
+        return delegate.getDefault(file);
     }
 
     @Override

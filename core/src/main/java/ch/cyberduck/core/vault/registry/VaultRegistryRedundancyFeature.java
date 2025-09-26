@@ -18,9 +18,12 @@ package ch.cyberduck.core.vault.registry;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class VaultRegistryRedundancyFeature implements Redundancy {
@@ -36,13 +39,29 @@ public class VaultRegistryRedundancyFeature implements Redundancy {
     }
 
     @Override
-    public String getDefault() {
-        return proxy.getDefault();
+    public String getDefault(final Path file) {
+        try {
+            return registry.find(session, file).getFeature(session, Redundancy.class, proxy).getDefault(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getDefault(file);
+        }
+        catch(UnsupportedException e) {
+            return null;
+        }
     }
 
     @Override
-    public Set<String> getClasses() {
-        return proxy.getClasses();
+    public Set<String> getClasses(final Path file) {
+        try {
+            return registry.find(session, file).getFeature(session, Redundancy.class, proxy).getClasses(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getClasses(file);
+        }
+        catch(UnsupportedException e) {
+            return Collections.emptySet();
+        }
     }
 
     @Override

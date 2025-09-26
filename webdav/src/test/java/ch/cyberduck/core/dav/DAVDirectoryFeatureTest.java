@@ -41,9 +41,9 @@ public class DAVDirectoryFeatureTest extends AbstractDAVTest {
     @Test
     public void testMakeDirectory() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
-        assertThrows(ConflictException.class, () -> new DAVDirectoryFeature(session).mkdir(test, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), test, new TransferStatus()));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
     }

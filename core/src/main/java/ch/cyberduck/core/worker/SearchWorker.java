@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -64,18 +65,19 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             throw new ConnectionCanceledException();
         }
         final AttributedList<Path> list;
-        if(!search.isRecursive() && cache.isCached(workdir)) {
+        final EnumSet<Search.Flags> features = search.features(workdir);
+        if(!features.contains(Search.Flags.recursive) && cache.isCached(workdir)) {
             list = new AttributedList<>(cache.get(workdir));
         }
         else {
             // Get filtered list from search
             list = search.search(workdir, new RecursiveSearchFilter(filter), new WorkerListProgressListener(this, listener));
-            if(!search.isRecursive()) {
+            if(!features.contains(Search.Flags.recursive)) {
                 cache.put(workdir, new AttributedList<>(list));
             }
         }
         final Set<Path> removal = new HashSet<>();
-        if(search.isRecursive()) {
+        if(features.contains(Search.Flags.recursive)) {
             for(Path directory : list) {
                 if(directory.isDirectory()) {
                     if(!list.toStream().filter(f -> f.isChild(directory)).findAny().isPresent()) {

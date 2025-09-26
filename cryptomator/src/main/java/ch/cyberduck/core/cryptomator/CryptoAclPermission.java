@@ -49,8 +49,8 @@ public class CryptoAclPermission implements AclPermission {
     }
 
     @Override
-    public List<Acl.User> getAvailableAclUsers() {
-        return delegate.getAvailableAclUsers();
+    public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
+        return delegate.getAvailableAclUsers(files);
     }
 
     @Override

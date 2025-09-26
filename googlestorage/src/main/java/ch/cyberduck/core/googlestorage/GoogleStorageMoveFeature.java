@@ -31,9 +31,9 @@ public class GoogleStorageMoveFeature implements Move {
     private final GoogleStorageDeleteFeature delete;
     private final GoogleStorageCopyFeature proxy;
 
-    public GoogleStorageMoveFeature(final GoogleStorageSession session) {
-        this.proxy = new GoogleStorageCopyFeature(session);
-        this.delete = new GoogleStorageDeleteFeature(session);
+    public GoogleStorageMoveFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
+        this.proxy = new GoogleStorageCopyFeature(session, versioning);
+        this.delete = new GoogleStorageDeleteFeature(session, versioning);
     }
 
     @Override

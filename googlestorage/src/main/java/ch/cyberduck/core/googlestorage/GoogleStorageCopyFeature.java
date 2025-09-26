@@ -40,9 +40,11 @@ public class GoogleStorageCopyFeature implements Copy {
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
+    private GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageCopyFeature(final GoogleStorageSession session) {
+    public GoogleStorageCopyFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -74,7 +76,7 @@ public class GoogleStorageCopyFeature implements Copy {
             }
             while(!response.getDone());
             listener.sent(status.getLength());
-            return new Path(target).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
+            return new Path(target).withAttributes(new GoogleStorageAttributesFinderFeature(session, versioning).toAttributes(response.getResource()));
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Cannot copy {0}", e, source);

@@ -27,6 +27,7 @@ import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -48,7 +49,7 @@ public class GraphLockFeatureTest extends AbstractSharepointTest {
         final ListService list = new SharepointListService(session, fileid);
         final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
-        final Path file = new GraphTouchFeature(session, fileid).touch(new Path(drive,
+        final Path file = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(drive,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(file);
         final GraphLockFeature feature = new GraphLockFeature(session, fileid);

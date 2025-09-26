@@ -33,6 +33,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.PathDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -419,7 +420,7 @@ public class CryptoVaultTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final TransferStatus status) {
+                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }
@@ -443,7 +444,7 @@ public class CryptoVaultTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final TransferStatus status) {
+                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }
@@ -488,7 +489,7 @@ public class CryptoVaultTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final TransferStatus status) {
+                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }
@@ -533,7 +534,7 @@ public class CryptoVaultTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final TransferStatus status) {
+                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }

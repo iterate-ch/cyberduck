@@ -39,14 +39,16 @@ public class SDSDelegatingMoveFeature implements Move {
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
     private final SDSMoveFeature proxy;
+    private final SDSDelegatingCopyFeature copy;
 
     private final PathContainerService containerService
             = new SDSPathContainerService();
 
-    public SDSDelegatingMoveFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSMoveFeature proxy) {
+    public SDSDelegatingMoveFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSMoveFeature proxy, final SDSDelegatingCopyFeature copy) {
         this.session = session;
         this.nodeid = nodeid;
         this.proxy = proxy;
+        this.copy = copy;
     }
 
     @Override
@@ -60,7 +62,6 @@ public class SDSDelegatingMoveFeature implements Move {
         }
         if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(source) ^ new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(target))) {
             // Moving into or from an encrypted room
-            final Copy copy = new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid));
             log.debug("Move {} to {} using copy feature {}", source, target, copy);
             final Path c = copy.copy(source, target, status, connectionCallback, new DisabledStreamListener());
             // Delete source file after copy is complete
@@ -79,7 +80,7 @@ public class SDSDelegatingMoveFeature implements Move {
     @Override
     public EnumSet<Flags> features(final Path source, final Path target) {
         if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
-            if(session.getFeature(Copy.class).features(source, target).contains(Copy.Flags.recursive)) {
+            if(copy.features(source, target).contains(Copy.Flags.recursive)) {
                 return EnumSet.of(Flags.recursive);
             }
         }
@@ -91,7 +92,7 @@ public class SDSDelegatingMoveFeature implements Move {
         if(optional.isPresent()) {
             final Path target = optional.get();
             if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
-                session.getFeature(Copy.class).preflight(source, optional);
+                copy.preflight(source, optional);
             }
             else {
                 proxy.preflight(source, optional);

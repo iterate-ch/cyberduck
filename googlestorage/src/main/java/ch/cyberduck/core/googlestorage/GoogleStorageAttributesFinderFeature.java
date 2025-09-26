@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
@@ -46,11 +45,13 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
+    private final GoogleStorageVersioningFeature versioning;
 
     public static final String KEY_REQUESTER_PAYS = "requester_pays";
 
-    public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session) {
+    public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -73,10 +74,10 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
                 if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     get.setUserProject(session.getHost().getCredentials().getUsername());
                 }
-                final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                final VersioningConfiguration config = null != versioning ? versioning.getConfiguration(
                         containerService.getContainer(file)
                 ) : VersioningConfiguration.empty();
-                if(versioning.isEnabled()) {
+                if(config.isEnabled()) {
                     if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
                         get.setGeneration(Long.parseLong(file.attributes().getVersionId()));
                     }
@@ -92,7 +93,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
                             log.debug("Search for common prefix {}", file);
                             // File may be marked as placeholder but no placeholder file exists. Check for common prefix returned.
                             try {
-                                new GoogleStorageObjectListService(session).list(file, new CancellingListProgressListener(), String.valueOf(Path.DELIMITER), 1, VersioningConfiguration.empty());
+                                new GoogleStorageObjectListService(session, versioning).list(file, new CancellingListProgressListener(), String.valueOf(Path.DELIMITER), 1, VersioningConfiguration.empty());
                             }
                             catch(ListCanceledException l) {
                                 // Found common prefix
@@ -107,7 +108,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
                     }
                     throw e;
                 }
-                if(versioning.isEnabled()) {
+                if(config.isEnabled()) {
                     // Determine if latest version
                     try {
                         // Duplicate if not latest version

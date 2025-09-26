@@ -46,7 +46,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
 
     public S3AttributesFinderFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
     }
 
@@ -62,7 +62,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return attributes;
         }
         if(file.getType().contains(Path.Type.upload)) {
-            final Write.Append append = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl).append(file, new TransferStatus());
+            final Write.Append append = new S3MultipartUploadService(session, acl).append(file, new TransferStatus());
             if(append.append) {
                 return new PathAttributes().setSize(append.offset);
             }
@@ -129,7 +129,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             }
             else {
                 if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.multipart.lookup")) {
-                    final Write.Append append = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl).append(file, new TransferStatus());
+                    final Write.Append append = new S3MultipartUploadService(session, acl).append(file, new TransferStatus());
                     if(append.append) {
                         return new PathAttributes().setSize(append.offset);
                     }

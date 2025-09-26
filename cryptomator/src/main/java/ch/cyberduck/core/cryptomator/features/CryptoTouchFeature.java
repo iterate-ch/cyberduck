@@ -37,19 +37,19 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     private final Touch<Reply> proxy;
     private final CryptoVault vault;
 
-    public CryptoTouchFeature(final Session<?> session, final Touch<Reply> proxy, final Write<Reply> writer, final CryptoVault cryptomator) {
+    public CryptoTouchFeature(final Session<?> session, final Touch<Reply> proxy, final CryptoVault cryptomator) {
         this.session = session;
-        this.proxy = proxy.withWriter(new CryptoWriteFeature<>(session, writer, cryptomator));
+        this.proxy = proxy;
         this.vault = cryptomator;
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<Reply> writer, final Path file, final TransferStatus status) throws BackgroundException {
         // Write header
         final FileHeader header = vault.getFileHeaderCryptor().create();
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
-        final Path target = proxy.touch(vault.encrypt(session, file), new TransferStatus(status) {
+        final Path target = proxy.touch(writer, vault.encrypt(session, file), new TransferStatus(status) {
             @Override
             public TransferStatus setResponse(final PathAttributes attributes) {
                 status.setResponse(attributes);

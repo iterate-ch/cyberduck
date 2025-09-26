@@ -70,7 +70,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
     public void testSetConfiguration() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(container, new TransferStatus());
+        new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), container, new TransferStatus());
         final Versioning feature = new S3VersioningFeature(session, acl);
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
@@ -88,10 +88,10 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
     public void testRevert() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(
+        final Path directory = new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(
                 bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new S3TouchFeature(session, acl).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path ignored = new S3TouchFeature(session, acl).touch(new Path(directory, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path ignored = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(directory, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             // Make sure there is another versioned copy of a file not to be included when listing
             final byte[] content = RandomUtils.nextBytes(245);

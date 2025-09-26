@@ -61,7 +61,7 @@ public class S3UrlProvider implements UrlProvider {
     public S3UrlProvider(final S3Session session, final Map<Path, Set<Distribution>> distributions) {
         this.session = session;
         this.distributions = distributions;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

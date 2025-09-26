@@ -29,9 +29,11 @@ import java.util.EnumSet;
 public class GoogleStoragePublicUrlProvider implements Share<Void, Void> {
 
     private final GoogleStorageSession session;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStoragePublicUrlProvider(final GoogleStorageSession session) {
+    public GoogleStoragePublicUrlProvider(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class GoogleStoragePublicUrlProvider implements Share<Void, Void> {
 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
-        final GoogleStorageAccessControlListFeature acl = new GoogleStorageAccessControlListFeature(session);
+        final GoogleStorageAccessControlListFeature acl = new GoogleStorageAccessControlListFeature(session, versioning);
         final Acl permission = acl.getPermission(file);
         final Acl.GroupUser everyone = new Acl.GroupUser(Acl.GroupUser.EVERYONE);
         final Acl.Role read = new Acl.Role(Permission.PERMISSION_READ.toString());

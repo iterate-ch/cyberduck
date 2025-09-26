@@ -19,17 +19,19 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.api.FoldersApi;
+import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.FoldersBody;
 import ch.cyberduck.core.box.io.swagger.client.model.FoldersParent;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.Collections;
 
-public class BoxDirectoryFeature implements Directory {
+public class BoxDirectoryFeature implements Directory<File> {
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
@@ -40,7 +42,7 @@ public class BoxDirectoryFeature implements Directory {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<File> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             return new Path(folder).withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
                     new FoldersApi(new BoxApiClient(session.getClient())).postFolders(new FoldersBody()

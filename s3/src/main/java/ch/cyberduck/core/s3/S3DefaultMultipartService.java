@@ -53,7 +53,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
 
     public S3DefaultMultipartService(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

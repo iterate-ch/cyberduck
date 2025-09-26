@@ -61,7 +61,7 @@ public class S3VersioningFeature implements Versioning {
     public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.acl = acl;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

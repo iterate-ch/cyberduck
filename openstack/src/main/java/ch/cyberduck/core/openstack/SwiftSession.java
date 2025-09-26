@@ -162,10 +162,10 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftWriteFeature(this, regionService);
         }
         if(type == Upload.class) {
-            return (T) new SwiftThresholdUploadService(this, regionService, new SwiftWriteFeature(this, regionService));
+            return (T) new SwiftThresholdUploadService(this, regionService);
         }
         if(type == Directory.class) {
-            return (T) new SwiftDirectoryFeature(this, regionService, new SwiftWriteFeature(this, regionService));
+            return (T) new SwiftDirectoryFeature(this, regionService);
         }
         if(type == Delete.class) {
             return (T) new SwiftThresholdDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);

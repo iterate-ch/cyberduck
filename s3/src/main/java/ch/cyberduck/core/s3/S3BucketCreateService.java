@@ -40,7 +40,7 @@ public class S3BucketCreateService {
 
     public S3BucketCreateService(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     public void create(final Path bucket, final String region) throws BackgroundException {

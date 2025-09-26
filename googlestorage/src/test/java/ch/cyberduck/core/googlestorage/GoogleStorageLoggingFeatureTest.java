@@ -34,7 +34,7 @@ public class GoogleStorageLoggingFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testGetConfiguration() throws Exception {
-        final GoogleStorageLoggingFeature feature = new GoogleStorageLoggingFeature(session);
+        final GoogleStorageLoggingFeature feature = new GoogleStorageLoggingFeature(session, new GoogleStorageVersioningFeature(session));
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         feature.setConfiguration(bucket, new LoggingConfiguration(true, "cyberduck-test-eu"));
         final LoggingConfiguration configuration = feature.getConfiguration(bucket);
@@ -45,14 +45,14 @@ public class GoogleStorageLoggingFeatureTest extends AbstractGoogleStorageTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
-        new GoogleStorageLoggingFeature(session).getConfiguration(
+        new GoogleStorageLoggingFeature(session, new GoogleStorageVersioningFeature(session)).getConfiguration(
             new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory))
         );
     }
 
     @Test(expected = NotfoundException.class)
     public void testWriteNotFound() throws Exception {
-        new GoogleStorageLoggingFeature(session).setConfiguration(
+        new GoogleStorageLoggingFeature(session, new GoogleStorageVersioningFeature(session)).setConfiguration(
             new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false)
         );
     }

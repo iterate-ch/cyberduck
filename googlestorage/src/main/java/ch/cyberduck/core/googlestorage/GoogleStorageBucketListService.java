@@ -35,9 +35,9 @@ public class GoogleStorageBucketListService implements ListService {
     private final GoogleStorageSession session;
     private final GoogleStorageAttributesFinderFeature attributes;
 
-    public GoogleStorageBucketListService(final GoogleStorageSession session) {
+    public GoogleStorageBucketListService(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
-        this.attributes = new GoogleStorageAttributesFinderFeature(session);
+        this.attributes = new GoogleStorageAttributesFinderFeature(session, versioning);
     }
 
     @Override

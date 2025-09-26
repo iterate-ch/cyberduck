@@ -22,7 +22,6 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,9 +35,11 @@ public class GoogleStorageDeleteFeature implements Delete {
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageDeleteFeature(final GoogleStorageSession session) {
+    public GoogleStorageDeleteFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -59,10 +60,10 @@ public class GoogleStorageDeleteFeature implements Delete {
                     if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                         request.setUserProject(session.getHost().getCredentials().getUsername());
                     }
-                    final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                    final VersioningConfiguration config = null != versioning ? versioning.getConfiguration(
                             containerService.getContainer(file)
                     ) : VersioningConfiguration.empty();
-                    if(versioning.isEnabled()) {
+                    if(config.isEnabled()) {
                         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
                             // You permanently delete versions of objects by including the generation number in the deletion request
                             request.setGeneration(Long.parseLong(file.attributes().getVersionId()));

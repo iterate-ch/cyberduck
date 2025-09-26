@@ -22,6 +22,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -36,18 +37,18 @@ import java.io.InputStream;
 
 public class DefaultUploadFeature<Reply> implements Upload<Reply> {
 
-    private Write<Reply> writer;
+    private final Session<?> session;
 
-    public DefaultUploadFeature(final Write<Reply> writer) {
-        this.writer = writer;
+    public DefaultUploadFeature(final Session<?> session) {
+        this.session = session;
     }
 
     @Override
-    public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
+    public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
                         final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
                         final ConnectionCallback callback) throws BackgroundException {
         final InputStream in = local.getInputStream();
-        final StatusOutputStream<Reply> out = writer.write(file, status, callback);
+        final StatusOutputStream<Reply> out = write.write(file, status, callback);
         new StreamCopier(status, status)
             .withOffset(status.getOffset())
             .withLimit(status.getLength())
@@ -56,9 +57,4 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
         return out.getStatus();
     }
 
-    @Override
-    public Upload<Reply> withWriter(final Write<Reply> writer) {
-        this.writer = writer;
-        return this;
-    }
 }

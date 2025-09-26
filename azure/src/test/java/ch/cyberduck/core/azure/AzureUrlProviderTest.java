@@ -27,7 +27,7 @@ public class AzureUrlProviderTest extends AbstractAzureTest {
     public void testGet() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
         final DescriptiveUrlBag urls = new AzureUrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String findLoginPassword(final Host bookmark) {

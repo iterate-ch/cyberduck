@@ -52,10 +52,10 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
         final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SFTPTouchFeature(session).touch(file, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), file, new TransferStatus());
         new SFTPSymlinkFeature(session).symlink(symlinkRelative, file.getName());
         new SFTPSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
-        new SFTPDirectoryFeature(session).mkdir(directory, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), directory, new TransferStatus());
         final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
         new SFTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());

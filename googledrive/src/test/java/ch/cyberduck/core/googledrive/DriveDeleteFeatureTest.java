@@ -48,7 +48,7 @@ public class DriveDeleteFeatureTest extends AbstractDriveTest {
     @Test
     public void testDeleteFolder() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER,
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER,
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(directory, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -58,9 +58,9 @@ public class DriveDeleteFeatureTest extends AbstractDriveTest {
     @Test
     public void testDeleteMultipleFiles() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path file1 = new DriveTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path file2 = new DriveTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file1 = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file2 = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file1));
         assertTrue(new DriveFindFeature(session, fileid).find(file2));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());

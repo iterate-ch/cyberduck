@@ -28,19 +28,21 @@ public class GoogleStorageLocationFeature implements Location {
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
+    private GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageLocationFeature(final GoogleStorageSession session) {
+    public GoogleStorageLocationFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
     @Override
-    public Name getDefault() {
+    public Name getDefault(final Path file) {
         return new GoogleStorageRegion(HostPreferencesFactory.get(session.getHost()).getProperty("googlestorage.location"));
     }
 
     @Override
-    public Set<Name> getLocations() {
+    public Set<Name> getLocations(final Path file) {
         return session.getHost().getProtocol().getRegions();
     }
 
@@ -50,7 +52,7 @@ public class GoogleStorageLocationFeature implements Location {
         if(container.isRoot()) {
             return unknown;
         }
-        return new GoogleStorageRegion(new GoogleStorageAttributesFinderFeature(session).find(container).getRegion());
+        return new GoogleStorageRegion(new GoogleStorageAttributesFinderFeature(session, versioning).find(container).getRegion());
     }
 
     public static final class GoogleStorageRegion extends Name {

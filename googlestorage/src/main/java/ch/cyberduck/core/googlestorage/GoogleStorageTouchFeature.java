@@ -28,7 +28,7 @@ import com.google.api.services.storage.model.StorageObject;
 public class GoogleStorageTouchFeature extends DefaultTouchFeature<StorageObject> {
 
     public GoogleStorageTouchFeature(final GoogleStorageSession session) {
-        super(new GoogleStorageWriteFeature(session));
+        super(session);
     }
 
     @Override

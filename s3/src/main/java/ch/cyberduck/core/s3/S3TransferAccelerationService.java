@@ -41,7 +41,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
 
     public S3TransferAccelerationService(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

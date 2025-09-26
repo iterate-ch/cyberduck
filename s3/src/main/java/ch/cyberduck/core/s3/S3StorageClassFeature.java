@@ -41,17 +41,17 @@ public class S3StorageClassFeature implements Redundancy {
 
     public S3StorageClassFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
     }
 
     @Override
-    public String getDefault() {
+    public String getDefault(final Path file) {
         return HostPreferencesFactory.get(session.getHost()).getProperty("s3.storage.class");
     }
 
     @Override
-    public Set<String> getClasses() {
+    public Set<String> getClasses(final Path file) {
         return new LinkedHashSet<>(HostPreferencesFactory.get(session.getHost()).getList("s3.storage.class.options"));
     }
 

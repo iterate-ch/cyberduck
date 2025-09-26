@@ -50,7 +50,7 @@ public class FTPAttributesFinderFeatureTest extends AbstractFTPTest {
     @Test
     public void testAttributesWrongFiletype() throws Exception {
         final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
-        final Path file = new FTPTouchFeature(session).touch(new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new FTPTouchFeature(session).touch(new FTPWriteFeature(session), new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         // Test wrong type
