@@ -15,14 +15,21 @@ package ch.cyberduck.cli;
  * GNU General Public License for more details.
  */
 
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Property;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.fusesource.jansi.Ansi;
 
 import java.nio.charset.StandardCharsets;
 
+@Plugin(
+        name = "Terminal",
+        category = Core.CATEGORY_NAME,
+        elementType = Appender.ELEMENT_TYPE)
 public class TerminalAppender extends AbstractAppender {
 
     private final Console console = new Console();
@@ -39,10 +46,10 @@ public class TerminalAppender extends AbstractAppender {
         final StringBuilder buffer = new StringBuilder();
         buffer.append(new String(getLayout().toByteArray(event), StandardCharsets.UTF_8));
         console.printf("\r%s%s%s", Ansi.ansi()
-                .fg(Ansi.Color.YELLOW)
-                .saveCursorPosition()
-                .eraseLine(Ansi.Erase.ALL)
-                .restoreCursorPosition(), buffer.toString(),
-            Ansi.ansi().reset());
+                        .fg(Ansi.Color.YELLOW)
+                        .saveCursorPosition()
+                        .eraseLine(Ansi.Erase.ALL)
+                        .restoreCursorPosition(), buffer.toString(),
+                Ansi.ansi().reset());
     }
 }
