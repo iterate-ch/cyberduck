@@ -70,7 +70,7 @@ public class S3AccessControlListFeature implements AclPermission {
 
     public S3AccessControlListFeature(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     private boolean isBucketOwnerEnforced(final Path bucket) throws BackgroundException {

@@ -41,7 +41,7 @@ public class S3StorageClassFeature implements Redundancy {
 
     public S3StorageClassFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
     }
 

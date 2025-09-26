@@ -60,7 +60,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     public S3MultipartCopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
         super(session, acl);
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.pool = ThreadPoolFactory.get("multipart", HostPreferencesFactory.get(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
         this.partsize = HostPreferencesFactory.get(session.getHost()).getLong("s3.copy.multipart.size");
     }

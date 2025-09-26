@@ -46,7 +46,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
 
     public S3AttributesFinderFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
     }
 
