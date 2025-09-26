@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17132.0.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17132.0.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="ch.cyberduck.ui.cocoa.CDProgressController">
+        <customObject id="-2" userLabel="File's Owner" customClass="CDProgressController" customModule="ch.cyberduck.ui.cocoa">
             <connections>
                 <outlet property="filesPopup" destination="10" id="20"/>
                 <outlet property="iconImageView" destination="4" id="21"/>
@@ -25,9 +26,11 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
             <subviews>
                 <imageView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4">
-                    <rect key="frame" x="0.0" y="44" width="38" height="38"/>
+                    <rect key="frame" x="0.0" y="40" width="38" height="38"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="5"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" id="5">
+                        <imageReference key="image" image="square.and.arrow.down.fill" catalog="system" symbolScale="default" renderingMode="template"/>
+                    </imageCell>
                 </imageView>
                 <box fixedFrame="YES" boxType="oldStyle" borderType="none" title="Title" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="6">
                     <rect key="frame" x="40" y="0.0" width="293" height="82"/>
@@ -36,7 +39,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="293" height="82"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7">
+                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7">
                                 <rect key="frame" x="28" y="22" width="259" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="8">
@@ -50,7 +53,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                             </progressIndicator>
                             <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="10">
-                                <rect key="frame" x="-3" y="56" width="290" height="22"/>
+                                <rect key="frame" x="2" y="56" width="283" height="22"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="bevel" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="bezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="13" id="11">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -62,7 +65,7 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="14">
+                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="14">
                                 <rect key="frame" x="28" y="5" width="259" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="15">
@@ -76,7 +79,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="topRight" imageScaling="proportionallyDown" image="statusGreen" id="17"/>
                             </imageView>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="18">
+                            <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="18">
                                 <rect key="frame" x="6" y="42" width="281" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="19">
@@ -89,11 +92,11 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="74" y="154"/>
+            <point key="canvasLocation" x="73.5" y="154"/>
         </customView>
     </objects>
     <resources>
-        <image name="NSApplicationIcon" width="32" height="32"/>
+        <image name="square.and.arrow.down.fill" catalog="system" width="15" height="16"/>
         <image name="statusGreen" width="32" height="32"/>
     </resources>
 </document>

@@ -577,6 +577,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.update();
     }
 
+    @Action
     public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
