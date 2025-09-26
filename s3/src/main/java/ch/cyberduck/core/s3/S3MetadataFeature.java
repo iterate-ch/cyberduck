@@ -52,7 +52,7 @@ public class S3MetadataFeature implements Headers {
     public S3MetadataFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.acl = acl;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

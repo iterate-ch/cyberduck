@@ -51,7 +51,7 @@ public class S3LocationFeature implements Location {
     public S3LocationFeature(final S3Session session, final RegionEndpointCache cache) {
         this.session = session;
         this.cache = cache;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

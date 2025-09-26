@@ -50,7 +50,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     public S3BulkTransferAccelerationFeature(final S3Session session, final TransferAcceleration accelerationService) {
         this.session = session;
         this.accelerationService = accelerationService;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

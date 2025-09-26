@@ -48,7 +48,7 @@ public class S3MoveFeature implements Move {
 
     public S3MoveFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.proxy = new S3ThresholdCopyFeature(session, acl);
         this.delete = new S3DefaultDeleteFeature(session, acl);
     }
