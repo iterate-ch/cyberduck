@@ -19,13 +19,20 @@ import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Property;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
 
 /**
  * Redirect to NSLog(). Logs an error message to the Apple System Log facility.
  */
+@Plugin(
+        name = "UnifiedSystemLog",
+        category = Core.CATEGORY_NAME,
+        elementType = Appender.ELEMENT_TYPE)
 public class UnifiedSystemLogAppender extends AbstractAppender {
 
     static {

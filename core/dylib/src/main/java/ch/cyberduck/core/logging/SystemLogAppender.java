@@ -21,10 +21,13 @@ package ch.cyberduck.core.logging;
 import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Property;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.util.Strings;
 import org.rococoa.internal.RococoaTypeMapper;
 
@@ -37,10 +40,14 @@ import com.sun.jna.Native;
 /**
  * Redirect to NSLog(). Logs an error message to the Apple System Log facility.
  */
+@Plugin(
+        name = "SystemLog",
+        category = Core.CATEGORY_NAME,
+        elementType = Appender.ELEMENT_TYPE)
 public class SystemLogAppender extends AbstractAppender {
 
     private static final FoundationKitFunctions library = Native.load(
-        "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
+            "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
 
     public SystemLogAppender(final Layout layout) {
         super(SystemLogAppender.class.getName(), null, layout, true, Property.EMPTY_ARRAY);
