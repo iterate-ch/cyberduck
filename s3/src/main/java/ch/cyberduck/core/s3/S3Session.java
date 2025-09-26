@@ -452,7 +452,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == PathContainerService.class) {
-            return (T) S3PathContainerServiceFactory.get(host);
+            return (T) new S3PathContainerService(host);
         }
         return super._getFeature(type);
     }
