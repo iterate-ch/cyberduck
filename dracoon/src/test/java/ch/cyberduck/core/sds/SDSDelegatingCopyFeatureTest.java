@@ -199,7 +199,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid, new SDSMissingFileKeysSchedulerFeature(session, nodeid));
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -299,7 +299,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid, new SDSMissingFileKeysSchedulerFeature(session, nodeid));
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
@@ -356,7 +356,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid, new SDSMissingFileKeysSchedulerFeature(session, nodeid));
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());

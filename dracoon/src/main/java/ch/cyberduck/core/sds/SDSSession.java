@@ -638,7 +638,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingCopyFeature(this, nodeid, new SDSCopyFeature(this, nodeid));
         }
         if(type == Bulk.class) {
-            return (T) new SDSEncryptionBulkFeature(this, nodeid);
+            return (T) new SDSEncryptionBulkFeature(this, nodeid, scheduler);
         }
         if(type == UrlProvider.class) {
             return (T) new SDSUrlProvider(this);

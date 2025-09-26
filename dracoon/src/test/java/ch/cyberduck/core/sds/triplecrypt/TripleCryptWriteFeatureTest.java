@@ -32,6 +32,7 @@ import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectS3MultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
 import ch.cyberduck.core.sds.SDSEncryptionBulkFeature;
+import ch.cyberduck.core.sds.SDSMissingFileKeysSchedulerFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSReadFeature;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -76,7 +77,7 @@ public class TripleCryptWriteFeatureTest extends AbstractSDSTest {
         status.setLength(content.length);
         status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid, new SDSMissingFileKeysSchedulerFeature(session, nodeid));
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
@@ -115,7 +116,7 @@ public class TripleCryptWriteFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid, new SDSMissingFileKeysSchedulerFeature(session, nodeid));
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());

@@ -20,9 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetRequest;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -31,7 +29,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SDSEncryptionBulkFeature implements Bulk<Void> {
@@ -39,12 +36,14 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     private final SDSSession session;
     private final SDSTripleCryptEncryptorFeature triplecrypt;
+    private final SDSMissingFileKeysSchedulerFeature scheduler;
 
     private final PathContainerService containerService
             = new SDSPathContainerService();
 
-    public SDSEncryptionBulkFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+    public SDSEncryptionBulkFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSMissingFileKeysSchedulerFeature scheduler) {
         this.session = session;
+        this.scheduler = scheduler;
         this.triplecrypt = new SDSTripleCryptEncryptorFeature(session, nodeid);
     }
 
@@ -93,7 +92,6 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             default:
                 if(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.encryption.missingkeys.upload")) {
                     if(session.userAccount().isEncryptionEnabled()) {
-                        final Scheduler<List<UserFileKeySetRequest>> scheduler = session.getFeature(Scheduler.class);
                         final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
                         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
                             final Path file = entry.getKey().remote;

@@ -47,7 +47,7 @@ public class SDSEncryptionBulkFeatureTest extends AbstractSDSTest {
         room.attributes().setCustom(Collections.emptyMap());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        new SDSEncryptionBulkFeature(session, nodeid).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        new SDSEncryptionBulkFeature(session, nodeid, new SDSMissingFileKeysSchedulerFeature(session, nodeid)).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         assertNotNull(status.getFilekey());
     }
 }
