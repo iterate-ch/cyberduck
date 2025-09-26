@@ -38,7 +38,7 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
     @Test
     public void testGetMetadataBucket() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Map<String, String> metadata = new GoogleStorageMetadataFeature(session).getMetadata(bucket);
+        final Map<String, String> metadata = new GoogleStorageMetadataFeature(session, new GoogleStorageVersioningFeature(session)).getMetadata(bucket);
         assertTrue(metadata.isEmpty());
     }
 
@@ -46,9 +46,10 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
     public void testGetMetadataFile() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
         final Path test = new GoogleStorageTouchFeature(session).touch(
-                new GoogleStorageWriteFeature(session), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.setMime("text/plain"));
-        final GoogleStorageMetadataFeature feature = new GoogleStorageMetadataFeature(session);
+                new GoogleStorageWriteFeature(session, versioning), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.setMime("text/plain"));
+        final GoogleStorageMetadataFeature feature = new GoogleStorageMetadataFeature(session, versioning);
         assertTrue(feature.getMetadata(test).isEmpty());
         final Map<String, String> set = Collections.singletonMap("k", "v");
         feature.setMetadata(test, status.setMetadata(set));
@@ -59,24 +60,25 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
         assertEquals("v", get.get("k"));
         feature.setMetadata(test, status.setMetadata(Collections.emptyMap()));
         assertTrue(feature.getMetadata(test).isEmpty());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session, versioning), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String v = UUID.randomUUID().toString();
-        final GoogleStorageStorageClassFeature storage = new GoogleStorageStorageClassFeature(session);
+        final GoogleStorageStorageClassFeature storage = new GoogleStorageStorageClassFeature(session, versioning);
         storage.setClass(test, "NEARLINE");
         assertEquals("NEARLINE", storage.getClass(test));
-        final GoogleStorageMetadataFeature feature = new GoogleStorageMetadataFeature(session);
+        final GoogleStorageMetadataFeature feature = new GoogleStorageMetadataFeature(session, versioning);
         feature.setMetadata(test, Collections.singletonMap("Test", v));
         final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
         assertEquals("NEARLINE", storage.getClass(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

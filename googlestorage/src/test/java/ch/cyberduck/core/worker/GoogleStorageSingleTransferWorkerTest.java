@@ -27,6 +27,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googlestorage.AbstractGoogleStorageTest;
 import ch.cyberduck.core.googlestorage.GoogleStorageDeleteFeature;
+import ch.cyberduck.core.googlestorage.GoogleStorageVersioningFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -67,17 +68,18 @@ public class GoogleStorageSingleTransferWorkerTest extends AbstractGoogleStorage
         final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream out = new GoogleStorageWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream out = new GoogleStorageWriteFeature(session, versioning).write(test, writeStatus, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session, versioning).write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -94,7 +96,7 @@ public class GoogleStorageSingleTransferWorkerTest extends AbstractGoogleStorage
 
         }.run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile.delete();
     }
 }

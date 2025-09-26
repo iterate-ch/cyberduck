@@ -28,6 +28,7 @@ import ch.cyberduck.core.googlestorage.GoogleStorageDeleteFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageDirectoryFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageFindFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageTouchFeature;
+import ch.cyberduck.core.googlestorage.GoogleStorageVersioningFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -48,25 +49,26 @@ public class DeleteWorkerTest extends AbstractGoogleStorageTest {
     @Test
     public void testDelete() throws Exception {
         final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new GoogleStorageDirectoryFeature(session).mkdir(
-                new GoogleStorageWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new GoogleStorageFindFeature(session).find(folder));
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path folder = new GoogleStorageDirectoryFeature(session, versioning).mkdir(
+                new GoogleStorageWriteFeature(session, versioning), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(folder));
         final Path file = new GoogleStorageTouchFeature(session).touch(
-                new GoogleStorageWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new GoogleStorageWriteFeature(session, versioning), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
-        assertTrue(new GoogleStorageFindFeature(session).find(file));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(file));
         final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener());
         int hashCode = worker.hashCode();
         worker.run(session);
         assertEquals(hashCode, worker.hashCode());
         // Find delete marker
-        assertTrue(new GoogleStorageFindFeature(session).find(file));
-        assertTrue(new GoogleStorageAttributesFinderFeature(session).find(file).isDuplicate());
-        assertFalse(new GoogleStorageFindFeature(session).find(new Path(file).withAttributes(PathAttributes.EMPTY)));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(file));
+        assertTrue(new GoogleStorageAttributesFinderFeature(session, versioning).find(file).isDuplicate());
+        assertFalse(new GoogleStorageFindFeature(session, versioning).find(new Path(file).withAttributes(PathAttributes.EMPTY)));
         assertTrue(new DefaultFindFeature(session).find(file));
         assertFalse(new DefaultFindFeature(session).find(new Path(file).withAttributes(PathAttributes.EMPTY)));
-        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new GoogleStorageFindFeature(session).find(folder));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Arrays.asList(file, folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertFalse(new GoogleStorageFindFeature(session, versioning).find(folder));
         assertFalse(new DefaultFindFeature(session).find(folder));
     }
 }

@@ -55,7 +55,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status.setLength(2L), new DisabledConnectionCallback());
+        new GoogleStorageReadFeature(session, new GoogleStorageVersioningFeature(session)).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status.setLength(2L), new DisabledConnectionCallback());
     }
 
     @Test
@@ -63,18 +63,19 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
     public void testReadRangeUnknownLength() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), test, new TransferStatus());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session, versioning), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session, versioning).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         test.attributes().setVersionId(String.valueOf(out.getStatus().getGeneration()));
         status.setAppend(true);
         status.setOffset(100L);
         status.setLength(-1L);
-        final InputStream in = new GoogleStorageReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new GoogleStorageReadFeature(session, versioning).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -82,7 +83,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -93,16 +94,17 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final OutputStream out = new GoogleStorageWriteFeature(session, versioning).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        final InputStream in = new GoogleStorageReadFeature(session).read(file, status, new DisabledConnectionCallback());
+        final InputStream in = new GoogleStorageReadFeature(session, versioning).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
         assertEquals(content.length, count.getRecv());
         assertEquals(content.length, status.getLength());
         in.close();
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -113,12 +115,13 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final byte[] content = RandomUtils.nextBytes(length);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final OutputStream out = new GoogleStorageWriteFeature(session, versioning).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, status, new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session, versioning).read(file, status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -129,13 +132,14 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final Path file = new Path(container, String.format("t %s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final OutputStream out = new GoogleStorageWriteFeature(session, versioning).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertEquals(length, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
-        final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback()));
+        assertEquals(length, new GoogleStorageAttributesFinderFeature(session, versioning).find(file).getSize());
+        final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session, versioning).read(file, new TransferStatus(), new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -143,29 +147,31 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final int length = 47;
         final byte[] content = RandomUtils.nextBytes(length);
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path directory = new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
+        final OutputStream out = new GoogleStorageWriteFeature(session, versioning).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertEquals(length, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
-        final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback()));
+        assertEquals(length, new GoogleStorageAttributesFinderFeature(session, versioning).find(file).getSize());
+        final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session, versioning).read(file, new TransferStatus(), new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testReadEmpty() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path file = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(0, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
-        final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, new TransferStatus(), new DisabledConnectionCallback()));
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path directory = new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session, versioning), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(0, new GoogleStorageAttributesFinderFeature(session, versioning).find(file).getSize());
+        final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session, versioning).read(file, new TransferStatus(), new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -173,24 +179,25 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final int length = 8;
         final byte[] content = RandomUtils.nextBytes(length);
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertTrue(new GoogleStorageVersioningFeature(session).getConfiguration(container).isEnabled());
-        final Path file = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        assertTrue(versioning.getConfiguration(container).isEnabled());
+        final Path file = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session, versioning), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String initialVersion = file.attributes().getVersionId();
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session, versioning).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertEquals(0L, new GoogleStorageAttributesFinderFeature(session).find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(initialVersion))).getSize());
+        assertEquals(0L, new GoogleStorageAttributesFinderFeature(session, versioning).find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(initialVersion))).getSize());
         // Read previous version
         status.setLength(0L);
-        final InputStream in = new GoogleStorageReadFeature(session).read(file, status, new DisabledConnectionCallback());
+        final InputStream in = new GoogleStorageReadFeature(session, versioning).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(0);
         new StreamCopier(status, status).transfer(in, buffer);
         assertEquals(0, buffer.size());
         in.close();
         file.attributes().setVersionId(String.valueOf(out.getStatus().getGeneration()));
-        assertEquals(length, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(length, new GoogleStorageAttributesFinderFeature(session, versioning).find(file).getSize());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

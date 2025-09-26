@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -41,10 +40,10 @@ public class GoogleStorageVersioningFeatureTest extends AbstractGoogleStorageTes
     @Test
     public void testSetConfiguration() throws Exception {
         final Path container = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), container, new TransferStatus());
-        final Versioning feature = new GoogleStorageVersioningFeature(session);
-        feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
-        assertTrue(feature.getConfiguration(container).isEnabled());
-        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), container, new TransferStatus());
+        versioning.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
+        assertTrue(versioning.getConfiguration(container).isEnabled());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -43,9 +43,11 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
+    public GoogleStorageDirectoryFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -61,7 +63,7 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
                 final Bucket bucket = request.execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
-                return new Path(folder).withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
+                return new Path(folder).withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session, versioning).toAttributes(bucket));
             }
             else {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());

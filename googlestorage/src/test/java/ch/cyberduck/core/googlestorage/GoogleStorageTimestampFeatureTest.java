@@ -44,14 +44,15 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
     @Test
     public void testFindTimesteamp() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(bucket,
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session, versioning), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setModified(1530305150672L));
-        assertEquals(1530305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(1530305150672L, new GoogleStorageAttributesFinderFeature(session, versioning).find(test).getModificationDate());
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1033);
         status.setLength(content.length);
         status.setModified(1530305150673L);
-        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session, versioning).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final PathAttributes response = status.getResponse();
@@ -59,29 +60,29 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
         assertNotNull(response.getVersionId());
         test.withAttributes(response);
         assertEquals(1530305150673L, response.getModificationDate());
-        final GoogleStorageTimestampFeature feature = new GoogleStorageTimestampFeature(session);
+        final GoogleStorageTimestampFeature feature = new GoogleStorageTimestampFeature(session, versioning);
         // Rewrite object with timestamp earlier than already set
         final TransferStatus rewriteStatus = new TransferStatus().setModified(1530305150672L);
         feature.setTimestamp(test, rewriteStatus);
         assertNotEquals(test.attributes().getVersionId(), rewriteStatus.getResponse().getVersionId());
         test.attributes().setVersionId(null);
-        final PathAttributes attrAfterRewrite = new GoogleStorageAttributesFinderFeature(session).find(test);
+        final PathAttributes attrAfterRewrite = new GoogleStorageAttributesFinderFeature(session, versioning).find(test);
         assertEquals(rewriteStatus.getResponse(), attrAfterRewrite);
         assertEquals(1530305150672L, attrAfterRewrite.getModificationDate());
         assertNotEquals(response.getETag(), attrAfterRewrite.getETag());
         assertNotEquals(response.getVersionId(), attrAfterRewrite.getVersionId());
         final TransferStatus patchStatus = new TransferStatus().setModified(1630305150672L);
         feature.setTimestamp(test, patchStatus);
-        assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());
-        final PathAttributes attrAfterPatch = new GoogleStorageAttributesFinderFeature(session).find(test);
+        assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session, versioning).find(test).getModificationDate());
+        final PathAttributes attrAfterPatch = new GoogleStorageAttributesFinderFeature(session, versioning).find(test);
         assertEquals(patchStatus.getResponse(), attrAfterPatch);
         final String eTagAfterPatch = attrAfterPatch.getETag();
         assertNotEquals(attrAfterRewrite.getETag(), eTagAfterPatch);
-        final Path moved = new GoogleStorageMoveFeature(session).move(test, new Path(bucket,
+        final Path moved = new GoogleStorageMoveFeature(session, versioning).move(test, new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1630305150672L, moved.attributes().getModificationDate());
-        assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(moved).getModificationDate());
-        assertNotEquals(eTagAfterPatch, new GoogleStorageAttributesFinderFeature(session).find(moved).getETag());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session, versioning).find(moved).getModificationDate());
+        assertNotEquals(eTagAfterPatch, new GoogleStorageAttributesFinderFeature(session, versioning).find(moved).getETag());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

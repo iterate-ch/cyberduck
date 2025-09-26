@@ -24,16 +24,18 @@ import ch.cyberduck.core.exception.BackgroundException;
 public class GoogleStorageListService implements ListService {
 
     private final GoogleStorageSession session;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageListService(final GoogleStorageSession session) {
+    public GoogleStorageListService(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new GoogleStorageBucketListService(session).list(directory, listener);
+            return new GoogleStorageBucketListService(session, versioning).list(directory, listener);
         }
-        return new GoogleStorageObjectListService(session).list(directory, listener);
+        return new GoogleStorageObjectListService(session, versioning).list(directory, listener);
     }
 }

@@ -60,9 +60,11 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageAccessControlListFeature(final GoogleStorageSession session) {
+    public GoogleStorageAccessControlListFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -176,7 +178,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
                 final List<BucketAccessControl> bucketAccessControls = this.toBucketAccessControl(status.getAcl());
-                status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(
+                status.setResponse(new GoogleStorageAttributesFinderFeature(session, versioning).toAttributes(
                         session.getClient().buckets().update(bucket.getName(),
                                 new Bucket().setAcl(bucketAccessControls)).execute()
                 ));
@@ -188,9 +190,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
                 if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     request.setUserProject(session.getHost().getCredentials().getUsername());
                 }
-                status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(
-                        request.execute()
-                ));
+                status.setResponse(new GoogleStorageAttributesFinderFeature(session, versioning).toAttributes(request.execute()));
             }
         }
         catch(IOException e) {
@@ -319,7 +319,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
 
     @Override
     public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
-        final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
+        final List<Acl.User> users = new ArrayList<>(Arrays.asList(
                 new Acl.CanonicalUser(),
                 new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED, false) {
                     @Override
@@ -356,7 +356,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         // There are two roles that can be assigned to an entity:
-        return new ArrayList<Acl.Role>(Arrays.asList(
+        return new ArrayList<>(Arrays.asList(
                 new Acl.Role(Acl.Role.FULL),
                 new Acl.Role(Acl.Role.READ))
         );

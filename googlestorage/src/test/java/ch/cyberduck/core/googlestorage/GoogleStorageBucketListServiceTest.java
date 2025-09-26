@@ -34,10 +34,11 @@ public class GoogleStorageBucketListServiceTest extends AbstractGoogleStorageTes
     @Test
     public void testListContainers() throws Exception {
         final Path container = new Path("/", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> list = new GoogleStorageBucketListService(session).list(container, new DisabledListProgressListener());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final AttributedList<Path> list = new GoogleStorageBucketListService(session, versioning).list(container, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path bucket : list) {
-            assertEquals(bucket.attributes(), new GoogleStorageAttributesFinderFeature(session).find(bucket, new DisabledListProgressListener()));
+            assertEquals(bucket.attributes(), new GoogleStorageAttributesFinderFeature(session, versioning).find(bucket, new DisabledListProgressListener()));
         }
     }
 }

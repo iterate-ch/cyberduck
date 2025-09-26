@@ -42,25 +42,26 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     @Test
     public void testGetMethods() {
         final DistributionConfiguration configuration
-            = new GoogleStorageWebsiteDistributionConfiguration(session);
+                = new GoogleStorageWebsiteDistributionConfiguration(session, new GoogleStorageVersioningFeature(session));
         assertEquals(Collections.singletonList(Distribution.WEBSITE), configuration.getMethods(new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
     public void testWrite() throws Exception {
-        final DistributionConfiguration configuration = new GoogleStorageWebsiteDistributionConfiguration(session);
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final DistributionConfiguration configuration = new GoogleStorageWebsiteDistributionConfiguration(session, versioning);
         final Path bucket = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), bucket, new TransferStatus());
+        new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), bucket, new TransferStatus());
         configuration.write(bucket, new Distribution(Distribution.WEBSITE, null, true), new DisabledLoginCallback());
         final Distribution distribution = configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginCallback());
         assertTrue(distribution.isEnabled());
         assertEquals(configuration.getName(), distribution.getName());
-        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testFeatures() {
-        final DistributionConfiguration d = new GoogleStorageWebsiteDistributionConfiguration(session);
+        final DistributionConfiguration d = new GoogleStorageWebsiteDistributionConfiguration(session, new GoogleStorageVersioningFeature(session));
         assertNotNull(d.getFeature(Index.class, Distribution.WEBSITE));
         assertNotNull(d.getFeature(DistributionLogging.class, Distribution.WEBSITE));
         assertNull(d.getFeature(Cname.class, Distribution.WEBSITE));

@@ -46,70 +46,75 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     public void testMakeBucket() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(),
                 new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), test, new TransferStatus().setRegion("us"));
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
-        assertThrows(ConflictException.class, () -> new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), test, new TransferStatus()));
-        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), test, new TransferStatus().setRegion("us"));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
+        assertThrows(ConflictException.class, () -> new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), test, new TransferStatus()));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testDirectoryDeleteWithVersioning() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path parent = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(bucket,
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path parent = new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(parent,
+        final Path test = new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), new Path(parent,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         // Only placeholder is found in list output with no version id set
         assertTrue(test.isPlaceholder());
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         // This will only cause a delete marker being added
-        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(new Path(test).withAttributes(PathAttributes.EMPTY), parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Arrays.asList(new Path(test).withAttributes(PathAttributes.EMPTY), parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
         // Specific version is still found
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertFalse(new GoogleStorageFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        assertFalse(new GoogleStorageFindFeature(session, versioning).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
         assertFalse(new DefaultFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
-        assertTrue(new GoogleStorageAttributesFinderFeature(session).find(new Path(test)).isDuplicate());
+        assertTrue(new GoogleStorageAttributesFinderFeature(session, versioning).find(new Path(test)).isDuplicate());
         assertTrue(new DefaultAttributesFinderFeature(session).find(new Path(test)).isDuplicate());
     }
 
     @Test
     public void testDirectoryWhitespace() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(bucket,
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path test = new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), new Path(bucket,
                 String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testCreatePlaceholderVersioningDelete() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path test = new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
-        assertTrue(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(bucket, new DisabledListProgressListener()).contains(test));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new GoogleStorageObjectListService(session, versioning).list(bucket, new DisabledListProgressListener()).contains(test));
         assertFalse(new DefaultFindFeature(session).find(test));
-        assertFalse(new GoogleStorageFindFeature(session).find(test));
+        assertFalse(new GoogleStorageFindFeature(session, versioning).find(test));
     }
 
     @Test
     public void testCreatePlaceholderVersioningDeleteWithMarker() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path test = new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
-        assertTrue(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(bucket, new DisabledListProgressListener()).contains(test));
         // Add delete marker
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
-        assertFalse(new GoogleStorageFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        assertFalse(new GoogleStorageFindFeature(session, versioning).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
     }
 }

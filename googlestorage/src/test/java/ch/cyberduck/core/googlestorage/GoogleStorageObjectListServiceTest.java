@@ -44,7 +44,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
     @Test
     public void testListObjects() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final AttributedList<Path> list = new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener());
+        final AttributedList<Path> list = new GoogleStorageObjectListService(session, new GoogleStorageVersioningFeature(session)).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertSame(container, p.getParent());
             if(p.isFile()) {
@@ -57,22 +57,23 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
     @Test
     public void testListLexicographicSortOrderAssumption() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(
-                new GoogleStorageWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path directory = new GoogleStorageDirectoryFeature(session, versioning).mkdir(
+                new GoogleStorageWriteFeature(session, versioning), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(directory, new DisabledListProgressListener()).isEmpty());
         final List<String> files = new ArrayList<>(Arrays.asList(
                 "Z", "aa", "0a", "a", "AAA", "B", "~$a", ".c"
         ));
         for(String f : files) {
-            new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
+            new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session, versioning), new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         final List<String> folders = Arrays.asList("b", "BB");
         for(String f : folders) {
-            new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(directory, f, EnumSet.of(Path.Type.directory)), new TransferStatus());
+            new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), new Path(directory, f, EnumSet.of(Path.Type.directory)), new TransferStatus());
         }
         files.addAll(folders);
         files.sort(session.getHost().getProtocol().getListComparator());
-        final AttributedList<Path> list = new GoogleStorageObjectListService(session).list(directory, new IndexedListProgressListener() {
+        final AttributedList<Path> list = new GoogleStorageObjectListService(session, versioning).list(directory, new IndexedListProgressListener() {
             @Override
             public void message(final String message) {
                 //
@@ -85,81 +86,88 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         });
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());
-            new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListEncodedCharacterFile() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
         final Path placeholder = new GoogleStorageTouchFeature(session).touch(
-                new GoogleStorageWriteFeature(session), new Path(container, String.format("^<%%%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                new GoogleStorageWriteFeature(session, versioning), new Path(container, String.format("^<%%%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListEncodedCharacterFolderVersioned() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
-                new GoogleStorageWriteFeature(session), new Path(container, String.format("%s +", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path placeholder = new GoogleStorageDirectoryFeature(session, versioning).mkdir(
+                new GoogleStorageWriteFeature(session, versioning), new Path(container, String.format("%s +", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListEncodedCharacterFolderNonVersioned() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
-                new GoogleStorageWriteFeature(session), new Path(container, String.format("%s +", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener(), String.valueOf(Path.DELIMITER),
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path placeholder = new GoogleStorageDirectoryFeature(session, versioning).mkdir(
+                new GoogleStorageWriteFeature(session, versioning), new Path(container, String.format("%s +", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(container, new DisabledListProgressListener(), String.valueOf(Path.DELIMITER),
                 HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.chunksize"), VersioningConfiguration.empty()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListInvisibleCharacter() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
         final Path placeholder = new GoogleStorageTouchFeature(session).touch(
-                new GoogleStorageWriteFeature(session), new Path(container, String.format("test-\u001F-%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                new GoogleStorageWriteFeature(session, versioning), new Path(container, String.format("test-\u001F-%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListFilePlusCharacter() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
         final Path placeholder = new GoogleStorageTouchFeature(session).touch(
-                new GoogleStorageWriteFeature(session), new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                new GoogleStorageWriteFeature(session, versioning), new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListPlaceholderPlusCharacter() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(
-                new GoogleStorageWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
-                new GoogleStorageWriteFeature(session), new Path(directory, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener()).contains(placeholder));
-        assertTrue(new GoogleStorageObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
-        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(placeholder, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path directory = new GoogleStorageDirectoryFeature(session, versioning).mkdir(
+                new GoogleStorageWriteFeature(session, versioning), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path placeholder = new GoogleStorageDirectoryFeature(session, versioning).mkdir(
+                new GoogleStorageWriteFeature(session, versioning), new Path(directory, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session, new GoogleStorageVersioningFeature(session)).list(directory, new DisabledListProgressListener()).contains(placeholder));
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(placeholder, new DisabledListProgressListener()).isEmpty());
+        new GoogleStorageDeleteFeature(session, new GoogleStorageVersioningFeature(session)).delete(Arrays.asList(placeholder, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testListPlaceholderDot() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
-                new GoogleStorageWriteFeature(session), new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path placeholder = new GoogleStorageDirectoryFeature(session, versioning).mkdir(
+                new GoogleStorageWriteFeature(session, versioning), new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session, versioning).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

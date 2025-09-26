@@ -35,9 +35,11 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageStorageClassFeature(final GoogleStorageSession session) {
+    public GoogleStorageStorageClassFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -54,7 +56,7 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     @Override
     public String getClass(final Path file) throws BackgroundException {
-        return new GoogleStorageAttributesFinderFeature(session).find(file).getStorageClass();
+        return new GoogleStorageAttributesFinderFeature(session, versioning).find(file).getStorageClass();
     }
 
     @Override

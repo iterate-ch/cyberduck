@@ -45,23 +45,24 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testMove() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
         final Path test = new GoogleStorageTouchFeature(session).touch(
-                new GoogleStorageWriteFeature(session), new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMetadata(Collections.singletonMap("cyberduck", "set")));
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
-        assertFalse(new GoogleStorageMetadataFeature(session).getMetadata(test).isEmpty());
+                new GoogleStorageWriteFeature(session, versioning), new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMetadata(Collections.singletonMap("cyberduck", "set")));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
+        assertFalse(new GoogleStorageMetadataFeature(session, versioning).getMetadata(test).isEmpty());
         final Path renamed = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path moved = new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new GoogleStorageFindFeature(session).find(test));
-        assertTrue(new GoogleStorageFindFeature(session).find(renamed));
-        final PathAttributes targetAttr = new GoogleStorageAttributesFinderFeature(session).find(renamed);
+        final Path moved = new GoogleStorageMoveFeature(session, versioning).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new GoogleStorageFindFeature(session, versioning).find(test));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(renamed));
+        final PathAttributes targetAttr = new GoogleStorageAttributesFinderFeature(session, versioning).find(renamed);
         assertEquals(moved.attributes(), targetAttr);
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, moved.attributes(), targetAttr));
-        assertEquals(1, new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener())
+        assertEquals(1, new GoogleStorageObjectListService(session, versioning).list(bucket, new DisabledListProgressListener())
                 .filter(new SearchFilter(renamed.getName())).size());
-        final Map<String, String> metadata = new GoogleStorageMetadataFeature(session).getMetadata(renamed);
+        final Map<String, String> metadata = new GoogleStorageMetadataFeature(session, versioning).getMetadata(renamed);
         assertFalse(metadata.isEmpty());
         assertEquals("set", metadata.get("cyberduck"));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -69,20 +70,22 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path placeholder = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), test, new TransferStatus());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session, versioning), test, new TransferStatus());
         final Path renamed = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new GoogleStorageFindFeature(session).find(test));
-        assertTrue(new GoogleStorageFindFeature(session).find(renamed));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageMoveFeature(session, versioning).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new GoogleStorageFindFeature(session, versioning).find(test));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(renamed));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new GoogleStorageMoveFeature(session).isSupported(c, Optional.of(new Path(new Path("/d", EnumSet.of(Path.Type.directory))))));
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        assertFalse(new GoogleStorageMoveFeature(session, versioning).isSupported(c, Optional.of(new Path(new Path("/d", EnumSet.of(Path.Type.directory))))));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new GoogleStorageMoveFeature(session).isSupported(cf, Optional.of(new Path("/c/f2", EnumSet.of(Path.Type.directory)))));
+        assertTrue(new GoogleStorageMoveFeature(session, versioning).isSupported(cf, Optional.of(new Path("/c/f2", EnumSet.of(Path.Type.directory)))));
     }
 
     @Test
@@ -92,12 +95,13 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         final GoogleStorageTouchFeature touch = new GoogleStorageTouchFeature(session);
         final TransferStatus status = new TransferStatus();
         status.setEncryption(new Encryption.Algorithm("AES256", null));
-        touch.touch(new GoogleStorageWriteFeature(session), test, status);
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        touch.touch(new GoogleStorageWriteFeature(session, versioning), test, status);
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new GoogleStorageFindFeature(session).find(test));
-        assertTrue(new GoogleStorageFindFeature(session).find(renamed));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageMoveFeature(session, versioning).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new GoogleStorageFindFeature(session, versioning).find(test));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(renamed));
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

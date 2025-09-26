@@ -26,7 +26,6 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -59,14 +58,16 @@ public class GoogleStorageObjectListService implements ListService {
     private final GoogleStorageAttributesFinderFeature attributes;
     private final PathContainerService containerService;
     private final Integer concurrency;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageObjectListService(final GoogleStorageSession session) {
-        this(session, HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.concurrency"));
+    public GoogleStorageObjectListService(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
+        this(session, versioning, HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.concurrency"));
     }
 
-    public GoogleStorageObjectListService(final GoogleStorageSession session, final Integer concurrency) {
+    public GoogleStorageObjectListService(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning, final Integer concurrency) {
         this.session = session;
-        this.attributes = new GoogleStorageAttributesFinderFeature(session);
+        this.versioning = versioning;
+        this.attributes = new GoogleStorageAttributesFinderFeature(session, versioning);
         this.containerService = new GoogleStoragePathContainerService();
         this.concurrency = concurrency;
     }
@@ -77,11 +78,11 @@ public class GoogleStorageObjectListService implements ListService {
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
-        final VersioningConfiguration versioning = HostPreferencesFactory.get(session.getHost()).getBoolean("googlestorage.listing.versioning.enable") &&
-                null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+        final VersioningConfiguration config = HostPreferencesFactory.get(session.getHost()).getBoolean("googlestorage.listing.versioning.enable") &&
+                null != versioning ? versioning.getConfiguration(
                 containerService.getContainer(directory)
         ) : VersioningConfiguration.empty();
-        return this.list(directory, listener, delimiter, HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.chunksize"), versioning);
+        return this.list(directory, listener, delimiter, HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.chunksize"), config);
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize,

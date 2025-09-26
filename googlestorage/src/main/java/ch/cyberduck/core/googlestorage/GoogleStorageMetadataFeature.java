@@ -38,9 +38,11 @@ public class GoogleStorageMetadataFeature implements Headers {
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageMetadataFeature(final GoogleStorageSession session) {
+    public GoogleStorageMetadataFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -52,7 +54,7 @@ public class GoogleStorageMetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            return new GoogleStorageAttributesFinderFeature(session).find(file).getMetadata();
+            return new GoogleStorageAttributesFinderFeature(session, versioning).find(file).getMetadata();
         }
         catch(NotfoundException e) {
             if(file.isDirectory()) {
@@ -73,7 +75,7 @@ public class GoogleStorageMetadataFeature implements Headers {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             final StorageObject object = request.execute();
-            status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(object));
+            status.setResponse(new GoogleStorageAttributesFinderFeature(session, versioning).toAttributes(object));
         }
         catch(IOException e) {
             final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);

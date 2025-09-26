@@ -39,9 +39,11 @@ public class GoogleStorageTimestampFeature implements Timestamp {
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageTimestampFeature(final GoogleStorageSession session) {
+    public GoogleStorageTimestampFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
         this.containerService = new GoogleStoragePathContainerService();
     }
 
@@ -61,7 +63,7 @@ public class GoogleStorageTimestampFeature implements Timestamp {
                     request.setUserProject(session.getHost().getCredentials().getUsername());
                 }
                 final StorageObject latest = request.execute();
-                status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(latest));
+                status.setResponse(new GoogleStorageAttributesFinderFeature(session, versioning).toAttributes(latest));
             }
         }
         catch(IOException e) {
@@ -77,7 +79,7 @@ public class GoogleStorageTimestampFeature implements Timestamp {
                 // You cannot remove Custom-Time once it's been set on an object. Additionally, the value for Custom-Time cannot
                 // decrease. That is, you cannot set Custom-Time to be an earlier date/time than the existing Custom-Time.
                 // You can, however, effectively remove or reset the Custom-Time by rewriting the object.
-                final Path copy = new GoogleStorageCopyFeature(session).copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+                final Path copy = new GoogleStorageCopyFeature(session, versioning).copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
                 status.setResponse(copy.attributes());
                 return;
             }

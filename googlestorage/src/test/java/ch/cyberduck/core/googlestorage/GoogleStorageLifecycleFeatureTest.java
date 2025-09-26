@@ -40,7 +40,8 @@ public class GoogleStorageLifecycleFeatureTest extends AbstractGoogleStorageTest
     public void testSetConfiguration() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(),
                 new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), test, new TransferStatus());
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), test, new TransferStatus());
         final GoogleStorageLifecycleFeature feature = new GoogleStorageLifecycleFeature(session);
         assertEquals(LifecycleConfiguration.empty(), feature.getConfiguration(test));
         feature.setConfiguration(test, new LifecycleConfiguration(1, 2));
@@ -49,7 +50,7 @@ public class GoogleStorageLifecycleFeatureTest extends AbstractGoogleStorageTest
         assertEquals(2, read.getExpiration(), 0L);
         feature.setConfiguration(test, LifecycleConfiguration.empty());
         assertEquals(LifecycleConfiguration.empty(), feature.getConfiguration(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session, new GoogleStorageVersioningFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

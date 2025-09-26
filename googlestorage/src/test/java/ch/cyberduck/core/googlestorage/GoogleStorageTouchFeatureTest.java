@@ -36,11 +36,12 @@ public class GoogleStorageTouchFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testTouch() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
         final Path test = new GoogleStorageTouchFeature(session).touch(
-                new GoogleStorageWriteFeature(session), new Path(bucket, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("text/plain"));
-        assertTrue(new GoogleStorageFindFeature(session).find(test));
-        assertEquals(test.attributes().getVersionId(), new GoogleStorageAttributesFinderFeature(session).find(test).getVersionId());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new GoogleStorageFindFeature(session).find(test));
+                new GoogleStorageWriteFeature(session, versioning), new Path(bucket, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("text/plain"));
+        assertTrue(new GoogleStorageFindFeature(session, versioning).find(test));
+        assertEquals(test.attributes().getVersionId(), new GoogleStorageAttributesFinderFeature(session, versioning).find(test).getVersionId());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new GoogleStorageFindFeature(session, versioning).find(test));
     }
 }

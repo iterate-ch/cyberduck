@@ -48,14 +48,14 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
                         "NEARLINE",
                         "COLDLINE",
                         "ARCHIVE").toArray(),
-                new GoogleStorageStorageClassFeature(session).getClasses(Home.root()).toArray());
+                new GoogleStorageStorageClassFeature(session, new GoogleStorageVersioningFeature(session)).getClasses(Home.root()).toArray());
     }
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session);
+        final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session, new GoogleStorageVersioningFeature(session));
         feature.getClass(test);
     }
 
@@ -63,9 +63,10 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
     public void testSetClassBucket() throws Exception {
         final TransferStatus status = new TransferStatus();
         status.setStorageClass("MULTI_REGIONAL");
-        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory)),
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path test = new GoogleStorageDirectoryFeature(session, versioning).mkdir(new GoogleStorageWriteFeature(session, versioning), new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory)),
                 status);
-        final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session);
+        final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session, versioning);
         assertEquals("MULTI_REGIONAL", feature.getClass(test));
         feature.setClass(test, "MULTI_REGIONAL");
         assertEquals("MULTI_REGIONAL", feature.getClass(test));
@@ -73,16 +74,17 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
         assertEquals("NEARLINE", feature.getClass(test));
         feature.setClass(test, "COLDLINE");
         assertEquals("COLDLINE", feature.getClass(test));
-        assertEquals("COLDLINE", new GoogleStorageAttributesFinderFeature(session).find(test).getStorageClass());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals("COLDLINE", new GoogleStorageAttributesFinderFeature(session, versioning).find(test).getStorageClass());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testSetClassObject() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory));
-        final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(bucket,
+        final GoogleStorageVersioningFeature versioning = new GoogleStorageVersioningFeature(session);
+        final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session, versioning), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session);
+        final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session, versioning);
         assertEquals("STANDARD", feature.getClass(test));
         feature.setClass(test, "MULTI_REGIONAL");
         assertEquals("MULTI_REGIONAL", feature.getClass(test));
@@ -90,7 +92,7 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
         assertEquals("NEARLINE", feature.getClass(test));
         feature.setClass(test, "COLDLINE");
         assertEquals("COLDLINE", feature.getClass(test));
-        assertEquals("COLDLINE", new GoogleStorageAttributesFinderFeature(session).find(test).getStorageClass());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals("COLDLINE", new GoogleStorageAttributesFinderFeature(session, versioning).find(test).getStorageClass());
+        new GoogleStorageDeleteFeature(session, versioning).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

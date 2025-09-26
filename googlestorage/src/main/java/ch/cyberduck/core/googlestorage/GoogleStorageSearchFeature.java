@@ -30,24 +30,26 @@ import java.util.Set;
 public class GoogleStorageSearchFeature implements Search {
 
     private final GoogleStorageSession session;
+    private final GoogleStorageVersioningFeature versioning;
 
-    public GoogleStorageSearchFeature(final GoogleStorageSession session) {
+    public GoogleStorageSearchFeature(final GoogleStorageSession session, final GoogleStorageVersioningFeature versioning) {
         this.session = session;
+        this.versioning = versioning;
     }
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         if(workdir.isRoot()) {
             final AttributedList<Path> result = new AttributedList<>();
-            final AttributedList<Path> buckets = new GoogleStorageBucketListService(session).list(workdir, listener);
+            final AttributedList<Path> buckets = new GoogleStorageBucketListService(session, versioning).list(workdir, listener);
             for(Path bucket : buckets) {
-                result.addAll(filter(regex, new GoogleStorageObjectListService(session).list(bucket, listener, null)));
+                result.addAll(filter(regex, new GoogleStorageObjectListService(session, versioning).list(bucket, listener, null)));
             }
             result.addAll(filter(regex, buckets));
             return result;
         }
         try {
-            return filter(regex, new GoogleStorageObjectListService(session).list(workdir, listener, null));
+            return filter(regex, new GoogleStorageObjectListService(session, versioning).list(workdir, listener, null));
         }
         catch(NotfoundException e) {
             return AttributedList.emptyList();

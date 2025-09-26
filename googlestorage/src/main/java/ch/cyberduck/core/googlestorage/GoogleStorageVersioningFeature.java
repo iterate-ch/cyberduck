@@ -102,7 +102,7 @@ public class GoogleStorageVersioningFeature implements Versioning {
 
     @Override
     public void revert(final Path file) throws BackgroundException {
-        new GoogleStorageCopyFeature(session).copy(file, file, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new GoogleStorageCopyFeature(session, this).copy(file, file, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
     }
 
     @Override
@@ -110,7 +110,7 @@ public class GoogleStorageVersioningFeature implements Versioning {
         if(file.isDirectory()) {
             return AttributedList.emptyList();
         }
-        return new GoogleStorageObjectListService(session).list(file, listener, String.valueOf(Path.DELIMITER),
+        return new GoogleStorageObjectListService(session, this).list(file, listener, String.valueOf(Path.DELIMITER),
                 HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.chunksize"), new VersioningConfiguration(true)).filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {
