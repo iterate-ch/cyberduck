@@ -37,9 +37,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Overview;
 import ch.cyberduck.core.deepcloud.DeepcloudExceptionMappingService;
 import ch.cyberduck.core.deepcloud.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.deepcloud.io.swagger.client.model.CompanyRoles;
-import ch.cyberduck.core.deepcloud.io.swagger.client.model.StructureEnum;
 import ch.cyberduck.core.deepcloud.io.swagger.client.model.UserFull;
-import ch.cyberduck.core.deepcloud.io.swagger.client.model.VerificationStateEnum;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -382,11 +380,6 @@ public class DeepboxListService implements ListService {
                 final UsersApi rest = new UsersApi(session.getDeepcloudClient());
                 final UserFull user = rest.usersMeList();
                 for(CompanyRoles company : user.getCompanies()) {
-                    if(company.getStructure() == StructureEnum.PERSONAL) {
-                        if(company.getVerificationState() == VerificationStateEnum.NONE) {
-                            continue;
-                        }
-                    }
                     list.add(new Path(directory, DeepboxPathNormalizer.name(company.getDisplayName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                             attributes.toAttributes(company))
                     );
