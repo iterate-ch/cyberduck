@@ -45,4 +45,4 @@ jobs:
         run: mvn --no-transfer-progress verify -DskipITs -DskipSign ${{ env.args }} --batch-mode -Drevision=0
       - name: Publish Test Report
         if: ${{ always() }}
-        uses: scacap/action-surefire-report@v1.9.0
+        uses: scacap/action-surefire-report@v1.9.1
