@@ -307,7 +307,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(home.isRoot() && StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
             log.debug("Skip querying region for {}", home);
-            new S3ListService(this, acl).list(home, new DisabledListProgressListener());
+            new S3ListService(this, acl, versioning).list(home, new DisabledListProgressListener());
         }
         else {
             final Location.Name location = new S3LocationFeature(this, regions).getLocation(home);
@@ -338,7 +338,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new S3ListService(this, acl);
+            return (T) new S3ListService(this, acl, versioning);
         }
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);

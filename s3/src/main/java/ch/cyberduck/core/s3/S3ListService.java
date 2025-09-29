@@ -40,10 +40,12 @@ public class S3ListService implements ListService {
 
     private final S3Session session;
     private final S3AccessControlListFeature acl;
+    private final Versioning versioning;
 
-    public S3ListService(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3ListService(final S3Session session, final S3AccessControlListFeature acl, final Versioning versioning) {
         this.session = session;
         this.acl = acl;
+        this.versioning = versioning;
     }
 
     @Override
@@ -76,10 +78,9 @@ public class S3ListService implements ListService {
 
     private AttributedList<Path> listObjects(final Path directory, final ListProgressListener listener) throws BackgroundException {
         AttributedList<Path> objects;
-        final VersioningConfiguration versioning = HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable")
-                && null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class)
-                .getConfiguration(directory) : VersioningConfiguration.empty();
-        if(versioning.isEnabled()) {
+        final VersioningConfiguration config = HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable")
+                && null != versioning ? versioning.getConfiguration(directory) : VersioningConfiguration.empty();
+        if(config.isEnabled()) {
             try {
                 objects = new S3VersionedObjectListService(session, acl).list(directory, listener);
             }
