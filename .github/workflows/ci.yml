@@ -27,4 +27,4 @@ jobs:
         run: mvn verify -pl protocols -am --no-transfer-progress --batch-mode --fail-at-end -Denforcer.skip
       - name: Publish Test Report
         if: ${{ always() }}
-        uses: scacap/action-surefire-report@v1.9.0
+        uses: scacap/action-surefire-report@v1.9.1
