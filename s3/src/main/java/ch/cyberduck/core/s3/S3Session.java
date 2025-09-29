@@ -116,7 +116,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     };
 
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
-    private final CloudFrontDistributionConfigurationPreloader scheduler = new CloudFrontDistributionConfigurationPreloader(this);
+    private final CloudFrontDistributionConfigurationPreloader scheduler = new CloudFrontDistributionConfigurationPreloader(this, cloudfront);
 
     private S3CredentialsStrategy authentication;
 

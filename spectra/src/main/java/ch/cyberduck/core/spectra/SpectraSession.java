@@ -114,6 +114,9 @@ public class SpectraSession extends S3Session {
         if(type == DistributionConfiguration.class) {
             return null;
         }
+        if(type == Scheduler.class) {
+            return null;
+        }
         return super._getFeature(type);
     }
 }

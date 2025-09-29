@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
-import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.s3.S3BucketListService;
@@ -39,25 +38,26 @@ public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedul
     private static final Logger log = LogManager.getLogger(CloudFrontDistributionConfigurationPreloader.class);
 
     private final S3Session session;
+    private final CloudFrontDistributionConfiguration cloudfront;
 
-    public CloudFrontDistributionConfigurationPreloader(final S3Session session) {
+    public CloudFrontDistributionConfigurationPreloader(final S3Session session, final CloudFrontDistributionConfiguration cloudfront) {
         this.session = session;
+        this.cloudfront = cloudfront;
     }
 
     @Override
     protected Set<Distribution> operate(final PasswordCallback callback) throws BackgroundException {
-        final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
-        if(null == feature) {
+        if(null == cloudfront) {
             return Collections.emptySet();
         }
         final AttributedList<Path> containers = new S3BucketListService(session).list(Home.root(), new DisabledListProgressListener());
         final Set<Distribution> distributions = new LinkedHashSet<>();
         for(Path container : containers) {
-            for(Distribution.Method method : feature.getMethods(container)) {
+            for(Distribution.Method method : cloudfront.getMethods(container)) {
                 if(Distribution.WEBSITE.equals(method)) {
                     continue;
                 }
-                final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
+                final Distribution distribution = cloudfront.read(container, method, new DisabledLoginCallback());
                 log.info("Cache distribution {}", distribution);
                 distributions.add(distribution);
             }
