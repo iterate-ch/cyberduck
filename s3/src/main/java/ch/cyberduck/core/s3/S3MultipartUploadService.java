@@ -72,7 +72,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private final S3Session session;
     private final PathContainerService containerService;
     private final S3MultipartService multipartService;
-    private final S3AccessControlListFeature acl;
 
     /**
      * A split smaller than 5M is not allowed
@@ -80,16 +79,15 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private final Long partsize;
     private final Integer concurrency;
 
-    public S3MultipartUploadService(final S3Session session, final S3AccessControlListFeature acl) {
-        this(session, acl, HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.size"),
+    public S3MultipartUploadService(final S3Session session) {
+        this(session, HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.size"),
                 HostPreferencesFactory.get(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
     }
 
-    public S3MultipartUploadService(final S3Session session, final S3AccessControlListFeature acl, final Long partsize, final Integer concurrency) {
+    public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
         this.session = session;
         this.multipartService = new S3DefaultMultipartService(session);
         this.containerService = new S3PathContainerService(session.getHost());
-        this.acl = acl;
         this.partsize = Math.max(HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.partsize.minimum"), partsize);
         this.concurrency = concurrency;
     }
@@ -117,7 +115,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             // Not found or new upload
             if(null == multipart) {
                 log.info("No pending multipart upload found");
-                final S3Object object = new S3WriteFeature(session, acl).getDetails(file, status);
+                final S3Object object = new S3WriteFeature(session).getDetails(file, status);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object);
                 log.debug("Multipart upload started for {} with ID {}", multipart.getObjectKey(), multipart.getUploadId());

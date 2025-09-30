@@ -7,6 +7,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -45,11 +46,11 @@ public class S3ReadFeatureTest extends AbstractS3Test {
     public void testReadRange() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         status.setAppend(true);
@@ -68,9 +69,9 @@ public class S3ReadFeatureTest extends AbstractS3Test {
     @Test
     public void testReadEmoji() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
-                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("%s-\uD83D\uDE80", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new S3ListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).contains(test));
+        final Path test = new S3TouchFeature(session).touch(
+                new S3WriteFeature(session), new Path(container, String.format("%s-\uD83D\uDE80", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3ListService(session, new S3AccessControlListFeature(session), new S3VersioningFeature(session, new S3AccessControlListFeature(session))).list(container, new DisabledListProgressListener()).contains(test));
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus().setLength(0L), new DisabledConnectionCallback());
         in.close();
         new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -80,11 +81,11 @@ public class S3ReadFeatureTest extends AbstractS3Test {
     public void testReadRangeUnknownLength() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         status.setAppend(true);
@@ -116,7 +117,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         status.setMetadata(Collections.singletonMap(HttpHeaders.CONTENT_ENCODING, "gzip"));
         assertNotEquals(TransferStatus.UNKNOWN_LENGTH, status.getLength());
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(compressedContent), status));
-        final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(file, status, new DisabledConnectionCallback());
+        final OutputStream out = new S3WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(compressedContent), out);
         final InputStream in = new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
@@ -138,7 +139,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(length);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(file, status, new DisabledConnectionCallback());
+        final OutputStream out = new S3WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback()));
         in.close();
@@ -155,7 +156,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setAcl(Acl.CANNED_PUBLIC_READ);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(file, status, new DisabledConnectionCallback());
+        final OutputStream out = new S3WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new S3ReadFeature(cloudfront).read(
                 new Path(file.getName(), EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
@@ -172,7 +173,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(2018);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).write(file, status, new DisabledConnectionCallback());
+        final OutputStream out = new S3WriteFeature(virtualhost).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new S3ReadFeature(virtualhost).read(
                 new Path(file.getName(), EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));

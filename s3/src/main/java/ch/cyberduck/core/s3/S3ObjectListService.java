@@ -50,14 +50,14 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
 
     private final boolean metadata;
 
-    public S3ObjectListService(final S3Session session, final S3AccessControlListFeature acl) {
-        this(session, acl, HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.metadata.enable"));
+    public S3ObjectListService(final S3Session session) {
+        this(session, HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.metadata.enable"));
     }
 
-    public S3ObjectListService(final S3Session session, final S3AccessControlListFeature acl, final boolean metadata) {
+    public S3ObjectListService(final S3Session session, final boolean metadata) {
         super(session);
         this.session = session;
-        this.attributes = new S3AttributesFinderFeature(session, acl);
+        this.attributes = new S3AttributesFinderFeature(session);
         this.containerService = new S3PathContainerService(session.getHost());
         this.metadata = metadata;
     }

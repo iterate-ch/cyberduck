@@ -36,6 +36,8 @@ import org.jets3t.service.Jets3tProperties;
 
 public class SpectraSession extends S3Session {
 
+    private final SpectraVersioningFeature versioning = new SpectraVersioningFeature(this);
+
     public SpectraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
@@ -58,7 +60,7 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraAttributesFinderFeature(this);
         }
         if(type == ListService.class) {
-            return (T) new SpectraListService(this);
+            return (T) new SpectraListService(this, this._getFeature(Versioning.class));
         }
         if(type == Bulk.class) {
             return (T) new SpectraBulkService(this);
@@ -67,7 +69,7 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraTouchFeature(this);
         }
         if(type == Directory.class) {
-            return (T) new SpectraDirectoryFeature(this, new SpectraWriteFeature(this));
+            return (T) new SpectraDirectoryFeature(this, this._getFeature(Write.class));
         }
         if(type == Move.class) {
             // Disable operation not supported
@@ -78,7 +80,7 @@ public class SpectraSession extends S3Session {
             return null;
         }
         if(type == Versioning.class) {
-            return (T) new SpectraVersioningFeature(this);
+            return (T) versioning;
         }
         if(type == Redundancy.class) {
             return null;

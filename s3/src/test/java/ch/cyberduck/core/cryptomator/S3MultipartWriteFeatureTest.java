@@ -67,7 +67,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session, acl), cryptomator);
+        final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session), cryptomator);
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final TransferStatus writeStatus = new TransferStatus();
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
@@ -82,7 +82,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         assertEquals(content.length, count.getSent());
         assertEquals(content.length, count.getRecv());
         assertNotNull(out.getStatus());
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session)).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

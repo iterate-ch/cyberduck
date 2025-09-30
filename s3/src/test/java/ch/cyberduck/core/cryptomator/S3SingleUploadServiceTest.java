@@ -86,11 +86,11 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final CryptoUploadFeature<StorageObject> m = new CryptoUploadFeature<>(session,
                 new S3SingleUploadService(session),
                 cryptomator);
-        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null);
+        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
-        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test).getSize());
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session)).find(test));
+        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session)).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().setLength(content.length);
         final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());

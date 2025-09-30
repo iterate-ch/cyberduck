@@ -109,7 +109,7 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
             out.close();
             assertEquals(content1.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
             bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-            final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SpectraReadFeature(session, new SpectraBulkService(session)).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content1.length);
             new StreamCopier(status, status).transfer(in, buffer);
@@ -125,7 +125,7 @@ public class SpectraWriteFeatureTest extends AbstractSpectraTest {
             out.close();
             assertEquals(content2.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
             bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-            final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SpectraReadFeature(session, new SpectraBulkService(session)).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content2.length);
             new StreamCopier(status, status).transfer(in, buffer);

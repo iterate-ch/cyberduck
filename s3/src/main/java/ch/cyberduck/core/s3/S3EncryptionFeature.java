@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -39,9 +40,9 @@ public class S3EncryptionFeature implements Encryption {
 
     private final PathContainerService containerService;
     private final S3Session session;
-    private final S3AccessControlListFeature acl;
+    private final AclPermission acl;
 
-    public S3EncryptionFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3EncryptionFeature(final S3Session session, final AclPermission acl) {
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
@@ -77,7 +78,7 @@ public class S3EncryptionFeature implements Encryption {
      */
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
-        return new S3AttributesFinderFeature(session, acl).find(file).getEncryption();
+        return new S3AttributesFinderFeature(session).find(file).getEncryption();
     }
 
     /**
@@ -92,7 +93,7 @@ public class S3EncryptionFeature implements Encryption {
         }
         else {
             try {
-                final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
+                final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session, acl);
                 // Copy item in place to write new attributes
                 final TransferStatus status = new TransferStatus();
                 status.setEncryption(setting);

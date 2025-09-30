@@ -62,7 +62,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        assertTrue(new S3FindFeature(session).find(container));
         session.close();
     }
 
@@ -91,10 +91,10 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
-        assertTrue(new S3FindFeature(session, acl).find(test));
+        new S3TouchFeature(session).touch(new S3WriteFeature(session), test, new TransferStatus());
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session, acl).find(test));
+        assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
 
@@ -108,8 +108,8 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertThrows(AccessDeniedException.class, () -> new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus()));
-        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+        assertThrows(AccessDeniedException.class, () -> new S3TouchFeature(session).touch(new S3WriteFeature(session), test, new TransferStatus()));
+        assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
 }

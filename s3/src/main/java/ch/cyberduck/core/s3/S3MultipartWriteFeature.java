@@ -49,17 +49,15 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
 
     private final PathContainerService containerService;
     private final S3Session session;
-    private final S3AccessControlListFeature acl;
 
-    public S3MultipartWriteFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3MultipartWriteFeature(final S3Session session) {
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());
-        this.acl = acl;
     }
 
     @Override
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final S3Object object = new S3WriteFeature(session, acl).getDetails(file, status);
+        final S3Object object = new S3WriteFeature(session).getDetails(file, status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
@@ -143,7 +141,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                                 break;
                         }
                         status.setSegment(true);
-                        final S3Object part = new S3WriteFeature(session, acl).getDetails(file, status);
+                        final S3Object part = new S3WriteFeature(session).getDetails(file, status);
                         part.addMetadata(HttpHeaders.CONTENT_MD5, md5.compute(new ByteArrayInputStream(content, off, len), status).base64);
                         try {
                             final Path bucket = containerService.getContainer(file);

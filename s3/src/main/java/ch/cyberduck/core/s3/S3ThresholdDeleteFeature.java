@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -26,9 +27,9 @@ import java.util.Map;
 public class S3ThresholdDeleteFeature implements Delete {
 
     private final S3Session session;
-    private final S3AccessControlListFeature acl;
+    private final AclPermission acl;
 
-    public S3ThresholdDeleteFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3ThresholdDeleteFeature(final S3Session session, final AclPermission acl) {
         this.session = session;
         this.acl = acl;
     }

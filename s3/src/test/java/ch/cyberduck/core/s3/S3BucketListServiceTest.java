@@ -23,7 +23,7 @@ public class S3BucketListServiceTest extends AbstractS3Test {
         assertFalse(list.isEmpty());
         assertNotNull(list.find(new SimplePathPredicate(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
         for(Path bucket : list) {
-            assertEquals(bucket.attributes(), new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(bucket, new DisabledListProgressListener()));
+            assertEquals(bucket.attributes(), new S3AttributesFinderFeature(session).find(bucket, new DisabledListProgressListener()));
         }
     }
 }

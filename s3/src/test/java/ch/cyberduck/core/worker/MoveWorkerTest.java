@@ -56,7 +56,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), source, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session), source, new TransferStatus());
         new S3AccessControlListFeature(session).setPermission(source, new Acl(
                 new Acl.UserAndRole(
                         new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)
@@ -65,11 +65,11 @@ public class MoveWorkerTest extends AbstractS3Test {
                         new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers"), new Acl.Role(Acl.Role.READ)
                 )
         ));
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(source));
+        assertTrue(new S3FindFeature(session).find(source));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
-        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(source));
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(target));
+        assertFalse(new S3FindFeature(session).find(source));
+        assertTrue(new S3FindFeature(session).find(target));
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
                 new Acl.UserAndRole(
                         new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)
@@ -85,25 +85,25 @@ public class MoveWorkerTest extends AbstractS3Test {
     public void testMoveVersionedDirectory() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path sourceDirectory = new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
+        final Path sourceDirectory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path targetDirectory = new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket,
+        final Path targetDirectory = new S3DirectoryFeature(session).mkdir(new S3WriteFeature(session), new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final S3TouchFeature touch = new S3TouchFeature(session, acl);
-        Path test = touch.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new S3FindFeature(session, acl).find(test));
+        final S3TouchFeature touch = new S3TouchFeature(session);
+        Path test = touch.touch(new S3WriteFeature(session), new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3FindFeature(session).find(test));
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session, acl);
         delete.delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(session, acl).find(test));
-        test = touch.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
-        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertTrue(new S3FindFeature(session).find(test));
+        test = touch.touch(new S3WriteFeature(session), test, new TransferStatus());
+        assertTrue(new S3FindFeature(session).find(test));
         final S3VersionedObjectListService list = new S3VersionedObjectListService(session, acl);
         final AttributedList<Path> versioned = list.list(sourceDirectory, new DisabledListProgressListener());
         final Map<Path, Path> result = new MoveWorker(Collections.singletonMap(sourceDirectory, targetDirectory), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
         assertEquals(4, result.size());
         for(Map.Entry<Path, Path> entry : result.entrySet()) {
-            assertFalse(new S3FindFeature(session, acl).find(entry.getKey().withAttributes(PathAttributes.EMPTY)));
-            assertTrue(new S3FindFeature(session, acl).find(entry.getValue()));
+            assertFalse(new S3FindFeature(session).find(entry.getKey().withAttributes(PathAttributes.EMPTY)));
+            assertTrue(new S3FindFeature(session).find(entry.getValue()));
         }
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), new DisabledProgressListener()).run(session);
     }

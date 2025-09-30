@@ -307,7 +307,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(home.isRoot() && StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(host))) {
             log.debug("Skip querying region for {}", home);
-            new S3ListService(this, acl, versioning).list(home, new DisabledListProgressListener());
+            new S3ListService(this, this._getFeature(AclPermission.class), this._getFeature(Versioning.class)).list(home, new DisabledListProgressListener());
         }
         else {
             final Location.Name location = new S3LocationFeature(this, regions).getLocation(home);
@@ -338,52 +338,52 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new S3ListService(this, acl, versioning);
+            return (T) new S3ListService(this, this._getFeature(AclPermission.class), this._getFeature(Versioning.class));
         }
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
         }
         if(type == MultipartWrite.class) {
             if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new S3MultipartWriteFeature(this, acl);
+                return (T) new S3MultipartWriteFeature(this);
             }
-            return (T) new S3MultipartWriteFeature(this, acl);
+            return (T) new S3MultipartWriteFeature(this);
         }
         if(type == Write.class) {
-            return (T) new S3WriteFeature(this, acl);
+            return (T) new S3WriteFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new S3ThresholdUploadService(this, acl);
+            return (T) new S3ThresholdUploadService(this);
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this, acl);
+            return (T) new S3DirectoryFeature(this);
         }
         if(type == Move.class) {
-            return (T) new S3MoveFeature(this, acl);
+            return (T) new S3MoveFeature(this, this._getFeature(AclPermission.class));
         }
         if(type == Copy.class) {
             if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new S3ThresholdCopyFeature(this);
+                return (T) new S3ThresholdCopyFeature(this, this._getFeature(AclPermission.class));
             }
-            return (T) new S3CopyFeature(this, acl);
+            return (T) new S3CopyFeature(this, this._getFeature(AclPermission.class));
         }
         if(type == Delete.class) {
             if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new S3ThresholdDeleteFeature(this, acl);
+                return (T) new S3ThresholdDeleteFeature(this, this._getFeature(AclPermission.class));
             }
-            return (T) new S3DefaultDeleteFeature(this, acl);
+            return (T) new S3DefaultDeleteFeature(this, this._getFeature(AclPermission.class));
         }
         if(type == AclPermission.class) {
             return (T) acl;
         }
         if(type == Headers.class) {
-            return (T) new S3MetadataFeature(this, acl);
+            return (T) new S3MetadataFeature(this, this._getFeature(AclPermission.class));
         }
         if(type == Metadata.class) {
-            return (T) new S3MetadataFeature(this, acl);
+            return (T) new S3MetadataFeature(this, this._getFeature(AclPermission.class));
         }
         if(type == Touch.class) {
-            return (T) new S3TouchFeature(this, acl);
+            return (T) new S3TouchFeature(this);
         }
         if(type == Location.class) {
             return (T) new S3LocationFeature(this, regions);
@@ -401,7 +401,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) encryption;
         }
         if(type == Redundancy.class) {
-            return (T) new S3StorageClassFeature(this, acl);
+            return (T) new S3StorageClassFeature(this, this._getFeature(AclPermission.class));
         }
         if(type == DistributionConfiguration.class) {
             return (T) cloudfront;
@@ -410,13 +410,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3UrlProvider(this, distributions);
         }
         if(type == Share.class) {
-            return (T) new S3PublicUrlProvider(this, acl);
+            return (T) new S3PublicUrlProvider(this, this._getFeature(AclPermission.class));
         }
         if(type == Find.class) {
-            return (T) new S3FindFeature(this, acl);
+            return (T) new S3FindFeature(this);
         }
         if(type == AttributesFinder.class) {
-            return (T) new S3AttributesFinderFeature(this, acl);
+            return (T) new S3AttributesFinderFeature(this);
         }
         if(type == TransferAcceleration.class) {
             // Only for AWS. Disable transfer acceleration for AWS GovCloud
@@ -435,7 +435,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new DisabledBulkFeature();
         }
         if(type == Search.class) {
-            return (T) new S3SearchFeature(this, acl);
+            return (T) new S3SearchFeature(this);
         }
         if(type == Scheduler.class) {
             if(preferences.getBoolean("s3.cloudfront.preload.enable")) {
@@ -447,7 +447,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Timestamp.class) {
             if(preferences.getBoolean("s3.timestamp.enable")) {
-                return (T) new S3TimestampFeature(this);
+                return (T) new S3TimestampFeature(this, this._getFeature(AclPermission.class));
             }
             return null;
         }

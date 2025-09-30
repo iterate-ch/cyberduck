@@ -45,8 +45,8 @@ public class DefaultTouchFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new DefaultTouchFeature<StorageObject>(session).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
-        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, acl);
+        new DefaultTouchFeature<StorageObject>(session).touch(new S3WriteFeature(session), test, new TransferStatus());
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);

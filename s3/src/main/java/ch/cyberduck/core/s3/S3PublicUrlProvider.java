@@ -20,6 +20,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -30,9 +31,9 @@ import java.util.EnumSet;
 public class S3PublicUrlProvider implements Share<Void, Void> {
 
     private final S3Session session;
-    private final S3AccessControlListFeature acl;
+    private final AclPermission acl;
 
-    public S3PublicUrlProvider(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3PublicUrlProvider(final S3Session session, final AclPermission acl) {
         this.session = session;
         this.acl = acl;
     }

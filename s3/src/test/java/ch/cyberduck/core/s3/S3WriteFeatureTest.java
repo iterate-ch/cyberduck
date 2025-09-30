@@ -37,10 +37,10 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
         status.setAcl(Acl.CANNED_PUBLIC_READ);
-        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+        assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new S3AccessControlListFeature(session)
                 .getPermission(test).asList().contains(new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))));
         new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -55,31 +55,31 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         test.withAttributes(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()));
-        assertTrue(new S3FindFeature(session, acl).find(test));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(1630305150000L, attributes.getModificationDate());
         assertEquals(1695159781000L, attributes.getCreationDate());
-        assertEquals(1630305150000L, new S3ObjectListService(session, acl, true).list(container,
+        assertEquals(1630305150000L, new S3ObjectListService(session, true).list(container,
                 new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
-        assertEquals(1630305150000L, new S3VersionedObjectListService(session, acl, 50, true).list(container,
+        assertEquals(1630305150000L, new S3VersionedObjectListService(session, 50, true).list(container,
                 new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
-        assertNotEquals(1630305150000L, new S3ObjectListService(session, acl, false).list(container,
+        assertNotEquals(1630305150000L, new S3ObjectListService(session, false).list(container,
                 new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
-        assertNotEquals(1630305150000L, new S3VersionedObjectListService(session, acl, 50, false).list(container,
+        assertNotEquals(1630305150000L, new S3VersionedObjectListService(session, 50, false).list(container,
                 new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
         final Path moved = new S3MoveFeature(session, acl).move(test, new Path(container,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
+        assertEquals(1630305150000L, new S3AttributesFinderFeature(session).find(moved).getModificationDate());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = InteroperabilityException.class)
     public void testWriteChunkedTransferAWS4Signature() throws Exception {
-        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
+        final S3WriteFeature feature = new S3WriteFeature(session);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -106,7 +106,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
+        final S3WriteFeature feature = new S3WriteFeature(session);
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
@@ -116,7 +116,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(content.length, attr.getSize());
@@ -143,7 +143,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
+        final S3WriteFeature feature = new S3WriteFeature(session);
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
@@ -153,7 +153,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(content.length, attr.getSize());
@@ -163,7 +163,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWriteAWS4Signature() throws Exception {
-        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
+        final S3WriteFeature feature = new S3WriteFeature(session);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
@@ -173,7 +173,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(content.length, attr.getSize());
@@ -182,7 +182,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWriteVersionedBucket() throws Exception {
-        final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
+        final S3WriteFeature feature = new S3WriteFeature(session);
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
@@ -193,7 +193,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertNotNull(status.getResponse().getVersionId());
-        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
         assertEquals(status.getResponse().getVersionId(), attr.getVersionId());
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(status.getResponse().getETag(), attr.getETag());

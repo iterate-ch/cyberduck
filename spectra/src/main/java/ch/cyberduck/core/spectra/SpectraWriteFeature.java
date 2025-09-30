@@ -33,7 +33,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
     private final PathContainerService containerService;
 
     public SpectraWriteFeature(final SpectraSession session) {
-        super(session, new S3AccessControlListFeature(session));
+        super(session);
         this.containerService = new S3PathContainerService(session.getHost());
     }
 

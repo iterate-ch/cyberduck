@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Redundancy;
@@ -47,9 +48,9 @@ public class S3MetadataFeature implements Headers {
 
     private final S3Session session;
     private final PathContainerService containerService;
-    private final S3AccessControlListFeature acl;
+    private final AclPermission acl;
 
-    public S3MetadataFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3MetadataFeature(final S3Session session, final AclPermission acl) {
         this.session = session;
         this.acl = acl;
         this.containerService = new S3PathContainerService(session.getHost());
@@ -62,7 +63,7 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return new S3AttributesFinderFeature(session, acl).find(file).getMetadata();
+        return new S3AttributesFinderFeature(session).find(file).getMetadata();
     }
 
     @Override
@@ -75,7 +76,7 @@ public class S3MetadataFeature implements Headers {
                 // Apply non-standard ACL
                 final Acl list = acl.getPermission(file);
                 if(list.isEditable()) {
-                    target.setAcl(acl.toAcl(list));
+                    target.setAcl(S3AccessControlListFeature.toAcl(list));
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {

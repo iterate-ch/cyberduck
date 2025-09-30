@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -37,9 +38,9 @@ public class S3StorageClassFeature implements Redundancy {
 
     private final S3Session session;
     private final PathContainerService containerService;
-    private final S3AccessControlListFeature acl;
+    private final AclPermission acl;
 
-    public S3StorageClassFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3StorageClassFeature(final S3Session session, final AclPermission acl) {
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
@@ -66,7 +67,7 @@ public class S3StorageClassFeature implements Redundancy {
         }
         // HEAD request provides storage class information of the object.
         // S3 returns this header for all objects except for Standard storage class objects.
-        final String redundancy = new S3AttributesFinderFeature(session, acl).find(file).getStorageClass();
+        final String redundancy = new S3AttributesFinderFeature(session).find(file).getStorageClass();
         if(StringUtils.isBlank(redundancy)) {
             return S3Object.STORAGE_CLASS_STANDARD;
         }
@@ -76,7 +77,7 @@ public class S3StorageClassFeature implements Redundancy {
     @Override
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
         try {
-            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
+            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session, acl);
             final TransferStatus status = new TransferStatus();
             status.setLength(file.attributes().getSize());
             status.setStorageClass(redundancy);

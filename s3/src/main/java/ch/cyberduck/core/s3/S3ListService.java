@@ -25,6 +25,7 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
@@ -39,10 +40,10 @@ public class S3ListService implements ListService {
     private static final Logger log = LogManager.getLogger(S3ListService.class);
 
     private final S3Session session;
-    private final S3AccessControlListFeature acl;
+    private final AclPermission acl;
     private final Versioning versioning;
 
-    public S3ListService(final S3Session session, final S3AccessControlListFeature acl, final Versioning versioning) {
+    public S3ListService(final S3Session session, final AclPermission acl, final Versioning versioning) {
         this.session = session;
         this.acl = acl;
         this.versioning = versioning;
@@ -86,11 +87,11 @@ public class S3ListService implements ListService {
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn("Ignore failure {} listing versioned objects", e.toString());
-                objects = new S3ObjectListService(session, acl).list(directory, listener);
+                objects = new S3ObjectListService(session).list(directory, listener);
             }
         }
         else {
-            objects = new S3ObjectListService(session, acl).list(directory, listener);
+            objects = new S3ObjectListService(session).list(directory, listener);
         }
         if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.multipart.lookup")) {
             try {

@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
@@ -46,7 +47,7 @@ public class S3MoveFeature implements Move {
     private final S3ThresholdCopyFeature proxy;
     private final S3DefaultDeleteFeature delete;
 
-    public S3MoveFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3MoveFeature(final S3Session session, final AclPermission acl) {
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());
         this.proxy = new S3ThresholdCopyFeature(session, acl);

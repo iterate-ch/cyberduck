@@ -51,7 +51,7 @@ public class SpectraReadFeatureTest extends AbstractSpectraTest {
         final Path test = new Path(container, "nosuchname", EnumSet.of(Path.Type.file));
         try {
             new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-            new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            new SpectraReadFeature(session, new SpectraBulkService(session)).read(test, status, new DisabledConnectionCallback());
             fail();
         }
         catch(NotfoundException e) {
@@ -73,7 +73,7 @@ public class SpectraReadFeatureTest extends AbstractSpectraTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-        final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new SpectraReadFeature(session, new SpectraBulkService(session)).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -85,6 +85,6 @@ public class SpectraReadFeatureTest extends AbstractSpectraTest {
 
     @Test
     public void testOffsetSupport() throws Exception {
-        assertFalse(new SpectraReadFeature(session).offset(null));
+        assertFalse(new SpectraReadFeature(session, new SpectraBulkService(session)).offset(null));
     }
 }

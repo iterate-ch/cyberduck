@@ -51,14 +51,14 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     public void testMove() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session).touch(new S3WriteFeature(session), new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
-        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new S3MoveFeature(session, acl).move(test, new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)),
                 new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new S3FindFeature(session, acl).find(test));
-        assertTrue(new S3FindFeature(session, acl).find(renamed));
-        final PathAttributes targetAttr = new S3AttributesFinderFeature(session, acl).find(renamed);
+        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
+        final PathAttributes targetAttr = new S3AttributesFinderFeature(session).find(renamed);
         assertEquals(renamed.attributes().getETag(), targetAttr.getETag());
         assertEquals(renamed.attributes().getChecksum(), targetAttr.getChecksum());
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
@@ -69,24 +69,24 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     @Test
     public void testMoveVirtualHost() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3TouchFeature(virtualhost, acl).touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        final Path test = new S3TouchFeature(virtualhost).touch(new S3WriteFeature(virtualhost), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3FindFeature(virtualhost).find(test));
         final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(virtualhost, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new S3FindFeature(virtualhost, acl).find(test));
-        assertTrue(new S3FindFeature(virtualhost, acl).find(renamed));
+        assertFalse(new S3FindFeature(virtualhost).find(test));
+        assertTrue(new S3FindFeature(virtualhost).find(renamed));
         new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testMovePlaceholderVirtualHost() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
-        final Path test = new S3DirectoryFeature(virtualhost, acl).mkdir(new S3WriteFeature(virtualhost, acl), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        final Path test = new S3DirectoryFeature(virtualhost).mkdir(new S3WriteFeature(virtualhost), new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new S3FindFeature(virtualhost).find(test));
         final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new S3MoveFeature(virtualhost, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DefaultFindFeature(virtualhost).find(test));
-        assertTrue(new S3FindFeature(virtualhost, acl).find(renamed));
+        assertTrue(new S3FindFeature(virtualhost).find(renamed));
         new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -95,10 +95,10 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        assertNotNull(new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, acl), test, new TransferStatus()).attributes().getVersionId());
-        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertNotNull(new S3TouchFeature(session).touch(new S3WriteFeature(session), test, new TransferStatus()).attributes().getVersionId());
+        assertTrue(new S3FindFeature(session).find(test));
         // Write some data to add a new version
-        final S3WriteFeature feature = new S3WriteFeature(session, acl);
+        final S3WriteFeature feature = new S3WriteFeature(session);
         final byte[] content = RandomUtils.nextBytes(10);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -107,16 +107,16 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         // Get new path with updated version id
-        test = new S3ListService(session, acl).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        test = new S3ListService(session, acl, new S3VersioningFeature(session, acl)).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         final Path renamed = new Path(container, String.format("%s-renamed", test.getName()), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertTrue(new S3FindFeature(session, acl).find(test));
+        assertTrue(new S3FindFeature(session).find(test));
         // Ensure that the latest version of the source file is a delete marker
-        test = new S3ListService(session, acl).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        test = new S3ListService(session, acl, new S3VersioningFeature(session, acl)).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         assertTrue(test.attributes().isTrashed());
-        assertTrue(new S3AttributesFinderFeature(session, acl).find(test).isTrashed());
-        assertTrue(new S3FindFeature(session, acl).find(renamed));
-        assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(renamed).getSize());
+        assertTrue(new S3AttributesFinderFeature(session).find(test).isTrashed());
+        assertTrue(new S3FindFeature(session).find(renamed));
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(renamed).getSize());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -126,11 +126,11 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path placeholder = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
+        new S3TouchFeature(session).touch(new S3WriteFeature(session), test, new TransferStatus());
         final Path renamed = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new S3FindFeature(session, acl).find(test));
-        assertTrue(new S3FindFeature(session, acl).find(renamed));
+        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -147,15 +147,15 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3TouchFeature touch = new S3TouchFeature(session, acl);
+        final S3TouchFeature touch = new S3TouchFeature(session);
         final TransferStatus status = new TransferStatus();
         status.setEncryption(S3EncryptionFeature.SSE_AES256);
-        touch.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, status);
-        assertTrue(new S3FindFeature(session, acl).find(test));
+        touch.touch(new S3WriteFeature(session), test, status);
+        assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new S3FindFeature(session, acl).find(test));
-        assertTrue(new S3FindFeature(session, acl).find(renamed));
+        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -164,13 +164,13 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-acl-disabled", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final S3TouchFeature touch = new S3TouchFeature(session, acl);
-        touch.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
-        assertTrue(new S3FindFeature(session, acl).find(test));
+        final S3TouchFeature touch = new S3TouchFeature(session);
+        touch.touch(new S3WriteFeature(session), test, new TransferStatus());
+        assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new S3FindFeature(session, acl).find(test));
-        assertTrue(new S3FindFeature(session, acl).find(renamed));
+        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

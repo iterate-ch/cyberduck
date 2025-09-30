@@ -36,6 +36,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 
@@ -53,12 +54,12 @@ public class S3VersioningFeature implements Versioning {
 
     private final S3Session session;
     private final PathContainerService containerService;
-    private final S3AccessControlListFeature acl;
+    private final AclPermission acl;
 
     private final LRUCache<Path, VersioningConfiguration> cache
             = LRUCache.build(10);
 
-    public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3VersioningFeature(final S3Session session, final AclPermission acl) {
         this.session = session;
         this.acl = acl;
         this.containerService = new S3PathContainerService(session.getHost());
@@ -180,7 +181,7 @@ public class S3VersioningFeature implements Versioning {
                     // Apply non standard ACL
                     final Acl list = acl.getPermission(file);
                     if(list.isEditable()) {
-                        destination.setAcl(acl.toAcl(list));
+                        destination.setAcl(S3AccessControlListFeature.toAcl(list));
                     }
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {

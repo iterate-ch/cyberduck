@@ -146,7 +146,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testToSignedUrl() throws Exception {
         final S3UrlProvider provider = new S3UrlProvider(session, Collections.emptyMap());
         final Path bucket = new Path("/test-eu-west-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(bucket);
+        new S3ObjectListService(session).list(bucket);
         assertTrue(provider.toSignedUrl(new Path(bucket, "test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
                 "https://test-eu-west-1-cyberduck.s3.dualstack.eu-west-1.amazonaws.com/test?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="));
     }
@@ -155,7 +155,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
     public void testToSignedUrlVirtualHost() throws Exception {
         final S3UrlProvider provider = new S3UrlProvider(virtualhost, Collections.emptyMap());
         final Path bucket = Home.root();
-        new S3ObjectListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(bucket);
+        new S3ObjectListService(virtualhost).list(bucket);
         final String url = provider.toSignedUrl(new Path(bucket, "t", EnumSet.of(Path.Type.file)), 30).getUrl();
         assertTrue(url, url.startsWith(
                 "https://test-eu-central-1-cyberduck.s3.dualstack.eu-central-1.amazonaws.com/t?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential="));

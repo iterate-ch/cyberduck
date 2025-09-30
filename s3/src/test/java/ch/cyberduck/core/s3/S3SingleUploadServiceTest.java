@@ -69,10 +69,10 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         status.setMime("text/plain");
-        service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new S3FindFeature(session, acl).find(test));
-        final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(test);
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(test);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(random.length, attr.getSize());
@@ -95,10 +95,10 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
-        service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new S3FindFeature(session, acl).find(test));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.length, attributes.getSize());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
@@ -118,10 +118,10 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new S3FindFeature(session, acl).find(test));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.length, attributes.getSize());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
@@ -135,7 +135,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(local);
         final TransferStatus status = new TransferStatus();
-        m.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+        m.upload(new S3WriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 status, new DisabledLoginCallback());
     }
 }

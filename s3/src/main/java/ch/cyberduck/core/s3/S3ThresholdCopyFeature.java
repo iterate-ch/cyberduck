@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -35,27 +36,23 @@ import java.util.Optional;
 public class S3ThresholdCopyFeature implements Copy {
 
     private final S3Session session;
-    private final S3AccessControlListFeature accessControlListFeature;
+    private final AclPermission acl;
     private final Long multipartThreshold;
     private final PathContainerService containerService;
 
-    public S3ThresholdCopyFeature(final S3Session session) {
-        this(session, new S3AccessControlListFeature(session));
-    }
-
-    public S3ThresholdCopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
+    public S3ThresholdCopyFeature(final S3Session session, final AclPermission acl) {
         this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
+        this.acl = acl;
         this.multipartThreshold = HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.required.threshold");
         this.containerService = new S3PathContainerService(session.getHost());
     }
 
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(status.getLength() > multipartThreshold) {
-            return new S3MultipartCopyFeature(session, accessControlListFeature).copy(source, copy, status, callback, listener);
+            return new S3MultipartCopyFeature(session, acl).copy(source, copy, status, callback, listener);
         }
         else {
-            return new S3CopyFeature(session, accessControlListFeature).copy(source, copy, status, callback, listener);
+            return new S3CopyFeature(session, acl).copy(source, copy, status, callback, listener);
         }
     }
 
@@ -73,6 +70,6 @@ public class S3ThresholdCopyFeature implements Copy {
 
     @Override
     public EnumSet<Flags> features(final Path source, final Path target) {
-        return new S3CopyFeature(session, accessControlListFeature).features(source, target);
+        return new S3CopyFeature(session, acl).features(source, target);
     }
 }

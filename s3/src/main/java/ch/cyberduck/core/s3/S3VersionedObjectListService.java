@@ -26,6 +26,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -66,23 +67,22 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
      */
     private final boolean metadata;
 
-    public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3VersionedObjectListService(final S3Session session, final AclPermission acl) {
         this(session, acl, HostPreferencesFactory.get(session.getHost()).getInteger("s3.listing.concurrency"));
     }
 
-    public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl, final Integer concurrency) {
-        this(session, acl, concurrency, HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.metadata.enable"));
+    public S3VersionedObjectListService(final S3Session session, final AclPermission acl, final Integer concurrency) {
+        this(session, concurrency, HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.metadata.enable"));
     }
 
     /**
      * @param session     Connection
-     * @param acl
      * @param concurrency Number of threads to handle prefixes
      */
-    public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl, final Integer concurrency, final boolean metadata) {
+    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean metadata) {
         super(session);
         this.session = session;
-        this.attributes = new S3AttributesFinderFeature(session, acl);
+        this.attributes = new S3AttributesFinderFeature(session);
         this.concurrency = concurrency;
         this.containerService = new S3PathContainerService(session.getHost());
         this.metadata = metadata;

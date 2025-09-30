@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.StreamListener;
@@ -51,9 +52,9 @@ public class S3CopyFeature implements Copy {
 
     private final S3Session session;
     private final PathContainerService containerService;
-    private final S3AccessControlListFeature acl;
+    private final AclPermission acl;
 
-    public S3CopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3CopyFeature(final S3Session session, final AclPermission acl) {
         this.session = session;
         this.acl = acl;
         this.containerService = new S3PathContainerService(session.getHost());
@@ -82,8 +83,8 @@ public class S3CopyFeature implements Copy {
                 status.setAcl(acl.getDefault(target));
             }
         }
-        final S3Object destination = new S3WriteFeature(session, acl).getDetails(target, status);
-        destination.setAcl(acl.toAcl(status.getAcl()));
+        final S3Object destination = new S3WriteFeature(session).getDetails(target, status);
+        destination.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));

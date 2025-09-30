@@ -58,12 +58,12 @@ public class DefaultDownloadFeatureTest extends AbstractS3Test {
     public void testTransferVersioning() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3TouchFeature(session, acl).touch(
-                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session).touch(
+                new S3WriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -71,7 +71,7 @@ public class DefaultDownloadFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(39864);
         {
             final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();

@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -57,7 +58,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
      */
     private final Long partsize;
 
-    public S3MultipartCopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3MultipartCopyFeature(final S3Session session, final AclPermission acl) {
         super(session, acl);
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());

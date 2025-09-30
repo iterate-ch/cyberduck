@@ -59,10 +59,10 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        assertTrue(new CryptoListService(session, new S3ObjectListService(session, acl), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
-                new CryptoWriteFeature<>(session, new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator), test, new TransferStatus());
-        assertEquals(test, new CryptoListService(session, new S3ObjectListService(session, acl), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
+        assertTrue(new CryptoListService(session, new S3ObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
+                new CryptoWriteFeature<>(session, new S3WriteFeature(session), cryptomator), test, new TransferStatus());
+        assertEquals(test, new CryptoListService(session, new S3ObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

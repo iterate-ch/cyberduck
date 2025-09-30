@@ -41,10 +41,6 @@ public class SpectraReadFeature implements Read {
     private final SpectraSession session;
     private final SpectraBulkService bulk;
 
-    public SpectraReadFeature(final SpectraSession session) {
-        this(session, new SpectraBulkService(session));
-    }
-
     public SpectraReadFeature(final SpectraSession session, final SpectraBulkService bulk) {
         this.session = session;
         this.bulk = bulk;

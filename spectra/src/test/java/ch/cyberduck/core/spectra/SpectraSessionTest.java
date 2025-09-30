@@ -73,6 +73,6 @@ public class SpectraSessionTest extends AbstractSpectraTest {
 
     @Test
     public void testLogin() throws Exception {
-        new SpectraListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        new SpectraListService(session, new SpectraVersioningFeature(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 }

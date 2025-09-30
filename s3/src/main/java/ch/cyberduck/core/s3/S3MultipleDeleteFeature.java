@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -50,7 +51,7 @@ public class S3MultipleDeleteFeature implements Delete {
     private final S3MultipartService multipartService;
     private final S3VersioningFeature versioningService;
 
-    public S3MultipleDeleteFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3MultipleDeleteFeature(final S3Session session, final AclPermission acl) {
         this(session, new S3DefaultMultipartService(session), new S3VersioningFeature(session, acl));
     }
 

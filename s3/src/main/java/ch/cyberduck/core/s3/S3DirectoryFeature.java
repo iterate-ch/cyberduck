@@ -39,13 +39,11 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     private static final String MIMETYPE = "application/x-directory";
 
     private final S3Session session;
-    private final S3AccessControlListFeature acl;
     private final PathContainerService containerService;
 
-    public S3DirectoryFeature(final S3Session session, final S3AccessControlListFeature acl) {
+    public S3DirectoryFeature(final S3Session session) {
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());
-        this.acl = acl;
     }
 
     @Override
@@ -59,7 +57,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
         else {
             final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
-            return new S3TouchFeature(session, acl).touch(writer, folder
+            return new S3TouchFeature(session).touch(writer, folder
                     .withType(type), status
                     // Add placeholder object
                     .setMime(MIMETYPE)

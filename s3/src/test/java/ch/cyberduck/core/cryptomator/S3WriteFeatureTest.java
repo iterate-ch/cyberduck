@@ -74,7 +74,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final CryptoWriteFeature<StorageObject> writer = new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator);
+        final CryptoWriteFeature<StorageObject> writer = new CryptoWriteFeature<>(session, new S3WriteFeature(session), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
@@ -84,8 +84,8 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertEquals(content.length, status.getResponse().getSize());
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
-        final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session)).find(test));
+        final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session)).find(test);
         assertEquals(content.length, attributes.getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());

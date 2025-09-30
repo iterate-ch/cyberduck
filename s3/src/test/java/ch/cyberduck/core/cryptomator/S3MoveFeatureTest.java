@@ -65,24 +65,24 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
-                cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), folder, new TransferStatus());
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
-                cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), file, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session)).mkdir(
+                cryptomator.getFeature(session, Write.class, new S3WriteFeature(session)), folder, new TransferStatus());
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session), cryptomator).touch(
+                cryptomator.getFeature(session, Write.class, new S3WriteFeature(session)), file, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new S3MoveFeature(session, acl));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(file));
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(fileRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new S3FindFeature(session)).find(file));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(folder));
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(folderRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new S3FindFeature(session)).find(folder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session)).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(fileRenamedInRenamedFolder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session)).find(fileRenamedInRenamedFolder));
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

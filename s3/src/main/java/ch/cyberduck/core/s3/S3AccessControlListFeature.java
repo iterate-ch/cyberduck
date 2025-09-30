@@ -185,7 +185,7 @@ public class S3AccessControlListFeature implements AclPermission {
      * @param acl Edited ACL
      * @return ACL to write to server
      */
-    protected AccessControlList toAcl(final Acl acl) {
+    protected static AccessControlList toAcl(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
             return null;
         }

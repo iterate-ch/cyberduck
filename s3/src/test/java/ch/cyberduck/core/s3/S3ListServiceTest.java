@@ -38,23 +38,24 @@ public class S3ListServiceTest extends AbstractS3Test {
 
     @Test
     public void testListBucketNameInHostname() throws Exception {
-        new S3ListService(virtualhost, new S3AccessControlListFeature(virtualhost)).list(Home.root(), new DisabledListProgressListener());
+        new S3ListService(virtualhost, new S3AccessControlListFeature(virtualhost), new S3VersioningFeature(virtualhost, new S3AccessControlListFeature(virtualhost))).list(Home.root(), new DisabledListProgressListener());
     }
 
     @Test
     public void testList() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3ListService(session, new S3AccessControlListFeature(session)).list(bucket, new DisabledListProgressListener());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3ListService(session, acl, new S3VersioningFeature(session, acl)).list(bucket, new DisabledListProgressListener());
     }
 
     @Test
     public void testListMultipartUploadDot() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path placeholder = new S3DirectoryFeature(session, acl).mkdir(
-                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new TransferStatus());
+        final Path placeholder = new S3DirectoryFeature(session).mkdir(
+                new S3WriteFeature(session), new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new TransferStatus());
         final MultipartUpload multipart = session.getClient().multipartStartUpload(bucket.getName(), String.format("%s/.", new S3PathContainerService(session.getHost()).getKey(placeholder)), Collections.emptyMap());
-        assertNotNull(new S3ListService(session, acl).list(placeholder, new DisabledListProgressListener()).find(path -> path.getName().equals(".")));
+        assertNotNull(new S3ListService(session, acl, new S3VersioningFeature(session, acl)).list(placeholder, new DisabledListProgressListener()).find(path -> path.getName().equals(".")));
         new S3DefaultMultipartService(session).delete(multipart);
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }

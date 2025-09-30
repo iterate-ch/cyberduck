@@ -105,15 +105,15 @@ public class CryptoS3SingleTransferWorkerTest extends AbstractS3Test {
 
         }.run(session));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(dir1));
-        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(file1).getSize());
+        assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session)).find(dir1));
+        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session)).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(file1, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(file2).getSize());
+        assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session)).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(file1, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
