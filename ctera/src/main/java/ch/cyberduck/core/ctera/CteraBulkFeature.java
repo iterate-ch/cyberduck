@@ -106,7 +106,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
     }
 
     private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
-        final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withPath(false)
+        final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withUsername(false).withPath(false)
                 .get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
         return session.getClient().getClient().execute(request, new AbstractResponseHandler<DirectIO>() {
             @Override
