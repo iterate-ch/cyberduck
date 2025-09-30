@@ -24,17 +24,12 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.synchronization.ChainedComparisonService;
-import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
 import ch.cyberduck.core.synchronization.ETagComparisonService;
-import ch.cyberduck.core.synchronization.SizeComparisonService;
-import ch.cyberduck.core.synchronization.TimestampComparisonService;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -138,10 +133,7 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
             return (T) new DirectoryDelimiterPathContainerService();
         }
         if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new ChainedComparisonService(EnumSet.of(Comparison.unknown, Comparison.notequal),
-                    new ETagComparisonService(),
-                    new ChainedComparisonService(
-                            EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampComparisonService(), new SizeComparisonService())), ComparisonService.disabled);
+            return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

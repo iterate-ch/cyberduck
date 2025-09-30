@@ -18,15 +18,9 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.synchronization.ChainedComparisonService;
-import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
-import ch.cyberduck.core.synchronization.SizeComparisonService;
-import ch.cyberduck.core.synchronization.TimestampComparisonService;
 import ch.cyberduck.core.synchronization.VersionIdComparisonService;
-
-import java.util.EnumSet;
 
 public abstract class GraphProtocol extends AbstractProtocol {
     @Override
@@ -79,11 +73,7 @@ public abstract class GraphProtocol extends AbstractProtocol {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new ChainedComparisonService(EnumSet.of(Comparison.unknown, Comparison.notequal),
-                    new VersionIdComparisonService(),
-                    new ChainedComparisonService(
-                            EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampComparisonService(), new SizeComparisonService())
-            ), ComparisonService.disabled);
+            return (T) new DefaultComparisonService(new VersionIdComparisonService(), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

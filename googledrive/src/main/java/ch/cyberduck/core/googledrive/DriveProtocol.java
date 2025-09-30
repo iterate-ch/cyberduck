@@ -19,6 +19,9 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.synchronization.ChecksumComparisonService;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
 
 import com.google.auto.service.AutoService;
 
@@ -84,5 +87,15 @@ public class DriveProtocol extends AbstractProtocol {
     @Override
     public VersioningMode getVersioningMode() {
         return VersioningMode.storage;
+    }
+
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getFeature(final Class<T> type) {
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ChecksumComparisonService(), ComparisonService.disabled);
+        }
+        return super.getFeature(type);
     }
 }
