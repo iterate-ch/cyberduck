@@ -94,7 +94,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
     @Test
     public void testFindDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path directory = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(
+        final Path directory = new DAVDirectoryFeature(session).mkdir(
                 new NextcloudWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(directory);

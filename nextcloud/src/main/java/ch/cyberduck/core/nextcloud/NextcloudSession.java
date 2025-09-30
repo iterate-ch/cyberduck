@@ -95,9 +95,6 @@ public class NextcloudSession extends DAVSession {
         if(type == ListService.class) {
             return (T) new NextcloudListService(this);
         }
-        if(type == Directory.class) {
-            return (T) new DAVDirectoryFeature(this, new NextcloudAttributesFinderFeature(this));
-        }
         if(type == Touch.class) {
             return (T) new DAVTouchFeature(this);
         }
