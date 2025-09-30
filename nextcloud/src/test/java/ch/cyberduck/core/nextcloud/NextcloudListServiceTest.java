@@ -70,7 +70,7 @@ public class NextcloudListServiceTest extends AbstractNextcloudTest {
     @Test
     public void testList() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path directory = new DAVDirectoryFeature(session, new NextcloudAttributesFinderFeature(session)).mkdir(new NextcloudWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DAVDirectoryFeature(session).mkdir(new NextcloudWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final PathAttributes directoryAttributes = new DAVAttributesFinderFeature(session).find(directory);
         final String folderEtag = directoryAttributes.getETag();
         final long folderTimestamp = directoryAttributes.getModificationDate();

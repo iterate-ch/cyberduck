@@ -19,7 +19,6 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
@@ -34,10 +33,6 @@ public class DAVDirectoryFeature implements Directory<Void> {
     private final DAVSession session;
 
     public DAVDirectoryFeature(final DAVSession session) {
-        this(session, new DAVAttributesFinderFeature(session));
-    }
-
-    public DAVDirectoryFeature(final DAVSession session, final AttributesFinder attributes) {
         this.session = session;
     }
 
