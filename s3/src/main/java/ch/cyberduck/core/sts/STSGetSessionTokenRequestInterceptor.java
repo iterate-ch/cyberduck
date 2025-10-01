@@ -52,7 +52,7 @@ public class STSGetSessionTokenRequestInterceptor extends STSRequestInterceptor 
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
-            if(StringUtils.isNotBlank(new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY))) {
+            if(StringUtils.isNotBlank(new ProxyPreferencesReader(credentials, host).getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY))) {
                 log.debug("Retrieve temporary credentials with {}", credentials);
                 // GetSessionToken
                 return tokens = this.getSessionToken(credentials);

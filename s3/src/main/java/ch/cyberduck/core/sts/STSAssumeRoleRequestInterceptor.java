@@ -52,7 +52,7 @@ public class STSAssumeRoleRequestInterceptor extends STSRequestInterceptor imple
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
-            if(StringUtils.isNotBlank(new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
+            if(StringUtils.isNotBlank(new ProxyPreferencesReader(credentials, host).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn"))) {
                 log.debug("Retrieve temporary credentials with {}", credentials);
                 // AssumeRoleRequest
                 return tokens = this.assumeRole(credentials);
