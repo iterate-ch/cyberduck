@@ -38,6 +38,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -61,7 +62,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     public void testReadInterrupt() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), test, new TransferStatus());
         // Unknown length in status
         final TransferStatus status = new TransferStatus();
         // Read a single byte
@@ -82,7 +83,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     public void testReadRange() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);
@@ -90,8 +91,8 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+        new DefaultUploadFeature<DriveItem.Metadata>(session).upload(
+                new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
@@ -115,7 +116,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     public void testReadInvalidRange() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), test, new TransferStatus());
         final GraphReadFeature read = new GraphReadFeature(session, fileid);
         final InputStream in = read.read(test, new TransferStatus().setOffset(1).setAppend(true), new DisabledConnectionCallback());
         assertNull(in);
@@ -125,7 +126,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     public void testReadRangeUnknownLength() throws Exception {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);
@@ -133,8 +134,8 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<>(new GraphWriteFeature(session, fileid)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+        new DefaultUploadFeature<DriveItem.Metadata>(session).upload(
+                new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();

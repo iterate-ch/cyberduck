@@ -50,26 +50,20 @@ import java.text.MessageFormat;
 public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     private static final Logger log = LogManager.getLogger(HttpUploadFeature.class);
 
-    private Write<Reply> writer;
-
-    public HttpUploadFeature(final Write<Reply> writer) {
-        this.writer = writer;
-    }
-
     @Override
-    public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
+    public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
                         final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final Reply response = this.upload(file, local, throttle, streamListener, status, status, status, callback);
+        final Reply response = this.upload(write, file, local, throttle, streamListener, status, status, status, callback);
         log.debug("Received response {}", response);
         return response;
     }
 
-    public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
+    public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
                         final StreamListener listener, final TransferStatus status,
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         try {
             final Digest digest = this.digest();
-            final Reply response = this.transfer(file, local, throttle, listener, status, cancel, progress, callback, digest);
+            final Reply response = this.transfer(write, file, local, throttle, listener, status, cancel, progress, callback, digest);
             this.post(file, digest, response);
             return response;
         }
@@ -81,12 +75,12 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
         }
     }
 
-    protected Reply transfer(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    protected Reply transfer(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                              final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress,
                              final ConnectionCallback callback, final Digest digest) throws IOException, BackgroundException {
         // Wrap with digest stream if available
         final InputStream in = this.decorate(local.getInputStream(), digest);
-        final StatusOutputStream<Reply> out = writer.write(file, status, callback);
+        final StatusOutputStream<Reply> out = write.write(file, status, callback);
         new StreamCopier(cancel, progress)
                 .withOffset(status.getOffset())
                 .withLimit(status.getLength())
@@ -130,11 +124,5 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
                                 expected, checksum.hash));
             }
         }
-    }
-
-    @Override
-    public Upload<Reply> withWriter(final Write<Reply> writer) {
-        this.writer = writer;
-        return this;
     }
 }

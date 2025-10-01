@@ -64,7 +64,7 @@ public class EueFindFeatureTest extends AbstractEueSessionTest {
     public void testFindDirectory() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new EueFindFeature(session, fileid).find(folder));
         assertFalse(new EueFindFeature(session, fileid).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -74,7 +74,7 @@ public class EueFindFeatureTest extends AbstractEueSessionTest {
     public void testFindFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new EueTouchFeature(session, fileid).touch(file, new TransferStatus());
+        new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), file, new TransferStatus());
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertFalse(new EueFindFeature(session, fileid).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -83,18 +83,18 @@ public class EueFindFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testFind() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path folder1 = new EueDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path folder1 = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new EueFindFeature(session, fileid).find(folder1, new DisabledListProgressListener()));
         // Test case insensitivity
         assertTrue(new EueFindFeature(session, fileid).find(new Path(StringUtils.lowerCase(folder1.getName()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         assertTrue(new EueFindFeature(session, fileid).find(new Path(StringUtils.upperCase(folder1.getName()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         assertTrue(new DefaultFindFeature(session).find(folder1, new DisabledListProgressListener()));
-        final Path folder1Folder2 = new EueDirectoryFeature(session, fileid).mkdir(new Path(folder1,
+        final Path folder1Folder2 = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(folder1,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new EueFindFeature(session, fileid).find(folder1Folder2, new DisabledListProgressListener()));
         assertTrue(new DefaultFindFeature(session).find(folder1Folder2, new DisabledListProgressListener()));
-        final Path folder1Folder2Folder3 = new EueDirectoryFeature(session, fileid).mkdir(new Path(folder1Folder2,
+        final Path folder1Folder2Folder3 = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(folder1Folder2,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertEquals(folder1Folder2Folder3.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(folder1Folder2Folder3));
         assertTrue(new EueFindFeature(session, fileid).find(folder1Folder2Folder3, new DisabledListProgressListener()));

@@ -23,11 +23,14 @@ import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.FilescontentAttributes;
 import ch.cyberduck.core.box.io.swagger.client.model.FilescontentAttributesParent;
+import ch.cyberduck.core.box.io.swagger.client.model.UploadPart;
+import ch.cyberduck.core.box.io.swagger.client.model.UploadedPart;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -39,6 +42,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.message.BasicHeader;
@@ -67,74 +71,13 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
 
     @Override
     public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>(file) {
-            @Override
-            public File call(final HttpEntity entity) throws BackgroundException {
-                try {
-                    final HttpPost request;
-                    if(status.isExists()) {
-                        request = new HttpPost(String.format("%s/files/%s/content?fields=%s", client.getBasePath(),
-                                fileid.getFileId(file),
-                                String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
-                    }
-                    else {
-                        request = new HttpPost(String.format("%s/files/content?fields=%s", client.getBasePath(),
-                                String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
-                    }
-                    final Checksum checksum = status.getChecksum();
-                    if(Checksum.NONE != checksum) {
-                        switch(checksum.algorithm) {
-                            case sha1:
-                                request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
-                        }
-                    }
-                    final ByteArrayOutputStream content = new ByteArrayOutputStream();
-                    new JSON().getContext(null).writeValue(content, new FilescontentAttributes()
-                            .name(file.getName())
-                            .parent(new FilescontentAttributesParent().id(fileid.getFileId(file.getParent())))
-                            .contentCreatedAt(status.getCreated() != null ? new DateTime(status.getCreated()) : null)
-                            .contentModifiedAt(status.getModified() != null ? new DateTime(status.getModified()) : null)
-                    );
-                    final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
-                    multipart.addBinaryBody("attributes", content.toByteArray());
-                    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    entity.writeTo(out);
-                    multipart.addBinaryBody("file", out.toByteArray(),
-                            null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
-                    request.setEntity(multipart.build());
-                    if(status.isExists()) {
-                        if(StringUtils.isNotBlank(status.getRemote().getETag())) {
-                            request.addHeader(new BasicHeader(HttpHeaders.IF_MATCH, status.getRemote().getETag()));
-                        }
-                        else {
-                            log.warn("Missing remote attributes in transfer status to read current ETag for {}", file);
-                        }
-                    }
-                    final Files files = session.getClient().execute(request, new BoxClientErrorResponseHandler<Files>() {
-                        @Override
-                        public Files handleEntity(final HttpEntity entity) throws IOException {
-                            return new JSON().getContext(null).readValue(entity.getContent(), Files.class);
-                        }
-                    });
-                    log.debug("Received response {} for upload of {}", files, file);
-                    if(files.getEntries().stream().findFirst().isPresent()) {
-                        return files.getEntries().stream().findFirst().get();
-                    }
-                    throw new NotfoundException(file.getAbsolute());
-                }
-                catch(HttpResponseException e) {
-                    throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-                }
-            }
-
-            @Override
-            public long getContentLength() {
-                return -1L;
-            }
-        };
+        final DelayedHttpEntityCallable<File> command;
+        if(status.isSegment()) {
+            command = new ChunkDelayedHttpEntityCallable(file, status);
+        }
+        else {
+            command = new MultipartDelayedHttpEntityCallable(file, status);
+        }
         return this.write(file, status, command);
     }
 
@@ -146,5 +89,131 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
     @Override
     public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.timestamp, Flags.checksum, Flags.mime);
+    }
+
+    private class MultipartDelayedHttpEntityCallable extends DelayedHttpEntityCallable<File> {
+        private final Path file;
+        private final TransferStatus status;
+
+        public MultipartDelayedHttpEntityCallable(final Path file, final TransferStatus status) {
+            super(file);
+            this.file = file;
+            this.status = status;
+        }
+
+        @Override
+        public File call(final HttpEntity entity) throws BackgroundException {
+            try {
+                final HttpPost request;
+                if(status.isExists()) {
+                    request = new HttpPost(String.format("%s/files/%s/content?fields=%s", client.getBasePath(),
+                            fileid.getFileId(file),
+                            String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
+                }
+                else {
+                    request = new HttpPost(String.format("%s/files/content?fields=%s", client.getBasePath(),
+                            String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
+                }
+                final Checksum checksum = status.getChecksum();
+                if(Checksum.NONE != checksum) {
+                    switch(checksum.algorithm) {
+                        case sha1:
+                            request.addHeader(HttpHeaders.CONTENT_MD5, checksum.hash);
+                    }
+                }
+                final ByteArrayOutputStream content = new ByteArrayOutputStream();
+                new JSON().getContext(null).writeValue(content, new FilescontentAttributes()
+                        .name(file.getName())
+                        .parent(new FilescontentAttributesParent().id(fileid.getFileId(file.getParent())))
+                        .contentCreatedAt(status.getCreated() != null ? new DateTime(status.getCreated()) : null)
+                        .contentModifiedAt(status.getModified() != null ? new DateTime(status.getModified()) : null)
+                );
+                final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();
+                multipart.addBinaryBody("attributes", content.toByteArray());
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                entity.writeTo(out);
+                multipart.addBinaryBody("file", out.toByteArray(),
+                        null == status.getMime() ? ContentType.APPLICATION_OCTET_STREAM : ContentType.create(status.getMime()), file.getName());
+                request.setEntity(multipart.build());
+                if(status.isExists()) {
+                    if(StringUtils.isNotBlank(status.getRemote().getETag())) {
+                        request.addHeader(new BasicHeader(HttpHeaders.IF_MATCH, status.getRemote().getETag()));
+                    }
+                    else {
+                        log.warn("Missing remote attributes in transfer status to read current ETag for {}", file);
+                    }
+                }
+                final Files files = session.getClient().execute(request, new BoxClientErrorResponseHandler<Files>() {
+                    @Override
+                    public Files handleEntity(final HttpEntity entity) throws IOException {
+                        return new JSON().getContext(null).readValue(entity.getContent(), Files.class);
+                    }
+                });
+                log.debug("Received response {} for upload of {}", files, file);
+                if(files.getEntries().stream().findFirst().isPresent()) {
+                    return files.getEntries().stream().findFirst().get();
+                }
+                throw new NotfoundException(file.getAbsolute());
+            }
+            catch(HttpResponseException e) {
+                throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+            }
+        }
+
+        @Override
+        public long getContentLength() {
+            return -1L;
+        }
+    }
+
+    private class ChunkDelayedHttpEntityCallable extends DelayedHttpEntityCallable<File> {
+        private final Path file;
+        private final TransferStatus status;
+
+        public ChunkDelayedHttpEntityCallable(final Path file, final TransferStatus status) {
+            super(file);
+            this.file = file;
+            this.status = status;
+        }
+
+        @Override
+        public File call(final HttpEntity entity) throws BackgroundException {
+            try {
+                final HttpRange range = HttpRange.withStatus(new TransferStatus()
+                        .setLength(status.getLength())
+                        .setOffset(status.getOffset()));
+                final String uploadSessionId = status.getParameters().get(BoxLargeUploadService.UPLOAD_SESSION_ID);
+                final String overall_length = status.getParameters().get(BoxLargeUploadService.OVERALL_LENGTH);
+                log.debug("Send range {} for file {}", range, file);
+                final HttpPut request = new HttpPut(String.format("%s/files/upload_sessions/%s", client.getBasePath(), uploadSessionId));
+                // Must not overlap with the range of a part already uploaded this session.
+                request.addHeader(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
+                        Long.valueOf(overall_length))));
+                request.addHeader(new BasicHeader("Digest", String.format("sha=%s", status.getChecksum().base64)));
+                request.setEntity(entity);
+                final UploadPart response = session.getClient().execute(request, new BoxClientErrorResponseHandler<UploadedPart>() {
+                    @Override
+                    public UploadedPart handleEntity(final HttpEntity entity1) throws IOException {
+                        return new JSON().getContext(null).readValue(entity1.getContent(), UploadedPart.class);
+                    }
+                }).getPart();
+                log.debug("Received response {} for upload of {}", response, file);
+                return new File().size(response.getSize()).sha1(response.getSha1()).id(response.getPartId());
+            }
+            catch(HttpResponseException e) {
+                throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+            }
+        }
+
+        @Override
+        public long getContentLength() {
+            return -1L;
+        }
     }
 }

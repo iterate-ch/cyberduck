@@ -32,9 +32,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -47,7 +45,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -79,27 +76,24 @@ public class IRODSUploadFeatureTest extends VaultTest {
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Checksum checksumPart1;
-        final Checksum checksumPart2;
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             final BytecountStreamListener count = new BytecountStreamListener();
-            checksumPart1 = new IRODSUploadFeature(session).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
+            new IRODSUploadFeature(session).upload(
+                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
                     status,
                     new DisabledConnectionCallback());
             assertEquals(content.length / 2, count.getSent());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            checksumPart2 = new IRODSUploadFeature(session).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+            new IRODSUploadFeature(session).upload(
+                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
             assertEquals(content.length / 2, status.getOffset());
         }
-        assertNotEquals(checksumPart1, checksumPart2);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -128,16 +122,13 @@ public class IRODSUploadFeatureTest extends VaultTest {
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Checksum checksum;
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        final TransferStatus copy = new TransferStatus(status);
         final BytecountStreamListener count = new BytecountStreamListener();
-        checksum = new IRODSUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+        new IRODSUploadFeature(session).upload(
+                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
         assertTrue(status.isComplete());
         assertEquals(content.length, count.getSent());
-        assertEquals(checksum, new MD5ChecksumCompute().compute(new FileInputStream(local.getAbsolute()), copy));
         final byte[] buffer = new byte[content.length];
         final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -167,8 +158,8 @@ public class IRODSUploadFeatureTest extends VaultTest {
         out.close();
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        final Checksum checksum = new IRODSUploadFeature(session).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener() {
+        new IRODSUploadFeature(session).upload(
+                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener() {
                     @Override
                     public void sent(final long bytes) {
                         super.sent(bytes);

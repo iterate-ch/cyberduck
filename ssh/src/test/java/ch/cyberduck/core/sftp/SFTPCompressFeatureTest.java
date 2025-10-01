@@ -31,7 +31,7 @@ public class SFTPCompressFeatureTest extends AbstractSFTPTest {
         for(Archive archive : Archive.getKnownArchives()) {
             final Path workdir = new SFTPHomeDirectoryService(session).find();
             final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-            session.getFeature(Touch.class).touch(test, new TransferStatus());
+            session.getFeature(Touch.class).touch(new SFTPWriteFeature(session), test, new TransferStatus());
             feature.archive(archive, workdir, Collections.singletonList(test), new ProgressListener() {
                 @Override
                 public void message(final String message) {

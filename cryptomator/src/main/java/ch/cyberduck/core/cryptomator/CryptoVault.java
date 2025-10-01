@@ -164,11 +164,11 @@ public class CryptoVault implements Vault {
         // Obtain non encrypted directory writer
         final Directory<?> directory = session._getFeature(Directory.class);
         final TransferStatus status = new TransferStatus().setRegion(region);
-        final Encryption encryption = session.getFeature(Encryption.class);
+        final Encryption encryption = session._getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
         }
-        final Path vault = directory.mkdir(home, status);
+        final Path vault = directory.mkdir(session._getFeature(Write.class), home, status);
         new ContentWriter(session).write(masterkey, mkArray.toByteArray());
         if(VAULT_VERSION == version) {
             // Create vaultconfig.cryptomator
@@ -191,9 +191,9 @@ public class CryptoVault implements Vault {
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         log.debug("Create vault root directory at {}", secondLevel);
-        directory.mkdir(dataDir, status);
-        directory.mkdir(firstLevel, status);
-        directory.mkdir(secondLevel, status);
+        directory.mkdir(session._getFeature(Write.class), dataDir, status);
+        directory.mkdir(session._getFeature(Write.class), firstLevel, status);
+        directory.mkdir(session._getFeature(Write.class), secondLevel, status);
         return vault;
     }
 
@@ -632,19 +632,19 @@ public class CryptoVault implements Vault {
             }
             if(type == Touch.class) {
                 // Use default touch feature because touch with remote implementation will not add encrypted file header
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Write.class)), session._getFeature(Write.class), this);
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
             }
             if(type == Directory.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class), this) :
-                        new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class), this)
+                        new CryptoDirectoryV6Feature(session, (Directory) delegate, this) :
+                        new CryptoDirectoryV7Feature(session, (Directory) delegate, this)
                 );
             }
             if(type == Upload.class) {
-                return (T) new CryptoUploadFeature(session, (Upload) delegate, session._getFeature(Write.class), this);
+                return (T) new CryptoUploadFeature(session, (Upload) delegate, this);
             }
             if(type == Download.class) {
-                return (T) new CryptoDownloadFeature(session, (Download) delegate, session._getFeature(Read.class), this);
+                return (T) new CryptoDownloadFeature(session, (Download) delegate, this);
             }
             if(type == Read.class) {
                 return (T) new CryptoReadFeature(session, (Read) delegate, this);
@@ -696,7 +696,7 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
             }
             if(type == Bulk.class) {
-                return (T) new CryptoBulkFeature(session, (Bulk) delegate, session._getFeature(Delete.class), this);
+                return (T) new CryptoBulkFeature(session, (Bulk) delegate, this);
             }
             if(type == UnixPermission.class) {
                 return (T) new CryptoUnixPermission(session, (UnixPermission) delegate, this);

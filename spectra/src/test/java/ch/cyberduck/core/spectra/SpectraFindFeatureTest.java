@@ -36,8 +36,8 @@ public class SpectraFindFeatureTest extends AbstractSpectraTest {
 
     @Test
     public void testFindNotFound() throws Exception {
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SpectraFindFeature f = new SpectraFindFeature(session);
         assertFalse(f.find(test));
@@ -52,8 +52,8 @@ public class SpectraFindFeatureTest extends AbstractSpectraTest {
 
     @Test
     public void testFindBucket() throws Exception {
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(container));
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

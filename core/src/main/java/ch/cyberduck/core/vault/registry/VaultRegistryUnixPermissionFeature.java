@@ -19,9 +19,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.EnumSet;
 
@@ -58,8 +60,16 @@ public class VaultRegistryUnixPermissionFeature implements UnixPermission {
     }
 
     @Override
-    public Permission getDefault(final EnumSet<Path.Type> type) {
-        return proxy.getDefault(type);
+    public Permission getDefault(final Path workdir, final EnumSet<Path.Type> type) {
+        try {
+            return registry.find(session, workdir).getFeature(session, UnixPermission.class, proxy).getDefault(workdir, type);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getDefault(workdir, type);
+        }
+        catch(UnsupportedException e) {
+            return Permission.EMPTY;
+        }
     }
 
     @Override

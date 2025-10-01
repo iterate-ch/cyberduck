@@ -54,8 +54,8 @@ public class BrickLockFeatureTest extends AbstractBrickTest {
         out.close();
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final BrickUploadFeature upload = new BrickUploadFeature(session, new BrickWriteFeature(session));
-        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final BrickUploadFeature upload = new BrickUploadFeature(session);
+        upload.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(new BrickFindFeature(session).find(test));
         final BrickLockFeature feature = new BrickLockFeature(session);

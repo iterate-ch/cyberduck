@@ -182,14 +182,14 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                     catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
                         final Redundancy targetFeature = destination.getFeature(Redundancy.class);
                         if(targetFeature != null) {
-                            status.setStorageClass(targetFeature.getDefault());
+                            status.setStorageClass(targetFeature.getDefault(file));
                         }
                     }
                 }
                 else {
                     final Redundancy targetFeature = destination.getFeature(Redundancy.class);
                     if(targetFeature != null) {
-                        status.setStorageClass(targetFeature.getDefault());
+                        status.setStorageClass(targetFeature.getDefault(file));
                     }
                 }
             }

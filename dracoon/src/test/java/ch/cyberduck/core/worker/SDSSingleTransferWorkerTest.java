@@ -39,6 +39,7 @@ import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectS3MultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
 import ch.cyberduck.core.sds.SDSFindFeature;
+import ch.cyberduck.core.sds.SDSMultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -73,7 +74,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
     @Test
     public void testDownloadVersioned() throws Exception {
         final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new SDSMultipartWriteFeature(session, fileid), new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
@@ -117,7 +118,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
         final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
         final Local folder = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalDirectoryFeature().mkdir(folder);
-        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new Path(
+        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new SDSMultipartWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Transfer t = new UploadTransfer(session.getHost(), room, folder);
         final BytecountStreamListener counter = new BytecountStreamListener();

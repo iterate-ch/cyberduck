@@ -29,7 +29,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class BrickFindFeatureTest extends AbstractBrickTest {
@@ -47,7 +48,7 @@ public class BrickFindFeatureTest extends AbstractBrickTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path folder = new BrickDirectoryFeature(session).mkdir(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BrickWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new BrickFindFeature(session).find(folder));
         assertFalse(new BrickFindFeature(session).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
         new BrickDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -56,7 +57,7 @@ public class BrickFindFeatureTest extends AbstractBrickTest {
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BrickTouchFeature(session).touch(file, new TransferStatus());
+        new BrickTouchFeature(session).touch(new BrickWriteFeature(session), file, new TransferStatus());
         assertTrue(new BrickFindFeature(session).find(file));
         assertFalse(new BrickFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

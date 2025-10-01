@@ -36,7 +36,7 @@ public class ReadMetadataWorkerTest {
                 if(type == Metadata.class) {
                     return (T) new Metadata() {
                         @Override
-                        public Map<String, String> getDefault() {
+                        public Map<String, String> getDefault(final Path file) {
                             return Collections.emptyMap();
                         }
 
@@ -75,7 +75,7 @@ public class ReadMetadataWorkerTest {
                 if(type == Metadata.class) {
                     return (T) new Metadata() {
                         @Override
-                        public Map<String, String> getDefault() {
+                        public Map<String, String> getDefault(final Path file) {
                             return Collections.emptyMap();
                         }
 
@@ -129,7 +129,7 @@ public class ReadMetadataWorkerTest {
                 if(type == Metadata.class) {
                     return (T) new Metadata() {
                         @Override
-                        public Map<String, String> getDefault() {
+                        public Map<String, String> getDefault(final Path file) {
                             return Collections.emptyMap();
                         }
 

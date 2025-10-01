@@ -31,6 +31,7 @@ import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPDirectoryFeature;
 import ch.cyberduck.core.ftp.FTPTouchFeature;
 import ch.cyberduck.core.ftp.FTPWorkdirService;
+import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -53,7 +54,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
         final ListService service = new FTPListService(session);
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new FTPTouchFeature(session).touch(file, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), file, new TransferStatus());
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) {
@@ -72,7 +73,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
         service.remove(FTPListService.Command.mlsd);
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new FTPTouchFeature(session).touch(file, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), file, new TransferStatus());
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) {
@@ -91,7 +92,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
         list.remove(FTPListService.Command.mlsd);
         final Path home = new FTPWorkdirService(session).find();
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new FTPDirectoryFeature(session).mkdir(directory, new TransferStatus());
+        new FTPDirectoryFeature(session).mkdir(new FTPWriteFeature(session), directory, new TransferStatus());
         final AtomicBoolean callback = new AtomicBoolean();
         assertTrue(list.list(directory, new DisabledListProgressListener() {
             @Override

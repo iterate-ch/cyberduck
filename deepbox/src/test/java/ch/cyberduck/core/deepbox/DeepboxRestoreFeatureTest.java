@@ -45,7 +45,7 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path testInTrash = new Path(trash, test.getName(), test.getType());
 
-        new DeepboxTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), test, new TransferStatus());
         final String nodeId = new DeepboxAttributesFinderFeature(session, fileid).find(test).getFileId();
 
         assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
@@ -81,15 +81,15 @@ public class DeepboxRestoreFeatureTest extends AbstractDeepboxTest {
         final Path subfolderWithContentInTrash = new Path(folderInTrash, subfolderWithContent.getName(), EnumSet.of(Path.Type.directory));
         final Path fileInTrash = new Path(subfolderWithContentInTrash, file.getName(), EnumSet.of(Path.Type.file));
 
-        new DeepboxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
+        new DeepboxDirectoryFeature(session, fileid).mkdir(new DeepboxWriteFeature(session, fileid), folder, new TransferStatus());
         final String folderId = new DeepboxAttributesFinderFeature(session, fileid).find(folder).getFileId();
         assertTrue(new DeepboxFindFeature(session, fileid).find(folder));
         new CoreRestControllerApi(session.getClient()).getNodeInfo(folderId, null, null, null); // assert no fail
 
-        final String subFolderId = new DeepboxDirectoryFeature(session, fileid).mkdir(subfolderWithContent, new TransferStatus()).attributes().getFileId();
+        final String subFolderId = new DeepboxDirectoryFeature(session, fileid).mkdir(new DeepboxWriteFeature(session, fileid), subfolderWithContent, new TransferStatus()).attributes().getFileId();
         assertTrue(new DeepboxFindFeature(session, fileid).find(subfolderWithContent));
 
-        new DeepboxTouchFeature(session, fileid).touch(file, new TransferStatus());
+        new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), file, new TransferStatus());
         final String nodeId = new DeepboxAttributesFinderFeature(session, fileid).find(file).getFileId();
         assertTrue(new DeepboxFindFeature(session, fileid).find(folder.withAttributes(new PathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(subfolderWithContent.withAttributes(new PathAttributes())));

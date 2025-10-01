@@ -55,7 +55,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final long timestamp = System.currentTimeMillis();
-        new B2TouchFeature(session, fileid).touch(test, new TransferStatus().setModified(timestamp));
+        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), test, new TransferStatus().setModified(timestamp));
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
@@ -70,10 +70,10 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     public void testHideMarker() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long timestamp = System.currentTimeMillis();
         final TransferStatus status = new TransferStatus().setModified(timestamp);
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final Path test = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         assertNotNull(status.getResponse().getVersionId());
         assertNotNull(test.attributes().getVersionId());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -94,7 +94,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     public void testFindDirectory() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(directory);
         assertNotNull(attributes);
@@ -113,7 +113,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     @Test
     public void testFindBucket() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(bucket);
         assertNotNull(attributes);
@@ -145,8 +145,8 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     public void testChangedFileId() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getVersionId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server

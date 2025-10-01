@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVTouchFeature;
+import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -64,7 +65,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractDAVTest {
         final PathCache cache = new PathCache(1);
         final AttributesFinder f = new CachingAttributesFinderFeature(session, cache, new DefaultAttributesFinderFeature(session));
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Attributes lookup = f.find(file);
         assertEquals(0L, lookup.getSize());
         // Test cache

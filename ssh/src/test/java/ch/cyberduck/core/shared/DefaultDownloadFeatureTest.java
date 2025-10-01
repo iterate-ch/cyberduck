@@ -54,7 +54,7 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
     @Test
     public void testTransferAppend() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test, new TransferStatus());
+        session.getFeature(Touch.class).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {
@@ -67,15 +67,15 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }
@@ -91,7 +91,7 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
     @Test
     public void testTransferUnknownSize() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test, new TransferStatus());
+        session.getFeature(Touch.class).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final byte[] content = new byte[1];
         new Random().nextBytes(content);
         {
@@ -104,8 +104,8 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().setLength(-1L);
-            new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
                 new DisabledConnectionCallback());
         }

@@ -30,7 +30,7 @@ import com.dropbox.core.v2.files.Metadata;
 public class DropboxTouchFeature extends DefaultTouchFeature<Metadata> {
 
     public DropboxTouchFeature(final DropboxSession session) {
-        super(new DropboxWriteFeature(session));
+        super(session);
     }
 
     /**

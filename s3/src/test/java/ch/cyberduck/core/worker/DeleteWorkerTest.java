@@ -50,11 +50,11 @@ public class DeleteWorkerTest extends AbstractS3Test {
     public void testDelete() throws Exception {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path folder = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new S3DirectoryFeature(session, acl).mkdir(
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(folder));
         final Path file = new S3TouchFeature(session, acl).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(file.attributes().getVersionId());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);
         assertFalse(new S3FindFeature(session, acl).find(file));
@@ -64,11 +64,11 @@ public class DeleteWorkerTest extends AbstractS3Test {
     public void testDeleteVersioning() throws Exception {
         final Path home = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path folder = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new S3DirectoryFeature(session, acl).mkdir(
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(folder));
         final Path file = new S3TouchFeature(session, acl).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(file));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);

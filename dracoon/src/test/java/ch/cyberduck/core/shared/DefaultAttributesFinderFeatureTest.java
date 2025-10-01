@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
+import ch.cyberduck.core.sds.SDSDirectS3MultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSTouchFeature;
@@ -54,9 +55,9 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSDSTest {
         final PathCache cache = new PathCache(1);
         final AttributesFinder f = new CachingAttributesFinderFeature(session, cache, new DefaultAttributesFinderFeature(session));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), file, new TransferStatus());
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         // Test cache

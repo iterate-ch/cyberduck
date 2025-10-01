@@ -41,7 +41,7 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
     @Test
     public void testSetTimestamp() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final Path file = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final Path file = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         new DAVTimestampFeature(session).setTimestamp(file, status.setModified(5100L));
         final PathAttributes attr = new DAVAttributesFinderFeature(session).find(file);
         assertEquals(5000L, attr.getModificationDate());
@@ -56,12 +56,12 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testSetTimestampFolderExplicitImplicit() throws Exception {
-        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         new DAVTimestampFeature(session).setTimestamp(folder, 5100L);
         assertEquals(5000L, new DAVAttributesFinderFeature(session).find(folder).getModificationDate());
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(folder).getModificationDate());
         Thread.sleep(1000L);
-        final Path file = new DAVTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotEquals(5000L, new DAVAttributesFinderFeature(session).find(folder).getModificationDate());
         assertNotEquals(5000L, new DefaultAttributesFinderFeature(session).find(folder).getModificationDate());
         new DAVDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());

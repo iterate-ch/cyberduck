@@ -18,11 +18,11 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 
-public class SDSDirectoryFeature implements Directory<VersionId> {
+public class SDSDirectoryFeature implements Directory<Node> {
     private static final Logger log = LogManager.getLogger(SDSDirectoryFeature.class);
 
     private final SDSSession session;
@@ -54,7 +54,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Node> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 return this.createRoom(folder, HostPreferencesFactory.get(session.getHost()).getBoolean("sds.create.dataroom.encrypt"));

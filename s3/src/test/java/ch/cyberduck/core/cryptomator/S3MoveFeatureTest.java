@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -64,10 +65,12 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(folder, new TransferStatus());
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(file, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
+                cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), folder, new TransferStatus());
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
+                cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), file, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
-        final Move move = cryptomator.getFeature(session, Move.class, new S3MoveFeature(session, new S3AccessControlListFeature(session)));
+        final Move move = cryptomator.getFeature(session, Move.class, new S3MoveFeature(session, acl));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());

@@ -27,6 +27,7 @@ import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -56,7 +57,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().setMime("x-application/cyberduck"));
+        new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), file, new TransferStatus().setMime("x-application/cyberduck"));
         final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
@@ -72,7 +73,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new GraphDirectoryFeature(session, fileid).mkdir(file, new TransferStatus());
+        new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), file, new TransferStatus());
         final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
@@ -89,10 +90,10 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     public void testChangedFileId() throws Exception {
         final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
         final Path drive = new OneDriveHomeFinderService().find();
-        final Path test = new GraphTouchFeature(session, fileid).touch(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String previousnodeid = test.attributes().getFileId();
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        final String latestnodeid = new GraphTouchFeature(session, fileid).touch(new Path(drive, test.getName(), EnumSet.of(Path.Type.file)), new TransferStatus()).attributes().getFileId();
+        final String latestnodeid = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(drive, test.getName(), EnumSet.of(Path.Type.file)), new TransferStatus()).attributes().getFileId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server
         fileid.cache(test, previousnodeid);

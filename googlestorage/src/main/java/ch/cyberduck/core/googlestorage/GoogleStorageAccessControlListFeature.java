@@ -318,7 +318,7 @@ public class GoogleStorageAccessControlListFeature implements AclPermission {
     }
 
     @Override
-    public List<Acl.User> getAvailableAclUsers() {
+    public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
         final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
                 new Acl.CanonicalUser(),
                 new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED, false) {

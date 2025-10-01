@@ -37,8 +37,8 @@ public class VaultRegistryTouchFeature<R> implements Touch<R> {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Touch.class, proxy).touch(file, status);
+    public Path touch(final Write<R> writer, final Path file, final TransferStatus status) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Touch.class, proxy).touch(writer, file, status);
     }
 
     @Override
@@ -49,12 +49,6 @@ public class VaultRegistryTouchFeature<R> implements Touch<R> {
         catch(VaultUnlockCancelException e) {
             proxy.preflight(workdir, filename);
         }
-    }
-
-    @Override
-    public Touch<R> withWriter(final Write<R> writer) {
-        proxy.withWriter(writer);
-        return this;
     }
 
     @Override

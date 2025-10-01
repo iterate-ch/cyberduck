@@ -67,13 +67,13 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         final String rootEtag = f.find(root).getETag();
         // No milliseconds precision
         Thread.sleep(1000L);
-        final Path folder = new CteraDirectoryFeature(session).mkdir(new Path(root,
+        final Path folder = new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotEquals(rootTimestamp, f.find(root).getModificationDate());
         assertNotEquals(rootEtag, f.find(root).getETag());
         final long folderTimestamp = f.find(folder).getModificationDate();
         final String folderEtag = f.find(folder).getETag();
-        final Path test = new CteraTouchFeature(session).touch(new Path(folder,
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(folder,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(folderTimestamp, f.find(folder).getModificationDate());
         assertEquals(folderEtag, f.find(folder).getETag());
@@ -94,7 +94,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path test = new CteraDirectoryFeature(session).mkdir(new Path(home,
+        final Path test = new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), new Path(home,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new CteraAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);

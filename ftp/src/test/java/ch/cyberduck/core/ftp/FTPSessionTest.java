@@ -87,7 +87,7 @@ public class FTPSessionTest extends AbstractFTPTest {
     @Test
     public void testTouch() throws Exception {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new FTPTouchFeature(session).touch(test, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));

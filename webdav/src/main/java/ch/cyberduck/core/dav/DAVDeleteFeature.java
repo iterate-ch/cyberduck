@@ -87,7 +87,7 @@ public class DAVDeleteFeature implements Delete {
     }
 
     @Override
-    public EnumSet<Flags> features() {
+    public EnumSet<Flags> features(final Path file) {
         return EnumSet.of(Flags.recursive);
     }
 }

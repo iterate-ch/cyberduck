@@ -36,6 +36,7 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3TouchFeature;
+import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
@@ -90,7 +91,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acl).touch(test, new TransferStatus());
+        new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
@@ -107,7 +108,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertThrows(AccessDeniedException.class, () -> new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus()));
+        assertThrows(AccessDeniedException.class, () -> new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus()));
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         session.close();
     }

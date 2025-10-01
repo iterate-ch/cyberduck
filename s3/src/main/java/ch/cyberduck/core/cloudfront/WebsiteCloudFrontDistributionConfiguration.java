@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3LocationFeature;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -59,7 +60,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final S3LocationFeature location, final X509TrustManager trust, final X509KeyManager key) {
         super(session, location, trust, key);
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     /**

@@ -53,7 +53,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
     public void testReadWrite() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final long folderTimestamp = new StoregateAttributesFinderFeature(session, nodeid).find(room).getModificationDate();
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -109,7 +109,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final StoregateWriteFeature feature = new StoregateWriteFeature(session, nodeid);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1);
         final TransferStatus status = new TransferStatus();
@@ -134,11 +134,11 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
     public void testWriteWithLock() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
-                new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new StoregateWriteFeature(session, nodeid), new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -164,11 +164,11 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
     public void testWriteWithLockAlreadyReleased() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
-                new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new StoregateWriteFeature(session, nodeid), new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
@@ -186,7 +186,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
     public void testWriteCancel() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
 
         final byte[] content = RandomUtils.nextBytes(32769);

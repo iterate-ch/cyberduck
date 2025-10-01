@@ -39,8 +39,7 @@ public class DropboxUploadFeature extends HttpUploadFeature<Metadata, MessageDig
 
     final DropboxSession session;
 
-    public DropboxUploadFeature(final DropboxSession session, final DropboxWriteFeature writer) {
-        super(writer);
+    public DropboxUploadFeature(final DropboxSession session) {
         this.session = session;
     }
 

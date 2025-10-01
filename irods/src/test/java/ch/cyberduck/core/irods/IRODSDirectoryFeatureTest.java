@@ -29,7 +29,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -63,7 +62,7 @@ public class IRODSDirectoryFeatureTest extends VaultTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new IRODSDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
 
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

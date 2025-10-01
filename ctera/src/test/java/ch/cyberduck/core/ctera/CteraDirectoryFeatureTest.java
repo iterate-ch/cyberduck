@@ -43,9 +43,9 @@ public class CteraDirectoryFeatureTest extends AbstractCteraTest {
     @Test
     public void testMakeDirectory() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path result = new CteraDirectoryFeature(session).mkdir(test, new TransferStatus());
+        final Path result = new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
-        assertThrows(ConflictException.class, () -> new CteraDirectoryFeature(session).mkdir(test, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), test, new TransferStatus()));
         new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
     }

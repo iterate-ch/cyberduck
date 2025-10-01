@@ -69,7 +69,7 @@ public class SDSPermissionsFeature implements AclPermission {
     }
 
     @Override
-    public List<Acl.User> getAvailableAclUsers() {
+    public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
         return Collections.singletonList(new Acl.CanonicalUser());
     }
 

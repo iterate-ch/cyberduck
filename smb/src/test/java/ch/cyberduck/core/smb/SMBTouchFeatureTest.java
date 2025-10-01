@@ -42,9 +42,9 @@ public class SMBTouchFeatureTest extends AbstractSMBTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
         final Path test = new SMBTouchFeature(session)
-                .touch(new Path(home, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+                .touch(new SMBWriteFeature(session), new Path(home, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         assertThrows(ConflictException.class, () -> new SMBTouchFeature(session)
-                .touch(new Path(home, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L)));
+                .touch(new SMBWriteFeature(session), new Path(home, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L)));
         assertTrue(new SMBFindFeature(session).find(test));
         assertTrue(new SMBFindFeature(session).find(new Path(home, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file))));
         assertEquals(new SMBAttributesFinderFeature(session).find(test),
@@ -56,7 +56,7 @@ public class SMBTouchFeatureTest extends AbstractSMBTest {
     public void testTouchLongFilename() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path test = new SMBTouchFeature(session).touch(
-                new Path(home, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new SMBDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

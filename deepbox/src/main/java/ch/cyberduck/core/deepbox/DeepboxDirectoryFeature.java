@@ -17,15 +17,16 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.PathRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Folder;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.FolderAdded;
+import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +35,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Collections;
 import java.util.List;
 
-public class DeepboxDirectoryFeature implements Directory<VersionId> {
+public class DeepboxDirectoryFeature implements Directory<Node> {
     private static final Logger log = LogManager.getLogger(DeepboxDirectoryFeature.class);
 
     private final DeepboxSession session;
@@ -48,7 +49,7 @@ public class DeepboxDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Node> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(new DeepboxFindFeature(session, fileid).find(folder)) {
                 throw new ConflictException(folder.getAbsolute());

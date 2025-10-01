@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -296,8 +297,8 @@ public class DownloadTransfer extends Transfer {
                 new DefaultLocalDirectoryFeature().mkdir(folder);
             }
             // Transfer
-            final Download download = source.getFeature(Download.class);
-            download.download(file, local, bandwidth, listener, segment, prompt);
+            source.getFeature(Download.class).download(source.getFeature(Read.class),
+                    file, local, bandwidth, listener, segment, prompt);
         }
     }
 

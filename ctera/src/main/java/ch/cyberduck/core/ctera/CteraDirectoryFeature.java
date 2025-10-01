@@ -30,7 +30,7 @@ import static ch.cyberduck.core.ctera.CteraTouchFeature.validate;
 public class CteraDirectoryFeature extends DAVDirectoryFeature {
 
     public CteraDirectoryFeature(final CteraSession session) {
-        super(session, new CteraAttributesFinderFeature(session));
+        super(session);
     }
 
     @Override

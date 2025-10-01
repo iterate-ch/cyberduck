@@ -44,7 +44,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
     @Test
     public void testWrite() throws Exception {
         final MantaWriteFeature feature = new MantaWriteFeature(session);
-        final Path container = new MantaDirectoryFeature(session).mkdir(randomDirectory(), new TransferStatus());
+        final Path container = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), randomDirectory(), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -69,7 +69,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
     public void testWriteUnknownLength() throws Exception {
         final MantaWriteFeature feature = new MantaWriteFeature(session);
         final Path container = randomDirectory();
-        new MantaDirectoryFeature(session).mkdir(container, new TransferStatus());
+        new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), container, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
 
         final TransferStatus status = new TransferStatus();

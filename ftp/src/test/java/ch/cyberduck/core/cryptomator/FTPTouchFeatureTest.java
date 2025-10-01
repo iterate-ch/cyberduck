@@ -20,11 +20,15 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
+import ch.cyberduck.core.ftp.FTPAttributesFinderFeature;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -56,12 +60,14 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        final TransferStatus status = new TransferStatus();
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)), new FTPWriteFeature(session), cryptomator).touch(
-                new Path(vault, new AlphanumericRandomStringService(10).random(), EnumSet.of(Path.Type.file)), status);
+        final TransferStatus status = new TransferStatus().setLength(0L);
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(
+                new CryptoWriteFeature<>(session, new FTPWriteFeature(session), cryptomator), new Path(vault, new AlphanumericRandomStringService(10).random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
         assertEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
+        assertEquals(0L, cryptomator.getFeature(session, AttributesFinder.class, new FTPAttributesFinderFeature(session)).find(test).getSize());
+        assertEquals(0L, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test).getSize());
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -74,8 +80,8 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)), new FTPWriteFeature(session), cryptomator).touch(
-                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(
+                new CryptoWriteFeature<>(session, new FTPWriteFeature(session), cryptomator), new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -90,8 +96,8 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final TransferStatus status = new TransferStatus();
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)), new FTPWriteFeature(session), cryptomator).touch(
-                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(
+                new CryptoWriteFeature<>(session, new FTPWriteFeature(session), cryptomator), new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
         assertEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

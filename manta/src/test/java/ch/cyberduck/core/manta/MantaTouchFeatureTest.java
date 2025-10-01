@@ -40,7 +40,7 @@ public class MantaTouchFeatureTest extends AbstractMantaTest {
             testPathPrefix,
             new AlphanumericRandomStringService().random(),
             EnumSet.of(Path.Type.file));
-        new MantaTouchFeature(session).touch(file, new TransferStatus().setMime("x-application/cyberduck"));
+        new MantaTouchFeature(session).touch(new MantaWriteFeature(session), file, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(new MantaAttributesFinderFeature(session).find(file));
         new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -52,7 +52,7 @@ public class MantaTouchFeatureTest extends AbstractMantaTest {
             testPathPrefix,
             String.format("%s %s", randomStringService.random(), randomStringService.random()),
             EnumSet.of(Path.Type.file));
-        new MantaTouchFeature(session).touch(file, new TransferStatus().setMime("x-application/cyberduck"));
+        new MantaTouchFeature(session).touch(new MantaWriteFeature(session), file, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(new MantaAttributesFinderFeature(session).find(file));
         new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

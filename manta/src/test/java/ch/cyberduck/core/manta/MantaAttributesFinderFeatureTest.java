@@ -47,7 +47,7 @@ public class MantaAttributesFinderFeatureTest extends AbstractMantaTest {
     @Test
     public void testFindFile() throws Exception {
         final Path file = randomFile();
-        new MantaTouchFeature(session).touch(file, new TransferStatus().setMime("x-application/cyberduck"));
+        new MantaTouchFeature(session).touch(new MantaWriteFeature(session), file, new TransferStatus().setMime("x-application/cyberduck"));
         final PathAttributes attributes = new MantaAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
         assertEquals(-1L, attributes.getCreationDate());

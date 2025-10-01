@@ -17,13 +17,14 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 
-public class LocalTouchFeature implements Touch {
+public class LocalTouchFeature implements Touch<Void> {
 
     private final LocalSession session;
 
@@ -32,7 +33,7 @@ public class LocalTouchFeature implements Touch {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<Void> writer, final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isFile()) {
             try {
                 Files.createFile(session.toPath(file));

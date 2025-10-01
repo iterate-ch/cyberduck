@@ -15,14 +15,13 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import java.security.MessageDigest;
 
 public class EueUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
 
-    public EueUploadService(final EueSession session, final EueResourceIdProvider fileid, final Write<EueWriteFeature.Chunk> writer) {
-        super(writer);
+    public EueUploadService(final EueSession session) {
+
     }
 }

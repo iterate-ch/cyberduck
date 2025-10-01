@@ -60,7 +60,7 @@ public class LocalReadFeatureTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(test, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), test, new TransferStatus());
         final int length = 39865;
         final byte[] content = RandomUtils.nextBytes(length);
         {
@@ -91,7 +91,7 @@ public class LocalReadFeatureTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(test, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), test, new TransferStatus());
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);
         {

@@ -46,7 +46,7 @@ public class LocalMoveFeatureTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(test, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new LocalFindFeature(session).find(test));
@@ -61,7 +61,7 @@ public class LocalMoveFeatureTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new LocalFindFeature(session).find(test));
@@ -76,7 +76,7 @@ public class LocalMoveFeatureTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(test, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(workdir, StringUtils.capitalize(test.getName()), EnumSet.of(Path.Type.file));
         new LocalMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new LocalFindFeature(session).find(test));
@@ -91,9 +91,9 @@ public class LocalMoveFeatureTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(test, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(target, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), target, new TransferStatus());
         new LocalMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new LocalFindFeature(session).find(test));
         assertTrue(new LocalFindFeature(session).find(target));

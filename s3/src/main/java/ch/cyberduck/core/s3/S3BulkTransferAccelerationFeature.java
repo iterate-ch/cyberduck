@@ -23,7 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -51,7 +50,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     public S3BulkTransferAccelerationFeature(final S3Session session, final TransferAcceleration accelerationService) {
         this.session = session;
         this.accelerationService = accelerationService;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override
@@ -63,11 +62,6 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     @Override
     public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         this.configure(files, callback, false);
-    }
-
-    @Override
-    public Bulk<Void> withDelete(final Delete delete) {
-        return this;
     }
 
     private void configure(final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback, final boolean enabled) throws BackgroundException {

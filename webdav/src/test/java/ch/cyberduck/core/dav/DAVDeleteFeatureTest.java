@@ -25,7 +25,7 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
     @Test
     public void testDeleteFile() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVTouchFeature(session).touch(test, new TransferStatus());
+        new DAVTouchFeature(session).touch(new DAVWriteFeature(session), test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
         new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
@@ -34,7 +34,7 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
     @Test
     public void testDeleteFileWithLock() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVTouchFeature(session).touch(test, new TransferStatus());
+        new DAVTouchFeature(session).touch(new DAVWriteFeature(session), test, new TransferStatus());
         String lock = null;
         try {
             lock = new DAVLockFeature(session).lock(test);
@@ -50,9 +50,9 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
     @Test
     public void testDeleteDirectory() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
-        new DAVTouchFeature(session).touch(new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }

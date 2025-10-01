@@ -56,7 +56,7 @@ public class S3CopyFeature implements Copy {
     public S3CopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.acl = acl;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

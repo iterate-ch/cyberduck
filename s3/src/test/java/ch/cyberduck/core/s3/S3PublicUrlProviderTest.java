@@ -41,7 +41,7 @@ public class S3PublicUrlProviderTest extends AbstractS3Test {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acl).touch(test, new TransferStatus());
+        new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus());
         final S3PublicUrlProvider provider = new S3PublicUrlProvider(session, acl);
         assertFalse(provider.isSupported(bucket, Share.Type.download));
         assertTrue(provider.isSupported(test, Share.Type.download));

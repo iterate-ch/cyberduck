@@ -54,7 +54,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus().setLength(5 * 1024L);
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null);
+        m.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setLength(random.length);
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
-        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent(), 0L);
         assertTrue(status.isComplete());
@@ -95,7 +95,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setLength(random.length);
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
-        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());
@@ -121,7 +121,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setLength(random.length);
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
-        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        service.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());

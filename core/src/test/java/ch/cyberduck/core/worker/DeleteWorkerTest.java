@@ -87,8 +87,8 @@ public class DeleteWorkerTest {
                         }
 
                         @Override
-                        public boolean isRecursive() {
-                            return true;
+                        public EnumSet<Flags> features(final Path file) {
+                            return EnumSet.of(Flags.recursive);
                         }
                     };
                 }
@@ -133,8 +133,8 @@ public class DeleteWorkerTest {
                         }
 
                         @Override
-                        public boolean isRecursive() {
-                            return true;
+                        public EnumSet<Flags> features(final Path file) {
+                            return EnumSet.of(Flags.recursive);
                         }
                     };
                 }
@@ -181,11 +181,6 @@ public class DeleteWorkerTest {
                         @Override
                         public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
                             assertEquals(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)), new ArrayList<>(files.keySet()).get(0));
-                        }
-
-                        @Override
-                        public boolean isRecursive() {
-                            return false;
                         }
                     };
                 }

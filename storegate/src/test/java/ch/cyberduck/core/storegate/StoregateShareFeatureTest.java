@@ -39,11 +39,10 @@ public class StoregateShareFeatureTest extends AbstractStoregateTest {
     @Test
     public void toDownloadUrl() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
-        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
-            new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new StoregateWriteFeature(session, nodeid), new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new StoregateShareFeature(session, nodeid).toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
@@ -52,7 +51,7 @@ public class StoregateShareFeatureTest extends AbstractStoregateTest {
     public void toUploadUrl() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertNotNull(new StoregateShareFeature(session, nodeid).toUploadUrl(room, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());

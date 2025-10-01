@@ -43,8 +43,8 @@ public class CryptoUnixPermission implements UnixPermission {
     }
 
     @Override
-    public Permission getDefault(final EnumSet<Path.Type> type) {
-        return delegate.getDefault(type);
+    public Permission getDefault(final Path workdir, final EnumSet<Path.Type> type) {
+        return delegate.getDefault(workdir, type);
     }
 
     @Override

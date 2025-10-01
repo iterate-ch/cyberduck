@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -36,13 +37,13 @@ public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
     private final S3Session session;
 
     public S3TouchFeature(final S3Session session, final S3AccessControlListFeature acl) {
-        super(new S3WriteFeature(session, acl));
+        super(session);
         this.session = session;
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        return super.touch(file, status.setChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
+    public Path touch(final Write<StorageObject> writer, final Path file, final TransferStatus status) throws BackgroundException {
+        return super.touch(writer, file, status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status)));
     }
 
     @Override

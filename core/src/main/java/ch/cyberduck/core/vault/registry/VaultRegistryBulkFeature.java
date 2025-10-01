@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -47,12 +46,6 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
             return feature.pre(type, files, callback);
         }
         return null;
-    }
-
-    @Override
-    public Bulk<R> withDelete(final Delete delete) {
-        proxy.withDelete(delete);
-        return this;
     }
 
     @Override

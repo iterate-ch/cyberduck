@@ -19,6 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -31,12 +32,12 @@ import synapticloop.b2.response.BaseB2Response;
 public class B2TouchFeature extends DefaultTouchFeature<BaseB2Response> {
 
     public B2TouchFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        super(new B2WriteFeature(session, fileid));
+        super(session);
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        return super.touch(file, status.setChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
+    public Path touch(final Write<BaseB2Response> writer, final Path file, final TransferStatus status) throws BackgroundException {
+        return super.touch(writer, file, status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status)));
     }
 
     @Override

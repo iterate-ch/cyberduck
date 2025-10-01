@@ -39,8 +39,8 @@ public class SpectraVersioningFeatureTest extends AbstractSpectraTest {
     @Test
     @Ignore
     public void testSetConfiguration() throws Exception {
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Versioning feature = new SpectraVersioningFeature(session);
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());

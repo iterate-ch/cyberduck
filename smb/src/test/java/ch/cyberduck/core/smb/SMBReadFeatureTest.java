@@ -65,9 +65,9 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
         status.setLength(content.length);
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new SMBTouchFeature(session).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Write writer = new SMBWriteFeature(session);
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
@@ -128,9 +128,9 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
                     final byte[] content = RandomUtils.nextBytes(length);
                     status.setLength(content.length);
                     final Path folder = new SMBDirectoryFeature(session).mkdir(
-                            new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                            new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
                     final Path test = new SMBTouchFeature(session).touch(
-                            new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                            new SMBWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
                     final Write writer = new SMBWriteFeature(session);
                     status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
                     final OutputStream out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());

@@ -21,8 +21,10 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.EnumSet;
 
@@ -44,8 +46,16 @@ public class VaultRegistrySearchFeature implements Search {
     }
 
     @Override
-    public EnumSet<Flags> features() {
-        return proxy.features();
+    public EnumSet<Flags> features(final Path workdir) {
+        try {
+            return registry.find(session, workdir).getFeature(session, Search.class, proxy).features(workdir);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.features(workdir);
+        }
+        catch(UnsupportedException e) {
+            return EnumSet.noneOf(Flags.class);
+        }
     }
 
     @Override

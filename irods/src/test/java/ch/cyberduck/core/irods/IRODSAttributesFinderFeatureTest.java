@@ -27,7 +27,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -73,12 +72,12 @@ public class IRODSAttributesFinderFeatureTest extends VaultTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Path folder = new IRODSDirectoryFeature(session).mkdir(new Path(
+        final Path folder = new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), new Path(
                 new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final IRODSAttributesFinderFeature f = new IRODSAttributesFinderFeature(session);
         final long folderTimestamp = f.find(folder).getModificationDate();
         final Path test = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new IRODSTouchFeature(session).touch(test, new TransferStatus());
+        new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), test, new TransferStatus());
         assertEquals(folderTimestamp, f.find(folder).getModificationDate());
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());

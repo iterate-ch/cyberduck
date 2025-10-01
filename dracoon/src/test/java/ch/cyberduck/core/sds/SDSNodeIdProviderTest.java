@@ -46,9 +46,9 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
     @Test
     public void getFileIdFile() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = String.format("%s%s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
-        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         nodeid.clear();
         final String nodeId = nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1);
         assertNotNull(nodeId);
@@ -75,9 +75,9 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
     @Test
     public void getFileIdFileVersions() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionIdTouch = file.attributes().getVersionId();
         nodeid.clear();
         assertEquals(versionIdTouch, nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
@@ -99,11 +99,11 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
     @Test
     public void getFileIdDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(folder.attributes().getVersionId());
-        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
         nodeid.clear();
         assertEquals(folder.attributes().getVersionId(), nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), 1));
@@ -122,10 +122,10 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
     public void getFileIdRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final String roomname = new AlphanumericRandomStringService().random();
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(roomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(roomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertNotNull(room.attributes().getVersionId());
         final String subroomname = new AlphanumericRandomStringService().random();
-        final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, subroomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, subroomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertNotNull(subroom.attributes().getVersionId());
         nodeid.clear();
         assertEquals(room.attributes().getVersionId(), nodeid.getNodeId(new Path(roomname, EnumSet.of(Path.Type.directory)), 1));

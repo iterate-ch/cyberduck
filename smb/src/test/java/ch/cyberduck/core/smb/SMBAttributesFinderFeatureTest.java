@@ -52,7 +52,7 @@ public class SMBAttributesFinderFeatureTest extends AbstractSMBTest {
 
     @Test
     public void testFindFile() throws Exception {
-        final Path test = new SMBTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new SMBTouchFeature(session).touch(new SMBWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final SMBAttributesFinderFeature f = new SMBAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
@@ -65,7 +65,7 @@ public class SMBAttributesFinderFeatureTest extends AbstractSMBTest {
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path test = new SMBDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new SMBDirectoryFeature(session).mkdir(new SMBWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final SMBAttributesFinderFeature f = new SMBAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);

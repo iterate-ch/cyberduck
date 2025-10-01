@@ -63,14 +63,14 @@ public class SFTPUnixPermissionFeatureTest extends AbstractSFTPTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         {
             final Path file = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-            new SFTPTouchFeature(session).touch(file, new TransferStatus());
+            new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), file, new TransferStatus());
             new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
             assertEquals("666", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
             new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         {
             final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-            new SFTPDirectoryFeature(session).mkdir(directory, new TransferStatus());
+            new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), directory, new TransferStatus());
             new SFTPUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
             assertEquals("666", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
             new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -81,7 +81,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractSFTPTest {
     @Ignore
     public void testRetainStickyBits() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final SFTPUnixPermissionFeature feature = new SFTPUnixPermissionFeature(session);
         feature.setUnixPermission(test,
             new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,

@@ -56,10 +56,10 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
     @Test
     public void testMoveFile() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String id = test.attributes().getFileId();
         final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
+        new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), folder, new TransferStatus());
         final Path target = new DriveMoveFeature(session, fileid).move(test, new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(id, target.attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
@@ -73,10 +73,10 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
     @Test
     public void testMoveToExistingFile() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String firstVersion = test.attributes().getFileId();
-        final Path temp = new DriveTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path temp = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new DriveMoveFeature(session, fileid).move(temp, test, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(test.attributes().getFileId(), target.attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
@@ -94,8 +94,8 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final Path sourceDirectory = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetDirectory = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveDirectoryFeature(session, fileid).mkdir(sourceDirectory, new TransferStatus());
-        final Path sourceFile = new DriveTouchFeature(session, fileid).touch(new Path(sourceDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), sourceDirectory, new TransferStatus());
+        final Path sourceFile = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(sourceDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path targetFile = new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file));
         new DriveMoveFeature(session, fileid).move(sourceDirectory, targetDirectory, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);

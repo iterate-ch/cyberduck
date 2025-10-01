@@ -54,7 +54,7 @@ public interface AclPermission {
     /**
      * @return List of known ACL users
      */
-    List<Acl.User> getAvailableAclUsers();
+    List<Acl.User> getAvailableAclUsers(List<Path> files);
 
     /**
      * Roles available for users in a configurable ACL.

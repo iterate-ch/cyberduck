@@ -45,7 +45,7 @@ public class GoogleStorageMetadataFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault() {
+    public Map<String, String> getDefault(final Path file) {
         return HostPreferencesFactory.get(session.getHost()).getMap("googlestorage.metadata.default");
     }
 

@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class SFTPDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final FileAttributes attrs;
             if(Permission.EMPTY != status.getPermission()) {

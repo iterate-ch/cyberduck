@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -47,7 +48,7 @@ public class S3MoveFeature implements Move {
 
     public S3MoveFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.proxy = new S3ThresholdCopyFeature(session, acl);
         this.delete = new S3DefaultDeleteFeature(session, acl);
     }
@@ -89,7 +90,7 @@ public class S3MoveFeature implements Move {
             catch(NotfoundException e) {
                 if(source.getType().contains(Path.Type.placeholder)) {
                     // No placeholder object to copy, create a new one at the target
-                    target = session.getFeature(Directory.class).mkdir(renamed, status);
+                    target = session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), renamed, status);
                 }
                 else {
                     throw e;
