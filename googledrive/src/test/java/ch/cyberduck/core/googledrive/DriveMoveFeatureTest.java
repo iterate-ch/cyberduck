@@ -58,14 +58,19 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String id = test.attributes().getFileId();
-        final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), folder, new TransferStatus());
+        final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid),
+                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertEquals(folder.attributes(), new DriveAttributesFinderFeature(session, fileid).find(folder));
         final Path target = new DriveMoveFeature(session, fileid).move(test, new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(id, target.attributes().getFileId());
+        assertEquals(test.attributes().getChecksum(), target.attributes().getChecksum());
+        assertNotEquals(test.attributes().getModificationDate(), target.attributes().getModificationDate());
         final Find find = new DefaultFindFeature(session);
         assertFalse(find.find(test));
         assertTrue(find.find(target));
+        assertEquals(folder.attributes(), new DriveAttributesFinderFeature(session, fileid).find(folder));
         final PathAttributes targetAttr = new DriveAttributesFinderFeature(session, fileid).find(target);
+        assertEquals(target.attributes(), targetAttr);
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(target, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

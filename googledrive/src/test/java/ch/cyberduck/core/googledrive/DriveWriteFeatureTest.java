@@ -55,6 +55,8 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
         final Path folder = new DriveDirectoryFeature(session, idProvider).mkdir(
                 new DriveWriteFeature(session, idProvider), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final PathAttributes folderAttributes = new DriveAttributesFinderFeature(session, idProvider).find(folder);
+        assertEquals(folderAttributes, folder.attributes());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         String fileid;
         {
@@ -83,6 +85,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertArrayEquals(content, buffer);
             assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getFileId()).execute().getMimeType());
         }
+        assertEquals(folderAttributes, new DriveAttributesFinderFeature(session, idProvider).find(folder));
         {
             // overwrite
             final TransferStatus status = new TransferStatus();
