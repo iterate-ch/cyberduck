@@ -41,6 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.stream.Collectors;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -57,6 +59,7 @@ import com.amazonaws.services.securitytoken.model.GetCallerIdentityRequest;
 import com.amazonaws.services.securitytoken.model.GetCallerIdentityResult;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
+import com.amazonaws.services.securitytoken.model.Tag;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
@@ -176,6 +179,9 @@ public class STSAuthorizationService {
         if(StringUtils.isNotBlank(settings.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY))) {
             request.setDurationSeconds(PreferencesReader.toInteger(settings.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY)));
         }
+        request.setTags(settings.getMap(Profile.STS_TAGS_PROPERTY_KEY).entrySet().stream().map(
+                entry -> new Tag().withKey(entry.getKey()).withValue(entry.getValue())).collect(Collectors.toList())
+        );
         final String roleArn = settings.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
         if(StringUtils.isNotBlank(roleArn)) {
             log.debug("Found Role ARN {} for {}", roleArn, bookmark);

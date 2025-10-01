@@ -69,6 +69,7 @@ public class Profile implements Protocol {
      * A constant key used to define the Amazon Resource Name (ARN) for AWS Security Token Service (STS)
      */
     public static final String STS_ROLE_ARN_PROPERTY_KEY = "role_arn";
+    public static final String STS_TAGS_PROPERTY_KEY = "tags";
     public static final String STS_ROLE_SESSION_NAME_PROPERTY_KEY = "role_session_name";
     public static final String STS_DURATION_SECONDS_PROPERTY_KEY = "duration_seconds";
     /**
