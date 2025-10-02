@@ -109,7 +109,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
         attributes.setSize(properties.getBlobSize());
         attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
         if(properties.getContentMd5() != null) {
-            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMd5()))));
+            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
         }
         attributes.setETag(properties.getETag());
         final Map<String, String> custom = new HashMap<>();
@@ -124,7 +124,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
         attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
         attributes.setETag(properties.getETag());
         if(properties.getContentMd5() != null) {
-            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMd5()))));
+            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
         }
         return attributes;
     }
