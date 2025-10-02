@@ -25,7 +25,6 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.features.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -47,20 +46,11 @@ public abstract class AbstractVault implements Vault {
 
     private static final Logger log = LogManager.getLogger(AbstractVault.class);
 
-    public static final int VAULT_VERSION_DEPRECATED = 6;
-    public static final int VAULT_VERSION = PreferencesFactory.get().getInteger("cryptomator.vault.version");
-
-    public static final String DIR_PREFIX = "0";
-
-    private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
-
     public abstract Path getMasterkeyPath();
 
     public abstract Masterkey getMasterkey();
 
     public abstract Path getConfig();
-
-    public abstract int getVersion();
 
     public abstract FileHeaderCryptor getFileHeaderCryptor();
 
@@ -73,6 +63,8 @@ public abstract class AbstractVault implements Vault {
     public abstract Cryptor getCryptor();
 
     public abstract int getNonceSize();
+
+    public abstract Pattern getFilenamePattern();
 
     public int numberOfChunks(long cleartextFileSize) {
         return (int) (cleartextFileSize / this.getFileContentCryptor().cleartextChunkSize() +
@@ -159,10 +151,6 @@ public abstract class AbstractVault implements Vault {
             // Translate file size
             attributes.setSize(this.toCiphertextSize(0L, file.attributes().getSize()));
             final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-            if(metadata && this.getVersion() == VAULT_VERSION_DEPRECATED) {
-                type.remove(Path.Type.directory);
-                type.add(Path.Type.file);
-            }
             type.remove(Path.Type.decrypted);
             type.add(Path.Type.encrypted);
             encrypted = new Path(parent, filename, type, attributes);
@@ -182,15 +170,15 @@ public abstract class AbstractVault implements Vault {
             encrypted.attributes().setDecrypted(file);
         }
         // Add reference for vault
-        file.attributes().setVault(this.getHome());
-        encrypted.attributes().setVault(this.getHome());
+        file.attributes().setVaultMetadata(this.getMetadata());
+        encrypted.attributes().setVaultMetadata(this.getMetadata());
         return encrypted;
     }
 
     @Override
     public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         if(file.getType().contains(Path.Type.decrypted)) {
-            log.warn("Skip file {} because it is already marked as an decrypted path", file);
+            log.warn("Skip file {} because it is already marked as a decrypted path", file);
             return file;
         }
         if(file.getType().contains(Path.Type.vault)) {
@@ -198,15 +186,14 @@ public abstract class AbstractVault implements Vault {
             return file;
         }
         final Path inflated = this.inflate(session, file);
-        final Pattern pattern = this.getVersion() == VAULT_VERSION_DEPRECATED ? BASE32_PATTERN : this.getBase64URLPattern();
+        final Pattern pattern = this.getFilenamePattern();
         final Matcher m = pattern.matcher(inflated.getName());
         if(m.matches()) {
-            final String ciphertext = m.group(1);
             try {
                 //TODO lädt das recovery metadaten file anstatt normales
                 final DirectoryContentCryptor.Decrypting decrypting = this.getFilenameDecryptor(session, file);
                 //TODO hier hatten wir caching via CryptorCache
-                final String cleartextFilename = decrypting.decrypt(ciphertext);
+                final String cleartextFilename = decrypting.decrypt(inflated.getName());
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
@@ -228,7 +215,7 @@ public abstract class AbstractVault implements Vault {
                 // Add reference to encrypted file
                 attributes.setEncrypted(file);
                 // Add reference for vault
-                attributes.setVault(this.getHome());
+                attributes.setVaultMetadata(this.getMetadata());
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
                 type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
                 type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
@@ -254,16 +241,11 @@ public abstract class AbstractVault implements Vault {
     private DirectoryContentCryptor.Decrypting getFilenameDecryptor(final Session<?> session, final Path directory) throws BackgroundException {
         // Read directory id from file
         log.debug("Read directory ID from {}", directory);
-        final Path metadataFile = new Path(directory.getParent(), this.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
-        final byte[] ciphertext = new ContentReader(session).readBytes(metadataFile);
-        final DirectoryMetadata metadata = this.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(ciphertext);
+        final DirectoryMetadata metadata = this.getDirectoryProvider().getOrCreateDirectoryId(session, directory.getParent());
         return this.getCryptor().directoryContentCryptor().fileNameDecryptor(metadata);
     }
 
     private boolean isDirectory(final Path p) {
-        if(this.getVersion() == VAULT_VERSION_DEPRECATED) {
-            return p.getName().startsWith(DIR_PREFIX);
-        }
         return p.isDirectory();
     }
 
@@ -294,9 +276,7 @@ public abstract class AbstractVault implements Vault {
 
     public abstract String getBackupDirectoryMetadataFilename();
 
-    public abstract Pattern getBase64URLPattern();
-
-    public abstract byte[] getRootDirId();
+    public abstract DirectoryMetadata getRootDirId();
 
     @Override
     public synchronized void close() {
@@ -322,7 +302,7 @@ public abstract class AbstractVault implements Vault {
             }
             if(type == Touch.class) {
                 // Use default touch feature because touch with remote implementation will not add encrypted file header
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Write.class)), session._getFeature(Write.class), this);
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
             }
             if(type == Directory.class) {
                 //TODO
@@ -333,7 +313,7 @@ public abstract class AbstractVault implements Vault {
 //                );
             }
             if(type == Upload.class) {
-                return (T) new CryptoUploadFeature(session, (Upload) delegate, session._getFeature(Write.class), this);
+                return (T) new CryptoUploadFeature(session, (Upload) delegate, this);
             }
             if(type == Download.class) {
                 return (T) new CryptoDownloadFeature(session, (Download) delegate, session._getFeature(Read.class), this);
@@ -394,7 +374,7 @@ public abstract class AbstractVault implements Vault {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
             }
             if(type == Bulk.class) {
-                return (T) new CryptoBulkFeature(session, (Bulk) delegate, session._getFeature(Delete.class), this);
+                return (T) new CryptoBulkFeature(session, (Bulk) delegate, this);
             }
             if(type == UnixPermission.class) {
                 return (T) new CryptoUnixPermission(session, (UnixPermission) delegate, this);

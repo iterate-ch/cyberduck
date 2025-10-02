@@ -19,6 +19,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptoVault;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,8 +54,8 @@ public class CryptoWriteFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(home);
-        vault.create(session, null, new VaultCredentials("test"), CryptoVault.VAULT_VERSION);
+        final CryptoVault vault = new CryptoVault(session, home);
+        vault.create(session, null, new VaultCredentials("test"));
         int headerSize = vault.getFileHeaderCryptor().headerSize();
         // zero file size
         assertEquals(headerSize, vault.toCiphertextSize(0L, 0));

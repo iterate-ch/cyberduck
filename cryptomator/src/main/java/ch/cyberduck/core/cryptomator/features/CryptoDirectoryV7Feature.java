@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cryptomator.cryptolib.api.DirectoryMetadata;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.util.EnumSet;
@@ -47,7 +48,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Write<Reply> writer, final Path folder, final TransferStatus status) throws BackgroundException {
-        final byte[] directoryId = vault.getDirectoryProvider().createDirectoryId(folder);
+        final DirectoryMetadata dirMetadata = vault.getDirectoryProvider().createDirectoryId(folder);
         // Create metadata file for directory
         final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(
                 session._getFeature(Write.class), vault.encrypt(session, folder, true),
@@ -56,7 +57,8 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
-        new ContentWriter(session).write(directoryMetadataFile, directoryId);
+        final byte[] encryptedMetadata = this.vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(dirMetadata);
+        new ContentWriter(session).write(directoryMetadataFile, encryptedMetadata);
         final Path encrypt = vault.encrypt(session, folder, false);
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
@@ -68,7 +70,7 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
         final Path target = delegate.mkdir(writer, encrypt, status);
         // Implementation may return new copy of attributes without encryption attributes
-        target.attributes().setDirectoryId(directoryId);
+        target.attributes().setDirectoryId(encryptedMetadata);
         target.attributes().setDecrypted(folder);
         // Make reference of encrypted path in attributes of decrypted file point to metadata file
         final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));

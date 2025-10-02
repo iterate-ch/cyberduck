@@ -35,7 +35,7 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
     private final Upload<Reply> proxy;
     private final AbstractVault vault;
 
-    public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final Write<Reply> writer, final AbstractVault vault) {
+    public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final AbstractVault vault) {
         this.session = session;
         this.proxy = delegate;
         this.vault = vault;

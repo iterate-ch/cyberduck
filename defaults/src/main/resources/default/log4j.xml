@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-  ~ Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+  ~ Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
   ~ https://cyberduck.io/
   ~
   ~ This program is free software; you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
   ~ This program is distributed in the hope that it will be useful,
@@ -15,13 +15,16 @@
   -->
 <Configuration>
     <Appenders>
-        <Null name="disabled"/>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d [%t] %-5p %c - %m%n"/>
+        </Console>
     </Appenders>
     <Loggers>
         <Logger name="org.apache.http.wire" additivity="false" level="error"/>
         <Logger name="org.apache.http.headers" additivity="false" level="error"/>
-        <Root level="error">
-            <AppenderRef ref="disabled"/>
+        <Logger name="ch.cyberduck" additivity="true" level="debug"/>
+        <Root level="debug">
+            <AppenderRef ref="console"/>
         </Root>
     </Loggers>
 </Configuration>

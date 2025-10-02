@@ -28,6 +28,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -38,6 +39,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -63,6 +65,7 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
@@ -101,7 +104,7 @@ public class SFTPCryptomatorInteroperabilityTest {
                 csprng = FastSecureRandomProvider.get().provide();
         }
         final PerpetualMasterkey mk = Masterkey.generate(csprng);
-        final MasterkeyFileAccess mkAccess = new MasterkeyFileAccess(CryptoVault.VAULT_PEPPER, csprng);
+        final MasterkeyFileAccess mkAccess = new MasterkeyFileAccess(PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8), csprng);
         final java.nio.file.Path mkPath = Paths.get(vault.toString(), DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME);
         mkAccess.persist(mk, mkPath, passphrase);
         CryptoFileSystemProperties properties = cryptoFileSystemProperties().withKeyLoader(new MasterkeyLoader() {
@@ -144,15 +147,16 @@ public class SFTPCryptomatorInteroperabilityTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
-        final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault).load(session, new DisabledPasswordCallback() {
+        final Path vaultPath = new Path(home, "vault", EnumSet.of(Path.Type.directory));
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, new VaultMetadata(vaultPath, VaultMetadata.Type.V8));
+        cryptomator.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials(passphrase);
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
+        Path p = new Path(new Path(vaultPath, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
         final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), new DisabledConnectionCallback());
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);
@@ -178,15 +182,16 @@ public class SFTPCryptomatorInteroperabilityTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
-        final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault).load(session, new DisabledPasswordCallback() {
+        final Path vaultPath = new Path(home, "vault", EnumSet.of(Path.Type.directory));
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, new VaultMetadata(vaultPath, VaultMetadata.Type.V8));
+        cryptomator.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials(passphrase);
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
+        Path p = new Path(new Path(vaultPath, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
         final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), new DisabledConnectionCallback());
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);

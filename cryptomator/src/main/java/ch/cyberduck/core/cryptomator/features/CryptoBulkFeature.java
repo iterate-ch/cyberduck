@@ -47,7 +47,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     private final Bulk<R> delegate;
     private final AbstractVault cryptomator;
 
-    public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final AbstractVault cryptomator) {
+    public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final AbstractVault cryptomator) {
         this.session = session;
         this.delegate = delegate;
         this.cryptomator = cryptomator;
@@ -82,6 +82,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 if(!status.isExists()) {
                     switch(type) {
                         case upload:
+                            cryptomator.getDirectoryProvider().createDirectoryId(file);
                             encrypted.put(new TransferItem(cryptomator.encrypt(session, file, false), local), status);
                             break;
                         default:

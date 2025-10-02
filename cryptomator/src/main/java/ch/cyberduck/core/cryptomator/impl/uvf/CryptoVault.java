@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.cryptomator.impl.uvf;
 
 /*
  * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
@@ -22,18 +22,24 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.cryptomator.AbstractVault;
+import ch.cyberduck.core.cryptomator.CryptoDirectory;
+import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryUVFFeature;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.DirectoryMetadata;
 import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.RevolvingMasterkey;
@@ -44,9 +50,11 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class UVFVault extends AbstractVault {
+import com.google.auto.service.AutoService;
 
-    private static final Logger log = LogManager.getLogger(UVFVault.class);
+@AutoService(Vault.class)
+public class CryptoVault extends AbstractVault {
+    private static final Logger log = LogManager.getLogger(CryptoVault.class);
 
     private static final String REGULAR_FILE_EXTENSION = ".uvf";
     private static final String FILENAME_DIRECTORYID = "dir";
@@ -54,12 +62,13 @@ public class UVFVault extends AbstractVault {
     private static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
     private static final String BACKUP_DIRECTORY_METADATA_FILENAME = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
 
-    private static final Pattern BASE64URL_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)" + REGULAR_FILE_EXTENSION);
+    private static final Pattern FILENAME_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)" + REGULAR_FILE_EXTENSION);
 
+    private final Session<?> session;
     /**
      * Root of vault directory
      */
-    protected final Path home;
+    private final Path home;
 
     private RevolvingMasterkey masterKey;
 
@@ -68,20 +77,20 @@ public class UVFVault extends AbstractVault {
     private CryptoDirectory directoryProvider;
 
     private int nonceSize;
-    private byte[] rootDirId;
 
-    public UVFVault(final Path home) {
+    public CryptoVault(final Session<?> session, Path home) {
+        this.session = session;
         this.home = home;
     }
 
     @Override
-    public Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         throw new UnsupportedOperationException();
     }
 
     // load -> unlock -> open
     @Override
-    public UVFVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
+    public CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
         masterKey = UVFMasterkey.fromDecryptedPayload(prompt.prompt(session.getHost(),
                 LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName()),
@@ -97,7 +106,6 @@ public class UVFVault extends AbstractVault {
         this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE);
         this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
         this.nonceSize = 12;
-        this.rootDirId = masterKey.rootDirId();
         return this;
     }
 
@@ -135,10 +143,6 @@ public class UVFVault extends AbstractVault {
             // Translate file size
             attributes.setSize(this.toCiphertextSize(0L, file.attributes().getSize()));
             final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-            if(metadata && this.getVersion() == VAULT_VERSION_DEPRECATED) {
-                type.remove(Path.Type.directory);
-                type.add(Path.Type.file);
-            }
             type.remove(Path.Type.decrypted);
             type.add(Path.Type.encrypted);
             encrypted = new Path(parent, filename, type, attributes);
@@ -158,8 +162,8 @@ public class UVFVault extends AbstractVault {
             encrypted.attributes().setDecrypted(file);
         }
         // Add reference for vault
-        file.attributes().setVault(this.getHome());
-        encrypted.attributes().setVault(this.getHome());
+        file.attributes().setVaultMetadata(this.getMetadata());
+        encrypted.attributes().setVaultMetadata(this.getMetadata());
         return encrypted;
     }
 
@@ -222,8 +226,8 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public int getVersion() {
-        return VAULT_VERSION;
+    public Pattern getFilenamePattern() {
+        return FILENAME_PATTERN;
     }
 
     @Override
@@ -241,13 +245,13 @@ public class UVFVault extends AbstractVault {
         return BACKUP_DIRECTORY_METADATA_FILENAME;
     }
 
-    @Override
-    public Pattern getBase64URLPattern() {
-        return BASE64URL_PATTERN;
+    public DirectoryMetadata getRootDirId() {
+        return this.cryptor.directoryContentCryptor().rootDirectoryMetadata();
     }
 
-    public byte[] getRootDirId() {
-        return rootDirId;
+    @Override
+    public VaultMetadata getMetadata() {
+        return new VaultMetadata(this.getHome(), VaultMetadata.Type.UVF);
     }
 
     @Override
@@ -266,10 +270,10 @@ public class UVFVault extends AbstractVault {
         if(this == o) {
             return true;
         }
-        if(!(o instanceof UVFVault)) {
+        if(!(o instanceof CryptoVault)) {
             return false;
         }
-        final UVFVault that = (UVFVault) o;
+        final CryptoVault that = (CryptoVault) o;
         return new SimplePathPredicate(home).test(that.home);
     }
 

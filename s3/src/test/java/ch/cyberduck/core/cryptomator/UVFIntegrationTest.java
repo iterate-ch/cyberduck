@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
@@ -65,7 +66,7 @@ import java.util.stream.Stream;
 import static org.junit.Assert.*;
 
 /**
- * Test {@link UVFVault} implementation against test data from
+ * Test {@link CryptoVault} implementation against test data from
  * <a href="https://github.com/cryptomator/cryptolib/tree/develop/src/test/java/org/cryptomator/cryptolib/v3/UVFIntegrationTest.java">org.cryptomator.cryptolib.v3.UVFIntegrationTest</a>
  */
 @Category(TestcontainerTest.class)
@@ -135,7 +136,7 @@ public class UVFIntegrationTest {
 
                 final VaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback());
                 bookmark.setDefaultPath("/" + bucketName);
-                final UVFVault vault = new UVFVault(new DefaultPathHomeFeature(bookmark).find());
+                final CryptoVault vault = new CryptoVault(storage, new DefaultPathHomeFeature(bookmark).find());
                 vaults.add(vault.load(storage, new DisabledPasswordCallback() {
                     @Override
                     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -145,7 +146,7 @@ public class UVFIntegrationTest {
                 final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
                 storage.withRegistry(vaults);
                 try(final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(jwe)) {
-                    assertArrayEquals(masterKey.rootDirId(), vault.getRootDirId());
+                    assertArrayEquals(masterKey.rootDirId(), vault.getMasterkey().rootDirId());
                 }
 
                 final Path home = vault.getHome().withAttributes(attr).withType(EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.vault));
@@ -192,7 +193,7 @@ public class UVFIntegrationTest {
                     assertEquals(new String(expected), readFile(storage, new Path("/cyberduckbucket/subdir/alice.txt", EnumSet.of(AbstractPath.Type.file, AbstractPath.Type.decrypted))));
                 }
                 {
-                    storage.getFeature(Directory.class).mkdir(new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new TransferStatus());
+                    storage._getFeature(Directory.class).mkdir(storage._getFeature(Write.class), new Path("/cyberduckbucket/subdir/subsubdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new TransferStatus());
                     final AttributedList<Path> list = storage.getFeature(ListService.class).list(new Path("/cyberduckbucket/subdir", EnumSet.of(AbstractPath.Type.directory, AbstractPath.Type.placeholder, AbstractPath.Type.decrypted)), new DisabledListProgressListener());
                     storage.getFeature(ListService.class).list(bucket, new DisabledListProgressListener());
                     assertEquals(

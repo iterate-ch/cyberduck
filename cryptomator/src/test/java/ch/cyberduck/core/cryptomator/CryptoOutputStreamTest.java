@@ -19,6 +19,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -59,7 +60,7 @@ public class CryptoOutputStreamTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(home);
+        final CryptoVault vault = new CryptoVault(session, home);
         vault.create(session, null, new VaultCredentials("test"));
         return vault;
     }

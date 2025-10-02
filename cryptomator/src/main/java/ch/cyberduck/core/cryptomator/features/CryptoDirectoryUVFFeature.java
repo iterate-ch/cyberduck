@@ -28,7 +28,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.DirectoryContentCryptor;
 import org.cryptomator.cryptolib.api.DirectoryMetadata;
 import org.cryptomator.cryptolib.api.FileHeader;
 
@@ -48,47 +47,43 @@ public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<R
         this.vault = vault;
     }
 
+    //TODO check if we can merge this implementation with the one in the superclass. Here we additionally write the recovery metadata file.
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
-        final byte[] directoryId = vault.getDirectoryProvider().createDirectoryId(folder);
+    public Path mkdir(final Write<Reply> writer, final Path folder, final TransferStatus status) throws BackgroundException {
+        final DirectoryMetadata dirMetadata = vault.getDirectoryProvider().createDirectoryId(folder);
         // Create metadata file for directory
-        final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(vault.encrypt(session, folder, true),
+        final Path directoryMetadataFolder = session._getFeature(Directory.class).mkdir(writer, vault.encrypt(session, folder, true),
                 new TransferStatus().setRegion(status.getRegion()));
         final Path directoryMetadataFile = new Path(directoryMetadataFolder,
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
-        new ContentWriter(session).write(directoryMetadataFile, this.encryptDirectoryMetadataWithCurrentRevision(directoryId));
+        final byte[] encryptedMetadata = this.vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(dirMetadata);
+        new ContentWriter(session).write(directoryMetadataFile, encryptedMetadata);
         final Path encrypt = vault.encrypt(session, folder, false);
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
-            session._getFeature(Directory.class).mkdir(intermediate, new TransferStatus().setRegion(status.getRegion()));
+            session._getFeature(Directory.class).mkdir(writer, intermediate, new TransferStatus().setRegion(status.getRegion()));
         }
+
         // Write metadata
         final FileHeader header = vault.getFileHeaderCryptor().create();
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
-        final Path target = delegate.withWriter(new CryptoWriteFeature<>(session, writer, vault)).mkdir(encrypt, status);
+        final Path target = delegate.mkdir(writer, encrypt, status);
         final Path recoveryDirectoryMetadataFile = new Path(target,
                 vault.getDirectoryMetadataFilename(),
                 EnumSet.of(Path.Type.file));
         log.debug("Write recovery metadata {} for folder {}", recoveryDirectoryMetadataFile, folder);
-        new ContentWriter(session).write(recoveryDirectoryMetadataFile, this.encryptDirectoryMetadataWithCurrentRevision(directoryId));
+        new ContentWriter(session).write(recoveryDirectoryMetadataFile, this.vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(dirMetadata));
         // Implementation may return new copy of attributes without encryption attributes
-
-        target.attributes().setDirectoryId(directoryId);
+        target.attributes().setDirectoryId(encryptedMetadata);
         target.attributes().setDecrypted(folder);
         // Make reference of encrypted path in attributes of decrypted file point to metadata file
         final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));
         decrypt.attributes().setFileId(directoryMetadataFolder.attributes().getFileId());
         decrypt.attributes().setVersionId(directoryMetadataFolder.attributes().getVersionId());
         return decrypt;
-    }
-
-    private byte[] encryptDirectoryMetadataWithCurrentRevision(final byte[] dirId) {
-        final DirectoryContentCryptor directoryContentCryptor = vault.getCryptor().directoryContentCryptor();
-        final DirectoryMetadata directoryMetadata = directoryContentCryptor.newDirectoryMetadata(dirId);
-        return directoryContentCryptor.encryptDirectoryMetadata(directoryMetadata);
     }
 
     @Override
