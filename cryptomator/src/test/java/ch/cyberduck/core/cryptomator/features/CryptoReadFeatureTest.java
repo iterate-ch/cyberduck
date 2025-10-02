@@ -79,7 +79,7 @@ public class CryptoReadFeatureTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
 
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
                     @Override
@@ -156,7 +156,7 @@ public class CryptoReadFeatureTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

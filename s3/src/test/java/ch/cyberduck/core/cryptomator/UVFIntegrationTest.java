@@ -136,7 +136,7 @@ public class UVFIntegrationTest {
 
                 final VaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback());
                 bookmark.setDefaultPath("/" + bucketName);
-                final CryptoVault vault = new CryptoVault(storage, new DefaultPathHomeFeature(bookmark).find());
+                final CryptoVault vault = new CryptoVault(new DefaultPathHomeFeature(bookmark).find());
                 vaults.add(vault.load(storage, new DisabledPasswordCallback() {
                     @Override
                     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

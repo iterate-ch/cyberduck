@@ -60,7 +60,7 @@ public class CryptoOutputStreamTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         vault.create(session, null, new VaultCredentials("test"));
         return vault;
     }

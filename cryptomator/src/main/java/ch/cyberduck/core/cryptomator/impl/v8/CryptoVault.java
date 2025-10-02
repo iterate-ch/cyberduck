@@ -44,7 +44,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -127,11 +126,11 @@ public class CryptoVault extends AbstractVault {
     private CryptoFilename filenameProvider;
     private CryptoDirectory directoryProvider;
 
-    public CryptoVault(final Session session, final Path home) {
+    public CryptoVault(final Path home) {
         this.home = home;
-        this.masterkeyPath = new Path(home, HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
-        this.config = new Path(home, HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
-        this.pepper = HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
+        this.masterkeyPath = new Path(home, preferences.getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
+        this.config = new Path(home, preferences.getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
+        this.pepper = preferences.getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
 
         //TODO nötig?
         // New vault home with vault flag set for internal use

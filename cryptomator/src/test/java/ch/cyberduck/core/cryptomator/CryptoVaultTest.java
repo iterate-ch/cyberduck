@@ -104,7 +104,7 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -186,7 +186,7 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -237,7 +237,7 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -287,7 +287,7 @@ public class CryptoVaultTest {
             }
         };
         final AtomicBoolean prompt = new AtomicBoolean();
-        final CryptoVault vault = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)));
+        final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
@@ -345,7 +345,7 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)));
+        final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
@@ -394,7 +394,7 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)));
+        final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
@@ -429,7 +429,7 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         vault.create(session, null, new VaultCredentials("test"));
     }
 
@@ -453,7 +453,7 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         vault.create(session, null, new VaultCredentials("test"));
         // zero ciphertextFileSize
         try {
@@ -502,7 +502,7 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         vault.create(session, null, new VaultCredentials("test"));
         for(int i = 0; i < 26000000; i++) {
             assertEquals(i, vault.toCleartextSize(0L, vault.toCiphertextSize(0L, i)));

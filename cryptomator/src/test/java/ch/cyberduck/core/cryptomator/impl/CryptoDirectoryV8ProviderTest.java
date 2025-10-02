@@ -52,7 +52,7 @@ public class CryptoDirectoryV8ProviderTest {
         final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
         final SecureRandom random = new SecureRandom();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptoVault(session, home), new CryptoFilenameV7Provider());
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptoVault(home), new CryptoFilenameV7Provider());
         provider.toEncrypted(session, new Path("/vault/f", EnumSet.of(Path.Type.file)));
     }
 
@@ -62,7 +62,7 @@ public class CryptoDirectoryV8ProviderTest {
         final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
         final SecureRandom random = new SecureRandom();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptoVault(session, home), new CryptoFilenameV7Provider());
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptoVault(home), new CryptoFilenameV7Provider());
         provider.toEncrypted(session, new Path("/", EnumSet.of(Path.Type.directory)));
     }
 
@@ -105,7 +105,7 @@ public class CryptoDirectoryV8ProviderTest {
             }
         };
         final Path home = new Path("/vault", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         vault.load(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

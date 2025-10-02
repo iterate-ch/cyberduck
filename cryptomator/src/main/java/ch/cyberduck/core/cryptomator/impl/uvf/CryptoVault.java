@@ -64,7 +64,6 @@ public class CryptoVault extends AbstractVault {
 
     private static final Pattern FILENAME_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)" + REGULAR_FILE_EXTENSION);
 
-    private final Session<?> session;
     /**
      * Root of vault directory
      */
@@ -78,8 +77,7 @@ public class CryptoVault extends AbstractVault {
 
     private int nonceSize;
 
-    public CryptoVault(final Session<?> session, Path home) {
-        this.session = session;
+    public CryptoVault(final Path home) {
         this.home = home;
     }
 

@@ -62,7 +62,7 @@ public class CryptoBulkFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault cryptomator = new CryptoVault(session, vault);
+        final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"));
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override
@@ -119,7 +119,7 @@ public class CryptoBulkFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault cryptomator = new CryptoVault(session, vault);
+        final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"));
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override

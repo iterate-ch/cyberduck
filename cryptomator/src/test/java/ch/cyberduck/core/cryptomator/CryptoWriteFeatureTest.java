@@ -54,7 +54,7 @@ public class CryptoWriteFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, home);
+        final CryptoVault vault = new CryptoVault(home);
         vault.create(session, null, new VaultCredentials("test"));
         int headerSize = vault.getFileHeaderCryptor().headerSize();
         // zero file size
