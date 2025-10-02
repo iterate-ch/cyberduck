@@ -1,19 +1,26 @@
 # Changelog
 
 [9.3.0](https://github.com/iterate-ch/cyberduck/compare/release-9-2-4...release-9-3-0)
+* [Feature] Rewrite protocol implementation (Azure) ([#15967](https://trac.cyberduck.io/ticket/15967))
 * [Feature] Connect with Multi-Bucket Application Keys that grant access to a specific group of buckets within an
-  account, including the option to limit access based on a single file prefix (B2) (#17139)
-* [Feature] Connect with connection profile obtaining temporary credentials from AWS Security Token Service (STS) by assuming role with optional Multi-Factor Authentication (MFA) input (S3) (#17437)
-* [Feature] Connect with connection profile obtaining temporary credentials from AWS Security Token Service (STS) by getting session token with optional Multi-Factor Authentication (MFA) input (S3) (#17506)
+  account, including the option to limit access based on a single file prefix (
+  B2) ([#17139](https://trac.cyberduck.io/ticket/17139))
+* [Feature] Connect with connection profile obtaining temporary credentials from AWS Security Token Service (STS) by
+  assuming role with optional Multi-Factor Authentication (MFA) input (
+  S3) ([#17437](https://trac.cyberduck.io/ticket/17437))
+* [Feature] Connect with connection profile obtaining temporary credentials from AWS Security Token Service (STS) by
+  getting session token with optional Multi-Factor Authentication (MFA) input (
+  S3) ([#17506](https://trac.cyberduck.io/ticket/17506))
 
-  [9.2.4](https://github.com/iterate-ch/cyberduck/compare/release-9-2-3...release-9-2-4)
-* [Bugfix] Unable to close connection window with "Cancel" (macOS) (#17366)
-* [Bugfix] Choose "Cancel" in upload prompt continues transfer (macOS) (#17358)
-* [Bugfix] Change button styles for bottom bar of window (macOS) (#17407)
+[9.2.4](https://github.com/iterate-ch/cyberduck/compare/release-9-2-3...release-9-2-4)
+* [Bugfix] Unable to close connection window with "Cancel" (macOS) ([#17366](https://trac.cyberduck.io/ticket/17366))
+* [Bugfix] Choose "Cancel" in upload prompt continues transfer (
+  macOS) ([#17358](https://trac.cyberduck.io/ticket/17358))
+* [Bugfix] Change button styles for bottom bar of window (macOS) ([#17407](https://trac.cyberduck.io/ticket/17407))
 * [Bugfix] Resumable uploads fail with Basic authentication (ownCloud)
 * [Bugfix] Include "Add to My Files" shortcuts (OneDrive)
-* [Bugfix] Exclude non-accessible "Personal Vault" (OneDrive) (#17318)
-* [Bugfix] Cache connection profiles loaded in Preferences → Profiles (#17432)
+* [Bugfix] Exclude non-accessible "Personal Vault" (OneDrive) ([#17318](https://trac.cyberduck.io/ticket/17318))
+* [Bugfix] Cache connection profiles loaded in Preferences → Profiles ([#17432](https://trac.cyberduck.io/ticket/17432))
 
 [9.2.3](https://github.com/iterate-ch/cyberduck/compare/release-9-2-2...release-9-2-3)
 * [Bugfix] Failure opening application (Windows)
