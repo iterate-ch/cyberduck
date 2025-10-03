@@ -17,6 +17,7 @@ package ch.cyberduck.core.proxy;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.HttpProxySocketFactory;
@@ -47,7 +48,7 @@ public class ProxySocketFactory extends SocketFactory {
             Arrays.asList(Proxy.Type.DIRECT, Proxy.Type.SOCKS, Proxy.Type.HTTP, Proxy.Type.HTTPS));
 
     public ProxySocketFactory(final Host host) {
-        this(host, new DefaultSocketConfigurator());
+        this(host, new DefaultSocketConfigurator(ConnectionTimeoutFactory.get(host)));
     }
 
     public ProxySocketFactory(final Host host,
@@ -57,7 +58,7 @@ public class ProxySocketFactory extends SocketFactory {
 
     public ProxySocketFactory(final Host host,
                               final ProxyFinder proxyFinder) {
-        this(host, new DefaultSocketConfigurator(), proxyFinder);
+        this(host, new DefaultSocketConfigurator(ConnectionTimeoutFactory.get(host)), proxyFinder);
     }
 
     public ProxySocketFactory(final Host host,
