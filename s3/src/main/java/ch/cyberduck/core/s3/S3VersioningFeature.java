@@ -180,7 +180,7 @@ public class S3VersioningFeature implements Versioning {
                     // Apply non standard ACL
                     final Acl list = acl.getPermission(file);
                     if(list.isEditable()) {
-                        destination.setAcl(acl.toAcl(list));
+                        destination.setAcl(S3AccessControlListFeature.toAcl(list));
                     }
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {

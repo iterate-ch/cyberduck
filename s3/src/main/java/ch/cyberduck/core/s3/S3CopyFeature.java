@@ -83,7 +83,7 @@ public class S3CopyFeature implements Copy {
             }
         }
         final S3Object destination = new S3WriteFeature(session, acl).getDetails(target, status);
-        destination.setAcl(acl.toAcl(status.getAcl()));
+        destination.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));
