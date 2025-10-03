@@ -2,6 +2,7 @@
 BHID_DataObject
 CLSID_QueryAssociations
 CoTaskMemFree
+CreateFile
 CRED_FLAGS
 CRED_PERSIST
 CRED_TYPE
@@ -11,8 +12,10 @@ CredRead
 CredWrite
 DefWindowProc
 ExtractIconEx
+FILE_ID_INFO
 FOLDERID_Downloads
 GetCurrentPackageFullName
+GetFinalPathNameByHandle
 GetTokenInformation
 GetWindowLong
 GetWindowLongPtr
@@ -29,6 +32,8 @@ KNOWN_FOLDER_FLAG
 LoadLibrary
 LoadString
 MESSAGEBOX_RESULT
+OpenFileById
+PathCchStripPrefix
 PathParseIconLocation
 PBST_ERROR
 PBST_NORMAL
