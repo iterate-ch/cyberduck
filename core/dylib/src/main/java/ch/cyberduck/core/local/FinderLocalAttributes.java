@@ -124,6 +124,20 @@ public class FinderLocalAttributes extends LocalAttributes {
     }
 
     @Override
+    public long getModificationDate() {
+        try {
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFileModificationDate);
+            if(object.isKindOfClass(Rococoa.createClass("NSDate", NSDate._Class.class))) {
+                return (long) (Rococoa.cast(object, NSDate.class).timeIntervalSince1970() * 1000);
+            }
+            return -1;
+        }
+        catch(AccessDeniedException | NotfoundException e) {
+            return -1;
+        }
+    }
+
+    @Override
     public String getOwner() {
         try {
             final NSObject object = this.getNativeAttribute(NSFileManager.NSFileOwnerAccountName);
