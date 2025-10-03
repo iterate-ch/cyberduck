@@ -116,6 +116,19 @@ Make sure that `MSBuild`, `mvn`, `ant` and `java` are on your `PATH`-environment
 Additionally include the latest Windows Sdk-binary folder in your `PATH`-environment variable:
 * `%ProgramFiles(x86)%\Windows Kits\10\bin\10.0.<Latest>.0\x64`
 
+#### NuGet Configuration
+
+To build on Windows, you need to configure NuGet with credentials to access GitHub Package Registry sources. Create a GitHub [personal access token (classic)](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry) with at least `read:packages` permissions.
+
+Then, in the Cyberduck repository root directory, run the following commands in Terminal (PowerShell or Command Prompt):
+
+```sh
+dotnet nuget update source gh-ikvmnet -u "YourUsername" -p "YourPAT"
+dotnet nuget update source gh-iterate-ch -u "YourUsername" -p "YourPAT"
+```
+
+Replace `YourUsername` with your GitHub username and `YourPAT` with your personal access token.
+
 ## Building
 
 Run `mvn verify -DskipTests -DskipSign` to build without running any tests and skip codesign. Find build artifacts in
