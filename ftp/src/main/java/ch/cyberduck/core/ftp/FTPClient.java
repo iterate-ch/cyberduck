@@ -84,7 +84,8 @@ public class FTPClient extends FTPSClient {
         if(null == socket) {
             throw new FTPException(this.getReplyCode(), this.getReplyString());
         }
-        return socket;
+        // Wrap socket to ensure proper TCP shutdown sequence
+        return new FTPSocket(socket);
     }
 
     @Override
