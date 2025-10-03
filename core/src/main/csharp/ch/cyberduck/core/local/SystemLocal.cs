@@ -1,35 +1,36 @@
-﻿//
-// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
-// http://cyberduck.io/
-//
+﻿// Copyright (c) 2010-2025 iterate GmbH. All rights reserved.
+// https://cyberduck.io/
+// 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-//
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//
-// Bug fixes, suggestions and comments should be sent to:
-// feedback@cyberduck.io
-//
 
-using ch.cyberduck.core;
-using org.apache.logging.log4j;
 using System;
 using System.IO;
+using ch.cyberduck.core;
+using ch.cyberduck.core.exception;
+using java.io;
+using org.apache.logging.log4j;
 using CoreLocal = ch.cyberduck.core.Local;
+using File = System.IO.File;
 using Path = System.IO.Path;
+using StringWriter = System.IO.StringWriter;
 
 namespace Ch.Cyberduck.Core.Local
 {
     public class SystemLocal : CoreLocal
     {
-        private static readonly char[] INVALID_CHARS = Path.GetInvalidFileNameChars();
         private static readonly Logger Log = LogManager.getLogger(typeof(SystemLocal).FullName);
-        private static readonly char[] PATH_SEPARATORS = new[] { Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar };
+
+        private static readonly char[] INVALID_CHARS = Path.GetInvalidFileNameChars();
+        private static readonly char[] PATH_SEPARATORS = new[]
+            { Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar };
 
         public SystemLocal(string parent, string name)
             : this(Join(parent, Sanitize(name, true)))
@@ -51,19 +52,60 @@ namespace Ch.Cyberduck.Core.Local
         {
         }
 
+        public CoreLocal Resolve()
+        {
+            if (null == bookmark)
+            {
+                return this;
+            }
+
+            try
+            {
+                return (CoreLocal)new NTFSFilesystemBookmarkResolver(this).resolve(bookmark);
+            }
+            catch (LocalAccessDeniedException e)
+            {
+                Log.warn($"Failure resolving bookmark for {this}", e);
+                return this;
+            }
+        }
+
+        public override AttributedList list(Filter filter)
+        {
+            return base.list(Resolve().getAbsolute(), filter);
+        }
+
+        public override OutputStream getOutputStream(bool append)
+        {
+            return base.getOutputStream(Resolve().getAbsolute(), append);
+        }
+
+        public override InputStream getInputStream()
+        {
+            return base.getInputStream(Resolve().getAbsolute());
+        }
+
         public override bool exists()
         {
-            string path = getAbsolute();
+            var resolved = Resolve();
+            string path = resolved.getAbsolute();
             if (File.Exists(path))
             {
                 return true;
             }
+
             bool directory = Directory.Exists(path);
             if (directory)
             {
                 return true;
             }
+
             return false;
+        }
+
+        public override LocalAttributes attributes()
+        {
+            return new SystemLocalAttributes(this);
         }
 
         public override String getAbbreviatedPath()
@@ -93,7 +135,8 @@ namespace Ch.Cyberduck.Core.Local
                 ? string.Concat(root, path)
                 : string.Concat(root, Path.DirectorySeparatorChar, path);
 
-            static bool IsDirectorySeparator(char sep) => sep == Path.DirectorySeparatorChar || sep == Path.AltDirectorySeparatorChar;
+            static bool IsDirectorySeparator(char sep) =>
+                sep == Path.DirectorySeparatorChar || sep == Path.AltDirectorySeparatorChar;
         }
 
         private static string Sanitize(string name, bool makeUnc = false)
@@ -102,6 +145,7 @@ namespace Ch.Cyberduck.Core.Local
             {
                 return "";
             }
+
             using StringWriter writer = new();
 
             var namespan = name.AsSpan();
@@ -160,6 +204,7 @@ namespace Ch.Cyberduck.Core.Local
                             // letter is not in range A to Z.
                             return "";
                         }
+
                         // check above is simplified only, this passes raw input through
                         // check is 'a' but segment is 'A:', then 'A:' is written to output
                         writer.Write(segment[0]);
@@ -186,6 +231,7 @@ namespace Ch.Cyberduck.Core.Local
                             });
                         }
                     }
+
                     hasUnc = false;
                     leadingSeparators = null;
 
@@ -198,6 +244,7 @@ namespace Ch.Cyberduck.Core.Local
                     }
                 }
             }
+
             return writer.ToString();
         }
     }

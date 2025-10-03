@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
 using Windows.Win32.Foundation;
+using Windows.Win32.Security;
 using Windows.Win32.Security.Credentials;
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.UI.Shell;
@@ -19,6 +21,48 @@ public unsafe partial class CorePInvoke
         {
             int __result = LoadString(hInstance, uID, (char*)lpBufferLocal, 0);
             return __result;
+        }
+    }
+
+    /// <inheritdoc cref="CreateFile(PCWSTR, uint, FILE_SHARE_MODE, SECURITY_ATTRIBUTES*, FILE_CREATION_DISPOSITION, FILE_FLAGS_AND_ATTRIBUTES, HANDLE)"/>
+    public static unsafe SafeFileHandle CreateFile(
+        in ReadOnlySpan<char> lpFileName,
+        uint dwDesiredAccess,
+        FILE_SHARE_MODE dwShareMode,
+        SECURITY_ATTRIBUTES? lpSecurityAttributes,
+        FILE_CREATION_DISPOSITION dwCreationDisposition,
+        FILE_FLAGS_AND_ATTRIBUTES dwFlagsAndAttributes,
+        SafeHandle hTemplateFile)
+    {
+        bool hTemplateFileAddRef = false;
+        try
+        {
+            fixed (char* lpFileNameLocal = lpFileName)
+            {
+                SECURITY_ATTRIBUTES lpSecurityAttributesLocal = lpSecurityAttributes ?? default(SECURITY_ATTRIBUTES);
+                HANDLE hTemplateFileLocal;
+                if (hTemplateFile is object)
+                {
+                    hTemplateFile.DangerousAddRef(ref hTemplateFileAddRef);
+                    hTemplateFileLocal = (HANDLE)hTemplateFile.DangerousGetHandle();
+                }
+                else
+                    hTemplateFileLocal = (HANDLE)new IntPtr(0L);
+                HANDLE __result = CorePInvoke.CreateFile(
+                    lpFileName: lpFileNameLocal,
+                    dwDesiredAccess: dwDesiredAccess,
+                    dwShareMode: dwShareMode,
+                    lpSecurityAttributes: lpSecurityAttributes.HasValue ? &lpSecurityAttributesLocal : null,
+                    dwCreationDisposition: dwCreationDisposition,
+                    dwFlagsAndAttributes: dwFlagsAndAttributes,
+                    hTemplateFile: hTemplateFileLocal);
+                return new SafeFileHandle(__result, ownsHandle: true);
+            }
+        }
+        finally
+        {
+            if (hTemplateFileAddRef)
+                hTemplateFile.DangerousRelease();
         }
     }
 
@@ -41,6 +85,36 @@ public unsafe partial class CorePInvoke
             _ = CredRead(targetNameLocal, type, (uint)flags, &credential);
         }
         return new((nint)credential, true);
+    }
+
+    /// <inheritdoc cref="GetFileInformationByHandleEx(HANDLE, FILE_INFO_BY_HANDLE_CLASS, void*, uint)"/>
+    public static unsafe BOOL GetFileInformationByHandleEx<T>(SafeHandle hFile, FILE_INFO_BY_HANDLE_CLASS FileInformationClass, out T value) where T : unmanaged
+    {
+        fixed (T* valueLocal = &value)
+        {
+            return GetFileInformationByHandleEx(hFile, FileInformationClass, valueLocal, (uint)Marshal.SizeOf<T>());
+        }
+    }
+
+    /// <inheritdoc cref="GetFinalPathNameByHandle(HANDLE, PWSTR, uint, GETFINALPATHNAMEBYHANDLE_FLAGS)"/>
+    public static unsafe partial uint GetFinalPathNameByHandle(SafeHandle hFile, Span<char> lpszFilePath, GETFINALPATHNAMEBYHANDLE_FLAGS dwFlags)
+    {
+        fixed (char* lpszFilePathLocal = lpszFilePath)
+        {
+            return GetFinalPathNameByHandle(hFile, lpszFilePathLocal, (uint)lpszFilePath.Length, dwFlags);
+        }
+    }
+
+    /// <inheritdoc cref="PathCchCanonicalizeEx(PWSTR, nuint, PCWSTR, PATHCCH_OPTIONS)"/>
+    public static unsafe HRESULT PathCchCanonicalizeEx(ref Span<char> pszPathOut, string pszPathIn, PATHCCH_OPTIONS dwFlags)
+    {
+        fixed (char* ppszPathOut = pszPathOut)
+        {
+            PWSTR wstrpszPathOut = ppszPathOut;
+            HRESULT __result = CorePInvoke.PathCchCanonicalizeEx(wstrpszPathOut, (nuint)pszPathOut.Length, pszPathIn, dwFlags);
+            pszPathOut = pszPathOut.Slice(0, wstrpszPathOut.Length);
+            return __result;
+        }
     }
 
     /// <inheritdoc cref="SHCreateAssociationRegistration(Guid*, object)"/>
