@@ -54,7 +54,7 @@ public class BrickApiClient extends ApiClient {
                 .register(JacksonFeature.class)
                 .connectorProvider(new HttpComponentsProvider(session.getClient())))
         );
-        final int timeout = ConnectionTimeoutFactory.get().getTimeout() * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(session.getHost()).getTimeout() * 1000;
         this.setConnectTimeout(timeout);
         this.setReadTimeout(timeout);
         this.setUserAgent(new PreferencesUseragentProvider().get());
