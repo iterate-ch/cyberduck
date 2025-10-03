@@ -9,6 +9,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -42,10 +43,12 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
     public void testFind() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
+        new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus()
+                .setChecksum(new MD5ChecksumCompute().compute("")));
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertNotNull(attributes.getETag());
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

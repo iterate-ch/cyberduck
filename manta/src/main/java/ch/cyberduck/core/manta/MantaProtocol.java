@@ -18,6 +18,9 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.ETagComparisonService;
 
 import com.google.auto.service.AutoService;
 
@@ -87,5 +90,14 @@ public class MantaProtocol extends AbstractProtocol {
     @Override
     public VersioningMode getVersioningMode() {
         return VersioningMode.custom;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getFeature(final Class<T> type) {
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
+        }
+        return super.getFeature(type);
     }
 }

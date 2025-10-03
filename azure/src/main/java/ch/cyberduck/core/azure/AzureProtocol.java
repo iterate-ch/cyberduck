@@ -23,6 +23,11 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.synchronization.ChainedComparisonService;
+import ch.cyberduck.core.synchronization.ChecksumComparisonService;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.ETagComparisonService;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import org.apache.commons.codec.binary.Base64;
@@ -108,6 +113,9 @@ public class AzureProtocol extends AbstractProtocol {
     public <T> T getFeature(final Class<T> type) {
         if(type == PathContainerService.class) {
             return (T) new DirectoryDelimiterPathContainerService();
+        }
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ChainedComparisonService(new ChecksumComparisonService(), new ETagComparisonService()), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

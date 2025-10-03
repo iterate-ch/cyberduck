@@ -63,6 +63,8 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertNotEquals(target.attributes().getVersionId(), file.attributes().getVersionId());
         assertEquals(target.attributes().getModificationDate(), file.attributes().getModificationDate());
         final PathAttributes targetAttributes = new DropboxAttributesFinderFeature(session).find(target);
+        assertEquals(file.attributes().getChecksum(), target.attributes().getChecksum());
+        assertEquals(target.attributes(), new DropboxAttributesFinderFeature(session).find(target));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, file.attributes(), targetAttributes));
         assertEquals(target.attributes(), targetAttributes);
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
