@@ -17,14 +17,13 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionTimeout;
-import ch.cyberduck.core.ConnectionTimeoutFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FilterInputStream;
-import java.io.FilterOutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,15 +50,15 @@ public class FTPSocket extends Socket {
     private static final Logger log = LogManager.getLogger(FTPSocket.class);
 
     private final Socket delegate;
-
-    private final ConnectionTimeout connectionTimeoutPreferences = ConnectionTimeoutFactory.get();
+    private InputStream inputStreamWrapper;
+    private OutputStream outputStreamWrapper;
 
     public FTPSocket(final Socket delegate) {
         this.delegate = delegate;
     }
 
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         if(delegate.isClosed()) {
             log.debug("Socket already closed {}", delegate);
             return;
@@ -93,7 +92,7 @@ public class FTPSocket extends Socket {
         }
         finally {
             log.debug("Closing socket {}", delegate);
-            // Work around macOS bug where Java NIO's SocketDispatcher.close0() has a 1,000ms delay
+            // Work around macOS quirk where Java NIO's SocketDispatcher.close0() has a 1,000ms delay
             CompletableFuture.runAsync(() -> {
                 try {
                     delegate.close();
@@ -136,23 +135,43 @@ public class FTPSocket extends Socket {
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
-        return new FilterInputStream(delegate.getInputStream()) {
-            @Override
-            public void close() throws IOException {
-                FTPSocket.this.close(); // Call wrapper's close, not delegate's
-            }
-        };
+    public synchronized OutputStream getOutputStream() throws IOException {
+        if(outputStreamWrapper == null) {
+            outputStreamWrapper = new BufferedOutputStream(delegate.getOutputStream(),
+                    PreferencesFactory.get().getInteger("connection.buffer")) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        // We can't close this stream as it would propagate to delegate.close()
+                        // Therefore, we must flush before we manually close the delegate
+                        super.flush();
+                    }
+                    catch(IOException e) {
+                        log.error("Error flushing output stream for socket {}: {}", delegate, e.getMessage());
+                    }
+                    finally {
+                        // Stream close will call Socket.close(), so override it with ours
+                        FTPSocket.this.close();
+                    }
+                }
+            };
+        }
+        return outputStreamWrapper;
     }
 
     @Override
-    public OutputStream getOutputStream() throws IOException {
-        return new FilterOutputStream(delegate.getOutputStream()) {
-            @Override
-            public void close() throws IOException {
-                FTPSocket.this.close(); // Call wrapper's close, not delegate's
-            }
-        };
+    public synchronized InputStream getInputStream() throws IOException {
+        if(inputStreamWrapper == null) {
+            inputStreamWrapper = new BufferedInputStream(delegate.getInputStream(),
+                    PreferencesFactory.get().getInteger("connection.buffer")) {
+                @Override
+                public void close() throws IOException {
+                    // Stream close will call Socket.close(), so override it with ours
+                    FTPSocket.this.close();
+                }
+            };
+        }
+        return inputStreamWrapper;
     }
 
     @Override
