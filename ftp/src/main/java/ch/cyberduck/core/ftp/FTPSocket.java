@@ -32,6 +32,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Socket wrapper that enforces proper TCP shutdown sequence to prevent
@@ -59,9 +60,16 @@ public class FTPSocket extends Socket {
 
     @Override
     public void close() throws IOException {
+        if(delegate.isClosed()) {
+            log.debug("Socket already closed {}", delegate);
+            return;
+        }
         try {
-            if(delegate.isClosed() || delegate.isOutputShutdown() || !delegate.isConnected()) {
-                log.debug("Socket already closed {}", delegate);
+            if(delegate.isOutputShutdown()) {
+                log.debug("Socket output already closed {}", delegate);
+            }
+            else if(!delegate.isConnected()) {
+                log.debug("Socket is already disconnected {}", delegate);
             }
             else {
                 // Shutdown output to send FIN, but keep socket open to receive ACKs
@@ -70,34 +78,30 @@ public class FTPSocket extends Socket {
 
                 // Wait for server FIN by draining any remaining data
                 // This ensures all our data packets are ACKed before closing
-                try {
-                    // Avoid hanging in case the server malfunctions
-                    delegate.setSoTimeout(connectionTimeoutPreferences.getTimeout() * 1000);
-                    InputStream in = delegate.getInputStream();
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-                    // Read until EOF (server closes its side) or timeout
-                    while((bytesRead = in.read(buffer)) != -1) {
-                        log.debug("Drained {} bytes from socket after shutdown", bytesRead);
-                    }
-                    log.debug("Received EOF from server, all data acknowledged");
-                }
-                catch(java.net.SocketTimeoutException e) {
-                    // Timeout is acceptable - server may not close its side
-                    log.debug("Timeout waiting for server EOF, proceeding with close");
-                }
-                catch(IOException e) {
-                    // Other errors during drain are acceptable
-                    log.debug("Error draining socket: {}", e.getMessage());
+                log.debug("Draining input for socket {}", delegate);
+                InputStream in = delegate.getInputStream();
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                // Read until EOF (server closes its side) or timeout
+                while((bytesRead = in.read(buffer)) != -1) {
+                    log.debug("Drained {} bytes from socket {}", bytesRead, delegate);
                 }
             }
         }
         catch(IOException e) {
-            log.warn("Failed to shutdown output for socket {}: {}", delegate, e.getMessage());
+            log.error("Failed to shutdown output for socket {}: {}", delegate, e.getMessage());
         }
         finally {
             log.debug("Closing socket {}", delegate);
-            delegate.close();
+            // Work around macOS bug where Java NIO's SocketDispatcher.close0() has a 1,000ms delay
+            CompletableFuture.runAsync(() -> {
+                try {
+                    delegate.close();
+                }
+                catch(IOException e) {
+                    log.error("Error closing socket {}: {}", delegate, e.getMessage());
+                }
+            });
         }
     }
 
