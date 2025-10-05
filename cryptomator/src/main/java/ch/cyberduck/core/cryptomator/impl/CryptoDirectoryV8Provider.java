@@ -186,9 +186,10 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
         }
         catch(NotfoundException e) {
             log.warn("Missing directory ID for folder {}", directory);
-            throw e;
-            //TODO check if we need this fallback
-            //return random.random().getBytes(StandardCharsets.US_ASCII);
+            return this.createDirectoryId(directory);
+            //TODO check if we need to propagtae exception instead?
+            // throw e;
+
         }
     }
 }

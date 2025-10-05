@@ -40,6 +40,7 @@ import ch.cyberduck.core.serializer.PathDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -118,8 +119,10 @@ public class CryptoVaultTest {
         assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
         final Path directory = new Path(home, "dir", EnumSet.of(Path.Type.directory));
         assertNull(directory.attributes().getVault());
-        assertEquals(home, vault.encrypt(session, directory).attributes().getVault());
-        assertEquals(home, directory.attributes().getVault());
+        assertEquals(home, vault.encrypt(session, directory).attributes().getVaultMetadata().root);
+        assertEquals(VaultMetadata.Type.V8, vault.encrypt(session, directory).attributes().getVaultMetadata().type);
+        assertEquals(home, directory.attributes().getVaultMetadata().root);
+        assertEquals(VaultMetadata.Type.V8, directory.attributes().getVaultMetadata().type);
         assertEquals(vault.encrypt(session, directory), vault.encrypt(session, directory));
         assertEquals(new Path(home, directory.getName(), EnumSet.of(Path.Type.directory, Path.Type.decrypted)), vault.decrypt(session, vault.encrypt(session, directory, true)));
         final Path placeholder = new Path(home, "placeholder", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
