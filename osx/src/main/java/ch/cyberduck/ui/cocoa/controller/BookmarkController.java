@@ -17,7 +17,6 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
-import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.application.NSButton;
@@ -99,8 +98,6 @@ public class BookmarkController extends SheetController implements CollectionLis
     protected NSTextField portField;
     @Outlet
     protected NSTextField pathField;
-    @Outlet
-    protected NSTextField urlField;
     @Outlet
     protected NSTextField usernameField;
     @Outlet
@@ -345,18 +342,6 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void pathInputDidChange(final NSNotification sender) {
         bookmark.setDefaultPath(pathField.stringValue());
         this.update();
-    }
-
-    public void setUrlField(final NSTextField field) {
-        this.urlField = field;
-        this.urlField.setAllowsEditingTextAttributes(true);
-        this.urlField.setSelectable(true);
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new HostUrlProvider().withUsername(false).withPath(true).get(bookmark)));
-            }
-        });
     }
 
     public void setUsernameField(final NSTextField field) {
