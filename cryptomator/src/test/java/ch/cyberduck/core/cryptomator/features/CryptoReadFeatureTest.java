@@ -38,7 +38,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.cryptomator.CryptoVaultTest.createJWT;
+import static ch.cyberduck.core.cryptomator.impl.v8.CryptoVaultTest.createJWT;
 import static org.junit.Assert.assertEquals;
 
 public class CryptoReadFeatureTest {

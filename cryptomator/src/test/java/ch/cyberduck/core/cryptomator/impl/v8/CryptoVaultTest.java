@@ -1,7 +1,7 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.cryptomator.impl.v8;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
-import ch.cyberduck.core.cryptomator.impl.v8.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
