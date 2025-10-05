@@ -30,6 +30,7 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Socket wrapper that enforces proper TCP shutdown sequence to prevent
@@ -48,6 +49,8 @@ public class FTPSocket extends Socket {
     private static final Logger log = LogManager.getLogger(FTPSocket.class);
 
     private final Socket delegate;
+    private final AtomicInteger outputBytesCount = new AtomicInteger(0);
+
     private InputStream inputStreamWrapper;
     private OutputStream outputStreamWrapper;
 
@@ -62,26 +65,28 @@ public class FTPSocket extends Socket {
             return;
         }
         try {
-            if(delegate.isOutputShutdown()) {
-                log.debug("Socket output already closed {}", delegate);
-            }
-            else if(!delegate.isConnected()) {
-                log.debug("Socket is already disconnected {}", delegate);
-            }
-            else {
-                // Shutdown output to send FIN, but keep socket open to receive ACKs
-                log.debug("Shutting down output for socket {}", delegate);
-                delegate.shutdownOutput();
+            // Only do full TCP shutdown if we have output bytes, otherwise close socket directly
+            if(outputBytesCount.get() > 0) {
+                if(delegate.isOutputShutdown()) {
+                    log.debug("Socket output already closed {}", delegate);
+                }
+                else if(!delegate.isConnected()) {
+                    log.debug("Socket is already disconnected {}", delegate);
+                }
+                else {
+                    // Shutdown output to send FIN, but keep socket open to receive ACKs
+                    log.debug("Shutting down output for socket {}", delegate);
+                    delegate.shutdownOutput();
 
-                // Wait for server FIN by draining any remaining data
-                // This ensures all our data packets are ACKed before closing
-                log.debug("Draining input for socket {}", delegate);
-                InputStream in = delegate.getInputStream();
-                byte[] buffer = new byte[8192];
-                int bytesRead;
-                // Read until EOF (server closes its side) or timeout
-                while((bytesRead = in.read(buffer)) != -1) {
-                    log.debug("Drained {} bytes from socket {}", bytesRead, delegate);
+                    log.debug("Waiting for input to close for socket {}", delegate);
+                    int bytesRead = 0;
+                    // Read until EOF (server FIN) or timeout
+                    while(delegate.getInputStream().read() != -1) {
+                        bytesRead++;
+                    }
+                    if(bytesRead > 0) {
+                        log.debug("Drained {} bytes from socket {}", bytesRead, delegate);
+                    }
                 }
             }
         }
@@ -143,6 +148,11 @@ public class FTPSocket extends Socket {
                     finally {
                         FTPSocket.this.close();
                     }
+                }
+
+                @Override
+                protected void afterWrite(final int n) {
+                    outputBytesCount.addAndGet(n);
                 }
             };
         }
