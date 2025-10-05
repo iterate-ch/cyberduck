@@ -85,9 +85,6 @@ public class FTPSocket extends Socket {
                 }
             }
         }
-        catch(IOException e) {
-            log.error("Failed to shutdown output for socket {}: {}", delegate, e.getMessage());
-        }
         finally {
             log.debug("Closing socket {}", delegate);
             // Work around macOS quirk where Java NIO's SocketDispatcher.close0() has a 1,000ms delay
@@ -138,16 +135,12 @@ public class FTPSocket extends Socket {
             outputStreamWrapper = new ProxyOutputStream(delegate.getOutputStream()) {
                 @Override
                 public void close() throws IOException {
+                    // We can't call super.close() as it would call delegate.close()
+                    // Therefore, we flush here and close the underlying stream ourselves
                     try {
-                        // We can't close this stream as it would propagate to delegate.close()
-                        // Therefore, we must flush before we manually close the delegate
                         super.flush();
                     }
-                    catch(IOException e) {
-                        log.error("Error flushing output stream for socket {}: {}", delegate, e.getMessage());
-                    }
                     finally {
-                        // Stream close will call Socket.close(), so override it with ours
                         FTPSocket.this.close();
                     }
                 }
@@ -162,7 +155,7 @@ public class FTPSocket extends Socket {
             inputStreamWrapper = new ProxyInputStream(delegate.getInputStream()) {
                 @Override
                 public void close() throws IOException {
-                    // Stream close will call Socket.close(), so override it with ours
+                    // super.close() will call delegate.close(), so override it with ours instead
                     FTPSocket.this.close();
                 }
             };
