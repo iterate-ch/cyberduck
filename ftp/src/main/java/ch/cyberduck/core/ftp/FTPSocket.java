@@ -17,13 +17,11 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
+import org.apache.commons.io.input.ProxyInputStream;
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -137,8 +135,7 @@ public class FTPSocket extends Socket {
     @Override
     public synchronized OutputStream getOutputStream() throws IOException {
         if(outputStreamWrapper == null) {
-            outputStreamWrapper = new BufferedOutputStream(delegate.getOutputStream(),
-                    PreferencesFactory.get().getInteger("connection.buffer")) {
+            outputStreamWrapper = new ProxyOutputStream(delegate.getOutputStream()) {
                 @Override
                 public void close() throws IOException {
                     try {
@@ -162,8 +159,7 @@ public class FTPSocket extends Socket {
     @Override
     public synchronized InputStream getInputStream() throws IOException {
         if(inputStreamWrapper == null) {
-            inputStreamWrapper = new BufferedInputStream(delegate.getInputStream(),
-                    PreferencesFactory.get().getInteger("connection.buffer")) {
+            inputStreamWrapper = new ProxyInputStream(delegate.getInputStream()) {
                 @Override
                 public void close() throws IOException {
                     // Stream close will call Socket.close(), so override it with ours
