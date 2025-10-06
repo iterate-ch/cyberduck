@@ -28,15 +28,9 @@ namespace Ch.Cyberduck.Core.Local
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(NTFSFilesystemBookmarkResolver).FullName);
 
-        public string create(ch.cyberduck.core.Local file)
-        {
-            throw new NotImplementedException();
-        }
+        public string create(ch.cyberduck.core.Local file) => FilesystemBookmarkResolver.__DefaultMethods.create(this, file);
 
-        public string create(ch.cyberduck.core.Local l, bool prompt)
-        {
-            throw new NotImplementedException();
-        }
+        public string create(ch.cyberduck.core.Local file, bool prompt) => null;
 
         public object resolve(string bookmark)
         {
