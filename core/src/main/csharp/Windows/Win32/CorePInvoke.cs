@@ -43,6 +43,14 @@ public unsafe partial class CorePInvoke
         return new((nint)credential, true);
     }
 
+    public static unsafe partial uint GetFinalPathNameByHandle(SafeHandle hFile, Span<char> lpszFilePath, GETFINALPATHNAMEBYHANDLE_FLAGS dwFlags)
+    {
+        fixed (char* lpszFilePathLocal = lpszFilePath)
+        {
+            return GetFinalPathNameByHandle(hFile, lpszFilePathLocal, (uint)lpszFilePath.Length, dwFlags);
+        }
+    }
+
     /// <inheritdoc cref="SHCreateAssociationRegistration(Guid*, object)"/>
     public static unsafe HRESULT SHCreateAssociationRegistration<T>(out T ppv) where T : class
     {
