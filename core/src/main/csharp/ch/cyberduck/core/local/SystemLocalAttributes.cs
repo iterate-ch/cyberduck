@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public override long getSize()
         {
-            var resolved = local.resolve();
+            var resolved = local.Resolve();
             try
             {
                 return new FileInfo(resolved.getAbsolute()).Length;
@@ -47,7 +47,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public override long getModificationDate()
         {
-            var resolved = local.resolve();
+            var resolved = local.Resolve();
             try
             {
                 return Files.getLastModifiedTime(Paths.get(resolved.getAbsolute())).toMillis();
@@ -61,7 +61,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public override long getCreationDate()
         {
-            var resolved = local.resolve();
+            var resolved = local.Resolve();
             try
             {
                 return Files
@@ -77,7 +77,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public override long getAccessedDate()
         {
-            var resolved = local.resolve();
+            var resolved = local.Resolve();
             try
             {
                 return Files
