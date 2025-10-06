@@ -66,7 +66,6 @@ namespace Ch.Cyberduck.Core.Local
                 return local;
             }
             catch (LocalAccessDeniedException e)
-
             {
                 Log.warn($"Failure resolving bookmark for {this}", e);
                 return this;
