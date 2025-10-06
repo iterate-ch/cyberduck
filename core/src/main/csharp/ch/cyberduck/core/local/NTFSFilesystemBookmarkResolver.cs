@@ -118,14 +118,18 @@ namespace Ch.Cyberduck.Core.Local
                 {
                     var errorCode = Marshal.GetHRForLastWin32Error();
                     Log.warn(
+#if NETCOREAPP
                         $"Path Strip Prefix \"{finalNameBuffer}\" ({errorCode:X8})");
+#else
+                        $"Path Strip Prefix \"{finalNameBuffer.ToString()}\" ({errorCode:X8})");
+#endif
                     throw new LocalAccessDeniedException(bookmark);
                 }
 
                 var finalName = LocalFactory.get(finalNameBuffer.ToString());
                 if (!finalName.equals(root) && !finalName.isChild(root))
                 {
-                    Log.warn($"Mismatched root: \"{finalNameBuffer}\", expected \"{rootPath}\"");
+                    Log.warn($"Mismatched root: \"{finalName.getAbsolute()}\", expected \"{rootPath}\"");
                     throw new LocalAccessDeniedException(bookmark);
                 }
 
