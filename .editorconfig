@@ -22,6 +22,9 @@ indent_size = 2
 [*.yml]
 indent_size = 2
 
+[*.{cs,vb}]
+dotnet_sort_system_directives_first = true
+
 [*.java]
 ij_java_align_consecutive_assignments = false
 ij_java_align_consecutive_variable_declarations = false
