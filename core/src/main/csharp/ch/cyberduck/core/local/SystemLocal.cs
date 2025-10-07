@@ -15,7 +15,6 @@ using System;
 using System.IO;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.local;
 using java.io;
 using org.apache.logging.log4j;
 using CoreLocal = ch.cyberduck.core.Local;
@@ -62,8 +61,7 @@ namespace Ch.Cyberduck.Core.Local
 
             try
             {
-                var local = FilesystemBookmarkResolverFactory.get().resolve(bookmark) as CoreLocal;
-                return local;
+                return (CoreLocal)new NTFSFilesystemBookmarkResolver(this).resolve(bookmark);
             }
             catch (LocalAccessDeniedException e)
             {
