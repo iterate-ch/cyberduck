@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public string create(CoreLocal file, bool prompt)
         {
-            Debug.Assert(local is null, "Unecessary usage of Local-constructor.");
+            Debug.Assert(local is null, "Unnecessary usage of Local-constructor.");
 
             // ToDo: Backport
 
