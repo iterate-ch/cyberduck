@@ -43,6 +43,7 @@ public unsafe partial class CorePInvoke
         return new((nint)credential, true);
     }
 
+    /// <inheritdoc cref="GetFinalPathNameByHandle(HANDLE, PWSTR, uint, GETFINALPATHNAMEBYHANDLE_FLAGS)"/>
     public static unsafe partial uint GetFinalPathNameByHandle(SafeHandle hFile, Span<char> lpszFilePath, GETFINALPATHNAMEBYHANDLE_FLAGS dwFlags)
     {
         fixed (char* lpszFilePathLocal = lpszFilePath)
