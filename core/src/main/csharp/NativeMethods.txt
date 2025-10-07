@@ -15,6 +15,7 @@ ExtractIconEx
 FILE_ID_INFO
 FOLDERID_Downloads
 GetCurrentPackageFullName
+GetFileInformationByHandleEx
 GetFinalPathNameByHandle
 GetTokenInformation
 GetWindowLong
@@ -33,6 +34,9 @@ LoadLibrary
 LoadString
 MESSAGEBOX_RESULT
 OpenFileById
+PATHCCH_ALLOW_LONG_PATHS
+PATHCCH_MAX_CCH
+PathCchCanonicalizeEx
 PathCchStripPrefix
 PathParseIconLocation
 PBST_ERROR

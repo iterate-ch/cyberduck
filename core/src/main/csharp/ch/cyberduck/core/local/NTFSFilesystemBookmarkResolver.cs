@@ -12,8 +12,8 @@
 // GNU General Public License for more details.
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
@@ -22,7 +22,9 @@ using Microsoft.Win32.SafeHandles;
 using org.apache.logging.log4j;
 using Windows.Win32;
 using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.UI.Shell;
 using CoreLocal = ch.cyberduck.core.Local;
+using NetPath = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
 {
@@ -30,28 +32,52 @@ namespace Ch.Cyberduck.Core.Local
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(NTFSFilesystemBookmarkResolver).FullName);
 
-        public NTFSFilesystemBookmarkResolver() : this(null)
-        {
-        }
-
         public string create(CoreLocal file) => FilesystemBookmarkResolver.__DefaultMethods.create(this, file);
 
         public string create(CoreLocal file, bool prompt)
         {
-            Debug.Assert(local is null, "Unnecessary usage of Local-constructor.");
+            Span<char> finalNameBuffer = new char[CorePInvoke.PATHCCH_MAX_CCH];
+            if (CorePInvoke.PathCchCanonicalizeEx(
+                ref finalNameBuffer,
+                NetPath.GetFullPath(file.getAbsolute()),
+                PATHCCH_OPTIONS.PATHCCH_ALLOW_LONG_PATHS | PATHCCH_OPTIONS.PATHCCH_FORCE_ENABLE_LONG_NAME_PROCESS) is
+                {
+                    Failed: true,
+                    Value: { } error
+                })
+            {
+                goto error;
+            }
 
-            // ToDo: Backport
+            FILE_ID_INFO info;
+            using (var handle = CorePInvoke.CreateFile(
+                lpFileName: finalNameBuffer,
+                dwDesiredAccess: 0,
+                dwShareMode: (FILE_SHARE_MODE)7,
+                lpSecurityAttributes: null,
+                dwCreationDisposition: FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                dwFlagsAndAttributes: FILE_FLAGS_AND_ATTRIBUTES.FILE_FLAG_BACKUP_SEMANTICS,
+                hTemplateFile: null))
+            {
+                if (handle.IsInvalid)
+                {
+                    goto error;
+                }
 
+                if (!CorePInvoke.GetFileInformationByHandleEx(handle, FILE_INFO_BY_HANDLE_CLASS.FileIdInfo, out info))
+                {
+                    goto error;
+                }
+            }
+
+            return Unsafe.As<FILE_ID_128, long>(ref info.FileId).ToString("X16");
+
+        error:
             return null;
         }
 
         public object resolve(string bookmark)
         {
-            if (local is null)
-            {
-                throw new LocalAccessDeniedException("Unsupported Interface usage");
-            }
-
             if (!ToFileId(bookmark, out var fileId))
             {
                 throw new LocalAccessDeniedException(bookmark);
