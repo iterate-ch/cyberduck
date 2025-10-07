@@ -1919,7 +1919,6 @@
 				473A8DD5287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m */,
 			);
 			name = Core;
-			path = source;
 			sourceTree = "<group>";
 		};
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
