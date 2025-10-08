@@ -15,7 +15,6 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.ApplescriptTerminalService;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
@@ -124,10 +123,8 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.hardwareaddress.class", IOKitHardwareAddress.class.getName());
         this.setDefault("factory.pasteboardservice.class", WorkspacePasteboardService.class.getName());
 
-        if(null != NSBundle.mainBundle().appStoreReceiptURL()) {
-            if(null != NSBundle.mainBundle().appStoreReceiptURL().fileReferenceURL()) {
-                this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
-            }
+        if(null == this.getDefault("SUExpectsDSASignature")) {
+            this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
         }
     }
 }
