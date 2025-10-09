@@ -37,7 +37,8 @@ public class IRODSCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status,
+                     final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final IRODSConnection conn = session.getClient();
             final String from = source.getAbsolute();

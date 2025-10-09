@@ -97,7 +97,7 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
 
             String msg = String.format("Could not connect to iRODS server at [%s:%d] as [%s#%s]: %s",
                     host, port, username, zone, e.getMessage());
-            throw new BackgroundException(msg, e);
+            throw new IRODSExceptionMappingService().map(msg, e);
         }
     }
 

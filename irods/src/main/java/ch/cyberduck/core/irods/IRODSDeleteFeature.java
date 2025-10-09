@@ -69,7 +69,6 @@ public class IRODSDeleteFeature implements Delete {
                 continue;
             }
 
-            // TODO Shouldn't these be updated after the operation?
             deleted.add(file);
             callback.delete(file);
 

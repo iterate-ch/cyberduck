@@ -47,14 +47,14 @@ public class IRODSListService implements ListService {
         try {
             final IRODSConnection conn = session.getClient();
 
-            String path = directory.getAbsolute();
-            if(!IRODSFilesystem.exists(conn.getRcComm(), path)) {
-                throw new NotfoundException(path);
+            String logicalPath = directory.getAbsolute();
+            if(!IRODSFilesystem.exists(conn.getRcComm(), logicalPath)) {
+                throw new NotfoundException(logicalPath);
             }
 
             final AttributedList<Path> children = new AttributedList<Path>();
 
-            for(CollectionEntry entry : new IRODSCollectionIterator(conn.getRcComm(), path)) {
+            for(CollectionEntry entry : new IRODSCollectionIterator(conn.getRcComm(), logicalPath)) {
                 final String normalized = PathNormalizer.normalize(entry.path(), true);
                 if(StringUtils.equals(normalized, directory.getAbsolute())) {
                     continue;
@@ -83,7 +83,7 @@ public class IRODSListService implements ListService {
             return children;
         }
         catch(IRODSException | IOException e) {
-            throw new IRODSExceptionMappingService().map("Listing directory {0} failed", e, directory);
+            throw new IRODSExceptionMappingService().map("Listing {0} failed", e, directory);
         }
     }
 }

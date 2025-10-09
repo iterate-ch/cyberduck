@@ -73,18 +73,22 @@ public class IRODSUploadFeature implements Upload<Void> {
             log.debug("logicalPath        = [{}]", logicalPath);
             log.debug("dst root resource  = [{}]", dstRootResource);
 
-            // Transfer the bytes over multiple connections if the size of the local file
-            // exceeds a certain threshold - e.g. 32MB.
-            final long threshold = preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_THRESHOLD);
-            if(fileSize < threshold) {
-                log.debug("local file is smaller than 32MB. performing single-threaded transfer.");
+            final long threshold = IRODSIntegerUtils.clamp(
+                    preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_THRESHOLD), 1, Integer.MAX_VALUE);
+            final int bufferSize = IRODSIntegerUtils.clamp(
+                    preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_BUFFER_SIZE), 1, (int) (128 * TransferStatus.MEGA));
 
-                byte[] buffer = new byte[preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_BUFFER_SIZE)];
+            // Transfer the bytes over multiple connections if the size of the local file
+            // exceeds a certain number of bytes - e.g. 32MB.
+            if(fileSize < threshold) {
+                log.debug("local file does not exceed parallel transfer threshold. performing single-threaded transfer.");
+
+                byte[] buffer = new byte[bufferSize];
                 boolean truncate = true;
                 boolean append = false;
 
                 try(FileInputStream in = new FileInputStream(local.getAbsolute());
-                    IRODSConnection conn = IRODSConnectionUtils.newConnection(session)) {
+                    IRODSConnection conn = IRODSConnectionUtils.newAuthenticatedConnection(session)) {
 
                     IRODSDataObjectOutputStream out;
                     if(StringUtils.isNotBlank(dstRootResource)) {
@@ -116,10 +120,10 @@ public class IRODSUploadFeature implements Upload<Void> {
             // The data object is larger than the threshold so use parallel transfer.
             //
 
-            log.debug("local file is larger than 32MB. performing multi-threaded transfer.");
+            log.debug("local file exceeds parallel transfer threshold. performing multi-threaded transfer.");
 
-            // TODO Clamp the value so that users do not specify something ridiculous.
-            final int threadCount = preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_CONNECTIONS);
+            final int threadCount = IRODSIntegerUtils.clamp(
+                    preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_CONNECTIONS), 2, 10);
             log.debug("thread count = [{}]; starting thread pool.", threadCount);
             final ExecutorService executor = Executors.newFixedThreadPool(threadCount);
 
@@ -192,7 +196,7 @@ public class IRODSUploadFeature implements Upload<Void> {
                                 irodsStreams.get(i),
                                 i * chunkSize,
                                 (threadCount - 1 == i) ? chunkSize + remainingBytes : chunkSize,
-                                preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_BUFFER_SIZE)
+                                bufferSize
                         )));
                     }
 

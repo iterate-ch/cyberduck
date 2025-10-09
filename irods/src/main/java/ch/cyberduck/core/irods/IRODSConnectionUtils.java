@@ -75,7 +75,7 @@ final class IRODSConnectionUtils {
         return plugin;
     }
 
-    public static IRODSConnection newConnection(IRODSSession session) throws Exception {
+    public static IRODSConnection newAuthenticatedConnection(IRODSSession session) throws Exception {
         String host = session.getHost().getHostname();
         int port = session.getHost().getPort();
         String zone = session.getRegion();

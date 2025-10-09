@@ -45,7 +45,7 @@ public class IRODSFindFeature implements Find {
             return IRODSFilesystem.exists(conn.getRcComm(), file.getAbsolute());
         }
         catch(IOException | IRODSException e) {
-            throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new IRODSExceptionMappingService().map("Failure to find {0}", e, file);
         }
     }
 }

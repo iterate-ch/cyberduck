@@ -42,7 +42,7 @@ public class IRODSReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final RcComm rcComm = session.getClient().getRcComm();
-            final String logicalPath = file.getAbsolute(); // e.g., "/zone/home/user/file.txt"
+            final String logicalPath = file.getAbsolute(); // e.g. /tempZone/home/rods/data_object.txt
 
             if(!IRODSFilesystem.exists(rcComm, logicalPath)) {
                 throw new NotfoundException(logicalPath);
@@ -57,7 +57,7 @@ public class IRODSReadFeature implements Read {
             return in;
         }
         catch(IOException | IRODSException e) {
-            throw new IRODSExceptionMappingService().map("Download {0} failed", e, file);
+            throw new IRODSExceptionMappingService().map("Download of {0} failed", e, file);
         }
     }
 
