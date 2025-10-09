@@ -49,11 +49,11 @@
             <string>demoResc</string>
             -->
 
-            <!-- Controls whether deletion of an object permanently removes it or moves it into the trash collection. -->
+            <!-- Controls whether deletion of an object permanently removes or moves it into the trash collection. -->
             <key>Delete Objects Permanently</key>
             <string>no</string>
 
-            <!-- The size of a file or data object that must be exceeded before using parallel transfer. -->
+            <!-- The size (in bytes) of a file or data object that must be exceeded before using parallel transfer. -->
             <key>Parallel Transfer Threshold</key>
             <string>33554432</string>
 
@@ -62,7 +62,7 @@
             <key>Parallel Transfer Connections</key>
             <string>3</string>
 
-            <!-- The buffer size used for parallel transfer of a single file or data object. -->
+            <!-- The buffer size (in bytes) used for parallel transfer of a single file or data object. -->
             <!-- Applies to upload and downloads. -->
             <key>Parallel Transfer Buffer Size</key>
             <string>4194304</string>
@@ -71,12 +71,13 @@
 
             <!-- Must be set to CS_NEG_REFUSE, CS_NEG_DONT_CARE, or CS_NEG_REQUIRE. -->
             <!-- CS_NEG_REFUSE:    Do not use TLS. -->
-            <!-- CS_NEG_DONT_CARE: Let the server decide if TLS should be used or not. -->
+            <!-- CS_NEG_DONT_CARE: Let the server decide if TLS should be used. -->
             <!-- CS_NEG_REQUIRE:   Demand TLS be used. -->
             <key>Client Server Negotiation</key>
             <string>CS_NEG_REFUSE</string>
 
-            <!-- Options which are only used when using CS_NEG_DONT_CARE or CS_NEG_REQUIRE. -->
+            <!-- Options which are only used when TLS is active. -->
+
             <key>TLS Protocol</key>
             <string>TLSv1.2</string>
             <key>TLS Truststore</key>
@@ -84,7 +85,6 @@
             <key>TLS Truststore Password</key>
             <string>changeme</string>
 
-            <!-- Options which are only used when using CS_NEG_DONT_CARE or CS_NEG_REQUIRE. -->
             <key>Encryption Algorithm</key>
             <string>AES-256-CBC</string>
             <key>Encryption Key Size</key>
