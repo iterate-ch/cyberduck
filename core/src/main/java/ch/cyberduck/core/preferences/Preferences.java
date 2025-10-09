@@ -433,7 +433,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
                         withCustomActions(new Action[]{new AbstractAction() {
                             @Override
                             public boolean execute() {
-                                log.info("Running version {}", getVersion());
+                                log.info("Running version {} on {}", getVersion(), getSystem());
                                 return true;
                             }
                         }, deleteAction}).build())
@@ -565,5 +565,12 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 this.getProperty("application.version"),
                 this.getProperty("application.revision"),
                 this.getProperty("application.hash"));
+    }
+
+    public String getSystem() {
+        return String.format("%s %s (%s)",
+                this.getProperty("os.name"),
+                this.getProperty("os.version"),
+                this.getProperty("os.arch"));
     }
 }
