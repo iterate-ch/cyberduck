@@ -122,6 +122,11 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.quicklook.class", QuartzQuickLook.class.getName());
         this.setDefault("factory.hardwareaddress.class", IOKitHardwareAddress.class.getName());
         this.setDefault("factory.pasteboardservice.class", WorkspacePasteboardService.class.getName());
+    }
+
+    @Override
+    protected void setDefaults() {
+        super.setDefaults();
 
         if(null == this.getDefault("SUExpectsDSASignature")) {
             this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
