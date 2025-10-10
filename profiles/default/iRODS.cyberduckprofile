@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>irods</string>
+        <key>Vendor</key>
+        <string>iRODS Consortium</string>
+        <key>Description</key>
+        <string>iRODS (Integrated Rule-Oriented Data System)</string>
+
+        <key>Hostname Configurable</key>
+        <true/>
+        <key>Port Configurable</key>
+        <true/>
+
+        <key>Default Port</key>
+        <string>1247</string>
+
+        <!-- The zone of the iRODS server to connect to. -->
+        <key>Region</key>
+        <string>tempZone</string>
+
+        <!-- Must be set to native or pam_password. -->
+        <key>Authorization</key>
+        <string>native</string>
+
+        <key>Properties</key>
+        <dict>
+            <!-- The resource to target when uploading files. -->
+            <!-- DO NOT define this option unless needed. -->
+            <!--
+            <key>Destination Root Resource</key>
+            <string>demoResc</string>
+            -->
+
+            <!-- Controls whether deletion of an object permanently removes or moves it into the trash collection. -->
+            <key>Delete Objects Permanently</key>
+            <string>no</string>
+
+            <!-- The size (in bytes) of a file or data object that must be exceeded before using parallel transfer. -->
+            <key>Parallel Transfer Threshold</key>
+            <string>33554432</string>
+
+            <!-- The number of iRODS connections used for parallel transfer of a single file or data object. -->
+            <!-- Each transfer will use the specified number of iRODS connections. -->
+            <key>Parallel Transfer Connections</key>
+            <string>3</string>
+
+            <!-- The buffer size (in bytes) used for parallel transfer of a single file or data object. -->
+            <!-- Applies to upload and downloads. -->
+            <key>Parallel Transfer Buffer Size</key>
+            <string>4194304</string>
+
+            <!-- Secure Communication Options -->
+
+            <!-- Must be set to CS_NEG_REFUSE, CS_NEG_DONT_CARE, or CS_NEG_REQUIRE. -->
+            <!-- CS_NEG_REFUSE:    Do not use TLS. -->
+            <!-- CS_NEG_DONT_CARE: Let the server decide if TLS should be used. -->
+            <!-- CS_NEG_REQUIRE:   Demand TLS be used. -->
+            <key>Client Server Negotiation</key>
+            <string>CS_NEG_REFUSE</string>
+
+            <!-- Options which are only used when TLS is active. -->
+
+            <key>TLS Protocol</key>
+            <string>TLSv1.2</string>
+            <key>TLS Truststore</key>
+            <string>/absolute/path/to/jks/file</string>
+            <key>TLS Truststore Password</key>
+            <string>changeme</string>
+
+            <key>Encryption Algorithm</key>
+            <string>AES-256-CBC</string>
+            <key>Encryption Key Size</key>
+            <string>32</string>
+            <key>Encryption Salt Size</key>
+            <string>8</string>
+            <key>Encryption Hash Rounds</key>
+            <string>16</string>
+        </dict>
+    </dict>
+</plist>

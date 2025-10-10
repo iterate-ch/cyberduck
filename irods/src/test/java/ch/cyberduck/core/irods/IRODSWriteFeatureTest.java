@@ -50,6 +50,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -260,7 +261,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
             assertEquals(content.length, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
             final StatusOutputStream<Void> out = feature.write(test, status, new DisabledConnectionCallback());
-            assertNull(out);
+            assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
             assertTrue(session.getFeature(Find.class).find(test));
