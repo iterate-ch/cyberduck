@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DirectIOTest {
 
@@ -58,7 +59,8 @@ public class DirectIOTest {
                 "}";
         ObjectMapper mapper = new ObjectMapper();
         final DirectIO directio = mapper.readValue(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)), DirectIO.class);
-        assertEquals("mWPomzFfgsRg0xYHV4qwN6vQhBotAKK8d7nHUvhvFi7RWLM8MY/JNk7VH4z/793B", directio.wrapped_key);
+        assertEquals("mWPomzFfgsRg0xYHV4qwN6vQhBotAKK8d7nHUvhvFi7RWLM8MY/JNk7VH4z/793B", directio.encrypt_info.wrapped_key);
+        assertTrue(directio.encrypt_info.data_encrypted);
         assertEquals(4, directio.chunks.size());
         assertEquals(262144, directio.chunks.get(0).len);
         assertEquals(262144, directio.chunks.get(1).len);
