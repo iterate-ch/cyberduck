@@ -24,6 +24,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.features.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -304,7 +305,7 @@ public abstract class AbstractVault implements Vault {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
+    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) throws UnsupportedException {
         if(this.isUnlocked()) {
             if(type == ListService.class) {
                 return (T) new CryptoListService(session, (ListService) delegate, this);
