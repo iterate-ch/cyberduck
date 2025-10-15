@@ -28,6 +28,7 @@ import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.vault.VaultCredentials;
 
@@ -365,13 +366,10 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
-
+    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) throws UnsupportedException {
         if(type == Directory.class) {
-            return (T) new CryptoDirectoryUVFFeature(session, (Directory) delegate, this
-            );
+            return (T) new CryptoDirectoryUVFFeature(session, (Directory) delegate, this);
         }
-
         return super.getFeature(session, type, delegate);
     }
 
