@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -159,19 +159,19 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="t4E-eL-Tgs"/>
-                            <menuItem title="ინფო" tag="2" keyEquivalent="i" id="261">
+                            <menuItem title="ინფო" image="info.circle" catalog="system" tag="2" keyEquivalent="i" id="261">
                                 <connections>
                                     <action selector="infoButtonClicked:" target="-1" id="383"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="სწრაფი ნახვა" image="NSQuickLookTemplate" id="260">
+                            <menuItem title="სწრაფი ნახვა" image="eye.circle" catalog="system" id="260">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="quicklookButtonClicked:" target="-1" id="382"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="რედაქტირება" id="258">
+                            <menuItem title="რედაქტირება" image="pencil" catalog="system" id="258">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="რედაქტირება" id="259"/>
                             </menuItem>
@@ -321,12 +321,12 @@ CA
                 <menuItem title="ხედი" id="290">
                     <menu key="submenu" title="ხედი" id="291">
                         <items>
-                            <menuItem title="სულ მცირე" keyEquivalent="1" id="292">
+                            <menuItem title="სულ მცირე" image="list.bullet" catalog="system" keyEquivalent="1" id="292">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="400"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="როგორც გამონატანი" tag="1" keyEquivalent="2" id="293">
+                            <menuItem title="როგორც გამონატანი" image="list.bullet.indent" catalog="system" tag="1" keyEquivalent="2" id="293">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="401"/>
                                 </connections>
@@ -566,6 +566,10 @@ CA
         </menu>
     </objects>
     <resources>
-        <image name="NSQuickLookTemplate" width="27" height="16"/>
+        <image name="eye.circle" catalog="system" width="32" height="32"/>
+        <image name="info.circle" catalog="system" width="32" height="32"/>
+        <image name="list.bullet" catalog="system" width="32" height="32"/>
+        <image name="list.bullet.indent" catalog="system" width="32" height="32"/>
+        <image name="pencil" catalog="system" width="32" height="32"/>
     </resources>
 </document>
