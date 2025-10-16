@@ -9,6 +9,7 @@ jobs:
   build:
     permissions:
       checks: write
+      pull-requests: write
       statuses: write
       contents: read
       packages: read
