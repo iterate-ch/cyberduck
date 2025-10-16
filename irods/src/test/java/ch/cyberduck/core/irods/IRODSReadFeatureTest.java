@@ -53,6 +53,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
