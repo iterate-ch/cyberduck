@@ -139,7 +139,7 @@ public class UVFIntegrationTest {
                 vaults.add(vault.load(storage, new DisabledPasswordCallback() {
                     @Override
                     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                        return new Credentials().withPassword(jwe);
+                        return new Credentials().setPassword(jwe);
                     }
                 }));
                 final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
