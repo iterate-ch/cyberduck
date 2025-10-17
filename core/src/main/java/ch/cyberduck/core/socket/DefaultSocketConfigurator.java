@@ -57,7 +57,7 @@ public class DefaultSocketConfigurator implements SocketConfigurator {
         socket.setSoTimeout(timeout * 1000);
         if(preferences.getBoolean("connection.socket.linger")) {
             // The setting only affects socket close. Make sure closing SSL socket does not hang because close_notify cannot be sent.
-            socket.setSoLinger(true, timeout);
+            socket.setSoLinger(true, preferences.getInteger("connection.socket.linger.timeout"));
         }
         if(preferences.getBoolean("connection.socket.keepalive")) {
             socket.setKeepAlive(true);
