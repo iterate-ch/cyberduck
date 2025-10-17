@@ -140,6 +140,7 @@ public class OAuth2AuthorizationService {
                 return credentials;
             }
         }
+        log.warn("Expired or missing OAuth tokens {} for {}", credentials.getOauth(), host);
         return credentials.setOauth(this.authorize());
     }
 
