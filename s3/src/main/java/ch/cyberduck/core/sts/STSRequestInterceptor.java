@@ -82,6 +82,6 @@ public abstract class STSRequestInterceptor extends STSAuthorizationService impl
     @Override
     public Credentials get() throws BackgroundException {
         // Get temporary credentials from STS using static long-lived credentials
-        return basic.withTokens(tokens.isExpired() ? this.refresh(basic) : tokens);
+        return basic.setTokens(tokens.isExpired() ? this.refresh(basic) : tokens);
     }
 }

@@ -62,6 +62,9 @@ public class OAuth2AuthorizationService {
             = new GsonFactory();
 
     private final Host host;
+    /**
+     * Static long-lived credentials
+     */
     private final Credentials credentials;
     private final String tokenServerUrl;
     private final String authorizationServerUrl;
@@ -114,6 +117,7 @@ public class OAuth2AuthorizationService {
 
     /**
      * Authorize when cached tokens expired otherwise return
+     *
      * @return Tokens retrieved
      */
     public Credentials validate() throws BackgroundException {
@@ -124,7 +128,7 @@ public class OAuth2AuthorizationService {
                 log.warn("Refresh expired access tokens {}", saved);
                 // Refresh expired access key
                 try {
-                    return credentials.withOauth(this.refresh(saved));
+                    return credentials.setOauth(this.refresh(saved));
                 }
                 catch(LoginFailureException e) {
                     log.warn("Failure refreshing tokens from {} for {}", saved, host);
@@ -136,7 +140,7 @@ public class OAuth2AuthorizationService {
                 return credentials;
             }
         }
-        return credentials.withOauth(this.authorize());
+        return credentials.setOauth(this.authorize());
     }
 
     /**
@@ -146,7 +150,7 @@ public class OAuth2AuthorizationService {
      */
     public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
-        credentials.withOauth(tokens).withSaved(new LoginOptions().save);
+        credentials.setOauth(tokens).setSaved(new LoginOptions().save);
         if(credentials.isSaved()) {
             store.save(host);
         }
