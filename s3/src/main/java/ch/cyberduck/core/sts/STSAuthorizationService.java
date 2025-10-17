@@ -90,7 +90,7 @@ public class STSAuthorizationService {
      * @param credentials AWS credentials
      * @return User ID
      */
-    public String validate(final Credentials credentials) throws BackgroundException {
+    public String getCallerIdentity(final Credentials credentials) throws BackgroundException {
         try {
             final GetCallerIdentityResult identity = service.getCallerIdentity(new GetCallerIdentityRequest()
                     .withRequestCredentialsProvider(S3CredentialsStrategy.toCredentialsProvider(credentials)));
