@@ -133,7 +133,8 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
 
     @Override
     public void login(final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         try {
             final HttpRequestBase request = new HttpPost(
                     new HostUrlProvider().withUsername(false).withPath(true).get(

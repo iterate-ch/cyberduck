@@ -40,7 +40,6 @@ public class STSAssumeRoleRequestInterceptor extends STSRequestInterceptor imple
     private static final Logger log = LogManager.getLogger(STSAssumeRoleRequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
-
     private final Host host;
 
     public STSAssumeRoleRequestInterceptor(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {

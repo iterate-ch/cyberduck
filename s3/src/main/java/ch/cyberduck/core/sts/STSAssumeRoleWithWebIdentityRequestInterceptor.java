@@ -20,7 +20,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -56,12 +55,9 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestIn
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
-            return tokens = this.assumeRoleWithWebIdentity(credentials.setOauth(oauth.validate().getOauth()));
-        }
-        catch(LoginFailureException e) {
-            // Expired STS tokens
-            log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
-            return this.tokens = this.assumeRoleWithWebIdentity(credentials.withOauth(oauth.authorize()));
+            credentials.setOauth(oauth.refresh(credentials.getOauth()));
+            log.debug("Retrieve temporary credentials with {}", credentials);
+            return tokens = this.assumeRoleWithWebIdentity(credentials);
         }
         finally {
             lock.unlock();

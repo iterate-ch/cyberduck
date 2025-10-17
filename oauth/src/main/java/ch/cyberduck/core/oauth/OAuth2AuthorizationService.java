@@ -103,7 +103,7 @@ public class OAuth2AuthorizationService {
                                       final LoginCallback prompt) throws LoginCanceledException {
         this.transport = transport;
         this.host = host;
-        this.credentials = host.getCredentials();
+        this.credentials = new CopyCredentialsHolder(host.getCredentials());
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.prompt = prompt;
@@ -120,15 +120,17 @@ public class OAuth2AuthorizationService {
      *
      * @return Tokens retrieved
      */
-    public Credentials validate() throws BackgroundException {
-        final OAuthTokens saved = credentials.getOauth();
+    public OAuthTokens validate(final OAuthTokens saved) throws BackgroundException {
         if(saved.validate()) {
             // Found existing tokens
             if(saved.isExpired()) {
                 log.warn("Refresh expired access tokens {}", saved);
                 // Refresh expired access key
                 try {
-                    return credentials.setOauth(this.refresh(saved));
+                    final OAuthTokens refreshed = this.refresh(saved);
+                    log.debug("Refreshed tokens {} for {}", refreshed, host);
+                    credentials.setOauth(refreshed);
+                    return refreshed;
                 }
                 catch(LoginFailureException e) {
                     log.warn("Failure refreshing tokens from {} for {}", saved, host);
@@ -137,11 +139,14 @@ public class OAuth2AuthorizationService {
             }
             else {
                 log.debug("Returned saved OAuth tokens {} for {}", saved, host);
-                return credentials;
+                return saved;
             }
         }
-        log.warn("Expired or missing OAuth tokens {} for {}", credentials.getOauth(), host);
-        return credentials.setOauth(this.authorize());
+        log.warn("Missing OAuth tokens {} for {}", saved, host);
+        final OAuthTokens tokens = this.authorize();
+        log.debug("Retrieved tokens {} for {}", tokens, host);
+        credentials.setOauth(tokens);
+        return tokens;
     }
 
     /**
@@ -183,6 +188,7 @@ public class OAuth2AuthorizationService {
     }
 
     private IdTokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
+        log.debug("Request tokens with code");
         if(HostPreferencesFactory.get(bookmark).getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -243,7 +249,7 @@ public class OAuth2AuthorizationService {
 
     private IdTokenResponse authorizeWithPassword(final Credentials credentials) throws BackgroundException {
         try {
-            log.debug("Request tokens for user {}", credentials.getUsername());
+            log.debug("Request tokens with password {}", credentials);
             final PasswordTokenRequest request = new PasswordTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                     credentials.getUsername(), credentials.getPassword()
             )

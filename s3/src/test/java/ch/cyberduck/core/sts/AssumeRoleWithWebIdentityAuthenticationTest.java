@@ -109,6 +109,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         final TemporaryAccessTokens tokens = credentials.getTokens();
         assertTrue(tokens.validate());
 
+        host.getCredentials().reset();
+
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
 
@@ -145,6 +147,11 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertNotEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
+        host.getCredentials().reset();
+        assertEquals(OAuthTokens.EMPTY, credentials.getOauth());
+        assertEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
+        new S3BucketListService(session).list(
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
     }
 
     /**
@@ -172,5 +179,10 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertNotEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
+        host.getCredentials().reset();
+        assertEquals(OAuthTokens.EMPTY, credentials.getOauth());
+        assertEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
+        new S3BucketListService(session).list(
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
     }
 }

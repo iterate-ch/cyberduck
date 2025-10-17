@@ -165,7 +165,8 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         try {
             final Me me = new UserRestControllerApi(client).usersMe(null, null);
             log.debug("Authenticated for user {}", me);
