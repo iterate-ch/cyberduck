@@ -75,7 +75,7 @@ public abstract class AbstractMantaTest extends VaultTest {
         }
 
         final String user = PROPERTIES.get("manta.user");
-        final Host host = new Host(profile, hostname, new Credentials(user).withIdentity(file));
+        final Host host = new Host(profile, hostname, new Credentials(user).setIdentity(file));
         session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());

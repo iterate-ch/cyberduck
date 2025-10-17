@@ -60,7 +60,7 @@ public class KeychainLoginService implements LoginService {
                     if(StringUtils.isNotBlank(password)) {
                         log.info("Fetched password from keychain for {}", bookmark);
                         // No need to reinsert found password to the keychain.
-                        credentials.withPassword(password).setSaved(false);
+                        credentials.setPassword(password).setSaved(false);
                     }
                 }
             }
@@ -70,7 +70,7 @@ public class KeychainLoginService implements LoginService {
                     if(StringUtils.isNotBlank(token)) {
                         log.info("Fetched token from keychain for {}", bookmark);
                         // No need to reinsert found token to the keychain.
-                        credentials.withToken(token).setSaved(false);
+                        credentials.setToken(token).setSaved(false);
                     }
                 }
             }
@@ -79,7 +79,7 @@ public class KeychainLoginService implements LoginService {
                 if(StringUtils.isNotBlank(passphrase)) {
                     log.info("Fetched private key passphrase from keychain for {}", bookmark);
                     // No need to reinsert found token to the keychain.
-                    credentials.withIdentityPassphrase(passphrase).setSaved(false);
+                    credentials.setIdentityPassphrase(passphrase).setSaved(false);
                 }
             }
             if(options.oauth) {
@@ -87,7 +87,7 @@ public class KeychainLoginService implements LoginService {
                 if(tokens.validate()) {
                     log.info("Fetched OAuth token from keychain for {}", bookmark);
                     // No need to reinsert found token to the keychain.
-                    credentials.withOauth(tokens).setSaved(tokens.isExpired());
+                    credentials.setOauth(tokens).setSaved(tokens.isExpired());
                 }
             }
         }

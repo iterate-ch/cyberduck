@@ -16,38 +16,38 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.vault.VaultProviderFactory;
 
 import java.text.MessageFormat;
 import java.util.Objects;
 
-public class CreateVaultWorker extends Worker<Path> {
+public class CreateVaultWorker extends Worker<Vault> {
 
     private final String region;
     private final VaultCredentials passphrase;
-    private final Vault vault;
+    private final VaultMetadata metadata;
 
-    public CreateVaultWorker(final String region, final VaultCredentials passphrase, final Vault vault) {
+    public CreateVaultWorker(final String region, final VaultCredentials passphrase, final VaultMetadata metadata) {
         this.region = region;
         this.passphrase = passphrase;
-        this.vault = vault;
+        this.metadata = metadata;
     }
 
     @Override
-    public Path run(final Session<?> session) throws BackgroundException {
-        final Path home = vault.create(session, region, passphrase);
+    public Vault run(final Session<?> session) throws BackgroundException {
+        final Vault vault = VaultProviderFactory.get(session).create(session, region, passphrase, metadata);
         vault.close();
-        return home;
+        return vault;
     }
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), vault.getHome().getName());
+        return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), metadata.root.getName());
     }
 
     @Override
@@ -59,18 +59,18 @@ public class CreateVaultWorker extends Worker<Path> {
             return false;
         }
         final CreateVaultWorker that = (CreateVaultWorker) o;
-        return Objects.equals(vault, that.vault);
+        return Objects.equals(metadata, that.metadata);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vault);
+        return Objects.hash(metadata);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CreateVaultWorker{");
-        sb.append("vault=").append(vault);
+        sb.append("metadata=").append(metadata);
         sb.append('}');
         return sb.toString();
     }

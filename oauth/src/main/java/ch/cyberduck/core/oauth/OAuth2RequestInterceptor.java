@@ -15,7 +15,6 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
@@ -71,10 +70,8 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     }
 
     @Override
-    public Credentials validate() throws BackgroundException {
-        final Credentials credentials = super.validate();
-        tokens = credentials.getOauth();
-        return credentials;
+    public OAuthTokens validate(final OAuthTokens saved) throws BackgroundException {
+        return tokens = super.validate(saved);
     }
 
     @Override

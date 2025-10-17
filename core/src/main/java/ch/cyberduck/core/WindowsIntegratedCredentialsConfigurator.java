@@ -49,7 +49,7 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
         // No username preset
         final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
         final Credentials credentials = new Credentials(host.getCredentials())
-                .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
+                .setPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
         if(!includeDomain && StringUtils.contains(nameSamCompatible, '\\')) {
             credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
         }

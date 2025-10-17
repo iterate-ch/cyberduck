@@ -230,7 +230,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         LocaleFactory.localizedString("Your DRACOON environment is outdated and no longer works with this application. Please contact your administrator.", "SDS"));
             }
         }
-        final Credentials credentials;
+        final Credentials credentials = host.getCredentials();
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
@@ -245,10 +245,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         log.warn("Failure to parse software version {}", version);
                     }
                 }
-                credentials = authorizationService.validate();
+                credentials.setOauth(authorizationService.validate(credentials.getOauth()));
                 break;
-            default:
-                credentials = host.getCredentials();
         }
         final UserAccount account;
         try {

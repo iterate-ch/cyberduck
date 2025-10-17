@@ -112,8 +112,8 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             }
                             flag.set(true);
                             return credentials
-                                    .withPassword(input.getPassword())
-                                    .withSaved(input.isSaved()).getPassword().toCharArray();
+                                    .setPassword(input.getPassword())
+                                    .setSaved(input.isSaved()).getPassword().toCharArray();
                         }
                         catch(LoginCanceledException e) {
                             canceled.set(true);

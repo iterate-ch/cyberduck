@@ -23,12 +23,10 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -38,21 +36,17 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     private final Session<?> session;
     private final VaultLookupListener lookup;
     private final ListProgressListener proxy;
-    private final String config;
-    private final String masterkey;
-    private final byte[] pepper;
     // Number of files to wait for until proxy is notified of files
     private final int filecount;
     private final AtomicBoolean canceled = new AtomicBoolean();
+    private final VaultProvider provider;
 
     public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener lookup, final ListProgressListener proxy, final int filecount) {
         this.session = session;
         this.lookup = lookup;
         this.proxy = proxy;
-        this.config = HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename");
-        this.masterkey = HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename");
-        this.pepper = HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
         this.filecount = filecount;
+        this.provider = VaultProviderFactory.get(session);
     }
 
     @Override
@@ -83,10 +77,10 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
 
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException {
-        final Path directory = file.getParent();
-        if(config.equals(file.getName()) || masterkey.equals(file.getName())) {
+        final VaultMetadata metadata = provider.metadata(file);
+        if(metadata != null) {
             log.info("Found vault config or masterkey file {}", file);
-            final Vault vault = lookup.load(session, directory, masterkey, config, pepper);
+            final Vault vault = lookup.load(session, metadata);
             if(vault.equals(Vault.DISABLED)) {
                 return;
             }

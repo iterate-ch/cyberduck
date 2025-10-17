@@ -88,7 +88,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public Credentials prompt(Host bookmark, String username, String title, String reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
-            var credentials = new Credentials().withSaved(options.save()).withUsername(username);
+            var credentials = new Credentials().setSaved(options.save()).setUsername(username);
             InitEventHandlers(bookmark, credentials, options);
 
 
