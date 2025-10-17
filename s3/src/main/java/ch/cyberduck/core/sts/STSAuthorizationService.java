@@ -103,6 +103,7 @@ public class STSAuthorizationService {
     }
 
     public TemporaryAccessTokens getSessionToken(final Credentials credentials) throws BackgroundException {
+        log.debug("Get session token with credentials {} for {}", credentials, bookmark);
         final PreferencesReader settings = new ProxyPreferencesReader(credentials, bookmark);
         //  The purpose of the sts:GetSessionToken operation is to authenticate the user using MFA.
         final GetSessionTokenRequest request = new GetSessionTokenRequest()
@@ -173,6 +174,7 @@ public class STSAuthorizationService {
      * @see Profile#STS_MFA_ARN_PROPERTY_KEY
      */
     public TemporaryAccessTokens assumeRole(final Credentials credentials) throws BackgroundException {
+        log.debug("Assume role with credentials {} for {}", credentials, bookmark);
         final PreferencesReader settings = new ProxyPreferencesReader(credentials, bookmark);
         final AssumeRoleRequest request = new AssumeRoleRequest()
                 .withRequestCredentialsProvider(S3CredentialsStrategy.toCredentialsProvider(credentials));
@@ -263,6 +265,7 @@ public class STSAuthorizationService {
     }
 
     public TemporaryAccessTokens assumeRoleWithSAML(final Credentials credentials) throws BackgroundException {
+        log.debug("Assume role with SAML with credentials {} for {}", credentials, bookmark);
         final PreferencesReader settings = new ProxyPreferencesReader(credentials, bookmark);
         final AssumeRoleWithSAMLRequest request = new AssumeRoleWithSAMLRequest().withSAMLAssertion(credentials.getToken());
         if(StringUtils.isNotBlank(settings.getProperty("s3.assumerole.durationseconds", Profile.STS_DURATION_SECONDS_PROPERTY_KEY))) {
@@ -294,6 +297,7 @@ public class STSAuthorizationService {
      * @return Temporary access tokens for the assumed role
      */
     public TemporaryAccessTokens assumeRoleWithWebIdentity(final Credentials credentials) throws BackgroundException {
+        log.debug("Assume role with web identity with credentials {} for {}", credentials, bookmark);
         final PreferencesReader settings = new ProxyPreferencesReader(credentials, bookmark);
         final AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest();
         log.debug("Assume role with OIDC Id token for {}", bookmark);
