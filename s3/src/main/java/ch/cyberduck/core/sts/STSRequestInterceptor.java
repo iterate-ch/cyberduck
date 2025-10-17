@@ -57,6 +57,12 @@ public abstract class STSRequestInterceptor extends STSAuthorizationService impl
         this.basic = host.getCredentials();
     }
 
+    /**
+     * Request new temporary access tokens from static access key in credentials
+     *
+     * @param credentials Static long-lived credentials
+     * @return Temporary access tokens from STS service
+     */
     public abstract TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException;
 
     @Override
