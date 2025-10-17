@@ -18,13 +18,16 @@ package ch.cyberduck.core.sts;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,21 +46,27 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestIn
      * Handle authentication with OpenID connect retrieving token for STS
      */
     private final OAuth2RequestInterceptor oauth;
+    private final Host host;
 
     public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final Host host,
                                                           final X509TrustManager trust, final X509KeyManager key,
                                                           final LoginCallback prompt) {
         super(host, trust, key, prompt);
         this.oauth = oauth;
+        this.host = host;
     }
 
     @Override
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
         try {
-            credentials.setOauth(oauth.refresh(credentials.getOauth()));
-            log.debug("Retrieve temporary credentials with {}", credentials);
-            return tokens = this.assumeRoleWithWebIdentity(credentials);
+            final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
+            log.debug("Use ARN {}", arn);
+            if(StringUtils.isNotBlank(arn)) {
+                return tokens = this.assumeRoleWithWebIdentity(oauth.refresh(credentials.getOauth()), arn);
+            }
+            log.warn("Skip requesting tokens from token service for {}", credentials);
+            return TemporaryAccessTokens.EMPTY;
         }
         finally {
             lock.unlock();
