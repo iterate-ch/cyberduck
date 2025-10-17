@@ -270,7 +270,7 @@ public class OAuth2AuthorizationService {
     public OAuthTokens refresh(final OAuthTokens tokens) throws BackgroundException {
         if(StringUtils.isBlank(tokens.getRefreshToken())) {
             log.warn("Missing refresh token in {}", tokens);
-            return tokens;
+            return this.authorize();
         }
         log.debug("Refresh expired tokens {}", tokens);
         try {
