@@ -111,15 +111,15 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                             return credentials;
                         }
                         // No further token exchange required
-                        return credentials.withTokens(new TemporaryAccessTokens(
+                        return credentials.setTokens(new TemporaryAccessTokens(
                                 cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
                     }
                     else {
                         // If a profile defines the role_arn property then the profile is treated as an assume role profile
-                        return credentials.withTokens(new TemporaryAccessTokens(
+                        return credentials.setTokens(new TemporaryAccessTokens(
                                         sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken()))
-                                .withProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
-                                .withProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
+                                .setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
+                                .setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
                     }
                 }
             }
@@ -133,17 +133,17 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     if(null == cached) {
                         return credentials;
                     }
-                    return credentials.withTokens(new TemporaryAccessTokens(
+                    return credentials.setTokens(new TemporaryAccessTokens(
                             cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
                 }
                 log.debug("Set credentials from profile {}", profile.getProfileName());
                 return credentials
-                        .withTokens(new TemporaryAccessTokens(
+                        .setTokens(new TemporaryAccessTokens(
                                 profile.getAwsAccessIdKey(),
                                 profile.getAwsSecretAccessKey(),
                                 profile.getAwsSessionToken()))
-                        .withProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
-                        .withProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
+                        .setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
+                        .setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
             }
         }
         else {

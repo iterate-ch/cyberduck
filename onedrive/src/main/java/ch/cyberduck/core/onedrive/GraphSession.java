@@ -215,7 +215,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         try {
             user = Users.get(User.getCurrent(client), new ODataQuery().select(User.Select.values()));
             final String account = user.getUserPrincipalName();

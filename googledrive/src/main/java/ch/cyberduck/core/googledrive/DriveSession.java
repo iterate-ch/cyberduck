@@ -85,7 +85,8 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         final About about;
         try {
             about = client.about().get().setFields("user").execute();

@@ -154,9 +154,9 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
         log.debug("Save new tokens {} for {}", tokens, host);
         final Credentials credentials = host.getCredentials();
         credentials
-                .withToken(String.format("%s:%s", tokens.getDeviceId(), tokens.getSharedSecret()))
-                .withPassword(password)
-                .withSaved(new LoginOptions().save);
+                .setToken(String.format("%s:%s", tokens.getDeviceId(), tokens.getSharedSecret()))
+                .setPassword(password)
+                .setSaved(new LoginOptions().save);
         if(credentials.isSaved()) {
             store.save(host);
         }

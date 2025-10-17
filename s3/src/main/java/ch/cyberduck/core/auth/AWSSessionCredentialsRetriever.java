@@ -128,7 +128,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
             }
         }
         reader.endObject();
-        final Credentials credentials = new Credentials().withTokens(new TemporaryAccessTokens(
+        final Credentials credentials = new Credentials().setTokens(new TemporaryAccessTokens(
                 key, secret, token, expiration != null ? expiration.getTime() : -1L));
         log.debug("Received session credentials {}", credentials);
         return credentials;

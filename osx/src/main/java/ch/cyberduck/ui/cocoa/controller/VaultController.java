@@ -129,7 +129,7 @@ public class VaultController extends FolderController {
     @Override
     public void callback(final int returncode, final Path file) {
         file.setType(EnumSet.of(Path.Type.directory));
-        final VaultCredentials credentials = new VaultCredentials(passwordField.stringValue()).withSaved(this.isSuppressed());
+        final VaultCredentials credentials = new VaultCredentials(passwordField.stringValue()).setSaved(this.isSuppressed());
         callback.callback(file, this.getLocation(), credentials);
     }
 

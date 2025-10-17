@@ -286,7 +286,7 @@ public class CryptoVault implements Vault {
             }
         }
         else {
-            credentials = new VaultCredentials(passphrase).withSaved(false);
+            credentials = new VaultCredentials(passphrase).setSaved(false);
         }
         try {
             this.open(vaultConfig, credentials.getPassword());

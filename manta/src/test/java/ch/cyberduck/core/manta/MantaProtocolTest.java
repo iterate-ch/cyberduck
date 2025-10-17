@@ -63,13 +63,13 @@ public class MantaProtocolTest {
         assertFalse(profile.validate(new Credentials(), new LoginOptions(profile)));
         assertFalse(profile.validate(new Credentials("u@domain"), new LoginOptions(profile)));
         assertFalse(profile.validate(new Credentials("u@domain", "p"), new LoginOptions(profile)));
-        assertFalse(profile.validate(new Credentials("u@domain").withIdentity(new NullLocal("/f") {
+        assertFalse(profile.validate(new Credentials("u@domain").setIdentity(new NullLocal("/f") {
             @Override
             public boolean exists() {
                 return false;
             }
         }), new LoginOptions(profile)));
-        assertTrue(profile.validate(new Credentials("u@domain").withIdentity(new NullLocal("/f") {
+        assertTrue(profile.validate(new Credentials("u@domain").setIdentity(new NullLocal("/f") {
             @Override
             public boolean exists() {
                 return true;
