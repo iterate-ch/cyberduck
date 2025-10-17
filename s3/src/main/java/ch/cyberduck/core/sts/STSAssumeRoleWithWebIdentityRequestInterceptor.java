@@ -27,7 +27,6 @@ import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,11 +61,7 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestIn
         try {
             final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
             log.debug("Use ARN {}", arn);
-            if(StringUtils.isNotBlank(arn)) {
-                return tokens = this.assumeRoleWithWebIdentity(oauth.refresh(credentials.getOauth()), arn);
-            }
-            log.warn("Skip requesting tokens from token service for {}", credentials);
-            return TemporaryAccessTokens.EMPTY;
+            return tokens = this.assumeRoleWithWebIdentity(oauth.refresh(credentials.getOauth()), arn);
         }
         finally {
             lock.unlock();
