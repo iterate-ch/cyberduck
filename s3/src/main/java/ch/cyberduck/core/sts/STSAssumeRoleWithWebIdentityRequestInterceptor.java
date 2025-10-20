@@ -61,7 +61,7 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestIn
         try {
             final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
             log.debug("Use ARN {}", arn);
-            return tokens = this.assumeRoleWithWebIdentity(oauth.refresh(credentials.getOauth()), arn);
+            return tokens = this.assumeRoleWithWebIdentity(oauth.validate(credentials.getOauth()), arn);
         }
         finally {
             lock.unlock();

@@ -54,12 +54,12 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
     public void testSuccessfulLogin() throws BackgroundException {
         final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
+        final Credentials credentials = new Credentials("rouser", "rouser");
+        final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Credentials credentials = host.getCredentials();
         assertEquals("rouser", credentials.getUsername());
         assertEquals("rouser", credentials.getPassword());
 
@@ -98,18 +98,18 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
     public void testTokenRefresh() throws BackgroundException, InterruptedException {
         final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
+        final Credentials credentials = new Credentials("rawuser", "rawuser");
+        final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Credentials credentials = host.getCredentials();
         final OAuthTokens oauth = credentials.getOauth();
         assertTrue(oauth.validate());
         final TemporaryAccessTokens tokens = credentials.getTokens();
         assertTrue(tokens.validate());
 
-        host.getCredentials().reset();
+        credentials.reset();
 
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
@@ -147,7 +147,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertNotEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
-        host.getCredentials().reset();
+        credentials.reset();
         assertEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
         new S3BucketListService(session).list(
@@ -179,7 +179,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertNotEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
-        host.getCredentials().reset();
+        credentials.reset();
         assertEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
         new S3BucketListService(session).list(
