@@ -21,6 +21,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
@@ -58,10 +59,15 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestIn
     @Override
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
+        final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
+        log.debug("Use ARN {}", arn);
         try {
-            final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
-            log.debug("Use ARN {}", arn);
             return tokens = this.assumeRoleWithWebIdentity(oauth.validate(credentials.getOauth()), arn);
+        }
+        catch(LoginFailureException e) {
+            // Expired or invalid OAuth tokens
+            log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
+            return this.tokens = this.assumeRoleWithWebIdentity(oauth.authorize(), arn);
         }
         finally {
             lock.unlock();
