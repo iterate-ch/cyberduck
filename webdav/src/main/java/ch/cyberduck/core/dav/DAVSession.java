@@ -139,7 +139,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
         if(host.getProtocol().isOAuthConfigurable()) {
-            authorizationService.validate(credentials.getOauth());
+            credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         }
         if(host.getProtocol().isPasswordConfigurable()) {
             final String domain, username;
