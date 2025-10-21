@@ -17,6 +17,7 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -328,7 +329,7 @@ public class DeepboxListService implements ListService {
                 }
                 while(offset < size);
                 final Path shared = new Path(directory, containerService.getPinnedLocalization(SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                if(!new SharedWithMeListService(companyId).list(shared, listener).isEmpty()) {
+                if(!new SharedWithMeListService(companyId).list(shared, new DisabledListProgressListener()).isEmpty()) {
                     list.add(shared);
                     listener.chunk(directory, list);
                 }
