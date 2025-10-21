@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
+        <key>com.apple.application-identifier</key>
+        <string>G69SCX94XU.ch.sudo.cyberduck</string>
+        <key>com.apple.developer.team-identifier</key>
+        <string>G69SCX94XU</string>
         <key>com.apple.security.app-sandbox</key>
         <true/>
         <key>com.apple.security.files.bookmarks.app-scope</key>
