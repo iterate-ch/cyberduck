@@ -300,7 +300,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 if(!credentials.isAnonymousLogin()) {
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
-                    new STSAuthorizationService(host, trust, key, prompt).validate(credentials);
+                    new STSAuthorizationService(host, trust, key, prompt).getCallerIdentity(credentials);
                     return;
                 }
             }

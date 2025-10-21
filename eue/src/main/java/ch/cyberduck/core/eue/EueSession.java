@@ -161,7 +161,8 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         try {
             final StringBuilder url = new StringBuilder();
             url.append(host.getProtocol().getScheme().toString()).append("://");

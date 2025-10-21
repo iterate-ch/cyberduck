@@ -66,7 +66,7 @@ public class TripleCryptKeyPair {
             }
         }
         else {
-            credentials = new VaultCredentials(passphrase).withSaved(false);
+            credentials = new VaultCredentials(passphrase).setSaved(false);
         }
         if(!Crypto.checkUserKeyPair(keypair, credentials.getPassword().toCharArray())) {
             return this.unlock(callback, bookmark, keypair, null, String.format("%s. %s", LocaleFactory.localizedString("Invalid passphrase", "Credentials"), LocaleFactory.localizedString("Enter your decryption password to access encrypted data rooms.", "SDS")));

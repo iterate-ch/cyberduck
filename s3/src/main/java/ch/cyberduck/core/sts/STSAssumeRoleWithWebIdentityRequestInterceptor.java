@@ -18,10 +18,12 @@ package ch.cyberduck.core.sts;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -44,24 +46,28 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestIn
      * Handle authentication with OpenID connect retrieving token for STS
      */
     private final OAuth2RequestInterceptor oauth;
+    private final Host host;
 
     public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final Host host,
                                                           final X509TrustManager trust, final X509KeyManager key,
                                                           final LoginCallback prompt) {
         super(host, trust, key, prompt);
         this.oauth = oauth;
+        this.host = host;
     }
 
     @Override
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         lock.lock();
+        final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
+        log.debug("Use ARN {}", arn);
         try {
-            return tokens = this.assumeRoleWithWebIdentity(credentials.withOauth(oauth.validate().getOauth()));
+            return tokens = this.assumeRoleWithWebIdentity(oauth.validate(credentials.getOauth()), arn);
         }
         catch(LoginFailureException e) {
-            // Expired STS tokens
+            // Expired or invalid OAuth tokens
             log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
-            return this.tokens = this.assumeRoleWithWebIdentity(credentials.withOauth(oauth.authorize()));
+            return this.tokens = this.assumeRoleWithWebIdentity(oauth.authorize(), arn);
         }
         finally {
             lock.unlock();

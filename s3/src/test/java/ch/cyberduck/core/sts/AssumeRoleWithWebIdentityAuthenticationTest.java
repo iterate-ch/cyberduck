@@ -37,10 +37,8 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.TestcontainerTest;
 
-import org.jets3t.service.security.AWSSessionCredentials;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -56,12 +54,12 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
     public void testSuccessfulLogin() throws BackgroundException {
         final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
+        final Credentials credentials = new Credentials("rouser", "rouser");
+        final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Credentials credentials = host.getCredentials();
         assertEquals("rouser", credentials.getUsername());
         assertEquals("rouser", credentials.getPassword());
 
@@ -100,16 +98,18 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
     public void testTokenRefresh() throws BackgroundException, InterruptedException {
         final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
+        final Credentials credentials = new Credentials("rawuser", "rawuser");
+        final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Credentials credentials = host.getCredentials();
         final OAuthTokens oauth = credentials.getOauth();
         assertTrue(oauth.validate());
         final TemporaryAccessTokens tokens = credentials.getTokens();
         assertTrue(tokens.validate());
+
+        credentials.reset();
 
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
@@ -133,12 +133,12 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Credentials credentials = new Credentials("rouser", "rouser")
-                .withOauth(new OAuthTokens(
+                .setOauth(new OAuthTokens(
                         "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDQmpaYUNSeU5USmZqV0VmMU1fZXZLRVliMEdGLXU0QzhjZ3RZYnBtZUlFIn0.eyJleHAiOjE2OTE5OTc3MzUsImlhdCI6MTY5MTk5NzcwNSwianRpIjoiNDA1MGUxMGYtNzZjNC00MjYwLTk1YTctZTMyMTE2YTA3N2NlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9jeWJlcmR1Y2tyZWFsbSIsInN1YiI6IjMzNGRiZWIwLTE5NWQtNDJhMS1hMWQ2LTEyODFmMDBiZmIxZCIsInR5cCI6IkJlYXJlciIsImF6cCI6Im1pbmlvIiwic2Vzc2lvbl9zdGF0ZSI6IjNkZDY0MDVlLTNkMGMtNDVjOS05MTZkLTllYTNkNWY1ODVkYiIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwidXNlciJdfSwic2NvcGUiOiJvcGVuaWQgbWluaW8tYXV0aG9yaXphdGlvbiIsInNpZCI6IjNkZDY0MDVlLTNkMGMtNDVjOS05MTZkLTllYTNkNWY1ODVkYiIsInBvbGljeSI6WyJyZWFkb25seSJdfQ.uKxLmSW6j2EQEo86j0WZOKWgavhS8Ub7TjrnynUi4m1ls0SchvgCilVpzIzNdFL9Y7khiqxl7si5BezbTLPgwyh4GDgrHcJwBk5D6aOcaH6hYcAtcbOiu1KEyfj1O_lwvDCHb-J07TIEeuvquOs2nD7FxqafHjLe-3pL6JuTtBtlx8WKloO9PY-Dn-ntuyqikr7ysLcDBfFJda487cmeTADxiMQ_MmoidW3uGXn0Ps6vhRgteUQO5JTKMa7MT1PKMTY8iNnSdNVuhKkBodnkXMSo5JEt4veqR9Yh-WPT_XL8caUiGInYvHty-n6-yhGhNckrlvtmJc0dJsts4hi1Mw",
                         "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIxNzA0N2Q0NS0wMTVhLTQwYWItYjc5NS03Y2Y1ZDE2ZmFhMmQifQ.eyJleHAiOjE2OTE5OTk1MDUsImlhdCI6MTY5MTk5NzcwNSwianRpIjoiY2U4OGVlMjMtOTQ1Yi00YzlmLWExMjAtZjU2ODk0NzIwZDk0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9jeWJlcmR1Y2tyZWFsbSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvY3liZXJkdWNrcmVhbG0iLCJzdWIiOiIzMzRkYmViMC0xOTVkLTQyYTEtYTFkNi0xMjgxZjAwYmZiMWQiLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoibWluaW8iLCJzZXNzaW9uX3N0YXRlIjoiM2RkNjQwNWUtM2QwYy00NWM5LTkxNmQtOWVhM2Q1ZjU4NWRiIiwic2NvcGUiOiJvcGVuaWQgbWluaW8tYXV0aG9yaXphdGlvbiIsInNpZCI6IjNkZDY0MDVlLTNkMGMtNDVjOS05MTZkLTllYTNkNWY1ODVkYiJ9.iRFLFjU-Uyv81flgieBht2K2BSlM-67fe5unvqI9PXA",
                         Long.MAX_VALUE,
                         "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDQmpaYUNSeU5USmZqV0VmMU1fZXZLRVliMEdGLXU0QzhjZ3RZYnBtZUlFIn0.eyJleHAiOjE2OTE5OTc3MzUsImlhdCI6MTY5MTk5NzcwNSwiYXV0aF90aW1lIjowLCJqdGkiOiJlYWZiNWE5NS1lYmY3LTQ0OTEtODAwYy0yZjU1NTk2MjQ0YzIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL2N5YmVyZHVja3JlYWxtIiwiYXVkIjoibWluaW8iLCJzdWIiOiIzMzRkYmViMC0xOTVkLTQyYTEtYTFkNi0xMjgxZjAwYmZiMWQiLCJ0eXAiOiJJRCIsImF6cCI6Im1pbmlvIiwic2Vzc2lvbl9zdGF0ZSI6IjNkZDY0MDVlLTNkMGMtNDVjOS05MTZkLTllYTNkNWY1ODVkYiIsImF0X2hhc2giOiJWX1lIZTVpc0UzY0IyOGF4cXQzRGpnIiwic2lkIjoiM2RkNjQwNWUtM2QwYy00NWM5LTkxNmQtOWVhM2Q1ZjU4NWRiIiwicG9saWN5IjpbInJlYWRvbmx5Il19.bXjcBJY7H79O9rtYr3b_EpKuclaRRsWGIVm5SEesqMM3aIkGq6ikWNmoL4Ffy48Frx1E3UnvG5PQfd8C2-XgNg_9EnWyR1MkgxJ67xQOAT10E77wZ0YbFWYIcdOojR98rmh4_TGVeTaGwDMMQZzRMr0nQwfZP3TQ8ciRhor8svnkFkk3FBzT1rSJA0bJv181HyerQl0f_TnTEnr3UjmmFmDrNASxHoXbwqiE4L-qZBnNiz97jLxGULfyVn4CZUub53x0ka0KGnLeicFHDh1asiHMW18o9-BUh8cGp-Ywm7Xu_f_c8XokNjG8ls56Xp7g8rQ4-d3J0F0-TAgnn7xO1g"))
-                .withTokens(TemporaryAccessTokens.EMPTY);
+                .setTokens(TemporaryAccessTokens.EMPTY);
         final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
         assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
@@ -147,6 +147,11 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertNotEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
+        credentials.reset();
+        assertEquals(OAuthTokens.EMPTY, credentials.getOauth());
+        assertEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
+        new S3BucketListService(session).list(
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
     }
 
     /**
@@ -158,8 +163,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Credentials credentials = new Credentials("rouser", "rouser")
-                .withOauth(OAuthTokens.EMPTY)
-                .withTokens(new TemporaryAccessTokens(
+                .setOauth(OAuthTokens.EMPTY)
+                .setTokens(new TemporaryAccessTokens(
                         "5K1AVE34L4U1SQ7QTMWM",
                         "LfkexzCDPojZpdIoNLNvHxrUi1KI5yP3Yken+DGI",
                         "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NLZXkiOiI1SzFBVkUzNEw0VTFTUTdRVE1XTSIsImF0X2hhc2giOiJWX1lIZTVpc0UzY0IyOGF4cXQzRGpnIiwiYXVkIjoibWluaW8iLCJhdXRoX3RpbWUiOjAsImF6cCI6Im1pbmlvIiwiZXhwIjoxNjkxOTk3NzM1LCJpYXQiOjE2OTE5OTc3MDUsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvY3liZXJkdWNrcmVhbG0iLCJqdGkiOiJlYWZiNWE5NS1lYmY3LTQ0OTEtODAwYy0yZjU1NTk2MjQ0YzIiLCJwb2xpY3kiOiJyZWFkb25seSIsInNlc3Npb25fc3RhdGUiOiIzZGQ2NDA1ZS0zZDBjLTQ1YzktOTE2ZC05ZWEzZDVmNTg1ZGIiLCJzaWQiOiIzZGQ2NDA1ZS0zZDBjLTQ1YzktOTE2ZC05ZWEzZDVmNTg1ZGIiLCJzdWIiOiIzMzRkYmViMC0xOTVkLTQyYTEtYTFkNi0xMjgxZjAwYmZiMWQiLCJ0eXAiOiJJRCJ9.HmyC7XuJw9XnsNUd2ZuGSVIPjnGHPpgbXX1HSbNJuhis1kUjhcrYY2HnQZ-uScoX57o_C3fF1eEv_t1kW2U6Rw",
@@ -174,5 +179,10 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertNotEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
+        credentials.reset();
+        assertEquals(OAuthTokens.EMPTY, credentials.getOauth());
+        assertEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
+        new S3BucketListService(session).list(
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
     }
 }

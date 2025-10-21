@@ -52,14 +52,14 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
         final DescriptiveUrl url = provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new Credentials().withPassword(new AlphanumericRandomStringService().random());
+                return new Credentials().setPassword(new AlphanumericRandomStringService().random());
             }
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(url, provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new Credentials().withPassword(new AlphanumericRandomStringService().random());
+                return new Credentials().setPassword(new AlphanumericRandomStringService().random());
             }
         }));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
@@ -94,7 +94,7 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
         assertThrows(InteroperabilityException.class, () -> provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                return new Credentials().withPassword(new AlphanumericRandomStringService().random());
+                return new Credentials().setPassword(new AlphanumericRandomStringService().random());
             }
         }));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());

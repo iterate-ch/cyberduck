@@ -137,11 +137,11 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final Credentials credentials = host.getCredentials();
         if(host.getProtocol().isOAuthConfigurable()) {
-            authorizationService.validate();
+            credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         }
         if(host.getProtocol().isPasswordConfigurable()) {
-            final Credentials credentials = host.getCredentials();
             final String domain, username;
             if(credentials.getUsername().contains("\\")) {
                 domain = StringUtils.substringBefore(credentials.getUsername(), "\\");

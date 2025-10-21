@@ -15,6 +15,7 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CopyCredentialsHolder;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
@@ -50,13 +51,19 @@ public abstract class STSRequestInterceptor extends STSAuthorizationService impl
     /**
      * Static long-lived credentials
      */
-    protected final Credentials basic;
+    protected final Credentials credentials;
 
     public STSRequestInterceptor(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         super(host, trust, key, prompt);
-        this.basic = host.getCredentials();
+        this.credentials = new CopyCredentialsHolder(host.getCredentials());
     }
 
+    /**
+     * Request new temporary access tokens from static access key in credentials
+     *
+     * @param credentials Static long-lived credentials
+     * @return Temporary access tokens from STS service
+     */
     public abstract TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException;
 
     @Override
@@ -65,7 +72,7 @@ public abstract class STSRequestInterceptor extends STSAuthorizationService impl
         try {
             if(tokens.isExpired()) {
                 try {
-                    this.refresh(basic);
+                    this.refresh(credentials);
                     log.info("Authorizing service request with STS tokens {}", tokens);
                 }
                 catch(BackgroundException e) {
@@ -82,6 +89,6 @@ public abstract class STSRequestInterceptor extends STSAuthorizationService impl
     @Override
     public Credentials get() throws BackgroundException {
         // Get temporary credentials from STS using static long-lived credentials
-        return basic.withTokens(tokens.isExpired() ? this.refresh(basic) : tokens);
+        return credentials.setTokens(tokens.isExpired() ? this.refresh(credentials) : tokens);
     }
 }
