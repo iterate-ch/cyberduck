@@ -35,6 +35,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.auth.oauth2.BearerToken;
@@ -157,6 +160,20 @@ public class OAuth2AuthorizationService {
     public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
         credentials.setOauth(tokens).setSaved(new LoginOptions().save);
+        try {
+            final DecodedJWT jwt = JWT.decode(tokens.getIdToken());
+            // Standard claims
+            for(String claim : new String[]{"preferred_username", "email", "name", "nickname", "sub"}) {
+                final String value = jwt.getClaim(claim).asString();
+                if(StringUtils.isNotBlank(value)) {
+                    credentials.setUsername(value);
+                    break;
+                }
+            }
+        }
+        catch(JWTDecodeException e) {
+            log.warn("Failure {} decoding JWT {}", e, tokens.getIdToken());
+        }
         if(credentials.isSaved()) {
             store.save(host);
         }
