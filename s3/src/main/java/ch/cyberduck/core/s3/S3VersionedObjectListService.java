@@ -226,6 +226,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
                         if(URIEncoder.decode(version.getKey()).equals(prefix)) {
                             attr.setVersionId(version.getVersionId());
+                            log.debug("Set trashed attribute for prefix {}", key);
                             attr.setTrashed(version.isDeleteMarker());
                         }
                         // No placeholder but objects inside; need to check if all of them are deleted
@@ -233,6 +234,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                                 bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix,
                                 null, 1, null, false);
                         if(unversioned.getObjects().length == 0) {
+                            log.debug("Set duplicate attribute for prefix {}", key);
                             attr.setDuplicate(true);
                         }
                     }
