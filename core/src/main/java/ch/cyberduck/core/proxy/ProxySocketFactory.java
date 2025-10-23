@@ -108,7 +108,10 @@ public class ProxySocketFactory extends SocketFactory {
     }
 
     private IOException failure(final String target, final IllegalArgumentException e) {
-        return new ConnectException(String.format("Unsupported proxy type for target %s", target));
+        log.error("Failed to create socket for target {}", target, e);
+        final ConnectException exception = new ConnectException(String.format("Unsupported proxy type for target %s", target));
+        exception.initCause(e);
+        return exception;
     }
 
     @Override
