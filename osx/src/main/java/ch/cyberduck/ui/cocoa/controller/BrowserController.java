@@ -3599,8 +3599,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         },
         bookmarks,
-        history,
-        rendezvous;
+        history {
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("history", 16);
+            }
+        },
+        rendezvous {
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("bonjour", 16);
+            }
+        };
 
         public static BookmarkSwitchSegement byPosition(final int position) {
             return BookmarkSwitchSegement.values()[position];
