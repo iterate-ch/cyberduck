@@ -22,7 +22,7 @@
     </parent>
     <artifactId>azure</artifactId>
     <properties>
-        <azure-storage-version>12.31.3</azure-storage-version>
+        <azure-storage-version>12.32.0</azure-storage-version>
     </properties>
 
     <dependencies>
