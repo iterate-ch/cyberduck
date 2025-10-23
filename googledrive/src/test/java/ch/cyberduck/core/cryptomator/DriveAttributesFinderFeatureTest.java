@@ -46,6 +46,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -68,8 +69,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFindCustomAttributesFinderCryptomator() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<File>(session), cryptomator).touch(
@@ -85,8 +86,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFindDefaultAttributesFinderCryptomator() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<File>(session), cryptomator).touch(
@@ -102,8 +103,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFindDirectoryDefaultAttributesFinderCryptomator() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, fileid)).mkdir(
@@ -120,8 +121,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFindDefaultAttributesFinderWithCacheCryptomator() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<File>(session), cryptomator).touch(
@@ -142,8 +143,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFindAttributesFinderWithCacheCryptomator() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<File>(session), cryptomator).touch(
@@ -164,8 +165,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFindDirectoryDefaultAttributesFinderWithCacheCryptomator() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         assertEquals(new CryptoFileIdProvider(session, fileid, cryptomator).getFileId(vault),

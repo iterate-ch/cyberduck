@@ -36,7 +36,7 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Path create(final Session<?> session, final String region, final VaultCredentials credentials) {
+    public Vault create(final Session<?> session, final String region, final VaultCredentials credentials) {
         return null;
     }
 
@@ -96,6 +96,10 @@ public final class DisabledVault implements Vault {
         return home;
     }
 
+    @Override
+    public VaultMetadata getMetadata() {
+        return null;
+    }
 
     @Override
     public boolean equals(final Object o) {

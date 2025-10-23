@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.vault.VaultMetadataDictionary;
 
 import java.util.Collections;
 import java.util.Map;
@@ -116,6 +117,10 @@ public class PathAttributesDictionary<T> {
         final T vaultObj = dict.objectForKey("Vault");
         if(vaultObj != null) {
             attributes.setVault(new PathDictionary<>(factory).deserialize(vaultObj));
+        }
+        final T vaultMetadataObj = dict.objectForKey("Vault Metadata");
+        if(vaultMetadataObj != null) {
+            attributes.setVaultMetadata(new VaultMetadataDictionary<>(factory).deserialize(vaultMetadataObj));
         }
         final Map<String, String> customObj = dict.mapForKey("Custom");
         if(customObj != null) {

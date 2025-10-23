@@ -9,7 +9,8 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.AbstractVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultProvider;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -188,8 +190,8 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
     public void testFindDefaultAttributesFinderCryptomator() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoTouchFeature<>(session, new DAVTouchFeature(session), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
