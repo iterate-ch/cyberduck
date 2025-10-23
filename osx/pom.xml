@@ -229,18 +229,15 @@
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
-        </profile>
-        <profile>
-            <id>sparkle</id>
-            <!-- activate profile for non-Jenkins builds -->
-            <activation>
-                <property>
-                    <name>!env.JENKINS_HOME</name>
-                </property>
-            </activation>
             <properties>
                 <xcode.configuration>Release</xcode.configuration>
-                <sparkle.feed>local</sparkle.feed>
+                <codesign.arg>--entitlements ../setup/app/default.entitlements --requirements ../setup/app/codesign-requirement.bin</codesign.arg>
+                <codesign.provisionprofile.name>default.provisionprofile</codesign.provisionprofile.name>
+            </properties>
+        </profile>
+        <profile>
+            <id>debug</id>
+            <properties>
                 <codesign.certificate>Apple Development: David Kocher (DF448WW9PY)</codesign.certificate>
                 <installer.certificate>Apple Development: David Kocher (DF448WW9PY)</installer.certificate>
                 <codesign.arg>--entitlements ../setup/app/default.entitlements</codesign.arg>
@@ -250,6 +247,14 @@
             <id>sandbox</id>
             <properties>
                 <codesign.arg>--entitlements ../setup/app/sandbox.entitlements</codesign.arg>
+            </properties>
+        </profile>
+        <profile>
+            <id>appstore</id>
+            <properties>
+                <xcode.configuration>Mac App Store</xcode.configuration>
+                <codesign.provisionprofile.name>appstore.provisionprofile</codesign.provisionprofile.name>
+                <skipNotarize>true</skipNotarize>
             </properties>
         </profile>
         <profile>
