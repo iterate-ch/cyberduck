@@ -248,6 +248,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt) throws LoginCanceledException {
+        // Check for custom HTTP credentials URL in bookmark (stored in Custom map)
+        log.info("Checking for aws.credentials.http.url property in bookmark");
+        log.info("Host custom properties: {}", host.getCustom());
+        final String httpCredentialsUrl = host.getProperty("aws.credentials.http.url");
+        log.info("Retrieved aws.credentials.http.url value: {}", httpCredentialsUrl);
+        if(StringUtils.isNotBlank(httpCredentialsUrl)) {
+            log.info("Configure credentials from bookmark HTTP endpoint {}", httpCredentialsUrl);
+            final AWSSessionCredentialsRetriever retriever = new AWSSessionCredentialsRetriever(trust, key, httpCredentialsUrl);
+            log.info("Created AWSSessionCredentialsRetriever: {}", retriever);
+            return retriever;
+        }
+        log.info("No HTTP credentials URL found, continuing with other authentication methods");
         if(host.getProtocol().isOAuthConfigurable()) {
             final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());

@@ -68,14 +68,18 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
 
     @Override
     public Credentials get() throws BackgroundException {
-        log.debug("Configure credentials from {}", url);
+        log.debug("Fetching AWS session credentials from URL: {}", url);
+        // Parse URL to get hostname for SSL configuration, but use original URL for the request
+        // to preserve encoded characters and path structure (e.g., %2F and double slashes)
         final Host address = new HostParser(ProtocolFactory.get()).get(url);
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(address,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, address.getHostname()), key, ProxyFactory.get());
         final HttpClientBuilder configuration = builder.build(ProxyFactory.get(),
                 new DisabledTranscriptListener(), new DisabledLoginCallback());
         try (CloseableHttpClient client = configuration.build()) {
-            final HttpRequestBase resource = new HttpGet(new HostUrlProvider().withUsername(false).withPath(true).get(address));
+            // Use the original URL directly to preserve encoding and structure
+            log.info("Making HTTP GET request to: {}", url);
+            final HttpRequestBase resource = new HttpGet(url);
             return client.execute(resource, response -> {
                 switch(response.getStatusLine().getStatusCode()) {
                     case HttpStatus.SC_OK:
