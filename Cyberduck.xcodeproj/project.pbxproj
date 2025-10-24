@@ -257,8 +257,6 @@
 		47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C241C0F103E00FDA856 /* CDOutlineView.h */; };
 		47F85C371C0F103E00FDA856 /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C251C0F103E00FDA856 /* CDOutlineView.m */; };
 		47F85C3C1C0F103E00FDA856 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2A1C0F103E00FDA856 /* main.m */; };
-		47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */; };
-		47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */; };
 		47F9380F1D7F63CE00108AB5 /* dropbox.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47F9380E1D7F63CE00108AB5 /* dropbox.tiff */; };
 		47FB0FD724B3C7FB00C6764E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47FB0FD624B3C7FA00C6764E /* Security.framework */; };
 		47FB0FDE24B3C88A00C6764E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47FB0FDD24B3C88A00C6764E /* Foundation.framework */; };
@@ -1746,8 +1744,6 @@
 		47F85C241C0F103E00FDA856 /* CDOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDOutlineView.h; path = osx/src/main/objc/CDOutlineView.h; sourceTree = "<group>"; };
 		47F85C251C0F103E00FDA856 /* CDOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDOutlineView.m; path = osx/src/main/objc/CDOutlineView.m; sourceTree = "<group>"; };
 		47F85C2A1C0F103E00FDA856 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = osx/src/main/objc/main.m; sourceTree = "<group>"; };
-		47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SNDisclosableView.h; path = osx/src/main/objc/SNDisclosableView.h; sourceTree = "<group>"; };
-		47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SNDisclosableView.m; path = osx/src/main/objc/SNDisclosableView.m; sourceTree = "<group>"; };
 		47F9380E1D7F63CE00108AB5 /* dropbox.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = dropbox.tiff; sourceTree = "<group>"; };
 		47FB0FD624B3C7FA00C6764E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = ../MacOSX.sdk/System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		47FB0FDA24B3C84A00C6764E /* QuickLookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookUI.framework; path = ../MacOSX.sdk/System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework; sourceTree = SDKROOT; };
@@ -2143,8 +2139,6 @@
 				47F85C241C0F103E00FDA856 /* CDOutlineView.h */,
 				47F85C251C0F103E00FDA856 /* CDOutlineView.m */,
 				47F85C2A1C0F103E00FDA856 /* main.m */,
-				47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */,
-				47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */,
 				47D6FFE61CCFA54A005B01C5 /* CDToolbarItem.m */,
 				47D6FFE71CCFA54A005B01C5 /* CDToolbarItem.h */,
 			);
@@ -2184,7 +2178,6 @@
 				47FB79D81C2E9E67008D3B9C /* launcher.h in Headers */,
 				47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */,
 				47D6FFE91CCFA54A005B01C5 /* CDToolbarItem.h in Headers */,
-				47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2654,7 +2647,6 @@
 				47F85C371C0F103E00FDA856 /* CDOutlineView.m in Sources */,
 				47F85C311C0F103E00FDA856 /* CDBookmarkCell.m in Sources */,
 				47F85C351C0F103E00FDA856 /* CDOutlineCell.m in Sources */,
-				47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */,
 				47F85C331C0F103E00FDA856 /* CDListView.m in Sources */,
 				47D6FFE81CCFA54A005B01C5 /* CDToolbarItem.m in Sources */,
 				47F85C3C1C0F103E00FDA856 /* main.m in Sources */,
