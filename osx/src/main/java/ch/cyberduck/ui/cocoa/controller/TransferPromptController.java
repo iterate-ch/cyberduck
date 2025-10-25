@@ -21,8 +21,8 @@ import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
+import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Cache;
@@ -57,6 +57,7 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
@@ -102,8 +103,9 @@ public abstract class TransferPromptController extends SheetController implement
      */
     @Outlet
     private NSOutlineView browserView;
+    private NSPopover detailsPopover;
     @Outlet
-    private NSButton toggleDetailsButton;
+    private NSView detailsView;
     @Outlet
     private NSTextField remoteURLField;
     @Outlet
@@ -141,14 +143,14 @@ public abstract class TransferPromptController extends SheetController implement
         super.setWindow(window);
     }
 
-    public void setToggleDetailsButton(NSButton toggleDetailsButton) {
-        this.toggleDetailsButton = toggleDetailsButton;
-    }
-
-    @Override
-    public void awakeFromNib() {
-        this.setState(this.toggleDetailsButton, preferences.getBoolean("transfer.toggle.details"));
-        super.awakeFromNib();
+    public void setDetailsView(final NSView detailsView) {
+        this.detailsView = detailsView;
+        this.detailsPopover = NSPopover.create();
+        this.detailsPopover.setAnimates(true);
+        this.detailsPopover.setBehavior(NSPopover.NSPopoverBehaviorSemitransient);
+        final NSViewController viewController = NSViewController.create();
+        viewController.setView(detailsView);
+        this.detailsPopover.setContentViewController(viewController);
     }
 
     @Override
@@ -174,7 +176,6 @@ public abstract class TransferPromptController extends SheetController implement
     public void reload() {
         log.debug("Reload table view");
         browserView.reloadData();
-        browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0L)), false);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                 MessageFormat.format(LocaleFactory.localizedString("{0} Items"), String.valueOf(browserView.numberOfRows())),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -188,7 +189,6 @@ public abstract class TransferPromptController extends SheetController implement
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.cancel;
         }
-        preferences.setProperty("transfer.toggle.details", toggleDetailsButton.state());
         return action;
     }
 
@@ -259,7 +259,6 @@ public abstract class TransferPromptController extends SheetController implement
         this.browserView.setDelegate((this.browserViewDelegate = new AbstractPathTableDelegate(
                 browserView.tableColumnWithIdentifier(TransferPromptDataSource.Column.filename.name())
         ) {
-
             @Override
             public void enterKeyPressed(final ID sender) {
                 //
@@ -289,6 +288,7 @@ public abstract class TransferPromptController extends SheetController implement
                     localURLField.setStringValue(StringUtils.EMPTY);
                     localSizeField.setStringValue(StringUtils.EMPTY);
                     localModificationField.setStringValue(StringUtils.EMPTY);
+                    detailsPopover.close();
                 }
                 else {
                     final TransferItem item = cache.lookup(new NSObjectTransferItemReference(
@@ -334,6 +334,8 @@ public abstract class TransferPromptController extends SheetController implement
                                 UserDateFormatterFactory.get().getLongFormat(status.getRemote().getModificationDate()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
+                    final NSRect selectedRect = browserView.rectOfRow(browserView.selectedRow());
+                    detailsPopover.showRelativeToRect_ofView_preferredEdge(selectedRect, browserView, FoundationKitFunctions.NSRectEdge.NSMaxXEdge);
                 }
             }
 
