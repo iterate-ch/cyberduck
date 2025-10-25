@@ -24,6 +24,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     private static final Logger log = LogManager.getLogger(DefaultHostPasswordStore.class);
@@ -132,8 +134,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     @Override
     public OAuthTokens findOAuthTokens(final Host bookmark) {
         log.info("Fetching OAuth tokens from keychain for {}", bookmark);
-        final String[] descriptors = getOAuthPrefix(bookmark);
-        for(String prefix : descriptors) {
+        for(String prefix : getOAuthPrefix(bookmark)) {
             log.debug("Search with prefix {}", prefix);
             final String hostname = getOAuthHostname(bookmark);
             log.debug("Search with hostname {}", hostname);
@@ -185,17 +186,27 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         return getOAuthScheme(bookmark).getPort();
     }
 
-    protected static String[] getOAuthPrefix(final Host bookmark) {
+    protected static Set<String> getOAuthPrefix(final Host bookmark) {
+        final Set<String> prefix = new HashSet<>();
         if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-            return new String[]{
-                    String.format("%s (%s)", bookmark.getProtocol().getOAuthClientId(), bookmark.getCredentials().getUsername()),
-                    String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername())
-            };
+            if(StringUtils.isNotBlank(bookmark.getProtocol().getOAuthClientId())) {
+                prefix.add(String.format("%s (%s)", bookmark.getProtocol().getOAuthClientId(), bookmark.getCredentials().getUsername()));
+            }
+            if(StringUtils.isNotBlank(bookmark.getProperty(Profile.OAUTH_CLIENT_ID_KEY))) {
+                prefix.add(String.format("%s (%s)", bookmark.getProperty(Profile.OAUTH_CLIENT_ID_KEY), bookmark.getCredentials().getUsername()));
+            }
+            prefix.add(String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername()));
         }
-        return new String[]{
-                bookmark.getProtocol().getOAuthClientId(),
-                bookmark.getProtocol().getDescription()
-        };
+        else {
+            if(StringUtils.isNotBlank(bookmark.getProtocol().getOAuthClientId())) {
+                prefix.add(bookmark.getProtocol().getOAuthClientId());
+            }
+            if(StringUtils.isNotBlank(bookmark.getProperty(Profile.OAUTH_CLIENT_ID_KEY))) {
+                prefix.add(bookmark.getProperty(Profile.OAUTH_CLIENT_ID_KEY));
+            }
+            prefix.add(bookmark.getProtocol().getDescription());
+        }
+        return prefix;
     }
 
     @Override
@@ -227,8 +238,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                     credentials.getToken());
         }
         if(credentials.isOAuthAuthentication()) {
-            final String[] descriptors = getOAuthPrefix(bookmark);
-            for(String prefix : descriptors) {
+            for(String prefix : getOAuthPrefix(bookmark)) {
                 if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
                     this.addPassword(getOAuthScheme(bookmark),
                             getOAuthPort(bookmark), getOAuthHostname(bookmark),
@@ -273,8 +283,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             protocol.getTokenPlaceholder() : String.format("%s (%s)", protocol.getTokenPlaceholder(), credentials.getUsername()));
         }
         if(protocol.isOAuthConfigurable()) {
-            final String[] descriptors = getOAuthPrefix(bookmark);
-            for(String prefix : descriptors) {
+            for(String prefix : getOAuthPrefix(bookmark)) {
                 if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
                     this.deletePassword(getOAuthScheme(bookmark), getOAuthPort(bookmark), getOAuthHostname(bookmark),
                             String.format("%s OAuth2 Access Token", prefix));
