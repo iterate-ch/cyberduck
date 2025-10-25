@@ -160,19 +160,26 @@ public class OAuth2AuthorizationService {
     public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
         credentials.setOauth(tokens).setSaved(new LoginOptions().save);
-        try {
-            final DecodedJWT jwt = JWT.decode(tokens.getIdToken());
-            // Standard claims
-            for(String claim : new String[]{"preferred_username", "email", "name", "nickname", "sub"}) {
-                final String value = jwt.getClaim(claim).asString();
-                if(StringUtils.isNotBlank(value)) {
-                    credentials.setUsername(value);
-                    break;
+        switch(flowType) {
+            case PasswordGrant:
+                // Skip modifying username used for password grant
+                break;
+            default:
+                try {
+                    final DecodedJWT jwt = JWT.decode(tokens.getIdToken());
+                    // Standard claims
+                    for(String claim : new String[]{"preferred_username", "email", "name", "nickname", "sub"}) {
+                        final String value = jwt.getClaim(claim).asString();
+                        if(StringUtils.isNotBlank(value)) {
+                            credentials.setUsername(value);
+                            break;
+                        }
+                    }
                 }
-            }
-        }
-        catch(JWTDecodeException e) {
-            log.warn("Failure {} decoding JWT {}", e, tokens.getIdToken());
+                catch(JWTDecodeException e) {
+                    log.warn("Failure {} decoding JWT {}", e, tokens.getIdToken());
+                }
+                break;
         }
         if(credentials.isSaved()) {
             store.save(host);
