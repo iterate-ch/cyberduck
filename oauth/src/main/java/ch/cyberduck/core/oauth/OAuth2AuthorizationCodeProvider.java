@@ -31,5 +31,5 @@ public interface OAuth2AuthorizationCodeProvider {
      * @param state                       Custom state
      * @return Authentication code
      */
-    String prompt(Host bookmark, final LoginCallback prompt, String authorizationCodeRequestUrl, String redirectUri, final String state) throws BackgroundException;
+    String prompt(Host bookmark, LoginCallback prompt, String authorizationCodeRequestUrl, String redirectUri, String state) throws BackgroundException;
 }
