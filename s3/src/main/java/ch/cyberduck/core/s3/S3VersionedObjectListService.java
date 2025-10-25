@@ -156,6 +156,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, URIEncoder.decode(common))).test(directory)) {
                         continue;
                     }
+                    log.debug("Handle common prefix {}", common);
                     folders.add(this.submit(pool, bucket, directory, URIEncoder.decode(common)));
                 }
                 for(Future<Path> f : folders) {
