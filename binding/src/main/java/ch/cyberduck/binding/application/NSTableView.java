@@ -30,6 +30,7 @@ import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :69</i>
@@ -841,4 +842,13 @@ public abstract class NSTableView extends NSControl {
      * <i>from NSDeprecated native declaration : :528</i><br>
      * Conversion Error : NSRect
      */
+
+    /**
+     * Returns the rectangle containing the row at the specified index.
+     *
+     * @param row Table row
+     * @return The rectangle containing the row at rowIndex. Returns NSZeroRect if rowIndex lies outside the range of valid row indexes for the table view.
+     */
+    public abstract NSRect rectOfRow(NSInteger row);
+
 }
