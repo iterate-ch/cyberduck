@@ -28,7 +28,6 @@ import ch.cyberduck.binding.application.NSText;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSTextFieldCell;
 import ch.cyberduck.binding.application.NSTextView;
-import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -58,8 +57,6 @@ import org.rococoa.cocoa.foundation.NSSize;
 public class ExtendedBookmarkController extends DefaultBookmarkController {
 
     @Outlet
-    private NSButton toggleOptionsButton;
-    @Outlet
     private NSPopUpButton transferPopup;
     @Outlet
     private NSPopUpButton downloadPathPopup;
@@ -78,29 +75,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
 
     public ExtendedBookmarkController(final Host bookmark) {
         super(bookmark);
-    }
-
-    @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        this.setState(toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
-    }
-
-    @Override
-    public void setWindow(final NSWindow window) {
-        window.setContentMinSize(window.frame().size);
-        window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
-        super.setWindow(window);
-    }
-
-    @Override
-    public void windowWillClose(final NSNotification notification) {
-        preferences.setProperty("bookmark.toggle.options", toggleOptionsButton.state());
-        super.windowWillClose(notification);
-    }
-
-    public void setToggleOptionsButton(final NSButton toggleOptionsButton) {
-        this.toggleOptionsButton = toggleOptionsButton;
     }
 
     public void setCommentField(final NSTextView field) {
