@@ -34,6 +34,7 @@ import ch.cyberduck.core.threading.MainAction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.HashSet;
@@ -322,12 +323,18 @@ public class ProxyController extends AbstractController {
     public static final class PopoverAlertRunner extends Proxy implements AlertRunner, AlertRunner.CloseHandler, WindowListener {
         private final NSPopover popover = NSPopover.create();
         private final NSView positioningView;
+        private final NSRect positioningRect;
         private final SheetController controller;
         private final AtomicReference<Proxy> reference = new AtomicReference<>();
         private final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
 
         public PopoverAlertRunner(final NSView positioningView, final SheetController controller) {
+            this(positioningView, positioningView.frame(), controller);
+        }
+
+        public PopoverAlertRunner(final NSView positioningView, final NSRect positioningRect, final SheetController controller) {
             this.positioningView = positioningView;
+            this.positioningRect = positioningRect;
             this.controller = controller;
             this.controller.addHandler(this);
         }
@@ -343,7 +350,7 @@ public class ProxyController extends AbstractController {
             final NSViewController viewController = NSViewController.create();
             viewController.setView(sheet.contentView());
             popover.setContentViewController(viewController);
-            popover.showRelativeToRect_ofView_preferredEdge(positioningView.bounds(), positioningView,
+            popover.showRelativeToRect_ofView_preferredEdge(positioningRect, positioningView,
                     FoundationKitFunctions.NSRectEdge.NSMinYEdge);
             controller.addListener(this);
         }
