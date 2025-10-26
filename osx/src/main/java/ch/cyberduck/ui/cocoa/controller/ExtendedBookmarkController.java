@@ -19,15 +19,12 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSControl;
-import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
-import ch.cyberduck.binding.application.NSText;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSTextFieldCell;
-import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -63,8 +60,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     @Outlet
     private NSOpenPanel downloadFolderOpenPanel;
     @Outlet
-    private NSTextView commentField;
-    @Outlet
     private NSPopUpButton ftpModePopup;
     @Outlet
     private NSImage favicon;
@@ -75,26 +70,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
 
     public ExtendedBookmarkController(final Host bookmark) {
         super(bookmark);
-    }
-
-    public void setCommentField(final NSTextView field) {
-        this.commentField = field;
-        this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
-        this.notificationCenter.addObserver(this.id(),
-            Foundation.selector("commentInputDidChange:"),
-            NSText.TextDidChangeNotification,
-            field.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(Host bookmark) {
-                updateField(commentField, bookmark.getComment());
-            }
-        });
-    }
-
-    @Action
-    public void commentInputDidChange(final NSNotification sender) {
-        bookmark.setComment(commentField.textStorage().string());
     }
 
     public void setFtpModePopup(final NSPopUpButton button) {
