@@ -68,7 +68,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     @Outlet
     private NSTextView commentField;
     @Outlet
-    private NSPopUpButton connectmodePopup;
+    private NSPopUpButton ftpModePopup;
     @Outlet
     private NSImage favicon;
     @Outlet
@@ -123,29 +123,30 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         bookmark.setComment(commentField.textStorage().string());
     }
 
-    public void setConnectmodePopup(final NSPopUpButton button) {
-        this.connectmodePopup = button;
-        this.connectmodePopup.setTarget(this.id());
-        this.connectmodePopup.setAction(Foundation.selector("connectmodePopupClicked:"));
-        this.connectmodePopup.removeAllItems();
+    public void setFtpModePopup(final NSPopUpButton button) {
+        this.ftpModePopup = button;
+        this.ftpModePopup.setTarget(this.id());
+        this.ftpModePopup.setAction(Foundation.selector("ftpModePopupClicked:"));
+        this.ftpModePopup.removeAllItems();
         for(FTPConnectMode m : FTPConnectMode.values()) {
-            this.connectmodePopup.addItemWithTitle(m.toString());
-            this.connectmodePopup.lastItem().setRepresentedObject(m.name());
+            this.ftpModePopup.addItemWithTitle(m.toString());
+            this.ftpModePopup.lastItem().setRepresentedObject(m.name());
             if(m.equals(FTPConnectMode.unknown)) {
-                this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
+                this.ftpModePopup.menu().addItem(NSMenuItem.separatorItem());
             }
         }
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(Host bookmark) {
-                connectmodePopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.ftp);
-                connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
+                ftpModePopup.superview().setHidden(!(bookmark.getProtocol().getType() == Protocol.Type.ftp));
+                ftpModePopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.ftp);
+                ftpModePopup.selectItemAtIndex(ftpModePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
             }
         });
     }
 
     @Action
-    public void connectmodePopupClicked(final NSPopUpButton sender) {
+    public void ftpModePopupClicked(final NSPopUpButton sender) {
         bookmark.setFTPConnectMode(FTPConnectMode.valueOf(sender.selectedItem().representedObject()));
         this.update();
     }
