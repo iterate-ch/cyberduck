@@ -16,7 +16,6 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.Action;
-import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.application.NSButton;
@@ -57,8 +56,6 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -67,8 +64,6 @@ import java.util.Objects;
 
 public class BookmarkController extends SheetController implements CollectionListener {
     private static final Logger log = LogManager.getLogger(BookmarkController.class);
-
-    private static NSPoint cascade = new NSPoint(0, 0);
 
     protected final Preferences preferences
             = PreferencesFactory.get();
@@ -208,6 +203,8 @@ public class BookmarkController extends SheetController implements CollectionLis
             validator.configure(selected);
         }
         this.update();
+        log.debug("Resize window after configuration change of {}", bookmark);
+        this.resize();
     }
 
     public void setHostField(final NSTextField field) {
@@ -473,6 +470,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             }
         }
         this.update();
+        this.resize();
     }
 
     @Override
@@ -487,22 +485,13 @@ public class BookmarkController extends SheetController implements CollectionLis
     }
 
     @Override
-    public void display(final boolean key) {
-        super.display(key);
-        cascade = this.cascade(cascade);
-    }
-
-    @Delegate
-    public NSSize windowWillResize_toSize(final NSWindow window, final NSSize newSize) {
-        // Only allow horizontal sizing
-        return new NSSize(newSize.width.doubleValue(), window.frame().size.height.doubleValue());
+    protected double getMinWindowHeight() {
+        return 0d;
     }
 
     @Override
-    public void windowWillClose(final NSNotification notification) {
-        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
-                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
-        super.windowWillClose(notification);
+    protected double getMinWindowWidth() {
+        return 0d;
     }
 
     public void setPrivateKeyPopup(final NSPopUpButton button) {
@@ -624,5 +613,4 @@ public class BookmarkController extends SheetController implements CollectionLis
     public interface BookmarkObserver {
         void change(final Host bookmark);
     }
-
 }
