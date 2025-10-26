@@ -163,6 +163,16 @@ public class ProxyController extends AbstractController {
             = new HashSet<>();
 
     /**
+     * @param sheet    Controller for alert window
+     * @param callback Handler invoked after sheet is dismissed with selected option
+     * @param runner   Implementation to display alert window
+     * @return Selected alert option by user
+     */
+    public int alert(final SheetController sheet, final SheetCallback callback, final AlertRunner runner) {
+        return this.alert(sheet, callback, runner, new CountDownLatch(1));
+    }
+
+    /**
      * Display as sheet attached to window of parent controller
      *
      * @param sheet    Alert window controller

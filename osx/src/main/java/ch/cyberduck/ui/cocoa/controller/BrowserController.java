@@ -1899,7 +1899,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
-        c.display();
+        this.alert(c, returncode -> {
+            final Host bookmark = c.getBookmark();
+            if(returncode == SheetCallback.DEFAULT_OPTION) {
+                mount(bookmark);
+            }
+        }, new PopoverAlertRunner(bookmarkTable, bookmarkTable.rectOfRow(bookmarkTable.selectedRow()), c));
     }
 
     @Action
@@ -1948,7 +1953,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
         final BookmarkController c = BookmarkControllerFactory.create(bookmarks, item);
-        c.display();
+        this.alert(c, returncode -> {
+            final Host bookmark = c.getBookmark();
+            if(returncode == SheetCallback.DEFAULT_OPTION) {
+                mount(bookmark);
+            }
+        }, new PopoverAlertRunner(bookmarkTable, bookmarkTable.rectOfRow(index), c));
     }
 
     @Action
@@ -2850,16 +2860,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void connectButtonClicked(final ID sender) {
-        final ConnectionController controller = ConnectionControllerFactory.create(this);
-        this.alert(controller, new SheetCallback() {
-            @Override
-            public void callback(final int returncode) {
-                final Host bookmark = controller.getBookmark();
-                switch(returncode) {
-                    case DEFAULT_OPTION:
-                        mount(bookmark);
-                        break;
-                }
+        final ConnectionController c = ConnectionControllerFactory.create(this);
+        this.alert(c, returncode -> {
+            final Host bookmark = c.getBookmark();
+            if(returncode == SheetCallback.DEFAULT_OPTION) {
+                mount(bookmark);
             }
         });
     }
