@@ -15,22 +15,18 @@ package ch.cyberduck.core.owncloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
-import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Read;
@@ -62,15 +58,11 @@ import ch.cyberduck.core.tus.TusCapabilitiesResponseHandler;
 import ch.cyberduck.core.tus.TusWriteFeature;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
 
 import static ch.cyberduck.core.tus.TusCapabilities.TUS_VERSION;
 
@@ -104,19 +96,6 @@ public class OwncloudSession extends DAVSession {
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         super.login(prompt, cancel);
-        if(host.getProtocol().isOAuthConfigurable()) {
-            final Credentials credentials = host.getCredentials();
-            final OAuthTokens oauth = credentials.getOauth();
-            try {
-                final String username = JWT.decode(oauth.getIdToken()).getClaim("preferred_username").asString();
-                if(StringUtils.isNotBlank(username)) {
-                    credentials.setUsername(username);
-                }
-            }
-            catch(JWTDecodeException e) {
-                log.warn("Failure {} decoding JWT {}", e, oauth.getIdToken());
-            }
-        }
         try {
             client.execute(new OcsCapabilitiesRequest(host), new OcsCapabilitiesResponseHandler(ocs));
         }
