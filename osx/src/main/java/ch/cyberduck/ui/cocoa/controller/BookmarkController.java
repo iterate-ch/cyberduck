@@ -408,7 +408,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.update();
     }
 
-    public void setPasswordField(NSSecureTextField field) {
+    public void setPasswordField(final NSSecureTextField field) {
         this.passwordField = field;
         this.addObserver(new BookmarkObserver() {
             @Override
@@ -435,7 +435,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         });
     }
 
-    public void setPasswordLabel(NSTextField passwordLabel) {
+    public void setPasswordLabel(final NSTextField passwordLabel) {
         this.passwordLabel = passwordLabel;
         this.addObserver(new BookmarkObserver() {
             @Override
