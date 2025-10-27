@@ -35,7 +35,9 @@ import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.ui.LoginInputValidator;
@@ -72,6 +74,8 @@ public class DefaultBookmarkController extends BookmarkController {
     private NSPopUpButton timezonePopup;
     @Outlet
     private NSPopUpButton encodingPopup;
+    @Outlet
+    private NSPopUpButton ftpModePopup;
 
     private final KeychainX509KeyManager x509KeyManager = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
         CertificateStoreFactory.get());
@@ -300,6 +304,34 @@ public class DefaultBookmarkController extends BookmarkController {
         else {
             bookmark.setEncoding(sender.selectedItem().title());
         }
+        this.update();
+    }
+
+    public void setFtpModePopup(final NSPopUpButton button) {
+        this.ftpModePopup = button;
+        this.ftpModePopup.setTarget(this.id());
+        this.ftpModePopup.setAction(Foundation.selector("ftpModePopupClicked:"));
+        this.ftpModePopup.removeAllItems();
+        for(FTPConnectMode m : FTPConnectMode.values()) {
+            this.ftpModePopup.addItemWithTitle(m.toString());
+            this.ftpModePopup.lastItem().setRepresentedObject(m.name());
+            if(m.equals(FTPConnectMode.unknown)) {
+                this.ftpModePopup.menu().addItem(NSMenuItem.separatorItem());
+            }
+        }
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(Host bookmark) {
+                ftpModePopup.superview().setHidden(!(bookmark.getProtocol().getType() == Protocol.Type.ftp));
+                ftpModePopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.ftp);
+                ftpModePopup.selectItemAtIndex(ftpModePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
+            }
+        });
+    }
+
+    @Action
+    public void ftpModePopupClicked(final NSPopUpButton sender) {
+        bookmark.setFTPConnectMode(FTPConnectMode.valueOf(sender.selectedItem().representedObject()));
         this.update();
     }
 
