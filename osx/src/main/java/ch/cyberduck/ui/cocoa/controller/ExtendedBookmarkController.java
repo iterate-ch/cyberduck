@@ -59,8 +59,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     @Outlet
     private NSOpenPanel downloadFolderOpenPanel;
     @Outlet
-    private NSImage favicon;
-    @Outlet
     private NSTextField webURLField;
     @Outlet
     private NSButton webUrlImage;
@@ -201,9 +199,10 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
             @Override
             public void change(Host bookmark) {
                 if(preferences.getBoolean("bookmark.favicon.download")) {
-                    background(new AbstractBackgroundAction<Void>() {
+                    background(new AbstractBackgroundAction<NSImage>() {
                         @Override
-                        public Void run() {
+                        public NSImage run() {
+                            final NSImage favicon;
                             final String f = bookmark.getProtocol().favicon();
                             if(StringUtils.isNotBlank(f)) {
                                 favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
@@ -220,11 +219,11 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                             if(null != favicon) {
                                 favicon.setSize(new NSSize(16, 16));
                             }
-                            return null;
+                            return favicon;
                         }
 
                         @Override
-                        public void cleanup() {
+                        public void cleanup(final NSImage favicon, final BackgroundException failure) {
                             if(null != favicon) {
                                 webUrlImage.setImage(favicon);
                             }
