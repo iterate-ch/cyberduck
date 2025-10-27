@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
@@ -35,6 +36,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.ui.LoginInputValidator;
 
@@ -92,18 +94,20 @@ public class DefaultBookmarkController extends BookmarkController {
         window.makeFirstResponder(hostField);
     }
 
+    @Override
+    public void setProtocolPopup(final NSPopUpButton button) {
+        button.superview().setHidden(!preferences.getBoolean("bookmark.protocol.configurable"));
+        super.setProtocolPopup(button);
+    }
+
     public void setNicknameField(final NSTextField f) {
         this.nicknameField = f;
+        this.nicknameField.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.name.configurable"));
         notificationCenter.addObserver(this.id(),
             Foundation.selector("nicknameFieldDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
             f.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                updateField(nicknameField, BookmarkNameProvider.toString(bookmark));
-            }
-        });
+        this.addObserver(bookmark -> updateField(nicknameField, BookmarkNameProvider.toString(bookmark)));
     }
 
     @Action
@@ -114,19 +118,17 @@ public class DefaultBookmarkController extends BookmarkController {
 
     public void setLabelsField(final NSTokenField f) {
         this.labelsField = f;
+        this.labelsField.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.labels.configurable"));
         notificationCenter.addObserver(this.id(),
             Foundation.selector("tokenFieldDidChange:"),
             NSControl.NSControlTextDidEndEditingNotification,
             f.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                if(bookmark.getLabels().isEmpty()) {
-                    f.setObjectValue(NSArray.array());
-                }
-                else {
-                    f.setObjectValue(NSArray.arrayWithObjects(bookmark.getLabels().toArray(new String[bookmark.getLabels().size()])));
-                }
+        this.addObserver(bookmark -> {
+            if(bookmark.getLabels().isEmpty()) {
+                f.setObjectValue(NSArray.array());
+            }
+            else {
+                f.setObjectValue(NSArray.arrayWithObjects(bookmark.getLabels().toArray(new String[bookmark.getLabels().size()])));
             }
         });
     }
@@ -145,12 +147,14 @@ public class DefaultBookmarkController extends BookmarkController {
     }
 
     @Override
-    public void setPasswordField(final NSSecureTextField f) {
-        super.setPasswordField(f);
+    public void setPasswordField(final NSSecureTextField field) {
+        super.setPasswordField(field);
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("passwordFieldTextDidEndEditing:"),
             NSControl.NSControlTextDidEndEditingNotification,
-            f.id());
+            field.id());
+        this.addObserver(host -> field.superview().setHidden(!options.password));
+        super.setPasswordField(field);
     }
 
     @Action
@@ -185,26 +189,24 @@ public class DefaultBookmarkController extends BookmarkController {
         this.certificatePopup.setTarget(this.id());
         final Selector action = Foundation.selector("certificateSelectionChanged:");
         this.certificatePopup.setAction(action);
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                certificatePopup.setEnabled(options.certificate);
-                certificatePopup.removeAllItems();
-                certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
-                if(options.certificate) {
-                    certificatePopup.menu().addItem(NSMenuItem.separatorItem());
-                    for(String certificate : x509KeyManager.list()) {
-                        certificatePopup.addItemWithTitle(certificate);
-                        certificatePopup.lastItem().setRepresentedObject(certificate);
-                    }
-                }
-                if(bookmark.getCredentials().isCertificateAuthentication()) {
-                    certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getCertificate()));
-                }
-                else {
-                    certificatePopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+        this.addObserver(bookmark -> {
+            certificatePopup.setEnabled(options.certificate);
+            certificatePopup.removeAllItems();
+            certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+            if(options.certificate) {
+                certificatePopup.menu().addItem(NSMenuItem.separatorItem());
+                for(String certificate : x509KeyManager.list()) {
+                    certificatePopup.addItemWithTitle(certificate);
+                    certificatePopup.lastItem().setRepresentedObject(certificate);
                 }
             }
+            if(bookmark.getCredentials().isCertificateAuthentication()) {
+                certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getCertificate()));
+            }
+            else {
+                certificatePopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+            }
+            certificatePopup.superview().setHidden(!options.certificate);
         });
     }
 
@@ -223,34 +225,27 @@ public class DefaultBookmarkController extends BookmarkController {
         this.timezonePopup.addItemWithTitle(UTC.getID());
         this.timezonePopup.lastItem().setRepresentedObject(UTC.getID());
         this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
-        timezones.sort(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID());
-            }
-        });
+        timezones.sort((o1, o2) -> TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID()));
         for(String tz : timezones) {
             if(tz.matches(TIMEZONE_CONTINENT_PREFIXES)) {
                 this.timezonePopup.addItemWithTitle(String.format("%s", tz));
                 this.timezonePopup.lastItem().setRepresentedObject(tz);
             }
         }
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                timezonePopup.setEnabled(!bookmark.getProtocol().isUTCTimezone());
-                if(null == bookmark.getTimezone()) {
-                    if(bookmark.getProtocol().isUTCTimezone()) {
-                        timezonePopup.setTitle(UTC.getID());
-                    }
-                    else {
-                        timezonePopup.setTitle(TimeZone.getTimeZone(preferences.getProperty("ftp.timezone.default")).getID());
-                    }
+        this.addObserver(bookmark -> {
+            timezonePopup.setEnabled(!bookmark.getProtocol().isUTCTimezone());
+            if(null == bookmark.getTimezone()) {
+                if(bookmark.getProtocol().isUTCTimezone()) {
+                    timezonePopup.setTitle(UTC.getID());
                 }
                 else {
-                    timezonePopup.setTitle(bookmark.getTimezone().getID());
+                    timezonePopup.setTitle(TimeZone.getTimeZone(preferences.getProperty("ftp.timezone.default")).getID());
                 }
             }
+            else {
+                timezonePopup.setTitle(bookmark.getTimezone().getID());
+            }
+            timezonePopup.superview().setHidden(bookmark.getProtocol().isUTCTimezone());
         });
     }
 
@@ -280,22 +275,20 @@ public class DefaultBookmarkController extends BookmarkController {
             this.encodingPopup.addItemWithTitle(encoding);
             this.encodingPopup.lastItem().setRepresentedObject(encoding);
         }
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                encodingPopup.setEnabled(bookmark.getProtocol().isEncodingConfigurable());
-                if(!bookmark.getProtocol().isEncodingConfigurable()) {
+        this.addObserver(bookmark -> {
+            encodingPopup.setEnabled(bookmark.getProtocol().isEncodingConfigurable());
+            if(!bookmark.getProtocol().isEncodingConfigurable()) {
+                encodingPopup.selectItemWithTitle(DEFAULT);
+            }
+            else {
+                if(null == bookmark.getEncoding()) {
                     encodingPopup.selectItemWithTitle(DEFAULT);
                 }
                 else {
-                    if(null == bookmark.getEncoding()) {
-                        encodingPopup.selectItemWithTitle(DEFAULT);
-                    }
-                    else {
-                        encodingPopup.selectItemAtIndex(encodingPopup.indexOfItemWithRepresentedObject(bookmark.getEncoding()));
-                    }
+                    encodingPopup.selectItemAtIndex(encodingPopup.indexOfItemWithRepresentedObject(bookmark.getEncoding()));
                 }
             }
+            encodingPopup.superview().setHidden(!bookmark.getProtocol().isEncodingConfigurable());
         });
     }
 
@@ -308,5 +301,41 @@ public class DefaultBookmarkController extends BookmarkController {
             bookmark.setEncoding(sender.selectedItem().title());
         }
         this.update();
+    }
+
+    @Override
+    public void setHostField(final NSTextField field) {
+        this.addObserver(host -> field.superview().superview().setHidden(!host.getProtocol().isHostnameConfigurable() && !host.getProtocol().isPortConfigurable()));
+        super.setHostField(field);
+    }
+
+    @Override
+    public void setPortField(final NSTextField field) {
+        this.addObserver(host -> field.superview().superview().setHidden(!host.getProtocol().isHostnameConfigurable() && !host.getProtocol().isPortConfigurable()));
+        super.setPortField(field);
+    }
+
+    @Override
+    public void setPathField(final NSTextField field) {
+        this.addObserver(host -> field.superview().setHidden(!host.getProtocol().isPathConfigurable()));
+        super.setPathField(field);
+    }
+
+    @Override
+    public void setUsernameField(final NSTextField field) {
+        this.addObserver(host -> field.superview().setHidden(!host.getProtocol().isUsernameConfigurable()));
+        super.setUsernameField(field);
+    }
+
+    @Override
+    public void setAnonymousCheckbox(final NSButton button) {
+        this.addObserver(host -> button.superview().setHidden(!host.getProtocol().isAnonymousConfigurable()));
+        super.setAnonymousCheckbox(button);
+    }
+
+    @Override
+    public void setPrivateKeyPopup(final NSPopUpButton button) {
+        this.addObserver(host -> button.superview().setHidden(!host.getProtocol().isPrivateKeyConfigurable()));
+        super.setPrivateKeyPopup(button);
     }
 }
