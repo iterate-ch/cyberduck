@@ -24,12 +24,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class TerminalAlertCallback implements AlertCallback {
+    private static final Logger log = LogManager.getLogger(TerminalAlertCallback.class);
 
     private final Console console = new Console();
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure) {
+        log.warn("Notify for failure {}", failure.toString());
         this.print(failure);
         // Never repeat
         return false;

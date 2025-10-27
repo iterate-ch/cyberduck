@@ -23,12 +23,17 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class NotificationAlertCallback implements AlertCallback {
+    private static final Logger log = LogManager.getLogger(NotificationAlertCallback.class);
 
     private final NotificationService notification = NotificationServiceFactory.get();
 
     @Override
     public boolean alert(final Host bookmark, final BackgroundException failure) {
+        log.warn("Notify for failure {}", failure.toString());
         notification.notify(BookmarkNameProvider.toString(bookmark), bookmark.getUuid(), failure.getMessage(), BookmarkNameProvider.toString(bookmark));
         return false;
     }

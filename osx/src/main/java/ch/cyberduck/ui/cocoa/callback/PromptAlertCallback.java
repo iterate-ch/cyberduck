@@ -29,7 +29,11 @@ import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.ui.cocoa.controller.BackgroundExceptionAlertController;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class PromptAlertCallback implements AlertCallback {
+    private static final Logger log = LogManager.getLogger(PromptAlertCallback.class);
 
     private final ProxyController controller;
     private final NotificationAlertCallback notification = new NotificationAlertCallback();
@@ -40,6 +44,7 @@ public class PromptAlertCallback implements AlertCallback {
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure) {
+        log.warn("Notify for failure {}", failure.toString());
         final FailureDiagnostics.Type type = new DefaultFailureDiagnostics().determine(failure);
         switch(type) {
             case cancel:
