@@ -163,6 +163,7 @@ public class ProxyController extends AbstractController {
      * @return Selected alert option by user
      */
     public int alert(final SheetController sheet, final SheetCallback callback, final AlertRunner runner, final CountDownLatch signal) {
+        log.debug("Alert with runner {} and callback {}", runner, callback);
         alerts.add(runner);
         final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
         final CountDownLatch state = new CountDownLatch(1);
