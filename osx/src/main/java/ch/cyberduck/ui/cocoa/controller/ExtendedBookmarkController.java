@@ -58,10 +58,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     private NSPopUpButton downloadPathPopup;
     @Outlet
     private NSOpenPanel downloadFolderOpenPanel;
-    @Outlet
-    private NSTextField webURLField;
-    @Outlet
-    private NSButton webUrlImage;
 
     public ExtendedBookmarkController(final Host bookmark) {
         super(bookmark);
@@ -166,77 +162,5 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         downloadPathPopup.selectItem(item);
         downloadFolderOpenPanel = null;
         this.update();
-    }
-
-    public void setWebURLField(final NSTextField field) {
-        this.webURLField = field;
-        final NSTextFieldCell cell = this.webURLField.cell();
-        notificationCenter.addObserver(this.id(),
-            Foundation.selector("webURLInputDidChange:"),
-            NSControl.NSControlTextDidChangeNotification,
-            field.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(Host bookmark) {
-                updateField(webURLField, bookmark.getWebURL());
-                cell.setPlaceholderString(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
-            }
-        });
-    }
-
-    @Action
-    public void webURLInputDidChange(final NSNotification sender) {
-        bookmark.setWebURL(webURLField.stringValue());
-        this.update();
-    }
-
-    public void setWebUrlImage(final NSButton button) {
-        this.webUrlImage = button;
-        this.webUrlImage.setTarget(this.id());
-        this.webUrlImage.setAction(Foundation.selector("webUrlButtonClicked:"));
-        this.webUrlImage.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(Host bookmark) {
-                if(preferences.getBoolean("bookmark.favicon.download")) {
-                    background(new AbstractBackgroundAction<NSImage>() {
-                        @Override
-                        public NSImage run() {
-                            final NSImage favicon;
-                            final String f = bookmark.getProtocol().favicon();
-                            if(StringUtils.isNotBlank(f)) {
-                                favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
-                            }
-                            else {
-                                String url = String.format("%sfavicon.ico", new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
-                                // Default favicon location
-                                final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
-                                if(null == data) {
-                                    return null;
-                                }
-                                favicon = NSImage.imageWithData(data);
-                            }
-                            if(null != favicon) {
-                                favicon.setSize(new NSSize(16, 16));
-                            }
-                            return favicon;
-                        }
-
-                        @Override
-                        public void cleanup(final NSImage favicon, final BackgroundException failure) {
-                            if(null != favicon) {
-                                webUrlImage.setImage(favicon);
-                            }
-                        }
-                    });
-                }
-                webUrlImage.setToolTip(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
-            }
-        });
-    }
-
-    @Action
-    public void webUrlButtonClicked(final NSButton sender) {
-        BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
     }
 }
