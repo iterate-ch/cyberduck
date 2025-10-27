@@ -19,27 +19,36 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSControl;
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSTextFieldCell;
 import ch.cyberduck.binding.application.NSTokenField;
 import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.DefaultCharsetProvider;
+import ch.cyberduck.core.DefaultWebUrlProvider;
 import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +57,7 @@ import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -76,6 +86,10 @@ public class DefaultBookmarkController extends BookmarkController {
     private NSPopUpButton encodingPopup;
     @Outlet
     private NSPopUpButton ftpModePopup;
+    @Outlet
+    private NSTextField webURLField;
+    @Outlet
+    private NSButton webUrlImage;
 
     private final KeychainX509KeyManager x509KeyManager = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
         CertificateStoreFactory.get());
@@ -333,6 +347,78 @@ public class DefaultBookmarkController extends BookmarkController {
     public void ftpModePopupClicked(final NSPopUpButton sender) {
         bookmark.setFTPConnectMode(FTPConnectMode.valueOf(sender.selectedItem().representedObject()));
         this.update();
+    }
+
+    public void setWebURLField(final NSTextField field) {
+        this.webURLField = field;
+        final NSTextFieldCell cell = this.webURLField.cell();
+        notificationCenter.addObserver(this.id(),
+                Foundation.selector("webURLInputDidChange:"),
+                NSControl.NSControlTextDidChangeNotification,
+                field.id());
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(Host bookmark) {
+                updateField(webURLField, bookmark.getWebURL());
+                cell.setPlaceholderString(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
+            }
+        });
+    }
+
+    @Action
+    public void webURLInputDidChange(final NSNotification sender) {
+        bookmark.setWebURL(webURLField.stringValue());
+        this.update();
+    }
+
+    public void setWebUrlImage(final NSButton button) {
+        this.webUrlImage = button;
+        this.webUrlImage.setTarget(this.id());
+        this.webUrlImage.setAction(Foundation.selector("webUrlButtonClicked:"));
+        this.webUrlImage.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(Host bookmark) {
+                if(preferences.getBoolean("bookmark.favicon.download")) {
+                    background(new AbstractBackgroundAction<NSImage>() {
+                        @Override
+                        public NSImage run() {
+                            final NSImage favicon;
+                            final String f = bookmark.getProtocol().favicon();
+                            if(StringUtils.isNotBlank(f)) {
+                                favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
+                            }
+                            else {
+                                String url = String.format("%sfavicon.ico", new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
+                                // Default favicon location
+                                final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
+                                if(null == data) {
+                                    return null;
+                                }
+                                favicon = NSImage.imageWithData(data);
+                            }
+                            if(null != favicon) {
+                                favicon.setSize(new NSSize(16, 16));
+                            }
+                            return favicon;
+                        }
+
+                        @Override
+                        public void cleanup(final NSImage favicon, final BackgroundException failure) {
+                            if(null != favicon) {
+                                webUrlImage.setImage(favicon);
+                            }
+                        }
+                    });
+                }
+                webUrlImage.setToolTip(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
+            }
+        });
+    }
+
+    @Action
+    public void webUrlButtonClicked(final NSButton sender) {
+        BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
     }
 
     @Override
