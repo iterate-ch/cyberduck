@@ -19,9 +19,6 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSControl;
-import ch.cyberduck.binding.application.NSSecureTextField;
-import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.ui.LoginInputValidator;
@@ -29,7 +26,7 @@ import ch.cyberduck.ui.LoginInputValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 
-public class ConnectionController extends BookmarkController {
+public class ConnectionController extends DefaultBookmarkController {
 
     @Outlet
     private NSButton keychainCheckbox;
@@ -62,11 +59,6 @@ public class ConnectionController extends BookmarkController {
         }
     }
 
-    @Override
-    protected String getBundleName() {
-        return "Connection";
-    }
-
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setTarget(this.id());
@@ -83,19 +75,5 @@ public class ConnectionController extends BookmarkController {
     @Action
     public void keychainCheckboxClicked(final NSButton sender) {
         bookmark.getCredentials().setSaved(sender.state() == NSCell.NSOnState);
-    }
-
-    @Override
-    public void setPasswordField(final NSSecureTextField field) {
-        super.setPasswordField(field);
-        this.notificationCenter.addObserver(this.id(),
-            Foundation.selector("passwordFieldTextDidChange:"),
-            NSControl.NSControlTextDidChangeNotification,
-            field.id());
-    }
-
-    @Action
-    public void passwordFieldTextDidChange(final NSNotification notification) {
-        bookmark.getCredentials().setPassword(StringUtils.trim(passwordField.stringValue()));
     }
 }
