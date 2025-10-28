@@ -47,8 +47,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static final Logger log = LogManager.getLogger(WindowController.class);
 
-    protected static final String DEFAULT = LocaleFactory.localizedString("Default");
-
     protected final Set<WindowListener> listeners
             = Collections.synchronizedSet(new HashSet<>());
     /**
