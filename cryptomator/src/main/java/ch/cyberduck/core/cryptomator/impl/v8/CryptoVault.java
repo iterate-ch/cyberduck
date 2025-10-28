@@ -255,10 +255,13 @@ public class CryptoVault extends AbstractVault {
                 .withClaim(JSON_KEY_SHORTENING_THRESHOLD, CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD)
                 .sign(algorithm);
         new ContentWriter(session).write(config, conf.getBytes(StandardCharsets.US_ASCII));
-        this.open(parseVaultConfigFromJWT(conf).withMasterkeyFile(masterkeyFile), passphrase);
-        final Path secondLevel = directoryProvider.toEncrypted(session, home);
-        final Path firstLevel = secondLevel.getParent();
-        final Path dataDir = firstLevel.getParent();
+        final DirectoryContentCryptor contentCryptor = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM).
+                provide(mk, FastSecureRandomProvider.get().provide()).directoryContentCryptor();
+        final String dirPath = contentCryptor.dirPath(contentCryptor.rootDirectoryMetadata());
+        final String[] segments = StringUtils.split(dirPath, "/");
+        final Path dataDir = new Path(home, segments[0], EnumSet.of(Path.Type.directory));
+        final Path firstLevel = new Path(dataDir, segments[1], EnumSet.of(Path.Type.directory));
+        final Path secondLevel = new Path(firstLevel, segments[2], EnumSet.of(Path.Type.directory));
         log.debug("Create vault root directory at {}", secondLevel);
         directory.mkdir(session._getFeature(Write.class), dataDir, status);
         directory.mkdir(session._getFeature(Write.class), firstLevel, status);
