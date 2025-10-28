@@ -285,7 +285,10 @@ public class SFTPSession extends Session<SSHClient> {
                     defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator()));
                     break;
             }
-            final String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
+            String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
+            if(null == configuration) {
+                configuration = System.getenv("SSH_AUTH_SOCK");
+            }
             if(configuration != null) {
                 final String identityAgent = LocalFactory.get(configuration).getAbsolute();
                 log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
