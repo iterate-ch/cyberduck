@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>9.3.0.uvfdraft-SNAPSHOT</version>
+    <version>9.3.0.uvfdraft.cryptolib-SNAPSHOT</version>
 
     <modules>
         <module>defaults</module>
