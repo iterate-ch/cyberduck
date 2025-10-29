@@ -59,8 +59,6 @@ public class TerminalPreferences extends Preferences {
         for(Transfer.Type t : Transfer.Type.values()) {
             this.setDefault(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
         }
-        //TODO braucht es diesen eintrag noch?
-        this.setDefault("factory.vault.class", CryptoVault.class.getName());
         this.setDefault("factory.vaultprovider.class", CryptoVaultProvider.class.getName());
         this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
         this.setDefault("factory.connectiontimeout.class", DisabledConnectionTimeout.class.getName());
