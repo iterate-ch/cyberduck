@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.AbstractVault;
+import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryUVFFeature;
@@ -32,9 +33,13 @@ import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -83,8 +88,37 @@ public class CryptoVault extends AbstractVault {
     }
 
     @Override
-    public AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
-        throw new UnsupportedOperationException();
+    public AbstractVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
+        final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
+
+        final Path home = this.getHome();
+        log.debug("Create vault root directory at {}", home);
+
+        // Obtain non encrypted directory writer
+        final Directory<?> directory = session._getFeature(Directory.class);
+        final TransferStatus status = new TransferStatus().setRegion(region);
+        final Encryption encryption = session._getFeature(Encryption.class);
+        if(encryption != null) {
+            status.setEncryption(encryption.getDefault(home));
+        }
+        final Path vault = directory.mkdir(session._getFeature(Write.class), home, status);
+
+        final Path dataDir = new Path(vault, "d", EnumSet.of(Path.Type.directory));
+        final Path firstLevel = new Path(dataDir, provider.getDirPath().substring(0, 2), EnumSet.of(Path.Type.directory));
+        final Path secondLevel = new Path(firstLevel, provider.getDirPath().substring(2), EnumSet.of(Path.Type.directory));
+
+        directory.mkdir(session._getFeature(Write.class), dataDir, status);
+        directory.mkdir(session._getFeature(Write.class), firstLevel, status);
+        directory.mkdir(session._getFeature(Write.class), secondLevel, status);
+
+        // vault.uvf
+        new ContentWriter(session).write(new Path(home, PreferencesFactory.get().getProperty("cryptomator.vault.config.filename"),
+                EnumSet.of(Path.Type.file, Path.Type.vault)), provider.getMetadata());
+        // dir.uvf
+        new ContentWriter(session).write(new Path(secondLevel, "dir.uvf", EnumSet.of(Path.Type.file)),
+                provider.getRootDirectoryMetadata());
+
+        return this;
     }
 
     // load -> unlock -> open
