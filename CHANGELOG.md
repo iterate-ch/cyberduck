@@ -12,6 +12,8 @@
   getting session token with optional Multi-Factor Authentication (MFA) input (
   S3) ([#17506](https://trac.cyberduck.io/ticket/17506))
 * [Bugfix] Fix race conditions in FTP socket closure that cause intermittent errors (FTP)
+* [Bugfix] Default to read identity agent location from SSH_AUTH_SOCK environment variable with no custom
+  configuration (SFTP)
 
 [9.2.4](https://github.com/iterate-ch/cyberduck/compare/release-9-2-3...release-9-2-4)
 * [Bugfix] Unable to close connection window with "Cancel" (macOS) ([#17366](https://trac.cyberduck.io/ticket/17366))
