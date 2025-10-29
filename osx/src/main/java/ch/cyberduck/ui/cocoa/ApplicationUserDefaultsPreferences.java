@@ -104,7 +104,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         this.setDefault("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
         this.setDefault("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
         this.setDefault("factory.rendezvous.class", RendezvousResponder.class.getName());
-        this.setDefault("factory.vault.class", CryptoVaultProvider.class.getName());
+        this.setDefault("factory.vaultprovider.class", CryptoVaultProvider.class.getName());
         this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
     }
 }
