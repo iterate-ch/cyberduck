@@ -49,7 +49,7 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV8Provider {
     public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final DirectoryMetadata dirMetadata = load(session, parent);
         this.vault.getCryptor().directoryContentCryptor().fileNameEncryptor(dirMetadata).encrypt(filename);
-        final String ciphertextName = this.vault.getCryptor().directoryContentCryptor().fileNameEncryptor(dirMetadata).encrypt(filename) + vault.getRegularFileExtension();
+        final String ciphertextName = this.vault.getCryptor().directoryContentCryptor().fileNameEncryptor(dirMetadata).encrypt(filename);
         log.debug("Encrypted filename {} to {}", filename, ciphertextName);
         return filenameProvider.deflate(session, ciphertextName);
     }
