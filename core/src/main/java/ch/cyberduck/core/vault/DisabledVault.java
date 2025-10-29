@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
 import java.util.EnumSet;
@@ -36,7 +37,7 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Vault create(final Session<?> session, final String region, final VaultCredentials credentials) {
+    public Vault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
         return null;
     }
 
