@@ -96,7 +96,7 @@ namespace Ch.Cyberduck.Cli
             // This is a transient dependency coming from Cyberduck.Cryptomator through Cyberduck.Cli,
             // which isn't used in duck. Thus crazy stuff happens, and we have to force-load Cyberduck.Cryptomator here.
             // ref https://github.com/iterate-ch/cyberduck/issues/12812
-            this.setDefault("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
+            this.setDefault("factory.vaultprovider.class", typeof(CryptoVaultProvider).AssemblyQualifiedName);
         }
 
         private class TerminalPropertyStoreFactory : IPropertyStoreFactory

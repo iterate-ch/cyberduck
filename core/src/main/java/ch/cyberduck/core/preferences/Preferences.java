@@ -62,6 +62,7 @@ import ch.cyberduck.core.updater.DisabledUpdateCheckerArguments;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.DisabledVault;
+import ch.cyberduck.core.vault.DisabledVaultProvider;
 import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
 import ch.cyberduck.ui.quicklook.ApplicationLauncherQuicklook;
 
@@ -505,6 +506,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("factory.threadpool.class", DefaultThreadPool.class.getName());
         this.setDefault("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
         this.setDefault("factory.vault.class", DisabledVault.class.getName());
+        this.setDefault("factory.vaultprovider.class", DisabledVaultProvider.class.getName());
         this.setDefault("factory.vaultregistry.class", DefaultVaultRegistry.class.getName());
         this.setDefault("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
         this.setDefault("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
