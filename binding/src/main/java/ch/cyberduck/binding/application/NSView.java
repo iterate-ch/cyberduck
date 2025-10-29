@@ -1162,4 +1162,13 @@ public abstract class NSView extends NSResponder {
      * <i>from NSFullScreenMode native declaration : :419</i>
      */
     public abstract boolean isInFullScreenMode();
+
+    /**
+     * When this property is set to true, the view’s superview looks at the view’s autoresizing mask, produces constraints
+     * that implement it, and adds those constraints to itself (the superview). If your view has flexible constraints that
+     * require dynamic adjustment, set this property to false and apply the constraints yourself.
+     *
+     * @param flag A Boolean value indicating whether the view’s autoresizing mask is translated into constraints for the constraint-based layout system.
+     */
+    public abstract void setTranslatesAutoresizingMaskIntoConstraints(final boolean flag);
 }
