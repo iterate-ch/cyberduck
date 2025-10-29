@@ -42,7 +42,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
@@ -52,6 +51,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -212,8 +212,14 @@ public class CryptoVault extends AbstractVault {
         return FILENAME_PATTERN;
     }
 
+    public AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+        return this.create(session, region, new DefaultVaultMetadataV8Provider(credentials));
+    }
+
     @Override
-    public synchronized AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public AbstractVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
+        final VaultMetadataV8Provider provider = VaultMetadataV8Provider.cast(metadata);
+        final VaultCredentials credentials = provider.getCredentials();
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
             try {
