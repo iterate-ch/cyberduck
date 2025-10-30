@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="ConnectionController">
+            <connections>
+                <outlet property="contentView" destination="cjf-RS-AF0" id="Aequ0xah"/>
+                <outlet property="window" destination="3" id="84"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="2" customClass="NSApplication"/>
+        <window title="Edit Bookmark" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" id="3" userLabel="Edit Bookmark" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <rect key="contentRect" x="460" y="215" width="536" height="384"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2880" height="1595"/>
+            <view key="contentView" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4">
+                <rect key="frame" x="0.0" y="304" width="144" height="80"/>
+                <subviews>
+                    <customView id="cjf-RS-AF0">
+                        <rect key="frame" x="0.0" y="60" width="144" height="153"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    </customView>
+                    <button tag="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14">
+                        <rect key="frame" x="437" y="13" width="86" height="32"/>
+                        <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closeSheet:" target="-2" id="92"/>
+                        </connections>
+                    </button>
+                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="66">
+                        <rect key="frame" x="17" y="16" width="25" height="25"/>
+                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" inset="2" id="67">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="helpButtonClicked:" target="-2" id="95"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="14" secondAttribute="trailing" constant="20" symbolic="YES" id="7Bg-1W-QNm"/>
+                    <constraint firstItem="66" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="7G2-cV-PTi"/>
+                    <constraint firstItem="cjf-RS-AF0" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="DGV-GB-bkb"/>
+                    <constraint firstAttribute="bottom" secondItem="14" secondAttribute="bottom" constant="20" symbolic="YES" id="Ikq-tj-lN8"/>
+                    <constraint firstItem="14" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="66" secondAttribute="trailing" constant="12" symbolic="YES" id="JPN-Tt-7cd"/>
+                    <constraint firstAttribute="bottom" secondItem="66" secondAttribute="bottom" constant="20" symbolic="YES" id="UHg-cz-N8p"/>
+                    <constraint firstAttribute="trailing" secondItem="cjf-RS-AF0" secondAttribute="trailing" id="XK9-TW-cop"/>
+                    <constraint firstAttribute="bottom" secondItem="cjf-RS-AF0" secondAttribute="bottom" constant="60" id="cEH-Vq-whs"/>
+                    <constraint firstItem="cjf-RS-AF0" firstAttribute="leading" secondItem="4" secondAttribute="leading" id="neJ-Qq-rSF"/>
+                </constraints>
+            </view>
+            <contentBorderThickness minY="60"/>
+            <point key="canvasLocation" x="615" y="-110"/>
+        </window>
+    </objects>
+</document>
