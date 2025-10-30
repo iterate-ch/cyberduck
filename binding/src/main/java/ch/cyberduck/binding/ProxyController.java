@@ -183,7 +183,9 @@ public class ProxyController extends AbstractController {
      */
     public int alert(final SheetController sheet, final SheetCallback callback, final AlertRunner runner, final CountDownLatch signal) {
         log.debug("Alert with runner {} and callback {}", runner, callback);
-        alerts.add(runner);
+        synchronized(alerts) {
+            alerts.add(runner);
+        }
         final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
         final CountDownLatch state = new CountDownLatch(1);
         final SheetCallback.DelegatingSheetCallback chain = new SheetCallback.DelegatingSheetCallback(new SheetCallback.ReturnCodeSheetCallback(option), sheet, callback);
@@ -193,7 +195,11 @@ public class ProxyController extends AbstractController {
                 log.info("Load bundle for alert {}", sheet);
                 sheet.loadBundle();
                 runner.alert(sheet.window(), new SheetCallback.DelegatingSheetCallback(new SignalSheetCallback(state),
-                        chain, new SignalSheetCallback(signal), (returncode) -> alerts.remove(runner)));
+                        chain, new SignalSheetCallback(signal), (returncode) -> {
+                    synchronized(alerts) {
+                        alerts.remove(runner);
+                    }
+                }));
             }
         }, true);
         if(!NSThread.isMainThread()) {
