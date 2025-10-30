@@ -300,7 +300,7 @@ public class PathAttributes extends Attributes implements Serializable {
                     log.debug("Skip serializing vault metadata root attribute {} to avoid recursion", vaultMetadata.root);
                 }
                 else {
-                    dict.setObjectForKey(vaultMetadata.root, "Vault Metadata");
+                    dict.setObjectForKey(vaultMetadata, "Vault Metadata");
                 }
             }
         }
