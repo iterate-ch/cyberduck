@@ -36,8 +36,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
-import ch.cyberduck.test.VaultTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -55,14 +54,14 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
-public class IRODSWriteFeatureTest extends VaultTest {
+@Category(TestcontainerTest.class)
+public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
 
     @Test
     public void testWriteConcurrent() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -100,7 +99,13 @@ public class IRODSWriteFeatureTest extends VaultTest {
             in2.close();
             assertArrayEquals(content, buffer2);
         }
+
+        session1.getFeature(Delete.class).delete(Collections.singletonList(test1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(session1.getFeature(Find.class).find(test1));
         session1.close();
+
+        session2.getFeature(Delete.class).delete(Collections.singletonList(test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(session2.getFeature(Find.class).find(test2));
         session2.close();
     }
 
@@ -108,7 +113,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
     public void testWriteThreaded() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -203,7 +208,12 @@ public class IRODSWriteFeatureTest extends VaultTest {
         cr1.await();
         cr2.await();
 
+        session1.getFeature(Delete.class).delete(Collections.singletonList(test1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(session1.getFeature(Find.class).find(test1));
         session1.close();
+
+        session2.getFeature(Delete.class).delete(Collections.singletonList(test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(session2.getFeature(Find.class).find(test2));
         session2.close();
     }
 
@@ -211,7 +221,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
     public void testWrite() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -260,7 +270,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
             assertEquals(content.length, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
             final StatusOutputStream<Void> out = feature.write(test, status, new DisabledConnectionCallback());
-            assertNull(out);
+            assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
             assertTrue(session.getFeature(Find.class).find(test));
@@ -284,7 +294,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
     public void testWriteAppend() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
