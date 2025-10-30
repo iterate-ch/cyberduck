@@ -30,8 +30,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.test.IntegrationTest;
-import ch.cyberduck.test.VaultTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -41,14 +40,14 @@ import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
-public class IRODSSessionTest extends VaultTest {
+@Category(TestcontainerTest.class)
+public class IRODSSessionTest extends IRODSDockerComposeManager {
 
     @Test
     public void testConnect() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -67,7 +66,7 @@ public class IRODSSessionTest extends VaultTest {
     public void testLoginDefault() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -81,7 +80,7 @@ public class IRODSSessionTest extends VaultTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final AttributedList<Path> list = new IRODSListService(session).list(new IRODSHomeFinderService(session).find(), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
+        assertTrue(list.isEmpty());
 
         assertTrue(session.isConnected());
         session.close();
@@ -92,7 +91,7 @@ public class IRODSSessionTest extends VaultTest {
     public void testLoginWhitespaceHomeDirectory() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -115,7 +114,7 @@ public class IRODSSessionTest extends VaultTest {
     public void testLoginFailure() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("a", "a"));
 
         final IRODSSession session = new IRODSSession(host);

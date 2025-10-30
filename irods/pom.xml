@@ -41,6 +41,12 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <artifactId>testcontainers</artifactId>
+            <groupId>org.testcontainers</groupId>
+            <version>2.0.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
