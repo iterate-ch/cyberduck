@@ -337,16 +337,21 @@ public class ProxyController extends AbstractController {
         private final SheetController controller;
         private final AtomicReference<Proxy> reference = new AtomicReference<>();
         private final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
+        private final int behaviour;
 
         public PopoverAlertRunner(final NSView positioningView, final SheetController controller) {
             this(positioningView, positioningView.frame(), controller);
         }
 
         public PopoverAlertRunner(final NSView positioningView, final NSRect positioningRect, final SheetController controller) {
+            this(positioningView, positioningRect, controller, NSPopover.NSPopoverBehaviorSemitransient);
+        }
+
+        public PopoverAlertRunner(final NSView positioningView, final NSRect positioningRect, final SheetController controller, final int behaviour) {
             this.positioningView = positioningView;
             this.positioningRect = positioningRect;
             this.controller = controller;
-            this.controller.addHandler(this);
+            this.behaviour = behaviour;
         }
 
         @Override
@@ -356,7 +361,7 @@ public class ProxyController extends AbstractController {
             reference.set(proxy);
             popover.setDelegate(proxy.id());
             popover.setAnimates(true);
-            popover.setBehavior(NSPopover.NSPopoverBehaviorSemitransient);
+            popover.setBehavior(behaviour);
             final NSViewController viewController = NSViewController.create();
             viewController.setView(sheet.contentView());
             popover.setContentViewController(viewController);
