@@ -19,13 +19,14 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>9.3.0-SNAPSHOT</version>
+        <version>9.3.0.uvfdraft.cryptolib-SNAPSHOT</version>
     </parent>
     <artifactId>cryptomator</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <cryptolib.version>2.1.2.1</cryptolib.version>
+        <cryptolib.version>2.3.0.uvfdraft-SNAPSHOT</cryptolib.version>
+        <nimbus-jose.version>10.5</nimbus-jose.version>
     </properties>
 
     <dependencies>
@@ -45,6 +46,11 @@
             <groupId>ch.iterate.cryptomator</groupId>
             <artifactId>cryptolib</artifactId>
             <version>${cryptolib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>${nimbus-jose.version}</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
