@@ -24,6 +24,7 @@
                 <outlet property="portField" destination="r0A-uY-vq2" id="104"/>
                 <outlet property="privateKeyPopup" destination="bPT-hT-KlL" id="126"/>
                 <outlet property="protocolPopup" destination="qu9-6n-E5M" id="105"/>
+                <outlet property="tabView" destination="yX9-yd-D7S" id="eiho5Dah"/>
                 <outlet property="timezonePopup" destination="Aav-NI-gKI" id="106"/>
                 <outlet property="usernameField" destination="Ciu-Zv-VlC" id="110"/>
                 <outlet property="usernameLabel" destination="jqf-kB-PHA" id="123"/>

@@ -18,20 +18,7 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSControl;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.binding.application.NSOpenPanel;
-import ch.cyberduck.binding.application.NSPopUpButton;
-import ch.cyberduck.binding.application.NSSecureTextField;
-import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.binding.application.NSTextFieldCell;
-import ch.cyberduck.binding.application.NSTokenField;
-import ch.cyberduck.binding.application.NSView;
-import ch.cyberduck.binding.application.NSWindow;
-import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSData;
@@ -77,7 +64,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 
-public class BookmarkController extends BundleController {
+public class BookmarkController extends BundleController implements NSTabView.Delegate {
     private static final Logger log = LogManager.getLogger(BookmarkController.class);
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
@@ -97,6 +84,8 @@ public class BookmarkController extends BundleController {
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
 
+    @Outlet
+    private NSTabView tabView;
     @Outlet
     private NSView contentView;
     @Outlet
@@ -202,6 +191,16 @@ public class BookmarkController extends BundleController {
     @Override
     public NSView view() {
         return contentView;
+    }
+
+    public void setTabView(final NSTabView tabView) {
+        this.tabView = tabView;
+        this.tabView.setDelegate(this.id());
+    }
+
+    @Override
+    public void tabView_didSelectTabViewItem(final NSTabView view, final NSTabViewItem item) {
+        this.update();
     }
 
     public NSView getContentView() {

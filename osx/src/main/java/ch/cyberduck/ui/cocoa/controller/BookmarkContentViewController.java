@@ -19,6 +19,8 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.application.NSTabView;
+import ch.cyberduck.binding.application.NSTabViewItem;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.core.Host;
