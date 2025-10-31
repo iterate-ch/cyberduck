@@ -12,7 +12,6 @@
                 <outlet property="anonymousCheckbox" destination="W6c-7b-puJ" id="94"/>
                 <outlet property="certificatePopup" destination="2cc-0e-HKR" id="124"/>
                 <outlet property="contentView" destination="2Kx-No-QF1" id="Tawee3Ie"/>
-                <outlet property="downloadPathPopup" destination="ehA-FE-mFa" id="97"/>
                 <outlet property="encodingPopup" destination="hvx-ue-IcP" id="98"/>
                 <outlet property="ftpModePopup" destination="7ki-B7-LbY" id="96"/>
                 <outlet property="hostField" destination="L04-rl-TAx" id="99"/>
@@ -25,7 +24,6 @@
                 <outlet property="privateKeyPopup" destination="bPT-hT-KlL" id="126"/>
                 <outlet property="protocolPopup" destination="qu9-6n-E5M" id="105"/>
                 <outlet property="timezonePopup" destination="Aav-NI-gKI" id="106"/>
-                <outlet property="transferPopup" destination="LR8-YA-DUY" id="108"/>
                 <outlet property="usernameField" destination="Ciu-Zv-VlC" id="110"/>
                 <outlet property="usernameLabel" destination="jqf-kB-PHA" id="123"/>
                 <outlet property="webURLField" destination="RWH-RE-GNo" id="111"/>
@@ -33,14 +31,14 @@
             </connections>
         </customObject>
         <view horizontalCompressionResistancePriority="250" id="2Kx-No-QF1">
-            <rect key="frame" x="0.0" y="0.0" width="456" height="475"/>
+            <rect key="frame" x="0.0" y="0.0" width="456" height="589"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView distribution="fill" orientation="vertical" alignment="trailing" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Abt-8f-HzA">
-                    <rect key="frame" x="20" y="20" width="416" height="435"/>
+                    <rect key="frame" x="20" y="20" width="416" height="549"/>
                     <subviews>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="250" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LU6-KW-zzr">
-                            <rect key="frame" x="0.0" y="395" width="416" height="40"/>
+                            <rect key="frame" x="0.0" y="509" width="416" height="40"/>
                             <subviews>
                                 <popUpButton verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="qu9-6n-E5M" userLabel="Protocol Popup">
                                     <rect key="frame" x="-3" y="16" width="423" height="25"/>
@@ -57,8 +55,6 @@
                             </subviews>
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="9DG-Nk-K2b"/>
-                                <constraint firstAttribute="trailing" secondItem="qu9-6n-E5M" secondAttribute="trailing" id="Gd0-t6-RWl"/>
-                                <constraint firstItem="qu9-6n-E5M" firstAttribute="leading" secondItem="LU6-KW-zzr" secondAttribute="leading" id="OxU-te-TBb"/>
                                 <constraint firstAttribute="bottom" secondItem="qu9-6n-E5M" secondAttribute="bottom" constant="20" id="keI-Q1-g0H"/>
                             </constraints>
                             <visibilityPriorities>
@@ -69,7 +65,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Oe1-Kw-0WY">
-                            <rect key="frame" x="0.0" y="368" width="416" height="19"/>
+                            <rect key="frame" x="0.0" y="482" width="416" height="19"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="yth-wj-wAf">
                                     <rect key="frame" x="-2" y="2" width="154" height="14"/>
@@ -96,7 +92,6 @@
                             </subviews>
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="7y1-va-v7p"/>
-                                <constraint firstAttribute="trailing" secondItem="lfg-XO-WdV" secondAttribute="trailing" id="FWx-2o-ZIe"/>
                                 <constraint firstItem="lfg-XO-WdV" firstAttribute="leading" secondItem="yth-wj-wAf" secondAttribute="trailing" constant="8" symbolic="YES" id="Znd-fZ-F4x"/>
                             </constraints>
                             <visibilityPriorities>
@@ -109,7 +104,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XQ8-Ix-eXU">
-                            <rect key="frame" x="0.0" y="341" width="416" height="19"/>
+                            <rect key="frame" x="0.0" y="455" width="416" height="19"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CUU-A3-pee">
                                     <rect key="frame" x="-2" y="2" width="154" height="14"/>
@@ -137,7 +132,6 @@
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="224-hU-2Lp"/>
                                 <constraint firstItem="AvO-GE-eBC" firstAttribute="leading" secondItem="CUU-A3-pee" secondAttribute="trailing" constant="8" symbolic="YES" id="dDZ-14-fpR"/>
-                                <constraint firstAttribute="trailing" secondItem="AvO-GE-eBC" secondAttribute="trailing" id="fK7-HM-JAG"/>
                             </constraints>
                             <visibilityPriorities>
                                 <integer value="1000"/>
@@ -149,7 +143,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pSw-oV-gTk">
-                            <rect key="frame" x="0.0" y="298" width="416" height="35"/>
+                            <rect key="frame" x="0.0" y="412" width="416" height="35"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Xhi-kD-4lp">
                                     <rect key="frame" x="-2" y="0.0" width="154" height="14"/>
@@ -236,7 +230,6 @@
                                 </stackView>
                             </subviews>
                             <constraints>
-                                <constraint firstAttribute="trailing" secondItem="ol5-Sm-uF6" secondAttribute="trailing" id="5qW-ez-NEf"/>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="TXW-Bs-h18"/>
                                 <constraint firstItem="ol5-Sm-uF6" firstAttribute="leading" secondItem="Xhi-kD-4lp" secondAttribute="trailing" constant="8" symbolic="YES" id="c46-Uc-JVg"/>
                             </constraints>
@@ -250,7 +243,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vxc-p7-tmq">
-                            <rect key="frame" x="0.0" y="271" width="416" height="19"/>
+                            <rect key="frame" x="0.0" y="385" width="416" height="19"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="UjQ-6u-a70">
                                     <rect key="frame" x="-2" y="2" width="154" height="14"/>
@@ -276,7 +269,6 @@
                                 </textField>
                             </subviews>
                             <constraints>
-                                <constraint firstAttribute="trailing" secondItem="2Op-yu-r6q" secondAttribute="trailing" id="2gq-FK-kzW"/>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="8mC-U1-5fU"/>
                                 <constraint firstItem="2Op-yu-r6q" firstAttribute="leading" secondItem="UjQ-6u-a70" secondAttribute="trailing" constant="8" symbolic="YES" id="jmD-Eh-PIF"/>
                             </constraints>
@@ -290,7 +282,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WmN-L1-b6d">
-                            <rect key="frame" x="0.0" y="244" width="416" height="19"/>
+                            <rect key="frame" x="0.0" y="358" width="416" height="19"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="XxX-e4-PJI">
                                     <rect key="frame" x="-2" y="2" width="154" height="14"/>
@@ -328,7 +320,6 @@
                             </subviews>
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="06P-XU-qS6"/>
-                                <constraint firstAttribute="trailing" secondItem="Vl3-kb-L99" secondAttribute="trailing" id="2Sx-yA-kks"/>
                                 <constraint firstItem="Vl3-kb-L99" firstAttribute="leading" secondItem="RWH-RE-GNo" secondAttribute="trailing" constant="8" symbolic="YES" id="5of-JV-xDJ"/>
                                 <constraint firstItem="Vl3-kb-L99" firstAttribute="top" secondItem="WmN-L1-b6d" secondAttribute="top" id="JgM-XD-poS"/>
                                 <constraint firstItem="RWH-RE-GNo" firstAttribute="leading" secondItem="XxX-e4-PJI" secondAttribute="trailing" constant="8" symbolic="YES" id="TuD-IY-fY7"/>
@@ -346,7 +337,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rod-1T-W8m">
-                            <rect key="frame" x="0.0" y="217" width="416" height="19"/>
+                            <rect key="frame" x="0.0" y="331" width="416" height="19"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="jqf-kB-PHA" userLabel="Username Label">
                                     <rect key="frame" x="-2" y="2" width="154" height="14"/>
@@ -372,7 +363,6 @@
                                 </textField>
                             </subviews>
                             <constraints>
-                                <constraint firstAttribute="trailing" secondItem="Ciu-Zv-VlC" secondAttribute="trailing" id="WQb-N8-NZ5"/>
                                 <constraint firstItem="Ciu-Zv-VlC" firstAttribute="leading" secondItem="jqf-kB-PHA" secondAttribute="trailing" constant="8" symbolic="YES" id="X24-Oo-1bF"/>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="ay5-hc-Fgd"/>
                             </constraints>
@@ -386,10 +376,10 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1RC-Ds-Whd">
-                            <rect key="frame" x="158" y="195" width="258" height="14"/>
+                            <rect key="frame" x="158" y="147" width="258" height="176"/>
                             <subviews>
                                 <button horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="W6c-7b-puJ">
-                                    <rect key="frame" x="-1" y="-1" width="259" height="16"/>
+                                    <rect key="frame" x="-1" y="161" width="259" height="16"/>
                                     <buttonCell key="cell" type="check" title="Anonymous Login" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="QIp-1i-VGV">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="smallSystem"/>
@@ -401,7 +391,6 @@
                             </subviews>
                             <constraints>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="WiO-q6-fuB"/>
-                                <constraint firstAttribute="trailing" secondItem="W6c-7b-puJ" secondAttribute="trailing" id="eOB-05-gMM"/>
                             </constraints>
                             <visibilityPriorities>
                                 <integer value="1000"/>
@@ -411,7 +400,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="n1T-xb-QHg">
-                            <rect key="frame" x="0.0" y="168" width="416" height="19"/>
+                            <rect key="frame" x="0.0" y="120" width="416" height="19"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="9gh-NJ-mK9" userLabel="Password Label">
                                     <rect key="frame" x="-2" y="2" width="154" height="14"/>
@@ -437,7 +426,6 @@
                                 </textField>
                             </subviews>
                             <constraints>
-                                <constraint firstAttribute="trailing" secondItem="GuU-jB-XfB" secondAttribute="trailing" id="EmB-UC-m11"/>
                                 <constraint firstItem="GuU-jB-XfB" firstAttribute="leading" secondItem="9gh-NJ-mK9" secondAttribute="trailing" constant="8" symbolic="YES" id="al8-hc-eZx"/>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="gvl-J1-Lrb"/>
                             </constraints>
@@ -451,7 +439,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c7i-wA-eB2">
-                            <rect key="frame" x="0.0" y="144" width="416" height="16"/>
+                            <rect key="frame" x="0.0" y="96" width="416" height="16"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="mmd-cn-5n9">
                                     <rect key="frame" x="-2" y="1" width="154" height="14"/>
@@ -477,7 +465,6 @@
                                 </popUpButton>
                             </subviews>
                             <constraints>
-                                <constraint firstAttribute="trailing" secondItem="bPT-hT-KlL" secondAttribute="trailing" id="53x-hw-529"/>
                                 <constraint firstItem="bPT-hT-KlL" firstAttribute="leading" secondItem="mmd-cn-5n9" secondAttribute="trailing" constant="8" symbolic="YES" id="jMS-P3-7KI"/>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="rcf-Id-Jsy"/>
                             </constraints>
@@ -491,7 +478,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sYQ-Sz-UGS">
-                            <rect key="frame" x="0.0" y="120" width="416" height="16"/>
+                            <rect key="frame" x="0.0" y="72" width="416" height="16"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="NS6-OA-wNh">
                                     <rect key="frame" x="-2" y="1" width="154" height="14"/>
@@ -517,7 +504,6 @@
                                 </popUpButton>
                             </subviews>
                             <constraints>
-                                <constraint firstAttribute="trailing" secondItem="2cc-0e-HKR" secondAttribute="trailing" id="9pK-yG-BqB"/>
                                 <constraint firstItem="2cc-0e-HKR" firstAttribute="leading" secondItem="NS6-OA-wNh" secondAttribute="trailing" constant="8" symbolic="YES" id="kaK-PL-ReB"/>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="qKk-Ww-WIN"/>
                             </constraints>
@@ -531,7 +517,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JYr-bK-ixd">
-                            <rect key="frame" x="0.0" y="96" width="416" height="16"/>
+                            <rect key="frame" x="0.0" y="48" width="416" height="16"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="3Q9-dO-oVf">
                                     <rect key="frame" x="-2" y="1" width="154" height="14"/>
@@ -561,7 +547,6 @@
                                 </popUpButton>
                             </subviews>
                             <constraints>
-                                <constraint firstAttribute="trailing" secondItem="hvx-ue-IcP" secondAttribute="trailing" id="5aA-vx-2S3"/>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="qZ7-3s-M7h"/>
                                 <constraint firstItem="hvx-ue-IcP" firstAttribute="leading" secondItem="3Q9-dO-oVf" secondAttribute="trailing" constant="8" symbolic="YES" id="yWn-VN-34A"/>
                             </constraints>
@@ -575,7 +560,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8QN-Ke-Zmb">
-                            <rect key="frame" x="0.0" y="72" width="416" height="16"/>
+                            <rect key="frame" x="0.0" y="24" width="416" height="16"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="pik-2G-qJm">
                                     <rect key="frame" x="-2" y="1" width="154" height="14"/>
@@ -607,7 +592,6 @@
                             <constraints>
                                 <constraint firstItem="Aav-NI-gKI" firstAttribute="leading" secondItem="pik-2G-qJm" secondAttribute="trailing" constant="8" symbolic="YES" id="KeS-Rh-DXk"/>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="RCO-qJ-6WE"/>
-                                <constraint firstAttribute="trailing" secondItem="Aav-NI-gKI" secondAttribute="trailing" id="Xdl-di-xXT"/>
                             </constraints>
                             <visibilityPriorities>
                                 <integer value="1000"/>
@@ -619,7 +603,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fJ2-KK-yyG">
-                            <rect key="frame" x="0.0" y="48" width="416" height="16"/>
+                            <rect key="frame" x="0.0" y="0.0" width="416" height="16"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="a46-O2-NN5">
                                     <rect key="frame" x="-2" y="1" width="154" height="14"/>
@@ -650,94 +634,7 @@
                             </subviews>
                             <constraints>
                                 <constraint firstItem="7ki-B7-LbY" firstAttribute="leading" secondItem="a46-O2-NN5" secondAttribute="trailing" constant="8" symbolic="YES" id="iMe-Qg-J9y"/>
-                                <constraint firstAttribute="trailing" secondItem="7ki-B7-LbY" secondAttribute="trailing" id="oIv-aI-Cjh"/>
                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="q9W-C3-0Br"/>
-                            </constraints>
-                            <visibilityPriorities>
-                                <integer value="1000"/>
-                                <integer value="1000"/>
-                            </visibilityPriorities>
-                            <customSpacing>
-                                <real value="3.4028234663852886e+38"/>
-                                <real value="3.4028234663852886e+38"/>
-                            </customSpacing>
-                        </stackView>
-                        <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HfI-19-4O3">
-                            <rect key="frame" x="0.0" y="24" width="416" height="16"/>
-                            <subviews>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="ror-dg-M8K">
-                                    <rect key="frame" x="-2" y="1" width="154" height="14"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Qxw-u9-eqZ"/>
-                                    </constraints>
-                                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder:" id="TIN-SE-JBJ">
-                                        <font key="font" metaFont="smallSystem"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <popUpButton horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="ehA-FE-mFa" userLabel="Download Folder Popup">
-                                    <rect key="frame" x="154" y="-4" width="266" height="22"/>
-                                    <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="CMc-2j-WP7" id="6WI-WX-Tsu">
-                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="smallSystem"/>
-                                        <menu key="menu" title="OtherViews" id="S98-qD-c2s">
-                                            <items>
-                                                <menuItem title=" " state="on" id="CMc-2j-WP7"/>
-                                            </items>
-                                        </menu>
-                                    </popUpButtonCell>
-                                    <constraints>
-                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="RGs-cO-hSs"/>
-                                    </constraints>
-                                </popUpButton>
-                            </subviews>
-                            <constraints>
-                                <constraint firstAttribute="trailing" secondItem="ehA-FE-mFa" secondAttribute="trailing" id="qcs-KS-01m"/>
-                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="t2Z-dk-gch"/>
-                            </constraints>
-                            <visibilityPriorities>
-                                <integer value="1000"/>
-                                <integer value="1000"/>
-                            </visibilityPriorities>
-                            <customSpacing>
-                                <real value="3.4028234663852886e+38"/>
-                                <real value="3.4028234663852886e+38"/>
-                            </customSpacing>
-                        </stackView>
-                        <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e72-3x-N1I">
-                            <rect key="frame" x="0.0" y="0.0" width="416" height="16"/>
-                            <subviews>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="ryQ-XZ-BIh" userLabel="Transfer Files:">
-                                    <rect key="frame" x="-2" y="1" width="154" height="14"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="ads-NK-Q4B"/>
-                                    </constraints>
-                                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Transfer Files:" id="ntA-vp-xmv">
-                                        <font key="font" metaFont="smallSystem"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <popUpButton horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="LR8-YA-DUY" userLabel="Transfer Files Popup">
-                                    <rect key="frame" x="154" y="-4" width="266" height="22"/>
-                                    <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="mJO-HJ-2qI" id="YhT-e1-T78">
-                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="smallSystem"/>
-                                        <menu key="menu" title="OtherViews" id="CqU-Wz-YnW">
-                                            <items>
-                                                <menuItem title=" " state="on" id="mJO-HJ-2qI"/>
-                                            </items>
-                                        </menu>
-                                    </popUpButtonCell>
-                                    <constraints>
-                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="DIu-2l-bZd"/>
-                                    </constraints>
-                                </popUpButton>
-                            </subviews>
-                            <constraints>
-                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="otr-rr-mlr"/>
-                                <constraint firstAttribute="bottom" secondItem="LR8-YA-DUY" secondAttribute="bottom" id="uIw-BX-eGe"/>
                             </constraints>
                             <visibilityPriorities>
                                 <integer value="1000"/>
@@ -750,26 +647,24 @@
                         </stackView>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="ehA-FE-mFa" secondAttribute="width" id="39X-zh-eD8"/>
                         <constraint firstItem="pik-2G-qJm" firstAttribute="width" secondItem="yth-wj-wAf" secondAttribute="width" id="3f6-g1-wEh"/>
                         <constraint firstItem="9gh-NJ-mK9" firstAttribute="width" secondItem="yth-wj-wAf" secondAttribute="width" id="AcK-dj-3Tw"/>
+                        <constraint firstItem="LU6-KW-zzr" firstAttribute="leading" secondItem="Abt-8f-HzA" secondAttribute="leading" id="BMh-eD-HXO"/>
                         <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="7ki-B7-LbY" secondAttribute="width" id="CgK-uO-dEp"/>
                         <constraint firstItem="Xhi-kD-4lp" firstAttribute="width" secondItem="yth-wj-wAf" secondAttribute="width" id="Eqr-Cn-A7d"/>
                         <constraint firstItem="UjQ-6u-a70" firstAttribute="width" secondItem="yth-wj-wAf" secondAttribute="width" id="FEi-I7-okq"/>
                         <constraint firstItem="Aav-NI-gKI" firstAttribute="width" secondItem="lfg-XO-WdV" secondAttribute="width" id="GhT-qi-nQW"/>
-                        <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="LR8-YA-DUY" secondAttribute="width" id="J1P-wr-TpQ"/>
                         <constraint firstItem="AvO-GE-eBC" firstAttribute="width" secondItem="lfg-XO-WdV" secondAttribute="width" id="TTc-zv-puT"/>
                         <constraint firstItem="ol5-Sm-uF6" firstAttribute="width" secondItem="lfg-XO-WdV" secondAttribute="width" id="X1A-LI-ao3"/>
                         <constraint firstItem="jqf-kB-PHA" firstAttribute="width" secondItem="yth-wj-wAf" secondAttribute="width" id="YFx-YO-KVD"/>
+                        <constraint firstAttribute="trailing" secondItem="LU6-KW-zzr" secondAttribute="trailing" id="bkF-FB-hC4"/>
                         <constraint firstItem="NS6-OA-wNh" firstAttribute="width" secondItem="yth-wj-wAf" secondAttribute="width" id="cdI-JJ-HeD"/>
-                        <constraint firstItem="LU6-KW-zzr" firstAttribute="leading" secondItem="Abt-8f-HzA" secondAttribute="leading" id="d8I-dj-ctp"/>
-                        <constraint firstItem="yth-wj-wAf" firstAttribute="width" secondItem="ryQ-XZ-BIh" secondAttribute="width" id="dq3-HL-sjZ"/>
                         <constraint firstItem="GuU-jB-XfB" firstAttribute="width" secondItem="lfg-XO-WdV" secondAttribute="width" id="dyq-vj-hSA"/>
                         <constraint firstItem="hvx-ue-IcP" firstAttribute="width" secondItem="lfg-XO-WdV" secondAttribute="width" id="euE-ED-e9X"/>
+                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="800" id="fLA-zc-81h"/>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="400" id="gbu-t8-XHw"/>
                         <constraint firstItem="2Op-yu-r6q" firstAttribute="width" secondItem="lfg-XO-WdV" secondAttribute="width" id="hpL-Yf-rlP"/>
                         <constraint firstItem="3Q9-dO-oVf" firstAttribute="width" secondItem="yth-wj-wAf" secondAttribute="width" id="mKZ-NX-ggK"/>
-                        <constraint firstItem="yth-wj-wAf" firstAttribute="width" secondItem="ror-dg-M8K" secondAttribute="width" id="ofH-Ag-5MC"/>
                         <constraint firstItem="bPT-hT-KlL" firstAttribute="width" secondItem="lfg-XO-WdV" secondAttribute="width" id="p4c-HA-GzQ"/>
                         <constraint firstItem="W6c-7b-puJ" firstAttribute="width" secondItem="lfg-XO-WdV" secondAttribute="width" id="pNe-pd-1Ce"/>
                         <constraint firstItem="CUU-A3-pee" firstAttribute="width" secondItem="yth-wj-wAf" secondAttribute="width" id="pYG-l4-gN5"/>
@@ -779,8 +674,6 @@
                         <constraint firstItem="2cc-0e-HKR" firstAttribute="width" secondItem="lfg-XO-WdV" secondAttribute="width" id="zzD-J9-oLI"/>
                     </constraints>
                     <visibilityPriorities>
-                        <integer value="1000"/>
-                        <integer value="1000"/>
                         <integer value="1000"/>
                         <integer value="1000"/>
                         <integer value="1000"/>
@@ -811,8 +704,6 @@
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
-                        <real value="3.4028234663852886e+38"/>
-                        <real value="3.4028234663852886e+38"/>
                     </customSpacing>
                 </stackView>
             </subviews>
@@ -822,7 +713,7 @@
                 <constraint firstAttribute="trailing" secondItem="Abt-8f-HzA" secondAttribute="trailing" constant="20" symbolic="YES" id="SFz-fw-NRn"/>
                 <constraint firstItem="Abt-8f-HzA" firstAttribute="top" secondItem="2Kx-No-QF1" secondAttribute="top" constant="20" symbolic="YES" id="tUu-fq-ukF"/>
             </constraints>
-            <point key="canvasLocation" x="-2676" y="-1147"/>
+            <point key="canvasLocation" x="-2676" y="-1090.5"/>
         </view>
     </objects>
     <resources>
