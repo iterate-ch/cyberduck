@@ -21,12 +21,13 @@ import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.ui.LoginInputValidator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 
-public class ConnectionController extends DefaultBookmarkController {
+public class ConnectionController extends BookmarkContentViewController {
+
+    private final Host bookmark;
+    private final LoginOptions options;
 
     @Outlet
     private NSButton keychainCheckbox;
@@ -36,26 +37,20 @@ public class ConnectionController extends DefaultBookmarkController {
     }
 
     public ConnectionController(final Host bookmark, final LoginOptions options) {
-        super(bookmark, new LoginInputValidator(bookmark, options), options);
+        super(bookmark, new DefaultBookmarkController(bookmark, options));
+        this.bookmark = bookmark;
+        this.options = options;
     }
 
     @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        if(options.user) {
-            window.makeFirstResponder(usernameField);
-        }
-        if(options.password && !StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
-            window.makeFirstResponder(passwordField);
-        }
+    protected String getBundleName() {
+        return "Connection";
     }
 
     @Override
     public void callback(final int returncode) {
-        switch(returncode) {
-            case CANCEL_OPTION:
-                bookmark.getCredentials().setPassword(null);
-                break;
+        if(CANCEL_OPTION == returncode) {
+            bookmark.getCredentials().setPassword(null);
         }
     }
 
@@ -63,13 +58,8 @@ public class ConnectionController extends DefaultBookmarkController {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                keychainCheckbox.setEnabled(options.keychain);
-                keychainCheckbox.setState(bookmark.getCredentials().isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
-            }
-        });
+        this.keychainCheckbox.setEnabled(options.keychain);
+        this.keychainCheckbox.setState(bookmark.getCredentials().isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
