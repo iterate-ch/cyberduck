@@ -8,6 +8,8 @@
         <customObject id="-2" userLabel="File's Owner" customClass="ConnectionController">
             <connections>
                 <outlet property="contentView" destination="cjf-RS-AF0" id="Aequ0xah"/>
+                <outlet property="downloadPathPopup" destination="rHe-oM-KLc" id="97"/>
+                <outlet property="transferPopup" destination="Hn7-Yc-f09" id="108"/>
                 <outlet property="window" destination="3" id="84"/>
             </connections>
         </customObject>
@@ -15,54 +17,170 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
         <window title="Edit Bookmark" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" id="3" userLabel="Edit Bookmark" customClass="NSPanel">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-            <rect key="contentRect" x="460" y="215" width="536" height="384"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2880" height="1595"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
+            <rect key="contentRect" x="460" y="215" width="500" height="450"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
+            <value key="minSize" type="size" width="500" height="200"/>
             <view key="contentView" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4">
-                <rect key="frame" x="0.0" y="304" width="144" height="80"/>
+                <rect key="frame" x="0.0" y="322" width="440" height="128"/>
                 <subviews>
-                    <customView id="cjf-RS-AF0">
-                        <rect key="frame" x="0.0" y="60" width="144" height="198"/>
+                    <customView id="cjf-RS-AF0" userLabel="Content View">
+                        <rect key="frame" x="0.0" y="128" width="440" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>
-                    <button tag="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14">
-                        <rect key="frame" x="437" y="13" width="86" height="32"/>
-                        <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
+                    <stackView distribution="fill" orientation="vertical" alignment="trailing" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalHuggingPriority="750" verticalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Iql-6J-awM" userLabel="Options View">
+                        <rect key="frame" x="20" y="68" width="400" height="60"/>
+                        <subviews>
+                            <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NX8-ZW-YeI" userLabel="Download Folder Stack View">
+                                <rect key="frame" x="0.0" y="64" width="400" height="36"/>
+                                <subviews>
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="KBh-Lx-hEn">
+                                        <rect key="frame" x="-2" y="21" width="154" height="14"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="NpX-u0-Cjw"/>
+                                        </constraints>
+                                        <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder:" id="FC8-5G-WoJ">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <popUpButton horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="rHe-oM-KLc" userLabel="Download Folder Popup">
+                                        <rect key="frame" x="154" y="16" width="250" height="22"/>
+                                        <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="CEY-9o-gsN" id="X8h-fT-s95">
+                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <menu key="menu" title="OtherViews" id="9TH-3b-4Ce">
+                                                <items>
+                                                    <menuItem title=" " state="on" id="CEY-9o-gsN"/>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <constraints>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="mc0-NS-CvV"/>
+                                        </constraints>
+                                    </popUpButton>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="Dke-u1-Lyq"/>
+                                </constraints>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                            <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fxM-ZC-cQ3" userLabel="Transfer Stack View">
+                                <rect key="frame" x="0.0" y="0.0" width="400" height="16"/>
+                                <subviews>
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Cge-dP-p1l" userLabel="Transfer Files:">
+                                        <rect key="frame" x="-2" y="1" width="154" height="14"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="TTB-iX-60u"/>
+                                        </constraints>
+                                        <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Transfer Files:" id="1FT-fG-moM">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <popUpButton horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Hn7-Yc-f09" userLabel="Transfer Files Popup">
+                                        <rect key="frame" x="154" y="-4" width="250" height="22"/>
+                                        <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="DtH-Fx-kt7" id="ZMv-4U-Ut2">
+                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <menu key="menu" title="OtherViews" id="JI5-4e-UjZ">
+                                                <items>
+                                                    <menuItem title=" " state="on" id="DtH-Fx-kt7"/>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <constraints>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="YoK-ra-94j"/>
+                                        </constraints>
+                                    </popUpButton>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="ciW-gl-HQy"/>
+                                </constraints>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="400" id="6uJ-9P-iyc"/>
+                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="800" id="WSb-pk-w0Z"/>
+                        </constraints>
+                        <visibilityPriorities>
+                            <integer value="1000"/>
+                            <integer value="1000"/>
+                        </visibilityPriorities>
+                        <customSpacing>
+                            <real value="3.4028234663852886e+38"/>
+                            <real value="3.4028234663852886e+38"/>
+                        </customSpacing>
+                    </stackView>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="ax1-78-ilT" userLabel="Action View">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="60"/>
+                        <subviews>
+                            <button tag="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14">
+                                <rect key="frame" x="341" y="13" width="86" height="32"/>
+                                <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="closeSheet:" target="-2" id="92"/>
-                        </connections>
-                    </button>
-                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="66">
-                        <rect key="frame" x="17" y="16" width="25" height="25"/>
-                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" inset="2" id="67">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="helpButtonClicked:" target="-2" id="95"/>
-                        </connections>
-                    </button>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="closeSheet:" target="-2" id="92"/>
+                                </connections>
+                            </button>
+                            <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="66">
+                                <rect key="frame" x="17" y="16" width="25" height="25"/>
+                                <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" inset="2" id="67">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="helpButtonClicked:" target="-2" id="95"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="66" firstAttribute="leading" secondItem="ax1-78-ilT" secondAttribute="leading" constant="20" symbolic="YES" id="AEX-zN-DMv"/>
+                            <constraint firstAttribute="bottom" secondItem="66" secondAttribute="bottom" constant="20" symbolic="YES" id="BbS-MN-pEO"/>
+                            <constraint firstItem="14" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="66" secondAttribute="trailing" constant="12" symbolic="YES" id="G1H-bO-B9H"/>
+                            <constraint firstAttribute="trailing" secondItem="14" secondAttribute="trailing" constant="20" symbolic="YES" id="PX1-o7-lKr"/>
+                            <constraint firstAttribute="bottom" secondItem="14" secondAttribute="bottom" constant="20" symbolic="YES" id="lG9-G8-D1B"/>
+                            <constraint firstAttribute="height" constant="60" id="zVO-1f-DQ3"/>
+                        </constraints>
+                    </customView>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailing" secondItem="14" secondAttribute="trailing" constant="20" symbolic="YES" id="7Bg-1W-QNm"/>
-                    <constraint firstItem="66" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="7G2-cV-PTi"/>
-                    <constraint firstItem="cjf-RS-AF0" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="DGV-GB-bkb"/>
-                    <constraint firstAttribute="bottom" secondItem="14" secondAttribute="bottom" constant="20" symbolic="YES" id="Ikq-tj-lN8"/>
-                    <constraint firstItem="14" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="66" secondAttribute="trailing" constant="12" symbolic="YES" id="JPN-Tt-7cd"/>
-                    <constraint firstAttribute="bottom" secondItem="66" secondAttribute="bottom" constant="20" symbolic="YES" id="UHg-cz-N8p"/>
+                    <constraint firstItem="ax1-78-ilT" firstAttribute="top" secondItem="Iql-6J-awM" secondAttribute="bottom" constant="8" symbolic="YES" id="6Wr-Nb-QrN"/>
+                    <constraint firstItem="cjf-RS-AF0" firstAttribute="top" secondItem="4" secondAttribute="top" id="DGV-GB-bkb"/>
+                    <constraint firstAttribute="trailing" secondItem="Iql-6J-awM" secondAttribute="trailing" constant="20" symbolic="YES" id="GT0-Bc-li4"/>
+                    <constraint firstAttribute="trailing" secondItem="ax1-78-ilT" secondAttribute="trailing" id="Mo5-C5-aMG"/>
                     <constraint firstAttribute="trailing" secondItem="cjf-RS-AF0" secondAttribute="trailing" id="XK9-TW-cop"/>
-                    <constraint firstAttribute="bottom" secondItem="cjf-RS-AF0" secondAttribute="bottom" constant="60" id="cEH-Vq-whs"/>
+                    <constraint firstItem="ax1-78-ilT" firstAttribute="leading" secondItem="4" secondAttribute="leading" id="XWm-FQ-idk"/>
+                    <constraint firstItem="Iql-6J-awM" firstAttribute="top" secondItem="cjf-RS-AF0" secondAttribute="bottom" id="bxf-2S-2it"/>
+                    <constraint firstAttribute="bottom" secondItem="ax1-78-ilT" secondAttribute="bottom" id="cfj-fm-c7c"/>
                     <constraint firstItem="cjf-RS-AF0" firstAttribute="leading" secondItem="4" secondAttribute="leading" id="neJ-Qq-rSF"/>
+                    <constraint firstItem="Iql-6J-awM" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="y3Y-hl-TKs"/>
                 </constraints>
             </view>
             <contentBorderThickness minY="60"/>
-            <point key="canvasLocation" x="615" y="-110"/>
+            <point key="canvasLocation" x="799" y="-197"/>
         </window>
     </objects>
 </document>
