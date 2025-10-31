@@ -47,7 +47,7 @@ public interface Vault {
      * @throws BackgroundException    Failure reading master key from server
      * @throws NotfoundException      No master key file in home
      */
-    Vault load(Session<?> session, PasswordCallback prompt) throws BackgroundException;
+    Vault load(Session<?> session, PasswordCallback prompt, VaultMetadataProvider provider) throws BackgroundException;
 
     /**
      * Close vault
