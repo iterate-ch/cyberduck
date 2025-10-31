@@ -100,6 +100,8 @@ public class BookmarkController extends BundleController {
     @Outlet
     private NSView contentView;
     @Outlet
+    private NSView optionsView;
+    @Outlet
     private NSPopUpButton protocolPopup;
     @Outlet
     private NSTextField hostField;
@@ -202,8 +204,20 @@ public class BookmarkController extends BundleController {
         return contentView;
     }
 
+    public NSView getContentView() {
+        return contentView;
+    }
+
     public void setContentView(final NSView contentView) {
         this.contentView = contentView;
+    }
+
+    public NSView getOptionsView() {
+        return optionsView;
+    }
+
+    public void setOptionsView(final NSView optionsView) {
+        this.optionsView = optionsView;
     }
 
     public void setProtocolPopup(final NSPopUpButton button) {
