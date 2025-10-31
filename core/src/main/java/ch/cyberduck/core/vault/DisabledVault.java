@@ -42,7 +42,7 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Vault load(final Session<?> session, final PasswordCallback prompt) {
+    public Vault load(final Session<?> session, final PasswordCallback prompt, final VaultMetadataProvider provider) {
         return this;
     }
 

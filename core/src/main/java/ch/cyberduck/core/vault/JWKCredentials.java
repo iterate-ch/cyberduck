@@ -15,6 +15,18 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-public interface VaultMetadataProvider {
-    // Marker interface
+import com.nimbusds.jose.jwk.JWK;
+
+public class JWKCredentials extends VaultCredentials {
+
+    private final JWK key;
+
+    public JWKCredentials(final JWK key) {
+        super(null);
+        this.key = key;
+    }
+
+    public JWK getKey() {
+        return key;
+    }
 }
