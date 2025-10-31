@@ -41,6 +41,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -111,6 +112,7 @@ public class CryptoVaultTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
+        }, new VaultMetadataProvider() {
         });
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
@@ -195,6 +197,7 @@ public class CryptoVaultTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
+        }, new VaultMetadataProvider() {
         }).getHome());
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
@@ -246,6 +249,7 @@ public class CryptoVaultTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
+        }, new VaultMetadataProvider() {
         }).getHome());
         assertEquals(Vault.State.open, vault.getState());
         assertEquals(home, new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())));
@@ -305,6 +309,7 @@ public class CryptoVaultTest {
                         throw new LoginCanceledException();
                     }
                 }
+            }, new VaultMetadataProvider() {
             });
             fail();
         }
@@ -355,6 +360,7 @@ public class CryptoVaultTest {
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     throw new LoginCanceledException();
                 }
+            }, new VaultMetadataProvider() {
             });
             fail();
         }
@@ -404,6 +410,7 @@ public class CryptoVaultTest {
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                     return new VaultCredentials(null);
                 }
+            }, new VaultMetadataProvider() {
             });
             fail();
         }

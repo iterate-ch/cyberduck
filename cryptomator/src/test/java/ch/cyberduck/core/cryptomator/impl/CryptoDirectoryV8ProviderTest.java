@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -111,6 +112,7 @@ public class CryptoDirectoryV8ProviderTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
+        }, new VaultMetadataProvider() {
         });
         final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider());
         assertNotNull(provider.toEncrypted(session, home));
