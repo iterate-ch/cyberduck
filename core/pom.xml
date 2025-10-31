@@ -23,6 +23,10 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <nimbus-jose.version>10.5</nimbus-jose.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -143,6 +147,11 @@
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service-annotations</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>${nimbus-jose.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
