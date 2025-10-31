@@ -1896,7 +1896,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
-        final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
+        final BookmarkContentViewController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
         this.alert(c, returncode -> {
@@ -1944,23 +1944,23 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         this.addBookmark(bookmark);
-    }
-
-    public void addBookmark(Host item) {
-        bookmarkModel.setFilter(null);
-        bookmarkModel.getSource().add(item);
-        final int row = bookmarkModel.getSource().lastIndexOf(item);
-        final NSInteger index = new NSInteger(row);
-        bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
-        bookmarkTable.scrollRowToVisible(index);
-        final BookmarkController c = BookmarkControllerFactory.create(bookmarks, item);
+        final BookmarkContentViewController c = BookmarkControllerFactory.create(bookmarks, bookmark);
         this.alert(c, returncode -> {
-            final Host bookmark = c.getBookmark();
             if(returncode == SheetCallback.DEFAULT_OPTION) {
                 mount(bookmark);
             }
-        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable, bookmarkTable.rectOfRow(index), c) :
+        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable, bookmarkTable.rectOfRow(
+                new NSInteger(bookmarkModel.getSource().lastIndexOf(bookmark))), c) :
                 new FloatingWindowAlertRunner(c));
+    }
+
+    public void addBookmark(final Host bookmark) {
+        bookmarkModel.setFilter(null);
+        bookmarkModel.getSource().add(bookmark);
+        final int row = bookmarkModel.getSource().lastIndexOf(bookmark);
+        final NSInteger index = new NSInteger(row);
+        bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
+        bookmarkTable.scrollRowToVisible(index);
     }
 
     @Action
@@ -2867,6 +2867,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final Host bookmark = c.getBookmark();
             if(returncode == SheetCallback.DEFAULT_OPTION) {
                 mount(bookmark);
+            }
+            if(returncode == SheetCallback.ALTERNATE_OPTION) {
+                addBookmark(bookmark);
             }
         });
     }

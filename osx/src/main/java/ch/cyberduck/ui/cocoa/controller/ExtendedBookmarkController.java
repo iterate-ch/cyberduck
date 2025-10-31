@@ -17,40 +17,35 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
-import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.binding.application.NSTextFieldCell;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSData;
-import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.DefaultWebUrlProvider;
+import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSSize;
 
-public class ExtendedBookmarkController extends DefaultBookmarkController {
+import static ch.cyberduck.core.features.AclPermission.preferences;
+
+public class ExtendedBookmarkController extends BookmarkContentViewController implements CollectionListener<Host> {
+
+    private final Host bookmark;
 
     @Outlet
     private NSPopUpButton transferPopup;
@@ -60,7 +55,35 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     private NSOpenPanel downloadFolderOpenPanel;
 
     public ExtendedBookmarkController(final Host bookmark) {
-        super(bookmark);
+        super(bookmark, new DefaultBookmarkController(bookmark, new LoginOptions(bookmark.getProtocol())));
+        this.bookmark = bookmark;
+    }
+
+    @Override
+    protected String getBundleName() {
+        return "Edit";
+    }
+
+    @Override
+    public void collectionLoaded() {
+        //
+    }
+
+    @Override
+    public void collectionItemAdded(final Host item) {
+        //
+    }
+
+    @Override
+    public void collectionItemRemoved(final Host item) {
+        if(item.equals(bookmark)) {
+            this.close();
+        }
+    }
+
+    @Override
+    public void collectionItemChanged(final Host item) {
+        //
     }
 
     public void setTransferPopup(final NSPopUpButton button) {
@@ -73,17 +96,12 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         this.transferPopup.lastItem().setRepresentedObject(unknown.name());
         this.transferPopup.lastItem().setToolTip(Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type")).toString());
         this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(String name : preferences.getList("queue.transfer.type.enabled")) {
+        for(String name : HostPreferencesFactory.get(bookmark).getList("queue.transfer.type.enabled")) {
             final Host.TransferType t = Host.TransferType.valueOf(name);
             this.transferPopup.addItemWithTitle(t.toString());
             this.transferPopup.lastItem().setRepresentedObject(t.name());
         }
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(Host bookmark) {
-                transferPopup.selectItemAtIndex(transferPopup.indexOfItemWithRepresentedObject(bookmark.getTransferType().name()));
-            }
-        });
+        transferPopup.selectItemAtIndex(transferPopup.indexOfItemWithRepresentedObject(bookmark.getTransferType().name()));
     }
 
     @Action
@@ -135,7 +153,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
             downloadFolderOpenPanel.setAllowsMultipleSelection(false);
             downloadFolderOpenPanel.setCanCreateDirectories(true);
             downloadFolderOpenPanel.beginSheetForDirectory(null, null, this.window, this.id(),
-                Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
+                    Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
             final Local folder = LocalFactory.get(sender.selectedItem().representedObject());
