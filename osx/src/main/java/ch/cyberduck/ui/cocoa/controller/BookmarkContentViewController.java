@@ -22,20 +22,27 @@ import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.core.Host;
-
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSSize;
 
-public abstract class BookmarkContentViewController extends SheetController  {
+public abstract class BookmarkContentViewController extends SheetController {
 
     private final Host bookmark;
     private final BookmarkController proxy;
 
+    /**
+     * Container View
+     */
     @Outlet
     private NSView contentView;
+    /**
+     * Container View
+     */
+    @Outlet
+    private NSView optionsView;
 
     public BookmarkContentViewController(final Host bookmark, final BookmarkController proxy) {
         this.bookmark = bookmark;
@@ -52,19 +59,33 @@ public abstract class BookmarkContentViewController extends SheetController  {
     public void awakeFromNib() {
         proxy.awakeFromNib();
         proxy.setWindow(window);
-        final NSView subview = proxy.view();
-        subview.setTranslatesAutoresizingMaskIntoConstraints(true);
-        subview.setFrame(contentView.bounds());
-        contentView.addSubview(subview);
-        super.awakeFromNib();
+        this.addSubview(contentView, proxy.getContentView());
+        if(optionsView != null) {
+            final NSView additionalOptions = proxy.getOptionsView();
+            if(additionalOptions != null) {
+                this.addSubview(additionalOptions, optionsView);
+            }
+        }
         this.resize();
         proxy.focus(window);
         proxy.addObserver(bookmark -> this.resize());
+        super.awakeFromNib();
     }
 
-    public void setContentView(final NSView contentView) {
-        this.contentView = contentView;
+    private void addSubview(final NSView parent, final NSView subview) {
+        subview.setTranslatesAutoresizingMaskIntoConstraints(true);
+        subview.setFrame(parent.bounds());
+        parent.addSubview(subview);
+    }
+
+    public void setContentView(final NSView view) {
+        this.contentView = view;
         this.contentView.setTranslatesAutoresizingMaskIntoConstraints(true);
+    }
+
+    public void setOptionsView(final NSView view) {
+        this.optionsView = view;
+        this.optionsView.setTranslatesAutoresizingMaskIntoConstraints(true);
     }
 
     public Host getBookmark() {
