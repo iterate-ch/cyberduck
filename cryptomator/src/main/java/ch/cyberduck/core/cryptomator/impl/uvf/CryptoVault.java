@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
  */
 
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -39,9 +38,12 @@ import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.JWKCallback;
+import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -52,12 +54,16 @@ import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.RevolvingMasterkey;
 import org.cryptomator.cryptolib.api.UVFMasterkey;
 
-import java.text.MessageFormat;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.google.auto.service.AutoService;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWEObjectJSON;
+import com.nimbusds.jose.crypto.MultiDecrypter;
 
 @AutoService(Vault.class)
 public class CryptoVault extends AbstractVault {
@@ -124,16 +130,18 @@ public class CryptoVault extends AbstractVault {
 
     // load -> unlock -> open
     @Override
-    public CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
-        masterKey = UVFMasterkey.fromDecryptedPayload(prompt.prompt(session.getHost(),
-                LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
-                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName()),
-                new LoginOptions()
-                        .save(false)
-                        .user(false)
-                        .anonymous(false)
-                        .icon("cryptomator.tiff")
-                        .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator"))).getPassword());
+    public CryptoVault load(final Session<?> session, final PasswordCallback callback, final VaultMetadataProvider metadata) throws BackgroundException {
+        final JWKCallback jwk = JWKCallback.cast(callback);
+        final VaultMetadataUVFProvider metadataProvider = VaultMetadataUVFProvider.cast(metadata);
+        final JWEObjectJSON jweObject;
+        try {
+            jweObject = JWEObjectJSON.parse(new String(metadataProvider.getMetadata(), StandardCharsets.US_ASCII));
+            jweObject.decrypt(new MultiDecrypter(jwk.prompt(session.getHost(), StringUtils.EMPTY, StringUtils.EMPTY, new LoginOptions()).getKey()));
+        }
+        catch(ParseException | JOSEException e) {
+            throw new VaultException("Failure retrieving key material", e);
+        }
+        masterKey = UVFMasterkey.fromDecryptedPayload(jweObject.getPayload().toString());
         final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
         log.debug("Initialized crypto provider {}", provider);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());

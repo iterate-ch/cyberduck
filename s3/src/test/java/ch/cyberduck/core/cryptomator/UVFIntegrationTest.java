@@ -36,6 +36,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.TestcontainerTest;
@@ -142,6 +143,7 @@ public class UVFIntegrationTest {
                     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                         return new Credentials().setPassword(jwe);
                     }
+                }, new VaultMetadataProvider() {
                 }));
                 final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
                 storage.withRegistry(vaults);

@@ -279,7 +279,7 @@ public class CryptoVault extends AbstractVault {
     }
 
     @Override
-    public Vault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
+    public Vault load(final Session<?> session, final PasswordCallback prompt, final VaultMetadataProvider provider) throws BackgroundException {
         final Host bookmark = session.getHost();
         String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                 new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
