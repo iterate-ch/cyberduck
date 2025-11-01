@@ -270,7 +270,6 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     button.setTarget(controller.id());
                     button.setAction(bandwidth.action());
                     item.setView(button);
-                    item.setMaxSize(new NSSize(button.frame().size.width.doubleValue(), button.frame().size.height.doubleValue()));
                     return item;
                 }
                 case connections: {
@@ -308,7 +307,6 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     button.setAction(connections.action());
                     button.selectItemAtIndex(button.indexOfItemWithRepresentedObject(String.valueOf(preferences.getInteger("queue.connections.limit"))));
                     item.setView(button);
-                    item.setMaxSize(new NSSize(button.frame().size.width.doubleValue(), button.frame().size.height.doubleValue()));
                     return item;
                 }
                 default: {

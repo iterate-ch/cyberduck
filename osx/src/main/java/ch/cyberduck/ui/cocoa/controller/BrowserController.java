@@ -1896,10 +1896,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
-        final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
+        final BookmarkContainerController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
-        c.display();
+        this.alert(c, returncode -> {
+            final Host bookmark = c.getBookmark();
+            if(returncode == SheetCallback.DEFAULT_OPTION) {
+                mount(bookmark);
+            }
+        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable, bookmarkTable.rectOfRow(bookmarkTable.selectedRow()), c) :
+                new FloatingWindowAlertRunner(c));
     }
 
     @Action
@@ -1938,17 +1944,23 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         this.addBookmark(bookmark);
+        final BookmarkContainerController c = BookmarkControllerFactory.create(bookmarks, bookmark);
+        this.alert(c, returncode -> {
+            if(returncode == SheetCallback.DEFAULT_OPTION) {
+                mount(bookmark);
+            }
+        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable, bookmarkTable.rectOfRow(
+                new NSInteger(bookmarkModel.getSource().lastIndexOf(bookmark))), c) :
+                new FloatingWindowAlertRunner(c));
     }
 
-    public void addBookmark(Host item) {
+    public void addBookmark(final Host bookmark) {
         bookmarkModel.setFilter(null);
-        bookmarkModel.getSource().add(item);
-        final int row = bookmarkModel.getSource().lastIndexOf(item);
+        bookmarkModel.getSource().add(bookmark);
+        final int row = bookmarkModel.getSource().lastIndexOf(bookmark);
         final NSInteger index = new NSInteger(row);
         bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
-        final BookmarkController c = BookmarkControllerFactory.create(bookmarks, item);
-        c.display();
     }
 
     @Action
@@ -2850,16 +2862,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void connectButtonClicked(final ID sender) {
-        final ConnectionController controller = ConnectionControllerFactory.create(this);
-        this.alert(controller, new SheetCallback() {
-            @Override
-            public void callback(final int returncode) {
-                final Host bookmark = controller.getBookmark();
-                switch(returncode) {
-                    case DEFAULT_OPTION:
-                        mount(bookmark);
-                        break;
-                }
+        final ConnectionController c = ConnectionControllerFactory.create(this);
+        this.alert(c, returncode -> {
+            final Host bookmark = c.getBookmark();
+            if(returncode == SheetCallback.DEFAULT_OPTION) {
+                mount(bookmark);
+            }
+            if(returncode == SheetCallback.ALTERNATE_OPTION) {
+                addBookmark(bookmark);
             }
         });
     }
@@ -3599,8 +3609,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         },
         bookmarks,
-        history,
-        rendezvous;
+        history {
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("history", 16);
+            }
+        },
+        rendezvous {
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("bonjour", 16);
+            }
+        };
 
         public static BookmarkSwitchSegement byPosition(final int position) {
             return BookmarkSwitchSegement.values()[position];
