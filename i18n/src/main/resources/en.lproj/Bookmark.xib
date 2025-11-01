@@ -17,7 +17,7 @@
                 <outlet property="hostField" destination="L04-rl-TAx" id="99"/>
                 <outlet property="labelsField" destination="AvO-GE-eBC" id="noh6Wai"/>
                 <outlet property="nicknameField" destination="lfg-XO-WdV" id="100"/>
-                <outlet property="optionsView" destination="nDw-eK-zdv" id="wu1paW9e"/>
+                <outlet property="containerOptionsView" destination="nDw-eK-zdv" id="wu1paW9e"/>
                 <outlet property="passwordField" destination="GuU-jB-XfB" id="ohWoosh"/>
                 <outlet property="passwordLabel" destination="9gh-NJ-mK9" id="phe7doo"/>
                 <outlet property="pathField" destination="2Op-yu-r6q" id="101"/>
