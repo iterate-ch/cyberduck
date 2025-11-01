@@ -37,7 +37,7 @@ public abstract class BookmarkContainerController extends SheetController {
      * Container View
      */
     @Outlet
-    private NSView contentView;
+    private NSView containerContentView;
     /**
      * Container View
      */
@@ -59,11 +59,11 @@ public abstract class BookmarkContainerController extends SheetController {
     public void awakeFromNib() {
         proxy.awakeFromNib();
         proxy.setWindow(window);
-        this.addSubview(contentView, proxy.getContentView());
+        this.addSubview(containerContentView, proxy.getContentView());
         if(optionsView != null) {
-            final NSView additionalOptions = proxy.getOptionsView();
-            if(additionalOptions != null) {
-                this.addSubview(additionalOptions, optionsView);
+            final NSView containerOptionsView = proxy.getContainerOptionsView();
+            if(containerOptionsView != null) {
+                this.addSubview(containerOptionsView, optionsView);
             }
         }
         this.resize();
@@ -78,9 +78,9 @@ public abstract class BookmarkContainerController extends SheetController {
         parent.addSubview(subview);
     }
 
-    public void setContentView(final NSView view) {
-        this.contentView = view;
-        this.contentView.setTranslatesAutoresizingMaskIntoConstraints(true);
+    public void setContainerContentView(final NSView view) {
+        this.containerContentView = view;
+        this.containerContentView.setTranslatesAutoresizingMaskIntoConstraints(true);
     }
 
     public void setOptionsView(final NSView view) {

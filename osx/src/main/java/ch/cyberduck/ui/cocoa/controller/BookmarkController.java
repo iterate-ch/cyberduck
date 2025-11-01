@@ -89,7 +89,7 @@ public class BookmarkController extends BundleController implements NSTabView.De
     @Outlet
     private NSView contentView;
     @Outlet
-    private NSView optionsView;
+    private NSView containerOptionsView;
     @Outlet
     private NSPopUpButton protocolPopup;
     @Outlet
@@ -211,12 +211,12 @@ public class BookmarkController extends BundleController implements NSTabView.De
         this.contentView = contentView;
     }
 
-    public NSView getOptionsView() {
-        return optionsView;
+    public NSView getContainerOptionsView() {
+        return containerOptionsView;
     }
 
-    public void setOptionsView(final NSView optionsView) {
-        this.optionsView = optionsView;
+    public void setContainerOptionsView(final NSView containerOptionsView) {
+        this.containerOptionsView = containerOptionsView;
     }
 
     public void setProtocolPopup(final NSPopUpButton button) {

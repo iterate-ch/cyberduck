@@ -7,7 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ConnectionController">
             <connections>
-                <outlet property="contentView" destination="cjf-RS-AF0" id="Aequ0xah"/>
+                <outlet property="containerContentView" destination="cjf-RS-AF0" id="Aequ0xah"/>
                 <outlet property="downloadPathPopup" destination="rHe-oM-KLc" id="97"/>
                 <outlet property="optionsView" destination="tPC-9y-THV" id="yei6Chao"/>
                 <outlet property="transferPopup" destination="Hn7-Yc-f09" id="108"/>
@@ -26,7 +26,7 @@
                 <rect key="frame" x="0.0" y="240" width="400" height="60"/>
                 <subviews>
                     <customView id="cjf-RS-AF0" userLabel="Content View">
-                        <rect key="frame" x="0.0" y="60" width="800" height="0.0"/>
+                        <rect key="frame" x="0.0" y="60" width="400" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="ax1-78-ilT" userLabel="Action View">
