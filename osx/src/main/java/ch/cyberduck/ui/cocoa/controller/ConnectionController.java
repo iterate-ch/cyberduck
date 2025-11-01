@@ -24,7 +24,7 @@ import ch.cyberduck.core.LoginOptions;
 
 import org.rococoa.Foundation;
 
-public class ConnectionController extends BookmarkContentViewController {
+public class ConnectionController extends BookmarkContainerController {
 
     private final Host bookmark;
     private final LoginOptions options;

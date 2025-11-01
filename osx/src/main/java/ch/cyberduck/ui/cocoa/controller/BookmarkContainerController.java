@@ -19,8 +19,6 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
-import ch.cyberduck.binding.application.NSTabView;
-import ch.cyberduck.binding.application.NSTabViewItem;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.core.Host;
@@ -30,7 +28,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSSize;
 
-public abstract class BookmarkContentViewController extends SheetController {
+public abstract class BookmarkContainerController extends SheetController {
 
     private final Host bookmark;
     private final BookmarkController proxy;
@@ -46,7 +44,7 @@ public abstract class BookmarkContentViewController extends SheetController {
     @Outlet
     private NSView optionsView;
 
-    public BookmarkContentViewController(final Host bookmark, final BookmarkController proxy) {
+    public BookmarkContainerController(final Host bookmark, final BookmarkController proxy) {
         this.bookmark = bookmark;
         this.proxy = proxy;
     }
