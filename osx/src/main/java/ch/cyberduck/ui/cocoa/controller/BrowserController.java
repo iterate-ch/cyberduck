@@ -1896,7 +1896,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
-        final BookmarkContentViewController c = BookmarkControllerFactory.create(bookmarks,
+        final BookmarkContainerController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
         this.alert(c, returncode -> {
@@ -1944,7 +1944,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         this.addBookmark(bookmark);
-        final BookmarkContentViewController c = BookmarkControllerFactory.create(bookmarks, bookmark);
+        final BookmarkContainerController c = BookmarkControllerFactory.create(bookmarks, bookmark);
         this.alert(c, returncode -> {
             if(returncode == SheetCallback.DEFAULT_OPTION) {
                 mount(bookmark);
