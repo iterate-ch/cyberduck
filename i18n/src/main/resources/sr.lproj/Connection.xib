@@ -7,7 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ConnectionController">
             <connections>
-                <outlet property="contentView" destination="cjf-RS-AF0" id="Aequ0xah"/>
+                <outlet property="containerContentView" destination="cjf-RS-AF0" id="Aequ0xah"/>
                 <outlet property="keychainCheckbox" destination="30" id="74"/>
                 <outlet property="window" destination="3" id="84"/>
             </connections>

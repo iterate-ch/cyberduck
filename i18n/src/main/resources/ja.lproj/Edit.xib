@@ -7,7 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ConnectionController">
             <connections>
-                <outlet property="contentView" destination="cjf-RS-AF0" id="Aequ0xah"/>
+                <outlet property="containerContentView" destination="cjf-RS-AF0" id="Aequ0xah"/>
                 <outlet property="downloadPathPopup" destination="rHe-oM-KLc" id="97"/>
                 <outlet property="optionsView" destination="tPC-9y-THV" id="yei6Chao"/>
                 <outlet property="transferPopup" destination="Hn7-Yc-f09" id="108"/>
