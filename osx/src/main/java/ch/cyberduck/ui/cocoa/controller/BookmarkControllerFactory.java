@@ -24,17 +24,17 @@ import java.util.Map;
 
 public final class BookmarkControllerFactory {
 
-    private static final Map<Host, BookmarkContentViewController> open
+    private static final Map<Host, BookmarkContainerController> open
             = new HashMap<>();
 
     private BookmarkControllerFactory() {
         //
     }
 
-    public static BookmarkContentViewController create(final AbstractHostCollection collection, final Host host) {
+    public static BookmarkContainerController create(final AbstractHostCollection collection, final Host host) {
         synchronized(NSApplication.sharedApplication()) {
             if(!open.containsKey(host)) {
-                final BookmarkContentViewController c = new ExtendedBookmarkController(host) {
+                final BookmarkContainerController c = new ExtendedBookmarkController(host) {
                     @Override
                     public void invalidate() {
                         open.remove(host);

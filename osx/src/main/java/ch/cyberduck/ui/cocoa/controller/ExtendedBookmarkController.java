@@ -43,7 +43,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 import static ch.cyberduck.core.features.AclPermission.preferences;
 
-public class ExtendedBookmarkController extends BookmarkContentViewController implements CollectionListener<Host> {
+public class ExtendedBookmarkController extends BookmarkContainerController implements CollectionListener<Host> {
 
     private final Host bookmark;
 
