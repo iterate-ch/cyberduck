@@ -29,7 +29,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -55,7 +54,7 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
     private NSOpenPanel downloadFolderOpenPanel;
 
     public ExtendedBookmarkController(final Host bookmark) {
-        super(bookmark, new DefaultBookmarkController(bookmark, new LoginOptions(bookmark.getProtocol())));
+        super(bookmark);
         this.bookmark = bookmark;
     }
 
@@ -152,7 +151,7 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
             downloadFolderOpenPanel.setCanChooseDirectories(true);
             downloadFolderOpenPanel.setAllowsMultipleSelection(false);
             downloadFolderOpenPanel.setCanCreateDirectories(true);
-            downloadFolderOpenPanel.beginSheetForDirectory(null, null, this.window, this.id(),
+            downloadFolderOpenPanel.beginSheetForDirectory(null, null, window, this.id(),
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {

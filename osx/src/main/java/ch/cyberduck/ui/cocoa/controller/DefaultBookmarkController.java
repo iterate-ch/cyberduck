@@ -25,13 +25,23 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.ui.LoginInputValidator;
 
-public class DefaultBookmarkController extends BookmarkController {
+public abstract class DefaultBookmarkController extends BookmarkController {
 
     private final Host bookmark;
     private final LoginOptions options;
 
+    public DefaultBookmarkController(final Host bookmark) {
+        this(bookmark, new LoginOptions(bookmark.getProtocol()));
+    }
+
     public DefaultBookmarkController(final Host bookmark, final LoginOptions options) {
         super(bookmark, new LoginInputValidator(bookmark, options), options);
+        this.bookmark = bookmark;
+        this.options = options;
+    }
+
+    public DefaultBookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
+        super(bookmark, validator, options);
         this.bookmark = bookmark;
         this.options = options;
     }

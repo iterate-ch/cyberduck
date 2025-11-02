@@ -37,7 +37,7 @@ public class ConnectionController extends BookmarkContainerController {
     }
 
     public ConnectionController(final Host bookmark, final LoginOptions options) {
-        super(bookmark, new DefaultBookmarkController(bookmark, options));
+        super(bookmark, options);
         this.bookmark = bookmark;
         this.options = options;
     }

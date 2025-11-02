@@ -18,20 +18,22 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+
+import ch.cyberduck.ui.LoginInputValidator;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSSize;
 
-public abstract class BookmarkContainerController extends SheetController {
+public abstract class BookmarkContainerController extends DefaultBookmarkController {
 
     private final Host bookmark;
-    private final BookmarkController proxy;
 
     /**
      * Container View
@@ -44,32 +46,40 @@ public abstract class BookmarkContainerController extends SheetController {
     @Outlet
     private NSView optionsView;
 
-    public BookmarkContainerController(final Host bookmark, final BookmarkController proxy) {
+    public BookmarkContainerController(final Host bookmark) {
+        super(bookmark);
         this.bookmark = bookmark;
-        this.proxy = proxy;
     }
 
-    @Override
-    public void loadBundle() {
-        proxy.loadBundle();
-        super.loadBundle();
+    public BookmarkContainerController(final Host bookmark, final LoginOptions options) {
+        super(bookmark, options);
+        this.bookmark = bookmark;
+    }
+
+    public BookmarkContainerController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
+        super(bookmark, validator, options);
+        this.bookmark = bookmark;
     }
 
     @Override
     public void awakeFromNib() {
-        proxy.awakeFromNib();
-        proxy.setWindow(window);
-        this.addSubview(containerContentView, proxy.getContentView());
+        super.awakeFromNib();
+        final NSView contentView = this.getContentView();
+        this.addSubview(containerContentView, contentView);
         if(optionsView != null) {
-            final NSView containerOptionsView = proxy.getContainerOptionsView();
+            final NSView containerOptionsView = this.getContainerOptionsView();
             if(containerOptionsView != null) {
                 this.addSubview(containerOptionsView, optionsView);
             }
         }
         this.resize();
-        proxy.focus(window);
-        proxy.addObserver(bookmark -> this.resize());
-        super.awakeFromNib();
+        this.focus(window);
+    }
+
+    @Override
+    public void protocolSelectionChanged(final NSPopUpButton sender) {
+        super.protocolSelectionChanged(sender);
+        this.resize();
     }
 
     private void addSubview(final NSView parent, final NSView subview) {
@@ -112,13 +122,5 @@ public abstract class BookmarkContainerController extends SheetController {
     @Action
     public void helpButtonClicked(final ID sender) {
         BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help(bookmark.getProtocol()));
-    }
-
-    public void update() {
-        proxy.update();
-    }
-
-    public void addObserver(final BookmarkController.BookmarkObserver observer) {
-        proxy.addObserver(observer);
     }
 }
