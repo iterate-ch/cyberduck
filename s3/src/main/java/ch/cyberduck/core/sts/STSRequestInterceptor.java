@@ -46,7 +46,7 @@ public abstract class STSRequestInterceptor extends STSAuthorizationService impl
     /**
      * Currently valid tokens obtained from token service
      */
-    protected TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
+    protected TemporaryAccessTokens tokens;
 
     /**
      * Static long-lived credentials
@@ -56,6 +56,7 @@ public abstract class STSRequestInterceptor extends STSAuthorizationService impl
     public STSRequestInterceptor(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         super(host, trust, key, prompt);
         this.credentials = new CopyCredentialsHolder(host.getCredentials());
+        this.tokens = host.getCredentials().getTokens();
     }
 
     /**

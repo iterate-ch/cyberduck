@@ -50,7 +50,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     /**
      * Currently valid tokens
      */
-    private OAuthTokens tokens = OAuthTokens.EMPTY;
+    private OAuthTokens tokens;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt) throws LoginCanceledException {
         this(client, host,
@@ -67,6 +67,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
         super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
+        this.tokens = host.getCredentials().getOauth();
     }
 
     @Override
