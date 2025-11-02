@@ -82,8 +82,8 @@ public class Credentials implements CredentialsHolder, Comparable<Credentials> {
     public Credentials(final Credentials copy) {
         this.user = copy.user;
         this.password = copy.password;
-        this.tokens = copy.tokens;
-        this.oauth = copy.oauth;
+        this.tokens = TemporaryAccessTokens.EMPTY == copy.tokens ? TemporaryAccessTokens.EMPTY : new TemporaryAccessTokens(copy.tokens);
+        this.oauth = OAuthTokens.EMPTY == copy.oauth ? OAuthTokens.EMPTY : new OAuthTokens(copy.oauth);
         this.properties.putAll(copy.properties);
         this.identity = copy.identity;
         this.identityPassphrase = copy.identityPassphrase;
