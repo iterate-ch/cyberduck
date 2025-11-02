@@ -67,7 +67,7 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestIn
         catch(LoginFailureException e) {
             // Expired or invalid OAuth tokens
             log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
-            return this.tokens = this.assumeRoleWithWebIdentity(oauth.authorize(), arn);
+            return this.tokens = this.assumeRoleWithWebIdentity(oauth.refresh(), arn);
         }
         finally {
             lock.unlock();
