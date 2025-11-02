@@ -16,11 +16,12 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.Action;
-import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -64,7 +65,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 
-public class BookmarkController extends BundleController implements NSTabView.Delegate {
+public abstract class BookmarkController extends SheetController implements NSTabView.Delegate {
     private static final Logger log = LogManager.getLogger(BookmarkController.class);
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
@@ -131,8 +132,6 @@ public class BookmarkController extends BundleController implements NSTabView.De
     @Outlet
     private NSButton webUrlImage;
 
-    private NSWindow window;
-
     public BookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
         this.bookmark = bookmark;
         this.validator = validator;
@@ -146,18 +145,20 @@ public class BookmarkController extends BundleController implements NSTabView.De
     }
 
     @Override
-    protected String getBundleName() {
-        return "Bookmark";
+    public void loadBundle() {
+        if(!NSBundle.loadNibNamed("Bookmark", this.id())) {
+            throw new FactoryException(String.format("Failure loading %s.xib", "Bookmark"));
+        }
+        super.loadBundle();
     }
+
+    @Override
+    protected abstract String getBundleName();
 
     @Override
     public void awakeFromNib() {
         super.awakeFromNib();
         this.update();
-    }
-
-    public void setWindow(final NSWindow window) {
-        this.window = window;
     }
 
     public interface BookmarkObserver {
@@ -200,7 +201,7 @@ public class BookmarkController extends BundleController implements NSTabView.De
 
     @Override
     public void tabView_didSelectTabViewItem(final NSTabView view, final NSTabViewItem item) {
-        this.update();
+        this.resize();
     }
 
     public NSView getContentView() {
