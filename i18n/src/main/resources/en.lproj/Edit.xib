@@ -18,9 +18,9 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
         <window title="Edit Bookmark" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" id="3" userLabel="Edit Bookmark" customClass="NSPanel">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="460" y="215" width="500" height="300"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1800" height="1125"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
             <value key="minSize" type="size" width="500" height="200"/>
             <view key="contentView" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="500" height="300"/>
@@ -82,31 +82,31 @@ DQ
             <point key="canvasLocation" x="718" y="-78"/>
         </window>
         <customView id="tPC-9y-THV">
-            <rect key="frame" x="0.0" y="0.0" width="400" height="40"/>
+            <rect key="frame" x="0.0" y="0.0" width="400" height="48"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalHuggingPriority="750" verticalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Iql-6J-awM" userLabel="Options View">
-                    <rect key="frame" x="0.0" y="0.0" width="400" height="40"/>
+                    <rect key="frame" x="0.0" y="0.0" width="400" height="48"/>
                     <subviews>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NX8-ZW-YeI" userLabel="Download Folder Stack View">
-                            <rect key="frame" x="0.0" y="24" width="400" height="16"/>
+                            <rect key="frame" x="0.0" y="28" width="400" height="20"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="KBh-Lx-hEn">
-                                    <rect key="frame" x="-2" y="1" width="154" height="14"/>
+                                    <rect key="frame" x="-2" y="3" width="154" height="16"/>
                                     <constraints>
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="NpX-u0-Cjw"/>
                                     </constraints>
-                                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder:" id="FC8-5G-WoJ">
-                                        <font key="font" metaFont="smallSystem"/>
+                                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder:" id="FC8-5G-WoJ">
+                                        <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <popUpButton horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="rHe-oM-KLc" userLabel="Download Folder Popup">
-                                    <rect key="frame" x="154" y="-4" width="250" height="22"/>
-                                    <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="CEY-9o-gsN" id="X8h-fT-s95">
+                                    <rect key="frame" x="155" y="-4" width="249" height="25"/>
+                                    <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="CEY-9o-gsN" id="X8h-fT-s95">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="smallSystem"/>
+                                        <font key="font" metaFont="message"/>
                                         <menu key="menu" title="OtherViews" id="9TH-3b-4Ce">
                                             <items>
                                                 <menuItem title=" " state="on" id="CEY-9o-gsN"/>
@@ -131,24 +131,24 @@ DQ
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fxM-ZC-cQ3" userLabel="Transfer Stack View">
-                            <rect key="frame" x="0.0" y="0.0" width="400" height="16"/>
+                            <rect key="frame" x="0.0" y="0.0" width="400" height="20"/>
                             <subviews>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Cge-dP-p1l" userLabel="Transfer Files:">
-                                    <rect key="frame" x="-2" y="1" width="154" height="14"/>
+                                    <rect key="frame" x="-2" y="3" width="154" height="16"/>
                                     <constraints>
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="TTB-iX-60u"/>
                                     </constraints>
-                                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Transfer Files:" id="1FT-fG-moM">
-                                        <font key="font" metaFont="smallSystem"/>
+                                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Transfer Files:" id="1FT-fG-moM">
+                                        <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <popUpButton horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Hn7-Yc-f09" userLabel="Transfer Files Popup">
-                                    <rect key="frame" x="154" y="-4" width="250" height="22"/>
-                                    <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="DtH-Fx-kt7" id="ZMv-4U-Ut2">
+                                    <rect key="frame" x="155" y="-4" width="249" height="25"/>
+                                    <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="DtH-Fx-kt7" id="ZMv-4U-Ut2">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="smallSystem"/>
+                                        <font key="font" metaFont="message"/>
                                         <menu key="menu" title="OtherViews" id="JI5-4e-UjZ">
                                             <items>
                                                 <menuItem title=" " state="on" id="DtH-Fx-kt7"/>
