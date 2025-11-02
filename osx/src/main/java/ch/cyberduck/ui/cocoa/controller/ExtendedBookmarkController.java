@@ -21,9 +21,11 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -83,6 +85,12 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
     @Override
     public void collectionItemChanged(final Host item) {
         //
+    }
+
+    @Override
+    public void setWindow(final NSWindow window) {
+        this.addObserver(bookmark -> window.setTitle(BookmarkNameProvider.toString(bookmark)));
+        super.setWindow(window);
     }
 
     public void setTransferPopup(final NSPopUpButton button) {
