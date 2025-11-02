@@ -17,7 +17,7 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
-        <window title="Edit Bookmark" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" id="3" userLabel="Edit Bookmark" customClass="NSPanel">
+        <window title="Edit Bookmark" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" titlebarAppearsTransparent="YES" id="3" userLabel="Edit Bookmark" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="460" y="215" width="500" height="300"/>
             <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
