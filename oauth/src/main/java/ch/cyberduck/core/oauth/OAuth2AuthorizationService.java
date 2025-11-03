@@ -127,29 +127,27 @@ public class OAuth2AuthorizationService {
         if(saved.validate()) {
             // Found existing tokens
             if(saved.isExpired()) {
-                log.warn("Refresh expired access tokens {}", saved);
-                // Refresh expired access key
+                log.warn("Refresh expired tokens {}", saved);
+                // Refresh expired tokens
                 try {
                     final OAuthTokens refreshed = this.refresh(saved);
                     log.debug("Refreshed tokens {} for {}", refreshed, host);
-                    credentials.setOauth(refreshed);
-                    return refreshed;
+                    return this.save(refreshed);
                 }
                 catch(LoginFailureException e) {
                     log.warn("Failure refreshing tokens from {} for {}", saved, host);
-                    // Continue with new OAuth 2 flow
+                    // Continue with authorization flow
                 }
             }
             else {
-                log.debug("Returned saved OAuth tokens {} for {}", saved, host);
+                log.debug("Returned saved tokens {} for {}", saved, host);
                 return saved;
             }
         }
-        log.warn("Missing OAuth tokens {} for {}", saved, host);
+        log.warn("Missing tokens {} for {}", saved, host);
         final OAuthTokens tokens = this.authorize();
         log.debug("Retrieved tokens {} for {}", tokens, host);
-        credentials.setOauth(tokens);
-        return tokens;
+        return this.save(tokens);
     }
 
     /**
