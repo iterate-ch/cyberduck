@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
+        <customObject id="-2" userLabel="File's Owner">
             <connections>
                 <outlet property="applicationMenu" destination="227" id="355"/>
                 <outlet property="archiveMenu" destination="273" id="356"/>
@@ -209,8 +209,8 @@
                             <menuItem isSeparatorItem="YES" id="268"/>
                             <menuItem title="Delete" id="269">
                                 <string key="keyEquivalent" base64-UTF8="YES">
-                                    CA
-                                </string>
+CA
+</string>
                                 <connections>
                                     <action selector="deleteFileButtonClicked:" target="-1" id="389"/>
                                 </connections>
@@ -365,6 +365,20 @@
                 <menuItem title="Go" id="306">
                     <menu key="submenu" title="Go" id="307">
                         <items>
+                            <menuItem title="Connect" id="6X5-2H-kSb">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="connectBookmarkButtonClicked:" target="-1" id="Eei-nI-ZKE"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Disconnect" keyEquivalent="y" id="qbG-8n-3N3">
+                                <connections>
+                                    <action selector="disconnectButtonClicked:" target="-1" id="5pF-4d-jNq"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Refresh" keyEquivalent="r" id="308">
                                 <connections>
                                     <action selector="reloadButtonClicked:" target="-1" id="406"/>
@@ -418,11 +432,6 @@
                             <menuItem title="Stop" keyEquivalent="." id="320">
                                 <connections>
                                     <action selector="interruptButtonClicked:" target="-1" id="415"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Disconnect" keyEquivalent="y" id="321">
-                                <connections>
-                                    <action selector="disconnectButtonClicked:" target="-1" id="416"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -563,6 +572,7 @@
                     </connections>
                 </menuItem>
             </items>
+            <point key="canvasLocation" x="139" y="51"/>
         </menu>
     </objects>
     <resources>
