@@ -130,7 +130,7 @@ public class OAuth2AuthorizationService {
                 log.warn("Refresh expired tokens {}", saved);
                 // Refresh expired tokens
                 try {
-                    final OAuthTokens refreshed = this.refresh(saved);
+                    final OAuthTokens refreshed = this.authorizeWithRefreshToken(saved);
                     log.debug("Refreshed tokens {} for {}", refreshed, host);
                     return this.save(refreshed);
                 }
@@ -195,7 +195,7 @@ public class OAuth2AuthorizationService {
         // Save access token, refresh token and id token
         switch(flowType) {
             case AuthorizationCode:
-                response = this.authorizeWithCode(host, prompt);
+                response = this.authorizeWithCode(prompt);
                 break;
             case PasswordGrant:
                 response = this.authorizeWithPassword(credentials);
@@ -209,10 +209,10 @@ public class OAuth2AuthorizationService {
                         System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken());
     }
 
-    private IdTokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
+    private IdTokenResponse authorizeWithCode(final LoginCallback prompt) throws BackgroundException {
         log.debug("Request tokens with code");
-        if(HostPreferencesFactory.get(bookmark).getBoolean("oauth.browser.open.warn")) {
-            prompt.warn(bookmark,
+        if(HostPreferencesFactory.get(host).getBoolean("oauth.browser.open.warn")) {
+            prompt.warn(host,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     new StringAppender()
                             .append(LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"))
@@ -246,7 +246,7 @@ public class OAuth2AuthorizationService {
         final String authorizationCodeUrl = authorizationCodeUrlBuilder.build();
         log.debug("Open browser with URL {}", authorizationCodeUrl);
         final String authorizationCode = OAuth2AuthorizationCodeProviderFactory.get().prompt(
-                bookmark, prompt, authorizationCodeUrl, redirectUri, state);
+                host, prompt, authorizationCodeUrl, redirectUri, state);
         if(StringUtils.isBlank(authorizationCode)) {
             throw new LoginCanceledException();
         }
@@ -295,7 +295,7 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    public OAuthTokens refresh(final OAuthTokens tokens) throws BackgroundException {
+    public OAuthTokens authorizeWithRefreshToken(final OAuthTokens tokens) throws BackgroundException {
         if(StringUtils.isBlank(tokens.getRefreshToken())) {
             log.warn("Missing refresh token in {}", tokens);
             return this.authorize();

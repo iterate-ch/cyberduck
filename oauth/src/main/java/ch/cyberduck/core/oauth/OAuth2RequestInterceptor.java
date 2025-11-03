@@ -72,7 +72,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
             final OAuthTokens tokens = host.getCredentials().getOauth();
             if(tokens.isExpired()) {
                 try {
-                    this.save(this.refresh(tokens));
+                    this.save(this.authorizeWithRefreshToken(tokens));
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure {} refreshing OAuth tokens {}", e, tokens);
