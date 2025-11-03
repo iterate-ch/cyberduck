@@ -502,6 +502,12 @@ DQ
                         <action selector="connectBookmarkButtonClicked:" target="-1" id="178"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Disconnect" keyEquivalent="D" id="i2x-ZJ-UNQ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="disconnectButtonClicked:" target="-1" id="YXB-XN-Cmw"/>
+                    </connections>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" id="101">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
