@@ -213,11 +213,5 @@ public class KeychainLoginService implements LoginService {
         else {
             log.info("Skip writing credentials for bookmark {}", bookmark.getHostname());
         }
-        // Nullify password and tokens
-        log.debug("Reset credentials for {}", bookmark);
-        switch(bookmark.getProtocol().getStatefulness()) {
-            case stateless:
-                credentials.reset();
-        }
     }
 }

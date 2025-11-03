@@ -15,7 +15,6 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.CopyCredentialsHolder;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
@@ -55,7 +54,7 @@ public abstract class STSRequestInterceptor extends STSAuthorizationService impl
 
     public STSRequestInterceptor(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         super(host, trust, key, prompt);
-        this.credentials = new CopyCredentialsHolder(host.getCredentials());
+        this.credentials = host.getCredentials();
         this.tokens = host.getCredentials().getTokens();
     }
 

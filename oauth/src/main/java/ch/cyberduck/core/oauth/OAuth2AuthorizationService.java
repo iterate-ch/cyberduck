@@ -106,7 +106,7 @@ public class OAuth2AuthorizationService {
                                       final LoginCallback prompt) throws LoginCanceledException {
         this.transport = transport;
         this.host = host;
-        this.credentials = new CopyCredentialsHolder(host.getCredentials());
+        this.credentials = host.getCredentials();
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.prompt = prompt;
