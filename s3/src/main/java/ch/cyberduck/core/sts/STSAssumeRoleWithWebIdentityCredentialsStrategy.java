@@ -66,7 +66,7 @@ public class STSAssumeRoleWithWebIdentityCredentialsStrategy extends STSCredenti
         catch(LoginFailureException e) {
             // Expired or invalid OAuth tokens
             log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
-            return this.assumeRoleWithWebIdentity(oauth.refresh(), arn);
+            return this.assumeRoleWithWebIdentity(oauth.authorize(), arn);
         }
         finally {
             lock.unlock();
