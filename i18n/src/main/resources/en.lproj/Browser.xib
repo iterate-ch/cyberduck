@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -147,7 +147,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="t14-pG-1DQ">
                                                 <rect key="frame" x="1" y="1" width="587" height="381"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33" customClass="CDListView">
                                                         <rect key="frame" x="0.0" y="0.0" width="587" height="364"/>
@@ -187,7 +187,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="KUj-N5-PnR">
                                                 <rect key="frame" x="1" y="1" width="587" height="381"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="OutlineBrowserView" headerView="44" id="41" customClass="CDOutlineView">
                                                         <rect key="frame" x="0.0" y="0.0" width="587" height="364"/>
@@ -493,13 +493,19 @@ CA
         </menu>
         <menu title="Menu" id="99">
             <items>
-                <menuItem title="Connect to server" id="100">
+                <menuItem title="Connect" id="100">
                     <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="connectBookmarkButtonClicked:" target="-1" id="178"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Disconnect" keyEquivalent="D" id="i2x-ZJ-UNQ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="disconnectButtonClicked:" target="-1" id="YXB-XN-Cmw"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="101">
