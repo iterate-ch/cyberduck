@@ -68,6 +68,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         assertNotNull(credentials.getTokens().getSessionToken());
         assertNotNull(credentials.getOauth().getIdToken());
         assertNotNull(credentials.getOauth().getRefreshToken());
+        assertEquals("rouser", credentials.getUsername());
+        assertEquals("rouser", credentials.getPassword());
         assertNotEquals(Optional.of(Long.MAX_VALUE).get(), credentials.getOauth().getExpiryInMilliseconds());
         session.close();
     }
