@@ -81,12 +81,15 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
             transport.shutdown();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            super.disconnect();
         }
     }
 

@@ -100,7 +100,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    protected void disconnect() {
+    protected void disconnect() throws BackgroundException {
         try {
             client.disconnect();
         }

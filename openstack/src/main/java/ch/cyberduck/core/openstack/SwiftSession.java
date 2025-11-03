@@ -101,13 +101,18 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
             scheduler.shutdown(false);
-            client.disconnect();
+            if(client != null) {
+                client.disconnect();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            super.disconnect();
         }
     }
 

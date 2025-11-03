@@ -232,15 +232,18 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
-            client.getExecutor().close();
+            fileid.clear();
+            if(client != null) {
+                client.getExecutor().close();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            fileid.clear();
+            super.disconnect();
         }
     }
 

@@ -68,15 +68,16 @@ public class B2Session extends HttpSession<B2ApiClient> {
     }
 
     @Override
-    public void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
+            fileid.clear();
             client.close();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            fileid.clear();
+            super.disconnect();
         }
     }
 

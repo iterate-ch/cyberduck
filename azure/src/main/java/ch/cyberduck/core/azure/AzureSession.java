@@ -16,6 +16,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
@@ -38,6 +39,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import com.azure.core.credential.AzureSasCredential;
@@ -142,8 +144,20 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     }
 
     @Override
-    protected void logout() {
-        //
+    public void disconnect() throws BackgroundException {
+        try {
+            if(client != null) {
+                try {
+                    ((ApacheHttpClient) client.getHttpPipeline().getHttpClient()).getHttpClient().close();
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map(e);
+                }
+            }
+        }
+        finally {
+            super.disconnect();
+        }
     }
 
     @Override
