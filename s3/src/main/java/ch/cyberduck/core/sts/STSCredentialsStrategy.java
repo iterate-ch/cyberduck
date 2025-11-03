@@ -24,11 +24,18 @@ import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Swap static access key id and secret access key with temporary credentials obtained from STS AssumeRole
  */
 public abstract class STSCredentialsStrategy extends STSAuthorizationService implements S3CredentialsStrategy {
+    private static final Logger log = LogManager.getLogger(STSCredentialsStrategy.class);
 
+    private final ReentrantLock lock = new ReentrantLock();
     private final Host host;
 
     public STSCredentialsStrategy(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
@@ -46,9 +53,19 @@ public abstract class STSCredentialsStrategy extends STSAuthorizationService imp
 
     @Override
     public Credentials get() throws BackgroundException {
-        final Credentials credentials = host.getCredentials();
-        final TemporaryAccessTokens tokens = credentials.getTokens();
-        // Get temporary credentials from STS using static long-lived credentials
-        return credentials.setTokens(tokens.isExpired() ? this.refresh(credentials) : tokens);
+        lock.lock();
+        try {
+            final Credentials credentials = host.getCredentials();
+            final TemporaryAccessTokens tokens = credentials.getTokens();
+            // Get temporary credentials from STS using static long-lived credentials
+            if(tokens.isExpired()) {
+                log.debug("Refresh expired tokens {} for {}", tokens, host);
+                credentials.setTokens(this.refresh(credentials));
+            }
+            return credentials;
+        }
+        finally {
+            lock.unlock();
+        }
     }
 }

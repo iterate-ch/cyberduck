@@ -29,15 +29,12 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * Swap static access key id and secret access key with temporary credentials obtained from STS AssumeRole
  */
 public class STSAssumeRoleCredentialsStrategy extends STSCredentialsStrategy implements S3CredentialsStrategy {
     private static final Logger log = LogManager.getLogger(STSAssumeRoleCredentialsStrategy.class);
 
-    private final ReentrantLock lock = new ReentrantLock();
     private final Host host;
 
     public STSAssumeRoleCredentialsStrategy(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
@@ -47,14 +44,8 @@ public class STSAssumeRoleCredentialsStrategy extends STSCredentialsStrategy imp
 
     @Override
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
-        lock.lock();
-        try {
-            final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
-            log.debug("Retrieve temporary credentials with {} for role ARN {}", credentials, arn);
-            return this.assumeRole(credentials, arn);
-        }
-        finally {
-            lock.unlock();
-        }
+        final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
+        log.debug("Retrieve temporary credentials with {} for role ARN {}", credentials, arn);
+        return this.assumeRole(credentials, arn);
     }
 }
