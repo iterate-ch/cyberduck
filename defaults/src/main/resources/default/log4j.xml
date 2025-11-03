@@ -15,26 +15,13 @@
   -->
 <Configuration>
     <Appenders>
-        <File name="file" fileName="/tmp/cyberduck.log" append="false">
-            <PatternLayout pattern="%d [%t] %-5p %c - %m%n"/>
-        </File>
-        <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d [%t] %-5p %c - %m%n"/>
-        </Console>
+        <Null name="disabled"/>
     </Appenders>
     <Loggers>
-        <Logger name="org.apache.http.wire" additivity="false" level="debug">
-            <AppenderRef ref="file"/>
-            <AppenderRef ref="console"/>
-        </Logger>
-        <Logger name="org.apache.http.headers" additivity="false" level="debug">
-            <AppenderRef ref="file"/>
-            <AppenderRef ref="console"/>
-        </Logger>
-        <Logger name="ch.cyberduck" additivity="true" level="debug"/>
-        <Root level="debug">
-            <AppenderRef ref="file"/>
-            <AppenderRef ref="console"/>
+        <Logger name="org.apache.http.wire" additivity="false" level="error"/>
+        <Logger name="org.apache.http.headers" additivity="false" level="error"/>
+        <Root level="error">
+            <AppenderRef ref="disabled"/>
         </Root>
     </Loggers>
 </Configuration>

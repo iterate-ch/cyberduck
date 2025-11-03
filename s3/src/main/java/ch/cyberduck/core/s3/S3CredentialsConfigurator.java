@@ -78,6 +78,19 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
     @Override
     public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
+        // Check for HTTP credentials URL in bookmark
+        final String httpCredentialsUrl = host.getProperty("aws.credentials.http.url");
+        log.debug("Retrieved aws.credentials.http.url property value: '{}'", httpCredentialsUrl);
+        if(StringUtils.isNotBlank(httpCredentialsUrl)) {
+            log.debug("HTTP credentials URL configured: {}. Returning placeholder credentials to skip credential validation.", httpCredentialsUrl);
+            // Return credentials with placeholder tokens AND username/password to pass validation
+            // The actual credentials will be fetched via HTTP during session connect
+            return credentials
+                    .setUsername("http-credentials-placeholder")
+                    .setPassword("http-credentials-placeholder")
+                    .setTokens(new TemporaryAccessTokens("http-credentials-placeholder", "http-credentials-placeholder", "http-credentials-placeholder", -1L));
+        }
+        log.info("No HTTP credentials URL found, continuing with AWS CLI profile lookup");
         final BasicProfile profile = profiles.entrySet().stream().filter(entry -> {
             // Matching access key or profile name
             if(StringUtils.equals(entry.getKey(), credentials.getUsername())) {
