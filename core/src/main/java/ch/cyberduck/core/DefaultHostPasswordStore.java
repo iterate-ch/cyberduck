@@ -163,27 +163,36 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     }
 
     protected static Scheme getOAuthScheme(final Host bookmark) {
-        final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
-        if(null == uri.getScheme()) {
-            return bookmark.getProtocol().getScheme();
+        if(null != bookmark.getProtocol().getOAuthTokenUrl()) {
+            final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
+            if(null == uri.getScheme()) {
+                return bookmark.getProtocol().getScheme();
+            }
+            return Scheme.valueOf(uri.getScheme());
         }
-        return Scheme.valueOf(uri.getScheme());
+        return null;
     }
 
     protected static String getOAuthHostname(final Host bookmark) {
-        final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
-        if(StringUtils.isNotBlank(uri.getHost())) {
-            return uri.getHost();
+        if(null != bookmark.getProtocol().getOAuthTokenUrl()) {
+            final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
+            if(StringUtils.isNotBlank(uri.getHost())) {
+                return uri.getHost();
+            }
+            return bookmark.getHostname();
         }
-        return bookmark.getHostname();
+        return null;
     }
 
     protected static int getOAuthPort(final Host bookmark) {
-        final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
-        if(-1 != uri.getPort()) {
-            return uri.getPort();
+        if(null != bookmark.getProtocol().getOAuthTokenUrl()) {
+            final URI uri = URI.create(bookmark.getProtocol().getOAuthTokenUrl());
+            if(-1 != uri.getPort()) {
+                return uri.getPort();
+            }
+            return getOAuthScheme(bookmark).getPort();
         }
-        return getOAuthScheme(bookmark).getPort();
+        return -1;
     }
 
     protected static Set<String> getOAuthPrefix(final Host bookmark) {

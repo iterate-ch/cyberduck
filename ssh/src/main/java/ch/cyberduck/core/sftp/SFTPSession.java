@@ -403,20 +403,22 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void logout() throws BackgroundException {
         try {
-            if(null == sftp) {
-                return;
+            if(null != sftp) {
+                sftp.close();
             }
-            sftp.close();
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
         }
+        finally {
+            super.logout();
+        }
     }
 
     @Override
-    public void disconnect() {
+    public void disconnect() throws BackgroundException {
         try {
             client.close();
         }

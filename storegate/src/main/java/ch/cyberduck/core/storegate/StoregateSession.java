@@ -191,9 +191,14 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     }
 
     @Override
-    protected void logout() {
-        client.getHttpClient().close();
+    public void disconnect() throws BackgroundException {
         fileid.clear();
+        try {
+            client.getHttpClient().close();
+        }
+        finally {
+            super.disconnect();
+        }
     }
 
     @Override

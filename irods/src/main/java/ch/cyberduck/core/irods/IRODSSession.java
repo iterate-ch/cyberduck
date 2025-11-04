@@ -145,12 +145,15 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
             client.getIRODSSession().closeSession();
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
+        }
+        finally {
+            super.disconnect();
         }
     }
 

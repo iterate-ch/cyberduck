@@ -28,9 +28,11 @@ import org.apache.logging.log4j.Logger;
 public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(OAuth2ErrorResponseInterceptor.class);
 
+    private final Host host;
     private final OAuth2RequestInterceptor service;
 
     public OAuth2ErrorResponseInterceptor(final Host host, final OAuth2RequestInterceptor service) {
+        this.host = host;
         this.service = service;
     }
 
@@ -40,7 +42,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
             case HttpStatus.SC_UNAUTHORIZED:
                 try {
                     log.warn("Attempt to refresh OAuth tokens for failure {}", response);
-                    service.save(service.refresh());
+                    service.save(service.authorizeWithRefreshToken(host.getCredentials().getOauth()));
                     // Try again
                     return true;
                 }

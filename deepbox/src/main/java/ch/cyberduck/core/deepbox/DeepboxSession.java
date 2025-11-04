@@ -182,8 +182,15 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     }
 
     @Override
-    protected void logout() {
-        client.getHttpClient().close();
+    public void disconnect() throws BackgroundException {
+        try {
+            if(client != null) {
+                client.getHttpClient().close();
+            }
+        }
+        finally {
+            super.disconnect();
+        }
     }
 
     @Override

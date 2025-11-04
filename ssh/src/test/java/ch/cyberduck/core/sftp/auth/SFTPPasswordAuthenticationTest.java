@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.test.IntegrationTest;
 

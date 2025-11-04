@@ -214,15 +214,18 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
-            client.close();
+            resourceid.clear();
+            if(client != null) {
+                client.close();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            resourceid.clear();
+            super.disconnect();
         }
     }
 

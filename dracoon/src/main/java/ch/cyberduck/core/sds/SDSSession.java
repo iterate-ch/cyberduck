@@ -580,10 +580,17 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
-    protected void logout() {
-        scheduler.shutdown(false);
-        client.getHttpClient().close();
-        nodeid.clear();
+    public void disconnect() throws BackgroundException {
+        try {
+            scheduler.shutdown(false);
+            nodeid.clear();
+            if(client != null) {
+                client.getHttpClient().close();
+            }
+        }
+        finally {
+            super.disconnect();
+        }
     }
 
     @Override

@@ -341,22 +341,25 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
-        if(session != null) {
-            try {
+    public void logout() throws BackgroundException {
+        try {
+            if(session != null) {
                 session.logoff();
             }
-            catch(SMBRuntimeException e) {
-                throw new SMBExceptionMappingService().map(e);
-            }
-            catch(TransportException e) {
-                throw new BackgroundException(e);
-            }
+        }
+        catch(SMBRuntimeException e) {
+            throw new SMBExceptionMappingService().map(e);
+        }
+        catch(TransportException | IllegalStateException e) {
+            throw new BackgroundException(e);
+        }
+        finally {
+            super.logout();
         }
     }
 
     @Override
-    protected void disconnect() {
+    protected void disconnect() throws BackgroundException {
         try {
             client.close();
         }

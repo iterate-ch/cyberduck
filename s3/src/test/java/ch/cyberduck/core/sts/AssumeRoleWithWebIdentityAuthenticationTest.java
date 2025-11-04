@@ -68,6 +68,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         assertNotNull(credentials.getTokens().getSessionToken());
         assertNotNull(credentials.getOauth().getIdToken());
         assertNotNull(credentials.getOauth().getRefreshToken());
+        assertEquals("rouser", credentials.getUsername());
+        assertEquals("rouser", credentials.getPassword());
         assertNotEquals(Optional.of(Long.MAX_VALUE).get(), credentials.getOauth().getExpiryInMilliseconds());
         session.close();
     }
@@ -109,7 +111,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         final TemporaryAccessTokens tokens = credentials.getTokens();
         assertTrue(tokens.validate());
 
-        credentials.reset();
+        credentials.setOauth(OAuthTokens.EMPTY).setTokens(TemporaryAccessTokens.EMPTY);
 
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
@@ -129,7 +131,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
      * Fetch OpenID Connect Id token initially fails because of invalid refresh token. Must re-run OAuth flow.
      */
     @Test
-    public void testLoginInvalidOAuthTokensLogin() throws Exception {
+    public void testLoginInvalidOAuthTokens() throws Exception {
         final Protocol profile = new ProfilePlistReader(new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())))).read(
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Credentials credentials = new Credentials("rouser", "rouser")
@@ -144,14 +146,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());
-        assertNotEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
-        credentials.reset();
-        assertEquals(OAuthTokens.EMPTY, credentials.getOauth());
-        assertEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
-        new S3BucketListService(session).list(
-                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
+        assertThrows(LoginFailureException.class, () -> session.login(new DisabledLoginCallback(), new DisabledCancelCallback()));
     }
 
     /**
@@ -179,9 +174,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertNotEquals(OAuthTokens.EMPTY, credentials.getOauth());
         assertNotEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
-        credentials.reset();
-        assertEquals(OAuthTokens.EMPTY, credentials.getOauth());
-        assertEquals(TemporaryAccessTokens.EMPTY, credentials.getTokens());
+        credentials.setOauth(OAuthTokens.EMPTY).setTokens(TemporaryAccessTokens.EMPTY);
         new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
     }

@@ -20,6 +20,7 @@ import com.azure.core.util.FluxUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 import reactor.core.publisher.Mono;
@@ -29,10 +30,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class ApacheHttpClient implements HttpClient {
-    private final org.apache.http.client.HttpClient httpClient;
+    private final CloseableHttpClient httpClient;
 
     public ApacheHttpClient(final HttpClientBuilder builder) {
         this.httpClient = builder.build();
+    }
+
+    public CloseableHttpClient getHttpClient() {
+        return httpClient;
     }
 
     public Mono<HttpResponse> send(final HttpRequest azureRequest) {

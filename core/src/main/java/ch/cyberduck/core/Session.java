@@ -200,12 +200,14 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
         }
     }
 
-    protected abstract void logout() throws BackgroundException;
+    protected void logout() throws BackgroundException {
+        host.getCredentials().reset();
+    }
 
     /**
      * Close the connection to the remote host. Subsequent calls to #getClient() must return null.
      */
-    protected void disconnect() {
+    protected void disconnect() throws BackgroundException {
         state = State.closed;
         listeners.clear();
     }

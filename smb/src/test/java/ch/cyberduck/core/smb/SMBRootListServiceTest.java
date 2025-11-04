@@ -39,6 +39,5 @@ public class SMBRootListServiceTest extends AbstractSMBTest {
             assertNotEquals(TransferStatus.UNKNOWN_LENGTH, f.attributes().getSize());
             assertNotEquals(Quota.unknown, f.attributes().getQuota());
         }
-        session.close();
     }
 }

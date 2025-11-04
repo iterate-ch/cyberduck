@@ -23,7 +23,6 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
@@ -46,11 +45,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     private static final Logger log = LogManager.getLogger(OAuth2RequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
-
-    /**
-     * Currently valid tokens
-     */
-    private OAuthTokens tokens = OAuthTokens.EMPTY;
+    private final Host host;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt) throws LoginCanceledException {
         this(client, host,
@@ -67,67 +62,17 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
         super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
-    }
-
-    @Override
-    public OAuthTokens validate(final OAuthTokens saved) throws BackgroundException {
-        return tokens = super.validate(saved);
-    }
-
-    @Override
-    public OAuthTokens authorize() throws BackgroundException {
-        lock.lock();
-        try {
-            return tokens = super.authorize();
-        }
-        finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Refresh with cached refresh token
-     */
-    public OAuthTokens refresh() throws BackgroundException {
-        lock.lock();
-        try {
-            return tokens = this.refresh(tokens);
-        }
-        finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * @param previous Refresh token
-     */
-    @Override
-    public OAuthTokens refresh(final OAuthTokens previous) throws BackgroundException {
-        lock.lock();
-        try {
-            return tokens = super.refresh(previous);
-        }
-        catch(LoginFailureException e) {
-            log.warn("Failure {} refreshing OAuth tokens", e.getMessage());
-            return tokens = this.authorize();
-        }
-        finally {
-            lock.unlock();
-        }
+        this.host = host;
     }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         lock.lock();
         try {
+            final OAuthTokens tokens = host.getCredentials().getOauth();
             if(tokens.isExpired()) {
                 try {
-                    final OAuthTokens previous = tokens;
-                    final OAuthTokens refreshed = this.refresh(tokens);
-                    // Skip saving tokens when not changed
-                    if(!refreshed.equals(previous)) {
-                        this.save(refreshed);
-                    }
+                    this.save(this.authorizeWithRefreshToken(tokens));
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure {} refreshing OAuth tokens {}", e, tokens);

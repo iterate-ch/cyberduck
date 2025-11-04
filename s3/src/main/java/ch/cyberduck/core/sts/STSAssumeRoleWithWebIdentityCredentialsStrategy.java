@@ -21,26 +21,20 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.http.HttpRequestInterceptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Swap OIDC Id token for temporary security credentials
  */
-public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestInterceptor implements S3CredentialsStrategy, HttpRequestInterceptor {
-    private static final Logger log = LogManager.getLogger(STSAssumeRoleWithWebIdentityRequestInterceptor.class);
-
-    private final ReentrantLock lock = new ReentrantLock();
+public class STSAssumeRoleWithWebIdentityCredentialsStrategy extends STSCredentialsStrategy implements S3CredentialsStrategy {
+    private static final Logger log = LogManager.getLogger(STSAssumeRoleWithWebIdentityCredentialsStrategy.class);
 
     /**
      * Handle authentication with OpenID connect retrieving token for STS
@@ -48,9 +42,9 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestIn
     private final OAuth2RequestInterceptor oauth;
     private final Host host;
 
-    public STSAssumeRoleWithWebIdentityRequestInterceptor(final OAuth2RequestInterceptor oauth, final Host host,
-                                                          final X509TrustManager trust, final X509KeyManager key,
-                                                          final LoginCallback prompt) {
+    public STSAssumeRoleWithWebIdentityCredentialsStrategy(final OAuth2RequestInterceptor oauth, final Host host,
+                                                           final X509TrustManager trust, final X509KeyManager key,
+                                                           final LoginCallback prompt) {
         super(host, trust, key, prompt);
         this.oauth = oauth;
         this.host = host;
@@ -58,19 +52,8 @@ public class STSAssumeRoleWithWebIdentityRequestInterceptor extends STSRequestIn
 
     @Override
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
-        lock.lock();
         final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
-        log.debug("Use ARN {}", arn);
-        try {
-            return tokens = this.assumeRoleWithWebIdentity(oauth.validate(credentials.getOauth()), arn);
-        }
-        catch(LoginFailureException e) {
-            // Expired or invalid OAuth tokens
-            log.warn("Failure {} authorizing. Retry with refreshed OAuth tokens", e.getMessage());
-            return this.tokens = this.assumeRoleWithWebIdentity(oauth.authorize(), arn);
-        }
-        finally {
-            lock.unlock();
-        }
+        log.debug("Retrieve temporary credentials with {} for role ARN {}", credentials, arn);
+        return this.assumeRoleWithWebIdentity(oauth.validate(credentials.getOauth()), arn);
     }
 }

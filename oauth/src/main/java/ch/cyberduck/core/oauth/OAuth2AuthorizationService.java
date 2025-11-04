@@ -106,7 +106,7 @@ public class OAuth2AuthorizationService {
                                       final LoginCallback prompt) throws LoginCanceledException {
         this.transport = transport;
         this.host = host;
-        this.credentials = new CopyCredentialsHolder(host.getCredentials());
+        this.credentials = host.getCredentials();
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.prompt = prompt;
@@ -127,29 +127,27 @@ public class OAuth2AuthorizationService {
         if(saved.validate()) {
             // Found existing tokens
             if(saved.isExpired()) {
-                log.warn("Refresh expired access tokens {}", saved);
-                // Refresh expired access key
+                log.warn("Refresh expired tokens {}", saved);
+                // Refresh expired tokens
                 try {
-                    final OAuthTokens refreshed = this.refresh(saved);
+                    final OAuthTokens refreshed = this.authorizeWithRefreshToken(saved);
                     log.debug("Refreshed tokens {} for {}", refreshed, host);
-                    credentials.setOauth(refreshed);
-                    return refreshed;
+                    return this.save(refreshed);
                 }
                 catch(LoginFailureException e) {
                     log.warn("Failure refreshing tokens from {} for {}", saved, host);
-                    // Continue with new OAuth 2 flow
+                    // Continue with authorization flow
                 }
             }
             else {
-                log.debug("Returned saved OAuth tokens {} for {}", saved, host);
+                log.debug("Returned saved tokens {} for {}", saved, host);
                 return saved;
             }
         }
-        log.warn("Missing OAuth tokens {} for {}", saved, host);
+        log.warn("Missing tokens {} for {}", saved, host);
         final OAuthTokens tokens = this.authorize();
         log.debug("Retrieved tokens {} for {}", tokens, host);
-        credentials.setOauth(tokens);
-        return tokens;
+        return this.save(tokens);
     }
 
     /**
@@ -197,7 +195,7 @@ public class OAuth2AuthorizationService {
         // Save access token, refresh token and id token
         switch(flowType) {
             case AuthorizationCode:
-                response = this.authorizeWithCode(host, prompt);
+                response = this.authorizeWithCode(prompt);
                 break;
             case PasswordGrant:
                 response = this.authorizeWithPassword(credentials);
@@ -211,10 +209,10 @@ public class OAuth2AuthorizationService {
                         System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken());
     }
 
-    private IdTokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
+    private IdTokenResponse authorizeWithCode(final LoginCallback prompt) throws BackgroundException {
         log.debug("Request tokens with code");
-        if(HostPreferencesFactory.get(bookmark).getBoolean("oauth.browser.open.warn")) {
-            prompt.warn(bookmark,
+        if(HostPreferencesFactory.get(host).getBoolean("oauth.browser.open.warn")) {
+            prompt.warn(host,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     new StringAppender()
                             .append(LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"))
@@ -248,7 +246,7 @@ public class OAuth2AuthorizationService {
         final String authorizationCodeUrl = authorizationCodeUrlBuilder.build();
         log.debug("Open browser with URL {}", authorizationCodeUrl);
         final String authorizationCode = OAuth2AuthorizationCodeProviderFactory.get().prompt(
-                bookmark, prompt, authorizationCodeUrl, redirectUri, state);
+                host, prompt, authorizationCodeUrl, redirectUri, state);
         if(StringUtils.isBlank(authorizationCode)) {
             throw new LoginCanceledException();
         }
@@ -297,7 +295,7 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    public OAuthTokens refresh(final OAuthTokens tokens) throws BackgroundException {
+    public OAuthTokens authorizeWithRefreshToken(final OAuthTokens tokens) throws BackgroundException {
         if(StringUtils.isBlank(tokens.getRefreshToken())) {
             log.warn("Missing refresh token in {}", tokens);
             return this.authorize();

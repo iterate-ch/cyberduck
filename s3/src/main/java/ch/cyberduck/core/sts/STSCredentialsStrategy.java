@@ -15,7 +15,6 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.CopyCredentialsHolder;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
@@ -25,37 +24,23 @@ import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Swap static access key id and secret access key with temporary credentials obtained from STS AssumeRole
  */
-public abstract class STSRequestInterceptor extends STSAuthorizationService implements S3CredentialsStrategy, HttpRequestInterceptor {
-    private static final Logger log = LogManager.getLogger(STSRequestInterceptor.class);
+public abstract class STSCredentialsStrategy extends STSAuthorizationService implements S3CredentialsStrategy {
+    private static final Logger log = LogManager.getLogger(STSCredentialsStrategy.class);
 
     private final ReentrantLock lock = new ReentrantLock();
+    private final Host host;
 
-    /**
-     * Currently valid tokens obtained from token service
-     */
-    protected TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
-
-    /**
-     * Static long-lived credentials
-     */
-    protected final Credentials credentials;
-
-    public STSRequestInterceptor(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
+    public STSCredentialsStrategy(final Host host, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         super(host, trust, key, prompt);
-        this.credentials = new CopyCredentialsHolder(host.getCredentials());
+        this.host = host;
     }
 
     /**
@@ -67,28 +52,20 @@ public abstract class STSRequestInterceptor extends STSAuthorizationService impl
     public abstract TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException;
 
     @Override
-    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+    public Credentials get() throws BackgroundException {
         lock.lock();
         try {
+            final Credentials credentials = host.getCredentials();
+            final TemporaryAccessTokens tokens = credentials.getTokens();
+            // Get temporary credentials from STS using static long-lived credentials
             if(tokens.isExpired()) {
-                try {
-                    this.refresh(credentials);
-                    log.info("Authorizing service request with STS tokens {}", tokens);
-                }
-                catch(BackgroundException e) {
-                    log.warn("Failure {} refreshing STS tokens {}", e, tokens);
-                    // Follow-up error 401 handled in error interceptor
-                }
+                log.debug("Refresh expired tokens {} for {}", tokens, host);
+                credentials.setTokens(this.refresh(credentials));
             }
+            return credentials;
         }
         finally {
             lock.unlock();
         }
-    }
-
-    @Override
-    public Credentials get() throws BackgroundException {
-        // Get temporary credentials from STS using static long-lived credentials
-        return credentials.setTokens(tokens.isExpired() ? this.refresh(credentials) : tokens);
     }
 }

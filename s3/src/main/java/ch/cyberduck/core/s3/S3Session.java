@@ -52,11 +52,11 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.sts.STSAssumeRoleRequestInterceptor;
-import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityRequestInterceptor;
+import ch.cyberduck.core.sts.STSAssumeRoleCredentialsStrategy;
+import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAuthorizationService;
-import ch.cyberduck.core.sts.STSGetSessionTokenRequestInterceptor;
-import ch.cyberduck.core.sts.STSRequestInterceptor;
+import ch.cyberduck.core.sts.STSCredentialsStrategy;
+import ch.cyberduck.core.sts.STSGetSessionTokenCredentialsStrategy;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -132,13 +132,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
             scheduler.shutdown(false);
-            client.shutdown();
+            if(client != null) {
+                client.shutdown();
+            }
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map(e);
+        }
+        finally {
+            super.disconnect();
         }
     }
 
@@ -256,11 +261,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
             log.debug("Add interceptor {}", oauth);
             configuration.addInterceptorLast(oauth);
-            final STSAssumeRoleWithWebIdentityRequestInterceptor interceptor
-                    = new STSAssumeRoleWithWebIdentityRequestInterceptor(oauth, host, trust, key, prompt);
-            log.debug("Add interceptor {}", interceptor);
-            configuration.addInterceptorLast(interceptor);
-            return interceptor;
+            final STSAssumeRoleWithWebIdentityCredentialsStrategy strategy
+                    = new STSAssumeRoleWithWebIdentityCredentialsStrategy(oauth, host, trust, key, prompt);
+            log.debug("Return authenticator {}", strategy);
+            return strategy;
         }
         if(S3Session.isAwsHostname(host.getHostname())) {
             // Try auto-configure
@@ -271,16 +275,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
         }
         if(host.getProtocol().isRoleConfigurable()) {
-            final STSRequestInterceptor interceptor = new STSAssumeRoleRequestInterceptor(host, trust, key, prompt);
-            log.debug("Add interceptor {}", interceptor);
-            configuration.addInterceptorLast(interceptor);
-            return interceptor;
+            final STSCredentialsStrategy strategy = new STSAssumeRoleCredentialsStrategy(host, trust, key, prompt);
+            log.debug("Return authenticator {}", strategy);
+            return strategy;
         }
         if(host.getProtocol().isMultiFactorConfigurable()) {
-            final STSRequestInterceptor interceptor = new STSGetSessionTokenRequestInterceptor(host, trust, key, prompt);
-            log.debug("Add interceptor {}", interceptor);
-            configuration.addInterceptorLast(interceptor);
-            return interceptor;
+            final STSCredentialsStrategy strategy = new STSGetSessionTokenCredentialsStrategy(host, trust, key, prompt);
+            log.debug("Return authenticator {}", strategy);
+            return strategy;
         }
         // Keep copy of credentials
         final Credentials credentials = new Credentials(host.getCredentials());

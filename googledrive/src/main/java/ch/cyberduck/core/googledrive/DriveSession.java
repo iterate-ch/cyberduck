@@ -99,15 +99,16 @@ public class DriveSession extends HttpSession<Drive> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
+            fileid.clear();
             transport.shutdown();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            fileid.clear();
+            super.disconnect();
         }
     }
 

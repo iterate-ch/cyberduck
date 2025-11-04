@@ -124,12 +124,15 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
             ((DropboxCommonsHttpRequestExecutor) client.getRequestConfig().getHttpRequestor()).close();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            super.disconnect();
         }
     }
 

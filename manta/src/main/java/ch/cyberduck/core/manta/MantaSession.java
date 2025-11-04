@@ -110,9 +110,14 @@ public class MantaSession extends HttpSession<MantaClient> {
     }
 
     @Override
-    protected void logout() {
-        if(client != null) {
-            client.closeWithWarning();
+    public void disconnect() throws BackgroundException {
+        try {
+            if(client != null) {
+                client.closeQuietly();
+            }
+        }
+        finally {
+            super.disconnect();
         }
     }
 

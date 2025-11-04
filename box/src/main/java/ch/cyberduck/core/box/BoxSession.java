@@ -87,15 +87,16 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
+            fileid.clear();
             client.close();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            fileid.clear();
+            super.disconnect();
         }
     }
 

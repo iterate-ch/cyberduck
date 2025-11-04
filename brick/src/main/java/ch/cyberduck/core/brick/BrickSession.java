@@ -111,12 +111,17 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
-            client.close();
+            if(client != null) {
+                client.close();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            super.disconnect();
         }
     }
 

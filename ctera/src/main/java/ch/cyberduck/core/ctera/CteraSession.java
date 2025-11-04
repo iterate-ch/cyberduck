@@ -228,8 +228,13 @@ public class CteraSession extends DAVSession {
         }
         finally {
             super.logout();
-            versionid.clear();
         }
+    }
+
+    @Override
+    public void disconnect() throws BackgroundException {
+        versionid.clear();
+        super.disconnect();
     }
 
     @Override

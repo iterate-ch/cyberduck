@@ -112,6 +112,7 @@ public class LocalSession extends Session<FileSystem> {
     protected void logout() throws BackgroundException {
         final Path home = new LocalHomeFinderFeature().find();
         LocalFactory.get(this.toPath(home).toString()).release(lock);
+        super.logout();
     }
 
     protected boolean isPosixFilesystem() {
