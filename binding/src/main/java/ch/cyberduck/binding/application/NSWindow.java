@@ -416,6 +416,7 @@ public abstract class NSWindow extends NSResponder {
      * When this property is the empty string, the system removes the subtitle from the window layout.
      *
      * @param aString A secondary line of text that appears in the title bar of the window.
+     * @since macOS 11.0+
      */
     public abstract void setSubtitle(String aString);
 
