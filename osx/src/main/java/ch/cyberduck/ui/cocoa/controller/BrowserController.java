@@ -642,7 +642,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
             window.setSubtitle(StringUtils.EMPTY);
         }
-        window.setTitle(preferences.getProperty("application.name"));
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
