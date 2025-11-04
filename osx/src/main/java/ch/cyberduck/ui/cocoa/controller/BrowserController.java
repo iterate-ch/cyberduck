@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.WindowController;
@@ -225,10 +226,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private Scheduler scheduler;
 
+    private final NavigationController listNavigationController = new NavigationController(navigation);
+    private final NavigationController outlineNavigationController = new NavigationController(navigation);
+
     @Outlet
-    protected NSProgressIndicator statusSpinner;
+    private NSView listNavigationContainerView;
     @Outlet
-    protected NSProgressIndicator browserSpinner;
+    private NSView outlineNavigationContainerView;
+    @Outlet
+    private NSProgressIndicator statusSpinner;
+    @Outlet
+    private NSProgressIndicator browserSpinner;
     @Delegate
     private BrowserOutlineViewDataSource browserOutlineModel;
     @Outlet
@@ -279,12 +287,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private NSButton addBookmarkButton;
     @Outlet
     private NSButton deleteBookmarkButton;
-    @Outlet
-    private NSSegmentedControl navigationButton;
-    @Outlet
-    private NSSegmentedControl upButton;
-    @Outlet
-    private NSPopUpButton pathPopupButton;
     @Outlet
     private NSTextField statusLabel;
     @Outlet
@@ -375,8 +377,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
+    public void loadBundle() {
+        listNavigationController.loadBundle();
+        outlineNavigationController.loadBundle();
+        super.loadBundle();
+    }
+
+    @Override
     public void awakeFromNib() {
         super.awakeFromNib();
+        this.addSubview(listNavigationContainerView, listNavigationController.view());
+        this.addSubview(outlineNavigationContainerView, outlineNavigationController.view());
         // Configure Toolbar
         this.toolbar = NSToolbar.toolbarWithIdentifier("Cyberduck Toolbar");
         this.toolbar.setDelegate((this.id()));
@@ -389,6 +400,99 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.addDonateWindowTitle();
         }
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
+    }
+
+    private final class NavigationController extends BundleController {
+        private final Navigation navigation;
+
+        public NavigationController(final Navigation navigation) {
+            this.navigation = navigation;
+        }
+
+        @Outlet
+        private NSView navigationView;
+        @Outlet
+        private NSPopUpButton pathPopupButton;
+        @Outlet
+        private NSSegmentedControl navigationButton;
+        @Outlet
+        private NSSegmentedControl upButton;
+
+        @Override
+        protected String getBundleName() {
+            return "Navigation";
+        }
+
+        @Override
+        public NSView view() {
+            return navigationView;
+        }
+
+        private void setNavigation(final Path workdir) {
+            pathPopupButton.removeAllItems();
+            final boolean enabled = workdir != null;
+            if(enabled) {
+                // Update the current working directory
+                navigation.add(workdir);
+                Path p = workdir;
+                do {
+                    this.addNavigation(p);
+                    p = p.getParent();
+                }
+                while(!p.isRoot());
+                this.addNavigation(p);
+            }
+            pathPopupButton.setEnabled(enabled);
+            navigationButton.setEnabled_forSegment(enabled && navigation.getBack().size() > 1, NavigationSegment.back.position());
+            navigationButton.setEnabled_forSegment(enabled && !navigation.getForward().isEmpty(), NavigationSegment.forward.position());
+            upButton.setEnabled_forSegment(enabled && !workdir.isRoot(), NavigationSegment.up.position());
+        }
+
+        private void addNavigation(final Path folder) {
+            pathPopupButton.addItemWithTitle(folder.getAbsolute());
+            pathPopupButton.lastItem().setRepresentedObject(folder.getAbsolute());
+            if(folder.isVolume()) {
+                pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().volumeIcon(pool.getHost().getProtocol(), 16));
+            }
+            else {
+                pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(folder, 16));
+            }
+        }
+
+        @Outlet
+        public void setNavigationView(final NSView view) {
+            this.navigationView = view;
+        }
+
+        @Outlet
+        public void setNavigationButton(NSSegmentedControl button) {
+            this.navigationButton = button;
+            this.navigationButton.setTarget(BrowserController.this.id());
+            this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
+            final NSSegmentedCell cell = Rococoa.cast(this.navigationButton.cell(), NSSegmentedCell.class);
+            this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff"), NavigationSegment.back.position());
+            this.navigationButton.imageForSegment(NavigationSegment.back.position()).setTemplate(true);
+            cell.setToolTip_forSegment(LocaleFactory.localizedString("Back", "Main"), NavigationSegment.back.position());
+            this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff"), NavigationSegment.forward.position());
+            this.navigationButton.imageForSegment(NavigationSegment.forward.position()).setTemplate(true);
+            cell.setToolTip_forSegment(LocaleFactory.localizedString("Forward", "Main"), NavigationSegment.forward.position());
+        }
+
+        @Outlet
+        public void setUpButton(NSSegmentedControl upButton) {
+            this.upButton = upButton;
+            this.upButton.setTarget(BrowserController.this.id());
+            this.upButton.setAction(Foundation.selector("upButtonClicked:"));
+            this.upButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-up.tiff"), NavigationSegment.up.position());
+            this.upButton.imageForSegment(NavigationSegment.up.position()).setTemplate(true);
+        }
+
+        @Outlet
+        public void setPathPopup(NSPopUpButton button) {
+            this.pathPopupButton = button;
+            this.pathPopupButton.setTarget(BrowserController.this.id());
+            this.pathPopupButton.setAction(Foundation.selector("pathPopupSelectionChanged:"));
+        }
     }
 
     public Comparator<Path> getComparator() {
@@ -500,7 +604,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             model.render(browser, Collections.emptyList());
         }
         if(null == workdir) {
-            this.setNavigation(false);
+            this.setNavigation();
             // Render empty browser
             model.render(browser, Collections.emptyList());
         }
@@ -518,7 +622,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<>(this, pool,
-                        new ListWorker(cache, folder, listener) {
+                                new ListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache
@@ -545,7 +649,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private void reload(final NSTableView browser, final BrowserTableDataSource model, final Path workdir, final List<Path> selected, final Path folder) {
         this.workdir = workdir;
-        this.setNavigation(workdir != null);
+        this.setNavigation();
         model.render(browser, Collections.singletonList(folder));
         this.setStatus();
         this.select(selected);
@@ -722,6 +826,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             bookmarks.add(0, duplicate);
         }
         return true;
+    }
+
+    @Outlet
+    public void setOutlineNavigationContainerView(final NSView view) {
+        this.outlineNavigationContainerView = view;
+    }
+
+    @Outlet
+    public void setListNavigationContainerView(final NSView view) {
+        this.listNavigationContainerView = view;
     }
 
     @Action
@@ -956,7 +1070,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private void selectBrowser(final BrowserSwitchSegement selected) {
         bookmarkSwitchView.setSelectedSegment(BookmarkSwitchSegement.browser.ordinal());
-        this.setNavigation(this.isMounted());
+        this.setNavigation();
         switch(selected) {
             case list:
                 browserTabView.selectTabViewItemAtIndex(BrowserTab.list.ordinal());
@@ -977,7 +1091,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private void selectBookmarks(final BookmarkSwitchSegement selected) {
         bookmarkSwitchView.setSelectedSegment(selected.ordinal());
-        this.setNavigation(false);
         // Display bookmarks
         browserTabView.selectTabViewItemAtIndex(BrowserTab.bookmarks.ordinal());
         final AbstractHostCollection source;
@@ -2011,40 +2124,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         return navigation;
     }
 
-    private void setNavigation(boolean enabled) {
-        if(!enabled) {
-            searchField.setStringValue(StringUtils.EMPTY);
-        }
-        pathPopupButton.removeAllItems();
-        if(enabled) {
-            // Update the current working directory
-            navigation.add(workdir);
-            Path p = workdir;
-            do {
-                this.addNavigation(p);
-                p = p.getParent();
-            }
-            while(!p.isRoot());
-            this.addNavigation(p);
-        }
-        pathPopupButton.setEnabled(enabled);
-        navigationButton.setEnabled_forSegment(enabled && navigation.getBack().size() > 1, NavigationSegment.back.position());
-        navigationButton.setEnabled_forSegment(enabled && navigation.getForward().size() > 0, NavigationSegment.forward.position());
-        upButton.setEnabled_forSegment(enabled && !workdir.isRoot(), NavigationSegment.up.position());
-    }
-
-    @Action
-    public void setNavigationButton(NSSegmentedControl navigationButton) {
-        this.navigationButton = navigationButton;
-        this.navigationButton.setTarget(this.id());
-        this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
-        final NSSegmentedCell cell = Rococoa.cast(this.navigationButton.cell(), NSSegmentedCell.class);
-        this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff"), NavigationSegment.back.position());
-        this.navigationButton.imageForSegment(NavigationSegment.back.position()).setTemplate(true);
-        cell.setToolTip_forSegment(LocaleFactory.localizedString("Back", "Main"), NavigationSegment.back.position());
-        this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff"), NavigationSegment.forward.position());
-        this.navigationButton.imageForSegment(NavigationSegment.forward.position()).setTemplate(true);
-        cell.setToolTip_forSegment(LocaleFactory.localizedString("Forward", "Main"), NavigationSegment.forward.position());
+    private void setNavigation() {
+        listNavigationController.setNavigation(workdir);
+        outlineNavigationController.setNavigation(workdir);
     }
 
     @Action
@@ -2082,26 +2164,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Action
-    public void setUpButton(NSSegmentedControl upButton) {
-        this.upButton = upButton;
-        this.upButton.setTarget(this.id());
-        this.upButton.setAction(Foundation.selector("upButtonClicked:"));
-        this.upButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-up.tiff"), NavigationSegment.up.position());
-        this.upButton.imageForSegment(NavigationSegment.up.position()).setTemplate(true);
-    }
-
-    @Action
     public void upButtonClicked(final ID sender) {
         final Path previous = workdir;
         this.setWorkdir(previous.getParent(), previous);
     }
 
-    @Action
-    public void setPathPopup(NSPopUpButton pathPopupButton) {
-        this.pathPopupButton = pathPopupButton;
-        this.pathPopupButton.setTarget(this.id());
-        this.pathPopupButton.setAction(Foundation.selector("pathPopupSelectionChanged:"));
-    }
 
     @Action
     public void pathPopupSelectionChanged(final NSPopUpButton sender) {
@@ -3214,17 +3281,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else {
             this.reload(directory, Collections.singleton(directory), selected, false);
-        }
-    }
-
-    private void addNavigation(final Path p) {
-        pathPopupButton.addItemWithTitle(p.getAbsolute());
-        pathPopupButton.lastItem().setRepresentedObject(p.getAbsolute());
-        if(p.isVolume()) {
-            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().volumeIcon(pool.getHost().getProtocol(), 16));
-        }
-        else {
-            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(p, 16));
         }
     }
 
