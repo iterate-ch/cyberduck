@@ -685,6 +685,9 @@ public class Profile implements Protocol {
                 property -> StringUtils.contains(property, '=') ? substitutor.replace(StringUtils.substringAfter(property, '=')) : StringUtils.EMPTY)));
         // In profile as dict
         properties.putAll(this.map(PROPERTIES_KEY));
+        if(null != this.getContext()) {
+            properties.put(CONTEXT_KEY, this.getContext());
+        }
         return properties;
     }
 

@@ -27,6 +27,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.UrlProvider;
@@ -267,7 +268,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(Scheme.isURL(host.getProtocol().getContext())) {
                 log.debug("Auto-configure credentials from instance metadata {}", host.getProtocol().getContext());
                 // Fetch temporary session token from instance metadata
-                return new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext());
+                return new AWSSessionCredentialsRetriever(trust, key, preferences.getProperty(Profile.CONTEXT_KEY));
             }
         }
         if(host.getProtocol().isRoleConfigurable()) {
