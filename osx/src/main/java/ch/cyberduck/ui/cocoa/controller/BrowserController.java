@@ -641,23 +641,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * Marks the current browser as the first responder
-     */
-    private void getFocus() {
-        NSView view;
-        if(this.getSelectedTabView() == BrowserTab.bookmarks) {
-            window.makeFirstResponder(bookmarkTable);
-            bookmarkTableDelegate.selectionDidChange(NSNotification.notificationWithName(StringUtils.EMPTY, this.id()));
-        }
-        else {
-            if(this.isMounted()) {
-                window.makeFirstResponder(this.getSelectedBrowserView());
-            }
-        }
-        this.setStatus();
-    }
-
-    /**
      * Make the browser reload its content. Will make use of the cache.
      */
     public void reload() {
@@ -1206,8 +1189,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.setFilter(null);
         // Update from model
         this.reload();
-        // Focus on browser view
-        this.getFocus();
     }
 
     private void selectBookmarks(final BookmarkSwitchSegement selected) {
@@ -1266,7 +1247,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
             this.bookmarkTable.scrollRowToVisible(new NSInteger(0));
         }
-        this.getFocus();
     }
 
     /**
