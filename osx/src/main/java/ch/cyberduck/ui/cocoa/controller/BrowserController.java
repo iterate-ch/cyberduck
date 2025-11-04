@@ -72,6 +72,7 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionListener;
 import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
@@ -228,13 +229,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private final NavigationController listNavigationController = new NavigationController(navigation);
     private final NavigationController outlineNavigationController = new NavigationController(navigation);
+    private final BundleController listStatusController = new StatusController();
+    private final BundleController outlineStatusController = new StatusController();
 
     @Outlet
     private NSView listNavigationContainerView;
     @Outlet
     private NSView outlineNavigationContainerView;
     @Outlet
-    private NSProgressIndicator statusSpinner;
+    private NSView listStatusContainerView;
+    @Outlet
+    private NSView outlineStatusContainerView;
     @Outlet
     private NSProgressIndicator browserSpinner;
     @Delegate
@@ -287,10 +292,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private NSButton addBookmarkButton;
     @Outlet
     private NSButton deleteBookmarkButton;
-    @Outlet
-    private NSTextField statusLabel;
-    @Outlet
-    private NSButton securityLabel;
     @Outlet
     private NSOpenPanel downloadToPanel;
     @Outlet
@@ -380,6 +381,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void loadBundle() {
         listNavigationController.loadBundle();
         outlineNavigationController.loadBundle();
+        listStatusController.loadBundle();
+        outlineStatusController.loadBundle();
         super.loadBundle();
     }
 
@@ -388,6 +391,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         super.awakeFromNib();
         this.addSubview(listNavigationContainerView, listNavigationController.view());
         this.addSubview(outlineNavigationContainerView, outlineNavigationController.view());
+        this.addSubview(listStatusContainerView, listStatusController.view());
+        this.addSubview(outlineStatusContainerView, outlineStatusController.view());
         // Configure Toolbar
         this.toolbar = NSToolbar.toolbarWithIdentifier("Cyberduck Toolbar");
         this.toolbar.setDelegate((this.id()));
@@ -400,6 +405,112 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.addDonateWindowTitle();
         }
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
+    }
+
+    private final class StatusController extends BundleController implements BackgroundActionListener {
+        @Outlet
+        private NSView statusView;
+        @Outlet
+        private NSProgressIndicator statusSpinner;
+        @Outlet
+        private NSTextField statusLabel;
+        @Outlet
+        private NSButton securityLabel;
+
+        @Override
+        protected String getBundleName() {
+            return "Status";
+        }
+
+        @Override
+        public NSView view() {
+            return statusView;
+        }
+
+        @Outlet
+        public void setStatusView(final NSView statusView) {
+            this.statusView = statusView;
+        }
+
+        @Outlet
+        public void setStatusSpinner(NSProgressIndicator statusSpinner) {
+            this.statusSpinner = statusSpinner;
+            this.statusSpinner.setDisplayedWhenStopped(false);
+            this.statusSpinner.setIndeterminate(true);
+        }
+
+        @Outlet
+        public void setStatusLabel(NSTextField statusLabel) {
+            this.statusLabel = statusLabel;
+            this.statusLabel.setFont(NSFont.monospacedDigitSystemFontOfSize(NSFont.smallSystemFontSize()));
+        }
+
+        @Outlet
+        public void setSecurityLabel(NSButton securityLabel) {
+            this.securityLabel = securityLabel;
+            this.securityLabel.setEnabled(false);
+            this.securityLabel.setTarget(this.id());
+            this.securityLabel.setAction(Foundation.selector("securityLabelButtonClicked:"));
+        }
+
+        @Action
+        public void securityLabelButtonClicked(final ID sender) {
+            final List<X509Certificate> certificates = Arrays.asList(pool.getFeature(X509TrustManager.class).getAcceptedIssuers());
+            if(certificates.isEmpty()) {
+                return;
+            }
+            try {
+                final NSMutableArray certs = NSMutableArray.arrayWithCapacity(new NSUInteger(certificates.size()));
+                for(X509Certificate certificate : certificates) {
+                    certs.addObject(SecurityFunctions.library.SecCertificateCreateWithData(null,
+                            NSData.dataWithBase64EncodedString(Base64.encodeBase64String(certificate.getEncoded()))));
+                }
+                final SFCertificatePanel panel = SFCertificatePanel.sharedCertificatePanel();
+                panel.setShowsHelp(false);
+                // Implementation of this delegate method is optional
+                panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_certificates_showGroup(
+                        window, this.id(), Foundation.selector("certificateSheetDidEnd:returnCode:contextInfo:"), null, certs, true);
+            }
+            catch(CertificateException e) {
+                log.warn("Failure decoding certificate {}", e.getMessage());
+            }
+        }
+
+        @Action
+        public void certificateSheetDidEnd_returnCode_contextInfo(NSWindow sheet, NSInteger returnCode, NSObject contextInfo) {
+            //
+        }
+
+        @Override
+        public void start(final BackgroundAction action) {
+            statusSpinner.startAnimation(null);
+        }
+
+        @Override
+        public void stop(final BackgroundAction action) {
+            statusSpinner.stopAnimation(null);
+            securityLabel.setImage(pool.getHost().getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
+                    : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
+            securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
+        }
+
+        @Override
+        public void message(final String label) {
+            if(StringUtils.isNotBlank(label)) {
+                // Update the status label at the bottom of the browser window
+                statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
+            }
+            else {
+                if(isMounted()) {
+                    statusLabel.setAttributedStringValue(
+                            NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Items"),
+                                    String.valueOf(getSelectedBrowserView().numberOfRows())), TRUNCATE_MIDDLE_ATTRIBUTES));
+                }
+                else {
+                    statusLabel.setStringValue(StringUtils.EMPTY);
+                }
+            }
+        }
     }
 
     private final class NavigationController extends BundleController {
@@ -838,6 +949,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.listNavigationContainerView = view;
     }
 
+    @Outlet
+    public void setOutlineStatusContainerView(final NSView outlineStatusContainerView) {
+        this.outlineStatusContainerView = outlineStatusContainerView;
+    }
+
+    @Outlet
+    public void setListStatusContainerView(final NSView listStatusContainerView) {
+        this.listStatusContainerView = listStatusContainerView;
+    }
+
     @Action
     public void setDonateButton(NSButton button) {
         button.setTitle(LocaleFactory.localizedString("Get a registration key!", "License"));
@@ -1153,7 +1274,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void reloadBookmarks() {
         bookmarkTable.reloadData();
-        this.setStatus();
     }
 
     /**
@@ -2205,21 +2325,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Action
-    public void setStatusSpinner(NSProgressIndicator statusSpinner) {
-        this.statusSpinner = statusSpinner;
-        this.statusSpinner.setDisplayedWhenStopped(false);
-        this.statusSpinner.setIndeterminate(true);
-    }
-
-    @Action
     public void setBrowserSpinner(NSProgressIndicator browserSpinner) {
         this.browserSpinner = browserSpinner;
-    }
-
-    @Action
-    public void setStatusLabel(NSTextField statusLabel) {
-        this.statusLabel = statusLabel;
-        this.statusLabel.setFont(NSFont.monospacedDigitSystemFontOfSize(NSFont.smallSystemFontSize()));
     }
 
     public void setStatus() {
@@ -2232,7 +2339,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
-                statusSpinner.stopAnimation(null);
+                listStatusController.stop(action);
+                outlineStatusController.stop(action);
             }
         });
         super.stop(action);
@@ -2243,7 +2351,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
-                statusSpinner.startAnimation(null);
+                listStatusController.start(action);
+                outlineStatusController.start(action);
             }
         });
         super.start(action);
@@ -2257,34 +2366,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
-                if(StringUtils.isNotBlank(label)) {
-                    // Update the status label at the bottom of the browser window
-                    statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label,
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
-                }
-                else {
-                    if(getSelectedTabView() == BrowserTab.bookmarks) {
-                        statusLabel.setAttributedStringValue(
-                                NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Bookmarks"), bookmarkTable.numberOfRows()),
-                                        TRUNCATE_MIDDLE_ATTRIBUTES
-                                )
-                        );
-                    }
-                    else {
-                        // Browser view
-                        if(isMounted()) {
-                            statusLabel.setAttributedStringValue(
-                                    NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Items"),
-                                                    String.valueOf(getSelectedBrowserView().numberOfRows())),
-                                            TRUNCATE_MIDDLE_ATTRIBUTES
-                                    )
-                            );
-                        }
-                        else {
-                            statusLabel.setStringValue(StringUtils.EMPTY);
-                        }
-                    }
-                }
+                listStatusController.message(label);
+                outlineStatusController.message(label);
             }
         });
     }
@@ -2292,42 +2375,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Override
     public void log(final Type type, final String message) {
         transcript.log(type, message);
-    }
-
-    @Action
-    public void setSecurityLabel(NSButton securityLabel) {
-        this.securityLabel = securityLabel;
-        this.securityLabel.setEnabled(false);
-        this.securityLabel.setTarget(this.id());
-        this.securityLabel.setAction(Foundation.selector("securityLabelClicked:"));
-    }
-
-    @Action
-    public void securityLabelClicked(final ID sender) {
-        final List<X509Certificate> certificates = Arrays.asList(pool.getFeature(X509TrustManager.class).getAcceptedIssuers());
-        if(certificates.isEmpty()) {
-            return;
-        }
-        try {
-            final NSMutableArray certs = NSMutableArray.arrayWithCapacity(new NSUInteger(certificates.size()));
-            for(X509Certificate certificate : certificates) {
-                certs.addObject(SecurityFunctions.library.SecCertificateCreateWithData(null,
-                        NSData.dataWithBase64EncodedString(Base64.encodeBase64String(certificate.getEncoded()))));
-            }
-            final SFCertificatePanel panel = SFCertificatePanel.sharedCertificatePanel();
-            panel.setShowsHelp(false);
-            // Implementation of this delegate method is optional
-            panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_certificates_showGroup(
-                    this.window, this.id(), Foundation.selector("certificateSheetDidEnd:returnCode:contextInfo:"), null, certs, true);
-        }
-        catch(CertificateException e) {
-            log.warn("Failure decoding certificate {}", e.getMessage());
-        }
-    }
-
-    @Action
-    public void certificateSheetDidEnd_returnCode_contextInfo(NSWindow sheet, NSInteger returnCode, NSObject contextInfo) {
-        //
     }
 
     @Action
@@ -3318,9 +3365,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                     if(preferences.getBoolean("browser.disconnect.confirm")) {
                                         window.setDocumentEdited(true);
                                     }
-                                    securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
-                                            : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
-                                    securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
                                     scheduler = pool.getFeature(Scheduler.class);
                                     if(scheduler != null) {
                                         scheduler.repeat(PasswordCallbackFactory.get(BrowserController.this));
