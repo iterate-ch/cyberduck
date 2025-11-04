@@ -225,7 +225,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private final TransferQueue queue = new TransferQueue(1);
 
-    private Scheduler scheduler;
+    private Scheduler<?> scheduler;
 
     private final NavigationController listNavigationController = new NavigationController(navigation);
     private final NavigationController outlineNavigationController = new NavigationController(navigation);
