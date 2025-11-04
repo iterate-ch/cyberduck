@@ -40,6 +40,13 @@ public class HostParserTest {
     }
 
     @Test
+    public void parsePath() throws HostParserException {
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https))))
+            .get("https://t%40u@host:443/key%2Fpart_a%2Fpart_b");
+        assertEquals("/key%2Fpart_a%2Fpart_b", host.getDefaultPath());
+    }
+
+    @Test
     public void parseNonConfigurableEmptyURL() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
             @Override
