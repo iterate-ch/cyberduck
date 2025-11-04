@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <capability name="System colors introduced in macOS 10.14" minToolsVersion="10.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -557,12 +558,13 @@ DQ
             <point key="canvasLocation" x="-327" y="215"/>
         </menu>
         <button verticalHuggingPriority="750" id="124" userLabel="Payment Titlebar Accessory">
-            <rect key="frame" x="0.0" y="0.0" width="123" height="19"/>
+            <rect key="frame" x="0.0" y="0.0" width="137" height="44"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-            <buttonCell key="cell" type="roundRect" bezelStyle="roundedRect" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="125">
+            <buttonCell key="cell" type="push" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="125">
                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                <font key="font" metaFont="message" size="11"/>
+                <font key="font" metaFont="system"/>
             </buttonCell>
+            <color key="bezelColor" name="controlAccentColor" catalog="System" colorSpace="catalog"/>
             <point key="canvasLocation" x="-32" y="338"/>
         </button>
         <searchField wantsLayer="YES" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="55">
