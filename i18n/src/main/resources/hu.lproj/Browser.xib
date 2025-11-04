@@ -20,14 +20,13 @@
                 <outlet property="donateButton" destination="124" id="140"/>
                 <outlet property="editBookmarkButton" destination="9" id="141"/>
                 <outlet property="editMenu" destination="71" id="142"/>
-                <outlet property="navigationButton" destination="63" id="146"/>
+                <outlet property="listNavigationContainerView" destination="umE-m4-NPn" id="she5eDo5"/>
                 <outlet property="openUrlMenu" destination="95" id="147"/>
-                <outlet property="pathPopup" destination="59" id="148"/>
+                <outlet property="outlineNavigationContainerView" destination="Bgq-zd-Hw3" id="Aesheo5u"/>
                 <outlet property="searchField" destination="55" id="150"/>
                 <outlet property="securityLabel" destination="47" id="151"/>
                 <outlet property="statusLabel" destination="49" id="152"/>
                 <outlet property="statusSpinner" destination="46" id="153"/>
-                <outlet property="upButton" destination="57" id="154"/>
                 <outlet property="urlMenu" destination="93" id="155"/>
                 <outlet property="window" destination="3" id="156"/>
             </connections>
@@ -46,12 +45,12 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="5">
-                        <rect key="frame" x="0.0" y="32" width="621" height="383"/>
+                        <rect key="frame" x="0.0" y="32" width="621" height="419"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Könyvjelzők" identifier="bookmarks" id="6">
                                 <view key="view" id="7">
-                                    <rect key="frame" x="0.0" y="0.0" width="621" height="383"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="621" height="419"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view translatesAutoresizingMaskIntoConstraints="NO" id="yLo-kg-Ioa" userLabel="Edit View">
@@ -91,13 +90,13 @@
                                             </constraints>
                                         </view>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="47" horizontalPageScroll="10" verticalLineScroll="47" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="15">
-                                            <rect key="frame" x="-1" y="32" width="623" height="351"/>
+                                            <rect key="frame" x="-1" y="32" width="623" height="387"/>
                                             <clipView key="contentView" id="ELY-XA-KER">
-                                                <rect key="frame" x="1" y="1" width="621" height="349"/>
+                                                <rect key="frame" x="1" y="1" width="621" height="385"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="sequential" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="45" id="17" customClass="CDListView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="621" height="349"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="621" height="385"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -118,36 +117,41 @@
                                             </scroller>
                                         </scrollView>
                                         <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="28">
-                                            <rect key="frame" x="295" y="176" width="32" height="32"/>
+                                            <rect key="frame" x="295" y="194" width="32" height="32"/>
                                         </progressIndicator>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="15" firstAttribute="leading" secondItem="7" secondAttribute="leading" constant="-1" id="CNk-yx-9NX"/>
                                         <constraint firstItem="15" firstAttribute="centerX" secondItem="7" secondAttribute="centerX" id="FsM-SK-bgj"/>
-                                        <constraint firstItem="28" firstAttribute="centerX" secondItem="7" secondAttribute="centerX" id="Leu-OF-ebE"/>
                                         <constraint firstAttribute="bottom" secondItem="15" secondAttribute="bottom" constant="32" id="O8p-kB-9Cn"/>
                                         <constraint firstAttribute="bottom" secondItem="yLo-kg-Ioa" secondAttribute="bottom" id="aKp-D2-HW1"/>
-                                        <constraint firstItem="28" firstAttribute="centerY" secondItem="7" secondAttribute="centerY" id="dvc-MB-VK6"/>
+                                        <constraint firstItem="28" firstAttribute="centerX" secondItem="7" secondAttribute="centerX" id="ex9-3D-6Aw"/>
                                         <constraint firstAttribute="trailing" secondItem="yLo-kg-Ioa" secondAttribute="trailing" id="fAd-vt-GLA"/>
+                                        <constraint firstItem="28" firstAttribute="centerY" secondItem="7" secondAttribute="centerY" id="hRq-pV-G2s"/>
                                         <constraint firstItem="yLo-kg-Ioa" firstAttribute="leading" secondItem="7" secondAttribute="leading" id="oDj-M7-bIl"/>
                                         <constraint firstItem="15" firstAttribute="top" secondItem="7" secondAttribute="top" id="ssr-kD-QJq"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Lista" identifier="0" id="29">
+                            <tabViewItem label="List" identifier="0" id="29">
                                 <view key="view" id="30">
-                                    <rect key="frame" x="0.0" y="0.0" width="621" height="383"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="621" height="419"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView fixedFrame="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="31">
-                                            <rect key="frame" x="-2" y="0.0" width="624" height="383"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="umE-m4-NPn" userLabel="Navigation Container View">
+                                            <rect key="frame" x="0.0" y="383" width="621" height="36"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="36" id="WbG-iU-6Z3"/>
+                                            </constraints>
+                                        </customView>
+                                        <scrollView horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="31">
+                                            <rect key="frame" x="0.0" y="0.0" width="621" height="383"/>
                                             <clipView key="contentView" id="t14-pG-1DQ">
-                                                <rect key="frame" x="1" y="1" width="607" height="381"/>
+                                                <rect key="frame" x="1" y="1" width="604" height="381"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33" customClass="CDListView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="607" height="364"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="604" height="364"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -163,31 +167,45 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="35">
-                                                <rect key="frame" x="608" y="18" width="15" height="364"/>
+                                                <rect key="frame" x="605" y="18" width="15" height="364"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" wantsLayer="YES" id="36">
-                                                <rect key="frame" x="0.0" y="0.0" width="607" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="604" height="17"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="umE-m4-NPn" firstAttribute="top" secondItem="30" secondAttribute="top" id="5TY-oU-0h7"/>
+                                        <constraint firstAttribute="bottom" secondItem="31" secondAttribute="bottom" id="Gu1-AY-5fy"/>
+                                        <constraint firstItem="31" firstAttribute="leading" secondItem="30" secondAttribute="leading" id="Jvs-xw-DRv"/>
+                                        <constraint firstItem="31" firstAttribute="top" secondItem="umE-m4-NPn" secondAttribute="bottom" id="Nhf-HW-lny"/>
+                                        <constraint firstAttribute="trailing" secondItem="31" secondAttribute="trailing" id="Xog-1s-tkL"/>
+                                        <constraint firstItem="umE-m4-NPn" firstAttribute="leading" secondItem="30" secondAttribute="leading" id="b7R-ys-2NE"/>
+                                        <constraint firstAttribute="trailing" secondItem="umE-m4-NPn" secondAttribute="trailing" id="zUI-ie-MiU"/>
+                                    </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Vázlat" identifier="1" id="37">
+                            <tabViewItem label="Outline" identifier="1" id="37">
                                 <view key="view" id="38">
-                                    <rect key="frame" x="0.0" y="0.0" width="621" height="383"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="621" height="419"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView fixedFrame="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="39">
-                                            <rect key="frame" x="-2" y="0.0" width="624" height="383"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="Bgq-zd-Hw3" userLabel="Navigation Container View">
+                                            <rect key="frame" x="0.0" y="383" width="621" height="36"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="36" id="E4D-j9-mrS"/>
+                                            </constraints>
+                                        </customView>
+                                        <scrollView horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="39">
+                                            <rect key="frame" x="0.0" y="0.0" width="621" height="383"/>
                                             <clipView key="contentView" id="KUj-N5-PnR">
-                                                <rect key="frame" x="1" y="1" width="607" height="381"/>
+                                                <rect key="frame" x="1" y="1" width="604" height="381"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="OutlineBrowserView" headerView="44" id="41" customClass="CDOutlineView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="607" height="364"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="604" height="364"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -204,15 +222,24 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="43">
-                                                <rect key="frame" x="608" y="18" width="15" height="364"/>
+                                                <rect key="frame" x="605" y="18" width="15" height="364"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" wantsLayer="YES" id="44">
-                                                <rect key="frame" x="0.0" y="0.0" width="607" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="604" height="17"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="Bgq-zd-Hw3" firstAttribute="top" secondItem="38" secondAttribute="top" id="6bg-RX-se2"/>
+                                        <constraint firstItem="39" firstAttribute="leading" secondItem="38" secondAttribute="leading" id="KBF-6h-0ii"/>
+                                        <constraint firstItem="39" firstAttribute="top" secondItem="Bgq-zd-Hw3" secondAttribute="bottom" id="Uvv-VC-cx4"/>
+                                        <constraint firstAttribute="trailing" secondItem="Bgq-zd-Hw3" secondAttribute="trailing" id="XUX-Rs-Fcc"/>
+                                        <constraint firstAttribute="bottom" secondItem="39" secondAttribute="bottom" id="kpV-tL-W8Q"/>
+                                        <constraint firstItem="Bgq-zd-Hw3" firstAttribute="leading" secondItem="38" secondAttribute="leading" id="nIw-cQ-B9A"/>
+                                        <constraint firstAttribute="trailing" secondItem="39" secondAttribute="trailing" id="tdH-Ty-7vU"/>
+                                    </constraints>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
@@ -253,75 +280,22 @@
                             <constraint firstItem="46" firstAttribute="centerY" secondItem="45" secondAttribute="centerY" id="yTP-f6-NsM"/>
                         </constraints>
                     </customView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="51" userLabel="Navigation View">
-                        <rect key="frame" x="0.0" y="415" width="621" height="36"/>
-                        <subviews>
-                            <segmentedControl horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="57">
-                                <rect key="frame" x="548" y="6" width="56" height="24"/>
-                                <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="58">
-                                    <font key="font" metaFont="system"/>
-                                    <segments>
-                                        <segment image="nav-up" width="50"/>
-                                    </segments>
-                                </segmentedCell>
-                            </segmentedControl>
-                            <popUpButton horizontalHuggingPriority="150" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="59">
-                                <rect key="frame" x="145" y="4" width="402" height="25"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="62" id="60">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
-                                    <menu key="menu" title="Más nézetek" id="61">
-                                        <items>
-                                            <menuItem title=" " state="on" id="62"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
-                            <segmentedControl verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="63">
-                                <rect key="frame" x="17" y="6" width="126" height="24"/>
-                                <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="64">
-                                    <font key="font" metaFont="system"/>
-                                    <segments>
-                                        <segment image="nav-backward" width="65">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="nav-forward" width="54" tag="1">
-                                            <nil key="label"/>
-                                        </segment>
-                                    </segments>
-                                </segmentedCell>
-                            </segmentedControl>
-                        </subviews>
-                        <constraints>
-                            <constraint firstItem="63" firstAttribute="leading" secondItem="51" secondAttribute="leading" constant="20" symbolic="YES" id="9II-Xe-kwq"/>
-                            <constraint firstAttribute="height" constant="36" id="Q9R-Dw-S99"/>
-                            <constraint firstItem="57" firstAttribute="centerY" secondItem="51" secondAttribute="centerY" id="YkK-6w-grg"/>
-                            <constraint firstAttribute="trailing" secondItem="57" secondAttribute="trailing" constant="20" symbolic="YES" id="ZSm-dQ-BtP"/>
-                            <constraint firstItem="59" firstAttribute="leading" secondItem="63" secondAttribute="trailing" constant="8" symbolic="YES" id="lsf-lF-C9c"/>
-                            <constraint firstItem="57" firstAttribute="baseline" secondItem="63" secondAttribute="baseline" id="onD-OQ-QCy"/>
-                            <constraint firstItem="57" firstAttribute="leading" secondItem="59" secondAttribute="trailing" constant="8" symbolic="YES" id="sde-5i-a7E"/>
-                            <constraint firstItem="57" firstAttribute="baseline" secondItem="59" secondAttribute="baseline" id="uFw-Rv-lsQ"/>
-                        </constraints>
-                    </customView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="5" firstAttribute="top" secondItem="51" secondAttribute="top" constant="36" id="197-qj-sQw"/>
-                    <constraint firstItem="51" firstAttribute="leading" secondItem="45" secondAttribute="leading" id="4JK-wx-q7J"/>
-                    <constraint firstItem="51" firstAttribute="leading" secondItem="5" secondAttribute="leading" id="A5g-x4-b5o"/>
-                    <constraint firstItem="51" firstAttribute="trailing" secondItem="5" secondAttribute="trailing" id="TYT-yS-0vt"/>
+                    <constraint firstItem="5" firstAttribute="leading" secondItem="4" secondAttribute="leading" id="7c0-7O-Afy"/>
+                    <constraint firstItem="45" firstAttribute="leading" secondItem="4" secondAttribute="leading" id="8v3-yp-tWY"/>
+                    <constraint firstItem="5" firstAttribute="top" secondItem="4" secondAttribute="top" id="NwT-xH-bzy"/>
                     <constraint firstAttribute="trailing" secondItem="45" secondAttribute="trailing" id="aVv-9V-a1Q"/>
                     <constraint firstItem="45" firstAttribute="top" secondItem="5" secondAttribute="bottom" id="gZd-oj-TZ4"/>
-                    <constraint firstAttribute="trailing" secondItem="51" secondAttribute="trailing" id="kwf-TU-DdT"/>
                     <constraint firstAttribute="bottom" secondItem="45" secondAttribute="bottom" id="sfd-wD-7EY"/>
-                    <constraint firstItem="51" firstAttribute="top" secondItem="4" secondAttribute="top" id="vP6-zW-SW0"/>
-                    <constraint firstItem="51" firstAttribute="leading" secondItem="4" secondAttribute="leading" id="vqT-XW-y27"/>
+                    <constraint firstAttribute="trailing" secondItem="5" secondAttribute="trailing" id="uNF-Pm-ASK"/>
                 </constraints>
             </view>
             <point key="canvasLocation" x="25.5" y="-8.5"/>
         </window>
-        <menu title="Menü" id="65">
+        <menu title="Menu" id="65">
             <items>
-                <menuItem title="Frissít" keyEquivalent="r" id="66">
+                <menuItem title="Refresh" keyEquivalent="r" id="66">
                     <connections>
                         <action selector="reloadButtonClicked:" target="-1" id="167"/>
                     </connections>
@@ -329,7 +303,7 @@
                 <menuItem isSeparatorItem="YES" id="67">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Új mappa…" keyEquivalent="N" id="81">
+                <menuItem title="New Folder…" keyEquivalent="N" id="81">
                     <connections>
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
@@ -340,19 +314,19 @@
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Új fájl…" keyEquivalent="f" id="82">
+                <menuItem title="New File…" keyEquivalent="f" id="82">
                     <connections>
                         <action selector="createFileButtonClicked:" target="-1" id="173"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Új szimbolikus link…" id="83">
+                <menuItem title="New Symbolic Link…" id="83">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="84"/>
-                <menuItem title="Infó" keyEquivalent="i" id="68">
+                <menuItem title="Info" keyEquivalent="i" id="68">
                     <connections>
                         <action selector="infoButtonClicked:" target="-1" id="163"/>
                     </connections>
@@ -364,34 +338,34 @@
                         <action selector="quicklookButtonClicked:" target="-1" id="185"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Szerkesztés ezzel" id="70">
-                    <menu key="submenu" title="Szerkesztés ezzel" id="71"/>
+                <menuItem title="Edit With" id="70">
+                    <menu key="submenu" title="Edit With" id="71"/>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="74"/>
-                <menuItem title="Átnevez..." id="72">
+                <menuItem title="Rename…" id="72">
                     <connections>
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Megkettőz…" keyEquivalent="d" id="73">
+                <menuItem title="Duplicate…" keyEquivalent="d" id="73">
                     <connections>
                         <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="U9L-O8-fnA"/>
-                <menuItem title="Letöltés" keyEquivalent="" id="75">
+                <menuItem title="Download" keyEquivalent="" id="75">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
                         <action selector="downloadButtonClicked:" target="-1" id="164"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Letöltés mint…" keyEquivalent="" id="76">
+                <menuItem title="Download As…" keyEquivalent="" id="76">
                     <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
                     <connections>
                         <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Letöltés ide…" id="77">
+                <menuItem title="Download To…" id="77">
                     <connections>
                         <action selector="downloadToButtonClicked:" target="-1" id="177"/>
                     </connections>
@@ -402,7 +376,7 @@
                         <action selector="uploadButtonClicked:" target="-1" id="174"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Szinkronizál…" id="80">
+                <menuItem title="Synchronize…" id="80">
                     <connections>
                         <action selector="syncButtonClicked:" target="-1" id="172"/>
                     </connections>
@@ -410,7 +384,7 @@
                 <menuItem isSeparatorItem="YES" id="78">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Törlés" id="85">
+                <menuItem title="Delete" id="85">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
@@ -424,7 +398,7 @@ CA
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Visszaállít" id="7eU-SG-dx0">
+                <menuItem title="Restore" id="7eU-SG-dx0">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="restoreFileButtonClicked:" target="-1" id="BbY-Jj-ck7"/>
@@ -444,7 +418,7 @@ CA
                 <menuItem title="Archívum létrehozása" id="88">
                     <menu key="submenu" title="Archívum létrehozása" id="89"/>
                 </menuItem>
-                <menuItem title="Archívum bővítése" id="90">
+                <menuItem title="Expand Archive" id="90">
                     <connections>
                         <action selector="unarchiveButtonClicked:" target="-1" id="181"/>
                     </connections>
@@ -452,11 +426,11 @@ CA
                 <menuItem isSeparatorItem="YES" id="91">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="URL másolása" id="92">
+                <menuItem title="Copy URL" id="92">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="URL másolása" id="93"/>
+                    <menu key="submenu" title="Copy URL" id="93"/>
                 </menuItem>
-                <menuItem title="URL megnyitása" id="94">
+                <menuItem title="Open URL" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="URL megnyitása" id="95"/>
                 </menuItem>
@@ -489,7 +463,7 @@ CA
         </menu>
         <menu title="Menü" id="99">
             <items>
-                <menuItem title="Kapcsolódás szerverhez" id="100">
+                <menuItem title="Connect" id="100">
                     <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
@@ -507,7 +481,7 @@ DQ
                 <menuItem isSeparatorItem="YES" id="101">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Új könyvjelzö" keyEquivalent="B" id="102">
+                <menuItem title="New Bookmark" keyEquivalent="B" id="102">
                     <connections>
                         <action selector="addBookmarkButtonClicked:" target="-1" id="169"/>
                     </connections>
@@ -529,11 +503,11 @@ DQ
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Rendezés" id="107">
+                <menuItem title="Sort By" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Rendezés" id="108">
+                    <menu key="submenu" title="Sort By" id="108">
                         <items>
-                            <menuItem title="Becenév" keyEquivalent="1" id="109">
+                            <menuItem title="Nickname" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
@@ -560,7 +534,7 @@ DQ
         <button verticalHuggingPriority="750" id="124" userLabel="Payment Titlebar Accessory">
             <rect key="frame" x="0.0" y="0.0" width="137" height="44"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-            <buttonCell key="cell" type="push" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="125">
+            <buttonCell key="cell" type="push" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="125">
                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                 <font key="font" metaFont="system"/>
             </buttonCell>
@@ -690,9 +664,6 @@ NwBJAEwAUQBTAGIAaAB3AH4AhQCSAJkApQCtALwAvgDAAMUAxwDJAMsAzQDUANkA5ADmAOgA6gDvAPIA
 RxRMFFQAAAAAAAACAQAAAAAAAABFAAAAAAAAAAAAAAAAAAAUVw
 </mutableData>
         </image>
-        <image name="nav-backward" width="11" height="13"/>
-        <image name="nav-forward" width="11" height="13"/>
-        <image name="nav-up" width="12" height="11"/>
         <image name="pencil" catalog="system" width="32" height="32"/>
     </resources>
 </document>

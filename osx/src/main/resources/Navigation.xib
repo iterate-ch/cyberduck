@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner">
+            <connections>
+                <outlet property="navigationButton" destination="lfe-fW-qlT" id="IRooX0Ah"/>
+                <outlet property="navigationView" destination="n5y-6N-ojT" id="choh1iKa"/>
+                <outlet property="pathPopup" destination="1hP-4z-a3t" id="eiW7haec"/>
+                <outlet property="upButton" destination="7F5-6a-0hh" id="ayoo2aiL"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="n5y-6N-ojT" userLabel="Navigation View">
+            <rect key="frame" x="0.0" y="0.0" width="621" height="36"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <segmentedControl horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="7F5-6a-0hh" userLabel="Segment Navigation Up">
+                    <rect key="frame" x="548" y="6" width="56" height="24"/>
+                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="Slg-S4-dvR" userLabel="Up">
+                        <font key="font" metaFont="system"/>
+                        <segments>
+                            <segment image="nav-up" width="50"/>
+                        </segments>
+                    </segmentedCell>
+                </segmentedControl>
+                <popUpButton horizontalHuggingPriority="150" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="1hP-4z-a3t" userLabel="Path Popup">
+                    <rect key="frame" x="145" y="4" width="402" height="25"/>
+                    <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="zco-hI-Pdy" id="FN6-h4-qDy">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="message"/>
+                        <menu key="menu" title="OtherViews" id="W6L-hh-Ja8">
+                            <items>
+                                <menuItem title=" " state="on" id="zco-hI-Pdy"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                </popUpButton>
+                <segmentedControl verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lfe-fW-qlT" userLabel="Segment Navigation Backward &amp; Forward">
+                    <rect key="frame" x="17" y="6" width="126" height="24"/>
+                    <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="loV-S1-gSA" userLabel="Backward, Forward">
+                        <font key="font" metaFont="system"/>
+                        <segments>
+                            <segment image="nav-backward" width="65">
+                                <nil key="label"/>
+                            </segment>
+                            <segment image="nav-forward" width="54" tag="1">
+                                <nil key="label"/>
+                            </segment>
+                        </segments>
+                    </segmentedCell>
+                </segmentedControl>
+            </subviews>
+            <constraints>
+                <constraint firstItem="7F5-6a-0hh" firstAttribute="centerY" secondItem="n5y-6N-ojT" secondAttribute="centerY" id="1xL-HR-zWz"/>
+                <constraint firstItem="7F5-6a-0hh" firstAttribute="baseline" secondItem="lfe-fW-qlT" secondAttribute="baseline" id="GDs-fS-ypW"/>
+                <constraint firstItem="7F5-6a-0hh" firstAttribute="baseline" secondItem="1hP-4z-a3t" secondAttribute="baseline" id="GUa-RK-jmF"/>
+                <constraint firstItem="1hP-4z-a3t" firstAttribute="leading" secondItem="lfe-fW-qlT" secondAttribute="trailing" constant="8" symbolic="YES" id="fAF-5R-ogI"/>
+                <constraint firstAttribute="trailing" secondItem="7F5-6a-0hh" secondAttribute="trailing" constant="20" symbolic="YES" id="h3F-4X-Tet"/>
+                <constraint firstItem="7F5-6a-0hh" firstAttribute="leading" secondItem="1hP-4z-a3t" secondAttribute="trailing" constant="8" symbolic="YES" id="pCg-CK-TDd"/>
+                <constraint firstAttribute="height" constant="36" id="rZG-aF-Iqk"/>
+                <constraint firstItem="lfe-fW-qlT" firstAttribute="leading" secondItem="n5y-6N-ojT" secondAttribute="leading" constant="20" symbolic="YES" id="rxn-kU-Tfo"/>
+            </constraints>
+            <point key="canvasLocation" x="-103" y="-348"/>
+        </customView>
+    </objects>
+    <resources>
+        <image name="nav-backward" width="11" height="13"/>
+        <image name="nav-forward" width="11" height="13"/>
+        <image name="nav-up" width="12" height="11"/>
+    </resources>
+</document>
