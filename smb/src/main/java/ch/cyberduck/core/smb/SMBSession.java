@@ -350,7 +350,7 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
         catch(SMBRuntimeException e) {
             throw new SMBExceptionMappingService().map(e);
         }
-        catch(TransportException e) {
+        catch(TransportException | IllegalStateException e) {
             throw new BackgroundException(e);
         }
         finally {
