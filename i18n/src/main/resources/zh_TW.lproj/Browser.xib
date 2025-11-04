@@ -21,12 +21,11 @@
                 <outlet property="editBookmarkButton" destination="9" id="141"/>
                 <outlet property="editMenu" destination="71" id="142"/>
                 <outlet property="listNavigationContainerView" destination="umE-m4-NPn" id="she5eDo5"/>
+                <outlet property="listStatusContainerView" destination="Pro-bq-cJZ" id="zucael2O"/>
                 <outlet property="openUrlMenu" destination="95" id="147"/>
                 <outlet property="outlineNavigationContainerView" destination="Bgq-zd-Hw3" id="Aesheo5u"/>
+                <outlet property="outlineStatusContainerView" destination="wfe-Jt-w2F" id="uK3tie5d"/>
                 <outlet property="searchField" destination="55" id="150"/>
-                <outlet property="securityLabel" destination="47" id="151"/>
-                <outlet property="statusLabel" destination="49" id="152"/>
-                <outlet property="statusSpinner" destination="46" id="153"/>
                 <outlet property="urlMenu" destination="93" id="155"/>
                 <outlet property="window" destination="3" id="156"/>
             </connections>
@@ -45,12 +44,12 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="5">
-                        <rect key="frame" x="0.0" y="32" width="621" height="419"/>
+                        <rect key="frame" x="0.0" y="0.0" width="621" height="451"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="書籤" identifier="bookmarks" id="6">
                                 <view key="view" id="7">
-                                    <rect key="frame" x="0.0" y="0.0" width="621" height="419"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="621" height="451"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view translatesAutoresizingMaskIntoConstraints="NO" id="yLo-kg-Ioa" userLabel="Edit View">
@@ -90,13 +89,13 @@
                                             </constraints>
                                         </view>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="47" horizontalPageScroll="10" verticalLineScroll="47" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="15">
-                                            <rect key="frame" x="-1" y="32" width="623" height="387"/>
+                                            <rect key="frame" x="-1" y="32" width="623" height="419"/>
                                             <clipView key="contentView" id="ELY-XA-KER">
-                                                <rect key="frame" x="1" y="1" width="621" height="385"/>
+                                                <rect key="frame" x="1" y="1" width="621" height="417"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="sequential" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="45" id="17" customClass="CDListView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="621" height="385"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="621" height="417"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -117,7 +116,7 @@
                                             </scroller>
                                         </scrollView>
                                         <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="28">
-                                            <rect key="frame" x="295" y="194" width="32" height="32"/>
+                                            <rect key="frame" x="295" y="210" width="32" height="32"/>
                                         </progressIndicator>
                                     </subviews>
                                     <constraints>
@@ -135,17 +134,17 @@
                             </tabViewItem>
                             <tabViewItem label="List" identifier="0" id="29">
                                 <view key="view" id="30">
-                                    <rect key="frame" x="0.0" y="0.0" width="621" height="419"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="621" height="451"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="umE-m4-NPn" userLabel="Navigation Container View">
-                                            <rect key="frame" x="0.0" y="383" width="621" height="36"/>
+                                            <rect key="frame" x="0.0" y="415" width="621" height="36"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="36" id="WbG-iU-6Z3"/>
                                             </constraints>
                                         </customView>
                                         <scrollView horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="31">
-                                            <rect key="frame" x="0.0" y="0.0" width="621" height="383"/>
+                                            <rect key="frame" x="0.0" y="32" width="621" height="383"/>
                                             <clipView key="contentView" id="t14-pG-1DQ">
                                                 <rect key="frame" x="1" y="1" width="604" height="381"/>
                                                 <autoresizingMask key="autoresizingMask"/>
@@ -166,7 +165,7 @@
                                                 <rect key="frame" x="-100" y="-100" width="582" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="35">
+                                            <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="35">
                                                 <rect key="frame" x="605" y="18" width="15" height="364"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -175,31 +174,40 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
+                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="Pro-bq-cJZ" userLabel="Status Container View">
+                                            <rect key="frame" x="0.0" y="0.0" width="621" height="32"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="32" id="sBq-Jh-fVz"/>
+                                            </constraints>
+                                        </customView>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="Pro-bq-cJZ" firstAttribute="top" secondItem="31" secondAttribute="bottom" id="12Y-hb-adk"/>
                                         <constraint firstItem="umE-m4-NPn" firstAttribute="top" secondItem="30" secondAttribute="top" id="5TY-oU-0h7"/>
-                                        <constraint firstAttribute="bottom" secondItem="31" secondAttribute="bottom" id="Gu1-AY-5fy"/>
                                         <constraint firstItem="31" firstAttribute="leading" secondItem="30" secondAttribute="leading" id="Jvs-xw-DRv"/>
                                         <constraint firstItem="31" firstAttribute="top" secondItem="umE-m4-NPn" secondAttribute="bottom" id="Nhf-HW-lny"/>
+                                        <constraint firstAttribute="bottom" secondItem="Pro-bq-cJZ" secondAttribute="bottom" id="WxH-Hb-Wht"/>
                                         <constraint firstAttribute="trailing" secondItem="31" secondAttribute="trailing" id="Xog-1s-tkL"/>
                                         <constraint firstItem="umE-m4-NPn" firstAttribute="leading" secondItem="30" secondAttribute="leading" id="b7R-ys-2NE"/>
+                                        <constraint firstAttribute="trailing" secondItem="Pro-bq-cJZ" secondAttribute="trailing" id="jcr-us-F2O"/>
+                                        <constraint firstItem="Pro-bq-cJZ" firstAttribute="leading" secondItem="30" secondAttribute="leading" id="rs1-nd-LWs"/>
                                         <constraint firstAttribute="trailing" secondItem="umE-m4-NPn" secondAttribute="trailing" id="zUI-ie-MiU"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Outline" identifier="1" id="37">
                                 <view key="view" id="38">
-                                    <rect key="frame" x="0.0" y="0.0" width="621" height="419"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="621" height="451"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Bgq-zd-Hw3" userLabel="Navigation Container View">
-                                            <rect key="frame" x="0.0" y="383" width="621" height="36"/>
+                                            <rect key="frame" x="0.0" y="415" width="621" height="36"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="36" id="E4D-j9-mrS"/>
                                             </constraints>
                                         </customView>
                                         <scrollView horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="39">
-                                            <rect key="frame" x="0.0" y="0.0" width="621" height="383"/>
+                                            <rect key="frame" x="0.0" y="32" width="621" height="383"/>
                                             <clipView key="contentView" id="KUj-N5-PnR">
                                                 <rect key="frame" x="1" y="1" width="604" height="381"/>
                                                 <autoresizingMask key="autoresizingMask"/>
@@ -230,64 +238,34 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
+                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="wfe-Jt-w2F" userLabel="Status Container View">
+                                            <rect key="frame" x="0.0" y="0.0" width="621" height="32"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="32" id="Zrk-66-bQi"/>
+                                            </constraints>
+                                        </customView>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="Bgq-zd-Hw3" firstAttribute="top" secondItem="38" secondAttribute="top" id="6bg-RX-se2"/>
+                                        <constraint firstAttribute="bottom" secondItem="wfe-Jt-w2F" secondAttribute="bottom" id="C9G-Hp-QKH"/>
                                         <constraint firstItem="39" firstAttribute="leading" secondItem="38" secondAttribute="leading" id="KBF-6h-0ii"/>
                                         <constraint firstItem="39" firstAttribute="top" secondItem="Bgq-zd-Hw3" secondAttribute="bottom" id="Uvv-VC-cx4"/>
                                         <constraint firstAttribute="trailing" secondItem="Bgq-zd-Hw3" secondAttribute="trailing" id="XUX-Rs-Fcc"/>
-                                        <constraint firstAttribute="bottom" secondItem="39" secondAttribute="bottom" id="kpV-tL-W8Q"/>
+                                        <constraint firstAttribute="trailing" secondItem="wfe-Jt-w2F" secondAttribute="trailing" id="dKv-e9-cnk"/>
+                                        <constraint firstItem="wfe-Jt-w2F" firstAttribute="top" secondItem="39" secondAttribute="bottom" id="lr3-aJ-NDD"/>
                                         <constraint firstItem="Bgq-zd-Hw3" firstAttribute="leading" secondItem="38" secondAttribute="leading" id="nIw-cQ-B9A"/>
+                                        <constraint firstItem="wfe-Jt-w2F" firstAttribute="leading" secondItem="38" secondAttribute="leading" id="qNn-TB-0j4"/>
                                         <constraint firstAttribute="trailing" secondItem="39" secondAttribute="trailing" id="tdH-Ty-7vU"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
                     </tabView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="45" userLabel="Status View">
-                        <rect key="frame" x="0.0" y="0.0" width="621" height="32"/>
-                        <subviews>
-                            <button translatesAutoresizingMaskIntoConstraints="NO" id="47" userLabel="Security Lock">
-                                <rect key="frame" x="583" y="16" width="18" height="1"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="buttonCell:48:image" imagePosition="only" alignment="left" id="48">
-                                    <behavior key="behavior" lightByContents="YES"/>
-                                    <font key="font" metaFont="system" size="10"/>
-                                </buttonCell>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="18" id="p5E-tz-U95"/>
-                                </constraints>
-                            </button>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49" userLabel="Progress Message">
-                                <rect key="frame" x="42" y="9" width="535" height="14"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="50">
-                                    <font key="font" metaFont="message" size="11"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="46" userLabel="Progress Spinner">
-                                <rect key="frame" x="20" y="8" width="16" height="16"/>
-                            </progressIndicator>
-                        </subviews>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="47" secondAttribute="trailing" constant="20" symbolic="YES" id="6uo-nO-WPL"/>
-                            <constraint firstItem="46" firstAttribute="leading" secondItem="45" secondAttribute="leading" constant="20" symbolic="YES" id="8PP-ec-TJc"/>
-                            <constraint firstItem="49" firstAttribute="leading" secondItem="46" secondAttribute="trailing" constant="8" symbolic="YES" id="DaF-Rr-w6Y"/>
-                            <constraint firstItem="47" firstAttribute="centerY" secondItem="45" secondAttribute="centerY" id="F8E-aJ-wIR"/>
-                            <constraint firstItem="47" firstAttribute="leading" secondItem="49" secondAttribute="trailing" constant="8" symbolic="YES" id="INc-sB-SIN"/>
-                            <constraint firstItem="49" firstAttribute="centerY" secondItem="45" secondAttribute="centerY" id="cA1-od-lBF"/>
-                            <constraint firstAttribute="height" constant="32" id="g7q-ou-z3l"/>
-                            <constraint firstItem="46" firstAttribute="centerY" secondItem="45" secondAttribute="centerY" id="yTP-f6-NsM"/>
-                        </constraints>
-                    </customView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="4" secondAttribute="leading" id="7c0-7O-Afy"/>
-                    <constraint firstItem="45" firstAttribute="leading" secondItem="4" secondAttribute="leading" id="8v3-yp-tWY"/>
+                    <constraint firstAttribute="bottom" secondItem="5" secondAttribute="bottom" id="KuW-pA-EfN"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="4" secondAttribute="top" id="NwT-xH-bzy"/>
-                    <constraint firstAttribute="trailing" secondItem="45" secondAttribute="trailing" id="aVv-9V-a1Q"/>
-                    <constraint firstItem="45" firstAttribute="top" secondItem="5" secondAttribute="bottom" id="gZd-oj-TZ4"/>
-                    <constraint firstAttribute="bottom" secondItem="45" secondAttribute="bottom" id="sfd-wD-7EY"/>
                     <constraint firstAttribute="trailing" secondItem="5" secondAttribute="trailing" id="uNF-Pm-ASK"/>
                 </constraints>
             </view>
@@ -570,100 +548,6 @@ DQ
         <image name="NSAddTemplate" width="18" height="16"/>
         <image name="NSQuickLookTemplate" width="27" height="16"/>
         <image name="NSRemoveTemplate" width="18" height="4"/>
-        <image name="buttonCell:48:image" width="1" height="1">
-            <mutableData key="keyedArchiveRepresentation">
-YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05T
-S2V5ZWRBcmNoaXZlctEICVRyb290gAGuCwwbHCEaJissMzY5P0JVJG51bGzXDQ4PEBESExQVFhcYGRpW
-TlNTaXplViRjbGFzc1xOU0ltYWdlRmxhZ3NWTlNSZXBzW05TVGludENvbG9yV05TQ29sb3JeTlNSZXNp
-emluZ01vZGWAAoANEiDDAACAA4AAgAsQAFZ7MSwgMX3SHQ4eIFpOUy5vYmplY3RzoR+ABIAK0h0OIiWi
-IySABYAGgAnTDicoKSoaXxAUTlNUSUZGUmVwcmVzZW50YXRpb25fEBlOU0ludGVybmFsTGF5b3V0RGly
-ZWN0aW9ugAiAB08REmxNTQAqAAAACgAAABABAAADAAAAAQABAAABAQADAAAAAQABAAABAgADAAAAAgAI
-AAgBAwADAAAAAQABAAABBgADAAAAAQABAAABCgADAAAAAQABAAABEQAEAAAAAQAAAAgBEgADAAAAAQAB
-AAABFQADAAAAAQACAAABFgADAAAAAQABAAABFwAEAAAAAQAAAAIBHAADAAAAAQABAAABKAADAAAAAQAC
-AAABUgADAAAAAQABAAABUwADAAAAAgABAAGHcwAHAAARnAAAANAAAAAAAAARnGFwcGwCAAAAbW50ckdS
-QVlYWVogB9wACAAXAA8ALgAPYWNzcEFQUEwAAAAAbm9uZQAAAAAAAAAAAAAAAAAAAAAAAPbWAAEAAAAA
-0y1hcHBsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFZGVzYwAA
-AMAAAAB5ZHNjbQAAATwAAAgaY3BydAAACVgAAAAjd3RwdAAACXwAAAAUa1RSQwAACZAAAAgMZGVzYwAA
-AAAAAAAfR2VuZXJpYyBHcmF5IEdhbW1hIDIuMiBQcm9maWxlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAG1s
-dWMAAAAAAAAAHwAAAAxza1NLAAAALgAAAYRkYURLAAAAOgAAAbJjYUVTAAAAOAAAAex2aVZOAAAAQAAA
-AiRwdEJSAAAASgAAAmR1a1VBAAAALAAAAq5mckZVAAAAPgAAAtpodUhVAAAANAAAAxh6aFRXAAAAGgAA
-A0xrb0tSAAAAIgAAA2ZuYk5PAAAAOgAAA4hjc0NaAAAAKAAAA8JoZUlMAAAAJAAAA+pyb1JPAAAAKgAA
-BA5kZURFAAAATgAABDhpdElUAAAATgAABIZzdlNFAAAAOAAABNR6aENOAAAAGgAABQxqYUpQAAAAJgAA
-BSZlbEdSAAAAKgAABUxwdFBPAAAAUgAABXZubE5MAAAAQAAABchlc0VTAAAATAAABgh0aFRIAAAAMgAA
-BlR0clRSAAAAJAAABoZmaUZJAAAARgAABqpockhSAAAAPgAABvBwbFBMAAAASgAABy5hckVHAAAALAAA
-B3hydVJVAAAAOgAAB6RlblVTAAAAPAAAB94AVgFhAGUAbwBiAGUAYwBuAOEAIABzAGkAdgDhACAAZwBh
-AG0AYQAgADIALAAyAEcAZQBuAGUAcgBpAHMAawAgAGcAcgDlACAAMgAsADIAIABnAGEAbQBtAGEALQBw
-AHIAbwBmAGkAbABHAGEAbQBtAGEAIABkAGUAIABnAHIAaQBzAG8AcwAgAGcAZQBuAOgAcgBpAGMAYQAg
-ADIALgAyAEMepQB1ACAAaADsAG4AaAAgAE0A4AB1ACAAeADhAG0AIABDAGgAdQBuAGcAIABHAGEAbQBt
-AGEAIAAyAC4AMgBQAGUAcgBmAGkAbAAgAEcAZQBuAOkAcgBpAGMAbwAgAGQAYQAgAEcAYQBtAGEAIABk
-AGUAIABDAGkAbgB6AGEAcwAgADIALAAyBBcEMAQzBDAEOwRMBD0EMAAgAEcAcgBhAHkALQQzBDAEPAQw
-ACAAMgAuADIAUAByAG8AZgBpAGwAIABnAOkAbgDpAHIAaQBxAHUAZQAgAGcAcgBpAHMAIABnAGEAbQBt
-AGEAIAAyACwAMgDBAGwAdABhAGwA4QBuAG8AcwAgAHMAegD8AHIAawBlACAAZwBhAG0AbQBhACAAMgAu
-ADKQGnUocHCWjlFJXqYAMgAuADKCcl9pY8+P8Md8vBgAINaMwMkAIKwQucgAIAAyAC4AMgAg1QS4XNMM
-x3wARwBlAG4AZQByAGkAcwBrACAAZwByAOUAIABnAGEAbQBtAGEAIAAyACwAMgAtAHAAcgBvAGYAaQBs
-AE8AYgBlAGMAbgDhACABYQBlAGQA4QAgAGcAYQBtAGEAIAAyAC4AMgXSBdAF3gXUACAF0AXkBdUF6AAg
-BdsF3AXcBdkAIAAyAC4AMgBHAGEAbQBhACAAZwByAGkAIABnAGUAbgBlAHIAaQBjAQMAIAAyACwAMgBB
-AGwAbABnAGUAbQBlAGkAbgBlAHMAIABHAHIAYQB1AHMAdAB1AGYAZQBuAC0AUAByAG8AZgBpAGwAIABH
-AGEAbQBtAGEAIAAyACwAMgBQAHIAbwBmAGkAbABvACAAZwByAGkAZwBpAG8AIABnAGUAbgBlAHIAaQBj
-AG8AIABkAGUAbABsAGEAIABnAGEAbQBtAGEAIAAyACwAMgBHAGUAbgBlAHIAaQBzAGsAIABnAHIA5QAg
-ADIALAAyACAAZwBhAG0AbQBhAHAAcgBvAGYAaQBsZm6QGnBwXqZ8+2VwADIALgAyY8+P8GWHTvZOAIIs
-MLAw7DCkMKww8zDeACAAMgAuADIAIDDXMO0w1TChMKQw6wOTA7UDvQO5A7oDzAAgA5MDugPBA7kAIAOT
-A6wDvAO8A7EAIAAyAC4AMgBQAGUAcgBmAGkAbAAgAGcAZQBuAOkAcgBpAGMAbwAgAGQAZQAgAGMAaQBu
-AHoAZQBuAHQAbwBzACAAZABhACAARwBhAG0AbQBhACAAMgAsADIAQQBsAGcAZQBtAGUAZQBuACAAZwBy
-AGkAagBzACAAZwBhAG0AbQBhACAAMgAsADIALQBwAHIAbwBmAGkAZQBsAFAAZQByAGYAaQBsACAAZwBl
-AG4A6QByAGkAYwBvACAAZABlACAAZwBhAG0AbQBhACAAZABlACAAZwByAGkAcwBlAHMAIAAyACwAMg4j
-DjEOBw4qDjUOQQ4BDiEOIQ4yDkAOAQ4jDiIOTA4XDjEOSA4nDkQOGwAgADIALgAyAEcAZQBuAGUAbAAg
-AEcAcgBpACAARwBhAG0AYQAgADIALAAyAFkAbABlAGkAbgBlAG4AIABoAGEAcgBtAGEAYQBuACAAZwBh
-AG0AbQBhACAAMgAsADIAIAAtAHAAcgBvAGYAaQBpAGwAaQBHAGUAbgBlAHIAaQENAGsAaQAgAEcAcgBh
-AHkAIABHAGEAbQBtAGEAIAAyAC4AMgAgAHAAcgBvAGYAaQBsAFUAbgBpAHcAZQByAHMAYQBsAG4AeQAg
-AHAAcgBvAGYAaQBsACAAcwB6AGEAcgBvAVsAYwBpACAAZwBhAG0AbQBhACAAMgAsADIGOgYnBkUGJwAg
-ADIALgAyACAGRAZIBkYAIAYxBkUGJwYvBkoAIAY5BicGRQQeBDEESQQwBE8AIARBBDUEQAQwBE8AIAQz
-BDAEPAQ8BDAAIAAyACwAMgAtBD8EQAQ+BEQEOAQ7BEwARwBlAG4AZQByAGkAYwAgAEcAcgBhAHkAIABH
-AGEAbQBtAGEAIAAyAC4AMgAgAFAAcgBvAGYAaQBsAGUAAHRleHQAAAAAQ29weXJpZ2h0IEFwcGxlIElu
-Yy4sIDIwMTIAAFhZWiAAAAAAAADzUQABAAAAARbMY3VydgAAAAAAAAQAAAAABQAKAA8AFAAZAB4AIwAo
-AC0AMgA3ADsAQABFAEoATwBUAFkAXgBjAGgAbQByAHcAfACBAIYAiwCQAJUAmgCfAKQAqQCuALIAtwC8
-AMEAxgDLANAA1QDbAOAA5QDrAPAA9gD7AQEBBwENARMBGQEfASUBKwEyATgBPgFFAUwBUgFZAWABZwFu
-AXUBfAGDAYsBkgGaAaEBqQGxAbkBwQHJAdEB2QHhAekB8gH6AgMCDAIUAh0CJgIvAjgCQQJLAlQCXQJn
-AnECegKEAo4CmAKiAqwCtgLBAssC1QLgAusC9QMAAwsDFgMhAy0DOANDA08DWgNmA3IDfgOKA5YDogOu
-A7oDxwPTA+AD7AP5BAYEEwQgBC0EOwRIBFUEYwRxBH4EjASaBKgEtgTEBNME4QTwBP4FDQUcBSsFOgVJ
-BVgFZwV3BYYFlgWmBbUFxQXVBeUF9gYGBhYGJwY3BkgGWQZqBnsGjAadBq8GwAbRBuMG9QcHBxkHKwc9
-B08HYQd0B4YHmQesB78H0gflB/gICwgfCDIIRghaCG4IggiWCKoIvgjSCOcI+wkQCSUJOglPCWQJeQmP
-CaQJugnPCeUJ+woRCicKPQpUCmoKgQqYCq4KxQrcCvMLCwsiCzkLUQtpC4ALmAuwC8gL4Qv5DBIMKgxD
-DFwMdQyODKcMwAzZDPMNDQ0mDUANWg10DY4NqQ3DDd4N+A4TDi4OSQ5kDn8Omw62DtIO7g8JDyUPQQ9e
-D3oPlg+zD88P7BAJECYQQxBhEH4QmxC5ENcQ9RETETERTxFtEYwRqhHJEegSBxImEkUSZBKEEqMSwxLj
-EwMTIxNDE2MTgxOkE8UT5RQGFCcUSRRqFIsUrRTOFPAVEhU0FVYVeBWbFb0V4BYDFiYWSRZsFo8WshbW
-FvoXHRdBF2UXiReuF9IX9xgbGEAYZRiKGK8Y1Rj6GSAZRRlrGZEZtxndGgQaKhpRGncanhrFGuwbFBs7
-G2MbihuyG9ocAhwqHFIcexyjHMwc9R0eHUcdcB2ZHcMd7B4WHkAeah6UHr4e6R8THz4faR+UH78f6iAV
-IEEgbCCYIMQg8CEcIUghdSGhIc4h+yInIlUigiKvIt0jCiM4I2YjlCPCI/AkHyRNJHwkqyTaJQklOCVo
-JZclxyX3JicmVyaHJrcm6CcYJ0kneierJ9woDSg/KHEooijUKQYpOClrKZ0p0CoCKjUqaCqbKs8rAis2
-K2krnSvRLAUsOSxuLKIs1y0MLUEtdi2rLeEuFi5MLoIuty7uLyQvWi+RL8cv/jA1MGwwpDDbMRIxSjGC
-Mbox8jIqMmMymzLUMw0zRjN/M7gz8TQrNGU0njTYNRM1TTWHNcI1/TY3NnI2rjbpNyQ3YDecN9c4FDhQ
-OIw4yDkFOUI5fzm8Ofk6Njp0OrI67zstO2s7qjvoPCc8ZTykPOM9Ij1hPaE94D4gPmA+oD7gPyE/YT+i
-P+JAI0BkQKZA50EpQWpBrEHuQjBCckK1QvdDOkN9Q8BEA0RHRIpEzkUSRVVFmkXeRiJGZ0arRvBHNUd7
-R8BIBUhLSJFI10kdSWNJqUnwSjdKfUrESwxLU0uaS+JMKkxyTLpNAk1KTZNN3E4lTm5Ot08AT0lPk0/d
-UCdQcVC7UQZRUFGbUeZSMVJ8UsdTE1NfU6pT9lRCVI9U21UoVXVVwlYPVlxWqVb3V0RXklfgWC9YfVjL
-WRpZaVm4WgdaVlqmWvVbRVuVW+VcNVyGXNZdJ114XcleGl5sXr1fD19hX7NgBWBXYKpg/GFPYaJh9WJJ
-Ypxi8GNDY5dj62RAZJRk6WU9ZZJl52Y9ZpJm6Gc9Z5Nn6Wg/aJZo7GlDaZpp8WpIap9q92tPa6dr/2xX
-bK9tCG1gbbluEm5rbsRvHm94b9FwK3CGcOBxOnGVcfByS3KmcwFzXXO4dBR0cHTMdSh1hXXhdj52m3b4
-d1Z3s3gReG54zHkqeYl553pGeqV7BHtje8J8IXyBfOF9QX2hfgF+Yn7CfyN/hH/lgEeAqIEKgWuBzYIw
-gpKC9INXg7qEHYSAhOOFR4Wrhg6GcobXhzuHn4gEiGmIzokziZmJ/opkisqLMIuWi/yMY4zKjTGNmI3/
-jmaOzo82j56QBpBukNaRP5GokhGSepLjk02TtpQglIqU9JVflcmWNJaflwqXdZfgmEyYuJkkmZCZ/Jpo
-mtWbQpuvnByciZz3nWSd0p5Anq6fHZ+Ln/qgaaDYoUehtqImopajBqN2o+akVqTHpTilqaYapoum/adu
-p+CoUqjEqTepqaocqo+rAqt1q+msXKzQrUStuK4trqGvFq+LsACwdbDqsWCx1rJLssKzOLOutCW0nLUT
-tYq2AbZ5tvC3aLfguFm40blKucK6O7q1uy67p7whvJu9Fb2Pvgq+hL7/v3q/9cBwwOzBZ8Hjwl/C28NY
-w9TEUcTOxUvFyMZGxsPHQce/yD3IvMk6ybnKOMq3yzbLtsw1zLXNNc21zjbOts83z7jQOdC60TzRvtI/
-0sHTRNPG1EnUy9VO1dHWVdbY11zX4Nhk2OjZbNnx2nba+9uA3AXcit0Q3ZbeHN6i3ynfr+A24L3hROHM
-4lPi2+Nj4+vkc+T85YTmDeaW5x/nqegy6LzpRunQ6lvq5etw6/vshu0R7ZzuKO6070DvzPBY8OXxcvH/
-8ozzGfOn9DT0wvVQ9d72bfb794r4Gfio+Tj5x/pX+uf7d/wH/Jj9Kf26/kv+3P9t///SLS4vMFokY2xh
-c3NuYW1lWCRjbGFzc2VzXxAQTlNCaXRtYXBJbWFnZVJlcKMvMTJaTlNJbWFnZVJlcFhOU09iamVjdNIt
-LjQ1V05TQXJyYXmiNDLSLS43OF5OU011dGFibGVBcnJheaM3NDLTOjsOPD0+V05TV2hpdGVcTlNDb2xv
-clNwYWNlRDAgMAAQA4AM0i0uQEFXTlNDb2xvcqJAMtItLkNEV05TSW1hZ2WiQzIACAARABoAJAApADIA
-NwBJAEwAUQBTAGIAaAB3AH4AhQCSAJkApQCtALwAvgDAAMUAxwDJAMsAzQDUANkA5ADmAOgA6gDvAPIA
-9AD2APgA/wEWATIBNAE2E6YTqxO2E78T0hPWE+ET6hPvE/cT+hP/FA4UEhQZFCEULhQzFDUUNxQ8FEQU
-RxRMFFQAAAAAAAACAQAAAAAAAABFAAAAAAAAAAAAAAAAAAAUVw
-</mutableData>
-        </image>
         <image name="pencil" catalog="system" width="32" height="32"/>
     </resources>
 </document>

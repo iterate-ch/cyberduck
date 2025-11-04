@@ -176,6 +176,7 @@
 		4799A6492C3BC93A00563133 /* Deepbox.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4799A6472C3BC93A00563133 /* Deepbox.strings */; };
 		479B23E62EBA3C16001D75BE /* Navigation.xib in Resources */ = {isa = PBXBuildFile; fileRef = 479B23E52EBA3C16001D75BE /* Navigation.xib */; };
 		479B23E72EBA3C16001D75BE /* Navigation.xib in Resources */ = {isa = PBXBuildFile; fileRef = 479B23E52EBA3C16001D75BE /* Navigation.xib */; };
+		479B23E92EBA45DD001D75BE /* Status.xib in Resources */ = {isa = PBXBuildFile; fileRef = 479B23E82EBA45DD001D75BE /* Status.xib */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479C63B022A167EA002CAA60 /* folderplus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479C63AF22A167EA002CAA60 /* folderplus.tiff */; };
 		47A0818D2DFF035E0074E7DC /* cyberduck-application-rect.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475B22EE25B0DB17005D7887 /* cyberduck-application-rect.icns */; };
@@ -1294,6 +1295,7 @@
 		4799A64B2C3BC94800563133 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = i18n/src/main/resources/en.lproj/Deepbox.strings; sourceTree = "<group>"; };
 		4799A64C2C3BC94D00563133 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = i18n/src/main/resources/de.lproj/Deepbox.strings; sourceTree = "<group>"; };
 		479B23E52EBA3C16001D75BE /* Navigation.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Navigation.xib; path = osx/src/main/resources/Navigation.xib; sourceTree = "<group>"; };
+		479B23E82EBA45DD001D75BE /* Status.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Status.xib; path = osx/src/main/resources/Status.xib; sourceTree = "<group>"; };
 		479BF77D1725A68C006854BF /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		479C63AF22A167EA002CAA60 /* folderplus.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = folderplus.tiff; sourceTree = "<group>"; };
@@ -1973,6 +1975,7 @@
 				47B2E9FC1E2CF5E1007BE83D /* Task.xib */,
 				47B2E9FD1E2CF5E1007BE83D /* Transcript.xib */,
 				479B23E52EBA3C16001D75BE /* Navigation.xib */,
+				479B23E82EBA45DD001D75BE /* Status.xib */,
 				47B2E9FE1E2CF5E1007BE83D /* Transfer.xib */,
 				47C35B0926247FE4002AABBD /* Profiles.xib */,
 				47C35B112627690E002AABBD /* Profile.xib */,
@@ -2441,6 +2444,7 @@
 				47AA19690AF09F810059C736 /* Error.strings in Resources */,
 				47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */,
 				47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */,
+				479B23E92EBA45DD001D75BE /* Status.xib in Resources */,
 				47A224802EB39A9500C21345 /* Edit.xib in Resources */,
 				47DE479B2598F2D400B18BCB /* preferences-s3.pdf in Resources */,
 				470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */,
