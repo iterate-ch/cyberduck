@@ -421,4 +421,16 @@ public class ProxyController extends AbstractController {
             return true;
         }
     }
+
+    /**
+     * Adjust frame of subview to match the parent view and attach with translating autoresizing mask into constraints
+     *
+     * @param parent  Container View
+     * @param subview Content View
+     */
+    protected void addSubview(final NSView parent, final NSView subview) {
+        subview.setTranslatesAutoresizingMaskIntoConstraints(true);
+        subview.setFrame(parent.bounds());
+        parent.addSubview(subview);
+    }
 }
