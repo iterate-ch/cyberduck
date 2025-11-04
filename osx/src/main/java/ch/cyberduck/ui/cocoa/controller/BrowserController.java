@@ -623,6 +623,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else {
             this.filenameFilter = filter;
         }
+        this.reload();
     }
 
     public PathPasteboard getPasteboard() {
@@ -631,13 +632,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     protected void setShowHiddenFiles(boolean showHidden) {
         if(showHidden) {
-            this.filenameFilter = SearchFilterFactory.NULL_FILTER;
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = SearchFilterFactory.HIDDEN_FILTER;
             this.showHiddenFiles = false;
         }
+        this.setFilter(null);
     }
 
     /**
@@ -1187,8 +1187,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         preferences.setProperty("browser.view", selected.ordinal());
         // Remove any custom file filter
         this.setFilter(null);
-        // Update from model
-        this.reload();
     }
 
     private void selectBookmarks(final BookmarkSwitchSegement selected) {
@@ -2014,8 +2012,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             case outline:
                 // Setup search filter
                 this.setFilter(SearchFilterFactory.create(input, showHiddenFiles));
-                // Reload with current cache
-                this.reload();
                 break;
         }
     }
@@ -2028,9 +2024,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 // Setup search filter
                 final String input = searchField.stringValue();
                 if(StringUtils.isBlank(input)) {
-                    this.setFilter(SearchFilterFactory.create(showHiddenFiles));
-                    // Reload with current cache
-                    this.reload();
+                    this.setFilter(null);
                 }
                 else {
                     // Setup search filter
@@ -2060,8 +2054,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                                         super.cleanup(list);
                                                         // Set filter with search result
                                                         setFilter(new RecursiveSearchFilter(list));
-                                                        // Reload browser
-                                                        reload();
                                                     }
                                                 })
                                         );
@@ -2997,7 +2989,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.setShowHiddenFiles(true);
             sender.setState(NSCell.NSOnState);
         }
-        this.reload();
     }
 
     /**
@@ -3300,7 +3291,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void setWorkdir(final Path directory, final List<Path> selected) {
         log.debug("Set working directory to {}", directory);
         // Remove any custom file filter
-        this.setFilter(SearchFilterFactory.create(showHiddenFiles));
+        this.setFilter(null);
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
         if(null == directory) {
