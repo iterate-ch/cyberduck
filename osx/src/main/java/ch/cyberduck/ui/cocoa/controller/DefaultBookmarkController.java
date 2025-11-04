@@ -47,6 +47,12 @@ public abstract class DefaultBookmarkController extends BookmarkController {
     }
 
     @Override
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        this.addObserver(bookmark -> window.recalculateKeyViewLoop());
+    }
+
+    @Override
     public void setProtocolPopup(final NSPopUpButton button) {
         button.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.protocol.configurable"));
         super.setProtocolPopup(button);
