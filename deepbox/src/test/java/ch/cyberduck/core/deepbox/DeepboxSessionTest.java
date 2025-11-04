@@ -27,15 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DeepboxSessionTest {
 
-    private static Stream<Arguments> provideStringsForIsBlank() {
+    private static Stream<Arguments> provideStringsForGetStage() {
         return Stream.of(
                 Arguments.of("api.int.deepbox.swiss", "int."),
-                Arguments.of("api.deepbox.swiss", "")
+                Arguments.of("api.deepbox.swiss", "app.")
         );
     }
 
     @ParameterizedTest
-    @MethodSource("provideStringsForIsBlank")
+    @MethodSource("provideStringsForGetStage")
     public void getStage(final String hostname, final String expectedStage) {
         final DeepboxSession session = new DeepboxSession(new Host(new DeepboxProtocol(), hostname), null, null);
         assertEquals(expectedStage, session.getStage());

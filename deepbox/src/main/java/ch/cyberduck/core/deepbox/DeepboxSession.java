@@ -239,8 +239,9 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     public String getStage() {
         // For now, required for descriptive URL, API forthcoming
-        // api.[<stage>.]deepbox.swiss
+        // api.[<stage>.]deepbox.swiss, defaults to app if no stage is specified
         String hostname = this.getHost().getHostname();
-        return hostname.replaceAll("^api\\.", "").replaceAll("deepbox\\.swiss$", "");
+        final String stage = hostname.replaceAll("^api\\.", "").replaceAll("deepbox\\.swiss$", "");
+        return StringUtils.isBlank(stage) ? "app." : stage;
     }
 }
