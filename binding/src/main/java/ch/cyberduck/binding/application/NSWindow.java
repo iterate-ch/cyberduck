@@ -1671,6 +1671,7 @@ public abstract class NSWindow extends NSResponder {
      * The style of the titlebar area when the window displays a toolbar.
      *
      * @param toolbarStyle {@link NSWindowToolbarStyle}
+     * @since macOS 11.0+
      */
     public abstract void setToolbarStyle(int toolbarStyle);
 
@@ -1755,6 +1756,7 @@ public abstract class NSWindow extends NSResponder {
      * together by using the same tabbing identifier.
      *
      * @param identifier A value that allows a group of related windows.
+     * @since macOS 10.12+
      */
     public abstract void setTabbingIdentifier(String identifier);
 
@@ -1781,6 +1783,7 @@ public abstract class NSWindow extends NSResponder {
      * NSFullSizeContentViewWindowMask is also set.
      *
      * @param value A Boolean value that indicates whether the title bar draws its background.
+     * @since macOS 10.10+
      */
     public abstract void setTitlebarAppearsTransparent(final boolean value);
 }
