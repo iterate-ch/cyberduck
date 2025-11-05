@@ -192,6 +192,12 @@ public class HostDictionary<T> {
             if(customObj != null) {
                 bookmark.setCustom(customObj);
             }
+            final Object contextObj = dict.stringForKey("Context");
+            if(contextObj != null) {
+                bookmark.setProperty("Context", contextObj.toString());
+                // Also set it on credentials so validate() can access it
+                bookmark.getCredentials().setProperty("Context", contextObj.toString());
+            }
             final Object labelObj = dict.stringForKey("Labels");
             if(labelObj != null) {
                 bookmark.setLabels(new HashSet<>(dict.listForKey("Labels")));
