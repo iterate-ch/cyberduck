@@ -116,6 +116,10 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
+        // Skip credential validation if Context property is present (HTTP credential provider)
+        if(credentials.getProperty("Context") != null) {
+            return true;
+        }
         // Password input is disabled for AWS CLI connection profile but requires lookup in AWS CLI configuration.
         return super.validate(credentials, new LoginOptions(options).token(true));
     }
