@@ -198,7 +198,6 @@ public class TransferController extends WindowController implements TransferList
     public void setWindow(NSWindow window) {
         window.setFrameAutosaveName("Transfers");
         window.setContentMinSize(new NSSize(400d, 150d));
-        window.setMovableByWindowBackground(true);
         window.setTitle(LocaleFactory.localizedString("Transfers"));
         if(window.respondsToSelector(Foundation.selector("setTabbingIdentifier:"))) {
             window.setTabbingIdentifier(preferences.getProperty("queue.window.tabbing.identifier"));
