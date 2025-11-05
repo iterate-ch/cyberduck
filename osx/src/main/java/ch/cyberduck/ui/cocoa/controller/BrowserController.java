@@ -834,7 +834,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    public void setWindow(NSWindow window) {
+    public void setWindow(final NSWindow window) {
         // Save frame rectangle
         window.setFrameAutosaveName("Browser");
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
@@ -849,9 +849,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(window.respondsToSelector(Foundation.selector("setTitlebarSeparatorStyle:"))) {
             window.setTitlebarSeparatorStyle(NSWindow.NSTitlebarSeparatorStyle.NSTitlebarSeparatorStyleNone);
         }
-        super.setWindow(window);
         // Accept file promises from history tab
         window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
+        super.setWindow(window);
     }
 
     @Override
