@@ -837,9 +837,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void setWindow(NSWindow window) {
         // Save frame rectangle
         window.setFrameAutosaveName("Browser");
-        if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-            window.setSubtitle(StringUtils.EMPTY);
-        }
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
@@ -1173,6 +1170,25 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     private void selectBrowser(final BrowserSwitchSegement selected) {
+        switch(pool.getState()) {
+            case closed:
+                window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(pool.getHost()).getAbsolute());
+                window.setTitle(LocaleFactory.localizedString("Browser", "Preferences"));
+                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                    window.setSubtitle(StringUtils.EMPTY);
+                }
+                break;
+            default:
+                window.setRepresentedFilename(StringUtils.EMPTY);
+                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                    window.setTitle(BookmarkNameProvider.toString(pool.getHost(), false));
+                    window.setSubtitle(BookmarkNameProvider.toHostname(pool.getHost(), true));
+                }
+                else {
+                    window.setTitle(BookmarkNameProvider.toString(pool.getHost(), true));
+                }
+                break;
+        }
         bookmarkSwitchView.setSelectedSegment(BookmarkSwitchSegement.browser.ordinal());
         this.setNavigation();
         switch(selected) {
@@ -1196,16 +1212,27 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final AbstractHostCollection source;
         switch(selected) {
             case history:
+                window.setTitle(LocaleFactory.localizedString("History"));
+                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                    window.setSubtitle(MessageFormat.format(LocaleFactory.localizedString("{0} Bookmarks"),
+                            String.valueOf(bookmarkTable.numberOfRows())));
+                }
                 source = HistoryCollection.defaultCollection();
                 break;
             case rendezvous:
+                window.setTitle(LocaleFactory.localizedString("Bonjour"));
                 source = RendezvousCollection.defaultCollection();
                 break;
             case bookmarks:
             default:
+                window.setTitle(LocaleFactory.localizedString("Bookmarks", "Browser"));
                 source = bookmarks;
                 break;
-
+        }
+        window.setRepresentedFilename(StringUtils.EMPTY);
+        if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+            window.setSubtitle(MessageFormat.format(LocaleFactory.localizedString("{0} Bookmarks"),
+                    String.valueOf(source.size())));
         }
         if(!source.isLoaded()) {
             browserSpinner.startAnimation(null);
@@ -3331,8 +3358,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                     setWorkdir(workdir);
                                     // Close bookmarks
                                     selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
-                                    // Set the window title
-                                    window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(bookmark).getAbsolute());
                                     if(preferences.getBoolean("browser.disconnect.confirm")) {
                                         window.setDocumentEdited(true);
                                     }
@@ -3347,14 +3372,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     @Override
                     public void init() throws BackgroundException {
                         super.init();
-                        if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-                            window.setTitle(BookmarkNameProvider.toString(bookmark, false));
-                            window.setSubtitle(BookmarkNameProvider.toHostname(bookmark, true));
-                        }
-                        else {
-                            window.setTitle(BookmarkNameProvider.toString(bookmark, true));
-                        }
-                        window.setRepresentedFilename(StringUtils.EMPTY);
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
                     }
@@ -3433,11 +3450,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     editor.close();
                 }
                 editors.clear();
-                window.setTitle(StringUtils.EMPTY);
-                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-                    window.setSubtitle(StringUtils.EMPTY);
-                }
-                window.setRepresentedFilename(StringUtils.EMPTY);
                 navigation.clear();
                 disconnected.run();
             }
