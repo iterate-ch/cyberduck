@@ -785,7 +785,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             downloads.add(new TransferItem(file, temporary.create(String.format("quicklook-%s", pool.getHost().getUuid()), file)));
         }
-        if(downloads.size() > 0) {
+        if(!downloads.isEmpty()) {
             this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, queue, downloads));
         }
     }
@@ -805,7 +805,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public Path getSelectedPath() {
         final List<Path> s = this.getSelectedPaths();
-        if(s.size() > 0) {
+        if(!s.isEmpty()) {
             return s.get(0);
         }
         return null;
@@ -1258,19 +1258,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.setBookmarkFilter(null);
         this.reloadBookmarks();
         if(this.isMounted()) {
-            int row = this.bookmarkModel.getSource().indexOf(pool.getHost());
+            int row = bookmarkModel.getSource().indexOf(pool.getHost());
             if(row != -1) {
-                this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
-                this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
+                bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
+                bookmarkTable.scrollRowToVisible(new NSInteger(row));
             }
             else {
-                this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
-                this.bookmarkTable.scrollRowToVisible(new NSInteger(0));
+                bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
+                bookmarkTable.scrollRowToVisible(new NSInteger(0));
             }
         }
         else {
-            this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
-            this.bookmarkTable.scrollRowToVisible(new NSInteger(0));
+            bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
+            bookmarkTable.scrollRowToVisible(new NSInteger(0));
         }
     }
 
@@ -2329,7 +2329,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     public void setStatus() {
-        final BackgroundAction current = registry.getCurrent();
+        final BackgroundAction<?> current = registry.getCurrent();
         this.message(null != current ? current.getActivity() : null);
     }
 
@@ -3115,7 +3115,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         // Writing data for private use when the item gets dragged to the transfer queue.
         pasteboard.addAll(s);
         final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
-        if(s.size() == 0) {
+        if(s.isEmpty()) {
             s.add(workdir);
         }
         clipboard.declareTypes(NSArray.arrayWithObject(
@@ -3827,7 +3827,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
-    private abstract class AbstractBrowserTableDelegate extends AbstractPathTableDelegate {
+    public abstract class AbstractBrowserTableDelegate extends AbstractPathTableDelegate {
 
         private static final double kSwipeGestureLeft = 1.000000;
         private static final double kSwipeGestureRight = -1.000000;
