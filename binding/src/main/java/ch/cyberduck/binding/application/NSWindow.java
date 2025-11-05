@@ -41,32 +41,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class NSWindow extends NSResponder {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWindow", _Class.class);
 
-    /// <i>native declaration : line 22</i>
-    public static final int NSBorderlessWindowMask = 0;
-    /// <i>native declaration : line 23</i>
-    public static final int NSTitledWindowMask = 1 << 0;
-    /// <i>native declaration : line 24</i>
-    public static final int NSClosableWindowMask = 1 << 1;
-    /// <i>native declaration : line 25</i>
-    public static final int NSMiniaturizableWindowMask = 1 << 2;
-    /// <i>native declaration : line 26</i>
-    public static final int NSResizableWindowMask = 1 << 3;
-    /**
-     * Specifies a window with textured background (eg. metal)<br>
-     * <i>native declaration : line 34</i>
-     */
-    public static final int NSTexturedBackgroundWindowMask = 1 << 8;
-    /**
-     * Specifies a window that ignores the userSpaceScaleFactor of the NSScreen on which it is created.  Currently
-     * restricted to borderless windows (NSBorderlessWindowMask)<br>
-     * <i>native declaration : line 42</i>
-     */
-    public static final int NSUnscaledWindowMask = 1 << 11;
-    /**
-     * Specifies a window whose titlebar and toolbar have a unified look - that is, a continuous background<br>
-     * <i>native declaration : line 48</i>
-     */
-    public static final int NSUnifiedTitleAndToolbarWindowMask = 1 << 12;
     /**
      * used with NSRunLoop's performSelector:target:argument:order:modes:<br>
      * <i>native declaration : line 55</i>
@@ -160,6 +134,50 @@ public abstract class NSWindow extends NSResponder {
      * @since macOS 10.9+
      */
     public static final int NSWindowOcclusionStateVisible = 1 << 1;
+
+    /// enum values
+    public interface NSWindowStyleMask {
+        int NSWindowStyleMaskBorderless = 0;
+        int NSWindowStyleMaskTitled = 1 << 0;
+        int NSWindowStyleMaskClosable = 1 << 1;
+        int NSWindowStyleMaskMiniaturizable = 1 << 2;
+        int NSWindowStyleMaskResizable = 1 << 3;
+        /**
+         * @deprecated
+         */
+        int NSWindowStyleMaskTexturedBackground = 1 << 8;
+        /**
+         * Specifies a window whose titlebar and toolbar have a unified look - that is, a continuous background. Under
+         * the titlebar and toolbar a horizontal separator line will appear.
+         */
+        int NSWindowStyleMaskUnifiedTitleAndToolbar = 1 << 12;
+        /**
+         * When present, the window will appear full screen. This mask is automatically toggled when \c -toggleFullScreen: is called.
+         */
+        int NSWindowStyleMaskFullScreen = 1 << 14;
+        /**
+         * If set, the \c contentView will consume the full size of the window; it can be combined with other window style masks,
+         * but is only respected for windows with a titlebar. Utilizing this mask opts-in to layer-backing. Utilize
+         * the \c contentLayoutRect or auto-layout \c contentLayoutGuide to layout views underneath the titlebar/toolbar area.
+         */
+        int NSWindowStyleMaskFullSizeContentView = 1 << 15;
+        /**
+         * Only applicable for \c NSPanel (or a subclass thereof).
+         */
+        int NSWindowStyleMaskUtilityWindow = 1 << 4;
+        /**
+         * Only applicable for \c NSPanel (or a subclass thereof).
+         */
+        int NSWindowStyleMaskDocModalWindow = 1 << 6;
+        /**
+         * Specifies that a panel that does not activate the owning application. Only applicable for \c NSPanel (or a subclass thereof).
+         */
+        int NSWindowStyleMaskNonactivatingPanel = 1 << 7;
+        /**
+         * Specifies a heads up display panel.  Only applicable for \c NSPanel (or a subclass thereof).
+         */
+        int NSWindowStyleMaskHUDWindow = 1 << 13;
+    }
 
     /// enum values
     public interface NSWindowLevel {
@@ -514,6 +532,9 @@ public abstract class NSWindow extends NSResponder {
      */
     public abstract NSUInteger styleMask();
 
+    /**
+     * @see NSWindowStyleMask
+     */
     public abstract void setStyleMask(NSUInteger mask);
 
     /**
