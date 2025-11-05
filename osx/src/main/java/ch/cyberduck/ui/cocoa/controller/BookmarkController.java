@@ -392,17 +392,16 @@ public abstract class BookmarkController extends SheetController implements NSTa
             public void change(final Host bookmark) {
                 if(StringUtils.isNotBlank(bookmark.getHostname())) {
                     background(new AbstractBackgroundAction<Boolean>() {
-                        boolean reachable = false;
-
                         @Override
                         public Boolean run() {
-                            return reachable = reachability.isReachable(bookmark);
+                            return reachability.isReachable(bookmark);
                         }
 
                         @Override
-                        public void cleanup() {
-                            alertIcon.setEnabled(!reachable);
-                            alertIcon.setImage(reachable ? null : IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
+                        public void cleanup(final Boolean result, final BackgroundException failure) {
+                            alertIcon.setEnabled(!result);
+                            alertIcon.setImage(result ? null : IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
+                            super.cleanup(result, failure);
                         }
                     });
                 }
