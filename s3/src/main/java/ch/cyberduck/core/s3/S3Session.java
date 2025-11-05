@@ -27,6 +27,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.UrlProvider;
@@ -55,7 +56,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAuthorizationService;
-import ch.cyberduck.core.sts.STSCredentialsStrategy;
 import ch.cyberduck.core.sts.STSGetSessionTokenCredentialsStrategy;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -274,12 +274,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 return new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext());
             }
         }
-        if(host.getProtocol().isRoleConfigurable()) {
+        if(host.getProtocol().isRoleConfigurable() || host.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY) != null) {
             final S3CredentialsStrategy strategy = new STSAssumeRoleCredentialsStrategy(host, trust, key, prompt);
             log.debug("Return authenticator {}", strategy);
             return strategy;
         }
-        if(host.getProtocol().isMultiFactorConfigurable()) {
+        if(host.getProtocol().isMultiFactorConfigurable() || host.getProperty(Profile.STS_MFA_ARN_PROPERTY_KEY) != null) {
             final S3CredentialsStrategy strategy = new STSGetSessionTokenCredentialsStrategy(host, trust, key, prompt);
             log.debug("Return authenticator {}", strategy);
             return strategy;
