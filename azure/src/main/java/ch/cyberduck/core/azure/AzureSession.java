@@ -130,8 +130,7 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        // Keep copy of credentials
-        authenticator.setCredentials(new Credentials(host.getCredentials()));
+        authenticator.setCredentials(host.getCredentials());
         try {
             final AccountKind kind = client.getAccountInfo().getAccountKind();
             if(log.isInfoEnabled()) {

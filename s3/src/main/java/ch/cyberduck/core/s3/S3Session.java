@@ -261,7 +261,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
             log.debug("Add interceptor {}", oauth);
             configuration.addInterceptorLast(oauth);
-            final STSAssumeRoleWithWebIdentityCredentialsStrategy strategy
+            final S3CredentialsStrategy strategy
                     = new STSAssumeRoleWithWebIdentityCredentialsStrategy(oauth, host, trust, key, prompt);
             log.debug("Return authenticator {}", strategy);
             return strategy;
@@ -275,17 +275,17 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
         }
         if(host.getProtocol().isRoleConfigurable()) {
-            final STSCredentialsStrategy strategy = new STSAssumeRoleCredentialsStrategy(host, trust, key, prompt);
+            final S3CredentialsStrategy strategy = new STSAssumeRoleCredentialsStrategy(host, trust, key, prompt);
             log.debug("Return authenticator {}", strategy);
             return strategy;
         }
         if(host.getProtocol().isMultiFactorConfigurable()) {
-            final STSCredentialsStrategy strategy = new STSGetSessionTokenCredentialsStrategy(host, trust, key, prompt);
+            final S3CredentialsStrategy strategy = new STSGetSessionTokenCredentialsStrategy(host, trust, key, prompt);
             log.debug("Return authenticator {}", strategy);
             return strategy;
         }
         // Keep copy of credentials
-        final Credentials credentials = new Credentials(host.getCredentials());
+        final Credentials credentials = host.getCredentials();
         if(credentials.isTokenAuthentication()) {
             return () -> credentials;
         }
