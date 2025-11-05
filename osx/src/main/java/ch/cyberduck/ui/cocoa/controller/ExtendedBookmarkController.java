@@ -90,6 +90,7 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
     @Override
     public void setWindow(final NSWindow window) {
         this.addObserver(bookmark -> window.setTitle(BookmarkNameProvider.toString(bookmark)));
+        window.setTitlebarAppearsTransparent(true);
         super.setWindow(window);
     }
 
