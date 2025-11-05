@@ -57,11 +57,6 @@ public abstract class WindowController extends BundleController implements NSWin
     @Outlet
     protected NSWindow window;
 
-    /**
-     * Main content view of window
-     */
-    protected NSView view;
-
     public WindowController() {
         super();
     }
@@ -91,7 +86,6 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public void setWindow(final NSWindow window) {
         this.window = window;
-        this.view = window.contentView();
         this.window.recalculateKeyViewLoop();
         this.window.setReleasedWhenClosed(true);
         this.window.setDelegate(this.id());
@@ -103,7 +97,7 @@ public abstract class WindowController extends BundleController implements NSWin
 
     @Override
     public NSView view() {
-        return view;
+        return window.contentView();
     }
 
     /**
@@ -252,14 +246,14 @@ public abstract class WindowController extends BundleController implements NSWin
 
     protected double toolbarHeightForWindow() {
         final NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
-        return windowFrame.size.height.doubleValue() - view.frame().size.height.doubleValue();
+        return windowFrame.size.height.doubleValue() - window.contentView().frame().size.height.doubleValue();
     }
 
     /**
      * @return Minimum size to fit content view of currently selected tab.
      */
     protected NSRect getContentRect() {
-        return view.frame();
+        return window.contentView().frame();
     }
 
     /**
