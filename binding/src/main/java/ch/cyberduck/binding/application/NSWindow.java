@@ -176,18 +176,37 @@ public abstract class NSWindow extends NSResponder {
 
     /// enum values
     public interface NSWindowCollectionBehavior {
-        int NSWindowCollectionBehaviorManaged = 1 << 2; // participates in spaces, exposé.  Default behavior if windowLevel == NSNormalWindowLevel
-        int NSWindowCollectionBehaviorTransient = 1 << 3; // floats in spaces, hidden by exposé.  Default behavior if windowLevel != NSNormalWindowLevel
-        int NSWindowCollectionBehaviorStationary = 1 << 4; // unaffected by exposé.  Stays visible and stationary, like desktop window
-
-        int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5; // default behavior if windowLevel == NSNormalWindowLevel
-        int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;  // default behavior if windowLevel != NSNormalWindowLevel
-
-        int NSWindowNumberListAllApplications = 1 << 0;
-        int NSWindowNumberListAllSpaces = 1 << 4;
-
-        int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7; // the frontmost window with this collection behavior will be the fullscreen window.
-        int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;  // windows with this collection behavior can be shown with the fullscreen window.
+        int NSWindowCollectionBehaviorDefault = 0;
+        int NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0;
+        int NSWindowCollectionBehaviorMoveToActiveSpace = 1 << 1;
+        int NSWindowCollectionBehaviorManaged = 1 << 2;
+        int NSWindowCollectionBehaviorTransient = 1 << 3;
+        int NSWindowCollectionBehaviorStationary = 1 << 4;
+        int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5;
+        int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;
+        int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7;
+        int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;
+        int NSWindowCollectionBehaviorFullScreenNone = 1 << 9;
+        /**
+         * @since macOS 10.11
+         */
+        int NSWindowCollectionBehaviorFullScreenAllowsTiling = 1 << 11;
+        /**
+         * @since macOS 10.11
+         */
+        int NSWindowCollectionBehaviorFullScreenDisallowsTiling = 1 << 12;
+        /**
+         * @since macOS 13.0
+         */
+        int NSWindowCollectionBehaviorPrimary = 1 << 16;
+        /**
+         * @since macOS 13.0
+         */
+        int NSWindowCollectionBehaviorAuxiliary = 1 << 17;
+        /**
+         * @since macOS 13.0
+         */
+        int NSWindowCollectionBehaviorCanJoinAllApplications = 1 << 18;
     }
 
     /// enum values
