@@ -78,6 +78,9 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
     @Override
     public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
+        if(credentials.isPasswordAuthentication()) {
+            return credentials;
+        }
         final BasicProfile profile = profiles.entrySet().stream().filter(entry -> {
             // Matching access key or profile name
             if(StringUtils.equals(entry.getKey(), credentials.getUsername())) {
