@@ -34,14 +34,13 @@ public final class BookmarkControllerFactory {
     public static BookmarkContainerController create(final AbstractHostCollection collection, final Host host) {
         synchronized(NSApplication.sharedApplication()) {
             if(!open.containsKey(host)) {
-                final BookmarkContainerController c = new ExtendedBookmarkController(host) {
+                final BookmarkContainerController c = new ExtendedBookmarkController(host, collection) {
                     @Override
                     public void invalidate() {
                         open.remove(host);
                         super.invalidate();
                     }
                 };
-                c.addObserver(collection::collectionItemChanged);
                 open.put(host, c);
             }
             return open.get(host);
