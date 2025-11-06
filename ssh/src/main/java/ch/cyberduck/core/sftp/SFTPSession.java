@@ -149,8 +149,7 @@ public class SFTPSession extends Session<SSHClient> {
                 log.info("Connect using jump host configuration {}", proxy);
                 final SSHClient hop = this.toClient(key, configuration);
                 hop.connect(proxy.getHostname(), proxy.getPort());
-                final Credentials proxyCredentials = new OpenSSHCredentialsConfigurator().configure(proxy);
-                proxy.setCredentials(proxyCredentials);
+                proxy.setCredentials(new OpenSSHCredentialsConfigurator().configure(proxy));
                 final KeychainLoginService service = new KeychainLoginService();
                 service.validate(proxy, prompt, new LoginOptions(proxy.getProtocol()));
                 // Authenticate with jump host

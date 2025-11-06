@@ -38,18 +38,18 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
 
     @Override
     public Credentials configure(final Host host) {
+        final Credentials credentials = new Credentials(host.getCredentials());
         if(!WinHttpClients.isWinAuthAvailable()) {
             log.warn("No Windows authentication available");
-            return CredentialsConfigurator.DISABLED.configure(host);
+            return credentials;
         }
-        if(host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
+        if(credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
             log.warn("Skip auto configuration of credentials for {}", host);
-            return CredentialsConfigurator.DISABLED.configure(host);
+            return credentials;
         }
         // No username preset
         final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
-        final Credentials credentials = new Credentials(host.getCredentials())
-                .setPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
+                credentials.setPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
         if(!includeDomain && StringUtils.contains(nameSamCompatible, '\\')) {
             credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
         }
