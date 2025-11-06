@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -159,46 +159,8 @@
                                                     <real value="3.4028234663852886e+38"/>
                                                 </customSpacing>
                                             </stackView>
-                                            <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vxc-p7-tmq">
-                                                <rect key="frame" x="0.0" y="138" width="420" height="21"/>
-                                                <subviews>
-                                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="UjQ-6u-a70">
-                                                        <rect key="frame" x="-2" y="3" width="154" height="16"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="65k-sF-gW4"/>
-                                                        </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Path:" id="tDz-Za-fbY">
-                                                            <font key="font" metaFont="system"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                    </textField>
-                                                    <textField focusRingType="none" horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="2Op-yu-r6q" userLabel="Path Text Field">
-                                                        <rect key="frame" x="158" y="0.0" width="262" height="21"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="7ev-eU-Ms9"/>
-                                                        </constraints>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="U7d-Y3-ZZb">
-                                                            <font key="font" metaFont="system"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                    </textField>
-                                                </subviews>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="8mC-U1-5fU"/>
-                                                </constraints>
-                                                <visibilityPriorities>
-                                                    <integer value="1000"/>
-                                                    <integer value="1000"/>
-                                                </visibilityPriorities>
-                                                <customSpacing>
-                                                    <real value="3.4028234663852886e+38"/>
-                                                    <real value="3.4028234663852886e+38"/>
-                                                </customSpacing>
-                                            </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rod-1T-W8m">
-                                                <rect key="frame" x="0.0" y="109" width="420" height="21"/>
+                                                <rect key="frame" x="0.0" y="138" width="420" height="21"/>
                                                 <subviews>
                                                     <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="jqf-kB-PHA" userLabel="Username Label">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
@@ -236,7 +198,7 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1RC-Ds-Whd">
-                                                <rect key="frame" x="0.0" y="85" width="420" height="16"/>
+                                                <rect key="frame" x="0.0" y="114" width="420" height="16"/>
                                                 <subviews>
                                                     <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="wS1-Vy-CQV" userLabel="Anonymous Label">
                                                         <rect key="frame" x="-2" y="0.0" width="154" height="16"/>
@@ -273,7 +235,7 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="n1T-xb-QHg">
-                                                <rect key="frame" x="0.0" y="56" width="420" height="21"/>
+                                                <rect key="frame" x="0.0" y="85" width="420" height="21"/>
                                                 <subviews>
                                                     <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="9gh-NJ-mK9" userLabel="Password Label">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
@@ -311,7 +273,7 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c7i-wA-eB2">
-                                                <rect key="frame" x="0.0" y="28" width="420" height="20"/>
+                                                <rect key="frame" x="0.0" y="57" width="420" height="20"/>
                                                 <subviews>
                                                     <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="mmd-cn-5n9">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
@@ -349,7 +311,7 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sYQ-Sz-UGS">
-                                                <rect key="frame" x="0.0" y="0.0" width="420" height="20"/>
+                                                <rect key="frame" x="0.0" y="29" width="420" height="20"/>
                                                 <subviews>
                                                     <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="NS6-OA-wNh">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
@@ -386,7 +348,53 @@
                                                     <real value="3.4028234663852886e+38"/>
                                                 </customSpacing>
                                             </stackView>
+                                            <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vxc-p7-tmq">
+                                                <rect key="frame" x="0.0" y="0.0" width="420" height="21"/>
+                                                <subviews>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="UjQ-6u-a70">
+                                                        <rect key="frame" x="-2" y="3" width="154" height="16"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="65k-sF-gW4"/>
+                                                        </constraints>
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Path:" id="tDz-Za-fbY">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField focusRingType="none" horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="2Op-yu-r6q" userLabel="Path Text Field">
+                                                        <rect key="frame" x="158" y="0.0" width="262" height="21"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="7ev-eU-Ms9"/>
+                                                        </constraints>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="U7d-Y3-ZZb">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="8mC-U1-5fU"/>
+                                                </constraints>
+                                                <visibilityPriorities>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                </visibilityPriorities>
+                                                <customSpacing>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                </customSpacing>
+                                            </stackView>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstItem="2cc-0e-HKR" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="7oL-sD-Sft"/>
+                                            <constraint firstItem="ol5-Sm-uF6" firstAttribute="width" secondItem="Ciu-Zv-VlC" secondAttribute="width" id="8kX-V7-u3v"/>
+                                            <constraint firstItem="bPT-hT-KlL" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="JZC-Gm-kjY"/>
+                                            <constraint firstItem="2Op-yu-r6q" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="mRX-hc-xGK"/>
+                                            <constraint firstItem="W6c-7b-puJ" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="ntV-lH-DN5"/>
+                                            <constraint firstItem="GuU-jB-XfB" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="tFb-Wu-E09"/>
+                                        </constraints>
                                         <visibilityPriorities>
                                             <integer value="1000"/>
                                             <integer value="1000"/>
@@ -513,41 +521,53 @@
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <textField focusRingType="none" horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="RWH-RE-GNo" userLabel="Web URL Text Field">
-                                                        <rect key="frame" x="158" y="0.0" width="236" height="21"/>
+                                                    <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zZW-tu-gdf">
+                                                        <rect key="frame" x="158" y="0.0" width="262" height="21"/>
+                                                        <subviews>
+                                                            <textField focusRingType="none" horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="RWH-RE-GNo" userLabel="Web URL Text Field">
+                                                                <rect key="frame" x="0.0" y="0.0" width="236" height="21"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="rfq-KL-8Yb"/>
+                                                                </constraints>
+                                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="9CA-aR-oG5">
+                                                                    <font key="font" metaFont="system"/>
+                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                </textFieldCell>
+                                                            </textField>
+                                                            <button placeholderIntrinsicWidth="18" placeholderIntrinsicHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Vl3-kb-L99" userLabel="Web URL Favicon">
+                                                                <rect key="frame" x="244" y="0.0" width="18" height="21"/>
+                                                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" imagePosition="only" alignment="left" imageScaling="proportionallyDown" id="L4r-st-R2S">
+                                                                    <behavior key="behavior" lightByContents="YES"/>
+                                                                    <font key="font" metaFont="label"/>
+                                                                </buttonCell>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="21" id="siY-Fd-qpb"/>
+                                                                    <constraint firstAttribute="width" constant="18" id="w7V-po-5CG"/>
+                                                                </constraints>
+                                                            </button>
+                                                        </subviews>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="rfq-KL-8Yb"/>
+                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="Glr-dS-VUX"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="9CA-aR-oG5">
-                                                            <font key="font" metaFont="system"/>
-                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        </textFieldCell>
-                                                    </textField>
-                                                    <button placeholderIntrinsicWidth="18" placeholderIntrinsicHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Vl3-kb-L99" userLabel="Web URL Favicon">
-                                                        <rect key="frame" x="402" y="0.0" width="18" height="21"/>
-                                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" imagePosition="only" alignment="left" imageScaling="proportionallyDown" id="L4r-st-R2S">
-                                                            <behavior key="behavior" lightByContents="YES"/>
-                                                            <font key="font" metaFont="label"/>
-                                                        </buttonCell>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="21" id="siY-Fd-qpb"/>
-                                                            <constraint firstAttribute="width" constant="18" id="w7V-po-5CG"/>
-                                                        </constraints>
-                                                    </button>
+                                                        <visibilityPriorities>
+                                                            <integer value="1000"/>
+                                                            <integer value="1000"/>
+                                                        </visibilityPriorities>
+                                                        <customSpacing>
+                                                            <real value="3.4028234663852886e+38"/>
+                                                            <real value="3.4028234663852886e+38"/>
+                                                        </customSpacing>
+                                                    </stackView>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="06P-XU-qS6"/>
-                                                    <constraint firstItem="Vl3-kb-L99" firstAttribute="top" secondItem="WmN-L1-b6d" secondAttribute="top" id="JgM-XD-poS"/>
-                                                    <constraint firstItem="Vl3-kb-L99" firstAttribute="leading" secondItem="RWH-RE-GNo" secondAttribute="trailing" constant="8" symbolic="YES" id="qnJ-jf-5Ov"/>
                                                 </constraints>
                                                 <visibilityPriorities>
                                                     <integer value="1000"/>
                                                     <integer value="1000"/>
-                                                    <integer value="1000"/>
                                                 </visibilityPriorities>
                                                 <customSpacing>
-                                                    <real value="3.4028234663852886e+38"/>
                                                     <real value="3.4028234663852886e+38"/>
                                                     <real value="3.4028234663852886e+38"/>
                                                 </customSpacing>
@@ -681,6 +701,11 @@
                                         </subviews>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="250" id="5os-0x-QLP"/>
+                                            <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="hvx-ue-IcP" secondAttribute="width" id="HOS-hL-Yy8"/>
+                                            <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="zZW-tu-gdf" secondAttribute="width" id="SyJ-HL-Dc1"/>
+                                            <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="AvO-GE-eBC" secondAttribute="width" id="byM-GW-ccS"/>
+                                            <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="7ki-B7-LbY" secondAttribute="width" id="hwT-a5-tBq"/>
+                                            <constraint firstItem="lfg-XO-WdV" firstAttribute="width" secondItem="Aav-NI-gKI" secondAttribute="width" id="ngc-9v-4uL"/>
                                         </constraints>
                                         <visibilityPriorities>
                                             <integer value="1000"/>
