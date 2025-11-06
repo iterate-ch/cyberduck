@@ -18,11 +18,9 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
@@ -105,19 +103,13 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public String getTokenPlaceholder() {
-        return LocaleFactory.localizedString("MFA Authentication Code", "S3");
+        return LocaleFactory.localizedString("Session Token", "S3");
     }
 
     @Override
     public String favicon() {
         // Return static icon as endpoint has no favicon configured
         return this.icon();
-    }
-
-    @Override
-    public boolean validate(final Credentials credentials, final LoginOptions options) {
-        // Password input is disabled for AWS CLI connection profile but requires lookup in AWS CLI configuration.
-        return super.validate(credentials, new LoginOptions(options).token(true));
     }
 
     @Override
