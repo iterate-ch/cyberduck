@@ -169,7 +169,7 @@ public class TransferController extends WindowController implements TransferList
         this.toolbar.setDelegate(this.id());
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeLabelOnly);
+        this.toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeIconOnly);
         this.window.setToolbar(toolbar);
 
         if(!collection.isLoaded()) {
