@@ -366,7 +366,7 @@ public class ProxyController extends AbstractController {
             final Proxy proxy = new PopoverDelegate(controller, option, callback);
             reference.set(proxy);
             popover.setDelegate(proxy.id());
-            popover.setAnimates(true);
+            popover.setAnimates(false);
             popover.setBehavior(behaviour);
             final NSViewController viewController = NSViewController.create();
             viewController.setView(sheet.contentView());
@@ -379,7 +379,7 @@ public class ProxyController extends AbstractController {
         @Override
         public void windowDidResize(final NSSize windowFrame) {
             log.debug("Resize popover to {}", windowFrame);
-            popover.setContentSize(controller.view().fittingSize());
+            popover.setContentSize(controller.view().intrinsicContentSize());
         }
 
         @Override

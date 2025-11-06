@@ -280,6 +280,13 @@ public abstract class NSView extends NSResponder {
     public abstract NSSize fittingSize();
 
     /**
+     * The natural size for the receiving view, considering only properties of the view itself.
+     *
+     * @return A size indicating the natural size for the receiving view based on its intrinsic properties.
+     */
+    public abstract NSSize intrinsicContentSize();
+
+    /**
      * Original signature : <code>void setAutoresizesSubviews(BOOL)</code><br>
      * <i>native declaration : :155</i>
      */
