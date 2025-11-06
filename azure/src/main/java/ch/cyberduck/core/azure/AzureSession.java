@@ -23,9 +23,23 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.azure.apache.ApacheHttpClient;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -204,7 +218,7 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
         if(type == Touch.class) {
             return (T) new AzureTouchFeature(this);
         }
-        if(type == Share.class) {
+        if(type == UrlProvider.class) {
             return (T) new AzureUrlProvider(this);
         }
         if(type == AclPermission.class) {
