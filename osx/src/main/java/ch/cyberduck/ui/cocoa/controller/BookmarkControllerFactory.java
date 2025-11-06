@@ -18,11 +18,16 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public final class BookmarkControllerFactory {
+
+    private static final Preferences preferences
+            = PreferencesFactory.get();
 
     private static final Map<Host, BookmarkContainerController> open
             = new HashMap<>();
@@ -33,7 +38,7 @@ public final class BookmarkControllerFactory {
 
     public static BookmarkContainerController create(final AbstractHostCollection collection, final Host host) {
         synchronized(NSApplication.sharedApplication()) {
-            if(!open.containsKey(host)) {
+            if(!open.containsKey(host) || preferences.getBoolean("bookmark.window.popover")) {
                 final BookmarkContainerController c = new ExtendedBookmarkController(host, collection) {
                     @Override
                     public void invalidate() {
