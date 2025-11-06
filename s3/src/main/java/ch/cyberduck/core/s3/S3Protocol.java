@@ -103,7 +103,7 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public String getTokenPlaceholder() {
-        return LocaleFactory.localizedString("MFA Authentication Code", "S3");
+        return LocaleFactory.localizedString("Session Token", "S3");
     }
 
     @Override
