@@ -25,6 +25,7 @@ import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
@@ -55,9 +56,10 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
     @Outlet
     private NSOpenPanel downloadFolderOpenPanel;
 
-    public ExtendedBookmarkController(final Host bookmark) {
+    public ExtendedBookmarkController(final Host bookmark, final AbstractHostCollection collection) {
         super(bookmark);
         this.bookmark = bookmark;
+        this.addObserver(collection::collectionItemChanged);
     }
 
     @Override
