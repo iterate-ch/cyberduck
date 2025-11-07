@@ -169,6 +169,7 @@ public class OAuth2AuthorizationService {
                     for(String claim : new String[]{"preferred_username", "email", "name", "nickname", "sub"}) {
                         final String value = jwt.getClaim(claim).asString();
                         if(StringUtils.isNotBlank(value)) {
+                            log.debug("Set username to {} from claim {}", value, claim);
                             credentials.setUsername(value);
                             break;
                         }
