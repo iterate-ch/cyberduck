@@ -241,7 +241,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Outlet
     private NSView outlineStatusContainerView;
     @Outlet
-    private NSProgressIndicator browserSpinner;
+    private NSProgressIndicator bookmarkProgressIndicator;
+    @Outlet
+    private NSProgressIndicator browserListProgressIndicator;
+    @Outlet
+    private NSProgressIndicator browserOutlineProgressIndicator;
     @Delegate
     private BrowserOutlineViewDataSource browserOutlineModel;
     @Outlet
@@ -322,8 +326,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public static void updateBrowserTableAttributes() {
         for(BrowserController controller : MainController.getBrowsers()) {
-            controller._updateBrowserAttributes(controller.browserListView);
-            controller._updateBrowserAttributes(controller.browserOutlineView);
+            controller.updateBrowserAttributes();
         }
     }
 
@@ -1169,25 +1172,24 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     private void selectBrowser(final BrowserSwitchSegement selected) {
-        switch(pool.getState()) {
-            case closed:
-                window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(pool.getHost()).getAbsolute());
-                window.setTitle(LocaleFactory.localizedString("Browser", "Preferences"));
-                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-                    window.setSubtitle(StringUtils.EMPTY);
-                }
-                break;
-            default:
-                window.setRepresentedFilename(StringUtils.EMPTY);
-                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-                    window.setTitle(BookmarkNameProvider.toString(pool.getHost(), false));
-                    window.setSubtitle(BookmarkNameProvider.toHostname(pool.getHost(), true));
-                }
-                else {
-                    window.setTitle(BookmarkNameProvider.toString(pool.getHost(), true));
-                }
-                break;
+        if(this.isConnected()) {
+            window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(pool.getHost()).getAbsolute());
+            if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                window.setTitle(BookmarkNameProvider.toString(pool.getHost(), false));
+                window.setSubtitle(BookmarkNameProvider.toHostname(pool.getHost(), true));
+            }
+            else {
+                window.setTitle(BookmarkNameProvider.toString(pool.getHost(), true));
+            }
         }
+        else {
+            window.setRepresentedFilename(StringUtils.EMPTY);
+            window.setTitle(LocaleFactory.localizedString("Browser", "Preferences"));
+            if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                window.setSubtitle(StringUtils.EMPTY);
+            }
+        }
+        this.updateBrowserAttributes();
         bookmarkSwitchView.setSelectedSegment(BookmarkSwitchSegement.browser.ordinal());
         this.setNavigation();
         switch(selected) {
@@ -1234,14 +1236,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     String.valueOf(source.size())));
         }
         if(!source.isLoaded()) {
-            browserSpinner.startAnimation(null);
+            bookmarkProgressIndicator.startAnimation(null);
             source.addListener(new AbstractCollectionListener<Host>() {
                 @Override
                 public void collectionLoaded() {
                     invoke(new WindowMainAction(BrowserController.this) {
                         @Override
                         public void run() {
-                            browserSpinner.stopAnimation(null);
+                            bookmarkProgressIndicator.stopAnimation(null);
                             bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
                         }
                     });
@@ -1250,7 +1252,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             });
         }
         else {
-            browserSpinner.stopAnimation(null);
             bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
         bookmarkModel.setSource(source);
@@ -1325,8 +1326,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 // Accept file promises made myself
                 NSPasteboard.FilesPromisePboardType
         ));
-        // setting appearance attributes()
-        this._updateBrowserAttributes(browserOutlineView);
         // selection properties
         browserOutlineView.setAllowsMultipleSelection(true);
         browserOutlineView.setAllowsEmptySelection(true);
@@ -1470,8 +1469,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 // Accept file promises made myself
                 NSPasteboard.FilesPromisePboardType
         ));
-        // setting appearance attributes()
-        this._updateBrowserAttributes(browserListView);
         // selection properties
         browserListView.setAllowsMultipleSelection(true);
         browserListView.setAllowsEmptySelection(true);
@@ -1553,19 +1550,30 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         updateBrowserTableColumns();
     }
 
-    protected void _updateBrowserAttributes(NSTableView tableView) {
-        tableView.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
-        if(preferences.getBoolean("browser.horizontalLines") && preferences.getBoolean("browser.verticalLines")) {
-            tableView.setGridStyleMask(new NSUInteger(NSTableView.NSTableViewSolidHorizontalGridLineMask.intValue() | NSTableView.NSTableViewSolidVerticalGridLineMask.intValue()));
-        }
-        else if(preferences.getBoolean("browser.verticalLines")) {
-            tableView.setGridStyleMask(NSTableView.NSTableViewSolidVerticalGridLineMask);
-        }
-        else if(preferences.getBoolean("browser.horizontalLines")) {
-            tableView.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
+    protected void updateBrowserAttributes() {
+        this.updateBrowserAttributes(browserListView, this.isConnected());
+        this.updateBrowserAttributes(browserOutlineView, this.isConnected());
+    }
+
+    protected void updateBrowserAttributes(final NSTableView view, final boolean enabled) {
+        if(enabled) {
+            view.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
+            if(preferences.getBoolean("browser.horizontalLines") && preferences.getBoolean("browser.verticalLines")) {
+                view.setGridStyleMask(new NSUInteger(NSTableView.NSTableViewSolidHorizontalGridLineMask.intValue() | NSTableView.NSTableViewSolidVerticalGridLineMask.intValue()));
+            }
+            else if(preferences.getBoolean("browser.verticalLines")) {
+                view.setGridStyleMask(NSTableView.NSTableViewSolidVerticalGridLineMask);
+            }
+            else if(preferences.getBoolean("browser.horizontalLines")) {
+                view.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
+            }
+            else {
+                view.setGridStyleMask(NSTableView.NSTableViewGridNone);
+            }
         }
         else {
-            tableView.setGridStyleMask(NSTableView.NSTableViewGridNone);
+            view.setUsesAlternatingRowBackgroundColors(false);
+            view.setGridStyleMask(NSTableView.NSTableViewGridNone);
         }
     }
 
@@ -2322,9 +2330,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
-    @Action
-    public void setBrowserSpinner(NSProgressIndicator browserSpinner) {
-        this.browserSpinner = browserSpinner;
+    @Outlet
+    public void setBookmarkProgressIndicator(final NSProgressIndicator indicator) {
+        this.bookmarkProgressIndicator = indicator;
+    }
+
+    @Outlet
+    public void setBrowserListProgressIndicator(final NSProgressIndicator indicator) {
+        this.browserListProgressIndicator = indicator;
+    }
+
+    @Outlet
+    public void setBrowserOutlineProgressIndicator(final NSProgressIndicator indicator) {
+        this.browserOutlineProgressIndicator = indicator;
     }
 
     public void setStatus() {
@@ -3345,6 +3363,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                             @Override
                             public void cleanup(final Path workdir) {
                                 super.cleanup(workdir);
+                                browserListProgressIndicator.stopAnimation(null);
+                                browserOutlineProgressIndicator.stopAnimation(null);
                                 if(null == workdir) {
                                     doUnmount(() -> {
                                     });
@@ -3355,7 +3375,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                     bookmarkTable.setNeedsDisplay();
                                     // Set the working directory
                                     setWorkdir(workdir);
-                                    // Close bookmarks
                                     selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
                                     if(preferences.getBoolean("browser.disconnect.confirm")) {
                                         window.setDocumentEdited(true);
@@ -3371,6 +3390,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     @Override
                     public void init() throws BackgroundException {
                         super.init();
+                        selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
+                        browserListProgressIndicator.startAnimation(null);
+                        browserOutlineProgressIndicator.startAnimation(null);
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
                     }

@@ -10,11 +10,13 @@
             <connections>
                 <outlet property="addBookmarkButton" destination="11" id="128"/>
                 <outlet property="archiveMenu" destination="89" id="129"/>
+                <outlet property="bookmarkProgressIndicator" destination="28" id="geeFo5Ae"/>
                 <outlet property="bookmarkSwitchView" destination="53" id="132"/>
                 <outlet property="bookmarkTable" destination="17" id="133"/>
+                <outlet property="browserListProgressIndicator" destination="QsJ-nQ-rwf" id="qua4uWiR"/>
                 <outlet property="browserListView" destination="33" id="134"/>
+                <outlet property="browserOutlineProgressIndicator" destination="4NY-kx-fXV" id="GieS5shi"/>
                 <outlet property="browserOutlineView" destination="41" id="135"/>
-                <outlet property="browserSpinner" destination="28" id="136"/>
                 <outlet property="browserTabView" destination="5" id="138"/>
                 <outlet property="deleteBookmarkButton" destination="13" id="139"/>
                 <outlet property="donateButton" destination="124" id="140"/>
@@ -37,7 +39,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="67" y="115" width="621" height="451"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2880" height="1595"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
             <value key="minSize" type="size" width="600" height="200"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="621" height="451"/>
@@ -180,17 +182,22 @@
                                                 <constraint firstAttribute="height" constant="32" id="sBq-Jh-fVz"/>
                                             </constraints>
                                         </customView>
+                                        <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="QsJ-nQ-rwf">
+                                            <rect key="frame" x="295" y="210" width="32" height="32"/>
+                                        </progressIndicator>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="Pro-bq-cJZ" firstAttribute="top" secondItem="31" secondAttribute="bottom" id="12Y-hb-adk"/>
                                         <constraint firstItem="umE-m4-NPn" firstAttribute="top" secondItem="30" secondAttribute="top" id="5TY-oU-0h7"/>
                                         <constraint firstItem="31" firstAttribute="leading" secondItem="30" secondAttribute="leading" id="Jvs-xw-DRv"/>
                                         <constraint firstItem="31" firstAttribute="top" secondItem="umE-m4-NPn" secondAttribute="bottom" id="Nhf-HW-lny"/>
+                                        <constraint firstItem="QsJ-nQ-rwf" firstAttribute="centerX" secondItem="30" secondAttribute="centerX" id="TqV-0O-O3o"/>
                                         <constraint firstAttribute="bottom" secondItem="Pro-bq-cJZ" secondAttribute="bottom" id="WxH-Hb-Wht"/>
                                         <constraint firstAttribute="trailing" secondItem="31" secondAttribute="trailing" id="Xog-1s-tkL"/>
                                         <constraint firstItem="umE-m4-NPn" firstAttribute="leading" secondItem="30" secondAttribute="leading" id="b7R-ys-2NE"/>
                                         <constraint firstAttribute="trailing" secondItem="Pro-bq-cJZ" secondAttribute="trailing" id="jcr-us-F2O"/>
                                         <constraint firstItem="Pro-bq-cJZ" firstAttribute="leading" secondItem="30" secondAttribute="leading" id="rs1-nd-LWs"/>
+                                        <constraint firstItem="QsJ-nQ-rwf" firstAttribute="centerY" secondItem="30" secondAttribute="centerY" id="ryT-Bb-y4O"/>
                                         <constraint firstAttribute="trailing" secondItem="umE-m4-NPn" secondAttribute="trailing" id="zUI-ie-MiU"/>
                                     </constraints>
                                 </view>
@@ -244,13 +251,18 @@
                                                 <constraint firstAttribute="height" constant="32" id="Zrk-66-bQi"/>
                                             </constraints>
                                         </customView>
+                                        <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" minValue="16" maxValue="100" doubleValue="16" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="4NY-kx-fXV">
+                                            <rect key="frame" x="295" y="210" width="32" height="32"/>
+                                        </progressIndicator>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="4NY-kx-fXV" firstAttribute="centerX" secondItem="38" secondAttribute="centerX" id="4Ow-2x-5hh"/>
                                         <constraint firstItem="Bgq-zd-Hw3" firstAttribute="top" secondItem="38" secondAttribute="top" id="6bg-RX-se2"/>
                                         <constraint firstAttribute="bottom" secondItem="wfe-Jt-w2F" secondAttribute="bottom" id="C9G-Hp-QKH"/>
                                         <constraint firstItem="39" firstAttribute="leading" secondItem="38" secondAttribute="leading" id="KBF-6h-0ii"/>
                                         <constraint firstItem="39" firstAttribute="top" secondItem="Bgq-zd-Hw3" secondAttribute="bottom" id="Uvv-VC-cx4"/>
                                         <constraint firstAttribute="trailing" secondItem="Bgq-zd-Hw3" secondAttribute="trailing" id="XUX-Rs-Fcc"/>
+                                        <constraint firstItem="4NY-kx-fXV" firstAttribute="centerY" secondItem="38" secondAttribute="centerY" id="bW7-WI-c5E"/>
                                         <constraint firstAttribute="trailing" secondItem="wfe-Jt-w2F" secondAttribute="trailing" id="dKv-e9-cnk"/>
                                         <constraint firstItem="wfe-Jt-w2F" firstAttribute="top" secondItem="39" secondAttribute="bottom" id="lr3-aJ-NDD"/>
                                         <constraint firstItem="Bgq-zd-Hw3" firstAttribute="leading" secondItem="38" secondAttribute="leading" id="nIw-cQ-B9A"/>
