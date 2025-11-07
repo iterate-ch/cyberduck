@@ -357,6 +357,7 @@ public class ProxyController extends AbstractController {
             this.positioningView = positioningView;
             this.positioningRect = positioningRect;
             this.controller = controller;
+            this.controller.addHandler(this);
             this.behaviour = behaviour;
         }
 
