@@ -181,29 +181,80 @@ public abstract class NSWindow extends NSResponder {
 
     /// enum values
     public interface NSWindowLevel {
+        /**
+         * The default level for NSWindow objects.
+         */
         int NSNormalWindowLevel = 0;
+        /**
+         * Represents the level at which a floating window is positioned
+         */
         int NSFloatingWindowLevel = 3;
-        int NSSubmenuWindowLevel = 3;
-        int NSTornOffMenuWindowLevel = 3;
+        int NSSubmenuWindowLevel = NSFloatingWindowLevel;
+        int NSTornOffMenuWindowLevel = NSFloatingWindowLevel;
+        /**
+         * Reserved for the application’s main menu.
+         */
         int NSMainMenuWindowLevel = 24;
+        /**
+         * The level for a status window.
+         */
         int NSStatusWindowLevel = 25;
+        /**
+         * The level for a modal panel.
+         */
         int NSModalPanelWindowLevel = 8;
+        /**
+         * The level for a pop-up menu.
+         */
         int NSPopUpMenuWindowLevel = 101;
         int NSScreenSaverWindowLevel = 1000;
     }
 
     /// enum values
     public interface NSWindowCollectionBehavior {
+        /**
+         * The window appears in only one space at a time.
+         */
         int NSWindowCollectionBehaviorDefault = 0;
+        /**
+         * The window can appear in all spaces.
+         */
         int NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0;
+        /**
+         * When the window becomes active, move it to the active space instead of switching spaces.
+         */
         int NSWindowCollectionBehaviorMoveToActiveSpace = 1 << 1;
+        /**
+         * The window participates in Mission Control and Spaces.
+         */
         int NSWindowCollectionBehaviorManaged = 1 << 2;
+        /**
+         * The window floats in Spaces and hides in Mission Control.
+         */
         int NSWindowCollectionBehaviorTransient = 1 << 3;
+        /**
+         * Mission Control doesn’t affect the window, so it stays visible and stationary, like the desktop window.
+         */
         int NSWindowCollectionBehaviorStationary = 1 << 4;
+        /**
+         * The window participates in the window cycle for use with the Cycle Through Windows menu item.
+         */
         int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5;
+        /**
+         * The window isn’t part of the window cycle for use with the Cycle Through Windows menu item.
+         */
         int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;
+        /**
+         * The window can enter full-screen mode.
+         */
         int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7;
+        /**
+         * The window displays on the same space as the full screen window.
+         */
         int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;
+        /**
+         * The window doesn’t support full-screen mode.
+         */
         int NSWindowCollectionBehaviorFullScreenNone = 1 << 9;
         /**
          * @since macOS 10.11
@@ -214,15 +265,18 @@ public abstract class NSWindow extends NSResponder {
          */
         int NSWindowCollectionBehaviorFullScreenDisallowsTiling = 1 << 12;
         /**
+         * The behavior marking this window as primary for both Stage Manager and full screen.
          * @since macOS 13.0
          */
         int NSWindowCollectionBehaviorPrimary = 1 << 16;
         /**
          * @since macOS 13.0
+         * The behavior marking this window as auxiliary for both Stage Manager and full screen.
          */
         int NSWindowCollectionBehaviorAuxiliary = 1 << 17;
         /**
          * @since macOS 13.0
+         * The behavior marking this window as one that can join all apps for both Stage Manager and full screen.
          */
         int NSWindowCollectionBehaviorCanJoinAllApplications = 1 << 18;
     }
@@ -1440,6 +1494,7 @@ public abstract class NSWindow extends NSResponder {
 
     /**
      * Sets the size of the window’s content view to a given size, which is expressed in the window’s base coordinate system.
+     *
      * @param size The new size of the window’s content view in the window’s base coordinate system.
      */
     public abstract void setContentSize(NSSize size);
