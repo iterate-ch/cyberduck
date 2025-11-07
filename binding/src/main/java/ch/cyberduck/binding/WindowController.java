@@ -87,6 +87,7 @@ public abstract class WindowController extends BundleController implements NSWin
         this.window.recalculateKeyViewLoop();
         this.window.setReleasedWhenClosed(true);
         this.window.setDelegate(this.id());
+        this.window.setLevel(NSWindow.NSWindowLevel.NSNormalWindowLevel);
         this.window.setCollectionBehavior(window.collectionBehavior()
                 | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorTransient);
     }
