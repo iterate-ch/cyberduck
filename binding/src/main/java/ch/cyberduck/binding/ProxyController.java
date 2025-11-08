@@ -349,6 +349,10 @@ public class ProxyController extends AbstractController {
             this(positioningView, positioningView.frame(), controller);
         }
 
+        public PopoverAlertRunner(final NSView positioningView, final SheetController controller, final int behaviour) {
+            this(positioningView, positioningView.frame(), controller, behaviour);
+        }
+
         public PopoverAlertRunner(final NSView positioningView, final NSRect positioningRect, final SheetController controller) {
             this(positioningView, positioningRect, controller, NSPopover.NSPopoverBehaviorSemitransient);
         }
