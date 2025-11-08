@@ -2142,8 +2142,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(returncode == SheetCallback.DEFAULT_OPTION) {
                 mount(bookmark);
             }
-        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable, bookmarkTable.rectOfRow(bookmarkTable.selectedRow()), c) :
-                new FloatingWindowAlertRunner(c));
+        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable,
+                bookmarkTable.rectOfRow(bookmarkTable.selectedRow()), c) : new FloatingWindowAlertRunner(c));
     }
 
     @Action
@@ -2187,9 +2187,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(returncode == SheetCallback.DEFAULT_OPTION) {
                 mount(bookmark);
             }
-        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable, bookmarkTable.rectOfRow(
-                new NSInteger(bookmarkModel.getSource().lastIndexOf(bookmark))), c) :
-                new FloatingWindowAlertRunner(c));
+        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable,
+                bookmarkTable.rectOfRow(new NSInteger(bookmarkModel.getSource().lastIndexOf(bookmark))), c) : new FloatingWindowAlertRunner(c));
     }
 
     public void addBookmark(final Host bookmark) {
