@@ -82,11 +82,13 @@ public abstract class BookmarkContainerController extends DefaultBookmarkControl
         this.resize();
     }
 
+    @Outlet
     public void setContainerContentView(final NSView view) {
         this.containerContentView = view;
         this.containerContentView.setTranslatesAutoresizingMaskIntoConstraints(true);
     }
 
+    @Outlet
     public void setOptionsView(final NSView view) {
         this.optionsView = view;
         this.optionsView.setTranslatesAutoresizingMaskIntoConstraints(true);
