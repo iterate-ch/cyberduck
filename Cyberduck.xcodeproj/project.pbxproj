@@ -38,6 +38,7 @@
 		4723D1DC24C24FE80006CDE3 /* JavaNativeFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4724FA4526836D8A00CF289B /* preferences-openstack.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4724FA4426836D8A00CF289B /* preferences-openstack.pdf */; };
 		4724FA4726836D9000CF289B /* preferences-googlestorage.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4724FA4626836D9000CF289B /* preferences-googlestorage.pdf */; };
+		472A8EF22EBE1E33003D7237 /* Host.xib in Resources */ = {isa = PBXBuildFile; fileRef = 472A8EF12EBE1E33003D7237 /* Host.xib */; };
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
 		473A8DD6287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A8DD4287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h */; };
 		473A8DD7287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A8DD5287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m */; };
@@ -252,8 +253,6 @@
 		47F85C1A1C0F101F00FDA856 /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C161C0F101F00FDA856 /* UKCrashReporter.m */; };
 		47F85C1B1C0F101F00FDA856 /* UKSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C171C0F101F00FDA856 /* UKSystemInfo.h */; };
 		47F85C1C1C0F101F00FDA856 /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C181C0F101F00FDA856 /* UKSystemInfo.m */; };
-		47F85C301C0F103E00FDA856 /* CDBookmarkCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C1E1C0F103E00FDA856 /* CDBookmarkCell.h */; };
-		47F85C311C0F103E00FDA856 /* CDBookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C1F1C0F103E00FDA856 /* CDBookmarkCell.m */; };
 		47F85C321C0F103E00FDA856 /* CDListView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C201C0F103E00FDA856 /* CDListView.h */; };
 		47F85C331C0F103E00FDA856 /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C211C0F103E00FDA856 /* CDListView.m */; };
 		47F85C341C0F103E00FDA856 /* CDOutlineCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C221C0F103E00FDA856 /* CDOutlineCell.h */; };
@@ -586,6 +585,7 @@
 		47271DA809F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = tr; path = i18n/src/main/resources/tr.lproj/Bookmark.xib; sourceTree = "<group>"; };
 		47271DAB09F4053E00136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47271DAE09F4055700136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/Status.strings; sourceTree = "<group>"; };
+		472A8EF12EBE1E33003D7237 /* Host.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Host.xib; path = osx/src/main/resources/Host.xib; sourceTree = "<group>"; };
 		4732BD8713182C7F00CBC46B /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_PT; path = i18n/src/main/resources/pt_PT.lproj/Download.strings; sourceTree = "<group>"; };
 		4732BD8813182C7F00CBC46B /* tr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/Download.strings; sourceTree = "<group>"; };
 		4732BD8913182C7F00CBC46B /* ro */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ro; path = i18n/src/main/resources/ro.lproj/Download.strings; sourceTree = "<group>"; };
@@ -1779,8 +1779,6 @@
 		47F85C161C0F101F00FDA856 /* UKCrashReporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UKCrashReporter.m; path = core/src/main/objc/UKCrashReporter.m; sourceTree = SOURCE_ROOT; };
 		47F85C171C0F101F00FDA856 /* UKSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UKSystemInfo.h; path = core/src/main/objc/UKSystemInfo.h; sourceTree = SOURCE_ROOT; };
 		47F85C181C0F101F00FDA856 /* UKSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UKSystemInfo.m; path = core/src/main/objc/UKSystemInfo.m; sourceTree = SOURCE_ROOT; };
-		47F85C1E1C0F103E00FDA856 /* CDBookmarkCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDBookmarkCell.h; path = osx/src/main/objc/CDBookmarkCell.h; sourceTree = "<group>"; };
-		47F85C1F1C0F103E00FDA856 /* CDBookmarkCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDBookmarkCell.m; path = osx/src/main/objc/CDBookmarkCell.m; sourceTree = "<group>"; };
 		47F85C201C0F103E00FDA856 /* CDListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDListView.h; path = osx/src/main/objc/CDListView.h; sourceTree = "<group>"; };
 		47F85C211C0F103E00FDA856 /* CDListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDListView.m; path = osx/src/main/objc/CDListView.m; sourceTree = "<group>"; };
 		47F85C221C0F103E00FDA856 /* CDOutlineCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDOutlineCell.h; path = osx/src/main/objc/CDOutlineCell.h; sourceTree = "<group>"; };
@@ -1977,6 +1975,7 @@
 				479B23E52EBA3C16001D75BE /* Navigation.xib */,
 				479B23E82EBA45DD001D75BE /* Status.xib */,
 				47B2E9FE1E2CF5E1007BE83D /* Transfer.xib */,
+				472A8EF12EBE1E33003D7237 /* Host.xib */,
 				47C35B0926247FE4002AABBD /* Profiles.xib */,
 				47C35B112627690E002AABBD /* Profile.xib */,
 				474D86191DEF6017002D101F /* Cryptomator.strings */,
@@ -2177,8 +2176,6 @@
 		47F85C1D1C0F102600FDA856 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				47F85C1E1C0F103E00FDA856 /* CDBookmarkCell.h */,
-				47F85C1F1C0F103E00FDA856 /* CDBookmarkCell.m */,
 				47F85C201C0F103E00FDA856 /* CDListView.h */,
 				47F85C211C0F103E00FDA856 /* CDListView.m */,
 				47F85C221C0F103E00FDA856 /* CDOutlineCell.h */,
@@ -2221,7 +2218,6 @@
 			files = (
 				47F85C321C0F103E00FDA856 /* CDListView.h in Headers */,
 				47F85C341C0F103E00FDA856 /* CDOutlineCell.h in Headers */,
-				47F85C301C0F103E00FDA856 /* CDBookmarkCell.h in Headers */,
 				47FB79D81C2E9E67008D3B9C /* launcher.h in Headers */,
 				47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */,
 				47D6FFE91CCFA54A005B01C5 /* CDToolbarItem.h in Headers */,
@@ -2480,6 +2476,7 @@
 				476730BA16108E1300B28D35 /* alert.tiff in Resources */,
 				476730BB16108E1300B28D35 /* aliasbadge.tiff in Resources */,
 				47DE479E2598F2D400B18BCB /* preferences-sftp.pdf in Resources */,
+				472A8EF22EBE1E33003D7237 /* Host.xib in Resources */,
 				474D863E1DEF6017002D101F /* Cryptomator.strings in Resources */,
 				476730BC16108E1300B28D35 /* transfer-download.tiff in Resources */,
 				476730C216108E1300B28D35 /* nav-backward.tiff in Resources */,
@@ -2697,7 +2694,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				47F85C371C0F103E00FDA856 /* CDOutlineView.m in Sources */,
-				47F85C311C0F103E00FDA856 /* CDBookmarkCell.m in Sources */,
 				47F85C351C0F103E00FDA856 /* CDOutlineCell.m in Sources */,
 				47F85C331C0F103E00FDA856 /* CDListView.m in Sources */,
 				47D6FFE81CCFA54A005B01C5 /* CDToolbarItem.m in Sources */,
