@@ -46,7 +46,7 @@ public class IRODSDeleteFeature implements Delete {
         this.session = session;
 
         PreferencesReader prefs = HostPreferencesFactory.get(session.getHost());
-        if("yes".equalsIgnoreCase(prefs.getProperty(IRODSProtocol.DELETE_OBJECTS_PERMANTENTLY))) {
+        if(prefs.getBoolean(IRODSProtocol.DELETE_OBJECTS_PERMANTENTLY)) {
             removeOptions = RemoveOptions.NO_TRASH;
         }
         else {
