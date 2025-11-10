@@ -32,51 +32,49 @@ import org.apache.logging.log4j.Logger;
 import org.irods.irods4j.low_level.api.IRODSErrorCodes;
 import org.irods.irods4j.low_level.api.IRODSException;
 
-public class IRODSExceptionMappingService extends AbstractExceptionMappingService<Exception> {
+public class IRODSExceptionMappingService extends AbstractExceptionMappingService<IRODSException> {
 
     private static final Logger log = LogManager.getLogger(IRODSExceptionMappingService.class);
 
     @Override
-    public BackgroundException map(final Exception e) {
+    public BackgroundException map(final IRODSException e) {
         log.warn("Map failure {}", e.toString());
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
 
-        if(e instanceof IRODSException) {
-            switch(((IRODSException) e).getErrorCode()) {
-                case IRODSErrorCodes.AUTHENTICATION_ERROR:
-                case IRODSErrorCodes.CAT_INVALID_AUTHENTICATION:
-                case IRODSErrorCodes.CAT_PASSWORD_EXPIRED:
-                case IRODSErrorCodes.CAT_INVALID_USER:
-                    return new LoginFailureException(buffer.toString(), e);
+        switch(e.getErrorCode()) {
+            case IRODSErrorCodes.AUTHENTICATION_ERROR:
+            case IRODSErrorCodes.CAT_INVALID_AUTHENTICATION:
+            case IRODSErrorCodes.CAT_PASSWORD_EXPIRED:
+            case IRODSErrorCodes.CAT_INVALID_USER:
+                return new LoginFailureException(buffer.toString(), e);
 
-                case IRODSErrorCodes.CAT_NO_ACCESS_PERMISSION:
-                case IRODSErrorCodes.CAT_INSUFFICIENT_PRIVILEGE_LEVEL:
-                case IRODSErrorCodes.SYS_NOT_ALLOWED:
-                    return new AccessDeniedException(buffer.toString(), e);
+            case IRODSErrorCodes.CAT_NO_ACCESS_PERMISSION:
+            case IRODSErrorCodes.CAT_INSUFFICIENT_PRIVILEGE_LEVEL:
+            case IRODSErrorCodes.SYS_NOT_ALLOWED:
+                return new AccessDeniedException(buffer.toString(), e);
 
-                case IRODSErrorCodes.INTERMEDIATE_REPLICA_ACCESS:
-                case IRODSErrorCodes.SYS_REPLICA_INACCESSIBLE:
-                    return new LockedException(buffer.toString(), e);
+            case IRODSErrorCodes.INTERMEDIATE_REPLICA_ACCESS:
+            case IRODSErrorCodes.SYS_REPLICA_INACCESSIBLE:
+                return new LockedException(buffer.toString(), e);
 
-                case IRODSErrorCodes.SSL_CERT_ERROR:
-                case IRODSErrorCodes.SSL_HANDSHAKE_ERROR:
-                case IRODSErrorCodes.SSL_INIT_ERROR:
-                case IRODSErrorCodes.SSL_SHUTDOWN_ERROR:
-                case IRODSErrorCodes.SSL_NOT_BUILT_INTO_CLIENT:
-                case IRODSErrorCodes.SSL_NOT_BUILT_INTO_SERVER:
-                    return new SSLNegotiateException(buffer.toString(), e);
+            case IRODSErrorCodes.SSL_CERT_ERROR:
+            case IRODSErrorCodes.SSL_HANDSHAKE_ERROR:
+            case IRODSErrorCodes.SSL_INIT_ERROR:
+            case IRODSErrorCodes.SSL_SHUTDOWN_ERROR:
+            case IRODSErrorCodes.SSL_NOT_BUILT_INTO_CLIENT:
+            case IRODSErrorCodes.SSL_NOT_BUILT_INTO_SERVER:
+                return new SSLNegotiateException(buffer.toString(), e);
 
-                case IRODSErrorCodes.SYS_RESC_QUOTA_EXCEEDED:
-                    return new QuotaException(buffer.toString(), e);
+            case IRODSErrorCodes.SYS_RESC_QUOTA_EXCEEDED:
+                return new QuotaException(buffer.toString(), e);
 
-                case IRODSErrorCodes.CAT_NO_ROWS_FOUND:
-                case IRODSErrorCodes.CAT_NOT_A_DATAOBJ_AND_NOT_A_COLLECTION:
-                    return new NotfoundException(buffer.toString(), e);
+            case IRODSErrorCodes.CAT_NO_ROWS_FOUND:
+            case IRODSErrorCodes.CAT_NOT_A_DATAOBJ_AND_NOT_A_COLLECTION:
+                return new NotfoundException(buffer.toString(), e);
 
-                case IRODSErrorCodes.CONNECTION_REFUSED:
-                    return new ConnectionRefusedException(buffer.toString(), e);
-            }
+            case IRODSErrorCodes.CONNECTION_REFUSED:
+                return new ConnectionRefusedException(buffer.toString(), e);
         }
 
         return this.wrap(e, buffer);
