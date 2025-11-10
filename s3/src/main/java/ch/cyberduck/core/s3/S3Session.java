@@ -268,10 +268,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(S3Session.isAwsHostname(host.getHostname())) {
             // Try auto-configure
-            if(Scheme.isURL(host.getProtocol().getContext())) {
-                log.debug("Auto-configure credentials from instance metadata {}", host.getProtocol().getContext());
+            final String context = preferences.getProperty(Profile.CONTEXT_KEY);
+            if(Scheme.isURL(context)) {
+                log.debug("Auto-configure credentials from HTTP endpoint {}", context);
                 // Fetch temporary session token from instance metadata
-                return new AWSSessionCredentialsRetriever(trust, key, host.getProtocol().getContext());
+                return new AWSSessionCredentialsRetriever(trust, key, context);
             }
         }
         if(host.getProtocol().isRoleConfigurable() || host.getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY) != null) {
