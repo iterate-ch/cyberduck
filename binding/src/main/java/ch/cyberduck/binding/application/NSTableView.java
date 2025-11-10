@@ -262,6 +262,20 @@ public abstract class NSTableView extends NSControl {
     public abstract CGFloat rowHeight();
 
     /**
+     *
+     * @param enable A Boolean value that indicates whether the table view uses autolayout to calculate the height of rows.
+     * @since macOS 10.13+
+     */
+    public abstract void setUsesAutomaticRowHeights(boolean enable);
+
+    /**
+     *
+     * @return A Boolean value that indicates whether the table view uses autolayout to calculate the height of rows.
+     * @since macOS 10.13+
+     */
+    public abstract boolean usesAutomaticRowHeights();
+
+    /**
      * If the delegate implements -tableView:heightOfRow:, this method immediately re-tiles the table view using row
      * heights it provides.<br> Original signature : <code>void noteHeightOfRowsWithIndexesChanged(NSIndexSet*)</code><br>
      * <i>native declaration : :149</i>

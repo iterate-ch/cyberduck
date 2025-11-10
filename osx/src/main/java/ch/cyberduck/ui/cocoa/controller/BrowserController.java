@@ -45,7 +45,6 @@ import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
@@ -320,20 +319,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public static void updateBookmarkTableRowHeight() {
         for(BrowserController controller : MainController.getBrowsers()) {
-            controller._updateBookmarkCell();
+            controller._updateBookmarkTableRowHeight();
         }
     }
 
     public static void updateBrowserTableAttributes() {
         for(BrowserController controller : MainController.getBrowsers()) {
-            controller.updateBrowserAttributes();
+            controller._updateBrowserTableAttributes();
         }
     }
 
     public static void updateBrowserTableColumns() {
         for(BrowserController controller : MainController.getBrowsers()) {
-            controller._updateBrowserColumns(controller.browserListView, controller.browserListViewDelegate);
-            controller._updateBrowserColumns(controller.browserOutlineView, controller.browserOutlineViewDelegate);
+            controller._updateBrowserTableColumns();
         }
     }
 
@@ -402,8 +400,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
         this.window.setToolbar(toolbar);
-        this._configureBrowserColumns(browserListView, browserListViewDelegate);
-        this._configureBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
+        this.configureBrowserColumns();
         if(!LicenseFactory.find().verify()) {
             this.addDonateWindowTitle();
         }
@@ -485,12 +482,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
 
         @Override
-        public void start(final BackgroundAction action) {
+        public void start(final BackgroundAction<?> action) {
             statusSpinner.startAnimation(null);
         }
 
         @Override
-        public void stop(final BackgroundAction action) {
+        public void stop(final BackgroundAction<?> action) {
             statusSpinner.stopAnimation(null);
             securityLabel.setImage(pool.getHost().getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                     : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
@@ -1189,7 +1186,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 window.setSubtitle(StringUtils.EMPTY);
             }
         }
-        this.updateBrowserAttributes();
+        this._updateBrowserTableAttributes();
         bookmarkSwitchView.setSelectedSegment(BookmarkSwitchSegement.browser.ordinal());
         this.setNavigation();
         switch(selected) {
@@ -1550,7 +1547,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         updateBrowserTableColumns();
     }
 
-    protected void updateBrowserAttributes() {
+    protected void _updateBrowserTableAttributes() {
         this.updateBrowserAttributes(browserListView, this.isConnected());
         this.updateBrowserAttributes(browserOutlineView, this.isConnected());
     }
@@ -1577,14 +1574,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
-    protected void _updateBookmarkCell() {
-        final int size = preferences.getInteger("bookmark.icon.size");
-        final double width = size * 1.5;
-        final NSTableColumn c = bookmarkTable.tableColumnWithIdentifier(BookmarkColumn.icon.name());
-        c.setMinWidth(width);
-        c.setMaxWidth(width);
-        c.setWidth(width);
-        // Notify the table about the changed row height.
+    protected void _updateBookmarkTableRowHeight() {
+        for(int row = 0; row < bookmarkTable.numberOfRows().intValue(); row++) {
+            final HostController controller = bookmarkModel.getController(row);
+            if(controller != null) {
+                controller.update();
+            }
+        }
         bookmarkTable.noteHeightOfRowsWithIndexesChanged(
                 NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
     }
@@ -1592,8 +1588,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * Set current visible state for all columns in browser
      */
-    private void _updateBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate delegate) {
-        final NSEnumerator tableColumns = table.tableColumns().objectEnumerator();
+    private void _updateBrowserTableColumns() {
+        this._updateBrowserColumns(browserListView, browserListViewDelegate);
+        this._updateBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
+    }
+
+    private void _updateBrowserColumns(final NSTableView view, final AbstractBrowserTableDelegate delegate) {
+        final NSEnumerator tableColumns = view.tableColumns().objectEnumerator();
         NSObject next;
         while((next = tableColumns.nextObject()) != null) {
             final NSTableColumn c = Rococoa.cast(next, NSTableColumn.class);
@@ -1601,10 +1602,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
+    private void configureBrowserColumns() {
+        this.configureBrowserColumns(browserListView, browserListViewDelegate);
+        this.configureBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
+    }
+
     /**
      * Add table columns to browser
      */
-    private void _configureBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate delegate) {
+    private void configureBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate delegate) {
         {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.size.name());
             c.headerCell().setStringValue(BrowserColumn.size.toString());
@@ -1776,31 +1782,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void setBookmarkTable(NSTableView view) {
         bookmarkTable = view;
         bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
+        bookmarkTable.setUsesAutomaticRowHeights(false);
         bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(this)).id());
-        {
-            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkColumn.icon.name());
-            c.headerCell().setStringValue(StringUtils.EMPTY);
-            c.setResizingMask(NSTableColumn.NSTableColumnNoResizing);
-            c.setDataCell(imageCellPrototype);
-            bookmarkTable.addTableColumn(c);
-        }
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkColumn.bookmark.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Bookmarks", "Browser"));
             c.setMinWidth(150);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(BookmarkCell.bookmarkCell());
-            bookmarkTable.addTableColumn(c);
-        }
-        {
-            NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkColumn.status.name());
-            c.headerCell().setStringValue(StringUtils.EMPTY);
-            c.setMinWidth(40);
-            c.setWidth(40);
-            c.setMaxWidth(40);
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             bookmarkTable.addTableColumn(c);
         }
         bookmarkTable.setDelegate((bookmarkTableDelegate = new AbstractTableDelegate<Host, BookmarkColumn>(
@@ -1846,16 +1834,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete() && selected > 0);
             }
 
-            @Action
-            public CGFloat tableView_heightOfRow(NSTableView view, NSInteger row) {
+            @Delegate
+            public CGFloat tableView_heightOfRow(final NSTableView view, final NSInteger row) {
                 final int size = preferences.getInteger("bookmark.icon.size");
                 if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
-                    return new CGFloat(18);
+                    return new CGFloat(26);
                 }
-                if(BookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
-                    return new CGFloat(45);
+                else if(BookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
+                    return new CGFloat(50);
                 }
-                return new CGFloat(70);
+                return new CGFloat(80);
             }
 
             @Override
@@ -1863,14 +1851,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 return true;
             }
 
-            @Action
+            @Delegate
             public String tableView_typeSelectStringForTableColumn_row(NSTableView view,
-                                                                       NSTableColumn tableColumn,
-                                                                       NSInteger row) {
+                                                                       NSTableColumn tableColumn,  NSInteger row) {
                 return BookmarkNameProvider.toString(bookmarkModel.getSource().get(row.intValue()));
             }
 
-            @Action
+            @Delegate
             public boolean tableView_isGroupRow(NSTableView view, NSInteger row) {
                 return false;
             }
@@ -1910,38 +1897,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             }
 
+            @Delegate
+            public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
+                final HostController controller = bookmarkModel.getController(row.intValue());
+                return controller.view();
+            }
+
             @Override
             public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell, final NSTableColumn c, final NSInteger row) {
                 cell.setAccessibilityLabel(LocaleFactory.localizedString("Connect to server"));
-                if(c.identifier().equals(BookmarkColumn.icon.name())) {
-                    cell.setAccessibilityTitle(bookmarkModel.getSource().get(row.intValue()).getProtocol().getName());
-                }
                 if(c.identifier().equals(BookmarkColumn.bookmark.name())) {
                     cell.setAccessibilityTitle(BookmarkNameProvider.toString(bookmarkModel.getSource().get(row.intValue())));
-                }
-                if(c.identifier().equals(BookmarkColumn.status.name())) {
-                    final Host host = bookmarkModel.getSource().get(row.intValue());
-                    if(host.equals(pool.getHost())) {
-                        switch(pool.getState()) {
-                            case open:
-                                cell.setAccessibilityTitle(LocaleFactory.localizedString("Idle", "Status"));
-                                break;
-                            case closed:
-                                cell.setAccessibilityTitle(LocaleFactory.localizedString("Disconnected", "Status"));
-                                break;
-                            case opening:
-                                cell.setAccessibilityTitle(MessageFormat.format(LocaleFactory.localizedString("Mounting {0}", "Status"),
-                                        BookmarkNameProvider.toString(host)));
-                                break;
-                            case closing:
-                                cell.setAccessibilityTitle(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                                        BookmarkNameProvider.toString(host)));
-                                break;
-                        }
-                    }
-                    else {
-                        cell.setAccessibilityTitle(LocaleFactory.localizedString("Disconnected", "Status"));
-                    }
                 }
             }
         }).id());
@@ -1954,18 +1920,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 // Accept file promises made myself
                 NSPasteboard.FilesPromisePboardType
         ));
-        this._updateBookmarkCell();
-
-        final int size = preferences.getInteger("bookmark.icon.size");
-        if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
-            bookmarkTable.setRowHeight(new CGFloat(18));
-        }
-        else if(BookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
-            bookmarkTable.setRowHeight(new CGFloat(45));
-        }
-        else {
-            bookmarkTable.setRowHeight(new CGFloat(70));
-        }
 
         // setting appearance attributes()
         bookmarkTable.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
@@ -2350,24 +2304,38 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    public void stop(final BackgroundAction action) {
+    public void stop(final BackgroundAction<?> action) {
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
                 listStatusController.stop(action);
                 outlineStatusController.stop(action);
+                browserListProgressIndicator.stopAnimation(null);
+                browserOutlineProgressIndicator.stopAnimation(null);
+                final HostController host = bookmarkModel.getController(pool.getHost());
+                if(host != null) {
+                    host.stop(action);
+                }
             }
         });
         super.stop(action);
     }
 
     @Override
-    public void start(final BackgroundAction action) {
+    public void start(final BackgroundAction<?> action) {
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
                 listStatusController.start(action);
                 outlineStatusController.start(action);
+                if(pool == SessionPool.DISCONNECTED) {
+                    browserListProgressIndicator.startAnimation(null);
+                    browserOutlineProgressIndicator.startAnimation(null);
+                }
+                final HostController host = bookmarkModel.getController(pool.getHost());
+                if(host != null) {
+                    host.start(action);
+                }
             }
         });
         super.start(action);
@@ -3362,16 +3330,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                             @Override
                             public void cleanup(final Path workdir) {
                                 super.cleanup(workdir);
-                                browserListProgressIndicator.stopAnimation(null);
-                                browserOutlineProgressIndicator.stopAnimation(null);
                                 if(null == workdir) {
                                     doUnmount(() -> {
                                     });
                                 }
                                 else {
                                     pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
-                                    // Update status icon
-                                    bookmarkTable.setNeedsDisplay();
                                     // Set the working directory
                                     setWorkdir(workdir);
                                     selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
@@ -3385,17 +3349,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 }
                             }
                         }
-                ) {
-                    @Override
-                    public void init() throws BackgroundException {
-                        super.init();
-                        selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
-                        browserListProgressIndicator.startAnimation(null);
-                        browserOutlineProgressIndicator.startAnimation(null);
-                        // Update status icon
-                        bookmarkTable.setNeedsDisplay();
-                    }
-                });
+                ));
             }
         });
     }
