@@ -470,6 +470,9 @@ public class SFTPSession extends Session<SSHClient> {
         if(type == Move.class) {
             return (T) new SFTPMoveFeature(this);
         }
+        if(type == Copy.class) {
+            return (T) new SFTPCopyFeature(this);
+        }
         if(type == UnixPermission.class) {
             return (T) new SFTPUnixPermissionFeature(this);
         }
