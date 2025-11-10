@@ -39,6 +39,9 @@ public class IRODSAttributesFinderFeature implements AttributesFinder, Attribute
 
     private static final Logger log = LogManager.getLogger(IRODSAttributesFinderFeature.class);
 
+    private static final String REPLICA_STATUS_GOOD = "1";
+    private static final String REPLICA_STATUS_STALE = "0";
+
     private final IRODSSession session;
 
     public IRODSAttributesFinderFeature(final IRODSSession session) {
@@ -68,7 +71,7 @@ public class IRODSAttributesFinderFeature implements AttributesFinder, Attribute
 
                 if(!rows.isEmpty()) {
                     List<String> row = rows.get(0);
-                    if("0".equals(row.get(4)) || "1".equals(row.get(4))) {
+                    if(REPLICA_STATUS_STALE.equals(row.get(4)) || REPLICA_STATUS_GOOD.equals(row.get(4))) {
                         setAttributes(attrs, row);
                     }
                 }
