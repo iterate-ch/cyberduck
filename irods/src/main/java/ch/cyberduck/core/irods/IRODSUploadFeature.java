@@ -16,6 +16,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -27,7 +28,11 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
+import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -37,16 +42,15 @@ import org.irods.irods4j.high_level.connection.IRODSConnectionPool;
 import org.irods.irods4j.high_level.connection.IRODSConnectionPool.PoolConnection;
 import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
 import org.irods.irods4j.high_level.io.IRODSDataObjectStream;
+import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class IRODSUploadFeature implements Upload<Void> {
 
@@ -145,7 +149,7 @@ public class IRODSUploadFeature implements Upload<Void> {
             final int threadCount = IRODSIntegerUtils.clamp(
                     preferences.getInteger(IRODSProtocol.PARALLEL_TRANSFER_CONNECTIONS), 2, 10);
             log.debug("thread count = [{}]; starting thread pool.", threadCount);
-            final ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+            final ThreadPool threadPool = ThreadPoolFactory.get("multipart-iRODS", threadCount);
 
             final long chunkSize = fileSize / threadCount;
             final long remainingBytes = fileSize % threadCount;
@@ -220,7 +224,7 @@ public class IRODSUploadFeature implements Upload<Void> {
                     // Launch remaining IO tasks.
                     log.debug("launch parallel IO tasks.");
                     for(int i = 0; i < threadCount; ++i) {
-                        tasks.add(executor.submit(new IRODSChunkWorker(
+                        tasks.add(threadPool.execute(new IRODSChunkWorker(
                                 status,
                                 streamListener,
                                 localFileStreams.get(i),
@@ -243,15 +247,20 @@ public class IRODSUploadFeature implements Upload<Void> {
                 }
             }
 
-            log.debug("shutting down thread pool executor.");
-            executor.shutdown();
-            executor.awaitTermination(5, TimeUnit.SECONDS);
+            log.debug("shutting down thread pool.");
+            threadPool.shutdown(false);
             log.debug("done.");
 
             return null;
         }
-        catch(Exception e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+        catch(Exception e) {
+            throw new DefaultExceptionMappingService().map(e);
         }
     }
 
