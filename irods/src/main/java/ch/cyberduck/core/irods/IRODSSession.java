@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -59,7 +60,7 @@ import java.text.MessageFormat;
 public class IRODSSession extends SSLSession<IRODSConnection> {
 
     static {
-        IRODSApi.setApplicationName("Cyberduck");
+        IRODSApi.setApplicationName(new PreferencesUseragentProvider().get());
     }
 
     private static final Logger log = LogManager.getLogger(IRODSSession.class);
