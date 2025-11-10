@@ -48,12 +48,15 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.irods.irods4j.high_level.connection.IRODSConnection;
 import org.irods.irods4j.high_level.connection.QualifiedUsername;
 import org.irods.irods4j.low_level.api.IRODSApi;
+import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.text.MessageFormat;
 
@@ -80,14 +83,13 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
 
     @Override
     protected IRODSConnection connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final String host = this.host.getHostname();
+        final int port = this.host.getPort();
+        final String username = this.host.getCredentials().getUsername();
+        final String zone = getRegion();
+
         try {
             log.debug("connecting to iRODS server.");
-
-            final String host = this.host.getHostname();
-            final int port = this.host.getPort();
-            final String username = this.host.getCredentials().getUsername();
-            final String zone = getRegion();
-
             log.debug("iRODS server: host=[{}], port=[{}], username=[{}], zone=[{}]", host, port, username, zone);
 
             IRODSConnection conn = new IRODSConnection(IRODSConnectionUtils.initConnectionOptions(this));
@@ -96,15 +98,15 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
 
             return conn;
         }
-        catch(Exception e) {
-            final String host = this.host.getHostname();
-            final int port = this.host.getPort();
-            final String username = this.host.getCredentials().getUsername();
-            final String zone = getRegion();
-
+        catch(IRODSException e) {
             String msg = String.format("Could not connect to iRODS server at [%s:%d] as [%s#%s]: %s",
                     host, port, username, zone, e.getMessage());
             throw new IRODSExceptionMappingService().map(msg, e);
+        }
+        catch(Exception e) {
+            String msg = String.format("Problem connecting to iRODS server at [%s:%d] as [%s#%s]: %s",
+                    host, port, username, zone, e.getMessage());
+            throw new DefaultExceptionMappingService().map(msg, e);
         }
     }
 
