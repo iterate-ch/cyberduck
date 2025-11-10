@@ -201,7 +201,7 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
             return (T) new IRODSWriteFeature(this);
         }
         if(type == Timestamp.class) {
-            return (T) new IRODSTimestamp(this);
+            return (T) new IRODSTimestampFeature(this);
         }
         return super._getFeature(type);
     }

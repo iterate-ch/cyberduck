@@ -34,13 +34,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class IRODSTimestamp implements Timestamp {
+public class IRODSTimestampFeature implements Timestamp {
 
-    private static final Logger log = LogManager.getLogger(IRODSTimestamp.class);
+    private static final Logger log = LogManager.getLogger(IRODSTimestampFeature.class);
 
     private IRODSSession session;
 
-    public IRODSTimestamp(IRODSSession session) {
+    public IRODSTimestampFeature(IRODSSession session) {
         this.session = session;
     }
 
