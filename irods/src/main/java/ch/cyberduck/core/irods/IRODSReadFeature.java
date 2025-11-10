@@ -16,6 +16,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -56,8 +57,11 @@ public class IRODSReadFeature implements Read {
 
             return in;
         }
-        catch(IOException | IRODSException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Download of {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download of {0} failed", e, file);
         }
     }
 

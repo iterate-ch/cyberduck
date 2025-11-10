@@ -16,6 +16,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -55,8 +56,11 @@ public class IRODSCopyFeature implements Copy {
 
             return target;
         }
-        catch(IOException | IRODSException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Cannot copy {0}", e, source);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
 

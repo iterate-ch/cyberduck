@@ -16,6 +16,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -82,8 +83,11 @@ public class IRODSListService implements ListService {
 
             return children;
         }
-        catch(IRODSException | IOException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Listing {0} failed", e, directory);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Listing {0} failed", e, directory);
         }
     }
 }

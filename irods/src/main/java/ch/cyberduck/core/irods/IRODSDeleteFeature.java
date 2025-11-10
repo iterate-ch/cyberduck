@@ -15,6 +15,7 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -89,8 +90,11 @@ public class IRODSDeleteFeature implements Delete {
                     IRODSFilesystem.removeAll(conn.getRcComm(), logicalPath, removeOptions);
                 }
             }
-            catch(IOException | IRODSException e) {
+            catch(IRODSException e) {
                 throw new IRODSExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
     }

@@ -15,6 +15,7 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
@@ -74,8 +75,11 @@ public class IRODSTimestampFeature implements Timestamp {
                 log.debug("timestamp set to [{}] seconds (since epoch) on [{}] successfully.", seconds, logicalPath);
             }
         }
-        catch(IOException | IRODSException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

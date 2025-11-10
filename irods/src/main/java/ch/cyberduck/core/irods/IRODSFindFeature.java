@@ -15,6 +15,7 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -44,8 +45,11 @@ public class IRODSFindFeature implements Find {
             final IRODSConnection conn = session.getClient();
             return IRODSFilesystem.exists(conn.getRcComm(), file.getAbsolute());
         }
-        catch(IOException | IRODSException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Failure to find {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Failure to find {0}", e, file);
         }
     }
 }

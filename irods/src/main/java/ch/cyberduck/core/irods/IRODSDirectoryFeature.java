@@ -15,6 +15,7 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -42,8 +43,11 @@ public class IRODSDirectoryFeature implements Directory<Void> {
             IRODSFilesystem.createCollection(conn.getRcComm(), folder.getAbsolute());
             return folder;
         }
-        catch(IOException | IRODSFilesystemException e) {
+        catch(IRODSFilesystemException e) {
             throw new IRODSExceptionMappingService().map("Cannot create folder {0}", e, folder);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }
 }

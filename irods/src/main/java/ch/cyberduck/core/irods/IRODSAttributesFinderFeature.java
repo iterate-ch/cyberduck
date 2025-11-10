@@ -15,6 +15,7 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -102,8 +103,11 @@ public class IRODSAttributesFinderFeature implements AttributesFinder, Attribute
 
             throw new NotfoundException(logicalPath);
         }
-        catch(IOException | IRODSException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 

@@ -16,6 +16,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -55,8 +56,11 @@ public class IRODSMoveFeature implements Move {
             IRODSFilesystem.rename(conn.getRcComm(), file.getAbsolute(), renamed.getAbsolute());
             return renamed;
         }
-        catch(IOException | IRODSException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Cannot rename {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
     }
 

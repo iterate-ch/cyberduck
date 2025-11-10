@@ -16,6 +16,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
@@ -51,8 +52,11 @@ public class IRODSWriteFeature implements Write<Void> {
             final OutputStream out = new IRODSDataObjectOutputStream(conn.getRcComm(), file.getAbsolute(), truncate, append);
             return new VoidStatusOutputStream(out);
         }
-        catch(IRODSException | IOException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Uploading {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Uploading {0} failed", e, file);
         }
     }
 }
