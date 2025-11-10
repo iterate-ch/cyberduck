@@ -46,9 +46,12 @@ public class IRODSCopyFeature implements Copy {
             final String from = source.getAbsolute();
             final String to = target.getAbsolute();
 
-            // TODO If we're dealing with a collection, should existing data objects sharing
-            // the same name be overwritten? This should probably be a configurable option.
-            IRODSFilesystem.copy(conn.getRcComm(), from, to, IRODSFilesystem.CopyOptions.RECURSIVE);
+            int options = IRODSFilesystem.CopyOptions.RECURSIVE;
+            if(status.isExists()) {
+                options |= IRODSFilesystem.CopyOptions.OVERWRITE_EXISTING;
+            }
+
+            IRODSFilesystem.copy(conn.getRcComm(), from, to, options);
 
             return target;
         }
