@@ -36,6 +36,27 @@ final class IRODSConnectionUtils {
 
     private static final Logger log = LogManager.getLogger(IRODSConnectionUtils.class);
 
+    private enum AuthScheme {
+        NATIVE,
+        PAM_PASSWORD;
+
+        public static AuthScheme fromString(String s) {
+            if(null == s) {
+                throw new IllegalArgumentException("Cannot convert null to AuthScheme");
+            }
+
+            if("native".equalsIgnoreCase(s) || "standard".equalsIgnoreCase(s)) {
+                return NATIVE;
+            }
+
+            if("pam_password".equalsIgnoreCase(s)) {
+                return PAM_PASSWORD;
+            }
+
+            throw new IllegalArgumentException(String.format("Cannot convert [%s] to AuthScheme", s));
+        }
+    }
+
     public static IRODSApi.ConnectionOptions initConnectionOptions(IRODSSession session) {
         log.debug("configuring iRODS connection.");
         final PreferencesReader preferences = HostPreferencesFactory.get(session.getHost());
@@ -61,15 +82,20 @@ final class IRODSConnectionUtils {
     public static AuthPlugin newAuthPlugin(IRODSSession session) {
         AuthPlugin plugin = null;
 
-        final String authScheme = StringUtils.defaultIfBlank(session.getHost().getProtocol().getAuthorization(), "native");
-        if("native".equalsIgnoreCase(authScheme) || "standard".equalsIgnoreCase(authScheme)) {
-            plugin = new NativeAuthPlugin();
-        }
-        else if("pam_password".equalsIgnoreCase(authScheme)) {
-            plugin = new PamPasswordAuthPlugin(true);
-        }
-        else {
-            throw new IllegalArgumentException(String.format("Authentication scheme not recognized: %s", authScheme));
+        final String authSchemeStr = StringUtils.defaultIfBlank(session.getHost().getProtocol().getAuthorization(), "native");
+        final AuthScheme authScheme = AuthScheme.fromString(authSchemeStr);
+        switch(authScheme) {
+            case NATIVE:
+                plugin = new NativeAuthPlugin();
+                break;
+
+            case PAM_PASSWORD:
+                plugin = new PamPasswordAuthPlugin(true);
+                break;
+
+            default:
+                // Should never get here.
+                throw new IllegalArgumentException("Cannot resolve authentication scheme to plugin implementation");
         }
 
         return plugin;
