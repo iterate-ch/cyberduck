@@ -153,7 +153,12 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
             log.error(e.getMessage());
         }
 
-        super.disconnect();
+        try {
+            super.disconnect();
+        }
+        catch(BackgroundException e) {
+            log.error(e.getMessage());
+        }
     }
 
     @Override
