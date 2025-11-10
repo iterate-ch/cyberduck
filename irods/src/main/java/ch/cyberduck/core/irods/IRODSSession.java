@@ -141,12 +141,6 @@ public class IRODSSession extends SSLSession<IRODSConnection> {
     }
 
     @Override
-    protected void logout() {
-        // iRODS does not provide a logout operation.
-        // It only supports connecting, authenticating, and disconnecting.
-    }
-
-    @Override
     protected void disconnect() {
         try {
             if(null != client) {
