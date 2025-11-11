@@ -75,19 +75,19 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     @Override
     public void prepare() {
         log.debug("Prepare background task {}", this);
+        state = State.running;
         for(BackgroundActionListener listener : listeners) {
             listener.start(this);
         }
-        state = State.running;
     }
 
     @Override
     public void finish() {
         log.debug("Finish background task {}", this);
+        state = State.stopped;
         for(BackgroundActionListener listener : listeners) {
             listener.stop(this);
         }
-        state = State.stopped;
     }
 
     @Override
