@@ -1453,6 +1453,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 return true;
             }
         }).id());
+
+        browserOutlineView.setTarget(browserOutlineViewDelegate.id());
+        browserOutlineView.setDoubleAction(Foundation.selector("tableRowDoubleClicked:"));
     }
 
     @Action
@@ -1537,6 +1540,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 return true;
             }
         }).id());
+
+        browserListView.setTarget(browserListViewDelegate.id());
+        browserListView.setDoubleAction(Foundation.selector("tableRowDoubleClicked:"));
     }
 
     @Action
@@ -1779,7 +1785,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     // ----------------------------------------------------------
 
     @Action
-    public void setBookmarkTable(NSTableView view) {
+    public void setBookmarkTable(final NSTableView view) {
         bookmarkTable = view;
         bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
         bookmarkTable.setUsesAutomaticRowHeights(false);
@@ -1822,7 +1828,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
             @Override
-            public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+            public void tableColumnClicked(final NSTableView view, final NSTableColumn tableColumn) {
 
             }
 
@@ -1852,13 +1858,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
             @Delegate
-            public String tableView_typeSelectStringForTableColumn_row(NSTableView view,
-                                                                       NSTableColumn tableColumn,  NSInteger row) {
+            public String tableView_typeSelectStringForTableColumn_row(final NSTableView view, final  NSTableColumn tableColumn, final NSInteger row) {
                 return BookmarkNameProvider.toString(bookmarkModel.getSource().get(row.intValue()));
             }
 
+            @Override
+            public boolean tableView_shouldSelectRow(final NSTableView view, final NSInteger row) {
+                return !this.tableView_isGroupRow(view, row);
+            }
+
             @Delegate
-            public boolean tableView_isGroupRow(NSTableView view, NSInteger row) {
+            public boolean tableView_isGroupRow(final NSTableView view, final NSInteger row) {
                 return false;
             }
 
@@ -1868,7 +1878,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              * @param event Swipe event
              */
             @Action
-            public void swipeWithEvent(NSEvent event) {
+            public void swipeWithEvent(final NSEvent event) {
                 if(event.deltaY().doubleValue() == kSwipeGestureUp) {
                     NSInteger row = bookmarkTable.selectedRow();
                     NSInteger next;
@@ -1920,6 +1930,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 // Accept file promises made myself
                 NSPasteboard.FilesPromisePboardType
         ));
+
+        bookmarkTable.setTarget(bookmarkTableDelegate.id());
+        bookmarkTable.setDoubleAction(Foundation.selector("tableRowDoubleClicked:"));
 
         // setting appearance attributes()
         bookmarkTable.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));

@@ -27,6 +27,7 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 
 import org.rococoa.ID;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -409,13 +410,13 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>void setDoubleAction(SEL)</code><br>
      * <i>native declaration : :175</i>
      */
-    public abstract void setDoubleAction(org.rococoa.Selector aSelector);
+    public abstract void setDoubleAction(Selector aSelector);
 
     /**
      * Original signature : <code>SEL doubleAction()</code><br>
      * <i>native declaration : :176</i>
      */
-    public abstract org.rococoa.Selector doubleAction();
+    public abstract Selector doubleAction();
 
     /**
      * Sorting Support<br> The array of sort descriptors is archived.  Sort descriptors will persist along with other
@@ -861,7 +862,8 @@ public abstract class NSTableView extends NSControl {
      * Returns the rectangle containing the row at the specified index.
      *
      * @param row Table row
-     * @return The rectangle containing the row at rowIndex. Returns NSZeroRect if rowIndex lies outside the range of valid row indexes for the table view.
+     * @return The rectangle containing the row at rowIndex. Returns NSZeroRect if rowIndex lies outside the
+     * range of valid row indexes for the table view.
      */
     public abstract NSRect rectOfRow(NSInteger row);
 
