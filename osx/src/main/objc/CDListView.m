@@ -31,11 +31,6 @@ static NSTableColumn *localSelectionColumn;
 	return YES;
 }
 
-- (void)dealloc
-{
-	[super dealloc];
-}
-
 - (void)handleBrowserClick:(id)sender {
 	mBrowserWasDoubleClicked = NO;
 	NSPoint where = [self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil];
