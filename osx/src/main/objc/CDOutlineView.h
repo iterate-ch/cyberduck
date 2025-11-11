@@ -22,13 +22,7 @@
 @interface CDOutlineView : NSOutlineView {
 
 @private
-	BOOL mBrowserWasDoubleClicked;
-    NSInteger mBrowserEditingColumn;
-    NSInteger mBrowserEditingRow;
-
 	NSTimer *autoexpand_timer;
 }
-
-- (void)handleBrowserClick:(id)sender;
 
 @end
