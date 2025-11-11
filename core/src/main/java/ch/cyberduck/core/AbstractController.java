@@ -80,17 +80,17 @@ public abstract class AbstractController implements Controller {
     }
 
     @Override
-    public void start(final BackgroundAction action) {
+    public void start(final BackgroundAction<?> action) {
         log.debug("Start action {}", action);
     }
 
     @Override
-    public void cancel(final BackgroundAction action) {
+    public void cancel(final BackgroundAction<?> action) {
         log.debug("Cancel action {}", action);
     }
 
     @Override
-    public void stop(final BackgroundAction action) {
+    public void stop(final BackgroundAction<?> action) {
         log.debug("Stop action {}", action);
     }
 
