@@ -27,14 +27,6 @@
 
 static NSTableColumn *localSelectionColumn;
 
-- (void)awakeFromNib
-{
-	[self setTarget:self];
-	// [self setAction:@selector(handleBrowserClick:)];
-	[self setDoubleAction:@selector(handleBrowserDoubleClick:)];
-	autoexpand_timer = nil;
-}
-
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
 {
 	return YES;
@@ -110,17 +102,6 @@ static NSTableColumn *localSelectionColumn;
 	if((!mBrowserWasDoubleClicked) && (NSEqualPoints([inWrappedMouseLocation pointValue], [NSEvent mouseLocation])) ) {
 		if(mBrowserEditingRow == [self selectedRow])
 			[self editColumn:mBrowserEditingColumn row:mBrowserEditingRow withEvent:nil select:YES];
-	}
-	mBrowserWasDoubleClicked = NO;
-}
-
-- (void)handleBrowserDoubleClick:(id)sender 
-{
-	mBrowserWasDoubleClicked = YES;
-    if([self clickedRow] != -1) { // make sure double click was not in table header
-		if ([[self delegate] respondsToSelector:@selector(tableRowDoubleClicked:)]) {
-			[[self delegate] performSelector:@selector(tableRowDoubleClicked:) withObject:self];
-		}
 	}
 	mBrowserWasDoubleClicked = NO;
 }
