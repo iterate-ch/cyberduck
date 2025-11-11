@@ -32,12 +32,7 @@ static NSTableColumn *localSelectionColumn;
 	return YES;
 }
 
-- (void)dealloc
-{
-	[super dealloc];
-}
-
-- (void)_scheduleAutoExpandTimerForItem:(id)object 
+- (void)_scheduleAutoExpandTimerForItem:(id)object
 {
 	if(! [[NSUserDefaults standardUserDefaults] boolForKey:@"browser.view.autoexpand"]) {
 		return;
