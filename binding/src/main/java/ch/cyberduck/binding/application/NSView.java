@@ -32,7 +32,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-public abstract class NSView extends NSResponder {
+public abstract class NSView extends NSResponder implements NSUserInterfaceItemIdentification {
     private static final NSView._Class CLASS = org.rococoa.Rococoa.createClass("NSView", NSView._Class.class);
 
     public static final int NSViewNotSizable = 0;
