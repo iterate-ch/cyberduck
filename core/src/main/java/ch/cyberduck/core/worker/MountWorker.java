@@ -17,8 +17,6 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractHostCollection;
-import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
@@ -97,13 +95,6 @@ public class MountWorker extends Worker<Path> {
             final HistoryCollection history = HistoryCollection.defaultCollection();
             if(history.isLoaded()) {
                 history.add(bookmark);
-            }
-            // Notify changed bookmark
-            final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
-            if(bookmarks.isLoaded()) {
-                if(bookmarks.contains(bookmark)) {
-                    bookmarks.collectionItemChanged(bookmark);
-                }
             }
         }
         super.cleanup(workdir, failure);
