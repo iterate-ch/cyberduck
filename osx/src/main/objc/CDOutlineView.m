@@ -73,34 +73,6 @@ static NSTableColumn *localSelectionColumn;
 	autoexpand_timer = nil;
 }
 
-- (void)handleBrowserClick:(id)sender 
-{
-	NSPoint where = [self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil];
-	NSInteger row = [self rowAtPoint:where];
-    NSInteger col = [self columnAtPoint:where];
-	if(row >= 0 && col >= 0) {
-		NSTableColumn *column = [[self tableColumns] objectAtIndex:col];
-		if([[self delegate] respondsToSelector:@selector(isColumnEditable:)]) {
-			if([[self delegate] performSelector:@selector(isColumnEditable:) withObject:column]) {
-				mBrowserEditingColumn = col;
-				mBrowserEditingRow = row;
-				NSValue *wrappedMouseLocation = [NSValue valueWithPoint:[NSEvent mouseLocation]];
-				[self performSelector:@selector(handleBrowserClickOffloaded:) withObject:wrappedMouseLocation afterDelay:0.5];
-			}
-		}
-	}
-}
-
-- (void)handleBrowserClickOffloaded:(NSValue *)inWrappedMouseLocation 
-{
-	// UI: mouse must not have ben moved since first click, and must not have been double-clicked
-	if((!mBrowserWasDoubleClicked) && (NSEqualPoints([inWrappedMouseLocation pointValue], [NSEvent mouseLocation])) ) {
-		if(mBrowserEditingRow == [self selectedRow])
-			[self editColumn:mBrowserEditingColumn row:mBrowserEditingRow withEvent:nil select:YES];
-	}
-	mBrowserWasDoubleClicked = NO;
-}
-
 - (BOOL)shouldCollapseAutoExpandedItemsForDeposited:(BOOL)deposited
 {
 	return !deposited;

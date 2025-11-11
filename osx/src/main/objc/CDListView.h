@@ -22,11 +22,6 @@
 @interface CDListView : NSTableView {
 
 @private
-	BOOL mBrowserWasDoubleClicked;
-	NSInteger mBrowserEditingColumn;
-    NSInteger mBrowserEditingRow;
 }
-
-- (void)handleBrowserClick:(id)sender;
 
 @end
