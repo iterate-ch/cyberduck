@@ -28,7 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public final class BackgroundActionRegistry extends Collection<BackgroundAction> implements BackgroundActionListener {
+public final class BackgroundActionRegistry extends Collection<BackgroundAction<?>> implements BackgroundActionListener {
     private static final Logger log = LogManager.getLogger(BackgroundActionRegistry.class);
 
     private static BackgroundActionRegistry global = null;
@@ -44,7 +44,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         }
     }
 
-    private final Set<BackgroundAction> running = new LinkedHashSet<>();
+    private final Set<BackgroundAction<?>> running = new LinkedHashSet<>();
 
     public BackgroundActionRegistry() {
         //
@@ -55,8 +55,8 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
     /**
      * @return The currently running background action. Null if none is currently running.
      */
-    public synchronized BackgroundAction getCurrent() {
-        final Iterator<BackgroundAction> iter = running.iterator();
+    public synchronized BackgroundAction<?> getCurrent() {
+        final Iterator<BackgroundAction<?>> iter = running.iterator();
         if(iter.hasNext()) {
             return iter.next();
         }
@@ -64,17 +64,17 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
     }
 
     @Override
-    public synchronized void start(final BackgroundAction action) {
+    public synchronized void start(final BackgroundAction<?> action) {
         running.add(action);
     }
 
     @Override
-    public synchronized void stop(final BackgroundAction action) {
+    public synchronized void stop(final BackgroundAction<?> action) {
         this.remove(action);
     }
 
     @Override
-    public synchronized void cancel(final BackgroundAction action) {
+    public synchronized void cancel(final BackgroundAction<?> action) {
         if(action.isRunning()) {
             log.debug("Skip removing action {} currently running", action);
         }
@@ -90,7 +90,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
      * @return True
      */
     @Override
-    public synchronized boolean add(final BackgroundAction action) {
+    public synchronized boolean add(final BackgroundAction<?> action) {
         action.addListener(this);
         return super.add(action);
     }
@@ -102,7 +102,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
             log.warn("Failure finding action {} in running tasks", action);
         }
         if(super.remove(action)) {
-            ((BackgroundAction) action).removeListener(this);
+            ((BackgroundAction<?>) action).removeListener(this);
         }
         return true;
     }
