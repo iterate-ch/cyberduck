@@ -193,7 +193,6 @@
 		47B2E9FF1E2CF5E1007BE83D /* Activity.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FA1E2CF5E1007BE83D /* Activity.xib */; };
 		47B2EA001E2CF5E1007BE83D /* Progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FB1E2CF5E1007BE83D /* Progress.xib */; };
 		47B2EA011E2CF5E1007BE83D /* Task.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FC1E2CF5E1007BE83D /* Task.xib */; };
-		47B2EA021E2CF5E1007BE83D /* Transcript.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FD1E2CF5E1007BE83D /* Transcript.xib */; };
 		47B2EA031E2CF5E1007BE83D /* Transfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FE1E2CF5E1007BE83D /* Transfer.xib */; };
 		47B3318C16680FF100C9FFA0 /* ftp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318B16680FF100C9FFA0 /* ftp.tiff */; };
 		47B331931668102400C9FFA0 /* s3.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331911668102400C9FFA0 /* s3.tiff */; };
@@ -1391,7 +1390,6 @@
 		47B2E9FA1E2CF5E1007BE83D /* Activity.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Activity.xib; path = osx/src/main/resources/Activity.xib; sourceTree = "<group>"; };
 		47B2E9FB1E2CF5E1007BE83D /* Progress.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Progress.xib; path = osx/src/main/resources/Progress.xib; sourceTree = "<group>"; };
 		47B2E9FC1E2CF5E1007BE83D /* Task.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Task.xib; path = osx/src/main/resources/Task.xib; sourceTree = "<group>"; };
-		47B2E9FD1E2CF5E1007BE83D /* Transcript.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Transcript.xib; path = osx/src/main/resources/Transcript.xib; sourceTree = "<group>"; };
 		47B2E9FE1E2CF5E1007BE83D /* Transfer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Transfer.xib; path = osx/src/main/resources/Transfer.xib; sourceTree = "<group>"; };
 		47B3318B16680FF100C9FFA0 /* ftp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ftp.tiff; sourceTree = "<group>"; };
 		47B331911668102400C9FFA0 /* s3.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = s3.tiff; sourceTree = "<group>"; };
@@ -1971,7 +1969,6 @@
 				47B2E9FA1E2CF5E1007BE83D /* Activity.xib */,
 				47B2E9FB1E2CF5E1007BE83D /* Progress.xib */,
 				47B2E9FC1E2CF5E1007BE83D /* Task.xib */,
-				47B2E9FD1E2CF5E1007BE83D /* Transcript.xib */,
 				479B23E52EBA3C16001D75BE /* Navigation.xib */,
 				479B23E82EBA45DD001D75BE /* Status.xib */,
 				47B2E9FE1E2CF5E1007BE83D /* Transfer.xib */,
@@ -2557,7 +2554,6 @@
 				476730FE16108E1300B28D35 /* stop.tiff in Resources */,
 				4767310016108E1300B28D35 /* sync.tiff in Resources */,
 				474960701CD75C9700B020C9 /* sync.pdf in Resources */,
-				47B2EA021E2CF5E1007BE83D /* Transcript.xib in Resources */,
 				4767310116108E1300B28D35 /* transparent.tiff in Resources */,
 				4767310216108E1300B28D35 /* trash.tiff in Resources */,
 				4767310316108E1300B28D35 /* turtle.tiff in Resources */,
