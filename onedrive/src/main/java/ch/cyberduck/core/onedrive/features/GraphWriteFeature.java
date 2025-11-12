@@ -38,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonObject;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.UploadSession;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
@@ -89,6 +90,9 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Upload {0} failed", e.getCause(), file);
+        }
     }
 
     private final class ChunkedOutputStream extends OutputStream {
@@ -139,6 +143,9 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
                         }
                         catch(IOException e) {
                             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+                        }
+                        catch(OneDriveRuntimeException e) {
+                            throw new GraphExceptionMappingService(fileid).map("Download {0} failed", e.getCause(), file);
                         }
                         return null;
                     }

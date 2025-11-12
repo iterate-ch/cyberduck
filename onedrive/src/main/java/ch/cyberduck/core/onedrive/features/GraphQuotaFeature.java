@@ -25,6 +25,7 @@ import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
@@ -62,15 +63,17 @@ public class GraphQuotaFeature implements Quota {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, home);
         }
-        final org.nuxeo.onedrive.client.types.Quota quota = metadata.getQuota();
-        if(quota != null) {
-            Long used = quota.getUsed();
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e.getCause(), home);
+        }
+        if(metadata.getQuota() != null) {
+            Long used = metadata.getQuota().getUsed();
             if(used != null) {
-                Long remaining = quota.getRemaining();
+                Long remaining = metadata.getQuota().getRemaining();
                 if(remaining != null && (used != 0 || remaining != 0)) {
                     return new Space(used, remaining);
                 }
-                Long total = quota.getTotal();
+                Long total = metadata.getQuota().getTotal();
                 if(total != null && (used != 0 || total != 0)) {
                     return new Space(used, total - used);
                 }

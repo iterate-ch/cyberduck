@@ -34,6 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
@@ -100,6 +101,9 @@ public class GraphReadFeature implements Read {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
+        }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Download {0} failed", e.getCause(), file);
         }
     }
 }

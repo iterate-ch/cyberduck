@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.CopyOperation;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
@@ -87,6 +88,9 @@ public class GraphCopyFeature implements Copy {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, file);
+        }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Cannot copy {0}", e.getCause(), file);
         }
     }
 

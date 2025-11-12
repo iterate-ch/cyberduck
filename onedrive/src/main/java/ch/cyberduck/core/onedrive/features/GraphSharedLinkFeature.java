@@ -22,21 +22,26 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Share;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.nuxeo.onedrive.client.Files;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.OneDriveSharingLink;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 
-public class GraphSharedLinkFeature implements Share {
-    private final GraphSession session;
+public class GraphSharedLinkFeature implements Share<Object, Object> {
 
-    public GraphSharedLinkFeature(final GraphSession session) {
+    private final GraphSession session;
+    private final GraphFileIdProvider fileid;
+
+    public GraphSharedLinkFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
+        this.fileid = fileid;
     }
 
     @Override
@@ -55,11 +60,14 @@ public class GraphSharedLinkFeature implements Share {
             return new DescriptiveUrl(Files.createSharedLink(item, OneDriveSharingLink.Type.VIEW).getLink().getWebUrl(),
                     DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));
         }
+        catch(OneDriveAPIException e) {
+            throw new GraphExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
+        }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
         }
-        catch(IllegalArgumentException e) {
-            throw new DefaultExceptionMappingService().map("Failed creating download url", e);
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Failure to write attributes of {0}", e.getCause(), file);
         }
     }
 
