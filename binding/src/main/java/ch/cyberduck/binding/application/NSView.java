@@ -566,6 +566,28 @@ public abstract class NSView extends NSResponder implements NSUserInterfaceItemI
      * <i>native declaration : :218</i>
      */
     public abstract void displayIfNeededIgnoringOpacity();
+
+    /**
+     *
+     * @return A Boolean value indicating whether the view needs a layout pass before it can be drawn.
+     */
+    public abstract boolean needsLayout();
+
+    /**
+     * Perform layout in concert with the constraint-based layout system.
+     */
+    public abstract void layout();
+
+    /**
+     * Updates the layout of the receiving view and its subviews based on the current views and constraints.
+     */
+    public abstract void layoutSubtreeIfNeeded();
+
+    /**
+     * Updates the constraints for the receiving view and its subviews.
+     */
+    public abstract void updateConstraintsForSubtreeIfNeeded();
+
     /**
      * <i>native declaration : :219</i><br>
      * Conversion Error : NSRect
