@@ -54,6 +54,7 @@ public class KeychainLoginService implements LoginService {
             }
         }
         if(options.keychain) {
+            log.debug("Lookup credentials in keychain for {}", bookmark);
             if(options.password) {
                 if(StringUtils.isBlank(credentials.getPassword())) {
                     final String password = keychain.findLoginPassword(bookmark);
@@ -92,6 +93,7 @@ public class KeychainLoginService implements LoginService {
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
+            log.warn("Failed validation of credentials {} with options {}", credentials, options);
             final CredentialsConfigurator configurator = CredentialsConfiguratorFactory.get(bookmark.getProtocol());
             log.debug("Auto configure credentials with {}", configurator);
             final Credentials configuration = configurator.configure(bookmark);
@@ -112,6 +114,7 @@ public class KeychainLoginService implements LoginService {
             message.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
             this.prompt(bookmark, message.toString(), prompt, options);
         }
+        log.debug("Validated credentials {} with options {}", credentials, options);
     }
 
     /**
