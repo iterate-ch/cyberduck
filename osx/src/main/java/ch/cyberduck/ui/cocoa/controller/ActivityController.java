@@ -48,7 +48,7 @@ public class ActivityController extends WindowController {
 
     private final BackgroundActionRegistry registry;
 
-    private final Map<BackgroundAction, TaskController> tasks
+    private final Map<BackgroundAction<?>, TaskController> tasks
             = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public ActivityController() {
@@ -65,9 +65,9 @@ public class ActivityController extends WindowController {
         // Initialize to listen for background tasks
         registry.addListener(backgroundActionListener);
         // Add already running background actions
-        final BackgroundAction[] actions = registry.toArray(
-                new BackgroundAction[registry.size()]);
-        for(final BackgroundAction action : actions) {
+        final BackgroundAction<?>[] actions = registry.toArray(
+                new BackgroundAction<?>[registry.size()]);
+        for(final BackgroundAction<?> action : actions) {
             tasks.put(action, new TaskController(action));
         }
         this.reload();
@@ -81,18 +81,18 @@ public class ActivityController extends WindowController {
         super.invalidate();
     }
 
-    private final AbstractCollectionListener<BackgroundAction> backgroundActionListener
-            = new AbstractCollectionListener<BackgroundAction>() {
+    private final AbstractCollectionListener<BackgroundAction<?>> backgroundActionListener
+            = new AbstractCollectionListener<BackgroundAction<?>>() {
 
         @Override
-        public void collectionItemAdded(final BackgroundAction action) {
+        public void collectionItemAdded(final BackgroundAction<?> action) {
             log.debug("Add background action {}", action);
             tasks.put(action, new TaskController(action));
             reload();
         }
 
         @Override
-        public void collectionItemRemoved(final BackgroundAction action) {
+        public void collectionItemRemoved(final BackgroundAction<?> action) {
             log.debug("Remove background action {}", action);
             final TaskController controller = tasks.remove(action);
             if(null == controller) {
@@ -140,7 +140,7 @@ public class ActivityController extends WindowController {
 
     public void setTable(NSTableView table) {
         this.table = table;
-        this.table.setRowHeight(new CGFloat(42));
+        this.table.setRowHeight(new CGFloat(52));
         {
             final NSTableColumn c = tableColumnsFactory.create(ActivityColumn.single.name());
             c.setMinWidth(80f);
@@ -197,6 +197,7 @@ public class ActivityController extends WindowController {
                 return false;
             }
 
+            @Delegate
             public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
                 final TaskController controller = getController(row);
                 if(null == controller) {
