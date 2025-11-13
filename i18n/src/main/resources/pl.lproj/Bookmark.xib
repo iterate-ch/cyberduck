@@ -50,6 +50,10 @@
                 </popUpButton>
                 <tabView translatesAutoresizingMaskIntoConstraints="NO" id="yX9-yd-D7S">
                     <rect key="frame" x="13" y="10" width="480" height="587"/>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="300" id="IDe-hp-N6z"/>
+                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="400" id="J5B-aY-BH0"/>
+                    </constraints>
                     <font key="font" metaFont="system"/>
                     <tabViewItems>
                         <tabViewItem label="Connection" identifier="1" id="Eet-ov-fqC">
@@ -58,10 +62,10 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalHuggingPriority="750" verticalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QIL-y3-36a">
-                                        <rect key="frame" x="20" y="319" width="420" height="202"/>
+                                        <rect key="frame" x="20" y="331" width="420" height="190"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pSw-oV-gTk">
-                                                <rect key="frame" x="0.0" y="167" width="420" height="35"/>
+                                                <rect key="frame" x="0.0" y="167" width="420" height="23"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Xhi-kD-4lp">
                                                         <rect key="frame" x="-2" y="0.0" width="154" height="16"/>
@@ -75,7 +79,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <stackView distribution="fillProportionally" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ol5-Sm-uF6">
-                                                        <rect key="frame" x="158" y="14" width="262" height="21"/>
+                                                        <rect key="frame" x="158" y="2" width="262" height="21"/>
                                                         <subviews>
                                                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="L04-rl-TAx" userLabel="Server Text Field">
                                                                 <rect key="frame" x="0.0" y="0.0" width="150" height="21"/>
@@ -90,7 +94,7 @@
                                                             </textField>
                                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="6jP-Km-1jK">
                                                                 <rect key="frame" x="158" y="3" width="18" height="18"/>
-                                                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSCaution" imagePosition="only" alignment="left" controlSize="small" imageScaling="proportionallyDown" id="xpO-ad-Tdw">
+                                                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSCaution" imagePosition="overlaps" alignment="left" controlSize="small" imageScaling="proportionallyDown" id="xpO-ad-Tdw">
                                                                     <behavior key="behavior" lightByContents="YES"/>
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                 </buttonCell>
@@ -537,7 +541,7 @@
                                                             </textField>
                                                             <button placeholderIntrinsicWidth="18" placeholderIntrinsicHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Vl3-kb-L99" userLabel="Web URL Favicon">
                                                                 <rect key="frame" x="244" y="0.0" width="18" height="21"/>
-                                                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" imagePosition="only" alignment="left" imageScaling="proportionallyDown" id="L4r-st-R2S">
+                                                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" imagePosition="overlaps" alignment="left" imageScaling="proportionallyDown" id="L4r-st-R2S">
                                                                     <behavior key="behavior" lightByContents="YES"/>
                                                                     <font key="font" metaFont="label"/>
                                                                 </buttonCell>
