@@ -43,7 +43,9 @@ public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), test, new TransferStatus());
-        new GraphTimestampFeature(session, fileid).setTimestamp(test, new TransferStatus().setModified(1671187993791L));
+        final TransferStatus status = new TransferStatus();
+        new GraphTimestampFeature(session, fileid).setTimestamp(test, status.setModified(1671187993791L));
+        assertEquals(1671187993000L, status.getResponse().getModificationDate());
         final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(test);
         assertEquals(1671187993000L, attr.getModificationDate());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
