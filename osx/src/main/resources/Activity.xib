@@ -5,7 +5,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="sudo.cyberduck.ui.cocoa.CDActivityController" customModule="ch">
+        <customObject id="-2" userLabel="File's Owner">
             <connections>
                 <outlet property="table" destination="7" id="10"/>
                 <outlet property="window" destination="3" id="11"/>
@@ -18,7 +18,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="152" y="405" width="435" height="164"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1800" height="1125"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2880" height="1595"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="435" height="164"/>
                 <autoresizingMask key="autoresizingMask"/>
