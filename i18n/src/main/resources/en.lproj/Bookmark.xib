@@ -50,6 +50,9 @@
                 </popUpButton>
                 <tabView translatesAutoresizingMaskIntoConstraints="NO" id="yX9-yd-D7S">
                     <rect key="frame" x="13" y="10" width="480" height="587"/>
+                    <constraints>
+                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="300" id="IDe-hp-N6z"/>
+                    </constraints>
                     <font key="font" metaFont="system"/>
                     <tabViewItems>
                         <tabViewItem label="Connection" identifier="1" id="Eet-ov-fqC">
