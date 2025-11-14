@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.bonjour.RendezvousResponder;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoVaultProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.preferences.ApplicationPreferences;
@@ -104,7 +104,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         this.setDefault("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
         this.setDefault("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
         this.setDefault("factory.rendezvous.class", RendezvousResponder.class.getName());
-        this.setDefault("factory.vault.class", CryptoVault.class.getName());
+        this.setDefault("factory.vaultprovider.class", CryptoVaultProvider.class.getName());
         this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
     }
 }
