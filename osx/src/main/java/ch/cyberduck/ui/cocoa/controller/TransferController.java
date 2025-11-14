@@ -378,6 +378,7 @@ public class TransferController extends WindowController implements TransferList
                         NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(transferTable.numberOfRows()))));
             }
 
+            @Delegate
             public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
                 final ProgressController controller = transferTableModel.getController(row.intValue());
                 return controller.view();
@@ -539,9 +540,6 @@ public class TransferController extends WindowController implements TransferList
         transferTable.scrollRowToVisible(index);
     }
 
-    /**
-     * @param transfer Transfer
-     */
     public void transferDidStart(final Transfer transfer) {
         final ProgressController progress = transferTableModel.getController(transfer);
         progress.transferDidStart(transfer);
@@ -571,9 +569,6 @@ public class TransferController extends WindowController implements TransferList
         progress.transferDidProgress(transfer, status);
     }
 
-    /**
-     * @param transfer Transfer
-     */
     public void start(final Transfer transfer, final TransferOptions options) {
         this.start(transfer, options, new TransferCallback() {
             @Override
@@ -583,9 +578,6 @@ public class TransferController extends WindowController implements TransferList
         });
     }
 
-    /**
-     * @param transfer Transfer
-     */
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
         final Host source = transfer.getSource();
