@@ -149,7 +149,7 @@
                                             <rect key="frame" x="0.0" y="32" width="621" height="383"/>
                                             <clipView key="contentView" id="t14-pG-1DQ">
                                                 <rect key="frame" x="1" y="1" width="604" height="381"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33" customClass="CDListView">
                                                         <rect key="frame" x="0.0" y="0.0" width="604" height="364"/>
@@ -281,6 +281,7 @@
                     <constraint firstAttribute="trailing" secondItem="5" secondAttribute="trailing" id="uNF-Pm-ASK"/>
                 </constraints>
             </view>
+            <contentBorderThickness minY="35"/>
             <point key="canvasLocation" x="25.5" y="-8.5"/>
         </window>
         <menu title="Menu" id="65">
