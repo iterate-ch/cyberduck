@@ -31,6 +31,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.GroupItem;
@@ -115,11 +116,14 @@ public abstract class AbstractSharepointSession extends GraphSession {
                     return (DriveItem) remoteMetadata.getItem();
                 }
             }
-            catch(OneDriveAPIException oneDriveAPIException) {
-                throw new GraphExceptionMappingService(fileid).map(oneDriveAPIException);
+            catch(OneDriveAPIException e) {
+                throw new GraphExceptionMappingService(fileid).map(e);
             }
-            catch(IOException ioException) {
-                throw new DefaultIOExceptionMappingService().map(ioException);
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
+            catch(OneDriveRuntimeException e) {
+                throw new GraphExceptionMappingService(fileid).map(e.getCause());
             }
         }
         return ownItem;

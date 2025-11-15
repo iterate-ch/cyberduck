@@ -28,6 +28,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.http.HttpStatus;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
@@ -53,10 +54,13 @@ public class GraphLockFeature implements Lock<String> {
             if(e.getResponseCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
                 throw new LockedException(e.getMessage(), e);
             }
-            throw new GraphExceptionMappingService(fileid).map("Failure to checkout file {0}", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
+            throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+        }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Failure to write attributes of {0}", e.getCause(), file);
         }
     }
 
@@ -69,10 +73,13 @@ public class GraphLockFeature implements Lock<String> {
                     new AlphanumericRandomStringService().random()));
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService(fileid).map("Failure to check in file {0}", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
+            throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+        }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Failure to write attributes of {0}", e.getCause(), file);
         }
     }
 }

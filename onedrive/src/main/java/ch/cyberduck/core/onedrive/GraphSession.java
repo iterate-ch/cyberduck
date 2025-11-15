@@ -51,6 +51,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 import org.nuxeo.onedrive.client.Users;
@@ -229,6 +230,9 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map(e.getCause());
+        }
     }
 
     @Override
@@ -295,7 +299,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphUrlProvider();
         }
         if(type == Share.class) {
-            return (T) new GraphSharedLinkFeature(this);
+            return (T) new GraphSharedLinkFeature(this, fileid);
         }
         if(type == Versioning.class) {
             return (T) new GraphVersioningFeature(this, fileid);

@@ -44,7 +44,7 @@ public class GraphShareTest extends AbstractOneDriveTest {
     public void toUrl() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), file, new TransferStatus().setMime("x-application/cyberduck"));
-        assertNotEquals(DescriptiveUrl.EMPTY, new GraphSharedLinkFeature(session).toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback()));
+        assertNotEquals(DescriptiveUrl.EMPTY, new GraphSharedLinkFeature(session, fileid).toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback()));
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

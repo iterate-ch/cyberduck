@@ -29,6 +29,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
@@ -60,6 +61,9 @@ public class GraphDirectoryFeature implements Directory<DriveItem.Metadata> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, directory);
+        }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Cannot create folder {0}", e.getCause(), directory);
         }
     }
 

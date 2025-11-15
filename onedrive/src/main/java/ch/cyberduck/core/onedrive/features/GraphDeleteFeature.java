@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
@@ -59,6 +60,9 @@ public class GraphDeleteFeature implements Delete {
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+            catch(OneDriveRuntimeException e) {
+                throw new GraphExceptionMappingService(fileid).map("Cannot delete {0}", e.getCause(), file);
             }
         }
     }
