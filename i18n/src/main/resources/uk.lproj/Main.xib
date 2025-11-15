@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
+        <customObject id="-2" userLabel="File's Owner">
             <connections>
                 <outlet property="applicationMenu" destination="227" id="355"/>
                 <outlet property="archiveMenu" destination="273" id="356"/>
@@ -30,14 +30,14 @@
                 <menuItem title="Cyberduck" id="226">
                     <menu key="submenu" title="Cyberduck" systemMenu="apple" id="227">
                         <items>
-                            <menuItem title="Про Cyberduck" id="228">
+                            <menuItem title="About Cyberduck" id="228">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="aboutMenuClicked:" target="-2" id="366"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Перевірка оновлення…" id="229">
+                            <menuItem title="Check for Update…" id="229">
                                 <connections>
                                     <action selector="updateMenuClicked:" target="-2" id="367"/>
                                 </connections>
@@ -61,18 +61,18 @@
                             <menuItem isSeparatorItem="YES" id="234">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Послуги" id="235">
-                                <menu key="submenu" title="Послуги" systemMenu="services" id="236"/>
+                            <menuItem title="Services" id="235">
+                                <menu key="submenu" title="Services" systemMenu="services" id="236"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="237">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Приховати Cyberduck" keyEquivalent="h" id="238">
+                            <menuItem title="Hide Cyberduck" keyEquivalent="h" id="238">
                                 <connections>
                                     <action selector="hide:" target="224" id="370"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Приховати Інші" keyEquivalent="h" id="239">
+                            <menuItem title="Hide Others" keyEquivalent="h" id="239">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="hideOtherApplications:" target="224" id="371"/>
@@ -86,7 +86,7 @@
                             <menuItem isSeparatorItem="YES" id="241">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Вийти з Cyberduck" keyEquivalent="q" id="242">
+                            <menuItem title="Quit Cyberduck" keyEquivalent="q" id="242">
                                 <connections>
                                     <action selector="terminate:" target="224" id="373"/>
                                 </connections>
@@ -103,28 +103,28 @@
                             </attributes>
                         </fragment>
                     </attributedString>
-                    <menu key="submenu" title="Файл" id="244">
+                    <menu key="submenu" title="File" id="244">
                         <items>
-                            <menuItem title="Новий Оглядач" tag="1" keyEquivalent="n" id="245">
+                            <menuItem title="New Browser" tag="1" keyEquivalent="n" id="245">
                                 <attributedString key="attributedTitle"/>
                                 <connections>
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Відкрити З'єднання…" keyEquivalent="o" id="246">
+                            <menuItem title="Open Connection…" keyEquivalent="o" id="246">
                                 <connections>
                                     <action selector="connectButtonClicked:" target="-1" id="375"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="247"/>
-                            <menuItem title="Нове завантаження" keyEquivalent="" id="248">
+                            <menuItem title="New Download" keyEquivalent="" id="248">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="newDownloadMenuClicked:" target="-2" id="376"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="249"/>
-                            <menuItem title="Нова Тека…" keyEquivalent="N" id="250">
+                            <menuItem title="New Folder…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
@@ -135,48 +135,48 @@
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Новий Файл…" keyEquivalent="f" id="251">
+                            <menuItem title="New File…" keyEquivalent="f" id="251">
                                 <connections>
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Нове символьне посилання…" id="252">
+                            <menuItem title="New Symbolic Link…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="255"/>
-                            <menuItem title="Перейменувати…" id="253">
+                            <menuItem title="Rename…" id="253">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Дублювати…" keyEquivalent="d" id="254">
+                            <menuItem title="Duplicate…" keyEquivalent="d" id="254">
                                 <connections>
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="t4E-eL-Tgs"/>
-                            <menuItem title="Інфо" tag="2" keyEquivalent="i" id="261">
+                            <menuItem title="Info" image="info.circle" catalog="system" tag="2" keyEquivalent="i" id="261">
                                 <connections>
                                     <action selector="infoButtonClicked:" target="-1" id="383"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Швидкий Перегляд" image="NSQuickLookTemplate" id="260">
+                            <menuItem title="Quick Look" image="eye.circle" catalog="system" id="260">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="quicklookButtonClicked:" target="-1" id="382"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Редагувати за допомогою" id="258">
+                            <menuItem title="Редагувати за допомогою" image="pencil" catalog="system" id="258">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Редагувати за допомогою" id="259"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="262"/>
-                            <menuItem title="Завантажити" keyEquivalent="" id="263">
+                            <menuItem title="Download" keyEquivalent="" id="263">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
                                     <action selector="downloadButtonClicked:" target="-1" id="384"/>
@@ -215,7 +215,7 @@ CA
                                     <action selector="deleteFileButtonClicked:" target="-1" id="389"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Повернути" id="270">
+                            <menuItem title="Revert" id="270">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
@@ -228,7 +228,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="271"/>
-                            <menuItem title="Замкнути сховище" keyEquivalent="l" id="bBu-IP-reP">
+                            <menuItem title="Lock Vault" keyEquivalent="l" id="bBu-IP-reP">
                                 <connections>
                                     <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="GdE-9v-Sbq"/>
                                 </connections>
@@ -244,7 +244,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Xdd-Sj-x3y"/>
-                            <menuItem title="Відкрити URL" id="256">
+                            <menuItem title="Open URL" id="256">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Відкрити URL" id="257"/>
                             </menuItem>
@@ -321,12 +321,12 @@ CA
                 <menuItem title="Вигляд" id="290">
                     <menu key="submenu" title="Вигляд" id="291">
                         <items>
-                            <menuItem title="Списком" keyEquivalent="1" id="292">
+                            <menuItem title="Списком" image="list.bullet" catalog="system" keyEquivalent="1" id="292">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="400"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Схемою" tag="1" keyEquivalent="2" id="293">
+                            <menuItem title="Схемою" image="list.bullet.indent" catalog="system" tag="1" keyEquivalent="2" id="293">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="401"/>
                                 </connections>
@@ -362,10 +362,24 @@ CA
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Поїхали!" id="306">
-                    <menu key="submenu" title="Поїхали!" id="307">
+                <menuItem title="Go" id="306">
+                    <menu key="submenu" title="Go" id="307">
                         <items>
-                            <menuItem title="Оновити" keyEquivalent="r" id="308">
+                            <menuItem title="Connect" id="6X5-2H-kSb">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="connectBookmarkButtonClicked:" target="-1" id="Eei-nI-ZKE"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Disconnect" keyEquivalent="y" id="qbG-8n-3N3">
+                                <connections>
+                                    <action selector="disconnectButtonClicked:" target="-1" id="5pF-4d-jNq"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Refresh" keyEquivalent="r" id="308">
                                 <connections>
                                     <action selector="reloadButtonClicked:" target="-1" id="406"/>
                                 </connections>
@@ -391,18 +405,18 @@ CA
                                     <action selector="upButtonClicked:" target="-1" id="410"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Всередині" keyEquivalent="" id="314">
+                            <menuItem title="Inside" keyEquivalent="" id="314">
                                 <connections>
                                     <action selector="insideButtonClicked:" target="-1" id="411"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Шукати…" keyEquivalent="/" id="315">
+                            <menuItem title="Search…" keyEquivalent="/" id="315">
                                 <connections>
                                     <action selector="searchButtonClicked:" target="-1" id="412"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="316"/>
-                            <menuItem title="Надіслати Команду…" keyEquivalent="c" id="317">
+                            <menuItem title="Send Command…" keyEquivalent="c" id="317">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
@@ -420,27 +434,22 @@ CA
                                     <action selector="interruptButtonClicked:" target="-1" id="415"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Роз'єднатись" keyEquivalent="y" id="321">
-                                <connections>
-                                    <action selector="disconnectButtonClicked:" target="-1" id="416"/>
-                                </connections>
-                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Закладка" id="322">
-                    <menu key="submenu" title="Закладка" id="323">
+                <menuItem title="Bookmark" id="322">
+                    <menu key="submenu" title="Bookmark" id="323">
                         <items>
-                            <menuItem title="Переключитись на Закладки" keyEquivalent="b" id="324">
+                            <menuItem title="Toggle Bookmarks" keyEquivalent="b" id="324">
                                 <connections>
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Сортувати за" id="325">
+                            <menuItem title="Sort By" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Сортувати за" id="326">
+                                <menu key="submenu" title="Sort By" id="326">
                                     <items>
-                                        <menuItem title="Псевдонім" keyEquivalent="1" id="327">
+                                        <menuItem title="Nickname" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>
@@ -462,23 +471,23 @@ CA
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="330"/>
-                            <menuItem title="Нова закладка" keyEquivalent="B" id="331">
+                            <menuItem title="New Bookmark" keyEquivalent="B" id="331">
                                 <connections>
                                     <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Видалити Закладку" id="332">
+                            <menuItem title="Delete Bookmark" id="332">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="deleteBookmarkButtonClicked:" target="-1" id="422"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Редагувати Закладку" keyEquivalent="e" id="333">
+                            <menuItem title="Edit Bookmark" keyEquivalent="e" id="333">
                                 <connections>
                                     <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Дублювати Закладку" id="334">
+                            <menuItem title="Duplicate Bookmark" id="334">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
@@ -497,12 +506,12 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" tag="1" id="339"/>
-                            <menuItem title="Передачі" keyEquivalent="t" id="340">
+                            <menuItem title="Transfers" keyEquivalent="t" id="340">
                                 <connections>
                                     <action selector="showTransferQueueClicked:" target="-1" id="426"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Діяльність" keyEquivalent="0" id="341">
+                            <menuItem title="Activity" keyEquivalent="0" id="341">
                                 <connections>
                                     <action selector="showActivityWindowClicked:" target="-1" id="427"/>
                                 </connections>
@@ -538,7 +547,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="349"/>
-                            <menuItem title="Повідомити про помилку" id="350">
+                            <menuItem title="Report a Bug" id="350">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="bugreportMenuClicked:" target="-2" id="432"/>
@@ -563,9 +572,14 @@ CA
                     </connections>
                 </menuItem>
             </items>
+            <point key="canvasLocation" x="139" y="51"/>
         </menu>
     </objects>
     <resources>
-        <image name="NSQuickLookTemplate" width="27" height="16"/>
+        <image name="eye.circle" catalog="system" width="32" height="32"/>
+        <image name="info.circle" catalog="system" width="32" height="32"/>
+        <image name="list.bullet" catalog="system" width="32" height="32"/>
+        <image name="list.bullet.indent" catalog="system" width="32" height="32"/>
+        <image name="pencil" catalog="system" width="32" height="32"/>
     </resources>
 </document>

@@ -30,12 +30,16 @@ import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 
+import ch.cyberduck.core.LocaleFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class BundleController extends ProxyController {
     private static final Logger log = LogManager.getLogger(BundleController.class);
+
+    protected static final String DEFAULT = LocaleFactory.localizedString("Default");
 
     public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
     public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL;

@@ -41,32 +41,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class NSWindow extends NSResponder {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWindow", _Class.class);
 
-    /// <i>native declaration : line 22</i>
-    public static final int NSBorderlessWindowMask = 0;
-    /// <i>native declaration : line 23</i>
-    public static final int NSTitledWindowMask = 1 << 0;
-    /// <i>native declaration : line 24</i>
-    public static final int NSClosableWindowMask = 1 << 1;
-    /// <i>native declaration : line 25</i>
-    public static final int NSMiniaturizableWindowMask = 1 << 2;
-    /// <i>native declaration : line 26</i>
-    public static final int NSResizableWindowMask = 1 << 3;
-    /**
-     * Specifies a window with textured background (eg. metal)<br>
-     * <i>native declaration : line 34</i>
-     */
-    public static final int NSTexturedBackgroundWindowMask = 1 << 8;
-    /**
-     * Specifies a window that ignores the userSpaceScaleFactor of the NSScreen on which it is created.  Currently
-     * restricted to borderless windows (NSBorderlessWindowMask)<br>
-     * <i>native declaration : line 42</i>
-     */
-    public static final int NSUnscaledWindowMask = 1 << 11;
-    /**
-     * Specifies a window whose titlebar and toolbar have a unified look - that is, a continuous background<br>
-     * <i>native declaration : line 48</i>
-     */
-    public static final int NSUnifiedTitleAndToolbarWindowMask = 1 << 12;
     /**
      * used with NSRunLoop's performSelector:target:argument:order:modes:<br>
      * <i>native declaration : line 55</i>
@@ -162,32 +136,149 @@ public abstract class NSWindow extends NSResponder {
     public static final int NSWindowOcclusionStateVisible = 1 << 1;
 
     /// enum values
+    public interface NSWindowStyleMask {
+        int NSWindowStyleMaskBorderless = 0;
+        int NSWindowStyleMaskTitled = 1 << 0;
+        int NSWindowStyleMaskClosable = 1 << 1;
+        int NSWindowStyleMaskMiniaturizable = 1 << 2;
+        int NSWindowStyleMaskResizable = 1 << 3;
+        /**
+         * @deprecated
+         */
+        int NSWindowStyleMaskTexturedBackground = 1 << 8;
+        /**
+         * Specifies a window whose titlebar and toolbar have a unified look - that is, a continuous background. Under
+         * the titlebar and toolbar a horizontal separator line will appear.
+         */
+        int NSWindowStyleMaskUnifiedTitleAndToolbar = 1 << 12;
+        /**
+         * When present, the window will appear full screen. This mask is automatically toggled when \c -toggleFullScreen: is called.
+         */
+        int NSWindowStyleMaskFullScreen = 1 << 14;
+        /**
+         * If set, the \c contentView will consume the full size of the window; it can be combined with other window style masks,
+         * but is only respected for windows with a titlebar. Utilizing this mask opts-in to layer-backing. Utilize
+         * the \c contentLayoutRect or auto-layout \c contentLayoutGuide to layout views underneath the titlebar/toolbar area.
+         */
+        int NSWindowStyleMaskFullSizeContentView = 1 << 15;
+        /**
+         * Only applicable for \c NSPanel (or a subclass thereof).
+         */
+        int NSWindowStyleMaskUtilityWindow = 1 << 4;
+        /**
+         * Only applicable for \c NSPanel (or a subclass thereof).
+         */
+        int NSWindowStyleMaskDocModalWindow = 1 << 6;
+        /**
+         * Specifies that a panel that does not activate the owning application. Only applicable for \c NSPanel (or a subclass thereof).
+         */
+        int NSWindowStyleMaskNonactivatingPanel = 1 << 7;
+        /**
+         * Specifies a heads up display panel.  Only applicable for \c NSPanel (or a subclass thereof).
+         */
+        int NSWindowStyleMaskHUDWindow = 1 << 13;
+    }
+
+    /// enum values
     public interface NSWindowLevel {
+        /**
+         * The default level for NSWindow objects.
+         */
         int NSNormalWindowLevel = 0;
+        /**
+         * Represents the level at which a floating window is positioned
+         */
         int NSFloatingWindowLevel = 3;
-        int NSSubmenuWindowLevel = 3;
-        int NSTornOffMenuWindowLevel = 3;
+        int NSSubmenuWindowLevel = NSFloatingWindowLevel;
+        int NSTornOffMenuWindowLevel = NSFloatingWindowLevel;
+        /**
+         * Reserved for the application’s main menu.
+         */
         int NSMainMenuWindowLevel = 24;
+        /**
+         * The level for a status window.
+         */
         int NSStatusWindowLevel = 25;
+        /**
+         * The level for a modal panel.
+         */
         int NSModalPanelWindowLevel = 8;
+        /**
+         * The level for a pop-up menu.
+         */
         int NSPopUpMenuWindowLevel = 101;
         int NSScreenSaverWindowLevel = 1000;
     }
 
     /// enum values
     public interface NSWindowCollectionBehavior {
-        int NSWindowCollectionBehaviorManaged = 1 << 2; // participates in spaces, exposé.  Default behavior if windowLevel == NSNormalWindowLevel
-        int NSWindowCollectionBehaviorTransient = 1 << 3; // floats in spaces, hidden by exposé.  Default behavior if windowLevel != NSNormalWindowLevel
-        int NSWindowCollectionBehaviorStationary = 1 << 4; // unaffected by exposé.  Stays visible and stationary, like desktop window
-
-        int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5; // default behavior if windowLevel == NSNormalWindowLevel
-        int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;  // default behavior if windowLevel != NSNormalWindowLevel
-
-        int NSWindowNumberListAllApplications = 1 << 0;
-        int NSWindowNumberListAllSpaces = 1 << 4;
-
-        int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7; // the frontmost window with this collection behavior will be the fullscreen window.
-        int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;  // windows with this collection behavior can be shown with the fullscreen window.
+        /**
+         * The window appears in only one space at a time.
+         */
+        int NSWindowCollectionBehaviorDefault = 0;
+        /**
+         * The window can appear in all spaces.
+         */
+        int NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0;
+        /**
+         * When the window becomes active, move it to the active space instead of switching spaces.
+         */
+        int NSWindowCollectionBehaviorMoveToActiveSpace = 1 << 1;
+        /**
+         * The window participates in Mission Control and Spaces.
+         */
+        int NSWindowCollectionBehaviorManaged = 1 << 2;
+        /**
+         * The window floats in Spaces and hides in Mission Control.
+         */
+        int NSWindowCollectionBehaviorTransient = 1 << 3;
+        /**
+         * Mission Control doesn’t affect the window, so it stays visible and stationary, like the desktop window.
+         */
+        int NSWindowCollectionBehaviorStationary = 1 << 4;
+        /**
+         * The window participates in the window cycle for use with the Cycle Through Windows menu item.
+         */
+        int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5;
+        /**
+         * The window isn’t part of the window cycle for use with the Cycle Through Windows menu item.
+         */
+        int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;
+        /**
+         * The window can enter full-screen mode.
+         */
+        int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7;
+        /**
+         * The window displays on the same space as the full screen window.
+         */
+        int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;
+        /**
+         * The window doesn’t support full-screen mode.
+         */
+        int NSWindowCollectionBehaviorFullScreenNone = 1 << 9;
+        /**
+         * @since macOS 10.11
+         */
+        int NSWindowCollectionBehaviorFullScreenAllowsTiling = 1 << 11;
+        /**
+         * @since macOS 10.11
+         */
+        int NSWindowCollectionBehaviorFullScreenDisallowsTiling = 1 << 12;
+        /**
+         * The behavior marking this window as primary for both Stage Manager and full screen.
+         * @since macOS 13.0
+         */
+        int NSWindowCollectionBehaviorPrimary = 1 << 16;
+        /**
+         * @since macOS 13.0
+         * The behavior marking this window as auxiliary for both Stage Manager and full screen.
+         */
+        int NSWindowCollectionBehaviorAuxiliary = 1 << 17;
+        /**
+         * @since macOS 13.0
+         * The behavior marking this window as one that can join all apps for both Stage Manager and full screen.
+         */
+        int NSWindowCollectionBehaviorCanJoinAllApplications = 1 << 18;
     }
 
     /// enum values
@@ -397,6 +488,7 @@ public abstract class NSWindow extends NSResponder {
      * When this property is the empty string, the system removes the subtitle from the window layout.
      *
      * @param aString A secondary line of text that appears in the title bar of the window.
+     * @since macOS 11.0+
      */
     public abstract void setSubtitle(String aString);
 
@@ -494,6 +586,9 @@ public abstract class NSWindow extends NSResponder {
      */
     public abstract NSUInteger styleMask();
 
+    /**
+     * @see NSWindowStyleMask
+     */
     public abstract void setStyleMask(NSUInteger mask);
 
     /**
@@ -1399,6 +1494,7 @@ public abstract class NSWindow extends NSResponder {
 
     /**
      * Sets the size of the window’s content view to a given size, which is expressed in the window’s base coordinate system.
+     *
      * @param size The new size of the window’s content view in the window’s base coordinate system.
      */
     public abstract void setContentSize(NSSize size);
@@ -1649,6 +1745,7 @@ public abstract class NSWindow extends NSResponder {
      * The style of the titlebar area when the window displays a toolbar.
      *
      * @param toolbarStyle {@link NSWindowToolbarStyle}
+     * @since macOS 11.0+
      */
     public abstract void setToolbarStyle(int toolbarStyle);
 
@@ -1733,6 +1830,7 @@ public abstract class NSWindow extends NSResponder {
      * together by using the same tabbing identifier.
      *
      * @param identifier A value that allows a group of related windows.
+     * @since macOS 10.12+
      */
     public abstract void setTabbingIdentifier(String identifier);
 
@@ -1759,6 +1857,7 @@ public abstract class NSWindow extends NSResponder {
      * NSFullSizeContentViewWindowMask is also set.
      *
      * @param value A Boolean value that indicates whether the title bar draws its background.
+     * @since macOS 10.10+
      */
     public abstract void setTitlebarAppearsTransparent(final boolean value);
 }

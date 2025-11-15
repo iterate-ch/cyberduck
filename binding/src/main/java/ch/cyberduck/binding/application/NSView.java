@@ -32,7 +32,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-public abstract class NSView extends NSResponder {
+public abstract class NSView extends NSResponder implements NSUserInterfaceItemIdentification {
     private static final NSView._Class CLASS = org.rococoa.Rococoa.createClass("NSView", NSView._Class.class);
 
     public static final int NSViewNotSizable = 0;
@@ -278,6 +278,13 @@ public abstract class NSView extends NSResponder {
      * @return The minimum size of the view that satisfies the constraints it holds.
      */
     public abstract NSSize fittingSize();
+
+    /**
+     * The natural size for the receiving view, considering only properties of the view itself.
+     *
+     * @return A size indicating the natural size for the receiving view based on its intrinsic properties.
+     */
+    public abstract NSSize intrinsicContentSize();
 
     /**
      * Original signature : <code>void setAutoresizesSubviews(BOOL)</code><br>
@@ -559,6 +566,28 @@ public abstract class NSView extends NSResponder {
      * <i>native declaration : :218</i>
      */
     public abstract void displayIfNeededIgnoringOpacity();
+
+    /**
+     *
+     * @return A Boolean value indicating whether the view needs a layout pass before it can be drawn.
+     */
+    public abstract boolean needsLayout();
+
+    /**
+     * Perform layout in concert with the constraint-based layout system.
+     */
+    public abstract void layout();
+
+    /**
+     * Updates the layout of the receiving view and its subviews based on the current views and constraints.
+     */
+    public abstract void layoutSubtreeIfNeeded();
+
+    /**
+     * Updates the constraints for the receiving view and its subviews.
+     */
+    public abstract void updateConstraintsForSubtreeIfNeeded();
+
     /**
      * <i>native declaration : :219</i><br>
      * Conversion Error : NSRect
@@ -1162,4 +1191,13 @@ public abstract class NSView extends NSResponder {
      * <i>from NSFullScreenMode native declaration : :419</i>
      */
     public abstract boolean isInFullScreenMode();
+
+    /**
+     * When this property is set to true, the view’s superview looks at the view’s autoresizing mask, produces constraints
+     * that implement it, and adds those constraints to itself (the superview). If your view has flexible constraints that
+     * require dynamic adjustment, set this property to false and apply the constraints yourself.
+     *
+     * @param flag A Boolean value indicating whether the view’s autoresizing mask is translated into constraints for the constraint-based layout system.
+     */
+    public abstract void setTranslatesAutoresizingMaskIntoConstraints(final boolean flag);
 }

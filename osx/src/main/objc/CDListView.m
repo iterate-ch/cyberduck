@@ -26,57 +26,9 @@
 
 static NSTableColumn *localSelectionColumn;
 
-- (void)awakeFromNib
-{
-	[self setTarget:self];
-	// [self setAction:@selector(handleBrowserClick:)];
-	[self setDoubleAction:@selector(handleBrowserDoubleClick:)];
-}
-
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
 {
 	return YES;
-}
-
-- (void)dealloc
-{
-	[super dealloc];
-}
-
-- (void)handleBrowserClick:(id)sender {
-	mBrowserWasDoubleClicked = NO;
-	NSPoint where = [self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil];
-	NSInteger row = [self rowAtPoint:where];
-	NSInteger col = [self columnAtPoint:where];
-	if(row >= 0 && col >= 0) {
-		NSTableColumn *column = [[self tableColumns] objectAtIndex:col];
-		if([[self delegate] respondsToSelector:@selector(isColumnEditable:)]) {
-			if([[self delegate] performSelector:@selector(isColumnEditable:) withObject:column]) {
-				mBrowserEditingColumn = col;
-				mBrowserEditingRow = row;
-				NSValue *wrappedMouseLocation = [NSValue valueWithPoint:[NSEvent mouseLocation]];
-				[self performSelector:@selector(handleBrowserClickOffloaded:) withObject:wrappedMouseLocation afterDelay:0.5];
-			}
-		}
-	}
-}
-
-- (void)handleBrowserClickOffloaded:(NSValue *)inWrappedMouseLocation {
-	// UI: mouse must not have ben moved since first click, and must not have been double-clicked
-	if((!mBrowserWasDoubleClicked) && (NSEqualPoints([inWrappedMouseLocation pointValue], [NSEvent mouseLocation])) ) {
-		if(mBrowserEditingRow == [self selectedRow])
-			[self editColumn:mBrowserEditingColumn row:mBrowserEditingRow withEvent:nil select:YES];
-	}
-	mBrowserWasDoubleClicked = NO;
-}
-
-- (void)handleBrowserDoubleClick:(id)sender {
-	mBrowserWasDoubleClicked = YES;
-    if([self clickedRow] != -1) { // make sure double click was not in table header
-		if ([[self delegate] respondsToSelector:@selector(tableRowDoubleClicked:)]) {
-			[[self delegate] performSelector:@selector(tableRowDoubleClicked:) withObject:self];
-		}
-	}
 }
 
 - (void)cancelOperation:(id)sender
