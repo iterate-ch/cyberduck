@@ -266,6 +266,7 @@ public abstract class NSWindow extends NSResponder {
         int NSWindowCollectionBehaviorFullScreenDisallowsTiling = 1 << 12;
         /**
          * The behavior marking this window as primary for both Stage Manager and full screen.
+         *
          * @since macOS 13.0
          */
         int NSWindowCollectionBehaviorPrimary = 1 << 16;
@@ -871,26 +872,66 @@ public abstract class NSWindow extends NSResponder {
      * <i>native declaration : :320</i>
      */
     public abstract NSColor backgroundColor();
+
     /**
-     * <i>native declaration : :323</i><br>
-     * Conversion Error : /// Original signature : <code>void setContentBorderThickness(CGFloat, null)</code><br>
-     * - (void)setContentBorderThickness:(CGFloat)thickness forEdge:(null)edge; (Argument edge cannot be converted)
+     * Specifies the thickness of a given border of the window.
+     * <p>
+     * In a nontextured window calling setContentBorderThickness:forEdge: passing NSMaxYEdge will raise an exception
+     * (in a nontextured window, it’s only valid to set the content border thickness of the bottom edge). It is only valid to set the content border thickness of the top edge in a textured window.
+     * <p>
+     * Typically, if you call setContentBorderThickness:forEdge:, you should also call setAutorecalculatesContentBorderThickness:NO forEdge:.
+     * <p>
+     * The contentBorder does not include the title bar or toolbar, so a textured window that just wants the gradient
+     * in the title bar and toolbar should have a thickness of 0 for NSMaxYEdge.
+     *
+     * @param thickness The thickness for edge, in points.
+     * @param edge      The border whose thickness to set:
+     *                  <p>
+     *                  NSMaxYEdge: Top border.
+     *                  <p>
+     *                  NSMinYEdge: Bottom border.
+     * @see ch.cyberduck.binding.foundation.FoundationKitFunctions.NSRectEdge
      */
+    public abstract void setContentBorderThickness_forEdge(CGFloat thickness, int edge);
+
     /**
-     * <i>native declaration : :324</i><br>
-     * Conversion Error : /// Original signature : <code>CGFloat contentBorderThicknessForEdge(null)</code><br>
-     * - (CGFloat)contentBorderThicknessForEdge:(null)edge; (Argument edge cannot be converted)
+     * Indicates the thickness of a given border of the window.
+     *
+     * @param edge edge
+     *             The border whose thickness to get:
+     *             <p>
+     *             NSMaxYEdge: Top border.
+     *             <p>
+     *             NSMinYEdge: Bottom border.
+     * @return Thickness of the given border, in points.
      */
+    public abstract CGFloat contentBorderThicknessForEdge(int edge);
+
     /**
-     * <i>native declaration : :326</i><br>
-     * Conversion Error : /// Original signature : <code>void setAutorecalculatesContentBorderThickness(BOOL, null)</code><br>
-     * - (void)setAutorecalculatesContentBorderThickness:(BOOL)flag forEdge:(null)edge; (Argument edge cannot be converted)
+     * Specifies whether the window calculates the thickness of a given border automatically.
+     * Typically, if you call setContentBorderThickness:forEdge:, you should also call setAutorecalculatesContentBorderThickness:NO forEdge:.
+     *
+     * @param flag If true, the window calculates the thickness of the edge automatically; if false, it does not.
+     * @param edge The border to set auto-recalculation on or off:
+     *             <p>
+     *             NSMaxYEdge: Top border.
+     *             <p>
+     *             NSMinYEdge: Bottom border.
      */
+    public abstract void setAutorecalculatesContentBorderThickness_forEdge(boolean flag, int edge);
+
     /**
-     * <i>native declaration : :327</i><br>
-     * Conversion Error : /// Original signature : <code>BOOL autorecalculatesContentBorderThicknessForEdge(null)</code><br>
-     * - (BOOL)autorecalculatesContentBorderThicknessForEdge:(null)edge; (Argument edge cannot be converted)
+     * Indicates whether the window calculates the thickness of a given border automatically.
+     *
+     * @param edge The border to check:
+     *             <p>
+     *             NSMaxYEdge: Top border.
+     *             <p>
+     *             NSMinYEdge: Bottom border.
+     * @return true when the window auto-recalculates the given border’s thickness; otherwise, false.
      */
+    public abstract boolean autorecalculatesContentBorderThicknessForEdge(int edge);
+
     /**
      * Original signature : <code>void setMovableByWindowBackground(BOOL)</code><br>
      * <i>native declaration : :331</i>
