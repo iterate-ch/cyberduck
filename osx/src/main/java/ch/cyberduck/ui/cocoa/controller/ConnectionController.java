@@ -54,6 +54,7 @@ public class ConnectionController extends BookmarkContainerController {
         }
     }
 
+    @Outlet
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setTarget(this.id());
