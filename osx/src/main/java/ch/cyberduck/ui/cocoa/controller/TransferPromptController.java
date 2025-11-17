@@ -23,6 +23,7 @@ import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Cache;
@@ -445,13 +446,14 @@ public abstract class TransferPromptController extends SheetController implement
 
         for(TransferAction action : TransferAction.forTransfer(transfer.getType())) {
             this.actionPopup.addItemWithTitle(action.getTitle());
+            final NSMutableAttributedString title = NSMutableAttributedString.create(action.getTitle());
+            title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
+                    String.format("\n%s", action.getDescription()), MENU_HELP_FONT_ATTRIBUTES));
+            this.actionPopup.lastItem().setAttributedTitle(title);
             this.actionPopup.lastItem().setRepresentedObject(action.name());
             if(action.equals(defaultAction)) {
                 this.actionPopup.selectItem(actionPopup.lastItem());
             }
-            this.actionPopup.addItemWithTitle(action.getDescription());
-            this.actionPopup.lastItem().setAttributedTitle(NSAttributedString.attributedStringWithAttributes(action.getDescription(), MENU_HELP_FONT_ATTRIBUTES));
-            this.actionPopup.lastItem().setEnabled(false);
         }
         this.actionPopup.setTarget(this.id());
         this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
