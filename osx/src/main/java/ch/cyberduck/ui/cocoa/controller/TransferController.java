@@ -198,6 +198,7 @@ public class TransferController extends WindowController implements TransferList
     public void setWindow(NSWindow window) {
         window.setFrameAutosaveName("Transfers");
         window.setContentMinSize(new NSSize(400d, 150d));
+        window.setMovableByWindowBackground(true);
         window.setTitle(LocaleFactory.localizedString("Transfers"));
         if(window.respondsToSelector(Foundation.selector("setTabbingIdentifier:"))) {
             window.setTabbingIdentifier(preferences.getProperty("queue.window.tabbing.identifier"));
@@ -307,7 +308,7 @@ public class TransferController extends WindowController implements TransferList
 
     public void setQueueTable(NSTableView view) {
         this.transferTable = view;
-        this.transferTable.setRowHeight(new CGFloat(82));
+        this.transferTable.setRowHeight(new CGFloat(92));
         {
             NSTableColumn c = tableColumnsFactory.create(TransferColumn.progress.name());
             c.setMinWidth(80f);

@@ -840,6 +840,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
         window.setContentMinSize(new NSSize(600d, 200d));
+        window.setMovableByWindowBackground(true);
         if(window.respondsToSelector(Foundation.selector("setTabbingIdentifier:"))) {
             window.setTabbingIdentifier(preferences.getProperty("browser.window.tabbing.identifier"));
         }
