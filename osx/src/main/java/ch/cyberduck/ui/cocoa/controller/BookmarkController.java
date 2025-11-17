@@ -194,6 +194,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         return contentView;
     }
 
+    @Outlet
     public void setTabView(final NSTabView tabView) {
         this.tabView = tabView;
         this.tabView.setDelegate(this.id());
@@ -208,6 +209,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         return contentView;
     }
 
+    @Outlet
     public void setContentView(final NSView contentView) {
         this.contentView = contentView;
     }
@@ -216,10 +218,12 @@ public abstract class BookmarkController extends SheetController implements NSTa
         return containerOptionsView;
     }
 
+    @Outlet
     public void setContainerOptionsView(final NSView containerOptionsView) {
         this.containerOptionsView = containerOptionsView;
     }
 
+    @Outlet
     public void setProtocolPopup(final NSPopUpButton button) {
         this.protocolPopup = button;
         this.protocolPopup.setEnabled(true);
@@ -290,6 +294,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setNicknameField(final NSTextField f) {
         this.nicknameField = f;
         this.nicknameField.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.name.configurable"));
@@ -306,6 +311,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setLabelsField(final NSTokenField f) {
         this.labelsField = f;
         this.labelsField.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.labels.configurable"));
@@ -336,6 +342,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setHostField(final NSTextField field) {
         this.hostField = field;
         this.notificationCenter.addObserver(this.id(),
@@ -435,6 +442,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setPathField(final NSTextField field) {
         this.pathField = field;
         this.notificationCenter.addObserver(this.id(),
@@ -454,6 +462,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setUsernameField(final NSTextField field) {
         this.usernameField = field;
         this.notificationCenter.addObserver(this.id(),
@@ -474,6 +483,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setUsernameLabel(final NSTextField label) {
         this.usernameLabel = label;
         this.addObserver(bookmark -> usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
@@ -482,6 +492,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         )));
     }
 
+    @Outlet
     public void setAnonymousCheckbox(final NSButton button) {
         this.anonymousCheckbox = button;
         this.anonymousCheckbox.setTarget(this.id());
@@ -511,6 +522,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setPasswordField(final NSSecureTextField field) {
         this.passwordField = field;
         this.notificationCenter.addObserver(this.id(),
@@ -566,6 +578,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         }
     }
 
+    @Outlet
     public void setPasswordLabel(final NSTextField passwordLabel) {
         this.passwordLabel = passwordLabel;
         this.addObserver(bookmark -> passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
@@ -573,6 +586,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         )));
     }
 
+    @Outlet
     public void setCertificatePopup(final NSPopUpButton button) {
         this.certificatePopup = button;
         this.certificatePopup.setTarget(this.id());
@@ -605,6 +619,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setTimezonePopup(final NSPopUpButton button) {
         this.timezonePopup = button;
         this.timezonePopup.setTarget(this.id());
@@ -652,6 +667,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setEncodingPopup(final NSPopUpButton button) {
         this.encodingPopup = button;
         this.encodingPopup.setTarget(this.id());
@@ -718,6 +734,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setWebURLField(final NSTextField field) {
         this.webURLField = field;
         final NSTextFieldCell cell = this.webURLField.cell();
@@ -740,6 +757,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
+    @Outlet
     public void setWebUrlImage(final NSButton button) {
         this.webUrlImage = button;
         this.webUrlImage.setTarget(this.id());
@@ -790,6 +808,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
     }
 
+    @Outlet
     public void setPrivateKeyPopup(final NSPopUpButton button) {
         this.privateKeyPopup = button;
         this.privateKeyPopup.setTarget(this.id());
