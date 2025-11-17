@@ -368,6 +368,8 @@ public class TransferController extends WindowController implements TransferList
                 return transferTableModel.getSource().get(row.intValue()).getName();
             }
         }).id());
+        this.transferTable.setTarget(transferTableDelegate.id());
+        this.transferTable.setDoubleAction(Foundation.selector("tableRowDoubleClicked:"));
         // receive drag events from types
         // in fact we are not interested in file promises, but because the browser model can only initiate
         // a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
