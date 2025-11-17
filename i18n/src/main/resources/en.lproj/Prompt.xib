@@ -30,11 +30,11 @@
             <rect key="contentRect" x="220" y="298" width="589" height="350"/>
             <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
             <view key="contentView" id="4">
-                <rect key="frame" x="0.0" y="0.0" width="589" height="350"/>
+                <rect key="frame" x="0.0" y="0.0" width="589" height="358"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15" userLabel="Overwrite Action">
-                        <rect key="frame" x="17" y="306" width="556" height="25"/>
+                        <rect key="frame" x="17" y="314" width="556" height="25"/>
                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="18" id="16">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="message"/>
@@ -46,13 +46,13 @@
                         </popUpButtonCell>
                     </popUpButton>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9">
-                        <rect key="frame" x="20" y="43" width="549" height="259"/>
+                        <rect key="frame" x="20" y="60" width="549" height="250"/>
                         <clipView key="contentView" id="RNR-mg-LJN">
-                            <rect key="frame" x="1" y="1" width="547" height="257"/>
+                            <rect key="frame" x="1" y="1" width="547" height="248"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" autosaveName="ValidateTable" id="11" customClass="CDOutlineView">
-                                    <rect key="frame" x="0.0" y="0.0" width="547" height="257"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="547" height="248"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -133,14 +133,15 @@ DQ
                     <constraint firstAttribute="trailing" secondItem="cfF-Iv-FNQ" secondAttribute="trailing" constant="20" symbolic="YES" id="E5r-vt-izh"/>
                     <constraint firstItem="15" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="LMi-v3-klK"/>
                     <constraint firstItem="15" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="NEP-Ec-4US"/>
-                    <constraint firstItem="cfF-Iv-FNQ" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="8" symbolic="YES" id="SNL-nQ-3QV"/>
                     <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="Spw-Z5-Co6"/>
                     <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" symbolic="YES" id="Tvi-Wv-CFu"/>
                     <constraint firstItem="9" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="8" symbolic="YES" id="UNL-sT-YuO"/>
+                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="fWP-WV-dP6"/>
                     <constraint firstAttribute="bottom" secondItem="cfF-Iv-FNQ" secondAttribute="bottom" constant="13" id="uGM-me-aM6"/>
                     <constraint firstItem="9" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="uU6-u9-m4K"/>
                 </constraints>
             </view>
+            <contentBorderThickness minY="50"/>
             <connections>
                 <outlet property="initialFirstResponder" destination="5" id="56"/>
             </connections>
@@ -163,7 +164,7 @@ DQ
                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                             </textFieldCell>
                         </textField>
-                        <imageView ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hSP-0U-eb2">
+                        <imageView translatesAutoresizingMaskIntoConstraints="NO" id="hSP-0U-eb2">
                             <rect key="frame" x="16" y="130" width="16" height="16"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="16" id="pGg-sp-iHL"/>
@@ -216,7 +217,7 @@ DQ
                             </textFieldCell>
                         </textField>
                         <imageView translatesAutoresizingMaskIntoConstraints="NO" id="Jve-Jm-UAk">
-                            <rect key="frame" x="16" y="42" width="16" height="16"/>
+                            <rect key="frame" x="16" y="26" width="16" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="16" id="Jm9-T9-maF"/>
                                 <constraint firstAttribute="width" constant="16" id="KRq-UZ-y4b"/>
