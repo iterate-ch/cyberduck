@@ -96,7 +96,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
     @Outlet
     private NSTextField hostField;
     @Outlet
-    private NSButton alertIcon;
+    private NSImageView alertIcon;
     @Outlet
     private NSTextField portField;
     @Outlet
@@ -377,14 +377,10 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.update();
     }
 
-    public void setAlertIcon(final NSButton button) {
+    @Outlet
+    public void setAlertIcon(final NSImageView button) {
         this.alertIcon = button;
-        this.alertIcon.setEnabled(false);
         this.alertIcon.setImage(null);
-        this.alertIcon.setTarget(this.id());
-        if(new ReachabilityDiagnosticsFactory().isAvailable()) {
-            this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
-        }
         this.addObserver(new BookmarkObserver() {
             private final Reachability reachability = ReachabilityFactory.get();
 
@@ -399,7 +395,6 @@ public abstract class BookmarkController extends SheetController implements NSTa
 
                         @Override
                         public void cleanup(final Boolean result, final BackgroundException failure) {
-                            alertIcon.setEnabled(!result);
                             alertIcon.setImage(result ? null : IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
                             super.cleanup(result, failure);
                         }
@@ -407,7 +402,6 @@ public abstract class BookmarkController extends SheetController implements NSTa
                 }
                 else {
                     alertIcon.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
-                    alertIcon.setEnabled(false);
                 }
             }
         });
