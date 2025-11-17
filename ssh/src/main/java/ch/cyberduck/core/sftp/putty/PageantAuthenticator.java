@@ -23,7 +23,7 @@ import ch.cyberduck.core.sftp.auth.AgentAuthenticator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -62,15 +62,19 @@ public class PageantAuthenticator extends AgentAuthenticator {
             return Collections.emptyList();
         }
         log.debug("Retrieve identities from proxy {}", proxy);
-        final List<Identity> identities = new ArrayList<Identity>();
         try {
-            Collections.addAll(identities, proxy.getIdentities());
+            final Identity[] retrieved = proxy.getIdentities();
+            if(null == retrieved) {
+                return Collections.emptyList();
+            }
+            final List<Identity> identities = Arrays.asList(retrieved);
             log.debug("Found {} identities", identities.size());
+            return identities;
         }
         catch(Exception e) {
             log.warn("Ignore failure reading identities from {}", proxy);
+            return Collections.emptyList();
         }
-        return identities;
     }
 
     @Override
