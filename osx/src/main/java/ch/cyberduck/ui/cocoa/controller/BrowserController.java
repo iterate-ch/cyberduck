@@ -2342,7 +2342,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void run() {
                 listStatusController.start(action);
                 outlineStatusController.start(action);
-                if(pool == SessionPool.DISCONNECTED) {
+                if(!isMounted()) {
                     browserListProgressIndicator.startAnimation(null);
                     browserOutlineProgressIndicator.startAnimation(null);
                 }
