@@ -67,7 +67,7 @@ Gw
                                 </connections>
                             </button>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="30">
-                                <rect key="frame" x="18" y="19" width="201" height="18"/>
+                                <rect key="frame" x="18" y="19" width="201" height="22"/>
                                 <buttonCell key="cell" type="check" title="Сохранить в связку ключей" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="31">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -87,8 +87,12 @@ Gw
                         <constraints>
                             <constraint firstItem="14" firstAttribute="leading" secondItem="9x4-GT-xnj" secondAttribute="trailing" constant="12" symbolic="YES" id="0Op-uc-DQS"/>
                             <constraint firstAttribute="bottom" secondItem="9x4-GT-xnj" secondAttribute="bottom" constant="20" symbolic="YES" id="6nc-ya-emv"/>
+                            <constraint firstItem="66" firstAttribute="centerY" secondItem="10" secondAttribute="centerY" id="Gad-g0-NBC"/>
+                            <constraint firstItem="10" firstAttribute="centerY" secondItem="14" secondAttribute="centerY" id="Ho1-2B-gjd"/>
                             <constraint firstAttribute="height" constant="60" id="IY7-xx-Spw"/>
                             <constraint firstAttribute="trailing" secondItem="14" secondAttribute="trailing" constant="20" symbolic="YES" id="JU8-K5-5VY"/>
+                            <constraint firstItem="30" firstAttribute="centerY" secondItem="66" secondAttribute="centerY" id="cj2-tt-acL"/>
+                            <constraint firstItem="10" firstAttribute="centerY" secondItem="9x4-GT-xnj" secondAttribute="centerY" id="dIK-1n-G85"/>
                             <constraint firstItem="66" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="30" secondAttribute="trailing" constant="12" symbolic="YES" id="fbi-ws-nrw"/>
                             <constraint firstAttribute="bottom" secondItem="10" secondAttribute="bottom" constant="20" symbolic="YES" id="iXV-Gl-5PK"/>
                             <constraint firstAttribute="bottom" secondItem="66" secondAttribute="bottom" constant="20" symbolic="YES" id="jMC-0W-Wm5"/>
@@ -97,6 +101,7 @@ Gw
                             <constraint firstAttribute="bottom" secondItem="30" secondAttribute="bottom" constant="20" symbolic="YES" id="tBB-nE-Wai"/>
                             <constraint firstItem="30" firstAttribute="leading" secondItem="jUk-Uf-XtH" secondAttribute="leading" constant="20" symbolic="YES" id="uQe-nI-aDF"/>
                             <constraint firstItem="9x4-GT-xnj" firstAttribute="leading" secondItem="10" secondAttribute="trailing" constant="12" symbolic="YES" id="vHc-lt-mE4"/>
+                            <constraint firstItem="9x4-GT-xnj" firstAttribute="centerY" secondItem="14" secondAttribute="centerY" id="yq4-Ov-dSm"/>
                         </constraints>
                     </customView>
                 </subviews>
