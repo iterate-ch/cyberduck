@@ -143,6 +143,7 @@ public abstract class TransferPromptController extends SheetController implement
         super.setWindow(window);
     }
 
+    @Outlet
     public void setDetailsView(final NSView detailsView) {
         this.detailsView = detailsView;
         this.detailsPopover = NSPopover.create();
@@ -197,6 +198,7 @@ public abstract class TransferPromptController extends SheetController implement
         return browserModel.isSelected(file);
     }
 
+    @Outlet
     public void setBrowserView(final NSOutlineView view) {
         this.browserView = view;
         this.browserView.setHeaderView(null);
@@ -391,39 +393,48 @@ public abstract class TransferPromptController extends SheetController implement
         this.browserView.sizeToFit();
     }
 
+    @Outlet
     public void setRemoteURLField(final NSTextField f) {
         this.remoteURLField = f;
     }
 
+    @Outlet
     public void setRemoteSizeField(final NSTextField f) {
         this.remoteSizeField = f;
     }
 
+    @Outlet
     public void setRemoteModificationField(final NSTextField f) {
         this.remoteModificationField = f;
     }
 
+    @Outlet
     public void setLocalURLField(final NSTextField f) {
         this.localURLField = f;
     }
 
+    @Outlet
     public void setLocalSizeField(final NSTextField f) {
         this.localSizeField = f;
     }
 
+    @Outlet
     public void setLocalModificationField(final NSTextField f) {
         this.localModificationField = f;
     }
 
+    @Outlet
     public void setStatusIndicator(final NSProgressIndicator f) {
         this.statusIndicator = f;
         this.statusIndicator.setDisplayedWhenStopped(false);
     }
 
+    @Outlet
     public void setStatusLabel(final NSTextField f) {
         this.statusLabel = f;
     }
 
+    @Outlet
     public void setActionPopup(final NSPopUpButton actionPopup) {
         this.actionPopup = actionPopup;
         this.actionPopup.removeAllItems();
