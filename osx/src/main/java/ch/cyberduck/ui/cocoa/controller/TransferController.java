@@ -416,7 +416,7 @@ public class TransferController extends WindowController implements TransferList
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
             final String remote = transfer.getRemote().getUrl();
-            urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(remote));
+            urlField.setStringValue(remote);
             final String local = transfer.getLocal();
             if(local != null) {
                 localField.setAttributedStringValue(
