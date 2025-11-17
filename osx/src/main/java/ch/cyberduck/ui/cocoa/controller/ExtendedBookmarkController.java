@@ -96,6 +96,7 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
         super.setWindow(window);
     }
 
+    @Outlet
     public void setTransferPopup(final NSPopUpButton button) {
         this.transferPopup = button;
         this.transferPopup.setTarget(this.id());
@@ -120,6 +121,7 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
         this.update();
     }
 
+    @Outlet
     public void setDownloadPathPopup(final NSPopUpButton button) {
         this.downloadPathPopup = button;
         this.downloadPathPopup.setTarget(this.id());
@@ -172,6 +174,7 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
         }
     }
 
+    @Action
     public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
