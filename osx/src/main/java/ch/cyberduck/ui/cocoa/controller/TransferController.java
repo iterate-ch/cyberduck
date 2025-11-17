@@ -206,23 +206,25 @@ public class TransferController extends WindowController implements TransferList
         super.setWindow(window);
     }
 
+    @Outlet
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
-        this.urlField.setAllowsEditingTextAttributes(true);
-        this.urlField.setSelectable(true);
+        this.urlField.setSelectable(false);
     }
 
+    @Outlet
     public void setLocalField(NSTextField localField) {
         this.localField = localField;
-        this.localField.setAllowsEditingTextAttributes(true);
         this.localField.setSelectable(true);
     }
 
+    @Outlet
     public void setLocalLabel(NSTextField localLabel) {
         this.localLabel = localLabel;
         this.localLabel.setStringValue(LocaleFactory.localizedString("Local File:", "Transfer"));
     }
 
+    @Outlet
     public void setIconView(final NSImageView iconView) {
         this.iconView = iconView;
     }
@@ -242,7 +244,8 @@ public class TransferController extends WindowController implements TransferList
         return filterField;
     }
 
-    public void setFilterField(NSTextField t) {
+    @Outlet
+    public void setFilterField(final NSTextField t) {
         this.filterField = t;
         notificationCenter.addObserver(this.id(),
             Foundation.selector("filterFieldTextDidChange:"),
@@ -250,11 +253,13 @@ public class TransferController extends WindowController implements TransferList
             t.id());
     }
 
+    @Delegate
     public void filterFieldTextDidChange(final NSNotification notification) {
         transferTableModel.setFilter(filterField.stringValue());
         this.reload();
     }
 
+    @Outlet
     public void setTransferSpinner(NSProgressIndicator transferSpinner) {
         this.transferSpinner = transferSpinner;
     }
@@ -306,6 +311,7 @@ public class TransferController extends WindowController implements TransferList
         super.invalidate();
     }
 
+    @Outlet
     public void setQueueTable(NSTableView view) {
         this.transferTable = view;
         this.transferTable.setRowHeight(new CGFloat(92));
