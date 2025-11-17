@@ -201,12 +201,4 @@ public class TransferTableDataSource extends ListDataSource {
         }
         return controllers.get(t);
     }
-
-    public boolean isHighlighted(final int row) {
-        return this.getController(row).isHighlighted();
-    }
-
-    public void setHighlighted(final int row, final boolean highlighted) {
-        this.getController(row).setHighlighted(highlighted);
-    }
 }

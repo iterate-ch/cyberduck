@@ -205,26 +205,6 @@ public class TransferController extends WindowController implements TransferList
         super.setWindow(window);
     }
 
-    @Override
-    public void windowDidBecomeKey(NSNotification notification) {
-        this.updateHighlight();
-    }
-
-    @Override
-    public void windowDidResignKey(NSNotification notification) {
-        this.updateHighlight();
-    }
-
-    @Override
-    public void windowDidBecomeMain(NSNotification notification) {
-        this.updateHighlight();
-    }
-
-    @Override
-    public void windowDidResignMain(NSNotification notification) {
-        this.updateHighlight();
-    }
-
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
         this.urlField.setAllowsEditingTextAttributes(true);
@@ -365,13 +345,7 @@ public class TransferController extends WindowController implements TransferList
             }
 
             @Override
-            public void selectionIsChanging(final NSNotification notification) {
-                updateHighlight();
-            }
-
-            @Override
             public void selectionDidChange(final NSNotification notification) {
-                updateHighlight();
                 updateSelection();
                 transferTable.noteHeightOfRowsWithIndexesChanged(
                     NSIndexSet.indexSetWithIndexesInRange(
@@ -416,21 +390,6 @@ public class TransferController extends WindowController implements TransferList
 
     public TransferTableDataSource getTransferTableModel() {
         return transferTableModel;
-    }
-
-    /**
-     * Update highlighted rows
-     */
-    private void updateHighlight() {
-        final boolean main = window().isMainWindow();
-        final NSIndexSet set = transferTable.selectedRowIndexes();
-        for(int i = 0; i < transferTableModel.numberOfRowsInTableView(transferTable).intValue(); i++) {
-            boolean highlighted = set.containsIndex(new NSUInteger(i)) && main;
-            if(transferTableModel.isHighlighted(i) == highlighted) {
-                continue;
-            }
-            transferTableModel.setHighlighted(i, highlighted);
-        }
     }
 
     /**
@@ -491,7 +450,6 @@ public class TransferController extends WindowController implements TransferList
             (Rococoa.cast(transferTable.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
         }
         transferTable.reloadData();
-        this.updateHighlight();
         this.updateSelection();
     }
 
