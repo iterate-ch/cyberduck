@@ -88,14 +88,14 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final TransferStatus status = new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH);
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
         try {
-            final HttpResponseOutputStream<File> out = new StoregateWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
             fail();
         }
         catch(LockedException e) {
             //
         }
         status.setLockId(lockId);
-        final HttpResponseOutputStream<File> out = new StoregateWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -161,7 +161,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final TransferStatus status = new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateMultipartWriteFeature writer = new StoregateMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<File> out = new StoregateWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final String version = out.getStatus().getId();
