@@ -64,6 +64,7 @@ public class TaskController extends BundleController {
     public void setProgress(NSProgressIndicator progress) {
         this.progress = progress;
         this.progress.setDisplayedWhenStopped(false);
+        this.progress.setUsesThreadedAnimation(true);
         this.progress.setIndeterminate(true);
         if(task.isRunning()) {
             this.progress.startAnimation(null);
