@@ -98,7 +98,12 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final Host host = new Host(new S3Protocol(), "h");
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host) {
+            @Override
+            public S3CredentialsStrategy getAuthentication() {
+                return host::getCredentials;
+            }
+        };
         final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
                 "test-us-east-1-cyberduck", "us-east-1", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
@@ -110,7 +115,12 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final Host host = new Host(new S3Protocol(), "s3.eu-central-1.wasabisys.com");
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host) {
+            @Override
+            public S3CredentialsStrategy getAuthentication() {
+                return host::getCredentials;
+            }
+        };
         final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
                 "cyberduck", "eu-central-1", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
@@ -127,7 +137,12 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
                 return "wasabisys.com";
             }
         }, "wasabisys.com");
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host) {
+            @Override
+            public S3CredentialsStrategy getAuthentication() {
+                return host::getCredentials;
+            }
+        };
         final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
                 "cyberduck", "eu-central-1", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
@@ -144,7 +159,12 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
                 return "h";
             }
         }, "h");
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host) {
+            @Override
+            public S3CredentialsStrategy getAuthentication() {
+                return host::getCredentials;
+            }
+        };
         final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
                 "test-us-east-1-cyberduck", "us-east-1", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
@@ -164,7 +184,12 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
                 return super.getProperty(key);
             }
         };
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host) {
+            @Override
+            public S3CredentialsStrategy getAuthentication() {
+                return host::getCredentials;
+            }
+        };
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
