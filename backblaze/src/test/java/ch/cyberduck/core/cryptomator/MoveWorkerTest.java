@@ -164,7 +164,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(encryptedFolder));
-        assertThrows(NotfoundException.class, () -> cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(encryptedFile));
+        assertFalse(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(encryptedFile));
         assertTrue(new B2FindFeature(session, fileid).find(directoryRenamed));
         final Path fileRenamed = new Path(directoryRenamed, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new B2FindFeature(session, fileid).find(fileRenamed));
