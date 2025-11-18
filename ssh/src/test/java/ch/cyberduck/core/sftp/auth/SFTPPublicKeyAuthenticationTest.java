@@ -221,7 +221,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
         }
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test
     public void testUnknownFormat() throws Exception {
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
@@ -231,7 +231,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             session.disconnect();
             session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.getHost().getCredentials().setIdentity(key);
-            assertTrue(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
+            assertFalse(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                     fail();
