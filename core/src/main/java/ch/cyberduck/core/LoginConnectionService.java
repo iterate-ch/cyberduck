@@ -93,7 +93,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Obtain password from keychain or prompt
         synchronized(login) {
-            login.validate(bookmark, prompt, new LoginOptions(bookmark.getProtocol()));
+            login.validate(session, prompt, new LoginOptions(bookmark.getProtocol()));
         }
         this.connect(session, callback);
         return true;

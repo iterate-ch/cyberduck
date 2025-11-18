@@ -27,11 +27,11 @@ public interface LoginService {
     /**
      * Obtain password from password store or prompt user for input
      *
-     * @param bookmark Credentials
-     * @param pompt    Login prompt
-     * @param options  Login mechanism features
+     * @param session Credentials
+     * @param pompt   Login prompt
+     * @param options Login mechanism features
      */
-    void validate(Host bookmark, LoginCallback pompt, LoginOptions options) throws ConnectionCanceledException, LoginFailureException;
+    void validate(Session<?> session, LoginCallback pompt, LoginOptions options) throws ConnectionCanceledException, LoginFailureException;
 
     /**
      * Login and prompt on failure
