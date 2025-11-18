@@ -24,7 +24,8 @@ public class LoggingTranscriptListener implements TranscriptListener {
     private final Logger response;
 
     public LoggingTranscriptListener() {
-        this(LogManager.getLogger("ch.cyberduck.transcript.request"), LogManager.getLogger("ch.cyberduck.transcript.response"));
+        this(LogManager.getLogger("ch.cyberduck.transcript.request"),
+                LogManager.getLogger("ch.cyberduck.transcript.response"));
     }
 
     public LoggingTranscriptListener(final Logger request, final Logger response) {
@@ -38,8 +39,14 @@ public class LoggingTranscriptListener implements TranscriptListener {
             case request:
                 request.info(message);
                 break;
+            case requestheader:
+                request.debug(message);
+                break;
             case response:
                 response.info(message);
+                break;
+            case responseheader:
+                response.debug(message);
                 break;
         }
     }
