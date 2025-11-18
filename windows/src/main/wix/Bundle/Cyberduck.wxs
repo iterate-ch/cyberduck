@@ -6,7 +6,7 @@
     <MajorUpgrade AllowDowngrades="yes" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
-    <Property Id="BUILDVERSION" Value="0">
+    <Property Id="BUILDVERSION" Value="0" Secure="yes">
       <RegistrySearch Id="BuildVersion" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Type="raw" Name="CurrentBuild" />
     </Property>
 
