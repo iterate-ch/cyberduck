@@ -24,13 +24,12 @@ public class LoggingTranscriptListener implements TranscriptListener {
     @Override
     public void log(final Type type, final String message) {
         switch(type) {
-            case request:
-            case response:
-                log.info(message);
-                break;
             case requestheader:
             case responseheader:
                 log.debug(message);
+                break;
+            default:
+                log.info(message);
                 break;
         }
     }
