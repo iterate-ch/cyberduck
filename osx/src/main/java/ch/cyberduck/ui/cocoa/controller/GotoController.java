@@ -110,7 +110,10 @@ public class GotoController extends AlertController {
 
     @Override
     public boolean validate(final int option) {
-        return StringUtils.isNotBlank(folderCombobox.stringValue());
+        if(option == DEFAULT_OPTION) {
+            return StringUtils.isNotBlank(folderCombobox.stringValue());
+        }
+        return true;
     }
 
     private final class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {

@@ -178,9 +178,8 @@ public class LoginController extends AlertController {
 
     @Override
     public boolean validate(final int option) {
-        switch(option) {
-            case DEFAULT_OPTION:
-                return super.validate(option);
+        if(option == DEFAULT_OPTION) {
+            return super.validate(option);
         }
         return true;
     }

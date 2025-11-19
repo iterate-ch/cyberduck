@@ -20,6 +20,7 @@ import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -61,20 +62,23 @@ public abstract class FileController extends AlertController {
 
     @Override
     public boolean validate(final int option) {
-        final String input = StringUtils.trim(inputField.stringValue());
-        if(PreferencesFactory.get().getList("browser.filter.regex").stream().anyMatch(input::matches)) {
+        if(option == DEFAULT_OPTION) {
+            final String input = StringUtils.trim(inputField.stringValue());
+            if(PreferencesFactory.get().getList("browser.filter.regex").stream().anyMatch(input::matches)) {
+                return false;
+            }
+            if(StringUtils.isNotBlank(input)) {
+                if(cache.get(workdir).toStream().filter(new SimplePathPredicate(new Path(workdir, input, EnumSet.of(Path.Type.file)))).findAny().isPresent()) {
+                    return false;
+                }
+                if(cache.get(workdir).toStream().filter(new SimplePathPredicate(new Path(workdir, input, EnumSet.of(Path.Type.directory)))).findAny().isPresent()) {
+                    return false;
+                }
+                return true;
+            }
             return false;
         }
-        if(StringUtils.isNotBlank(input)) {
-            if(cache.get(workdir).toStream().filter(new SimplePathPredicate(new Path(workdir, input, EnumSet.of(Path.Type.file)))).findAny().isPresent()) {
-                return false;
-            }
-            if(cache.get(workdir).toStream().filter(new SimplePathPredicate(new Path(workdir, input, EnumSet.of(Path.Type.directory)))).findAny().isPresent()) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+        return true;
     }
 
     @Override

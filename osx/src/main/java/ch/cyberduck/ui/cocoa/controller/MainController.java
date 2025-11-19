@@ -781,7 +781,10 @@ public class MainController extends BundleController implements NSApplication.De
 
             @Override
             public boolean validate(final int option) {
-                return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
+                if(option == DEFAULT_OPTION) {
+                    return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
+                }
+                return true;
             }
         };
         TransferControllerFactory.get().alert(controller);
