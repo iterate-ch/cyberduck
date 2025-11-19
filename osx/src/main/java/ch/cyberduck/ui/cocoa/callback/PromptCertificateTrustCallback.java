@@ -52,12 +52,13 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
 
     public PromptCertificateTrustCallback(final ProxyController controller) {
         this.controller = controller;
-        this.window = null;
-    }
+        if(controller instanceof WindowController) {
+            this.window = ((WindowController) controller).window();
+        }
+        else {
+            this.window = null;
 
-    public PromptCertificateTrustCallback(final WindowController controller) {
-        this.controller = controller;
-        this.window = controller.window();
+        }
     }
 
     @Override
