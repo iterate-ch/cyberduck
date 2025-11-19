@@ -77,11 +77,11 @@ public class CustomHttpRequestExecutor extends HttpRequestExecutor {
                     case "X-Auth-Key":
                     case "X-Auth-Token":
                     case "X-FilesAPI-Key":
-                        listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(),
+                        listener.log(TranscriptListener.Type.requestheader, String.format("%s: %s", header.getName(),
                                 StringUtils.repeat("*", Integer.min(8, StringUtils.length(header.getValue())))));
                         break;
                     default:
-                        listener.log(TranscriptListener.Type.request, header.toString());
+                        listener.log(TranscriptListener.Type.requestheader, header.toString());
                         break;
                 }
             }
@@ -126,7 +126,7 @@ public class CustomHttpRequestExecutor extends HttpRequestExecutor {
         synchronized(listener) {
             listener.log(TranscriptListener.Type.response, response.getStatusLine().toString());
             for(Header header : response.getAllHeaders()) {
-                listener.log(TranscriptListener.Type.response, header.toString());
+                listener.log(TranscriptListener.Type.responseheader, header.toString());
             }
         }
     }

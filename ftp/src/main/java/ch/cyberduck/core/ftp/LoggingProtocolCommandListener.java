@@ -38,7 +38,7 @@ public class LoggingProtocolCommandListener implements ProtocolCommandListener, 
         final String message = StringUtils.chomp(event.getMessage());
         if(message.startsWith(FTPCmd.PASS.name())) {
             this.log(Type.request, String.format("%s %s", FTPCmd.PASS.name(),
-                    StringUtils.repeat("*", StringUtils.length(StringUtils.removeStart(message, FTPCmd.PASS.name())))));
+                    StringUtils.repeat("*", Integer.min(8, StringUtils.length(StringUtils.removeStart(message, FTPCmd.PASS.name()))))));
         }
         else {
             this.log(Type.request, message);

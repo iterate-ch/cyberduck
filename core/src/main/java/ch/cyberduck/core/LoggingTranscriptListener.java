@@ -19,27 +19,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LoggingTranscriptListener implements TranscriptListener {
-
-    private final Logger request;
-    private final Logger response;
-
-    public LoggingTranscriptListener() {
-        this(LogManager.getLogger("ch.cyberduck.transcript.request"), LogManager.getLogger("ch.cyberduck.transcript.response"));
-    }
-
-    public LoggingTranscriptListener(final Logger request, final Logger response) {
-        this.request = request;
-        this.response = response;
-    }
+    private static final Logger log = LogManager.getLogger("transcript");
 
     @Override
     public void log(final Type type, final String message) {
         switch(type) {
-            case request:
-                request.info(message);
+            case requestheader:
+            case responseheader:
+                log.debug(message);
                 break;
-            case response:
-                response.info(message);
+            default:
+                log.info(message);
                 break;
         }
     }
