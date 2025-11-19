@@ -8,4 +8,10 @@
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <SignTool>${signtool}</SignTool>
+    <SignToolCSP>${signtool.csp}</SignToolCSP>
+    <SignToolKC>${signtool.kc}</SignToolKC>
+  </PropertyGroup>
+
 </Project>

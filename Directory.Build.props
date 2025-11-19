@@ -50,4 +50,8 @@
 
   <Import Project="$(GeneratedMSBuildDir)Version.props" Condition="Exists('$(GeneratedMSBuildDir)Version.props')" />
 
+  <PropertyGroup>
+    <SignToolExecutablePath>$(PATH)</SignToolExecutablePath>
+  </PropertyGroup>
+
 </Project>

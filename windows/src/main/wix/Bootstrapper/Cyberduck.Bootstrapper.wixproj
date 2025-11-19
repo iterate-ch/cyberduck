@@ -19,8 +19,15 @@
   <ItemGroup>
     <Compile Include="Cyberduck Bootstrapper.wxs" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)Microsoft.Cpp.MSVC.Toolset.Common.props" />
+
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)'))" />
   <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
     <Error Text="The WiX Toolset v3.14 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
@@ -51,32 +58,12 @@
   <ItemGroup>
     <Content Include="InstallerTheme.xml" />
   </ItemGroup>
-  <Target Name="UsesFrameworkSdk">
-    <GetFrameworkSdkPath>
-      <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
-    </GetFrameworkSdkPath>
-    <PropertyGroup>
-      <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</WinSDK>
-      <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</WinSDK>
-      <Win10SDKBinPath>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v10.0@InstallationFolder)bin\</Win10SDKBinPath>
-      <Win10SDKVersion>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v10.0@ProductVersion).0\</Win10SDKVersion>
-      <Win10SDKVerBinPath>$(Win10SDKBinPath)$(Win10SDKVersion)</Win10SDKVerBinPath>
-    </PropertyGroup>
+  
+  <Target Name="SignBundleEngine" DependsOnTargets="SignToolArgs">
+    <Exec Command="$(SignToolArgs) &quot;@(SignBundleEngine)&quot;" EnvironmentVariables="@(SignToolEnvironmentVariable)" />
   </Target>
-  <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
-    <PropertyGroup>
-      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
-      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
-      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(Win10SDKVerBinPath)x86\signtool.exe')">$(Win10SDKVerBinPath)x86\signtool.exe</SignToolPath>
-    </PropertyGroup>
-  </Target>
-  <Target Name="SignBundleEngine" DependsOnTargets="UsesSignTool">
-    <Exec
-        Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundleEngine)&quot;"/>
-  </Target>
-  <Target Name="SignBundle" DependsOnTargets="UsesSignTool">
-    <Exec
-        Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundle)&quot;"/>
+  <Target Name="SignBundle" DependsOnTargets="SignToolArgs">
+    <Exec Command="$(SignToolArgs) &quot;@(SignBundle)&quot;" EnvironmentVariables="@(SignToolEnvironmentVariable)" />
   </Target>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
