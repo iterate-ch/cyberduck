@@ -20,6 +20,7 @@
     <PropertyGroup>
         <OutputPath>$(OutputPath)$(Configuration)</OutputPath>
         <SetupDir>$(CyberduckDir)setup\wix\</SetupDir>
+        <OutDir>$(OutputPath)</OutDir>
     </PropertyGroup>
 
 </Project>

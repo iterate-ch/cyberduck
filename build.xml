@@ -137,6 +137,7 @@
         </condition>
         <property name="msbuild.configuration" value="Release"/>
 
+        <property name="signtool" value="cng" />
         <property name="revision" value="0" />
         <copy todir="${build}/generated/msbuild" overwrite="True">
             <resources>
