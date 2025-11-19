@@ -64,15 +64,14 @@ public class PromptLoginCallback extends PromptPasswordCallback implements Login
     public PromptLoginCallback(final ProxyController controller) {
         super(controller);
         this.controller = controller;
-        this.window = null;
-    }
+        if(controller instanceof WindowController) {
+            this.window = ((WindowController) controller).window();
+        }
+        else {
+            this.window = null;
 
-    public PromptLoginCallback(final WindowController controller) {
-        super(controller);
-        this.controller = controller;
-        this.window = controller.window();
+        }
     }
-
     @Override
     public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message) throws ConnectionCanceledException {
         log.debug("Display progress alert for {}", bookmark);
