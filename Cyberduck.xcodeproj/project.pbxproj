@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -38,6 +38,7 @@
 		4723D1DC24C24FE80006CDE3 /* JavaNativeFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4724FA4526836D8A00CF289B /* preferences-openstack.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4724FA4426836D8A00CF289B /* preferences-openstack.pdf */; };
 		4724FA4726836D9000CF289B /* preferences-googlestorage.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4724FA4626836D9000CF289B /* preferences-googlestorage.pdf */; };
+		472A8EF22EBE1E33003D7237 /* Host.xib in Resources */ = {isa = PBXBuildFile; fileRef = 472A8EF12EBE1E33003D7237 /* Host.xib */; };
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
 		473A8DD6287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A8DD4287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h */; };
 		473A8DD7287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A8DD5287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m */; };
@@ -174,12 +175,16 @@
 		47990FD2195C63AE009EBB7C /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
 		47993F7811699F12000271A8 /* Transfer.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47993F5711699F12000271A8 /* Transfer.strings */; };
 		4799A6492C3BC93A00563133 /* Deepbox.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4799A6472C3BC93A00563133 /* Deepbox.strings */; };
+		479B23E62EBA3C16001D75BE /* Navigation.xib in Resources */ = {isa = PBXBuildFile; fileRef = 479B23E52EBA3C16001D75BE /* Navigation.xib */; };
+		479B23E72EBA3C16001D75BE /* Navigation.xib in Resources */ = {isa = PBXBuildFile; fileRef = 479B23E52EBA3C16001D75BE /* Navigation.xib */; };
+		479B23E92EBA45DD001D75BE /* Status.xib in Resources */ = {isa = PBXBuildFile; fileRef = 479B23E82EBA45DD001D75BE /* Status.xib */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479C63B022A167EA002CAA60 /* folderplus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479C63AF22A167EA002CAA60 /* folderplus.tiff */; };
 		47A0818D2DFF035E0074E7DC /* cyberduck-application-rect.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475B22EE25B0DB17005D7887 /* cyberduck-application-rect.icns */; };
 		47A0818E2DFF035E0074E7DC /* cyberduck-application.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A082B0167A169D004458C7 /* cyberduck-application.icns */; };
 		47A0818F2DFF08A90074E7DC /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D9E28C2DF9BB140088B042 /* main.swift */; };
 		47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A082B0167A169D004458C7 /* cyberduck-application.icns */; };
+		47A224802EB39A9500C21345 /* Edit.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47A2247E2EB39A9500C21345 /* Edit.xib */; };
 		47A40B321DEF1C09004E6084 /* cryptomator.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47A40B311DEF1C09004E6084 /* cryptomator.tiff */; };
 		47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
 		47AA19690AF09F810059C736 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
@@ -188,7 +193,6 @@
 		47B2E9FF1E2CF5E1007BE83D /* Activity.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FA1E2CF5E1007BE83D /* Activity.xib */; };
 		47B2EA001E2CF5E1007BE83D /* Progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FB1E2CF5E1007BE83D /* Progress.xib */; };
 		47B2EA011E2CF5E1007BE83D /* Task.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FC1E2CF5E1007BE83D /* Task.xib */; };
-		47B2EA021E2CF5E1007BE83D /* Transcript.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FD1E2CF5E1007BE83D /* Transcript.xib */; };
 		47B2EA031E2CF5E1007BE83D /* Transfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 47B2E9FE1E2CF5E1007BE83D /* Transfer.xib */; };
 		47B3318C16680FF100C9FFA0 /* ftp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318B16680FF100C9FFA0 /* ftp.tiff */; };
 		47B331931668102400C9FFA0 /* s3.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331911668102400C9FFA0 /* s3.tiff */; };
@@ -248,8 +252,6 @@
 		47F85C1A1C0F101F00FDA856 /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C161C0F101F00FDA856 /* UKCrashReporter.m */; };
 		47F85C1B1C0F101F00FDA856 /* UKSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C171C0F101F00FDA856 /* UKSystemInfo.h */; };
 		47F85C1C1C0F101F00FDA856 /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C181C0F101F00FDA856 /* UKSystemInfo.m */; };
-		47F85C301C0F103E00FDA856 /* CDBookmarkCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C1E1C0F103E00FDA856 /* CDBookmarkCell.h */; };
-		47F85C311C0F103E00FDA856 /* CDBookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C1F1C0F103E00FDA856 /* CDBookmarkCell.m */; };
 		47F85C321C0F103E00FDA856 /* CDListView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C201C0F103E00FDA856 /* CDListView.h */; };
 		47F85C331C0F103E00FDA856 /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C211C0F103E00FDA856 /* CDListView.m */; };
 		47F85C341C0F103E00FDA856 /* CDOutlineCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C221C0F103E00FDA856 /* CDOutlineCell.h */; };
@@ -257,8 +259,6 @@
 		47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C241C0F103E00FDA856 /* CDOutlineView.h */; };
 		47F85C371C0F103E00FDA856 /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C251C0F103E00FDA856 /* CDOutlineView.m */; };
 		47F85C3C1C0F103E00FDA856 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2A1C0F103E00FDA856 /* main.m */; };
-		47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */; };
-		47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */; };
 		47F9380F1D7F63CE00108AB5 /* dropbox.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47F9380E1D7F63CE00108AB5 /* dropbox.tiff */; };
 		47FB0FD724B3C7FB00C6764E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47FB0FD624B3C7FA00C6764E /* Security.framework */; };
 		47FB0FDE24B3C88A00C6764E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47FB0FDD24B3C88A00C6764E /* Foundation.framework */; };
@@ -584,6 +584,7 @@
 		47271DA809F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = tr; path = i18n/src/main/resources/tr.lproj/Bookmark.xib; sourceTree = "<group>"; };
 		47271DAB09F4053E00136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47271DAE09F4055700136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/Status.strings; sourceTree = "<group>"; };
+		472A8EF12EBE1E33003D7237 /* Host.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Host.xib; path = osx/src/main/resources/Host.xib; sourceTree = "<group>"; };
 		4732BD8713182C7F00CBC46B /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_PT; path = i18n/src/main/resources/pt_PT.lproj/Download.strings; sourceTree = "<group>"; };
 		4732BD8813182C7F00CBC46B /* tr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = i18n/src/main/resources/tr.lproj/Download.strings; sourceTree = "<group>"; };
 		4732BD8913182C7F00CBC46B /* ro */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ro; path = i18n/src/main/resources/ro.lproj/Download.strings; sourceTree = "<group>"; };
@@ -1058,6 +1059,43 @@
 		47652D071202BED200745031 /* he */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = i18n/src/main/resources/he.lproj/Azure.strings; sourceTree = "<group>"; };
 		47652D091202BED200745031 /* lv */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = lv; path = i18n/src/main/resources/lv.lproj/Azure.strings; sourceTree = "<group>"; };
 		47652D0A1202BED200745031 /* en */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = i18n/src/main/resources/en.lproj/Azure.strings; sourceTree = "<group>"; };
+		47667B2E2EB3C73C00C16F4F /* ar */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ar; path = i18n/src/main/resources/ar.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B2F2EB3C73C00C16F4F /* bg */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = bg; path = i18n/src/main/resources/bg.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B302EB3C73C00C16F4F /* ca */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ca; path = i18n/src/main/resources/ca.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B312EB3C73C00C16F4F /* cs */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = cs; path = i18n/src/main/resources/cs.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B322EB3C73C00C16F4F /* cy */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = cy; path = i18n/src/main/resources/cy.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B332EB3C73C00C16F4F /* da */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = da; path = i18n/src/main/resources/da.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B342EB3C73C00C16F4F /* de */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = de; path = i18n/src/main/resources/de.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B352EB3C73C00C16F4F /* el */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = el; path = i18n/src/main/resources/el.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B362EB3C73C00C16F4F /* es */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = es; path = i18n/src/main/resources/es.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B372EB3C73C00C16F4F /* et */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = et; path = i18n/src/main/resources/et.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B382EB3C73C00C16F4F /* fi */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fi; path = i18n/src/main/resources/fi.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B392EB3C73C00C16F4F /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fr; path = i18n/src/main/resources/fr.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B3A2EB3C73C00C16F4F /* he */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = he; path = i18n/src/main/resources/he.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B3B2EB3C73C00C16F4F /* hr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = hr; path = i18n/src/main/resources/hr.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B3C2EB3C73C00C16F4F /* hu */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = hu; path = i18n/src/main/resources/hu.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B3D2EB3C73C00C16F4F /* it */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = it; path = i18n/src/main/resources/it.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B3E2EB3C73C00C16F4F /* ja */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ja; path = i18n/src/main/resources/ja.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B3F2EB3C73C00C16F4F /* ka */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ka; path = i18n/src/main/resources/ka.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B402EB3C73C00C16F4F /* ko */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ko; path = i18n/src/main/resources/ko.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B412EB3C73C00C16F4F /* lv */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = lv; path = i18n/src/main/resources/lv.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B422EB3C73C00C16F4F /* nl */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = nl; path = i18n/src/main/resources/nl.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B432EB3C73C00C16F4F /* no */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = no; path = i18n/src/main/resources/no.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B442EB3C73C00C16F4F /* pl */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = pl; path = i18n/src/main/resources/pl.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B452EB3C73C00C16F4F /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = pt_BR; path = i18n/src/main/resources/pt_BR.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B462EB3C73C00C16F4F /* pt_PT */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = pt_PT; path = i18n/src/main/resources/pt_PT.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B472EB3C73C00C16F4F /* ro */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ro; path = i18n/src/main/resources/ro.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B482EB3C73C00C16F4F /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = i18n/src/main/resources/ru.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B492EB3C73C00C16F4F /* sk */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = sk; path = i18n/src/main/resources/sk.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B4A2EB3C73C00C16F4F /* sl */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = sl; path = i18n/src/main/resources/sl.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B4B2EB3C73C00C16F4F /* sr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = sr; path = i18n/src/main/resources/sr.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B4C2EB3C73C00C16F4F /* sv */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = sv; path = i18n/src/main/resources/sv.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B4D2EB3C73C00C16F4F /* ta_IN */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ta_IN; path = i18n/src/main/resources/ta_IN.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B4E2EB3C73C00C16F4F /* th */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = th; path = i18n/src/main/resources/th.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B4F2EB3C73C00C16F4F /* tr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = tr; path = i18n/src/main/resources/tr.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B502EB3C73C00C16F4F /* uk */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = uk; path = i18n/src/main/resources/uk.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B512EB3C73C00C16F4F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_CN; path = i18n/src/main/resources/zh_CN.lproj/Edit.xib; sourceTree = "<group>"; };
+		47667B522EB3C73C00C16F4F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_TW; path = i18n/src/main/resources/zh_TW.lproj/Edit.xib; sourceTree = "<group>"; };
 		4767306716108E1200B28D35 /* add.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = add.tiff; sourceTree = "<group>"; };
 		4767306816108E1200B28D35 /* addPressed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = addPressed.tiff; sourceTree = "<group>"; };
 		4767306916108E1200B28D35 /* advanced.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = advanced.tiff; sourceTree = "<group>"; };
@@ -1255,10 +1293,13 @@
 		4799A64A2C3BC94000563133 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = i18n/src/main/resources/fr.lproj/Deepbox.strings; sourceTree = "<group>"; };
 		4799A64B2C3BC94800563133 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = i18n/src/main/resources/en.lproj/Deepbox.strings; sourceTree = "<group>"; };
 		4799A64C2C3BC94D00563133 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = i18n/src/main/resources/de.lproj/Deepbox.strings; sourceTree = "<group>"; };
+		479B23E52EBA3C16001D75BE /* Navigation.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Navigation.xib; path = osx/src/main/resources/Navigation.xib; sourceTree = "<group>"; };
+		479B23E82EBA45DD001D75BE /* Status.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Status.xib; path = osx/src/main/resources/Status.xib; sourceTree = "<group>"; };
 		479BF77D1725A68C006854BF /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		479C63AF22A167EA002CAA60 /* folderplus.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = folderplus.tiff; sourceTree = "<group>"; };
 		47A082B0167A169D004458C7 /* cyberduck-application.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-application.icns"; sourceTree = "<group>"; };
+		47A2247F2EB39A9500C21345 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = i18n/src/main/resources/en.lproj/Edit.xib; sourceTree = "<group>"; };
 		47A40B311DEF1C09004E6084 /* cryptomator.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = cryptomator.tiff; sourceTree = "<group>"; };
 		47A8474618A1753800519D14 /* pt_BR */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pt_BR; path = i18n/src/main/resources/pt_BR.lproj/Azure.strings; sourceTree = "<group>"; };
 		47A8474718A1753800519D14 /* zh_TW */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_TW; path = i18n/src/main/resources/zh_TW.lproj/Azure.strings; sourceTree = "<group>"; };
@@ -1349,7 +1390,6 @@
 		47B2E9FA1E2CF5E1007BE83D /* Activity.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Activity.xib; path = osx/src/main/resources/Activity.xib; sourceTree = "<group>"; };
 		47B2E9FB1E2CF5E1007BE83D /* Progress.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Progress.xib; path = osx/src/main/resources/Progress.xib; sourceTree = "<group>"; };
 		47B2E9FC1E2CF5E1007BE83D /* Task.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Task.xib; path = osx/src/main/resources/Task.xib; sourceTree = "<group>"; };
-		47B2E9FD1E2CF5E1007BE83D /* Transcript.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Transcript.xib; path = osx/src/main/resources/Transcript.xib; sourceTree = "<group>"; };
 		47B2E9FE1E2CF5E1007BE83D /* Transfer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Transfer.xib; path = osx/src/main/resources/Transfer.xib; sourceTree = "<group>"; };
 		47B3318B16680FF100C9FFA0 /* ftp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ftp.tiff; sourceTree = "<group>"; };
 		47B331911668102400C9FFA0 /* s3.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = s3.tiff; sourceTree = "<group>"; };
@@ -1737,8 +1777,6 @@
 		47F85C161C0F101F00FDA856 /* UKCrashReporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UKCrashReporter.m; path = core/src/main/objc/UKCrashReporter.m; sourceTree = SOURCE_ROOT; };
 		47F85C171C0F101F00FDA856 /* UKSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UKSystemInfo.h; path = core/src/main/objc/UKSystemInfo.h; sourceTree = SOURCE_ROOT; };
 		47F85C181C0F101F00FDA856 /* UKSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UKSystemInfo.m; path = core/src/main/objc/UKSystemInfo.m; sourceTree = SOURCE_ROOT; };
-		47F85C1E1C0F103E00FDA856 /* CDBookmarkCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDBookmarkCell.h; path = osx/src/main/objc/CDBookmarkCell.h; sourceTree = "<group>"; };
-		47F85C1F1C0F103E00FDA856 /* CDBookmarkCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDBookmarkCell.m; path = osx/src/main/objc/CDBookmarkCell.m; sourceTree = "<group>"; };
 		47F85C201C0F103E00FDA856 /* CDListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDListView.h; path = osx/src/main/objc/CDListView.h; sourceTree = "<group>"; };
 		47F85C211C0F103E00FDA856 /* CDListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDListView.m; path = osx/src/main/objc/CDListView.m; sourceTree = "<group>"; };
 		47F85C221C0F103E00FDA856 /* CDOutlineCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDOutlineCell.h; path = osx/src/main/objc/CDOutlineCell.h; sourceTree = "<group>"; };
@@ -1746,8 +1784,6 @@
 		47F85C241C0F103E00FDA856 /* CDOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDOutlineView.h; path = osx/src/main/objc/CDOutlineView.h; sourceTree = "<group>"; };
 		47F85C251C0F103E00FDA856 /* CDOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDOutlineView.m; path = osx/src/main/objc/CDOutlineView.m; sourceTree = "<group>"; };
 		47F85C2A1C0F103E00FDA856 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = osx/src/main/objc/main.m; sourceTree = "<group>"; };
-		47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SNDisclosableView.h; path = osx/src/main/objc/SNDisclosableView.h; sourceTree = "<group>"; };
-		47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SNDisclosableView.m; path = osx/src/main/objc/SNDisclosableView.m; sourceTree = "<group>"; };
 		47F9380E1D7F63CE00108AB5 /* dropbox.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = dropbox.tiff; sourceTree = "<group>"; };
 		47FB0FD624B3C7FA00C6764E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = ../MacOSX.sdk/System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		47FB0FDA24B3C84A00C6764E /* QuickLookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookUI.framework; path = ../MacOSX.sdk/System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework; sourceTree = SDKROOT; };
@@ -1933,8 +1969,10 @@
 				47B2E9FA1E2CF5E1007BE83D /* Activity.xib */,
 				47B2E9FB1E2CF5E1007BE83D /* Progress.xib */,
 				47B2E9FC1E2CF5E1007BE83D /* Task.xib */,
-				47B2E9FD1E2CF5E1007BE83D /* Transcript.xib */,
+				479B23E52EBA3C16001D75BE /* Navigation.xib */,
+				479B23E82EBA45DD001D75BE /* Status.xib */,
 				47B2E9FE1E2CF5E1007BE83D /* Transfer.xib */,
+				472A8EF12EBE1E33003D7237 /* Host.xib */,
 				47C35B0926247FE4002AABBD /* Profiles.xib */,
 				47C35B112627690E002AABBD /* Profile.xib */,
 				474D86191DEF6017002D101F /* Cryptomator.strings */,
@@ -1972,6 +2010,7 @@
 				474163A706C4F64100AC0BD2 /* Main.xib */,
 				474163A506C4F64100AC0BD2 /* Browser.xib */,
 				474163B506C4F64100AC0BD2 /* Connection.xib */,
+				47A2247E2EB39A9500C21345 /* Edit.xib */,
 				474163BD06C4F64100AC0BD2 /* Preferences.xib */,
 				470912EB0C36FCE00049FBCE /* Prompt.xib */,
 				474163BF06C4F64100AC0BD2 /* Bookmark.xib */,
@@ -2134,8 +2173,6 @@
 		47F85C1D1C0F102600FDA856 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				47F85C1E1C0F103E00FDA856 /* CDBookmarkCell.h */,
-				47F85C1F1C0F103E00FDA856 /* CDBookmarkCell.m */,
 				47F85C201C0F103E00FDA856 /* CDListView.h */,
 				47F85C211C0F103E00FDA856 /* CDListView.m */,
 				47F85C221C0F103E00FDA856 /* CDOutlineCell.h */,
@@ -2143,8 +2180,6 @@
 				47F85C241C0F103E00FDA856 /* CDOutlineView.h */,
 				47F85C251C0F103E00FDA856 /* CDOutlineView.m */,
 				47F85C2A1C0F103E00FDA856 /* main.m */,
-				47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */,
-				47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */,
 				47D6FFE61CCFA54A005B01C5 /* CDToolbarItem.m */,
 				47D6FFE71CCFA54A005B01C5 /* CDToolbarItem.h */,
 			);
@@ -2180,11 +2215,9 @@
 			files = (
 				47F85C321C0F103E00FDA856 /* CDListView.h in Headers */,
 				47F85C341C0F103E00FDA856 /* CDOutlineCell.h in Headers */,
-				47F85C301C0F103E00FDA856 /* CDBookmarkCell.h in Headers */,
 				47FB79D81C2E9E67008D3B9C /* launcher.h in Headers */,
 				47F85C361C0F103E00FDA856 /* CDOutlineView.h in Headers */,
 				47D6FFE91CCFA54A005B01C5 /* CDToolbarItem.h in Headers */,
-				47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2280,7 +2313,8 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1100;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2610;
 				ORGANIZATIONNAME = Cyberduck;
 				TargetAttributes = {
 					471D2C0B05A2505500675163 = {
@@ -2404,6 +2438,8 @@
 				47AA19690AF09F810059C736 /* Error.strings in Resources */,
 				47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */,
 				47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */,
+				479B23E92EBA45DD001D75BE /* Status.xib in Resources */,
+				47A224802EB39A9500C21345 /* Edit.xib in Resources */,
 				47DE479B2598F2D400B18BCB /* preferences-s3.pdf in Resources */,
 				470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */,
 				47E987600D689A280077733F /* S3.strings in Resources */,
@@ -2432,10 +2468,12 @@
 				47DE479A2598F2D400B18BCB /* preferences-queue.pdf in Resources */,
 				476730B816108E1300B28D35 /* addPressed.tiff in Resources */,
 				4749606F1CD75C9700B020C9 /* reload.pdf in Resources */,
+				479B23E62EBA3C16001D75BE /* Navigation.xib in Resources */,
 				476730B916108E1300B28D35 /* advanced.tiff in Resources */,
 				476730BA16108E1300B28D35 /* alert.tiff in Resources */,
 				476730BB16108E1300B28D35 /* aliasbadge.tiff in Resources */,
 				47DE479E2598F2D400B18BCB /* preferences-sftp.pdf in Resources */,
+				472A8EF22EBE1E33003D7237 /* Host.xib in Resources */,
 				474D863E1DEF6017002D101F /* Cryptomator.strings in Resources */,
 				476730BC16108E1300B28D35 /* transfer-download.tiff in Resources */,
 				476730C216108E1300B28D35 /* nav-backward.tiff in Resources */,
@@ -2516,7 +2554,6 @@
 				476730FE16108E1300B28D35 /* stop.tiff in Resources */,
 				4767310016108E1300B28D35 /* sync.tiff in Resources */,
 				474960701CD75C9700B020C9 /* sync.pdf in Resources */,
-				47B2EA021E2CF5E1007BE83D /* Transcript.xib in Resources */,
 				4767310116108E1300B28D35 /* transparent.tiff in Resources */,
 				4767310216108E1300B28D35 /* trash.tiff in Resources */,
 				4767310316108E1300B28D35 /* turtle.tiff in Resources */,
@@ -2548,6 +2585,7 @@
 				47D93A061A2762A40006D4AE /* Acknowledgments.rtf in Resources */,
 				47D93A071A2762A40006D4AE /* Alert.strings in Resources */,
 				47D93A081A2762A40006D4AE /* Azure.strings in Resources */,
+				479B23E72EBA3C16001D75BE /* Navigation.xib in Resources */,
 				47D93A091A2762A40006D4AE /* Transfer.strings in Resources */,
 				47D93A0A1A2762A40006D4AE /* License.strings in Resources */,
 				47D93A0B1A2762A40006D4AE /* Archive.strings in Resources */,
@@ -2652,9 +2690,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				47F85C371C0F103E00FDA856 /* CDOutlineView.m in Sources */,
-				47F85C311C0F103E00FDA856 /* CDBookmarkCell.m in Sources */,
 				47F85C351C0F103E00FDA856 /* CDOutlineCell.m in Sources */,
-				47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */,
 				47F85C331C0F103E00FDA856 /* CDListView.m in Sources */,
 				47D6FFE81CCFA54A005B01C5 /* CDToolbarItem.m in Sources */,
 				47F85C3C1C0F103E00FDA856 /* main.m in Sources */,
@@ -3696,6 +3732,51 @@
 			name = Deepbox.strings;
 			sourceTree = "<group>";
 		};
+		47A2247E2EB39A9500C21345 /* Edit.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				47A2247F2EB39A9500C21345 /* en */,
+				47667B2E2EB3C73C00C16F4F /* ar */,
+				47667B2F2EB3C73C00C16F4F /* bg */,
+				47667B302EB3C73C00C16F4F /* ca */,
+				47667B312EB3C73C00C16F4F /* cs */,
+				47667B322EB3C73C00C16F4F /* cy */,
+				47667B332EB3C73C00C16F4F /* da */,
+				47667B342EB3C73C00C16F4F /* de */,
+				47667B352EB3C73C00C16F4F /* el */,
+				47667B362EB3C73C00C16F4F /* es */,
+				47667B372EB3C73C00C16F4F /* et */,
+				47667B382EB3C73C00C16F4F /* fi */,
+				47667B392EB3C73C00C16F4F /* fr */,
+				47667B3A2EB3C73C00C16F4F /* he */,
+				47667B3B2EB3C73C00C16F4F /* hr */,
+				47667B3C2EB3C73C00C16F4F /* hu */,
+				47667B3D2EB3C73C00C16F4F /* it */,
+				47667B3E2EB3C73C00C16F4F /* ja */,
+				47667B3F2EB3C73C00C16F4F /* ka */,
+				47667B402EB3C73C00C16F4F /* ko */,
+				47667B412EB3C73C00C16F4F /* lv */,
+				47667B422EB3C73C00C16F4F /* nl */,
+				47667B432EB3C73C00C16F4F /* no */,
+				47667B442EB3C73C00C16F4F /* pl */,
+				47667B452EB3C73C00C16F4F /* pt_BR */,
+				47667B462EB3C73C00C16F4F /* pt_PT */,
+				47667B472EB3C73C00C16F4F /* ro */,
+				47667B482EB3C73C00C16F4F /* ru */,
+				47667B492EB3C73C00C16F4F /* sk */,
+				47667B4A2EB3C73C00C16F4F /* sl */,
+				47667B4B2EB3C73C00C16F4F /* sr */,
+				47667B4C2EB3C73C00C16F4F /* sv */,
+				47667B4D2EB3C73C00C16F4F /* ta_IN */,
+				47667B4E2EB3C73C00C16F4F /* th */,
+				47667B4F2EB3C73C00C16F4F /* tr */,
+				47667B502EB3C73C00C16F4F /* uk */,
+				47667B512EB3C73C00C16F4F /* zh_CN */,
+				47667B522EB3C73C00C16F4F /* zh_TW */,
+			);
+			name = Edit.xib;
+			sourceTree = "<group>";
+		};
 		47A88FB90B931D9C00DB9D87 /* Configuration.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4210,6 +4291,8 @@
 		4739EF720856981300405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4228,6 +4311,8 @@
 		47C2AD841A268C880047B67A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/core/dylib/target",
@@ -4236,7 +4321,10 @@
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/pkg/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
 				MACH_O_TYPE = mh_execute;
 				PRODUCT_BUNDLE_IDENTIFIER = sh.duck;
 				PRODUCT_MODULE_NAME = duck;
@@ -4250,6 +4338,8 @@
 		47D286C70855740C008142CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/osx/target",
@@ -4259,7 +4349,10 @@
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/app/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					Sparkle,
@@ -4275,6 +4368,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -4288,6 +4382,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -4297,6 +4392,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -4313,7 +4409,7 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"",
 				);
 				SEPARATE_STRIP = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 5.0;
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -4342,6 +4438,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -4386,6 +4483,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -4416,6 +4514,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -4429,6 +4528,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -4438,6 +4538,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -4454,7 +4555,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"",
 				);
 				SEPARATE_STRIP = YES;
-				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_VERSION = 5.0;
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -4467,6 +4567,8 @@
 		47EFE4D21BECFE81009AC47B /* Mac App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/osx/target",
@@ -4476,7 +4578,10 @@
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/app/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ch.sudo.cyberduck;
 				PRODUCT_NAME = Cyberduck;
 				WRAPPER_EXTENSION = app;
@@ -4486,6 +4591,8 @@
 		47EFE4D31BECFE81009AC47B /* Mac App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4504,6 +4611,8 @@
 		47EFE4E01BECFE81009AC47B /* Mac App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/core/dylib/target",
@@ -4512,7 +4621,10 @@
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/pkg/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
 				MACH_O_TYPE = mh_execute;
 				PRODUCT_BUNDLE_IDENTIFIER = sh.duck;
 				PRODUCT_MODULE_NAME = duck;

@@ -16,22 +16,14 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.Action;
-import ch.cyberduck.binding.Delegate;
-import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
-import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSControl;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.binding.application.NSOpenPanel;
-import ch.cyberduck.binding.application.NSPopUpButton;
-import ch.cyberduck.binding.application.NSSecureTextField;
-import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.binding.application.NSWindow;
-import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.application.*;
+import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.binding.foundation.NSData;
+import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -40,13 +32,16 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.Reachability;
 import ch.cyberduck.core.diagnostics.ReachabilityDiagnosticsFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.LoginInputValidator;
 
@@ -58,86 +53,177 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TimeZone;
 
-public class BookmarkController extends SheetController implements CollectionListener {
+public abstract class BookmarkController extends SheetController implements NSTabView.Delegate {
     private static final Logger log = LogManager.getLogger(BookmarkController.class);
 
-    private static NSPoint cascade = new NSPoint(0, 0);
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
-    protected final Preferences preferences
-            = PreferencesFactory.get();
-
-    protected final NSNotificationCenter notificationCenter
-            = NSNotificationCenter.defaultCenter();
+    private static final String TIMEZONE_CONTINENT_PREFIXES =
+            "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
     private final ProtocolFactory protocols = ProtocolFactory.get();
-
     private final List<BookmarkObserver> observers = new ArrayList<>();
+    private final Host bookmark;
+    private final LoginInputValidator validator;
+    private final LoginOptions options;
 
-    protected final Host bookmark;
+    private final NSNotificationCenter notificationCenter
+            = NSNotificationCenter.defaultCenter();
 
-    protected final LoginInputValidator validator;
-    protected final LoginOptions options;
-
-    protected final HostPasswordStore keychain
+    private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
 
     @Outlet
-    protected NSPopUpButton protocolPopup;
+    private NSTabView tabView;
     @Outlet
-    protected NSTextField hostField;
+    private NSView contentView;
     @Outlet
-    protected NSButton alertIcon;
+    private NSView containerOptionsView;
     @Outlet
-    protected NSTextField portField;
+    private NSPopUpButton protocolPopup;
     @Outlet
-    protected NSTextField pathField;
+    private NSTextField hostField;
     @Outlet
-    protected NSTextField urlField;
+    private NSImageView alertIcon;
     @Outlet
-    protected NSTextField usernameField;
+    private NSTextField portField;
     @Outlet
-    protected NSTextField usernameLabel;
+    private NSTextField pathField;
     @Outlet
-    protected NSSecureTextField passwordField;
+    private NSTextField usernameField;
+    @Outlet
+    private NSTextField usernameLabel;
+    @Outlet
+    private NSSecureTextField passwordField;
     @Outlet
     private NSTextField passwordLabel;
     @Outlet
-    protected NSButton anonymousCheckbox;
+    private NSButton anonymousCheckbox;
     @Outlet
-    protected NSPopUpButton privateKeyPopup;
+    private NSPopUpButton privateKeyPopup;
     @Outlet
-    protected NSOpenPanel privateKeyOpenPanel;
-
-    /**
-     * @param bookmark The bookmark to edit
-     */
-    public BookmarkController(final Host bookmark) {
-        this(bookmark, new LoginOptions(bookmark.getProtocol()));
-    }
-
-    public BookmarkController(final Host bookmark, final LoginOptions options) {
-        this(bookmark, new LoginInputValidator(bookmark, options), options);
-    }
+    private NSOpenPanel privateKeyOpenPanel;
+    @Outlet
+    private NSTextField nicknameField;
+    @Outlet
+    private NSTokenField labelsField;
+    @Outlet
+    private NSPopUpButton certificatePopup;
+    @Outlet
+    private NSPopUpButton timezonePopup;
+    @Outlet
+    private NSPopUpButton encodingPopup;
+    @Outlet
+    private NSPopUpButton ftpModePopup;
+    @Outlet
+    private NSTextField webURLField;
+    @Outlet
+    private NSButton webUrlImage;
 
     public BookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
-        super(validator);
         this.bookmark = bookmark;
         this.validator = validator;
         this.options = options;
     }
 
-    public Host getBookmark() {
-        return bookmark;
+    @Override
+    public void invalidate() {
+        observers.clear();
+        super.invalidate();
     }
 
+    @Override
+    public void loadBundle() {
+        if(!NSBundle.loadNibNamed("Bookmark", this.id())) {
+            throw new FactoryException(String.format("Failure loading %s.xib", "Bookmark"));
+        }
+        super.loadBundle();
+    }
+
+    @Override
+    protected abstract String getBundleName();
+
+    @Override
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        this.update();
+    }
+
+    public interface BookmarkObserver {
+        void change(final Host bookmark);
+    }
+
+    /**
+     * Notify all observers
+     */
+    protected void update() {
+        for(BookmarkObserver observer : observers) {
+            observer.change(bookmark);
+        }
+    }
+
+    public void addObserver(final BookmarkObserver observer) {
+        observers.add(observer);
+    }
+
+    public void focus(final NSWindow window) {
+        if(bookmark.getProtocol().isHostnameConfigurable()) {
+            window.makeFirstResponder(hostField);
+        }
+        else {
+            if(options.user) {
+                window.makeFirstResponder(usernameField);
+            }
+        }
+    }
+
+    @Override
+    public NSView view() {
+        return contentView;
+    }
+
+    @Outlet
+    public void setTabView(final NSTabView tabView) {
+        this.tabView = tabView;
+        this.tabView.setDelegate(this.id());
+    }
+
+    @Override
+    public void tabView_didSelectTabViewItem(final NSTabView view, final NSTabViewItem item) {
+        this.resize();
+    }
+
+    public NSView getContentView() {
+        return contentView;
+    }
+
+    @Outlet
+    public void setContentView(final NSView contentView) {
+        this.contentView = contentView;
+    }
+
+    public NSView getContainerOptionsView() {
+        return containerOptionsView;
+    }
+
+    @Outlet
+    public void setContainerOptionsView(final NSView containerOptionsView) {
+        this.containerOptionsView = containerOptionsView;
+    }
+
+    @Outlet
     public void setProtocolPopup(final NSPopUpButton button) {
         this.protocolPopup = button;
         this.protocolPopup.setEnabled(true);
@@ -164,13 +250,8 @@ public class BookmarkController extends SheetController implements CollectionLis
         for(Protocol protocol : protocols.find(new ProfileProtocolPredicate())) {
             this.addProtocol(protocol);
         }
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(bookmark.getProtocol().hashCode())));
-            }
-        });
-        if(preferences.getBoolean("preferences.profiles.enable")) {
+        this.addObserver(bookmark -> protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(bookmark.getProtocol().hashCode()))));
+        if(HostPreferencesFactory.get(bookmark).getBoolean("preferences.profiles.enable")) {
             this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
             this.protocolPopup.addItemWithTitle(String.format("%s%s", LocaleFactory.localizedString("More Options", "Bookmark"), "…"));
         }
@@ -213,19 +294,65 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.update();
     }
 
+    @Outlet
+    public void setNicknameField(final NSTextField f) {
+        this.nicknameField = f;
+        this.nicknameField.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.name.configurable"));
+        notificationCenter.addObserver(this.id(),
+                Foundation.selector("nicknameFieldDidChange:"),
+                NSControl.NSControlTextDidChangeNotification,
+                f.id());
+        this.addObserver(bookmark -> updateField(nicknameField, BookmarkNameProvider.toString(bookmark)));
+    }
+
+    @Action
+    public void nicknameFieldDidChange(final NSNotification sender) {
+        bookmark.setNickname(nicknameField.stringValue());
+        this.update();
+    }
+
+    @Outlet
+    public void setLabelsField(final NSTokenField f) {
+        this.labelsField = f;
+        this.labelsField.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.labels.configurable"));
+        notificationCenter.addObserver(this.id(),
+                Foundation.selector("tokenFieldDidChange:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                f.id());
+        this.addObserver(bookmark -> {
+            if(bookmark.getLabels().isEmpty()) {
+                f.setObjectValue(NSArray.array());
+            }
+            else {
+                f.setObjectValue(NSArray.arrayWithObjects(bookmark.getLabels().toArray(new String[bookmark.getLabels().size()])));
+            }
+        });
+    }
+
+    @Action
+    public void tokenFieldDidChange(final NSNotification sender) {
+        final Set<String> labels = new HashSet<>();
+        final NSArray dict = Rococoa.cast(labelsField.objectValue(), NSArray.class);
+        final NSEnumerator i = dict.objectEnumerator();
+        NSObject next;
+        while(null != (next = i.nextObject())) {
+            labels.add(next.toString());
+        }
+        bookmark.setLabels(labels);
+        this.update();
+    }
+
+    @Outlet
     public void setHostField(final NSTextField field) {
         this.hostField = field;
         this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("hostFieldDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 field.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                updateField(hostField, bookmark.getHostname());
-                hostField.setEnabled(bookmark.getProtocol().isHostnameConfigurable());
-                hostField.cell().setPlaceholderString(bookmark.getProtocol().getHostnamePlaceholder());
-            }
+        this.addObserver(bookmark -> {
+            updateField(hostField, bookmark.getHostname());
+            hostField.setEnabled(bookmark.getProtocol().isHostnameConfigurable());
+            hostField.cell().setPlaceholderString(bookmark.getProtocol().getHostnamePlaceholder());
         });
     }
 
@@ -257,14 +384,10 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.update();
     }
 
-    public void setAlertIcon(final NSButton button) {
+    @Outlet
+    public void setAlertIcon(final NSImageView button) {
         this.alertIcon = button;
-        this.alertIcon.setEnabled(false);
         this.alertIcon.setImage(null);
-        this.alertIcon.setTarget(this.id());
-        if(new ReachabilityDiagnosticsFactory().isAvailable()) {
-            this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
-        }
         this.addObserver(new BookmarkObserver() {
             private final Reachability reachability = ReachabilityFactory.get();
 
@@ -272,23 +395,20 @@ public class BookmarkController extends SheetController implements CollectionLis
             public void change(final Host bookmark) {
                 if(StringUtils.isNotBlank(bookmark.getHostname())) {
                     background(new AbstractBackgroundAction<Boolean>() {
-                        boolean reachable = false;
-
                         @Override
                         public Boolean run() {
-                            return reachable = reachability.isReachable(bookmark);
+                            return reachability.isReachable(bookmark);
                         }
 
                         @Override
-                        public void cleanup() {
-                            alertIcon.setEnabled(!reachable);
-                            alertIcon.setImage(reachable ? null : IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
+                        public void cleanup(final Boolean result, final BackgroundException failure) {
+                            alertIcon.setImage(result ? null : IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
+                            super.cleanup(result, failure);
                         }
                     });
                 }
                 else {
-                    alertIcon.setImage(IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
-                    alertIcon.setEnabled(false);
+                    alertIcon.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
                 }
             }
         });
@@ -304,13 +424,10 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("portInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
-                field.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                updateField(portField, String.valueOf(bookmark.getPort()));
-                portField.setEnabled(bookmark.getProtocol().isPortConfigurable());
-            }
+                portField.id());
+        this.addObserver(bookmark -> {
+            updateField(portField, String.valueOf(bookmark.getPort()));
+            portField.setEnabled(bookmark.getProtocol().isPortConfigurable());
         });
     }
 
@@ -325,19 +442,17 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.update();
     }
 
-    public void setPathField(NSTextField field) {
+    @Outlet
+    public void setPathField(final NSTextField field) {
         this.pathField = field;
         this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("pathInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
-                field.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                updateField(pathField, bookmark.getDefaultPath());
-                pathField.setEnabled(bookmark.getProtocol().isPathConfigurable());
-                pathField.cell().setPlaceholderString(bookmark.getProtocol().getPathPlaceholder());
-            }
+                pathField.id());
+        this.addObserver(bookmark -> {
+            updateField(pathField, bookmark.getDefaultPath());
+            pathField.setEnabled(bookmark.getProtocol().isPathConfigurable());
+            pathField.cell().setPlaceholderString(bookmark.getProtocol().getPathPlaceholder());
         });
     }
 
@@ -347,179 +462,353 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.update();
     }
 
-    public void setUrlField(final NSTextField field) {
-        this.urlField = field;
-        this.urlField.setAllowsEditingTextAttributes(true);
-        this.urlField.setSelectable(true);
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new HostUrlProvider().withUsername(false).withPath(true).get(bookmark)));
-            }
-        });
-    }
-
+    @Outlet
     public void setUsernameField(final NSTextField field) {
         this.usernameField = field;
         this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("usernameFieldTextDidEndEditing:"),
                 NSControl.NSControlTextDidEndEditingNotification,
-                field.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                updateField(usernameField, bookmark.getCredentials().getUsername());
-                usernameField.cell().setPlaceholderString(bookmark.getProtocol().getUsernamePlaceholder());
-                usernameField.setEnabled(options.user && !bookmark.getCredentials().isAnonymousLogin());
-            }
+                usernameField.id());
+        this.addObserver(bookmark -> {
+            updateField(usernameField, bookmark.getCredentials().getUsername());
+            usernameField.cell().setPlaceholderString(bookmark.getProtocol().getUsernamePlaceholder());
+            usernameField.setEnabled(options.user && !bookmark.getCredentials().isAnonymousLogin());
         });
     }
 
     @Action
     public void usernameFieldTextDidEndEditing(final NSNotification sender) {
         bookmark.getCredentials().setUsername(StringUtils.trim(usernameField.stringValue()));
+        bookmark.setCredentials(CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark));
         this.update();
     }
 
-    public void setUsernameLabel(final NSTextField usernameLabel) {
-        this.usernameLabel = usernameLabel;
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        String.format("%s:", bookmark.getProtocol().getUsernamePlaceholder()),
-                        TRUNCATE_TAIL_ATTRIBUTES
-                ));
-            }
-        });
+    @Outlet
+    public void setUsernameLabel(final NSTextField label) {
+        this.usernameLabel = label;
+        this.addObserver(bookmark -> usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                String.format("%s:", bookmark.getProtocol().getUsernamePlaceholder()),
+                TRUNCATE_TAIL_ATTRIBUTES
+        )));
     }
 
+    @Outlet
     public void setAnonymousCheckbox(final NSButton button) {
         this.anonymousCheckbox = button;
         this.anonymousCheckbox.setTarget(this.id());
         this.anonymousCheckbox.setAction(Foundation.selector("anonymousCheckboxClicked:"));
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                anonymousCheckbox.setEnabled(options.anonymous);
-                anonymousCheckbox.setState(bookmark.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
-            }
+        this.addObserver(bookmark -> {
+            anonymousCheckbox.setEnabled(options.anonymous);
+            anonymousCheckbox.setState(bookmark.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
         });
     }
 
     @Action
     public void anonymousCheckboxClicked(final NSButton sender) {
         if(sender.state() == NSCell.NSOnState) {
-            bookmark.getCredentials().setUsername(preferences.getProperty("connection.login.anon.name"));
-            bookmark.getCredentials().setPassword(preferences.getProperty("connection.login.anon.pass"));
+            bookmark.getCredentials().setUsername(HostPreferencesFactory.get(bookmark).getProperty("connection.login.anon.name"));
+            bookmark.getCredentials().setPassword(HostPreferencesFactory.get(bookmark).getProperty("connection.login.anon.pass"));
         }
         if(sender.state() == NSCell.NSOffState) {
-            if(preferences.getProperty("connection.login.name").equals(
-                    preferences.getProperty("connection.login.anon.name"))) {
+            if(HostPreferencesFactory.get(bookmark).getProperty("connection.login.name").equals(
+                    HostPreferencesFactory.get(bookmark).getProperty("connection.login.anon.name"))) {
                 bookmark.getCredentials().setUsername(StringUtils.EMPTY);
             }
             else {
-                bookmark.getCredentials().setUsername(preferences.getProperty("connection.login.name"));
+                bookmark.getCredentials().setUsername(HostPreferencesFactory.get(bookmark).getProperty("connection.login.name"));
             }
             bookmark.getCredentials().setPassword(null);
         }
         this.update();
     }
 
-    public void setPasswordField(NSSecureTextField field) {
+    @Outlet
+    public void setPasswordField(final NSSecureTextField field) {
         this.passwordField = field;
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
-                passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
-                if(options.password) {
-                    if(options.keychain) {
-                        if(StringUtils.isBlank(bookmark.getHostname())) {
-                            return;
-                        }
-                        if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
-                            return;
-                        }
-                        final String password = keychain.findLoginPassword(bookmark);
-                        if(StringUtils.isNotBlank(password)) {
-                            // Make sure password fetched from keychain and set in field is set in model
-                            bookmark.getCredentials().setPassword(password);
-                        }
+        this.notificationCenter.addObserver(this.id(),
+                Foundation.selector("passwordFieldTextDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                field.id());
+        this.addObserver(bookmark -> {
+            passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
+            passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
+            if(options.password) {
+                if(options.keychain) {
+                    if(StringUtils.isBlank(bookmark.getHostname())) {
+                        return;
                     }
-                    updateField(passwordField, bookmark.getCredentials().getPassword());
+                    if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                        return;
+                    }
+                    final String password = keychain.findLoginPassword(bookmark);
+                    if(StringUtils.isNotBlank(password)) {
+                        // Make sure password fetched from keychain and set in field is set in model
+                        bookmark.getCredentials().setPassword(password);
+                    }
+                }
+                updateField(passwordField, bookmark.getCredentials().getPassword());
+            }
+        });
+    }
+
+    @Action
+    public void passwordFieldTextDidEndEditing(NSNotification notification) {
+        if(options.keychain && options.password) {
+            if(StringUtils.isBlank(bookmark.getHostname())) {
+                return;
+            }
+            if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                return;
+            }
+            if(StringUtils.isBlank(passwordField.stringValue())) {
+                return;
+            }
+            try {
+                keychain.addPassword(bookmark.getProtocol().getScheme(),
+                        bookmark.getPort(),
+                        bookmark.getHostname(),
+                        bookmark.getCredentials().getUsername(),
+                        // Remove control characters (char &lt;= 32) from both ends
+                        StringUtils.strip(passwordField.stringValue())
+                );
+            }
+            catch(LocalAccessDeniedException e) {
+                log.error("Failure saving credentials for {} in keychain. {}", bookmark, e);
+            }
+        }
+    }
+
+    @Outlet
+    public void setPasswordLabel(final NSTextField passwordLabel) {
+        this.passwordLabel = passwordLabel;
+        this.addObserver(bookmark -> passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                String.format("%s:", options.getPasswordPlaceholder()), TRUNCATE_TAIL_ATTRIBUTES
+        )));
+    }
+
+    @Outlet
+    public void setCertificatePopup(final NSPopUpButton button) {
+        this.certificatePopup = button;
+        this.certificatePopup.setTarget(this.id());
+        final Selector action = Foundation.selector("certificateSelectionChanged:");
+        this.certificatePopup.setAction(action);
+        this.addObserver(bookmark -> {
+            certificatePopup.setEnabled(options.certificate);
+            certificatePopup.removeAllItems();
+            certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+            if(options.certificate) {
+                certificatePopup.menu().addItem(NSMenuItem.separatorItem());
+                for(String certificate : new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
+                        CertificateStoreFactory.get()).list()) {
+                    certificatePopup.addItemWithTitle(certificate);
+                    certificatePopup.lastItem().setRepresentedObject(certificate);
                 }
             }
-        });
-    }
-
-    public void setPasswordLabel(NSTextField passwordLabel) {
-        this.passwordLabel = passwordLabel;
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        String.format("%s:", options.getPasswordPlaceholder()), TRUNCATE_TAIL_ATTRIBUTES
-                ));
+            if(bookmark.getCredentials().isCertificateAuthentication()) {
+                certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getCertificate()));
+            }
+            else {
+                certificatePopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
             }
         });
     }
 
-    @Override
-    public void invalidate() {
-        observers.clear();
-        super.invalidate();
+    @Action
+    public void certificateSelectionChanged(final NSPopUpButton sender) {
+        bookmark.getCredentials().setCertificate(sender.selectedItem().representedObject());
+        this.update();
     }
 
-    @Override
-    protected String getBundleName() {
-        return "Bookmark";
-    }
-
-    @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        if(bookmark.getProtocol().isHostnameConfigurable()) {
-            window.makeFirstResponder(hostField);
+    @Outlet
+    public void setTimezonePopup(final NSPopUpButton button) {
+        this.timezonePopup = button;
+        this.timezonePopup.setTarget(this.id());
+        this.timezonePopup.setAction(Foundation.selector("timezonePopupClicked:"));
+        this.timezonePopup.removeAllItems();
+        final List<String> timezones = Arrays.asList(TimeZone.getAvailableIDs());
+        this.timezonePopup.addItemWithTitle(UTC.getID());
+        this.timezonePopup.lastItem().setRepresentedObject(UTC.getID());
+        this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
+        timezones.sort(Comparator.comparing(o -> TimeZone.getTimeZone(o).getID()));
+        for(String tz : timezones) {
+            if(tz.matches(TIMEZONE_CONTINENT_PREFIXES)) {
+                this.timezonePopup.addItemWithTitle(String.format("%s", tz));
+                this.timezonePopup.lastItem().setRepresentedObject(tz);
+            }
         }
-        else {
-            if(options.user) {
-                window.makeFirstResponder(usernameField);
+        this.addObserver(bookmark -> {
+            timezonePopup.setEnabled(!bookmark.getProtocol().isUTCTimezone());
+            if(null == bookmark.getTimezone()) {
+                if(bookmark.getProtocol().isUTCTimezone()) {
+                    timezonePopup.setTitle(UTC.getID());
+                }
+                else {
+                    timezonePopup.setTitle(TimeZone.getTimeZone(HostPreferencesFactory.get(bookmark).getProperty("ftp.timezone.default")).getID());
+                }
+            }
+            else {
+                timezonePopup.setTitle(bookmark.getTimezone().getID());
+            }
+            timezonePopup.superview().setHidden(bookmark.getProtocol().isUTCTimezone());
+        });
+    }
+
+    @Action
+    public void timezonePopupClicked(final NSPopUpButton sender) {
+        String selected = sender.selectedItem().representedObject();
+        String[] ids = TimeZone.getAvailableIDs();
+        for(String id : ids) {
+            TimeZone tz;
+            if((tz = TimeZone.getTimeZone(id)).getID().equals(selected)) {
+                bookmark.setTimezone(tz);
+                break;
             }
         }
         this.update();
     }
 
-    @Override
-    public void setWindow(final NSWindow window) {
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                window.setTitle(BookmarkNameProvider.toString(bookmark));
+    @Outlet
+    public void setEncodingPopup(final NSPopUpButton button) {
+        this.encodingPopup = button;
+        this.encodingPopup.setTarget(this.id());
+        final Selector action = Foundation.selector("encodingSelectionChanged:");
+        this.encodingPopup.setAction(action);
+        this.encodingPopup.removeAllItems();
+        this.encodingPopup.addItemWithTitle(DEFAULT);
+        this.encodingPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(String encoding : new DefaultCharsetProvider().availableCharsets()) {
+            this.encodingPopup.addItemWithTitle(encoding);
+            this.encodingPopup.lastItem().setRepresentedObject(encoding);
+        }
+        this.addObserver(bookmark -> {
+            encodingPopup.setEnabled(bookmark.getProtocol().isEncodingConfigurable());
+            if(!bookmark.getProtocol().isEncodingConfigurable()) {
+                encodingPopup.selectItemWithTitle(DEFAULT);
+            }
+            else {
+                if(null == bookmark.getEncoding()) {
+                    encodingPopup.selectItemWithTitle(DEFAULT);
+                }
+                else {
+                    encodingPopup.selectItemAtIndex(encodingPopup.indexOfItemWithRepresentedObject(bookmark.getEncoding()));
+                }
             }
         });
-        super.setWindow(window);
     }
 
-    @Override
-    public void display(final boolean key) {
-        super.display(key);
-        cascade = this.cascade(cascade);
+    @Action
+    public void encodingSelectionChanged(final NSPopUpButton sender) {
+        if(sender.selectedItem().title().equals(DEFAULT)) {
+            bookmark.setEncoding(null);
+        }
+        else {
+            bookmark.setEncoding(sender.selectedItem().title());
+        }
+        this.update();
     }
 
-    @Delegate
-    public NSSize windowWillResize_toSize(final NSWindow window, final NSSize newSize) {
-        // Only allow horizontal sizing
-        return new NSSize(newSize.width.doubleValue(), window.frame().size.height.doubleValue());
+    public void setFtpModePopup(final NSPopUpButton button) {
+        this.ftpModePopup = button;
+        this.ftpModePopup.setTarget(this.id());
+        this.ftpModePopup.setAction(Foundation.selector("ftpModePopupClicked:"));
+        this.ftpModePopup.removeAllItems();
+        for(FTPConnectMode m : FTPConnectMode.values()) {
+            this.ftpModePopup.addItemWithTitle(m.toString());
+            this.ftpModePopup.lastItem().setRepresentedObject(m.name());
+            if(m.equals(FTPConnectMode.unknown)) {
+                this.ftpModePopup.menu().addItem(NSMenuItem.separatorItem());
+            }
+        }
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(Host bookmark) {
+                ftpModePopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.ftp);
+                ftpModePopup.selectItemAtIndex(ftpModePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
+            }
+        });
     }
 
-    @Override
-    public void windowWillClose(final NSNotification notification) {
-        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
-                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
-        super.windowWillClose(notification);
+    @Action
+    public void ftpModePopupClicked(final NSPopUpButton sender) {
+        bookmark.setFTPConnectMode(FTPConnectMode.valueOf(sender.selectedItem().representedObject()));
+        this.update();
     }
 
+    @Outlet
+    public void setWebURLField(final NSTextField field) {
+        this.webURLField = field;
+        final NSTextFieldCell cell = this.webURLField.cell();
+        notificationCenter.addObserver(this.id(),
+                Foundation.selector("webURLInputDidChange:"),
+                NSControl.NSControlTextDidChangeNotification,
+                field.id());
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(Host bookmark) {
+                updateField(webURLField, bookmark.getWebURL());
+                cell.setPlaceholderString(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
+            }
+        });
+    }
+
+    @Action
+    public void webURLInputDidChange(final NSNotification sender) {
+        bookmark.setWebURL(webURLField.stringValue());
+        this.update();
+    }
+
+    @Outlet
+    public void setWebUrlImage(final NSButton button) {
+        this.webUrlImage = button;
+        this.webUrlImage.setTarget(this.id());
+        this.webUrlImage.setAction(Foundation.selector("webUrlButtonClicked:"));
+        this.webUrlImage.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(Host bookmark) {
+                if(HostPreferencesFactory.get(bookmark).getBoolean("bookmark.favicon.download")) {
+                    background(new AbstractBackgroundAction<NSImage>() {
+                        @Override
+                        public NSImage run() {
+                            final NSImage favicon;
+                            final String f = bookmark.getProtocol().favicon();
+                            if(StringUtils.isNotBlank(f)) {
+                                favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
+                            }
+                            else {
+                                String url = String.format("%sfavicon.ico", new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
+                                // Default favicon location
+                                final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
+                                if(null == data) {
+                                    return null;
+                                }
+                                favicon = NSImage.imageWithData(data);
+                            }
+                            if(null != favicon) {
+                                favicon.setSize(new NSSize(16, 16));
+                            }
+                            return favicon;
+                        }
+
+                        @Override
+                        public void cleanup(final NSImage favicon, final BackgroundException failure) {
+                            if(null != favicon) {
+                                webUrlImage.setImage(favicon);
+                            }
+                        }
+                    });
+                }
+                webUrlImage.setToolTip(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
+            }
+        });
+    }
+
+    @Action
+    public void webUrlButtonClicked(final NSButton sender) {
+        BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
+    }
+
+    @Outlet
     public void setPrivateKeyPopup(final NSPopUpButton button) {
         this.privateKeyPopup = button;
         this.privateKeyPopup.setTarget(this.id());
@@ -536,23 +825,20 @@ public class BookmarkController extends SheetController implements CollectionLis
         // Choose another folder
         this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
         this.privateKeyPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                privateKeyPopup.setEnabled(options.publickey);
-                if(bookmark.getCredentials().isPublicKeyAuthentication()) {
-                    privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getIdentity().getAbsolute()));
-                }
-                else {
-                    privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
-                }
-                if(bookmark.getCredentials().isPublicKeyAuthentication()) {
-                    final Local key = bookmark.getCredentials().getIdentity();
-                    if(-1 == privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
-                        final NSInteger index = new NSInteger(0);
-                        privateKeyPopup.insertItemWithTitle_atIndex(key.getAbbreviatedPath(), index);
-                        privateKeyPopup.itemAtIndex(index).setRepresentedObject(key.getAbsolute());
-                    }
+        this.addObserver(bookmark -> {
+            privateKeyPopup.setEnabled(options.publickey);
+            if(bookmark.getCredentials().isPublicKeyAuthentication()) {
+                privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getIdentity().getAbsolute()));
+            }
+            else {
+                privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+            }
+            if(bookmark.getCredentials().isPublicKeyAuthentication()) {
+                final Local key = bookmark.getCredentials().getIdentity();
+                if(-1 == privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
+                    final NSInteger index = new NSInteger(0);
+                    privateKeyPopup.insertItemWithTitle_atIndex(key.getAbbreviatedPath(), index);
+                    privateKeyPopup.itemAtIndex(index).setRepresentedObject(key.getAbsolute());
                 }
             }
         });
@@ -568,7 +854,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             privateKeyOpenPanel.setAllowsMultipleSelection(false);
             privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
             privateKeyOpenPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-            privateKeyOpenPanel.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(), null, this.window(), this.id(),
+            privateKeyOpenPanel.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(), null, window, this.id(),
                     Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
@@ -577,6 +863,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.update();
     }
 
+    @Action
     public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
@@ -593,50 +880,4 @@ public class BookmarkController extends SheetController implements CollectionLis
         }
         this.update();
     }
-
-    @Override
-    @Action
-    public void helpButtonClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help(bookmark.getProtocol()));
-    }
-
-    /**
-     * Notify all observers
-     */
-    protected void update() {
-        for(BookmarkObserver observer : observers) {
-            observer.change(bookmark);
-        }
-    }
-
-    public void addObserver(final BookmarkObserver observer) {
-        observers.add(0, observer);
-    }
-
-    @Override
-    public void collectionLoaded() {
-        //
-    }
-
-    @Override
-    public void collectionItemAdded(Object item) {
-        //
-    }
-
-    @Override
-    public void collectionItemRemoved(Object item) {
-        if(item.equals(bookmark)) {
-            this.close();
-        }
-    }
-
-    @Override
-    public void collectionItemChanged(Object item) {
-        this.update();
-    }
-
-    public interface BookmarkObserver {
-        void change(final Host bookmark);
-    }
-
 }

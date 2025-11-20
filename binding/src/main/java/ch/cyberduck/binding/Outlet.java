@@ -22,7 +22,7 @@ package ch.cyberduck.binding;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
 
-@java.lang.annotation.Target({ElementType.FIELD})
+@java.lang.annotation.Target({ElementType.FIELD, ElementType.METHOD})
 @java.lang.annotation.Retention(RetentionPolicy.SOURCE)
 public @interface Outlet {
 }

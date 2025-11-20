@@ -15,25 +15,18 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSImageView;
-import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSProgressIndicator;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSDictionary;
-import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -49,8 +42,6 @@ import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
 
 import org.apache.commons.lang3.StringUtils;
-import org.rococoa.Foundation;
-import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -58,39 +49,15 @@ import java.util.List;
 
 public class ProgressController extends BundleController implements TransferListener, ProgressListener {
 
-    private static final NSDictionary NORMAL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                    NSColor.controlTextColor(),
-                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
-            NSArray.arrayWithObjects(
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName)
-    );
-    private static final NSDictionary HIGHLIGHTED_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                    NSColor.alternateSelectedControlTextColor(),
-                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
-            NSArray.arrayWithObjects(
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName)
-    );
     private static final NSImage RED_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusUnavailable");
     private static final NSImage GREEN_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusAvailable");
     private static final NSImage YELLOW_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusPartiallyAvailable");
-
-    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
     private final Transfer transfer;
     /**
      * Formatter for file size
      */
     private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
-
-    private boolean highlighted;
 
     @Outlet
     private NSPopUpButton filesPopup;
@@ -215,8 +182,7 @@ public class ProgressController extends BundleController implements TransferList
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
-                progressField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        message, TRUNCATE_MIDDLE_ATTRIBUTES));
+                progressField.setStringValue(message);
             }
         });
     }
@@ -236,36 +202,14 @@ public class ProgressController extends BundleController implements TransferList
         else {
             text = message;
         }
-        messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                text, TRUNCATE_MIDDLE_ATTRIBUTES));
+        messageField.setStringValue(text);
     }
 
     private void setStatus(final String status) {
-        statusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(status,
-                TRUNCATE_MIDDLE_ATTRIBUTES));
+        statusField.setStringValue(status);
     }
 
-    public boolean isHighlighted() {
-        return highlighted;
-    }
-
-    public void setHighlighted(final boolean h) {
-        highlighted = h;
-        statusField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.controlTextColor());
-        progressField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.controlTextColor());
-        messageField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.controlTextColor());
-        this.setMenuHighlighted(h);
-    }
-
-    private void setMenuHighlighted(boolean highlighted) {
-        for(int i = 0; i < filesPopup.numberOfItems().intValue(); i++) {
-            final NSMenuItem item = filesPopup.itemAtIndex(new NSInteger(i));
-            item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(item.title(),
-                    highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
-            );
-        }
-    }
-
+    @Outlet
     public void setFilesPopup(final NSPopUpButton p) {
         this.filesPopup = p;
         this.filesPopup.setTarget(this.id());
@@ -278,48 +222,31 @@ public class ProgressController extends BundleController implements TransferList
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
-        notificationCenter.addObserver(this.id(),
-                Foundation.selector("filesPopupWillShow:"),
-                NSPopUpButton.PopUpButtonWillPopUpNotification,
-                this.filesPopup.id());
-        notificationCenter.addObserver(this.id(),
-                Foundation.selector("filesPopupWillHide:"),
-                "NSMenuDidEndTrackingNotification",
-                this.filesPopup.menu().id());
     }
 
-    @Action
-    public void filesPopupWillShow(final NSNotification sender) {
-        this.setMenuHighlighted(false);
-    }
-
-    @Action
-    public void filesPopupWillHide(final NSNotification sender) {
-        this.setMenuHighlighted(highlighted);
-    }
-
+    @Outlet
     public void setProgressField(final NSTextField f) {
         this.progressField = f;
         this.progressField.setEditable(false);
         this.progressField.setSelectable(false);
-        this.progressField.setTextColor(NSColor.controlTextColor());
         this.progressField.setFont(NSFont.monospacedDigitSystemFontOfSize(NSFont.smallSystemFontSize()));
     }
 
+    @Outlet
     public void setStatusField(final NSTextField f) {
         this.statusField = f;
         this.statusField.setEditable(false);
         this.statusField.setSelectable(false);
-        this.statusField.setTextColor(NSColor.controlTextColor());
     }
 
+    @Outlet
     public void setMessageField(final NSTextField f) {
         this.messageField = f;
         this.messageField.setEditable(false);
         this.messageField.setSelectable(false);
-        this.messageField.setTextColor(NSColor.controlTextColor());
     }
 
+    @Outlet
     public void setProgressBar(final NSProgressIndicator p) {
         this.progressBar = p;
         this.progressBar.setDisplayedWhenStopped(false);
@@ -329,16 +256,38 @@ public class ProgressController extends BundleController implements TransferList
         this.progressBar.setMinValue(0);
     }
 
+    @Outlet
     public void setStatusIconView(final NSImageView statusIconView) {
         this.statusIconView = statusIconView;
         this.statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
     }
 
+    @Outlet
     public void setIconImageView(final NSImageView iconImageView) {
         this.iconImageView = iconImageView;
-        this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed(String.format("transfer-%s.tiff", transfer.getType().name()), 32));
+        if(!Factory.Platform.osversion.matches("(10)\\..*")) {
+            switch(transfer.getType()) {
+                case download:
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("square.and.arrow.down", 64));
+                    break;
+                case upload:
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("square.and.arrow.up", 64));
+                    break;
+                case sync:
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("arrow.up.and.down.square", 64));
+                    break;
+                case copy:
+                case move:
+                    this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("arrow.left.and.right.square", 64));
+                    break;
+            }
+        }
+        else {
+            this.iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed(String.format("transfer-%s.tiff", transfer.getType().name()), 32));
+        }
     }
 
+    @Outlet
     public void setProgressView(final NSView v) {
         this.progressView = v;
     }

@@ -169,7 +169,7 @@ public class TransferController extends WindowController implements TransferList
         this.toolbar.setDelegate(this.id());
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeLabelOnly);
+        this.toolbar.setDisplayMode(NSToolbar.NSToolbarDisplayModeIconOnly);
         this.window.setToolbar(toolbar);
 
         if(!collection.isLoaded()) {
@@ -206,43 +206,25 @@ public class TransferController extends WindowController implements TransferList
         super.setWindow(window);
     }
 
-    @Override
-    public void windowDidBecomeKey(NSNotification notification) {
-        this.updateHighlight();
-    }
-
-    @Override
-    public void windowDidResignKey(NSNotification notification) {
-        this.updateHighlight();
-    }
-
-    @Override
-    public void windowDidBecomeMain(NSNotification notification) {
-        this.updateHighlight();
-    }
-
-    @Override
-    public void windowDidResignMain(NSNotification notification) {
-        this.updateHighlight();
-    }
-
+    @Outlet
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
-        this.urlField.setAllowsEditingTextAttributes(true);
-        this.urlField.setSelectable(true);
+        this.urlField.setSelectable(false);
     }
 
+    @Outlet
     public void setLocalField(NSTextField localField) {
         this.localField = localField;
-        this.localField.setAllowsEditingTextAttributes(true);
         this.localField.setSelectable(true);
     }
 
+    @Outlet
     public void setLocalLabel(NSTextField localLabel) {
         this.localLabel = localLabel;
         this.localLabel.setStringValue(LocaleFactory.localizedString("Local File:", "Transfer"));
     }
 
+    @Outlet
     public void setIconView(final NSImageView iconView) {
         this.iconView = iconView;
     }
@@ -262,7 +244,8 @@ public class TransferController extends WindowController implements TransferList
         return filterField;
     }
 
-    public void setFilterField(NSTextField t) {
+    @Outlet
+    public void setFilterField(final NSTextField t) {
         this.filterField = t;
         notificationCenter.addObserver(this.id(),
             Foundation.selector("filterFieldTextDidChange:"),
@@ -270,11 +253,13 @@ public class TransferController extends WindowController implements TransferList
             t.id());
     }
 
+    @Delegate
     public void filterFieldTextDidChange(final NSNotification notification) {
         transferTableModel.setFilter(filterField.stringValue());
         this.reload();
     }
 
+    @Outlet
     public void setTransferSpinner(NSProgressIndicator transferSpinner) {
         this.transferSpinner = transferSpinner;
     }
@@ -326,9 +311,10 @@ public class TransferController extends WindowController implements TransferList
         super.invalidate();
     }
 
+    @Outlet
     public void setQueueTable(NSTableView view) {
         this.transferTable = view;
-        this.transferTable.setRowHeight(new CGFloat(82));
+        this.transferTable.setRowHeight(new CGFloat(92));
         {
             NSTableColumn c = tableColumnsFactory.create(TransferColumn.progress.name());
             c.setMinWidth(80f);
@@ -366,19 +352,14 @@ public class TransferController extends WindowController implements TransferList
             }
 
             @Override
-            public void selectionIsChanging(final NSNotification notification) {
-                updateHighlight();
-            }
-
-            @Override
             public void selectionDidChange(final NSNotification notification) {
-                updateHighlight();
                 updateSelection();
                 transferTable.noteHeightOfRowsWithIndexesChanged(
                     NSIndexSet.indexSetWithIndexesInRange(
                         NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(transferTable.numberOfRows()))));
             }
 
+            @Delegate
             public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
                 final ProgressController controller = transferTableModel.getController(row.intValue());
                 return controller.view();
@@ -393,6 +374,8 @@ public class TransferController extends WindowController implements TransferList
                 return transferTableModel.getSource().get(row.intValue()).getName();
             }
         }).id());
+        this.transferTable.setTarget(transferTableDelegate.id());
+        this.transferTable.setDoubleAction(Foundation.selector("tableRowDoubleClicked:"));
         // receive drag events from types
         // in fact we are not interested in file promises, but because the browser model can only initiate
         // a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
@@ -419,21 +402,6 @@ public class TransferController extends WindowController implements TransferList
     }
 
     /**
-     * Update highlighted rows
-     */
-    private void updateHighlight() {
-        final boolean main = window().isMainWindow();
-        final NSIndexSet set = transferTable.selectedRowIndexes();
-        for(int i = 0; i < transferTableModel.numberOfRowsInTableView(transferTable).intValue(); i++) {
-            boolean highlighted = set.containsIndex(new NSUInteger(i)) && main;
-            if(transferTableModel.isHighlighted(i) == highlighted) {
-                continue;
-            }
-            transferTableModel.setHighlighted(i, highlighted);
-        }
-    }
-
-    /**
      * Update labels from selection
      */
     private void updateSelection() {
@@ -448,7 +416,7 @@ public class TransferController extends WindowController implements TransferList
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
             final String remote = transfer.getRemote().getUrl();
-            urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(remote));
+            urlField.setStringValue(remote);
             final String local = transfer.getLocal();
             if(local != null) {
                 localField.setAttributedStringValue(
@@ -491,7 +459,6 @@ public class TransferController extends WindowController implements TransferList
             (Rococoa.cast(transferTable.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
         }
         transferTable.reloadData();
-        this.updateHighlight();
         this.updateSelection();
     }
 
@@ -540,9 +507,6 @@ public class TransferController extends WindowController implements TransferList
         transferTable.scrollRowToVisible(index);
     }
 
-    /**
-     * @param transfer Transfer
-     */
     public void transferDidStart(final Transfer transfer) {
         final ProgressController progress = transferTableModel.getController(transfer);
         progress.transferDidStart(transfer);
@@ -572,9 +536,6 @@ public class TransferController extends WindowController implements TransferList
         progress.transferDidProgress(transfer, status);
     }
 
-    /**
-     * @param transfer Transfer
-     */
     public void start(final Transfer transfer, final TransferOptions options) {
         this.start(transfer, options, new TransferCallback() {
             @Override
@@ -584,9 +545,6 @@ public class TransferController extends WindowController implements TransferList
         });
     }
 
-    /**
-     * @param transfer Transfer
-     */
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
         final Host source = transfer.getSource();

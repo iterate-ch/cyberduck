@@ -19,17 +19,15 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSControl;
-import ch.cyberduck.binding.application.NSSecureTextField;
-import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.ui.LoginInputValidator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 
-public class ConnectionController extends BookmarkController {
+public class ConnectionController extends BookmarkContainerController {
+
+    private final Host bookmark;
+    private final LoginOptions options;
 
     @Outlet
     private NSButton keychainCheckbox;
@@ -39,27 +37,9 @@ public class ConnectionController extends BookmarkController {
     }
 
     public ConnectionController(final Host bookmark, final LoginOptions options) {
-        super(bookmark, new LoginInputValidator(bookmark, options), options);
-    }
-
-    @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        if(options.user) {
-            window.makeFirstResponder(usernameField);
-        }
-        if(options.password && !StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
-            window.makeFirstResponder(passwordField);
-        }
-    }
-
-    @Override
-    public void callback(final int returncode) {
-        switch(returncode) {
-            case CANCEL_OPTION:
-                bookmark.getCredentials().setPassword(null);
-                break;
-        }
+        super(bookmark, options);
+        this.bookmark = bookmark;
+        this.options = options;
     }
 
     @Override
@@ -67,35 +47,24 @@ public class ConnectionController extends BookmarkController {
         return "Connection";
     }
 
+    @Override
+    public void callback(final int returncode) {
+        if(CANCEL_OPTION == returncode) {
+            bookmark.getCredentials().setPassword(null);
+        }
+    }
+
+    @Outlet
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                keychainCheckbox.setEnabled(options.keychain);
-                keychainCheckbox.setState(bookmark.getCredentials().isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
-            }
-        });
+        this.keychainCheckbox.setEnabled(options.keychain);
+        this.keychainCheckbox.setState(bookmark.getCredentials().isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void keychainCheckboxClicked(final NSButton sender) {
         bookmark.getCredentials().setSaved(sender.state() == NSCell.NSOnState);
-    }
-
-    @Override
-    public void setPasswordField(final NSSecureTextField field) {
-        super.setPasswordField(field);
-        this.notificationCenter.addObserver(this.id(),
-            Foundation.selector("passwordFieldTextDidChange:"),
-            NSControl.NSControlTextDidChangeNotification,
-            field.id());
-    }
-
-    @Action
-    public void passwordFieldTextDidChange(final NSNotification notification) {
-        bookmark.getCredentials().setPassword(StringUtils.trim(passwordField.stringValue()));
     }
 }

@@ -75,12 +75,10 @@ public abstract class SheetController extends WindowController implements InputV
     public void closeSheetWithOption(int option) {
         log.debug("Close sheet with option {}", option);
         window.endEditingFor(null);
-        if(option == SheetCallback.DEFAULT_OPTION || option == SheetCallback.ALTERNATE_OPTION) {
-            if(!this.validate(option)) {
-                log.warn("Failed validation with option {}", option);
-                AppKitFunctionsLibrary.beep();
-                return;
-            }
+        if(!this.validate(option)) {
+            log.warn("Failed validation with option {}", option);
+            AppKitFunctionsLibrary.beep();
+            return;
         }
         handlers.forEach(h -> h.closed(window, option));
     }

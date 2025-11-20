@@ -112,14 +112,16 @@ public class VaultController extends FolderController {
     @Override
     public boolean validate(final int option) {
         if(super.validate(option)) {
-            if(StringUtils.isBlank(passwordField.stringValue())) {
-                return false;
-            }
-            if(StringUtils.isBlank(confirmField.stringValue())) {
-                return false;
-            }
-            if(!StringUtils.equals(passwordField.stringValue(), confirmField.stringValue())) {
-                return false;
+            if(option == DEFAULT_OPTION) {
+                if(StringUtils.isBlank(passwordField.stringValue())) {
+                    return false;
+                }
+                if(StringUtils.isBlank(confirmField.stringValue())) {
+                    return false;
+                }
+                if(!StringUtils.equals(passwordField.stringValue(), confirmField.stringValue())) {
+                    return false;
+                }
             }
             return true;
         }

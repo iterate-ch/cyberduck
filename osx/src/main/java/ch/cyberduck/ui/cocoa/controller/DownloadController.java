@@ -91,7 +91,7 @@ public class DownloadController extends AlertController {
                 try {
                     final Host host = HostParser.parse(urlField.stringValue());
                     final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath()),
-                        EnumSet.of(detector.detect(host.getDefaultPath())));
+                            EnumSet.of(detector.detect(host.getDefaultPath())));
                     host.setDefaultPath(file.getParent().getAbsolute());
                     final Transfer transfer = new DownloadTransfer(host, file,
                             LocalFactory.get(LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder")).setBookmark(
@@ -107,13 +107,16 @@ public class DownloadController extends AlertController {
 
     @Override
     public boolean validate(final int option) {
-        final Host host;
-        try {
-            host = HostParser.parse(urlField.stringValue());
+        if(option == DEFAULT_OPTION) {
+            final Host host;
+            try {
+                host = HostParser.parse(urlField.stringValue());
+            }
+            catch(HostParserException e) {
+                return false;
+            }
+            return StringUtils.isNotBlank(host.getDefaultPath());
         }
-        catch(HostParserException e) {
-            return false;
-        }
-        return StringUtils.isNotBlank(host.getDefaultPath());
+        return true;
     }
 }

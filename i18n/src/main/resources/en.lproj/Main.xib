@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa"
-          propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24127" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24127"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
+        <customObject id="-2" userLabel="File's Owner">
             <connections>
                 <outlet property="applicationMenu" destination="227" id="355"/>
                 <outlet property="archiveMenu" destination="273" id="356"/>
@@ -160,19 +159,19 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="t4E-eL-Tgs"/>
-                            <menuItem title="Info" tag="2" keyEquivalent="i" id="261">
+                            <menuItem title="Info" image="info.circle" catalog="system" tag="2" keyEquivalent="i" id="261">
                                 <connections>
                                     <action selector="infoButtonClicked:" target="-1" id="383"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Quick Look" image="NSQuickLookTemplate" id="260">
+                            <menuItem title="Quick Look" image="eye.circle" catalog="system" id="260">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="quicklookButtonClicked:" target="-1" id="382"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Edit With" id="258">
+                            <menuItem title="Edit With" image="pencil" catalog="system" id="258">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Edit With" id="259"/>
                             </menuItem>
@@ -322,12 +321,12 @@ CA
                 <menuItem title="View" id="290">
                     <menu key="submenu" title="View" id="291">
                         <items>
-                            <menuItem title="as List" keyEquivalent="1" id="292">
+                            <menuItem title="as List" image="list.bullet" catalog="system" keyEquivalent="1" id="292">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="400"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="as Outline" tag="1" keyEquivalent="2" id="293">
+                            <menuItem title="as Outline" image="list.bullet.indent" catalog="system" tag="1" keyEquivalent="2" id="293">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="401"/>
                                 </connections>
@@ -366,6 +365,20 @@ CA
                 <menuItem title="Go" id="306">
                     <menu key="submenu" title="Go" id="307">
                         <items>
+                            <menuItem title="Connect" id="6X5-2H-kSb">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="connectBookmarkButtonClicked:" target="-1" id="Eei-nI-ZKE"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Disconnect" keyEquivalent="y" id="qbG-8n-3N3">
+                                <connections>
+                                    <action selector="disconnectButtonClicked:" target="-1" id="5pF-4d-jNq"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Refresh" keyEquivalent="r" id="308">
                                 <connections>
                                     <action selector="reloadButtonClicked:" target="-1" id="406"/>
@@ -419,11 +432,6 @@ CA
                             <menuItem title="Stop" keyEquivalent="." id="320">
                                 <connections>
                                     <action selector="interruptButtonClicked:" target="-1" id="415"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Disconnect" keyEquivalent="y" id="321">
-                                <connections>
-                                    <action selector="disconnectButtonClicked:" target="-1" id="416"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -564,9 +572,14 @@ CA
                     </connections>
                 </menuItem>
             </items>
+            <point key="canvasLocation" x="139" y="51"/>
         </menu>
     </objects>
     <resources>
-        <image name="NSQuickLookTemplate" width="26" height="17"/>
+        <image name="eye.circle" catalog="system" width="15" height="15"/>
+        <image name="info.circle" catalog="system" width="15" height="15"/>
+        <image name="list.bullet" catalog="system" width="16" height="12"/>
+        <image name="list.bullet.indent" catalog="system" width="19" height="12"/>
+        <image name="pencil" catalog="system" width="14" height="13"/>
     </resources>
 </document>

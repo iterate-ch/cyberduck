@@ -66,13 +66,13 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
      * Selection status map in the prompt
      */
     protected final Map<TransferItem, Boolean> selected
-            = new HashMap<TransferItem, Boolean>();
+            = new HashMap<>();
 
     /**
      * Transfer status determined by filters
      */
     protected Map<TransferItem, TransferStatus> status
-            = new HashMap<TransferItem, TransferStatus>();
+            = new HashMap<>();
 
     public enum Column {
         include,
@@ -136,16 +136,16 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
         if(null == directory) {
             // Root
             if(!cache.isCached(null)) {
-                cache.put(null, new AttributedList<TransferItem>(transfer.getRoots()));
+                cache.put(null, new AttributedList<>(transfer.getRoots()));
                 this.filter();
             }
         }
         else if(!cache.isCached(directory)) {
-            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, source,
+            controller.background(new WorkerBackgroundAction<>(controller, source,
                     new TransferPromptListWorker(transfer, directory.remote, directory.local, controller) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
-                            cache.put(directory, new AttributedList<TransferItem>(list));
+                            cache.put(directory, new AttributedList<>(list));
                             filter();
                         }
                     }
@@ -155,15 +155,15 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
     }
 
     private void filter() {
-        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, source,
-                new TransferPromptFilterWorker(transfer, action, cache, controller) {
+        controller.background(new WorkerBackgroundAction<>(controller, source,
+                        new TransferPromptFilterWorker(transfer, action, cache, controller) {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
                                 status = accepted;
                                 controller.reload();
                             }
-                }
-            )
+                        }
+                )
         );
     }
 
@@ -187,7 +187,7 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
         if(identifier.equals(Column.warning.name())) {
             if(file.remote.isFile()) {
                 if(status.getLength() == 0) {
-                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                    return IconCacheFactory.<NSImage>get().iconNamed("NSCaution");
                 }
             }
             return null;

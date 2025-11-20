@@ -3,6 +3,7 @@ target
 !.idea/codeStyleSettings.xml
 !.idea/copyright
 *.iml
+xcuserdata/*
 
 # VSCode/Java #
 ###############

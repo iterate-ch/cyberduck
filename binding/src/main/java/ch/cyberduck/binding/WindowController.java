@@ -47,8 +47,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static final Logger log = LogManager.getLogger(WindowController.class);
 
-    protected static final String DEFAULT = LocaleFactory.localizedString("Default");
-
     protected final Set<WindowListener> listeners
             = Collections.synchronizedSet(new HashSet<>());
     /**
@@ -89,6 +87,7 @@ public abstract class WindowController extends BundleController implements NSWin
         this.window.recalculateKeyViewLoop();
         this.window.setReleasedWhenClosed(true);
         this.window.setDelegate(this.id());
+        this.window.setLevel(NSWindow.NSWindowLevel.NSNormalWindowLevel);
         this.window.setCollectionBehavior(window.collectionBehavior()
                 | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorTransient);
     }
