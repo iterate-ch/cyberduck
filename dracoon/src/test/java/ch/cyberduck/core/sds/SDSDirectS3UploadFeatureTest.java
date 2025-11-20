@@ -40,6 +40,7 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptReadFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -83,7 +84,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
                                    return super.write(file, status, callback);
                                }
                            }, test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
             fail();
         }
         catch(ConnectionCanceledException e) {
@@ -111,7 +112,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -131,7 +132,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         new DefaultLocalTouchFeature().touch(local);
         final TransferStatus status = new TransferStatus();
         assertThrows(NotfoundException.class, () -> feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback()));
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost())));
         local.delete();
     }
 
@@ -150,7 +151,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -174,7 +175,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
@@ -200,7 +201,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
@@ -229,7 +230,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
         final Node node = feature.upload(session.getFeature(Write.class), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
@@ -268,7 +269,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
         final Node node = feature.upload(session.getFeature(Write.class), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
@@ -307,7 +308,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
         final Node node = feature.upload(session.getFeature(Write.class), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));

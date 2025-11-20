@@ -23,13 +23,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.security.MessageDigest;
-
-public class DAVUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
-
-    public DAVUploadFeature(final DAVSession session) {
-
-    }
+public class DAVUploadFeature extends HttpUploadFeature<Void> {
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {

@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 @Optional
 public interface Upload<Reply> {
@@ -38,10 +39,11 @@ public interface Upload<Reply> {
      * @param streamListener Stream copy callback
      * @param status         Transfer status holder
      * @param callback       Prompt
+     * @param options
      * @see AttributesAdapter#toAttributes(Reply)
      */
     Reply upload(Write<Reply> write, Path file, Local local, BandwidthThrottle throttle, final ProgressListener progress, StreamListener streamListener,
-                 TransferStatus status, ConnectionCallback callback) throws BackgroundException;
+                 TransferStatus status, ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException;
 
     /**
      * Determine if appending to file is supported

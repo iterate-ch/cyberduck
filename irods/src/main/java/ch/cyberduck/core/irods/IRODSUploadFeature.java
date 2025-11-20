@@ -35,6 +35,8 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,7 +65,7 @@ public class IRODSUploadFeature implements Upload<Void> {
     @Override
     public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle,
                        final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
-                       final ConnectionCallback callback) throws BackgroundException {
+                       final ConnectionCallback callback, final UploadFilterOptions uploadFilterOptions) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
@@ -98,7 +100,7 @@ public class IRODSUploadFeature implements Upload<Void> {
                         final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream(), new TransferStatus(status));
                         if(!expected.equals(fingerprint)) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                    MessageFormat.format("Mismatch between {0} hash {1} of transfered data and {2} returned by the server",
                                             fingerprint.algorithm.toString(), expected, fingerprint.hash));
                         }
                     }

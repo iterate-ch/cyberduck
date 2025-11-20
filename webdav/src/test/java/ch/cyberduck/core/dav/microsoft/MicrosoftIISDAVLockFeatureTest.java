@@ -33,6 +33,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -60,14 +61,14 @@ public class MicrosoftIISDAVLockFeatureTest extends AbstractMicrosoftIISDAVTest 
         out.close();
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpUploadFeature upload = new DAVUploadFeature(session);
+        final HttpUploadFeature upload = new DAVUploadFeature();
         upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         final String lock = new DAVLockFeature(session).lock(test);
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
         final PathAttributes attributes = new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize(), 0L);
-        assertEquals(content.length, new DAVUploadFeature(session).append(test, status.setRemote(attributes)).offset, 0L);
+        assertEquals(content.length, new DAVUploadFeature().append(test, status.setRemote(attributes)).offset, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new MicrosoftIISDAVReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);

@@ -30,6 +30,7 @@ import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -59,17 +60,17 @@ public class DefaultUploadFeatureTest extends AbstractSFTPTest {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            new DefaultUploadFeature<Void>(session).upload(
+            new DefaultUploadFeature<Void>().upload(
                     new SFTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback());
+                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            new DefaultUploadFeature<Void>(session).upload(
+            new DefaultUploadFeature<Void>().upload(
                     new SFTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback());
+                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         }
         final byte[] buffer = new byte[content.length];
         final Read read = session.getFeature(Read.class);

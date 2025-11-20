@@ -57,6 +57,8 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +66,6 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +80,7 @@ import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDigest> {
+public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node> {
     private static final Logger log = LogManager.getLogger(SDSDirectS3UploadFeature.class);
 
     /**
@@ -111,7 +112,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
 
     @Override
     public Node upload(final Write<Node> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                       final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                       final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             final InputStream in;
@@ -150,11 +151,11 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                         new StreamCopier(status, StreamProgress.noop).withAutoclose(false).withLimit(length)
                                 .transfer(in, new BufferOutputStream(buffer));
                         parts.add(this.submit(pool, write, file, temporary, buffer, throttle, streamListener, status,
-                                presignedUrl.getUrl(), presignedUrl.getPartNumber(), 0L, length, callback));
+                                presignedUrl.getUrl(), presignedUrl.getPartNumber(), 0L, length, callback, options));
                     }
                     else {
                         parts.add(this.submit(pool, write, file, local, Buffer.noop, throttle, streamListener, status,
-                                presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
+                                presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback, options));
                     }
                     remaining -= length;
                     offset += length;
@@ -237,7 +238,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
     private Future<TransferStatus> submit(final ThreadPool pool, final Write<Node> write, final Path file, final Local local,
                                           final Buffer buffer, final BandwidthThrottle throttle, final StreamListener listener,
                                           final TransferStatus overall, final String url, final Integer partNumber,
-                                          final long offset, final long length, final ConnectionCallback callback) throws ConnectionCanceledException {
+                                          final long offset, final long length, final ConnectionCallback callback, final UploadFilterOptions options) throws ConnectionCanceledException {
         overall.validate();
         log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
@@ -253,8 +254,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setFilekey(overall.getFilekey());
-                final Node node = SDSDirectS3UploadFeature.super.upload(
-                        write, file, local, throttle, counter, status, overall, status, callback);
+                final Node node = SDSDirectS3UploadFeature.super.transfer(
+                        write, file, local, throttle, counter, status, overall, status, callback, options);
                 log.info("Received response for part number {}", partNumber);
                 // Delete temporary file if any
                 buffer.close();

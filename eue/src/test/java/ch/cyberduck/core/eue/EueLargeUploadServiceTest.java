@@ -27,6 +27,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -56,7 +57,7 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final EueWriteFeature.Chunk uploadResponse = s.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+        final EueWriteFeature.Chunk uploadResponse = s.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
         assertEquals(PathAttributes.EMPTY, status.getResponse());

@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -57,7 +58,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -86,7 +87,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -113,7 +114,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+        feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());

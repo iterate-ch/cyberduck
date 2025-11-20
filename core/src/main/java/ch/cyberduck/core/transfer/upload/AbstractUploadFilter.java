@@ -32,6 +32,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LocalNotfoundException;
@@ -48,6 +49,7 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
@@ -371,6 +373,22 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                         catch(BackgroundException e) {
                             // Ignore
                             log.warn(e.getMessage());
+                        }
+                    }
+                }
+            }
+            if(file.isFile()) {
+                if(options.checksum) {
+                    final Checksum checksum = status.getChecksum();
+                    if(Checksum.NONE != checksum) {
+                        final Checksum response = status.getResponse().getChecksum();
+                        if(Checksum.NONE != response) {
+                            if(!checksum.equals(response)) {
+                                throw new ChecksumException(
+                                        MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {2} checksum {0} of transfered data and {1} returned by the server", "Error"),
+                                                response.algorithm.toString(), response.hash, checksum.hash));
+                            }
                         }
                     }
                 }

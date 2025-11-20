@@ -29,6 +29,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -63,15 +65,15 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
 
     @Override
     public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                                final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
         final Upload<StorageObject> feature;
         if(this.threshold(status)) {
             feature = new SwiftLargeObjectUploadFeature(session, regionService);
         }
         else {
-            feature = new SwiftSmallObjectUploadFeature(session);
+            feature = new SwiftSmallObjectUploadFeature();
         }
-        return feature.upload(write, file, local, throttle, progress, streamListener, status, callback);
+        return feature.upload(write, file, local, throttle, progress, streamListener, status, callback, options);
     }
 
     protected boolean threshold(final TransferStatus status) {

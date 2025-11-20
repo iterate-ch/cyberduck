@@ -32,6 +32,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
@@ -63,16 +65,16 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
 
     @Override
     public StorageObject upload(final Write<StorageObject> write, final Path file, Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                                final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+                                final TransferStatus status, final ConnectionCallback prompt, final UploadFilterOptions options) throws BackgroundException {
         if(this.threshold(status)) {
             try {
-                return new S3MultipartUploadService(session, acl).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+                return new S3MultipartUploadService(session, acl).upload(write, file, local, throttle, progress, streamListener, status, prompt, options);
             }
             catch(NotfoundException | InteroperabilityException e) {
                 log.warn("Failure {} using multipart upload. Fallback to single upload.", e.getMessage());
                 status.setAppend(false);
                 try {
-                    return new S3SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+                    return new S3SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, prompt, options);
                 }
                 catch(BackgroundException f) {
                     log.warn("Failure {} using single upload. Throw original multipart failure {}", e, e);
@@ -81,7 +83,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
             }
         }
         // Use single upload service
-        return new S3SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+        return new S3SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, prompt, options);
     }
 
     protected boolean threshold(final TransferStatus status) {

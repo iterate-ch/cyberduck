@@ -322,7 +322,7 @@ public class UploadTransfer extends Transfer {
                     file.getName()));
             // Transfer
             source.getFeature(Upload.class).upload(source.getFeature(Write.class),
-                    file, local, bandwidth, progress, listener, segment, prompt);
+                    file, local, bandwidth, progress, listener, segment, prompt, this.options);
         }
     }
 

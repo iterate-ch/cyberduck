@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -54,7 +55,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus().setLength(5 * 1024L);
-        m.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null);
+        m.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null, new UploadFilterOptions(session.getHost()));
     }
 
     @Test
@@ -71,7 +72,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertEquals(random.length, count.getSent(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
@@ -96,7 +97,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
@@ -122,7 +123,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));

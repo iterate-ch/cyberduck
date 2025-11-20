@@ -53,6 +53,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -83,7 +84,8 @@ public class DAVSingleTransferWorkerTest extends AbstractDAVTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature().upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback(),
+                new UploadFilterOptions(session.getHost()));
         final AtomicBoolean failed = new AtomicBoolean();
         final Host host = new Host(session.getHost()) {
             @Override
