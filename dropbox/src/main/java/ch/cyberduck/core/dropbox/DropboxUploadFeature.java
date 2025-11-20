@@ -18,21 +18,8 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import com.dropbox.core.v2.files.Metadata;
 
 public class DropboxUploadFeature extends HttpUploadFeature<Metadata> {
 
-    @Override
-    protected MessageDigest digest() throws IOException {
-        try {
-            return new DropboxContentHasher(MessageDigest.getInstance("SHA-256"), MessageDigest.getInstance("SHA-256"), 0);
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
-    }
 }

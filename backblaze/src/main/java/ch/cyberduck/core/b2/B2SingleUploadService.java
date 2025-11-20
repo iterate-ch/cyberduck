@@ -17,21 +17,8 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response> {
 
-    @Override
-    protected MessageDigest digest() throws IOException {
-        try {
-            return MessageDigest.getInstance("SHA1");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
-    }
 }
