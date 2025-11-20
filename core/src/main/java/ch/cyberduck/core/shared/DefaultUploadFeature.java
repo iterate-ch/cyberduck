@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
@@ -36,6 +37,7 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,7 +61,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     protected Reply transfer(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                              final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress,
                              final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
-        final InputStream in = this.decorate(local.getInputStream(), options);
+        final InputStream in = this.decorate(local.getInputStream(), status, options);
         final StatusOutputStream<Reply> out = write.write(file, status, callback);
         new StreamCopier(cancel, progress)
                 .withOffset(status.getOffset())
@@ -73,10 +75,11 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
      * Wrap input stream if checksum calculation is enabled.
      *
      * @param in      File input stream
+     * @param status
      * @param options
      * @return Wrapped or same stream
      */
-    protected InputStream decorate(final InputStream in, final UploadFilterOptions options) throws BackgroundException {
+    protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) throws BackgroundException {
         if(options.checksum) {
             final MessageDigest digest;
             try {
@@ -86,7 +89,13 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
             if(null != digest) {
-                return new DigestInputStream(in, digest);
+                return new DigestInputStream(in, digest) {
+                    @Override
+                    public void close() throws IOException {
+                        super.close();
+                        status.setChecksum(Checksum.parse(Hex.encodeHexString(digest.digest())));
+                    }
+                };
             }
         }
         return in;
