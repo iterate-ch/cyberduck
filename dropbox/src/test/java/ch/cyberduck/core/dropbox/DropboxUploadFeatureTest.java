@@ -23,9 +23,11 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -34,6 +36,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -47,7 +50,7 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testUploadSmall() throws Exception {
-        final DropboxUploadFeature feature = new DropboxUploadFeature(session);
+        final DropboxUploadFeature feature = new DropboxUploadFeature();
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
@@ -61,7 +64,7 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         final Metadata metadata = feature.upload(new DropboxWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new DropboxFindFeature(session).find(test));
@@ -76,6 +79,11 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(NullInputStream.class, new DropboxUploadFeature(session).decorate(n, null).getClass());
+        assertSame(NullInputStream.class, new DropboxUploadFeature() {
+            @Override
+            protected InputStream decorate(final InputStream in, final UploadFilterOptions options) throws BackgroundException {
+                return super.decorate(in, options);
+            }
+        }.decorate(n, new UploadFilterOptions(session.getHost())).getClass());
     }
 }

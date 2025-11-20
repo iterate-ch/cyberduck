@@ -172,7 +172,7 @@ public class LocalSession extends Session<FileSystem> {
             return (T) new LocalTimestampFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new LocalUploadFeature(this);
+            return (T) new LocalUploadFeature();
         }
         return super._getFeature(type);
     }

@@ -295,7 +295,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) read;
         }
         if(type == Upload.class) {
-            return (T) new FTPUploadFeature(this);
+            return (T) new FTPUploadFeature();
         }
         if(type == Write.class) {
             return (T) new FTPWriteFeature(this);

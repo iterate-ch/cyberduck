@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> {
@@ -52,16 +53,16 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
 
     @Override
     public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                                        final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+                                        final TransferStatus status, final ConnectionCallback prompt, final UploadFilterOptions options) throws BackgroundException {
         if(status.getLength() >= threshold) {
             if(Vault.DISABLED == registry.find(session, file)) {
                 // Only allow concurrent write of chunks when not uploading to vault. Write with default feature multiple 4MB chunks in parallel
-                return new EueLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+                return new EueLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, prompt, options);
             }
             // Write with multipart write feature for known file length sequentially 4MB chunks
-            return new EueUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+            return new EueUploadService().upload(write, file, local, throttle, progress, streamListener, status, prompt, options);
         }
         // Write single chunk smaller than threshold
-        return new EueSingleUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+        return new EueSingleUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, prompt, options);
     }
 }

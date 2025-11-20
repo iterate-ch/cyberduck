@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -58,10 +59,10 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(
+        new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
@@ -78,10 +79,10 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         // Close connections in pool to require new NTLM handshake
         final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
         manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
-        assertThrows(InteroperabilityException.class, () -> new DAVUploadFeature(session).upload(
+        assertThrows(InteroperabilityException.class, () -> new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback()));
+                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost())));
         local.delete();
     }
 
@@ -97,10 +98,10 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         // Close connections in pool to require new NTLM handshake
         final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
         manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
-        new DAVUploadFeature(session).upload(
+        new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }

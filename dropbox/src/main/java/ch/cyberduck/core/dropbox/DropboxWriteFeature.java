@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -66,6 +67,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
     public HttpResponseOutputStream<Metadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient(file));
+            final Checksum checksum = status.getChecksum();
             final UploadSessionStartUploader start = files.uploadSessionStart();
             new DefaultStreamCloser().close(start.getOutputStream());
             final String sessionId = start.finish().getSessionId();
