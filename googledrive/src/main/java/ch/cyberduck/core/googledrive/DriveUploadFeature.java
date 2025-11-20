@@ -19,19 +19,6 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 
 import com.google.api.services.drive.model.File;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class DriveUploadFeature extends HttpUploadFeature<File> {
 
-    @Override
-    protected MessageDigest digest() throws IOException {
-        try {
-            return MessageDigest.getInstance("MD5");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
-    }
 }

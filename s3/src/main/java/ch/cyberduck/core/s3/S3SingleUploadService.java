@@ -37,10 +37,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3SingleUploadService.class);
 
@@ -80,13 +76,4 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
         }
     }
 
-    @Override
-    protected MessageDigest digest() throws IOException {
-        try {
-            return MessageDigest.getInstance("MD5");
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
-        }
-    }
 }

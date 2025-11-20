@@ -19,7 +19,6 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -27,7 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
@@ -37,14 +35,10 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
 
 public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     private static final Logger log = LogManager.getLogger(DefaultUploadFeature.class);
@@ -80,28 +74,6 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
      * @return Wrapped or same stream
      */
     protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) throws BackgroundException {
-        if(options.checksum) {
-            final MessageDigest digest;
-            try {
-                digest = this.digest();
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
-            if(null != digest) {
-                return new DigestInputStream(in, digest) {
-                    @Override
-                    public void close() throws IOException {
-                        super.close();
-                        status.setChecksum(Checksum.parse(Hex.encodeHexString(digest.digest())));
-                    }
-                };
-            }
-        }
         return in;
-    }
-
-    protected MessageDigest digest() throws IOException {
-        return null;
     }
 }
