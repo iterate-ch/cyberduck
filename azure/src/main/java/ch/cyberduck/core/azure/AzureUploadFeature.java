@@ -24,6 +24,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.azure.storage.blob.models.BlobType;
 
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class AzureUploadFeature extends DefaultUploadFeature<Void> {
 
     private final AzureSession session;
@@ -42,5 +46,15 @@ public class AzureUploadFeature extends DefaultUploadFeature<Void> {
             }
         }
         return Write.override;
+    }
+
+    @Override
+    protected MessageDigest digest() throws IOException {
+        try {
+            return MessageDigest.getInstance("MD5");
+        }
+        catch(NoSuchAlgorithmException e) {
+            throw new IOException(e.getMessage(), e);
+        }
     }
 }
