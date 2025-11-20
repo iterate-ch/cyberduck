@@ -113,7 +113,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
                             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)
                             ) {
                                 @Override
-                                protected InputStream decorate(final InputStream in, final UploadFilterOptions options) {
+                                protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) {
                                     if(failed.get()) {
                                         // Second attempt successful
                                         return in;
