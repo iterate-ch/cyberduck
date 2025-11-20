@@ -209,7 +209,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                         if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                     MessageFormat.format("Mismatch between {2} checksum {0} of transfered data and {1} returned by the server",
-                                            expected, reference));
+                                            expected, reference, HashAlgorithm.md5));
                         }
                     }
                 }

@@ -129,8 +129,8 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 }
                 else {
                     throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                            MessageFormat.format("Mismatch between {0} hash {1} of transfered data and {2} returned by the server",
-                                    HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
+                            MessageFormat.format("Mismatch between {2} checksum {0} of transfered data and {1} returned by the server",
+                                    cdash64, completedUploadResponse.getCdash64(), HashAlgorithm.cdash64));
                 }
             }
             final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
