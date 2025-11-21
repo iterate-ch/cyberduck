@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -28,10 +27,10 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,14 +44,6 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3SingleUploadServiceTest extends AbstractS3Test {
-
-    @Test
-    public void testDecorate() throws Exception {
-        final NullInputStream n = new NullInputStream(1L);
-        final S3Session session = new S3Session(new Host(new S3Protocol()));
-        assertSame(NullInputStream.class, new S3SingleUploadService(session
-        ).decorate(n, null).getClass());
-    }
 
     @Test
     public void testUpload() throws Exception {
@@ -70,7 +61,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         status.setLength(random.length);
         status.setMime("text/plain");
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(new S3FindFeature(session, acl).find(test));
         final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(test);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
@@ -96,7 +87,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         status.setLength(random.length);
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(new S3FindFeature(session, acl).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -119,7 +110,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertTrue(new S3FindFeature(session, acl).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -136,6 +127,6 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         LocalTouchFactory.get().touch(local);
         final TransferStatus status = new TransferStatus();
         m.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                status, new DisabledLoginCallback());
+                status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
     }
 }

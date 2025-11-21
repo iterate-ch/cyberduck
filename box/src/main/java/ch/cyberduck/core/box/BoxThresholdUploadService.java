@@ -28,6 +28,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 public class BoxThresholdUploadService implements Upload<File> {
@@ -44,14 +45,14 @@ public class BoxThresholdUploadService implements Upload<File> {
 
     @Override
     public File upload(final Write<File> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                       final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                       final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
         if(this.threshold(status.getLength())) {
             if(Vault.DISABLED == registry.find(session, file)) {
-                return new BoxLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, callback);
+                return new BoxLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, callback, options);
             }
             // Cannot comply with chunk size requirement from server
         }
-        return new BoxSmallUploadService().upload(write, file, local, throttle, progress, streamListener, status, callback);
+        return new BoxSmallUploadService().upload(write, file, local, throttle, progress, streamListener, status, callback, options);
     }
 
     protected boolean threshold(final Long length) {

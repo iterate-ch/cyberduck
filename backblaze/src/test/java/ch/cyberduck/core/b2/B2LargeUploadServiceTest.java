@@ -38,6 +38,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -83,7 +84,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final B2LargeUploadService upload = new B2LargeUploadService(session, fileid, 5 * 1000L * 1000L, 5);
 
         upload.upload(new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                status, new DisabledConnectionCallback());
+                status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         final PathAttributes attr = new B2AttributesFinderFeature(session, fileid).find(test);
         assertNotEquals(Checksum.NONE, attr.getChecksum());
         assertEquals(checksum, attr.getChecksum());
@@ -118,15 +119,15 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2LargeUploadService service = new B2LargeUploadService(session, fileid, 5 * 1000L * 1000L, 1) {
             @Override
-            public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+            public BaseB2Response transfer(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
                 if(!interrupt.get()) {
                     throw new ConnectionTimeoutException("Test");
                 }
-                return super.upload(write, file, local, throttle, listener, status, cancel, progress, callback);
+                return super.transfer(write, file, local, throttle, listener, status, cancel, progress, callback, options);
             }
         };
         try {
-            service.upload(new B2WriteFeature(session, fileid), test, new Local(System.getProperty("java.io.tmpdir"), name), new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+            service.upload(new B2WriteFeature(session, fileid), test, new Local(System.getProperty("java.io.tmpdir"), name), new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         }
         catch(BackgroundException e) {
             // Expected
@@ -142,7 +143,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(content.length);
         service.upload(new B2WriteFeature(session, fileid), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), append,
-                new DisabledLoginCallback());
+                new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new B2FindFeature(session, fileid).find(test));
         assertEquals(content.length, new B2AttributesFinderFeature(session, fileid).find(test).getSize());
@@ -171,18 +172,18 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2LargeUploadService feature = new B2LargeUploadService(session, fileid, 5 * 1000L * 1000L, 1) {
             @Override
-            public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+            public BaseB2Response transfer(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
                 if(!interrupt.get()) {
                     if(status.getOffset() >= 5L * 1000L * 1000L) {
                         throw new ConnectionTimeoutException("Test");
                     }
                 }
-                return super.upload(write, file, local, throttle, listener, status, cancel, progress, callback);
+                return super.transfer(write, file, local, throttle, listener, status, cancel, progress, callback, options);
             }
         };
         final BytecountStreamListener count = new BytecountStreamListener();
         try {
-            feature.upload(new B2WriteFeature(session, fileid), test, new Local(System.getProperty("java.io.tmpdir"), name), new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+            feature.upload(new B2WriteFeature(session, fileid), test, new Local(System.getProperty("java.io.tmpdir"), name), new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         }
         catch(BackgroundException e) {
             // Expected
@@ -201,7 +202,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(2L * 1000L * 1000L).setOffset(5 * 1000L * 1000L);
         feature.upload(new B2WriteFeature(session, fileid), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, append,
-                new DisabledLoginCallback());
+                new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
         assertEquals(6 * 1000L * 1000L, count.getSent());
         assertTrue(append.isComplete());
         assertEquals(content.length, append.getResponse().getSize());

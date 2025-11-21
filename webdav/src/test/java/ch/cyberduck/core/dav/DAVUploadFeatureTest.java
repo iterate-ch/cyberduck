@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -56,10 +57,10 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         new DefaultLocalTouchFeature().touch(local);
         final Path test = new Path(new Path("/dav/accessdenied", EnumSet.of(Path.Type.directory)), "nosuchname", EnumSet.of(Path.Type.file));
         try {
-            new DAVUploadFeature(session).upload(
+            new DAVUploadFeature().upload(
                     new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback());
+                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         }
         catch(AccessDeniedException e) {
             assertEquals("Unexpected response (403 Forbidden). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -81,17 +82,17 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            new DAVUploadFeature(session).upload(
+            new DAVUploadFeature().upload(
                     new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback());
+                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            new DAVUploadFeature(session).upload(
+            new DAVUploadFeature().upload(
                     new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback());
+                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
@@ -104,7 +105,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testAppendZeroBytes() throws Exception {
-        final DAVUploadFeature feature = new DAVUploadFeature(session);
+        final DAVUploadFeature feature = new DAVUploadFeature();
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(feature.append(test, new TransferStatus().setExists(true).setLength(0L).setRemote(new DAVAttributesFinderFeature(session).find(test))).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -42,19 +42,20 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDigest> {
+public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
     private static final Logger log = LogManager.getLogger(BrickUploadFeature.class);
 
     /**
@@ -79,7 +80,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
 
     @Override
     public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                             final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                             final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             // Full size of file
@@ -98,7 +99,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                     length = remaining;
                 }
                 parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
-                        uploadPartEntity.getUploadUri(), partNumber, offset, length, callback));
+                        uploadPartEntity.getUploadUri(), partNumber, offset, length, callback, options));
                 remaining -= length;
                 offset += length;
                 ref = uploadPartEntity.getRef();
@@ -152,7 +153,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
     private Future<TransferStatus> submit(final ThreadPool pool, final Write<FileEntity> write, final Path file, final Local local,
                                           final BandwidthThrottle throttle, final StreamListener listener,
                                           final TransferStatus overall, final String url, final Integer partNumber,
-                                          final long offset, final long length, final ConnectionCallback callback) throws ConnectionCanceledException {
+                                          final long offset, final long length, final ConnectionCallback callback, final UploadFilterOptions options) throws ConnectionCanceledException {
         overall.validate();
         log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
@@ -168,8 +169,8 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                BrickUploadFeature.super.upload(
-                        write, file, local, throttle, listener, status, overall, status, callback);
+                BrickUploadFeature.super.transfer(
+                        write, file, local, throttle, listener, status, overall, status, callback, options);
                 log.info("Received response for part number {}", partNumber);
                 return status;
             }

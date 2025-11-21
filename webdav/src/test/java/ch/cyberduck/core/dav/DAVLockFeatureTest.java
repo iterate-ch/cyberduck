@@ -28,6 +28,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -52,9 +53,9 @@ public class DAVLockFeatureTest extends AbstractDAVTest {
         out.close();
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpUploadFeature upload = new DAVUploadFeature(session);
+        final HttpUploadFeature upload = new DAVUploadFeature();
         upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         String lock = null;
         try {
             lock = new DAVLockFeature(session).lock(test);

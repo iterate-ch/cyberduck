@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -109,9 +110,9 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<Node>(session).upload(
+        new DefaultUploadFeature<Node>().upload(
                 new SDSDirectS3MultipartWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
-                new DisabledConnectionCallback());
+                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -142,9 +143,9 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<Node>(session).upload(
+        new DefaultUploadFeature<Node>().upload(
                 new SDSDirectS3MultipartWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
-                new DisabledConnectionCallback());
+                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);

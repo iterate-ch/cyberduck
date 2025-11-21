@@ -15,57 +15,10 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
-public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
+public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response> {
 
-    private final B2Session session;
-
-    public B2SingleUploadService(final B2Session session) {
-        this.session = session;
-    }
-
-    @Override
-    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-        if(null == digest) {
-            return super.decorate(in, null);
-        }
-        else {
-            return new DigestInputStream(in, digest);
-        }
-    }
-
-    @Override
-    protected MessageDigest digest() throws IOException {
-        MessageDigest digest = null;
-        if(HostPreferencesFactory.get(session.getHost()).getBoolean("b2.upload.checksum.verify")) {
-            try {
-                digest = MessageDigest.getInstance("SHA1");
-            }
-            catch(NoSuchAlgorithmException e) {
-                throw new IOException(e.getMessage(), e);
-            }
-        }
-        return digest;
-    }
-
-    @Override
-    protected void post(final Path file, final MessageDigest digest, final BaseB2Response response) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(StringUtils.removeStart(((B2FileResponse) response).getContentSha1(), "unverified:")));
-    }
 }
