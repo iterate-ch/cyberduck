@@ -282,12 +282,12 @@ public class BookmarkController extends SheetController implements CollectionLis
                         @Override
                         public void cleanup() {
                             alertIcon.setEnabled(!reachable);
-                            alertIcon.setImage(reachable ? null : IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
+                            alertIcon.setImage(reachable ? null : IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
                         }
                     });
                 }
                 else {
-                    alertIcon.setImage(IconCacheFactory.<NSImage>get().iconNamed("alert.tiff"));
+                    alertIcon.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
                     alertIcon.setEnabled(false);
                 }
             }
