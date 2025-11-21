@@ -64,7 +64,6 @@ import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -88,7 +87,7 @@ import ch.cyberduck.core.transfer.TransferQueue;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultFactory;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
@@ -142,7 +141,6 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
@@ -2432,12 +2430,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
-                        new CreateVaultWorker(region, passphrase, VaultFactory.get(folder,
-                                HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                                HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.config.filename"),
-                                HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))) {
+                        new CreateVaultWorker(region, passphrase,
+                                new VaultMetadata(folder, VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default")))) {
                             @Override
-                            public void cleanup(final Path vault) {
+                            public void cleanup(final Vault vault) {
                                 reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         })
@@ -2450,9 +2446,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void lockUnlockEncryptedVaultButtonClicked(final ID sender) {
         final Path directory = new UploadTargetFinder(workdir).find(this.getSelectedPath());
-        if(directory.attributes().getVault() != null) {
+        if(directory.attributes().getVaultMetadata() != null) {
             // Lock and remove all open vaults
-            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory.attributes().getVault()) {
+            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory.attributes().getVaultMetadata().root) {
                 @Override
                 public void cleanup(final Path vault) {
                     if(vault != null) {
@@ -2464,7 +2460,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else {
             // Unlock vault
             this.background(new WorkerBackgroundAction<>(this, pool, new LoadVaultWorker(new LoadingVaultLookupListener(pool.getVaultRegistry(),
-                    PasswordCallbackFactory.get(this)), directory) {
+                    PasswordCallbackFactory.get(this)),
+                    new VaultMetadata(directory, VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default")))) {
                 @Override
                 public void cleanup(final Vault vault) {
                     if(vault != null) {

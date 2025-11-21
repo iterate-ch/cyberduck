@@ -23,12 +23,13 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -38,12 +39,12 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.cryptomator.CryptoVault.VAULT_VERSION;
-import static ch.cyberduck.core.cryptomator.CryptoVaultTest.createJWT;
+import static ch.cyberduck.core.cryptomator.impl.v8.CryptoVaultTest.createJWT;
 import static org.junit.Assert.assertEquals;
 
 public class CryptoReadFeatureTest {
 
+    //TODO prüfen, ob CTR in 7 vorkommen kann. oder nur GCM
     @Test
     public void testCalculations_CTR() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
@@ -61,7 +62,7 @@ public class CryptoReadFeatureTest {
                                     "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
                                     "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
                                     "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 6\n" +
+                                    "  \"version\": 7\n" +
                                     "}";
                             if("masterkey.cryptomator".equals(file.getName())) {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
@@ -87,10 +88,11 @@ public class CryptoReadFeatureTest {
                                               final LoginOptions options) {
                         return new VaultCredentials("vault");
                     }
+                }, new VaultMetadataProvider() {
                 }).
 
                 getHome());
-        CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
+        CryptoReadFeature read = new CryptoReadFeature(session, null, vault);
 
         {
             assertEquals(0, read.chunk(0));
@@ -141,7 +143,7 @@ public class CryptoReadFeatureTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptoVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -162,6 +164,7 @@ public class CryptoReadFeatureTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault");
             }
+        }, new VaultMetadataProvider() {
         }).getHome());
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
         {
