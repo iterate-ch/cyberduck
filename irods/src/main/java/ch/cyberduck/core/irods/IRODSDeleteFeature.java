@@ -1,8 +1,8 @@
 package ch.cyberduck.core.irods;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,20 +13,26 @@ package ch.cyberduck.core.irods;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.io.IRODSFile;
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem.RemoveOptions;
+import org.irods.irods4j.high_level.vfs.ObjectStatus;
+import org.irods.irods4j.high_level.vfs.ObjectStatus.ObjectType;
+import org.irods.irods4j.low_level.api.IRODSException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -35,9 +41,18 @@ import java.util.Map;
 public class IRODSDeleteFeature implements Delete {
 
     private final IRODSSession session;
+    private final RemoveOptions removeOptions;
 
     public IRODSDeleteFeature(IRODSSession session) {
         this.session = session;
+
+        PreferencesReader prefs = HostPreferencesFactory.get(session.getHost());
+        if(prefs.getBoolean(IRODSProtocol.DELETE_OBJECTS_PERMANTENTLY)) {
+            removeOptions = RemoveOptions.NO_TRASH;
+        }
+        else {
+            removeOptions = RemoveOptions.NONE;
+        }
     }
 
     @Override
@@ -51,25 +66,35 @@ public class IRODSDeleteFeature implements Delete {
                     break;
                 }
             }
+
             if(skip) {
                 continue;
             }
+
             deleted.add(file);
             callback.delete(file);
+
             try {
-                final IRODSFile f = session.getClient().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-                if(!f.exists()) {
-                    throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
+                final IRODSConnection conn = session.getClient();
+                final String logicalPath = file.getAbsolute();
+                final ObjectStatus status = IRODSFilesystem.status(conn.getRcComm(), logicalPath);
+
+                if(!IRODSFilesystem.exists(status)) {
+                    throw new NotfoundException(String.format("%s doesn't exist", logicalPath));
                 }
-                if(f.isFile()) {
-                    session.getClient().fileDeleteForce(f);
+
+                if(status.getType() == ObjectType.DATA_OBJECT) {
+                    IRODSFilesystem.remove(conn.getRcComm(), logicalPath, removeOptions);
                 }
-                else if(f.isDirectory()) {
-                    session.getClient().directoryDeleteForce(f);
+                else if(status.getType() == ObjectType.COLLECTION) {
+                    IRODSFilesystem.removeAll(conn.getRcComm(), logicalPath, removeOptions);
                 }
             }
-            catch(JargonException e) {
+            catch(IRODSException e) {
                 throw new IRODSExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
     }
