@@ -129,7 +129,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    protected void release(final Session session, final Connection type, final BackgroundException failure) {
+    protected void release(final Session<?> session, final Connection type, final BackgroundException failure) {
         switch(type) {
             case source:
                 source.release(session, failure);
@@ -176,7 +176,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     @Override
     protected void shutdown() {
-        // Always shutdown gracefully allowing the threads to return after checking transfer status
+        // Always shutdown gracefully, allowing the threads to return after checking transfer status
         pool.shutdown(true);
     }
 

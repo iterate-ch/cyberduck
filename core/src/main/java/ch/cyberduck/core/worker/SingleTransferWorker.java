@@ -37,10 +37,10 @@ import java.util.concurrent.Future;
 
 public class SingleTransferWorker extends AbstractTransferWorker {
 
-    private final Session source;
-    private final Session destination;
+    private final Session<?> source;
+    private final Session<?> destination;
 
-    public SingleTransferWorker(final Session source, final Session destination, final Transfer transfer, final TransferOptions options,
+    public SingleTransferWorker(final Session<?> source, final Session<?> destination, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error,
                                 final ProgressListener listener, final StreamListener streamListener,
@@ -51,7 +51,7 @@ public class SingleTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    public Session borrow(final Connection type) {
+    public Session<?> borrow(final Connection type) {
         switch(type) {
             case source:
                 return source;
@@ -62,7 +62,7 @@ public class SingleTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    protected void release(final Session session, final Connection type, final BackgroundException failure) {
+    protected void release(final Session<?> session, final Connection type, final BackgroundException failure) {
         //
     }
 
