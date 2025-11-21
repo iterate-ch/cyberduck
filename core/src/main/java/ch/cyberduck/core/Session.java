@@ -201,6 +201,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
     }
 
     protected void logout() throws BackgroundException {
+        log.debug("Reset credentials for {}", host);
         host.getCredentials().reset();
     }
 
