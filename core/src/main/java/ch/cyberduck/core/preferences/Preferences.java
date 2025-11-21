@@ -413,16 +413,17 @@ public abstract class Preferences implements Locales, PreferencesReader {
     protected void configureAppenders(final String level) {
         final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         final Configuration config = ctx.getConfiguration();
-
-        final Appender infoAppender = this.getInfoAppender(config, level);
-        infoAppender.start();
-        config.addAppender(infoAppender);
-        config.getRootLogger().addAppender(infoAppender, Level.INFO, null);
-
-        final Appender standardAppender = this.getDefaultAppender(config, level);
-        standardAppender.start();
-        config.addAppender(standardAppender);
-        config.getRootLogger().addAppender(standardAppender, null, null);
+        final Appender defaultAppender = this.getDefaultAppender(config, level);
+        defaultAppender.start();
+        config.addAppender(defaultAppender);
+        config.getRootLogger().addAppender(defaultAppender, null, null);
+        final Appender auditAppender = this.getAuditAppender(config, level);
+        auditAppender.start();
+        for(LoggerConfig logger : config.getLoggers().values()) {
+            if(logger.getName().startsWith("audit-")) {
+                logger.addAppender(auditAppender, null, null);
+            }
+        }
         ctx.updateLoggers();
     }
 
@@ -456,15 +457,15 @@ public abstract class Preferences implements Locales, PreferencesReader {
         return appender;
     }
 
-    private Appender getInfoAppender(final Configuration config, final String level) {
+    private Appender getAuditAppender(final Configuration config, final String level) {
         final String logfolder = LogDirectoryFinderFactory.get().find().getAbsolute();
         final String appname = StringUtils.replaceChars(StringUtils.lowerCase(this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY);
-        final Local active = LocalFactory.get(logfolder, String.format("%s-info.log", appname));
-        final Local archives = LocalFactory.get(logfolder, String.format("%s-info-%%d{yyyy-MM-dd'T'HHmmss}.log.zip", appname));
+        final Local active = LocalFactory.get(logfolder, String.format("%s-audit.log", appname));
+        final Local archives = LocalFactory.get(logfolder, String.format("%s-audit-%%d{yyyy-MM-dd'T'HHmmss}.log.zip", appname));
         final DeleteAction deleteAction = DeleteAction.createDeleteAction(logfolder, false, 1, false,
                 PathSortByModificationTime.createSorter(true),
                 new PathCondition[]{
-                        IfFileName.createNameCondition(String.format("%s-info-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
+                        IfFileName.createNameCondition(String.format("%s-audit-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
                 },
                 null, new NullConfiguration());
         final Appender appender = RollingFileAppender.newBuilder()
