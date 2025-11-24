@@ -16,6 +16,7 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertRunner;
+import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
@@ -30,14 +31,13 @@ import ch.cyberduck.core.keychain.SFCertificateTrustPanel;
 import ch.cyberduck.core.keychain.SecPolicyRef;
 import ch.cyberduck.core.keychain.SecTrustRef;
 import ch.cyberduck.core.keychain.SecurityFunctions;
-import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.rococoa.Rococoa;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.sun.jna.ptr.PointerByReference;
 
@@ -67,22 +67,28 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
         final PointerByReference reference = new PointerByReference();
         SecurityFunctions.library.SecTrustCreateWithCertificates(KeychainCertificateStore.toDEREncodedCertificates(certificates), policyRef, reference);
         final SecTrustRef trustRef = new SecTrustRef(reference.getValue());
-        final AtomicReference<SFCertificateTrustPanel> ref = new AtomicReference<>();
-        controller.invoke(new DefaultMainAction() {
-            @Override
-            public void run() {
-                ref.set(SFCertificateTrustPanel.sharedCertificateTrustPanel());
-            }
-        }, true);
-        final SFCertificateTrustPanel panel = ref.get();
-        panel.setInformativeText(null);
-        panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
-        panel.setPolicies(policyRef);
-        panel.setShowsHelp(true);
         log.debug("Display trust panel for controller {}", controller);
-        final int option = controller.alert(new SheetController.NoBundleSheetController(panel), new AlertRunner() {
+        final int option = controller.alert(new SheetController.NoBundleSheetController() {
+            @Outlet
+            private SFCertificateTrustPanel panel;
+
+            @Override
+            public void loadBundle() {
+                panel = SFCertificateTrustPanel.sharedCertificateTrustPanel();
+                panel.setInformativeText(null);
+                panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
+                panel.setPolicies(policyRef);
+                panel.setShowsHelp(true);
+            }
+
+            @Override
+            public NSWindow window() {
+                return panel;
+            }
+        }, new AlertRunner() {
             @Override
             public void alert(final NSWindow sheet, final SheetCallback callback) {
+                final SFCertificateTrustPanel panel = Rococoa.cast(sheet, SFCertificateTrustPanel.class);
                 if(null == window) {
                     callback.callback(panel.runModalForTrust_message(trustRef, null).intValue());
                 }

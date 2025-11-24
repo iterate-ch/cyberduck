@@ -16,6 +16,7 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.AlertRunner;
+import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
@@ -31,10 +32,10 @@ import ch.cyberduck.core.keychain.SFChooseIdentityPanel;
 import ch.cyberduck.core.keychain.SecIdentityRef;
 import ch.cyberduck.core.keychain.SecPolicyRef;
 import ch.cyberduck.core.keychain.SecurityFunctions;
-import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.rococoa.Rococoa;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -65,25 +66,32 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
     @Override
     public X509Certificate prompt(final String hostname, final List<X509Certificate> certificates) throws ConnectionCanceledException {
         final AtomicReference<SFChooseIdentityPanel> ref = new AtomicReference<>();
-        controller.invoke(new DefaultMainAction() {
-            @Override
-            public void run() {
-                ref.set(SFChooseIdentityPanel.sharedChooseIdentityPanel());
-            }
-        }, true);
-        final SFChooseIdentityPanel panel = ref.get();
-        panel.setDomain(hostname);
-        final SecPolicyRef policyRef = SecurityFunctions.library.SecPolicyCreateSSL(true, hostname);
-        panel.setPolicies(policyRef);
-        FoundationKitFunctions.library.CFRelease(policyRef);
-        panel.setShowsHelp(false);
-        panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
-        panel.setInformativeText(MessageFormat.format(LocaleFactory.localizedString(
-                "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."), hostname));
         final NSArray identities = KeychainCertificateStore.toDEREncodedCertificates(certificates);
-        final int option = controller.alert(new SheetController.NoBundleSheetController(panel), new AlertRunner() {
+        final int option = controller.alert(new SheetController.NoBundleSheetController() {
+            @Outlet
+            private SFChooseIdentityPanel panel;
+
+            @Override
+            public void loadBundle() {
+                panel = SFChooseIdentityPanel.sharedChooseIdentityPanel();
+                panel.setDomain(hostname);
+                final SecPolicyRef policyRef = SecurityFunctions.library.SecPolicyCreateSSL(true, hostname);
+                panel.setPolicies(policyRef);
+                FoundationKitFunctions.library.CFRelease(policyRef);
+                panel.setShowsHelp(false);
+                panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
+                panel.setInformativeText(MessageFormat.format(LocaleFactory.localizedString(
+                        "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."), hostname));
+            }
+
+            @Override
+            public NSWindow window() {
+                return panel;
+            }
+        }, new AlertRunner() {
             @Override
             public void alert(final NSWindow sheet, final SheetCallback callback) {
+                final SFChooseIdentityPanel panel = Rococoa.cast(sheet, SFChooseIdentityPanel.class);
                 if(null == window) {
                     callback.callback(panel.runModalForIdentities_message(identities, null).intValue());
                 }
@@ -98,6 +106,7 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
         switch(option) {
             case SheetCallback.DEFAULT_OPTION:
                 // Use the identity method to obtain the identity chosen by the user.
+                final SFChooseIdentityPanel panel = ref.get();
                 final SecIdentityRef identityRef = panel.identity();
                 if(null == identityRef) {
                     log.warn("No identity selected for {}", hostname);

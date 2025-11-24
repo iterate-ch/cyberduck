@@ -104,13 +104,12 @@ public abstract class SheetController extends WindowController implements InputV
      * Implementation with no bundle loaded but window reference only
      */
     public static class NoBundleSheetController extends SheetController {
-        public NoBundleSheetController(final NSWindow window) {
-            this(window, InputValidator.disabled);
+        public NoBundleSheetController() {
+            this(InputValidator.disabled);
         }
 
-        public NoBundleSheetController(final NSWindow window, final InputValidator callback) {
+        public NoBundleSheetController(final InputValidator callback) {
             super(callback);
-            this.setWindow(window);
         }
 
         @Override
