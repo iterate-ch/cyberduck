@@ -48,7 +48,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
@@ -66,8 +65,6 @@ public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = LogManager.getLogger(FTPSession.class);
 
     private final FTPListService list = new FTPListService(this);
-    private final FTPReadFeature read = new FTPReadFeature(this);
-
     private Timestamp timestamp;
     private UnixPermission permission;
     private Symlink symlink;
@@ -241,18 +238,10 @@ public class FTPSession extends SSLSession<FTPClient> {
                         }
                     }
                 }
-                String system = StringUtils.EMPTY; //Unknown
-                try {
-                    system = client.getSystemType();
-                    if(system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
-                        casesensitivity = Protocol.Case.insensitive;
-                    }
+                final String system = client.getSystemType();
+                if(system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
+                    casesensitivity = Protocol.Case.insensitive;
                 }
-                catch(IOException e) {
-                    log.warn("SYST command failed {}", e.getMessage());
-                }
-                read.configure(client.hasFeature("REST", "STREAM") ?
-                        EnumSet.of(Read.Flags.offset) : EnumSet.noneOf(Read.Flags.class));
                 list.configure(system);
                 // Selects timestamp parser based on server features
                 if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
@@ -298,7 +287,8 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) new FTPDeleteFeature(this);
         }
         if(type == Read.class) {
-            return (T) read;
+            return (T) new FTPReadFeature(this, client.hasFeature("REST", "STREAM") ?
+                    EnumSet.of(Read.Flags.offset) : EnumSet.noneOf(Read.Flags.class));
         }
         if(type == Upload.class) {
             return (T) new FTPUploadFeature(this);

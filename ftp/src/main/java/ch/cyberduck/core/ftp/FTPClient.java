@@ -197,6 +197,36 @@ public class FTPClient extends FTPSClient {
     }
 
     @Override
+    public String getSystemType() {
+        try {
+            return super.getSystemType();
+        }
+        catch(IOException e) {
+            return StringUtils.EMPTY;
+        }
+    }
+
+    @Override
+    public boolean hasFeature(final String feature, final String value) {
+        try {
+            return super.hasFeature(feature, value);
+        }
+        catch(IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean hasFeature(String feature) {
+        try {
+            return super.hasFeature(feature);
+        }
+        catch(IOException e) {
+            return false;
+        }
+    }
+
+    @Override
     public boolean retrieveFile(String remote, OutputStream local) throws IOException {
         this.pret(FTPCmd.RETR, remote);
         return super.retrieveFile(remote, local);
