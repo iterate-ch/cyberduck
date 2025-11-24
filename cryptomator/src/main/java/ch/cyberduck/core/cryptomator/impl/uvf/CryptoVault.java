@@ -61,7 +61,6 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.auto.service.AutoService;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEObjectJSON;
@@ -134,24 +133,6 @@ public class CryptoVault extends AbstractVault {
         return this;
     }
 
-    public static String decryptWithJWK(final String jwe, final JWK jwk) throws ParseException, JOSEException, JsonProcessingException, VaultException {
-        final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
-        jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM)));
-
-        // https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.11
-        // Recipients MAY consider the JWS to be invalid if the critical
-        // list contains any Header Parameter names defined by this
-        // specification or [JWA] for use with JWS or if any other constraints on its use are violated.
-        final Object uvfSpecVersion = jweObject.getHeader().getCustomParams().get(UVF_SPEC_VERSION_KEY_PARAM);
-        if(uvfSpecVersion.equals(1)) {
-            throw new VaultException(String.format("Unexpected value for critical header %s: found %s, expected \"1\"", UVF_SPEC_VERSION_KEY_PARAM, uvfSpecVersion));
-        }
-
-        final Payload payload = jweObject.getPayload();
-        return payload.toString();
-    }
-
-
     // load -> unlock -> open
     @Override
     public CryptoVault load(final Session<?> session, final PasswordCallback callback, final VaultMetadataProvider metadata) throws BackgroundException {
@@ -161,9 +142,12 @@ public class CryptoVault extends AbstractVault {
         try {
             final String jwe = new String(metadataProvider.getMetadata(), StandardCharsets.US_ASCII);
             final JWK jwk = jwkCallback.prompt(session.getHost(), StringUtils.EMPTY, StringUtils.EMPTY, new LoginOptions()).getKey();
-            uvfMetadata = decryptWithJWK(jwe, jwk);
+            final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
+            jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM)));
+            final Payload payload = jweObject.getPayload();
+            uvfMetadata = payload.toString();
         }
-        catch(ParseException | JOSEException | JsonProcessingException e) {
+        catch(ParseException | JOSEException e) {
             throw new VaultException("Failure retrieving key material", e);
         }
 
