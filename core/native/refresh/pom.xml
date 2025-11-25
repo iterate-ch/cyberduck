@@ -5,7 +5,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>Cyberduck.Core.Native</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>9.3.0</version>
+        <version>9.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>Cyberduck.Core.Refresh</artifactId>
     <packaging>pom</packaging>
@@ -73,8 +73,4 @@
             </dependencies>
         </profile>
     </profiles>
-
-  <scm>
-    <tag>release-9-3-0</tag>
-  </scm>
 </project>
