@@ -85,7 +85,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/DRACOON (CLI).cyberduckprofile"));
         final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
-                System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")
+                PROPERTIES.get("dracoon.user"), PROPERTIES.get("dracoon.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService c = new LoginConnectionService(
@@ -110,7 +110,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/DRACOON (CLI).cyberduckprofile"));
         final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
-                System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")
+                PROPERTIES.get("dracoon.user"), PROPERTIES.get("dracoon.key")
         ));
         final SDSSession session = new SDSSession(host, new DefaultX509TrustManager(),
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
