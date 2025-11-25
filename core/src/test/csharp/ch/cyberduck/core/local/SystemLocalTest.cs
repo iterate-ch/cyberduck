@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 using ch.cyberduck.core;
 using java.nio.file;
 using java.util;
@@ -138,6 +139,24 @@ namespace Ch.Cyberduck.Core.Local
             }
 
             Assert.That(absolute, Is.EqualTo(canonical));
+        }
+
+        [Test]
+        public void EnsurePrefixPlatform()
+        {
+            StringBuilder builder = new((int)CorePInvoke.PATHCCH_MAX_CCH);
+            builder.Append("C:");
+            while (builder.Length < 260)
+            {
+                builder.Append('\\');
+                builder.Append(Path.GetTempFileName());
+            }
+            SystemLocal local = new(builder.ToString());
+            Assert.That(local.getAbsolute(), Is.Not.SubPathOf(@"\\?\"));
+            Assert.That(local.NativePath(), Is.SubPathOf(@"\\?\"));
+#if NETFRAMEWORK
+            Assert.That(local.PlatformPath(), Is.SubPathOf(@"\\?\"));
+#endif
         }
     }
 }
