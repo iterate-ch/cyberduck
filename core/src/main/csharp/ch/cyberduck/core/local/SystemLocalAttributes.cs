@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Core.Local
             var resolved = local.Resolve();
             try
             {
-                return new FileInfo(resolved.getAbsolute()).Length;
+                return new FileInfo(resolved.PlatformPath()).Length;
             }
             catch (Exception e)
             {

@@ -249,7 +249,7 @@ namespace Ch.Cyberduck.Core.Local
                     lpClass = PCWSTR.DangerousFromString(getIdentifier()),
                     fMask = SEE_MASK_CLASSNAME | SEE_MASK_NOASYNC,
                     lpVerb = PCWSTR.DangerousFromString("open"),
-                    lpFile = PCWSTR.DangerousFromString(local.getAbsolute())
+                    lpFile = PCWSTR.DangerousFromString(local.NativePath())
                 };
                 ShellExecuteEx(ref info);
             }
@@ -284,7 +284,7 @@ namespace Ch.Cyberduck.Core.Local
                     return;
                 }
 
-                using var pidl = ILCreateFromPathSafe(local.getAbsolute());
+                using var pidl = ILCreateFromPathSafe(local.NativePath());
                 if (pidl.IsInvalid)
                 {
                     return;
@@ -331,7 +331,7 @@ namespace Ch.Cyberduck.Core.Local
                 OPENASINFO info = new()
                 {
                     oaifInFlags = OAIF_EXEC,
-                    pcszFile = PCWSTR.DangerousFromString(local.getAbsolute())
+                    pcszFile = PCWSTR.DangerousFromString(local.NativePath())
                 };
                 SHOpenWithDialog(default, info);
             }

@@ -157,7 +157,7 @@ namespace Ch.Cyberduck.Core.Local
                 try
                 {
                     result = CorePInvoke.CreateFile(
-                        lpFileName: local.getAbsolute(),
+                        lpFileName: local.NativePath(),
                         dwDesiredAccess: 0,
                         dwShareMode: (FILE_SHARE_MODE)7,
                         lpSecurityAttributes: null, dwCreationDisposition: FILE_CREATION_DISPOSITION.OPEN_EXISTING,
