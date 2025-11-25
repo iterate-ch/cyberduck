@@ -88,8 +88,9 @@ public class S3CopyFeature implements Copy {
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));
         final CopyResult result = this.copy(source, destination, status, listener);
-        return new Path(target).withAttributes(new PathAttributes(source.attributes()).setVersionId(
-                HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable") ? result.versionId : null).setETag(result.etag));
+        return new Path(target).withAttributes(new PathAttributes(source.attributes())
+                .setVersionId(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable") ? result.versionId : null)
+                .setETag(StringUtils.remove(result.etag, '"')));
     }
 
     protected CopyResult copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
