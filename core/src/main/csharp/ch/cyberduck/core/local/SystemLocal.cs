@@ -28,12 +28,13 @@ namespace Ch.Cyberduck.Core.Local
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(SystemLocal).FullName);
 
+        private const string UncPathPrefix = @"\\?\";
         private static readonly char[] INVALID_CHARS = Path.GetInvalidFileNameChars();
         private static readonly char[] PATH_SEPARATORS = new[]
             { Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar };
 
         public SystemLocal(string parent, string name)
-            : this(Join(parent, Sanitize(name, true)))
+            : this(Join(parent, name))
         {
         }
 
@@ -43,7 +44,7 @@ namespace Ch.Cyberduck.Core.Local
         }
 
         public SystemLocal(string path)
-            : base(Sanitize(path))
+            : base(Canonicalize(path))
         {
         }
 
@@ -89,18 +90,21 @@ namespace Ch.Cyberduck.Core.Local
         {
             var resolved = Resolve();
             string path = resolved.getAbsolute();
+#if NETCOREAPP
+            return Path.Exists(path);
+#else
             if (File.Exists(path))
             {
                 return true;
             }
 
-            bool directory = Directory.Exists(path);
-            if (directory)
+            if (Directory.Exists(path))
             {
                 return true;
             }
 
             return false;
+#endif
         }
 
         public override LocalAttributes attributes()
@@ -127,6 +131,136 @@ namespace Ch.Cyberduck.Core.Local
             return false;
         }
 
+        private static string Canonicalize(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return "";
+            }
+
+            int start = 0;
+            if (name[0] is '/')
+            {
+                // LocalFactory.get(Path.getAbsolute()) always retains '/' at the beginning.
+                // Need a Path-Local translation, which removes this.
+                // Adjust offset.
+                start = 1;
+            }
+
+            var pathRoot =
+#if NETCOREAPP
+                PathRoot(name.AsSpan(start));
+#else
+                PathRoot(name.Substring(start));
+#endif
+
+            bool deviceSyntax = pathRoot.Length > 3
+                && pathRoot[2] is '?' or '.'
+                && IsDirectorySeparator(pathRoot[0])
+                && IsDirectorySeparator(pathRoot[1])
+                && IsDirectorySeparator(pathRoot[3]);
+            bool deviceUnc = deviceSyntax && pathRoot.Length > 7
+                && pathRoot[4] is 'U'
+                && pathRoot[5] is 'N'
+                && pathRoot[6] is 'C'
+                && IsDirectorySeparator(pathRoot[7]);
+
+            using StringWriter writer = new();
+            var buffer = writer.GetStringBuilder();
+
+            if (deviceUnc)
+            {
+                // Is \\?\UNC\X or \\.\UNC\X, write \\X
+                buffer.EnsureCapacity(pathRoot.Length - 5);
+                writer.Write(Path.DirectorySeparatorChar);
+                // Include separator after UNC.
+                WriteNormalized(pathRoot.Slice(7), writer);
+            }
+            else if (deviceSyntax && pathRoot[2] is '?')
+            {
+                // Only if we've got a real long-path (\\?\)
+                // do we remove it.
+                WriteNormalized(pathRoot.Slice(4), writer);
+            }
+            else
+            {
+                // Keep \\.\-prefixes (for e.g. Pipes),
+                // and don't bother working out how `\\SHARE`-paths work.
+                WriteNormalized(pathRoot, writer);
+            }
+
+            start += pathRoot.Length;
+
+            // TODO: Replace following when we have ch.cyberduck.core.Path to ch.cyberduck.core.Local translation
+            //       e.g. on Windows when converting a Path to Local the leading slash has to be stripped, this
+            //       translation would also be responsible for cleaning up bad file and path names (blocked chars).
+            var path = name.AsSpan(start);
+            var skipped = pathRoot.Length > 0 && IsDirectorySeparator(pathRoot[pathRoot.Length - 1]) ? 1 : 0;
+            for (int lastSegment = 0, index = 0; index != -1; lastSegment += index + 1)
+            {
+                var segment = path.Slice(lastSegment);
+                if ((index = segment.IndexOfAny(PATH_SEPARATORS)) != -1)
+                {
+                    segment = segment.Slice(0, index);
+                }
+
+                if (skipped++ == 0)
+                {
+                    writer.Write(Path.DirectorySeparatorChar);
+                }
+
+                if (!segment.IsEmpty)
+                {
+                    // pass through segment sanitized from path invalid characters
+                    foreach (ref readonly var c in segment)
+                    {
+                        writer.Write(Array.IndexOf(INVALID_CHARS, c) switch
+                        {
+                            -1 => c,
+                            _ => '_'
+                        });
+                    }
+
+                    skipped = 0;
+                }
+            }
+
+
+            return writer.ToString();
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NETCOREAPP
+            static ReadOnlySpan<char> PathRoot(scoped in ReadOnlySpan<char> path)
+            {
+                return Path.GetPathRoot(path);
+            }
+#else
+            static ReadOnlySpan<char> PathRoot(string path)
+            {
+                return Path.GetPathRoot(path).AsSpan();
+            }
+#endif
+
+            static void WriteNormalized(in ReadOnlySpan<char> path, StringWriter writer)
+            {
+                writer.GetStringBuilder().EnsureCapacity(path.Length);
+                foreach (ref readonly var c in path)
+                {
+                    if (c == Path.AltDirectorySeparatorChar)
+                    {
+                        writer.Write(Path.DirectorySeparatorChar);
+                    }
+                    else
+                    {
+                        writer.Write(c);
+                    }
+                }
+            }
+        }
+
+        private static bool IsDirectorySeparator(char sep) =>
+            sep == Path.DirectorySeparatorChar || sep == Path.AltDirectorySeparatorChar;
+
         private static string Join(string root, string path)
         {
             // Path.Join doesn't exist in .NET Framework, need to replicate
@@ -134,118 +268,6 @@ namespace Ch.Cyberduck.Core.Local
             return hasDirectorySeparator
                 ? string.Concat(root, path)
                 : string.Concat(root, Path.DirectorySeparatorChar, path);
-
-            static bool IsDirectorySeparator(char sep) =>
-                sep == Path.DirectorySeparatorChar || sep == Path.AltDirectorySeparatorChar;
-        }
-
-        private static string Sanitize(string name, bool makeUnc = false)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return "";
-            }
-
-            using StringWriter writer = new();
-
-            var namespan = name.AsSpan();
-            int? leadingSeparators = 0;
-            bool hasUnc = false, nextDriveLetter = true;
-            for (int lastSegment = 0, index = 0; index != -1; lastSegment = index + 1)
-            {
-                index = name.IndexOfAny(PATH_SEPARATORS, lastSegment);
-                ReadOnlySpan<char> segment = (index switch
-                {
-                    -1 => namespan.Slice(lastSegment),
-                    _ => namespan.Slice(lastSegment, index - lastSegment)
-                }).Trim();
-
-                if (segment.IsEmpty && leadingSeparators is int lead)
-                {
-                    // handles up to first two leading separators, that is "\" and "\\"
-                    leadingSeparators = ++lead;
-                    if (lead == 2)
-                    {
-                        // in the case this is "\\" continue with assuming UNC
-                        // thus a drive letter _must not_ follow
-                        hasUnc = true;
-                        nextDriveLetter = false;
-                        leadingSeparators = null;
-                        writer.Write(Path.DirectorySeparatorChar);
-                        writer.Write(Path.DirectorySeparatorChar);
-                    }
-                    // hereafter (after "\\" has been read) every empty segment is skipped "\\\" -> "\"
-                    // or after anything except "\\" has been read, every empty segment is skipped, "\\" -> "\"
-                }
-                else if (!segment.IsEmpty)
-                {
-                    var firstChanceDriveLetter = nextDriveLetter;
-                    nextDriveLetter = false;
-                    if (hasUnc)
-                    {
-                        // ignore UNC, whatever is in as first value segment is passed-through as is
-                        // there is no need to validate hostnames here, would bail out somewhere else
-                        // handles all cases of "\\*\"
-                        // including, but not limited to: wsl$, wsl.localhost, \\?\ (MAX_PATH bypass), any network share
-                        writer.Write(segment);
-
-                        nextDriveLetter = segment.Length == 1 && (segment[0] == '?' || segment[0] == '.');
-                    }
-                    else if (firstChanceDriveLetter && segment.Length == 2 && segment[1] == Path.VolumeSeparatorChar)
-                    {
-                        // _only_ if there is a two-letter segment, that is ending in ':' (VolumeSeparatorChar)
-                        // is this thing here run.
-                        // If there is _anything_ wrong (that is not "[A-Z]:") return empty value
-
-                        /// <see cref="System.Char.IsLetter(char)" />
-                        var letter = (segment[0] | 0x20) - 'a';
-                        if (letter < 0 || letter > 25)
-                        {
-                            // letter is not in range A to Z.
-                            return "";
-                        }
-
-                        // check above is simplified only, this passes raw input through
-                        // check is 'a' but segment is 'A:', then 'A:' is written to output
-                        writer.Write(segment[0]);
-                        writer.Write(makeUnc ? '$' : ':');
-                        // additionally, this strips away all leading separator characters before the drive letter
-                        // "/C:" becomes "C:".
-                    }
-                    else
-                    {
-                        if (leadingSeparators > 0)
-                        {
-                            // workaround.
-                            // there may be input that is leading with one separator, but contains no
-                            writer.Write(Path.DirectorySeparatorChar);
-                        }
-
-                        // pass through segment sanitized from path invalid characters
-                        foreach (ref readonly var c in segment)
-                        {
-                            writer.Write(Array.IndexOf(INVALID_CHARS, c) switch
-                            {
-                                -1 => c,
-                                _ => '_'
-                            });
-                        }
-                    }
-
-                    hasUnc = false;
-                    leadingSeparators = null;
-
-                    if (index != -1)
-                    {
-                        // allow for input of "C:\Abc" and "C:\Abc\", preserve trailing separators, where
-                        // (1) return "C:\Abc"
-                        // (2) return "C:\Abc\"
-                        writer.Write(Path.DirectorySeparatorChar);
-                    }
-                }
-            }
-
-            return writer.ToString();
         }
     }
 }

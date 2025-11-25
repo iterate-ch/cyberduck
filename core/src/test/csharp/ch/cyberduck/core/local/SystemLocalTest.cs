@@ -1,7 +1,11 @@
-﻿using ch.cyberduck.core;
+﻿using System.Runtime.InteropServices;
+using ch.cyberduck.core;
 using java.nio.file;
 using java.util;
 using NUnit.Framework;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 using CorePath = ch.cyberduck.core.Path;
 using Path = System.IO.Path;
 
@@ -38,14 +42,14 @@ namespace Ch.Cyberduck.Core.Local
         }
 
         [Test]
-        public void TestBadDriveLetter([Values(@"#:\", @"\#:\", @"\\.\#:\")] string path)
+        public void TestBadDriveLetter([Values(@"#:\", @"\\.\#:\")] string path)
         {
-            // Sanitized empty
-            Assert.That(new SystemLocal(path).getAbsolute(), Is.Empty);
+            // Bad paths are copied verbatim.
+            Assert.That(new SystemLocal(path).getAbsolute(), Is.EqualTo(path));
         }
 
         [Test, Sequential]
-        public void TestPathSanitize(
+        public void TestPathCanonicalize(
             [Values(
                 /* 00 */ "C:\\C:"
             )] string path,
@@ -54,13 +58,6 @@ namespace Ch.Cyberduck.Core.Local
             )] string expected)
         {
             Assert.That(new SystemLocal(path).getAbsolute(), Is.EqualTo(expected));
-        }
-
-        [Test]
-        public void TestConvertToDirectorySeparator()
-        {
-            SystemLocal path = new(PIPE_NAME.Replace('\\', '/'));
-            Assert.That(path.getAbsolute(), Is.EqualTo(PIPE_NAME));
         }
 
         [Test]
@@ -77,29 +74,6 @@ namespace Ch.Cyberduck.Core.Local
             Assert.That(new SystemLocal("").getAbsolute(), Is.Empty);
         }
 
-        /// <remarks>
-        /// <see href="https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#example-ways-to-refer-to-the-same-file" />
-        /// </remarks>
-        [Test]
-        public void TestFileFormats()
-        {
-            string[] filenames =
-            [
-                @"c:\temp\test-file.txt",
-                @"\\127.0.0.1\c$\temp\test-file.txt",
-                @"\\LOCALHOST\c$\temp\test-file.txt",
-                @"\\.\c:\temp\test-file.txt",
-                @"\\?\c:\temp\test-file.txt",
-                @"\\.\UNC\LOCALHOST\c$\temp\test-file.txt",
-                @"\\127.0.0.1\c$\temp\test-file.txt"
-            ];
-            foreach (var item in filenames)
-            {
-                // Local passes through invalid paths, and logs an error
-                Assert.That(new SystemLocal(item).getAbsolute(), Is.EqualTo(item));
-            }
-        }
-
         [Test]
         public void TestPathToLocal()
         {
@@ -112,7 +86,6 @@ namespace Ch.Cyberduck.Core.Local
         [Test]
         public void TestAbsoluteEquality([Values(
             PIPE_NAME,
-            @"\\?\C:\ÄÖÜßßäöü",
             WSL_PATH,
             @"\Volumes\System\Test",
             @"C:\Directory\File.ext",
@@ -125,6 +98,46 @@ namespace Ch.Cyberduck.Core.Local
         public void TestTildePath()
         {
             Assert.That(new SystemLocal("~/.ssh/known_hosts").getAbsolute(), Is.Not.Empty);
+        }
+
+        /// <remarks>
+        /// <see href="https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#example-ways-to-refer-to-the-same-file" />
+        /// </remarks>
+        [Test]
+        public unsafe void TestPathCchCanonicalize([Values(
+            @"c:\temp\test-file.txt",
+            @"\\127.0.0.1\c$\temp\test-file.txt",
+            @"\\LOCALHOST\c$\temp\test-file.txt",
+            @"\\?\UNC\LOCALHOST\c$\temp\test-file.txt",
+            @"\\?\c:\temp\test-file.txt",
+            @"\\127.0.0.1\c$\temp\test-file.txt",
+            @"\\?\C:\Temp",
+            //@"\\?\C:\Temp\", // Paths.get() removes trailing separator
+            @"\\?\C:\ Leading Trailing Whitespace \", // Paths.get() keeps trailing separator
+            @"\Test"
+        )] string path)
+        {
+            SystemLocal local = new(path);
+            var absolute = local.getAbsolute();
+            string canonical;
+            fixed (char* canonicalLocal = new char[CorePInvoke.PATHCCH_MAX_CCH])
+            {
+                fixed (char* pathLocal = path)
+                {
+                    if (PInvoke.PathCchCanonicalizeEx(canonicalLocal, CorePInvoke.PATHCCH_MAX_CCH, pathLocal, PATHCCH_OPTIONS.PATHCCH_ALLOW_LONG_PATHS | PATHCCH_OPTIONS.PATHCCH_FORCE_ENABLE_LONG_NAME_PROCESS) is
+                        {
+                            Failed: true,
+                            Value: { } canonicalizeError
+                        })
+                    {
+                        throw Marshal.GetExceptionForHR(canonicalizeError);
+                    }
+                }
+
+                canonical = ((PCWSTR)canonicalLocal).ToString();
+            }
+
+            Assert.That(absolute, Is.EqualTo(canonical));
         }
     }
 }
