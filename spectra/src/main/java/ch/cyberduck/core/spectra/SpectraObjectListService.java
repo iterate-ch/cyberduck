@@ -118,7 +118,7 @@ public class SpectraObjectListService extends S3AbstractListService {
                     lastKey = key;
                 }
                 for(CommonPrefixes common : response.getListBucketResult().getCommonPrefixes()) {
-                    final String key = StringUtils.chomp(common.getPrefix(), String.valueOf(Path.DELIMITER));
+                    final String key = StringUtils.removeEnd(common.getPrefix(), String.valueOf(Path.DELIMITER));
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }

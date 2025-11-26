@@ -142,7 +142,7 @@ public class GoogleStorageObjectListService implements ListService {
                 if(response.getPrefixes() != null) {
                     final List<Future<Path>> folders = new ArrayList<>();
                     for(String prefix : response.getPrefixes()) {
-                        final String key = StringUtils.chomp(prefix, String.valueOf(Path.DELIMITER));
+                        final String key = StringUtils.removeEnd(prefix, String.valueOf(Path.DELIMITER));
                         if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                             continue;
                         }
@@ -208,7 +208,7 @@ public class GoogleStorageObjectListService implements ListService {
             public Path call() throws BackgroundException {
                 final PathAttributes attr = new PathAttributes();
                 attr.setRegion(bucket.attributes().getRegion());
-                final String key = StringUtils.chomp(prefix, String.valueOf(Path.DELIMITER));
+                final String key = StringUtils.removeEnd(prefix, String.valueOf(Path.DELIMITER));
                 try {
                     final Storage.Objects.List list = session.getClient().objects().list(bucket.getName())
                             .setVersions(true)
