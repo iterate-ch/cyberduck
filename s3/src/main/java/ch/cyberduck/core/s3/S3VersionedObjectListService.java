@@ -161,7 +161,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 }
                 for(Future<Path> f : folders) {
                     try {
-                        objects.add(Uninterruptibles.getUninterruptibly(f));
+                        final Path resolved = Uninterruptibles.getUninterruptibly(f);
+                        log.debug("Resolved common prefix {}", resolved);
+                        objects.add(resolved);
                     }
                     catch(ExecutionException e) {
                         log.warn("Listing versioned objects failed with execution failure {}", e.getMessage());
@@ -227,8 +229,10 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
                         if(URIEncoder.decode(version.getKey()).equals(prefix)) {
                             attr.setVersionId(version.getVersionId());
-                            log.debug("Set trashed attribute for prefix {}", key);
-                            attr.setTrashed(version.isDeleteMarker());
+                            if(version.isDeleteMarker()) {
+                                log.debug("Set trashed attribute for prefix {}", key);
+                                attr.setTrashed(true);
+                            }
                         }
                         // No placeholder but objects inside; need to check if all of them are deleted
                         final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(
