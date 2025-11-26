@@ -12,13 +12,12 @@
 // GNU General Public License for more details.
 
 using System;
-using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using java.io;
 using org.apache.logging.log4j;
+using static Ch.Cyberduck.Core.Local.PlatformLocalSupport;
 using CoreLocal = ch.cyberduck.core.Local;
 using File = System.IO.File;
 using Path = System.IO.Path;
@@ -30,7 +29,6 @@ namespace Ch.Cyberduck.Core.Local
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(SystemLocal).FullName);
 
-        private const string UncPathPrefix = @"\\?\";
         private static readonly char[] INVALID_CHARS = Path.GetInvalidFileNameChars();
         private static readonly char[] PATH_SEPARATORS = new[]
             { Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar };
@@ -53,62 +51,6 @@ namespace Ch.Cyberduck.Core.Local
         public SystemLocal(SystemLocal copy)
             : base(copy.getAbsolute())
         {
-        }
-
-        /// <summary>
-        /// Returns a path usable for Win32 IO, e.g. CreateFile.
-        /// </summary>
-        /// <returns>A path, optionally prefixed with \\?\ when needed.</returns>
-        [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
-        public static string ToNativePath(CoreLocal local)
-        {
-            // TODO There is RtlAreLongPathsEnabled, but this is undocumented.
-            // Manifest | LongPathsEnable | RtlAreLongPathsEnabled
-            // True     | False           | False
-            // False    | False           | False
-            // False    | True            | False
-            // True     | True            | True
-            // Just prefix every long path.
-
-            var path = local.getAbsolute();
-            bool unc = path.Length > 2
-                && IsDirectorySeparator(path[0])
-                && IsDirectorySeparator(path[1]);
-            bool extended = unc && path.Length > 3
-                && path[2] is '?' or '.';
-
-            if (!extended && path.Length > 248 /*MaxShortDirectoryName*/)
-            {
-                if (unc)
-                {
-                    // When storing to a UNC drive, make \\?\UNC\X from \\X
-                    return path.Insert(2, @"?\UNC\");
-                }
-                else
-                {
-                    // Create \\?\X from X
-                    return UncPathPrefix + path;
-                }
-            }
-
-            return path;
-        }
-
-        /// <summary>
-        /// Returns a path that is usable for .NET IO.
-        /// </summary>
-        /// <returns>A path, optionally prefixed with \\?\ when needed.</returns>
-        [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
-        public static string ToPlatformPath(CoreLocal local)
-        {
-#if NETCOREAPP
-            // .NET Core automatically handles long paths.
-            return local.getAbsolute();
-#else
-            // .NET Framework doesn't automatically prefix long paths.
-            // Assume same semantics as Win32 paths.
-            return ToNativePath(local);
-#endif
         }
 
         public CoreLocal Resolve()
@@ -283,41 +225,8 @@ namespace Ch.Cyberduck.Core.Local
                 }
             }
 
-
             return writer.ToString();
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#if NETCOREAPP
-            static ReadOnlySpan<char> PathRoot(scoped in ReadOnlySpan<char> path)
-            {
-                return Path.GetPathRoot(path);
-            }
-#else
-            static ReadOnlySpan<char> PathRoot(string path)
-            {
-                return Path.GetPathRoot(path).AsSpan();
-            }
-#endif
-
-            static void WriteNormalized(in ReadOnlySpan<char> path, StringWriter writer)
-            {
-                writer.GetStringBuilder().EnsureCapacity(path.Length);
-                foreach (ref readonly var c in path)
-                {
-                    if (c == Path.AltDirectorySeparatorChar)
-                    {
-                        writer.Write(Path.DirectorySeparatorChar);
-                    }
-                    else
-                    {
-                        writer.Write(c);
-                    }
-                }
-            }
         }
-
-        private static bool IsDirectorySeparator(char sep) =>
-            sep == Path.DirectorySeparatorChar || sep == Path.AltDirectorySeparatorChar;
 
         private static string Join(string root, string path)
         {
