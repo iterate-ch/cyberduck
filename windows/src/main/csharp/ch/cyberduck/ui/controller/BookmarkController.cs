@@ -420,7 +420,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                EnumSet.of(Protocol.Type.file, Protocol.Type.none))).toArray(new Protocol[] { }))
+                EnumSet.of(Protocol.Type.file))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.disk()));
