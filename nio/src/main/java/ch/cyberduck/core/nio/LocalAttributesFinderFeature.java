@@ -27,6 +27,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
+
 public class LocalAttributesFinderFeature implements AttributesFinder, AttributesAdapter<java.nio.file.Path> {
 
     private final LocalSession session;
@@ -42,50 +45,90 @@ public class LocalAttributesFinderFeature implements AttributesFinder, Attribute
 
     @Override
     public PathAttributes toAttributes(final java.nio.file.Path file) {
-        return new ProxyLocalAttributes(LocalFactory.get(file.toString()).attributes());
+        return new ProxyLocalAttributes(new LazyInitializer<LocalAttributes>() {
+            @Override
+            protected LocalAttributes initialize() {
+                return LocalFactory.get(file.toString()).attributes();
+            }
+        });
     }
 
     private static final class ProxyLocalAttributes extends ProxyPathAttributes {
-        private final LocalAttributes proxy;
+        private final LazyInitializer<LocalAttributes> proxy;
 
-        public ProxyLocalAttributes(final LocalAttributes proxy) {
+        public ProxyLocalAttributes(final LazyInitializer<LocalAttributes> proxy) {
             super(new DefaultPathAttributes());
             this.proxy = proxy;
         }
 
         @Override
         public long getModificationDate() {
-            return proxy.getModificationDate();
+            try {
+                return proxy.get().getModificationDate();
+            }
+            catch(ConcurrentException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override
         public long getCreationDate() {
-            return proxy.getCreationDate();
+            try {
+                return proxy.get().getCreationDate();
+            }
+            catch(ConcurrentException e) {
+                return -1L;
+            }
         }
 
         @Override
         public long getAccessedDate() {
-            return proxy.getAccessedDate();
+            try {
+                return proxy.get().getAccessedDate();
+            }
+            catch(ConcurrentException e) {
+                return -1L;
+            }
         }
 
         @Override
         public long getSize() {
-            return proxy.getSize();
+            try {
+                return proxy.get().getSize();
+            }
+            catch(ConcurrentException e) {
+                return -1L;
+            }
         }
 
         @Override
         public Permission getPermission() {
-            return proxy.getPermission();
+            try {
+                return proxy.get().getPermission();
+            }
+            catch(ConcurrentException e) {
+                return Permission.EMPTY;
+            }
         }
 
         @Override
         public String getOwner() {
-            return proxy.getOwner();
+            try {
+                return proxy.get().getOwner();
+            }
+            catch(ConcurrentException e) {
+                return null;
+            }
         }
 
         @Override
         public String getGroup() {
-            return proxy.getGroup();
+            try {
+                return proxy.get().getGroup();
+            }
+            catch(ConcurrentException e) {
+                return null;
+            }
         }
     }
 }
