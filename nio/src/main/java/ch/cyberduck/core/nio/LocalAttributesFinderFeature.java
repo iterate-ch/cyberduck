@@ -42,42 +42,50 @@ public class LocalAttributesFinderFeature implements AttributesFinder, Attribute
 
     @Override
     public PathAttributes toAttributes(final java.nio.file.Path file) {
-        final LocalAttributes proxy = LocalFactory.get(file.toString()).attributes();
-        return new ProxyPathAttributes(new DefaultPathAttributes()) {
-            @Override
-            public long getSize() {
-                return proxy.getSize();
-            }
+        return new ProxyLocalAttributes(LocalFactory.get(file.toString()).attributes());
+    }
 
-            @Override
-            public long getModificationDate() {
-                return proxy.getModificationDate();
-            }
+    private static final class ProxyLocalAttributes extends ProxyPathAttributes {
+        private final LocalAttributes proxy;
 
-            @Override
-            public long getCreationDate() {
-                return proxy.getCreationDate();
-            }
+        public ProxyLocalAttributes(final LocalAttributes proxy) {
+            super(new DefaultPathAttributes());
+            this.proxy = proxy;
+        }
 
-            @Override
-            public long getAccessedDate() {
-                return proxy.getAccessedDate();
-            }
+        @Override
+        public long getModificationDate() {
+            return proxy.getModificationDate();
+        }
 
-            @Override
-            public Permission getPermission() {
-                return proxy.getPermission();
-            }
+        @Override
+        public long getCreationDate() {
+            return proxy.getCreationDate();
+        }
 
-            @Override
-            public String getOwner() {
-                return proxy.getOwner();
-            }
+        @Override
+        public long getAccessedDate() {
+            return proxy.getAccessedDate();
+        }
 
-            @Override
-            public String getGroup() {
-                return proxy.getGroup();
-            }
-        };
+        @Override
+        public long getSize() {
+            return proxy.getSize();
+        }
+
+        @Override
+        public Permission getPermission() {
+            return proxy.getPermission();
+        }
+
+        @Override
+        public String getOwner() {
+            return proxy.getOwner();
+        }
+
+        @Override
+        public String getGroup() {
+            return proxy.getGroup();
+        }
     }
 }
