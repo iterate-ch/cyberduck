@@ -15,22 +15,19 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.ProxyPathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.DosFileAttributes;
-import java.nio.file.attribute.PosixFileAttributes;
-import java.nio.file.attribute.PosixFilePermissions;
-
-public class LocalAttributesFinderFeature implements AttributesFinder {
+public class LocalAttributesFinderFeature implements AttributesFinder, AttributesAdapter<java.nio.file.Path> {
 
     private final LocalSession session;
 
@@ -40,45 +37,47 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        try {
-            return this.toAttributes(session.toPath(file));
-        }
-        catch(IOException e) {
-            throw new LocalExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-        }
+        return this.toAttributes(session.toPath(file));
     }
 
-    public PathAttributes toAttributes(final java.nio.file.Path file) throws IOException {
-        final boolean isPosix = session.isPosixFilesystem();
-        final PathAttributes attributes = new PathAttributes();
-        final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
-        final BasicFileAttributes a = Files.readAttributes(file, provider, LinkOption.NOFOLLOW_LINKS);
-        if(a.isRegularFile()) {
-            attributes.setSize(a.size());
-        }
-        attributes.setModificationDate(a.lastModifiedTime().toMillis());
-        attributes.setCreationDate(a.creationTime().toMillis());
-        attributes.setAccessedDate(a.lastAccessTime().toMillis());
-        if(isPosix) {
-            attributes.setOwner(((PosixFileAttributes) a).owner().getName());
-            attributes.setGroup(((PosixFileAttributes) a).group().getName());
-            attributes.setPermission(new Permission(PosixFilePermissions.toString(((PosixFileAttributes) a).permissions())));
-        }
-        else {
-            Permission.Action actions = Permission.Action.none;
-            if(Files.isReadable(file)) {
-                actions = actions.or(Permission.Action.read);
+    @Override
+    public PathAttributes toAttributes(final java.nio.file.Path file) {
+        final LocalAttributes proxy = LocalFactory.get(file.toString()).attributes();
+        return new ProxyPathAttributes(new DefaultPathAttributes()) {
+            @Override
+            public long getSize() {
+                return proxy.getSize();
             }
-            if(Files.isWritable(file)) {
-                actions = actions.or(Permission.Action.write);
+
+            @Override
+            public long getModificationDate() {
+                return proxy.getModificationDate();
             }
-            if(Files.isExecutable(file)) {
-                actions = actions.or(Permission.Action.execute);
+
+            @Override
+            public long getCreationDate() {
+                return proxy.getCreationDate();
             }
-            attributes.setPermission(new Permission(
-                    actions, Permission.Action.none, Permission.Action.none
-            ));
-        }
-        return attributes;
+
+            @Override
+            public long getAccessedDate() {
+                return proxy.getAccessedDate();
+            }
+
+            @Override
+            public Permission getPermission() {
+                return proxy.getPermission();
+            }
+
+            @Override
+            public String getOwner() {
+                return proxy.getOwner();
+            }
+
+            @Override
+            public String getGroup() {
+                return proxy.getGroup();
+            }
+        };
     }
 }
