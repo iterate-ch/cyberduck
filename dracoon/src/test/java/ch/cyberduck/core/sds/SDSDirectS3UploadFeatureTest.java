@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -63,7 +64,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid, 5L * 1024 * 1024, 5);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                session.getFeature(Write.class), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] random = RandomUtils.nextBytes(6 * 1024 * 1024);
@@ -100,7 +101,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                session.getFeature(Write.class), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] random = RandomUtils.nextBytes(0);
@@ -109,7 +110,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        feature.upload(new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
@@ -123,13 +124,13 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                session.getFeature(Write.class), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path directory = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalTouchFeature().touch(local);
         final TransferStatus status = new TransferStatus();
-        assertThrows(NotfoundException.class, () -> feature.upload(new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        assertThrows(NotfoundException.class, () -> feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback()));
         local.delete();
     }
@@ -139,7 +140,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                session.getFeature(Write.class), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] random = RandomUtils.nextBytes(578);
@@ -148,7 +149,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
@@ -163,7 +164,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                session.getFeature(Write.class), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] random = RandomUtils.nextBytes(10 * 1024 * 1024);
@@ -172,7 +173,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -189,7 +190,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                session.getFeature(Write.class), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] random = RandomUtils.nextBytes(21 * 1024 * 1024);
@@ -198,7 +199,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, session.getFeature(Write.class)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -227,7 +228,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         status.setLength(random.length);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
-        final Node node = feature.upload(new SDSDirectS3WriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final Node node = feature.upload(session.getFeature(Write.class), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -266,7 +267,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         status.setLength(random.length);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
-        final Node node = feature.upload(new SDSDirectS3WriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final Node node = feature.upload(session.getFeature(Write.class), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -305,7 +306,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         status.setLength(random.length);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
-        final Node node = feature.upload(new SDSDirectS3WriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final Node node = feature.upload(session.getFeature(Write.class), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());

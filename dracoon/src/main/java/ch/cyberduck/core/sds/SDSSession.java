@@ -608,9 +608,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             return (T) new DefaultUploadFeature<Node>(this);
         }
-        if(type == Write.class || type == MultipartWrite.class) {
+        if(type == MultipartWrite.class) {
             if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
                 return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
+            }
+            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
+        }
+        if(type == Write.class) {
+            if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
+                return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
             }
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
         }
