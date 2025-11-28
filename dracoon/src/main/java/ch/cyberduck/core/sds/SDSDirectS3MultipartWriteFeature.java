@@ -105,7 +105,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                     .name(file.getName()));
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                     .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
-            log.debug("upload started for {} with response {}", file, createFileUploadResponse);
+            log.debug("Upload started for {} with response {}", file, createFileUploadResponse);
             final MultipartOutputStream proxy = new MultipartOutputStream(createFileUploadResponse, file, status);
             return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, partsize),
                     new SDSAttributesAdapter(session), status) {
