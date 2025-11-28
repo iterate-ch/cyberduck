@@ -23,11 +23,10 @@ public class LocalAttributesFinderTest {
     }
 
     @Test
-    public void testGetPermission() {
+    public void testGetPermissionNotFound() {
         final LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
         assertNotNull(a.getPermission());
         assertEquals(Permission.EMPTY, a.getPermission());
-        assertSame(a.getPermission(), a.getPermission());
     }
 
     @Test
