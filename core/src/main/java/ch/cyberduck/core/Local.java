@@ -230,6 +230,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
     }
 
+    public AttributedList<Local> list() throws AccessDeniedException {
+        return this.list(new NullFilter<>());
+    }
+
     public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
         return this.list(path, filter);
     }
@@ -259,10 +263,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
                     LocaleFactory.localizedString("Listing directory {0} failed", "Error"), this.getName()), e);
         }
         return children;
-    }
-
-    public AttributedList<Local> list() throws AccessDeniedException {
-        return this.list(new NullFilter<>());
     }
 
     @Override
