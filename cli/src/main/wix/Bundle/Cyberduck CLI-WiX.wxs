@@ -41,10 +41,10 @@
         <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
       </Component>
       <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
-        <File Id="product.exe" Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
+        <File Id="product.exe" Source="$(var.CLIPublishDir)duck.exe" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ProductExe.Config" Guid="CFC37A9B-0CD5-439B-BFB5-A3176D6500A1">
-        <File Source="$(var.CLI.TargetPath).config" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.CLIPublishDir)duck.exe.config" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="license" Guid="DF374856-F6F7-4520-A332-803CB0826593">
         <File Source="$(var.LicenseFile)" KeyPath="yes" Checksum="yes" />
@@ -53,72 +53,72 @@
         <File Source="$(var.CyberduckDir)Acknowledgments.rtf" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Cli" Guid="811AEB4A-4751-428E-9116-9F7396C5C2C8">
-        <File Source="$(var.CLI.TargetDir)/Cyberduck.Cli.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.CLIPublishDir)Cyberduck.Cli.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Core" Guid="058A9F4C-D8E9-43C3-83C1-E0E7439ACD93">
-        <File Source="$(var.CLI.TargetDir)/Cyberduck.Core.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.CLIPublishDir)Cyberduck.Core.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Protocols" Guid="A27F0196-0678-4AE6-9BD6-3EFD6EB1507A">
-        <File Source="$(var.CLI.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.CLIPublishDir)Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Cryptomator" Guid="06296D3F-6A87-4E56-A346-53C7B5368E39">
-        <File Source="$(var.CLI.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.CLIPublishDir)Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Core.Native" Guid="678E99DD-6943-495D-8742-ECE21846365D">
-        <File Source="$(var.CLI.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.CLIPublishDir)Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <!-- IKVM -->
       <Component Id="IKVM.ByteCode.dll">
-        <File Source="$(var.CLI.TargetDir)/IKVM.ByteCode.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)IKVM.ByteCode.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="IKVM.CoreLib.dll">
-        <File Source="$(var.CLI.TargetDir)/IKVM.CoreLib.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)IKVM.CoreLib.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ikvm.dll">
-        <File Source="$(var.CLI.TargetDir)/ikvm.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)ikvm.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="IKVM.Java.dll">
-        <File Source="$(var.CLI.TargetDir)/IKVM.Java.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)IKVM.Java.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ikvm.properties">
-        <File Source="$(var.CLI.TargetDir)/ikvm.properties" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)ikvm.properties" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="IKVM.Runtime.dll">
-        <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="IKVM.Reflection.dll">
-        <File Source="$(var.CLI.TargetDir)/IKVM.Reflection.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)IKVM.Reflection.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="jnidispatch" Guid="B6621775-1A9A-461E-83B8-BB1EE34B5965">
-        <File Source="$(var.CLI.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.CLIPublishDir)jnidispatch.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="vcruntime140">
-        <File Source="$(var.CLI.TargetDir)/vcruntime140.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.CLIPublishDir)vcruntime140.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="vcruntime140_1">
-        <File Source="$(var.CLI.TargetDir)/vcruntime140_1.dll" KeyPath="yes" Checksum="yes"/>
+        <File Source="$(var.CLIPublishDir)vcruntime140_1.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
 
       <Component Id="System.Buffers">
-        <File Source="$(var.CLI.TargetDir)/System.Buffers.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)System.Buffers.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Memory">
-        <File Source="$(var.CLI.TargetDir)/System.Memory.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)System.Memory.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Numerics.Vectors">
-        <File Source="$(var.CLI.TargetDir)/System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Runtime.CompilerServices.Unsafe">
-        <File Source="$(var.CLI.TargetDir)/System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Text.Json">
-        <File Source="$(var.CLI.TargetDir)/System.Text.Json.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)System.Text.Json.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Collections.Immutable">
-        <File Source="$(var.CLI.TargetDir)/System.Collections.Immutable.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)System.Collections.Immutable.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Reflection.Metadata">
-        <File Source="$(var.CLI.TargetDir)/System.Reflection.Metadata.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLIPublishDir)System.Reflection.Metadata.dll" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
 

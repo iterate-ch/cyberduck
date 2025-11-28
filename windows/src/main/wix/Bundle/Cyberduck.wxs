@@ -25,8 +25,8 @@
       </Directory>
     </Directory>
 
-    <Icon Id="icon.ico" SourceFile="$(var.cyberduck.TargetDir)/cyberduck-application.ico" />
-    <Icon Id="cd_document.ico" SourceFile="$(var.cyberduck.TargetDir)/cyberduck-document.ico" />
+    <Icon Id="icon.ico" SourceFile="$(var.CyberduckDir)cyberduck-application.ico" />
+    <Icon Id="cd_document.ico" SourceFile="$(var.CyberduckDir)cyberduck-document.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
     <Property Id="AUTOSTART" Value="0" />
     <Property Id="REINSTALLMODE" Value="dmus" />
@@ -37,7 +37,7 @@
       </Component>
 
       <Component Id="ProductExe">
-        <File Id="product.exe" Source="$(var.cyberduck.TargetPath)" KeyPath="yes" Checksum="yes">
+        <File Id="product.exe" Source="$(var.CyberduckPublishDir)Cyberduck.exe" KeyPath="yes" Checksum="yes">
           <Shortcut Id="ApplicationStartMenuShortcut"
             Name="Cyberduck"
             Advertise="yes"
@@ -93,151 +93,151 @@
         <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.License" Name="FriendlyTypeName" Value="Cyberduck License" Type="string" />
       </Component>
       <Component Id="Cyberduck.Exe.Config">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.exe.config" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Cyberduck.exe.config" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="CustomOpenFileFolderDialog">
-        <File Source="$(var.cyberduck.TargetDir)/CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Core">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Cyberduck.Core.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Core.Native">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Core.Refresh">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Protocols">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Bonjour">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Cyberduck.Bonjour.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Bonjour.Native">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Importer">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Cryptomator">
-        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="WinSparkle">
-        <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)WinSparkle.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="objectlistview">
-        <File Source="$(var.cyberduck.TargetDir)/ObjectListView.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)ObjectListView.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="jnidispatch">
-        <File Source="$(var.cyberduck.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)jnidispatch.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="vcruntime140">
-        <File Source="$(var.cyberduck.TargetDir)/vcruntime140.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)vcruntime140.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="vcruntime140_1">
-        <File Source="$(var.cyberduck.TargetDir)/vcruntime140_1.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)vcruntime140_1.dll" KeyPath="yes" Checksum="yes" />
       </Component>
 
       <!-- IKVM -->
       <Component Id="IKVM.ByteCode.dll">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.ByteCode.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)IKVM.ByteCode.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="IKVM.CoreLib.dll">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.CoreLib.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)IKVM.CoreLib.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ikvm.dll">
-        <File Source="$(var.cyberduck.TargetDir)/ikvm.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)ikvm.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="IKVM.Java.dll">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.Java.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)IKVM.Java.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="ikvm.properties">
-        <File Source="$(var.cyberduck.TargetDir)/ikvm.properties" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)ikvm.properties" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="IKVM.Runtime.dll">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="IKVM.Reflection.dll">
-        <File Source="$(var.cyberduck.TargetDir)/IKVM.Reflection.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)IKVM.Reflection.dll" KeyPath="yes" Checksum="yes" />
       </Component>
 
       <Component Id="System.Buffers">
-        <File Source="$(var.cyberduck.TargetDir)/System.Buffers.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.Buffers.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Memory">
-        <File Source="$(var.cyberduck.TargetDir)/System.Memory.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.Memory.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Numerics.Vectors">
-        <File Source="$(var.cyberduck.TargetDir)/System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Runtime.CompilerServices.Unsafe">
-        <File Source="$(var.cyberduck.TargetDir)/System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Threading.Tasks.Extensions">
-        <File Source="$(var.cyberduck.TargetDir)/System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.ValueTuple">
-        <File Source="$(var.cyberduck.TargetDir)/System.ValueTuple.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.ValueTuple.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Text.Json">
-        <File Source="$(var.cyberduck.TargetDir)/System.Text.Json.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.Text.Json.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Collections.Immutable">
-        <File Source="$(var.cyberduck.TargetDir)/System.Collections.Immutable.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.Collections.Immutable.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="System.Reflection.Metadata">
-        <File Source="$(var.cyberduck.TargetDir)/System.Reflection.Metadata.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.Reflection.Metadata.dll" KeyPath="yes" Checksum="yes" />
       </Component>
 
       <!-- NuGet Dependencies -->
       <!-- DotNetProjects.Extended.Wpf.Toolkit -->
       <Component Id="DotNetProjects.Wpf.Extended.Toolkit.dll">
-        <File Source="$(var.cyberduck.TargetDir)/DotNetProjects.Wpf.Extended.Toolkit.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)DotNetProjects.Wpf.Extended.Toolkit.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- ExceptionReporter -->
       <Component Id="ExceptionReporter.WinForms">
-        <File Source="$(var.cyberduck.TargetDir)/ExceptionReporter.NET.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)ExceptionReporter.NET.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="DotNetZip">
-        <File Source="$(var.cyberduck.TargetDir)/DotNetZip.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)DotNetZip.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="SimpleMapi">
-        <File Source="$(var.cyberduck.TargetDir)/SimpleMapi.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)SimpleMapi.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- Microsoft.Toolkit.Uwp.Notifications -->
       <Component Id="MSTKUWPNotifications">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- System.Reactive -->
       <Component Id="System.Reactive">
-        <File Source="$(var.cyberduck.TargetDir)/System.Reactive.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)System.Reactive.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- ReactiveUI.WPF-->
       <Component Id="ReactiveUI.Wpf">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Wpf.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)ReactiveUI.Wpf.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- ReactiveUI -->
       <Component Id="ReactiveUI">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)ReactiveUI.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- DynamicData -->
       <Component Id="DynamicData">
-        <File Source="$(var.cyberduck.TargetDir)/DynamicData.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)DynamicData.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- Splat -->
       <Component Id="Splat">
-        <File Source="$(var.cyberduck.TargetDir)/Splat.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Splat.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- StructureMap -->
       <Component Id="structuremap">
-        <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)StructureMap.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- CommunityToolkit.Mvvm -->
       <Component Id="CommunityToolkit.Mvvm">
-        <File Source="$(var.cyberduck.TargetDir)/CommunityToolkit.Mvvm.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)CommunityToolkit.Mvvm.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Microsoft.Bcl.AsyncInterfaces">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckPublishDir)Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- /Nuget Dependencies -->
 
