@@ -130,18 +130,7 @@ public class LocalAttributes implements Attributes {
                 return Permission.EMPTY;
             }
         }
-        Permission.Action actions = Permission.Action.none;
-        final Path file = Paths.get(path);
-        if(Files.isReadable(file)) {
-            actions = actions.or(Permission.Action.read);
-        }
-        if(Files.isWritable(file)) {
-            actions = actions.or(Permission.Action.write);
-        }
-        if(Files.isExecutable(file)) {
-            actions = actions.or(Permission.Action.execute);
-        }
-        return new Permission(actions, Permission.Action.none, Permission.Action.none);
+        return new LocalPermission();
     }
 
     public void setPermission(final Permission permission) throws AccessDeniedException {
