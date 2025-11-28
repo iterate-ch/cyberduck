@@ -45,7 +45,7 @@
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
     <PackageReference Include="ExceptionReporter" />
     <PackageReference Include="IKVM">
-      <PrivateAssets>all</PrivateAssets>
+      <PrivateAssets>build;buildMultitargeting;buildTransitive</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
     <PackageReference Include="Microsoft.Windows.CsWin32">

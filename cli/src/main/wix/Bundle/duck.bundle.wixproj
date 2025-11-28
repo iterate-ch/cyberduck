@@ -12,7 +12,6 @@
       CyberduckDir=$(CyberduckDir);
       ProfilesDir=$(CyberduckDir)profiles\default\;
       LicenseFile=$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt;
-      IkvmRuntimeDir=$(TargetBuildDir)\ikvm;
       $(DefineConstants)
     </DefineConstants>
   </PropertyGroup>
@@ -28,17 +27,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+
+  <ItemGroup>
     <HarvestDirectory Include="$(CyberduckDir)profiles\default" SuppressRootDirectory="true" SuppressCom="true" SuppressRegistry="true">
       <Link>Profiles</Link>
       <DirectoryRefId>PROFILES</DirectoryRefId>
       <ComponentGroupName>ProfileComponents</ComponentGroupName>
       <PreprocessorVariable>var.ProfilesDir</PreprocessorVariable>
-    </HarvestDirectory>
-    <HarvestDirectory Include="$(TargetBuildDir)ikvm" SuppressCom="true" SuppressRegistry="true">
-      <Link>ikvm</Link>
-      <DirectoryRefId>INSTALLLOCATION</DirectoryRefId>
-      <ComponentGroupName>IkvmRuntime</ComponentGroupName>
-      <PreprocessorVariable>var.IkvmRuntimeDir</PreprocessorVariable>
     </HarvestDirectory>
   </ItemGroup>
 
@@ -54,21 +54,31 @@
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
 
+  <PropertyGroup>
+    <CLIPublishDir>$(IntermediateOutputPath)CLI\</CLIPublishDir>
+    <DefineConstants>
+      CLIPublishDir=$(CLIPublishDir);
+      IkvmRuntimeDir=$(CLIPublishDir)\ikvm;
+      $(DefineConstants)
+    </DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\csharp\duck.csproj">
       <Name>CLI</Name>
       <Project>{4b14000d-f435-4eca-a119-7aef03792dee}</Project>
+      <Targets>Publish</Targets>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+      <AdditionalProperties>PublishDir=$(CLIPublishDir);RuntimeIdentifier=win-x64</AdditionalProperties>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WixExtension Include="WixNetFxExtension">
-      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
-      <Name>WixNetFxExtension</Name>
-    </WixExtension>
+    <HarvestDirectory Include="$(CLIPublishDir)ikvm" SuppressCom="true" SuppressRegistry="true">
+      <Link>ikvm</Link>
+      <DirectoryRefId>INSTALLLOCATION</DirectoryRefId>
+      <ComponentGroupName>IkvmRuntime</ComponentGroupName>
+      <PreprocessorVariable>var.IkvmRuntimeDir</PreprocessorVariable>
+    </HarvestDirectory>
   </ItemGroup>
 
   <Target Name="SignMsi" DependsOnTargets="SignToolArgs">
@@ -78,24 +88,25 @@
 	To modify your build process, add your task inside one of the targets below and uncomment it.
 	Other similar extension points exist, see Wix.targets.
   -->
-  <Target Name="_CollectPayload" Returns="@(SignPayload)">
+  <Target Name="BundlePayloadExecutable" Returns="@(BundlePayloadExecutable)">
     <ItemGroup>
-      <SignPayload Include="$(TargetBuildDir)*.dll;$(TargetBuildDir)*.exe" />
+      <BundlePayloadExecutable Include="$(CLIPublishDir)**\*.dll;$(CLIPublishDir)**\*.exe" />
     </ItemGroup>
   </Target>
-  <Target Name="CollectSignPayload" DependsOnTargets="_CollectPayload;SignToolArgs" Outputs="%(SignPayload.Identity)" Returns="@(SignPayload)">
-    <Exec Command="%22$(SignToolExecutable)%22 verify /q /pa %22%(SignPayload.Identity)%22"
-          EnvironmentVariables="@(SignToolEnvironmentVariable)"
-          IgnoreStandardErrorWarningFormat="true"
-          IgnoreExitCode="true">
+  <Target Name="CollectSignPayload" DependsOnTargets="BundlePayloadExecutable;SignToolArgs" Outputs="%(BundlePayloadExecutable.Identity)" Returns="@(SignBundlePayload)">
+    <Exec Command="%22$(SignToolExecutable)%22 verify /q /pa %22%(BundlePayloadExecutable.Identity)%22"
+      EnvironmentVariables="@(SignToolEnvironmentVariable)"
+      IgnoreStandardErrorWarningFormat="true"
+      IgnoreExitCode="true">
       <Output TaskParameter="ExitCode" PropertyName="PayloadSigned" />
     </Exec>
 
     <ItemGroup>
-      <SignPayload Remove="%(SignPayload.Identity)" Condition="'$(PayloadSigned)'=='0'" />
+      <SignBundlePayload Include="@(BundlePayloadExecutable)" Condition="'$(PayloadSigned)'!='0'" />
     </ItemGroup>
   </Target>
+
   <Target Name="SignPayload" Condition=" '$(SignOutput)' == 'true' " DependsOnTargets="CollectSignPayload;SignToolArgs" AfterTargets="Compile" BeforeTargets="Link">
-    <Exec Command="$(SignToolArgs) @(SignPayload->'%22%(Identity)%22', ' ')" EnvironmentVariables="@(SignToolEnvironmentVariable)" Condition="'@(SignPayload)'!=''" />
+    <Exec Command="$(SignToolArgs) @(SignBundlePayload->'%22%(Identity)%22', ' ')" EnvironmentVariables="@(SignToolEnvironmentVariable)" Condition="'@(SignBundlePayload)'!=''" />
   </Target>
 </Project>
