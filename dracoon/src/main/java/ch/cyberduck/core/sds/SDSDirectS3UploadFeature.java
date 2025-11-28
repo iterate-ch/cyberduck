@@ -130,7 +130,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                     .name(file.getName()));
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                     .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
-            log.debug("upload started for {} with response {}", file, createFileUploadResponse);
+            log.debug("Upload started for {} with response {}", file, createFileUploadResponse);
             final Map<Integer, TransferStatus> etags = new HashMap<>();
             final List<PresignedUrl> presignedUrls = this.retrievePresignedUrls(createFileUploadResponse, status);
             final List<Future<TransferStatus>> parts = new ArrayList<>();
