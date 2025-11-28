@@ -33,7 +33,7 @@ import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Objects;
 
-public class LocalAttributes extends Attributes {
+public class LocalAttributes implements Attributes {
     private static final Logger log = LogManager.getLogger(LocalAttributes.class);
 
     private final String path;

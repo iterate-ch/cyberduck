@@ -36,7 +36,7 @@ import java.util.Objects;
 /**
  * Attributes of a remote directory or file.
  */
-public class PathAttributes extends Attributes implements Serializable {
+public class PathAttributes implements Attributes, Serializable {
     private static final Logger log = LogManager.getLogger(PathAttributes.class);
 
     /**
