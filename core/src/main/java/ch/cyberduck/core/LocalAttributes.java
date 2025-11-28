@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -129,7 +130,18 @@ public class LocalAttributes implements Attributes {
                 return Permission.EMPTY;
             }
         }
-        return Permission.EMPTY;
+        Permission.Action actions = Permission.Action.none;
+        final Path file = Paths.get(path);
+        if(Files.isReadable(file)) {
+            actions = actions.or(Permission.Action.read);
+        }
+        if(Files.isWritable(file)) {
+            actions = actions.or(Permission.Action.write);
+        }
+        if(Files.isExecutable(file)) {
+            actions = actions.or(Permission.Action.execute);
+        }
+        return new Permission(actions, Permission.Action.none, Permission.Action.none);
     }
 
     public void setPermission(final Permission permission) throws AccessDeniedException {
