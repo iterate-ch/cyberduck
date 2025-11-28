@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -124,7 +125,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         continue;
                     }
                     final Path f;
-                    final PathAttributes attr = new PathAttributes();
+                    final PathAttributes attr = new DefaultPathAttributes();
                     attr.setRegion(bucket.attributes().getRegion());
                     if(null == delimiter) {
                         f = new Path(String.format("%s/%s", bucket.getAbsolute(), key),

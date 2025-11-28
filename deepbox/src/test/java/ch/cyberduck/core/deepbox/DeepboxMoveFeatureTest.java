@@ -17,6 +17,7 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -61,7 +62,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         final Path moved = new DeepboxMoveFeature(session, fileid).move(test,
                 new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(sourceId, moved.attributes().getFileId());
-        assertFalse(new DeepboxFindFeature(session, fileid).find(new Path(test).withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, fileid).find(new Path(test).withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(moved));
         assertEquals(test.attributes().getModificationDate(), moved.attributes().getModificationDate());
         assertEquals(test.attributes().getChecksum(), moved.attributes().getChecksum());
@@ -80,7 +81,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         final Path target = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path moved = new DeepboxMoveFeature(session, fileid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(sourceId, moved.attributes().getFileId());
-        assertFalse(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target));
 
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -77,7 +78,7 @@ public class SharepointSessionTest {
     @Test
     public void testContainerEquality() {
         final Path source = new Path("/Default/Drives/Docs", EnumSet.of(Path.Type.directory))
-                .withAttributes(new PathAttributes()
+                .withAttributes(new DefaultPathAttributes()
                         .setFileId("File Id"));
         final Path target = new Path("/Default/Drives/Docs", EnumSet.of(Path.Type.directory));
         final GraphSession.ContainerItem sourceItem = session.getContainer(source);

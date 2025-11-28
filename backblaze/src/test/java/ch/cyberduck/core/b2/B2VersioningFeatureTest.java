@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -60,7 +61,7 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
         assertTrue(new B2FindFeature(session, fileid).find(ignored));
-        final PathAttributes initialAttributes = new PathAttributes(test.attributes());
+        final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();

@@ -16,6 +16,7 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -80,7 +81,7 @@ public class SpectraAttributesFinderFeature implements AttributesFinder, Attribu
 
     @Override
     public PathAttributes toAttributes(final HeadObjectResponse object) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(object.getObjectSize());
         final Map<String, String> metadata = new HashMap<>();
         for(String key : object.getMetadata().keys()) {

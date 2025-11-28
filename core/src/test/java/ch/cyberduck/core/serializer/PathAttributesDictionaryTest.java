@@ -15,6 +15,7 @@ package ch.cyberduck.core.serializer;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -29,7 +30,7 @@ public class PathAttributesDictionaryTest {
 
     @Test
     public void testSerialize() {
-        PathAttributes attributes = new PathAttributes();
+        PathAttributes attributes = new DefaultPathAttributes();
         attributes.setOwner("u");
         attributes.setGroup("g");
         attributes.setTrashed(true);
@@ -48,7 +49,7 @@ public class PathAttributesDictionaryTest {
 
     @Test
     public void testGetAsDictionary() {
-        PathAttributes attributes = new PathAttributes();
+        PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(3L);
         attributes.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
         attributes.setModificationDate(5343L);
@@ -62,7 +63,7 @@ public class PathAttributesDictionaryTest {
 
     @Test
     public void testSerializeHashCode() {
-        PathAttributes attributes = new PathAttributes();
+        PathAttributes attributes = new DefaultPathAttributes();
         attributes.setPermission(new Permission(644));
         attributes.setDuplicate(true);
         attributes.setVersionId("v-1");

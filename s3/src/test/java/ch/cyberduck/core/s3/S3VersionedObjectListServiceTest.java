@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -191,7 +192,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         assertEquals(1, versions.size());
         assertEquals(versions.get(0), list.get(1));
         new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(
-                new Path(file).withAttributes(new PathAttributes().setVersionId("null")),
+                new Path(file).withAttributes(new DefaultPathAttributes().setVersionId("null")),
                 new Path(file).withAttributes(new DefaultAttributesFinderFeature(session).find(file)), bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

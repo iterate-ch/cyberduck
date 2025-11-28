@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -92,7 +93,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
             if(!response.getBuckets().isEmpty()) {
                 buckets.addAll(response.getBuckets().entrySet().stream().map(entry ->
                         new Path(PathNormalizer.normalize(entry.getValue()), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                                new PathAttributes().setVersionId(entry.getKey()))).collect(Collectors.toSet()));
+                                new DefaultPathAttributes().setVersionId(entry.getKey()))).collect(Collectors.toSet()));
             }
             retryHandler.setTokens(accountId, applicationKey, response.getAuthorizationToken());
             if(preferences.getBoolean("b2.upload.largeobject.auto")) {

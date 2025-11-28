@@ -16,6 +16,7 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -126,11 +127,11 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes()), new DisabledListProgressListener()));
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new DefaultPathAttributes()), new DisabledListProgressListener()));
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertThrows(NotfoundException.class, () -> nodeid.getFileId(folder.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes())));
+        assertThrows(NotfoundException.class, () -> nodeid.getFileId(folder.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new DefaultPathAttributes())));
     }
 
     @Test

@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -87,7 +88,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
 
     @Override
     public PathAttributes toAttributes(final FileAttributes stat) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         switch(stat.getType()) {
             case REGULAR:
             case UNKNOWN:

@@ -16,6 +16,7 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
@@ -62,7 +63,7 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
             if(entity.getFileMigrationId() != null) {
                 this.poll(client, entity);
             }
-            return new Path(target).withAttributes(new PathAttributes(file.attributes()).setVault(null));
+            return new Path(target).withAttributes(new DefaultPathAttributes(file.attributes()).setVault(null));
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Cannot copy {0}", e, file);

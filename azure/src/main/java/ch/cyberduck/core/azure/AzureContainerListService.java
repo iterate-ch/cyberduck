@@ -16,6 +16,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -46,7 +47,7 @@ public class AzureContainerListService implements RootListService {
             for(BlobContainerItem container : session.getClient().listBlobContainers(new ListBlobContainersOptions()
                     .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))
                     .setDetails(new BlobContainerListDetails().setRetrieveDeleted(false).setRetrieveMetadata(true)), null)) {
-                final PathAttributes attributes = new PathAttributes();
+                final PathAttributes attributes = new DefaultPathAttributes();
                 attributes.setETag(container.getProperties().getETag());
                 attributes.setModificationDate(container.getProperties().getLastModified().toInstant().toEpochMilli());
                 containers.add(new Path(PathNormalizer.normalize(container.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));

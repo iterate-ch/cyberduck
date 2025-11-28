@@ -60,7 +60,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         this.path = copy.path;
         this.symlink = null == copy.symlink ? null : new Path(copy.symlink);
         this.type = EnumSet.copyOf(copy.type);
-        this.attributes = new PathAttributes(copy.attributes);
+        this.attributes = new DefaultPathAttributes(copy.attributes);
         this.alias = copy.alias;
     }
 
@@ -71,7 +71,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      */
     public Path(final Path parent, final String name, final EnumSet<Type> type) {
         this.type = type;
-        this.attributes = new PathAttributes();
+        this.attributes = new DefaultPathAttributes();
         this.attributes.setRegion(parent.attributes.getRegion());
         this._setPath(parent, name);
     }
@@ -82,7 +82,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      */
     public Path(final String absolute, final EnumSet<Type> type) {
         this.type = type;
-        this.attributes = new PathAttributes();
+        this.attributes = new DefaultPathAttributes();
         this.setPath(absolute);
     }
 

@@ -3,6 +3,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -342,7 +343,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     public void testSize() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService feature = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L).setRemote(new PathAttributes().setSize(3L)));
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L).setRemote(new DefaultPathAttributes().setSize(3L)));
         assertFalse(append.append);
         assertEquals(0L, append.offset, 0L);
     }

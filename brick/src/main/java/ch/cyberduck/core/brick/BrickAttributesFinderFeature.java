@@ -15,6 +15,7 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -64,7 +65,7 @@ public class BrickAttributesFinderFeature implements AttributesFinder, Attribute
 
     @Override
     public PathAttributes toAttributes(final FileEntity entity) {
-        final PathAttributes attr = new PathAttributes();
+        final PathAttributes attr = new DefaultPathAttributes();
         attr.setChecksum(Checksum.parse(entity.getMd5()));
         attr.setRegion(entity.getRegion());
         if(entity.getSize() != null) {

@@ -17,6 +17,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
@@ -61,7 +62,7 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
         assertNotNull(versionId);
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         try {
-            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(file.withAttributes(new PathAttributes().setVersionId(versionId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(file.withAttributes(new DefaultPathAttributes().setVersionId(versionId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
             fail();
         }
         catch(NotfoundException e) {

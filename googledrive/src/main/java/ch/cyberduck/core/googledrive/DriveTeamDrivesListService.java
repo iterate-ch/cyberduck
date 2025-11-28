@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -60,7 +61,7 @@ public class DriveTeamDrivesListService implements ListService {
                     .execute();
                 for(TeamDrive f : list.getTeamDrives()) {
                     final Path child = new Path(directory, f.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            new PathAttributes().setFileId(f.getId()));
+                            new DefaultPathAttributes().setFileId(f.getId()));
                     children.add(child);
                 }
                 listener.chunk(directory, children);
