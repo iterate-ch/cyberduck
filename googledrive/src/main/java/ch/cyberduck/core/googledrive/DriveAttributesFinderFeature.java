@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.ListProgressListener;
@@ -99,7 +100,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
                 return PathAttributes.EMPTY;
             }
         }
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setFileId(f.getId());
         if(null != f.getTrashed()) {
             if(f.getTrashed()) {

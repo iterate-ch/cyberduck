@@ -15,6 +15,7 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -64,7 +65,7 @@ public class BoxAttributesFinderFeature implements AttributesFinder, AttributesA
 
     @Override
     public PathAttributes toAttributes(final File f) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         if(null != f.getContentModifiedAt()) {
             attrs.setModificationDate(f.getContentModifiedAt().getMillis());
         }
@@ -81,7 +82,7 @@ public class BoxAttributesFinderFeature implements AttributesFinder, AttributesA
     }
 
     protected PathAttributes toAttributes(final Folder f) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         if(null != f.getContentModifiedAt()) {
             attrs.setModificationDate(f.getContentModifiedAt().getMillis());
         }

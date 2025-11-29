@@ -1,6 +1,6 @@
 package ch.cyberduck.core;
 
-public class TestPermissionAttributes extends PathAttributes {
+public class TestPermissionAttributes extends DefaultPathAttributes {
     public TestPermissionAttributes(Permission.Action action) {
         this(action, action);
     }

@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -73,7 +74,7 @@ public class SwiftContainerListService implements RootListService {
                     do {
                         chunk = client.listContainers(r, limit, marker);
                         for(final Container f : chunk) {
-                            final PathAttributes attributes = new PathAttributes();
+                            final PathAttributes attributes = new DefaultPathAttributes();
                             attributes.setRegion(f.getRegion().getRegionId());
                             containers.add(new Path(String.format("/%s", f.getName()),
                                 EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));

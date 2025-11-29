@@ -18,6 +18,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -61,7 +62,7 @@ public class IRODSListService implements ListService {
                 if(StringUtils.equals(normalized, directory.getAbsolute())) {
                     continue;
                 }
-                final PathAttributes attributes = new PathAttributes();
+                final PathAttributes attributes = new DefaultPathAttributes();
                 final ObjStat stats = fs.getObjStat(file.getAbsolutePath());
                 attributes.setModificationDate(stats.getModifiedAt().getTime());
                 attributes.setCreationDate(stats.getCreatedAt().getTime());

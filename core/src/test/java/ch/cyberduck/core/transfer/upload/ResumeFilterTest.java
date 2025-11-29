@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -150,7 +151,7 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                        .withAttributes(new PathAttributes().setSize(3L))));
+                        .withAttributes(new DefaultPathAttributes().setSize(3L))));
                 listener.chunk(folder, list);
                 return list;
             }
@@ -189,7 +190,7 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                        .withAttributes(new PathAttributes().setSize(2L))));
+                        .withAttributes(new DefaultPathAttributes().setSize(2L))));
                 listener.chunk(folder, list);
                 return list;
             }
@@ -234,7 +235,7 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                        .withAttributes(new PathAttributes().setSize(4L))));
+                        .withAttributes(new DefaultPathAttributes().setSize(4L))));
                 listener.chunk(folder, list);
                 return list;
             }

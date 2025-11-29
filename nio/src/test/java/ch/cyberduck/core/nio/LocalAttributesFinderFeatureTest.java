@@ -35,6 +35,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 public class LocalAttributesFinderFeatureTest {
 
@@ -51,26 +52,25 @@ public class LocalAttributesFinderFeatureTest {
     @Test
     public void testConvert() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        if(session.isPosixFilesystem()) {
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-            final Path file = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-            new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
-            final java.nio.file.Path local = session.toPath(file);
-            final PosixFileAttributes posixAttributes = Files.readAttributes(local, PosixFileAttributes.class);
-            final LocalAttributesFinderFeature finder = new LocalAttributesFinderFeature(session);
-            assertEquals(PosixFilePermissions.toString(posixAttributes.permissions()), finder.find(file).getPermission().getSymbol());
-            Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rw-------"));
-            assertEquals("rw-------", finder.find(file).getPermission().getSymbol());
-            Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rwxrwxrwx"));
-            assertEquals("rwxrwxrwx", finder.find(file).getPermission().getSymbol());
-            Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rw-rw----"));
-            assertEquals("rw-rw----", finder.find(file).getPermission().getSymbol());
-            assertEquals(posixAttributes.size(), finder.find(file).getSize());
-            assertEquals(posixAttributes.lastModifiedTime().toMillis(), finder.find(file).getModificationDate());
-            assertEquals(posixAttributes.creationTime().toMillis(), finder.find(file).getCreationDate());
-            assertEquals(posixAttributes.lastAccessTime().toMillis(), finder.find(file).getAccessedDate());
-            new LocalDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
+        assumeTrue(session.isPosixFilesystem());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path file = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
+        final java.nio.file.Path local = session.toPath(file);
+        final PosixFileAttributes posixAttributes = Files.readAttributes(local, PosixFileAttributes.class);
+        final LocalAttributesFinderFeature finder = new LocalAttributesFinderFeature(session);
+        assertEquals(PosixFilePermissions.toString(posixAttributes.permissions()), finder.find(file).getPermission().getSymbol());
+        Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rw-------"));
+        assertEquals("rw-------", finder.find(file).getPermission().getSymbol());
+        Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rwxrwxrwx"));
+        assertEquals("rwxrwxrwx", finder.find(file).getPermission().getSymbol());
+        Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rw-rw----"));
+        assertEquals("rw-rw----", finder.find(file).getPermission().getSymbol());
+        assertEquals(posixAttributes.size(), finder.find(file).getSize());
+        assertEquals(posixAttributes.lastModifiedTime().toMillis(), finder.find(file).getModificationDate());
+        assertEquals(posixAttributes.creationTime().toMillis(), finder.find(file).getCreationDate());
+        assertEquals(posixAttributes.lastAccessTime().toMillis(), finder.find(file).getAccessedDate());
+        new LocalDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

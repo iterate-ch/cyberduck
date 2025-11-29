@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -84,7 +85,7 @@ public class S3MoveFeature implements Move {
             try {
                 target = proxy.copy(source, renamed, status, connectionCallback, new DisabledStreamListener());
                 // Copy source path and nullify version id to add a delete marker
-                delete.delete(Collections.singletonMap(new Path(source).withAttributes(new PathAttributes(source.attributes()).setVersionId(null)), status),
+                delete.delete(Collections.singletonMap(new Path(source).withAttributes(new DefaultPathAttributes(source.attributes()).setVersionId(null)), status),
                         connectionCallback, callback);
             }
             catch(NotfoundException e) {

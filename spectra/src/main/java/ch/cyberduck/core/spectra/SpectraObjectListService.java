@@ -17,6 +17,7 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -122,7 +123,7 @@ public class SpectraObjectListService extends S3AbstractListService {
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
-                    objects.add(new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), new PathAttributes()));
+                    objects.add(new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), new DefaultPathAttributes()));
                 }
                 marker = response.getListBucketResult().getNextMarker();
                 listener.chunk(directory, objects);
@@ -145,7 +146,7 @@ public class SpectraObjectListService extends S3AbstractListService {
 
     @NotNull
     private PathAttributes toAttributes(final Contents object) {
-        final PathAttributes attr = new PathAttributes();
+        final PathAttributes attr = new DefaultPathAttributes();
         attr.setETag(object.getETag());
         attr.setModificationDate(object.getLastModified().getTime());
         attr.setOwner(object.getOwner().getDisplayName());

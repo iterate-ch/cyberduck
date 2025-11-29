@@ -17,6 +17,7 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -180,7 +181,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertEquals(0L, new GoogleStorageAttributesFinderFeature(session).find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(initialVersion))).getSize());
+        assertEquals(0L, new GoogleStorageAttributesFinderFeature(session).find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(initialVersion))).getSize());
         // Read previous version
         status.setLength(0L);
         final InputStream in = new GoogleStorageReadFeature(session).read(file, status, new DisabledConnectionCallback());

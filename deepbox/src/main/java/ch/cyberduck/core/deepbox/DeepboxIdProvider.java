@@ -16,6 +16,7 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.CachingFileIdProvider;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
@@ -135,7 +136,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                             return file;
                         }
                     }
-                    final Path deepbox = new Path(result, deepboxName, type, new PathAttributes(combined.attributes()).setFileId(null));
+                    final Path deepbox = new Path(result, deepboxName, type, new DefaultPathAttributes(combined.attributes()).setFileId(null));
                     result = new Path(deepbox, boxName, type, segment.attributes());
                 }
                 else {

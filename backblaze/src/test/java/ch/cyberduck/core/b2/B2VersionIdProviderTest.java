@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -52,7 +53,7 @@ public class B2VersionIdProviderTest extends AbstractB2Test {
         catch(NotfoundException e) {
             // Expected
         }
-        final PathAttributes duplicate = new PathAttributes();
+        final PathAttributes duplicate = new DefaultPathAttributes();
         duplicate.setVersionId("d");
         duplicate.setDuplicate(true);
         fileid.cache(new Path(file).withAttributes(duplicate), "d");

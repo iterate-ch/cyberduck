@@ -16,6 +16,7 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -146,7 +147,7 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
                 final String boxNodeId = fileid.getBoxNodeId(file);
                 // map BoxAccessPolicy to CANLISTCHILDREN and CANADDCHILDREN for third level
                 final Box box = new BoxRestControllerApi(session.getClient()).getBox(deepBoxNodeId, boxNodeId);
-                final PathAttributes attr = new PathAttributes().setFileId(fileId);
+                final PathAttributes attr = new DefaultPathAttributes().setFileId(fileId);
                 final Acl acl = new Acl(new Acl.CanonicalUser());
                 final BoxAccessPolicy boxPolicy = box.getBoxPolicy();
                 if(containerService.isInbox(file)) {
@@ -200,26 +201,26 @@ public class DeepboxAttributesFinderFeature implements AttributesFinder, Attribu
     }
 
     public PathAttributes toAttributes(final Box box) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         attrs.setFileId(box.getBoxNodeId());
         return attrs;
     }
 
     public PathAttributes toAttributes(final DeepBox deepBox) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         attrs.setFileId(deepBox.getDeepBoxNodeId());
         return attrs;
     }
 
     public PathAttributes toAttributes(final CompanyRoles company) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         attrs.setFileId(company.getGroupId());
         return attrs;
     }
 
     @Override
     public PathAttributes toAttributes(final Node node) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         attrs.setFileId(node.getNodeId());
         attrs.setCreationDate(node.getCreated().getTime().getMillis());
         attrs.setModificationDate(node.getModified().getTime().getMillis());

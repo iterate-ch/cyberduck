@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.CancellingListProgressListener;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -142,7 +143,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
     }
 
     protected PathAttributes toAttributes(final Bucket bucket) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setRegion(bucket.getLocation());
         attributes.setStorageClass(bucket.getStorageClass());
         attributes.setCreationDate(bucket.getTimeCreated().getValue());
@@ -159,7 +160,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
 
     @Override
     public PathAttributes toAttributes(final StorageObject object) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         if(object.getSize() != null) {
             attributes.setSize(object.getSize().longValue());
         }

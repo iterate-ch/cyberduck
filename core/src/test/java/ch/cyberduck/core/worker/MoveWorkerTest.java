@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
@@ -84,7 +85,7 @@ public class MoveWorkerTest {
                 if(type == Move.class) {
                     return (T) new Move() {
                         private final AtomicInteger count = new AtomicInteger();
-                        private final PathAttributes attr = new PathAttributes().setSize(1L);
+                        private final PathAttributes attr = new DefaultPathAttributes().setSize(1L);
 
                         @Override
                         public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {

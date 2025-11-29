@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -46,7 +47,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
 
     @Override
     public PathAttributes toAttributes(final Node node) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setRevision(node.getBranchVersion());
         if(node.isIsEncrypted() != null && !node.isIsEncrypted()) {
@@ -107,7 +108,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
     }
 
     public PathAttributes toAttributes(final DeletedNode node) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setDuplicate(true);
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);

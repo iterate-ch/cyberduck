@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -88,7 +89,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final AttributedList<Path> files = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         // Replaced file is trashed
         assertEquals(2, files.size());
-        assertTrue(files.get(new Path(test).withAttributes(new PathAttributes().setFileId(firstVersion))).attributes().isTrashed());
+        assertTrue(files.get(new Path(test).withAttributes(new DefaultPathAttributes().setFileId(firstVersion))).attributes().isTrashed());
         assertFalse(files.get(target).attributes().isHidden());
         assertTrue(find.find(target));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());

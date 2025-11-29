@@ -1,5 +1,6 @@
 package ch.cyberduck.core.worker;
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
@@ -210,7 +211,8 @@ public class WriteMetadataWorkerTest {
 
     @Test
     public void testRunDifferent() throws Exception {
-        final PathAttributes attributesA = new PathAttributes();
+        final PathAttributes attributesA = new
+                DefaultPathAttributes();
         {
             final Map<String, String> map = new HashMap<>();
             map.put("equal", "equal");
@@ -218,7 +220,7 @@ public class WriteMetadataWorkerTest {
             map.put("unique", "unique");
             attributesA.setMetadata(map);
         }
-        final PathAttributes attributesB = new PathAttributes();
+        final PathAttributes attributesB = new DefaultPathAttributes();
         {
             final Map<String, String> map = new HashMap<>();
             map.put("equal", "equal");

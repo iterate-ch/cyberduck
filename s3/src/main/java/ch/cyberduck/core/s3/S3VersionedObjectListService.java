@@ -16,6 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -114,7 +115,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
-                    final PathAttributes attr = new PathAttributes();
+                    final PathAttributes attr = new DefaultPathAttributes();
                     attr.setVersionId(marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
@@ -218,7 +219,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
-                final PathAttributes attr = new PathAttributes();
+                final PathAttributes attr = new DefaultPathAttributes();
                 attr.setRegion(bucket.attributes().getRegion());
                 final String key = StringUtils.removeEnd(prefix, String.valueOf(Path.DELIMITER));
                 try {

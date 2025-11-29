@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -58,7 +59,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Test(expected = InteroperabilityException.class)
     public void testLock() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = touch.touch(new DropboxWriteFeature(session), new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().setFileId("7581509952")),
+        final Path file = touch.touch(new DropboxWriteFeature(session), new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new DefaultPathAttributes().setFileId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxLockFeature f = new DropboxLockFeature(session);
         final String lock = f.lock(file);
@@ -71,7 +72,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Ignore
     @Test(expected = NotfoundException.class)
     public void testLockNoSuchFile() throws Exception {
-        final Path file = new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().setFileId("7581509952")),
+        final Path file = new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new DefaultPathAttributes().setFileId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DropboxLockFeature f = new DropboxLockFeature(session);
         f.lock(file);
@@ -80,7 +81,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Test
     public void testLockNotfound() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = touch.touch(new DropboxWriteFeature(session), new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.shared)).withAttributes(new PathAttributes().setFileId("7581509952")),
+        final Path file = touch.touch(new DropboxWriteFeature(session), new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.shared)).withAttributes(new DefaultPathAttributes().setFileId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxLockFeature f = new DropboxLockFeature(session);
         f.unlock(file, "l");

@@ -18,6 +18,7 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -80,13 +81,13 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final Path update = new Path(container, test.getName(), test.getType(),
-                new PathAttributes().setVersionId(String.valueOf(out.getStatus().getGeneration())));
+                new DefaultPathAttributes().setVersionId(String.valueOf(out.getStatus().getGeneration())));
         final PathAttributes attributes = new GoogleStorageAttributesFinderFeature(session).find(update);
         assertFalse(attributes.isDuplicate());
         final AttributedList<Path> versions = new GoogleStorageVersioningFeature(session).list(update, new DisabledListProgressListener());
         assertEquals(1, versions.size());
         assertFalse(versions.isEmpty());
-        assertEquals(new Path(test).withAttributes(new PathAttributes(test.attributes()).setVersionId(versionId)), versions.get(0));
+        assertEquals(new Path(test).withAttributes(new DefaultPathAttributes(test.attributes()).setVersionId(versionId)), versions.get(0));
         for(Path version : versions) {
             assertTrue(version.attributes().isDuplicate());
         }

@@ -17,6 +17,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -127,7 +128,7 @@ public class SwiftLargeObjectCopyFeature implements Copy {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
         }
-        final PathAttributes attributes = new PathAttributes(source.attributes());
+        final PathAttributes attributes = new DefaultPathAttributes(source.attributes());
         attributes.setChecksum(new Checksum(HashAlgorithm.md5, stored.getMd5sum()));
         return new Path(target).withAttributes(attributes);
     }

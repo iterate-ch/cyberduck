@@ -1,6 +1,7 @@
 package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -36,7 +37,7 @@ public class DefaultComparePathFilterTest {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 attr.set(true);
-                return new PathAttributes() {
+                return new DefaultPathAttributes() {
                     @Override
                     public Checksum getChecksum() {
                         return new Checksum(HashAlgorithm.md5, "a");
@@ -163,7 +164,7 @@ public class DefaultComparePathFilterTest {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 attr.set(true);
-                return new PathAttributes() {
+                return new DefaultPathAttributes() {
                     @Override
                     public Checksum getChecksum() {
                         return new Checksum(HashAlgorithm.md5, "b");

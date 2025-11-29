@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -51,7 +52,7 @@ public class DriveDirectoryFeature implements Directory<File> {
                 final TeamDrive execute = session.getClient().teamdrives().create(
                         new UUIDRandomStringService().random(), new TeamDrive().setName(folder.getName())
                 ).execute();
-                return folder.withAttributes(new PathAttributes(folder.attributes()).setFileId(execute.getId()));
+                return folder.withAttributes(new DefaultPathAttributes(folder.attributes()).setFileId(execute.getId()));
             }
             else {
                 try {

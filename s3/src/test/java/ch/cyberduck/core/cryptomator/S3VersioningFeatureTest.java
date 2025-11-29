@@ -19,6 +19,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -78,7 +79,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final AttributesFinder f = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl));
         final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final PathAttributes initialAttributes = new PathAttributes(test.attributes());
+        final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();

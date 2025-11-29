@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.MemoryListProgressListener;
 import ch.cyberduck.core.Path;
@@ -41,7 +42,7 @@ public class CryptoAttributesFeature implements AttributesFinder {
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         final MemoryListProgressListener memory = new MemoryListProgressListener();
         // Fetch with any directory listing stored in memory encrypted
-        final PathAttributes attributes = new PathAttributes(delegate.find(vault.encrypt(session, file, true), memory));
+        final PathAttributes attributes = new DefaultPathAttributes(delegate.find(vault.encrypt(session, file, true), memory));
         final Path directory = file.getParent();
         // Decrypt directory listing and forward to proxy
         new DecryptingListProgressListener(session, vault, directory, listener).chunk(directory, memory.getContents());

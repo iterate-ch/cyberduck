@@ -16,6 +16,7 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -140,7 +141,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final String resourceId = file.attributes().getFileId();
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         try {
-            new EueMoveFeature(session, fileid).move(file.withAttributes(new PathAttributes().setFileId(resourceId)),
+            new EueMoveFeature(session, fileid).move(file.withAttributes(new DefaultPathAttributes().setFileId(resourceId)),
                     new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
             fail();
         }
@@ -155,7 +156,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final Path file = new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String resourceId = file.attributes().getFileId();
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new EueMoveFeature(session, fileid).move(file.withAttributes(new PathAttributes().setFileId(resourceId)),
+        new EueMoveFeature(session, fileid).move(file.withAttributes(new DefaultPathAttributes().setFileId(resourceId)),
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 

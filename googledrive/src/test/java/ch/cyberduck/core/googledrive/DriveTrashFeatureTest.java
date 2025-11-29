@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -67,8 +68,8 @@ public class DriveTrashFeatureTest extends AbstractDriveTest {
         final String fileId = file.attributes().getFileId();
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new DriveFindFeature(session, fileid).find(file));
-        assertTrue(new DriveFindFeature(session, fileid).find(file.withAttributes(new PathAttributes().setFileId(fileId))));
-        final PathAttributes attributesInTrash = new DriveAttributesFinderFeature(session, fileid).find(file.withAttributes(new PathAttributes().setFileId(fileId)));
+        assertTrue(new DriveFindFeature(session, fileid).find(file.withAttributes(new DefaultPathAttributes().setFileId(fileId))));
+        final PathAttributes attributesInTrash = new DriveAttributesFinderFeature(session, fileid).find(file.withAttributes(new DefaultPathAttributes().setFileId(fileId)));
         assertTrue(attributesInTrash.isTrashed());
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(attributesInTrash)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new DriveFindFeature(session, fileid).find(file.withAttributes(attributesInTrash)));

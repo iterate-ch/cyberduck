@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -88,7 +89,7 @@ public class S3CopyFeature implements Copy {
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));
         final CopyResult result = this.copy(source, destination, status, listener);
-        return new Path(target).withAttributes(new PathAttributes(source.attributes())
+        return new Path(target).withAttributes(new DefaultPathAttributes(source.attributes())
                 .setVersionId(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable") ? result.versionId : null)
                 .setETag(StringUtils.remove(result.etag, '"')));
     }

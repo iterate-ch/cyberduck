@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -56,7 +57,7 @@ public class DriveVersioningFeatureTest extends AbstractDriveTest {
         assertEquals(test.attributes().getVersionId(), attr.find(test).getVersionId());
         final DriveVersioningFeature feature = new DriveVersioningFeature(session, fileid);
         assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());
-        final PathAttributes initialAttributes = new PathAttributes(test.attributes());
+        final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
         {
             final byte[] content = RandomUtils.nextBytes(32769);
             final TransferStatus status = new TransferStatus();

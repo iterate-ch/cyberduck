@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -54,7 +55,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
             public TransferStatus setResponse(final PathAttributes attributes) {
                 status.setResponse(attributes);
                 // Will be converted back to clear text when decrypting file below set in default touch feature implementation using writer.
-                super.setResponse(new PathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                super.setResponse(new DefaultPathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
                 return this;
             }
         });

@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive.features;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -93,7 +94,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
 
     @Override
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setETag(metadata.getETag());
         final File file = metadata.getFile();
         if(file != null) {

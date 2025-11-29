@@ -1687,7 +1687,7 @@ namespace Ch.Cyberduck.Ui.Controller
             for (int i = 0; i < _pasteboard.size(); i++)
             {
                 Path next = (Path)_pasteboard.get(i);
-                Path renamed = new Path(parent, next.getName(), next.getType(), new PathAttributes(next.attributes()));
+                Path renamed = new Path(parent, next.getName(), next.getType(), new DefaultPathAttributes(next.attributes()));
                 files.Add(next, renamed);
             }
             _pasteboard.clear();

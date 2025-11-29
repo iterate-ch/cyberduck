@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -107,7 +108,7 @@ public class DriveVersioningFeature implements Versioning {
     }
 
     private PathAttributes toAttributes(final Revision f) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(f.getSize());
         if(f.getModifiedTime() != null) {
             attributes.setModificationDate(f.getModifiedTime().getValue());

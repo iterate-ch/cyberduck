@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
@@ -73,7 +74,7 @@ public class CryptoCopyFeature implements Copy {
                         public TransferStatus setResponse(final PathAttributes attributes) {
                             status.setResponse(attributes);
                             // Will be converted back to clear text when decrypting file below set in default copy feature implementation using writer.
-                            super.setResponse(new PathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                            super.setResponse(new DefaultPathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
                             return this;
                         }
                     } : status,

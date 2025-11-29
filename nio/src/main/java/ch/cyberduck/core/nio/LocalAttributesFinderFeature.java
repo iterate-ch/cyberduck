@@ -15,22 +15,22 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.ProxyPathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.DosFileAttributes;
-import java.nio.file.attribute.PosixFileAttributes;
-import java.nio.file.attribute.PosixFilePermissions;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 
-public class LocalAttributesFinderFeature implements AttributesFinder {
+public class LocalAttributesFinderFeature implements AttributesFinder, AttributesAdapter<java.nio.file.Path> {
 
     private final LocalSession session;
 
@@ -40,45 +40,95 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        try {
-            return this.toAttributes(session.toPath(file));
-        }
-        catch(IOException e) {
-            throw new LocalExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-        }
+        return this.toAttributes(session.toPath(file));
     }
 
-    public PathAttributes toAttributes(final java.nio.file.Path file) throws IOException {
-        final boolean isPosix = session.isPosixFilesystem();
-        final PathAttributes attributes = new PathAttributes();
-        final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
-        final BasicFileAttributes a = Files.readAttributes(file, provider, LinkOption.NOFOLLOW_LINKS);
-        if(a.isRegularFile()) {
-            attributes.setSize(a.size());
-        }
-        attributes.setModificationDate(a.lastModifiedTime().toMillis());
-        attributes.setCreationDate(a.creationTime().toMillis());
-        attributes.setAccessedDate(a.lastAccessTime().toMillis());
-        if(isPosix) {
-            attributes.setOwner(((PosixFileAttributes) a).owner().getName());
-            attributes.setGroup(((PosixFileAttributes) a).group().getName());
-            attributes.setPermission(new Permission(PosixFilePermissions.toString(((PosixFileAttributes) a).permissions())));
-        }
-        else {
-            Permission.Action actions = Permission.Action.none;
-            if(Files.isReadable(file)) {
-                actions = actions.or(Permission.Action.read);
+    @Override
+    public PathAttributes toAttributes(final java.nio.file.Path file) {
+        return new ProxyLocalAttributes(new LazyInitializer<LocalAttributes>() {
+            @Override
+            protected LocalAttributes initialize() {
+                return LocalFactory.get(file.toString()).attributes();
             }
-            if(Files.isWritable(file)) {
-                actions = actions.or(Permission.Action.write);
-            }
-            if(Files.isExecutable(file)) {
-                actions = actions.or(Permission.Action.execute);
-            }
-            attributes.setPermission(new Permission(
-                    actions, Permission.Action.none, Permission.Action.none
-            ));
+        });
+    }
+
+    private static final class ProxyLocalAttributes extends ProxyPathAttributes {
+        private final LazyInitializer<LocalAttributes> proxy;
+
+        public ProxyLocalAttributes(final LazyInitializer<LocalAttributes> proxy) {
+            super(new DefaultPathAttributes());
+            this.proxy = proxy;
         }
-        return attributes;
+
+        @Override
+        public long getModificationDate() {
+            try {
+                return proxy.get().getModificationDate();
+            }
+            catch(ConcurrentException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public long getCreationDate() {
+            try {
+                return proxy.get().getCreationDate();
+            }
+            catch(ConcurrentException e) {
+                return -1L;
+            }
+        }
+
+        @Override
+        public long getAccessedDate() {
+            try {
+                return proxy.get().getAccessedDate();
+            }
+            catch(ConcurrentException e) {
+                return -1L;
+            }
+        }
+
+        @Override
+        public long getSize() {
+            try {
+                return proxy.get().getSize();
+            }
+            catch(ConcurrentException e) {
+                return -1L;
+            }
+        }
+
+        @Override
+        public Permission getPermission() {
+            try {
+                return proxy.get().getPermission();
+            }
+            catch(ConcurrentException e) {
+                return Permission.EMPTY;
+            }
+        }
+
+        @Override
+        public String getOwner() {
+            try {
+                return proxy.get().getOwner();
+            }
+            catch(ConcurrentException e) {
+                return null;
+            }
+        }
+
+        @Override
+        public String getGroup() {
+            try {
+                return proxy.get().getGroup();
+            }
+            catch(ConcurrentException e) {
+                return null;
+            }
+        }
     }
 }

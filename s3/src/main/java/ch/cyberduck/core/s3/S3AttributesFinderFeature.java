@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.CancellingListProgressListener;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -56,7 +57,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         if(containerService.isContainer(file)) {
-            final PathAttributes attributes = new PathAttributes();
+            final PathAttributes attributes = new DefaultPathAttributes();
             log.debug("Read location for bucket {}", file);
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
@@ -64,7 +65,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         if(file.getType().contains(Path.Type.upload)) {
             final Write.Append append = new S3MultipartUploadService(session, acl).append(file, new TransferStatus());
             if(append.append) {
-                return new PathAttributes().setSize(append.offset);
+                return new DefaultPathAttributes().setSize(append.offset);
             }
             throw new NotfoundException(file.getAbsolute());
         }
@@ -80,7 +81,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     case 405:
                         log.debug("Mark file {} as delete marker", file);
                         // Only DELETE method is allowed for delete markers
-                        attr = new PathAttributes();
+                        attr = new DefaultPathAttributes();
                         attr.setTrashed(true);
                         return attr;
                 }
@@ -131,7 +132,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.multipart.lookup")) {
                     final Write.Append append = new S3MultipartUploadService(session, acl).append(file, new TransferStatus());
                     if(append.append) {
-                        return new PathAttributes().setSize(append.offset);
+                        return new DefaultPathAttributes().setSize(append.offset);
                     }
                 }
             }

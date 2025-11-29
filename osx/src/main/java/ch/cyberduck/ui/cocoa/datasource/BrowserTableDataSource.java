@@ -29,20 +29,7 @@ import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.AbstractHostCollection;
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -198,7 +185,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         log.debug("Set new value {} for item {}", value, item);
         if(identifier.equals(BrowserColumn.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
-                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), new PathAttributes(item.attributes()).setVersionId(null));
+                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), new DefaultPathAttributes(item.attributes()).setVersionId(null));
                 new MoveController(controller).rename(item, renamed);
             }
         }
