@@ -29,164 +29,164 @@ import java.util.Map;
  * Interface for path attributes operations.
  */
 public interface PathAttributes extends Attributes, Serializable {
-    DefaultPathAttributes EMPTY = new DefaultPathAttributes() {
+    PathAttributes EMPTY = new DefaultPathAttributes() {
         @Override
         public <T> T serialize(final Serializer<T> dict) {
             return super.serialize(dict);
         }
 
         @Override
-        public DefaultPathAttributes setSize(final long size) {
+        public PathAttributes setSize(final long size) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setQuota(final Quota.Space quota) {
+        public PathAttributes setQuota(final Quota.Space quota) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setModificationDate(final long millis) {
+        public PathAttributes setModificationDate(final long millis) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setCreationDate(final long millis) {
+        public PathAttributes setCreationDate(final long millis) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setAccessedDate(final long millis) {
+        public PathAttributes setAccessedDate(final long millis) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setPermission(final Permission p) {
+        public PathAttributes setPermission(final Permission p) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setAcl(final Acl acl) {
+        public PathAttributes setAcl(final Acl acl) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setOwner(final String o) {
+        public PathAttributes setOwner(final String o) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setGroup(final String g) {
+        public PathAttributes setGroup(final String g) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setChecksum(final Checksum checksum) {
+        public PathAttributes setChecksum(final Checksum checksum) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setETag(final String etag) {
+        public PathAttributes setETag(final String etag) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setStorageClass(final String storageClass) {
+        public PathAttributes setStorageClass(final String storageClass) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setEncryption(final Encryption.Algorithm encryption) {
+        public PathAttributes setEncryption(final Encryption.Algorithm encryption) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setVersionId(final String versionId) {
+        public PathAttributes setVersionId(final String versionId) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setFileId(final String fileId) {
+        public PathAttributes setFileId(final String fileId) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setLockId(final String lockId) {
+        public PathAttributes setLockId(final String lockId) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setDirectoryId(final String directoryId) {
+        public PathAttributes setDirectoryId(final String directoryId) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setRevision(final Long revision) {
+        public PathAttributes setRevision(final Long revision) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setDecrypted(final Path decrypted) {
+        public PathAttributes setDecrypted(final Path decrypted) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setEncrypted(final Path encrypted) {
+        public PathAttributes setEncrypted(final Path encrypted) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setVault(final Path vault) {
+        public PathAttributes setVault(final Path vault) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setDuplicate(final boolean duplicate) {
+        public PathAttributes setDuplicate(final boolean duplicate) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setHidden(final boolean hidden) {
+        public PathAttributes setHidden(final boolean hidden) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setTrashed(final boolean trashed) {
+        public PathAttributes setTrashed(final boolean trashed) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setMetadata(final Map<String, String> metadata) {
+        public PathAttributes setMetadata(final Map<String, String> metadata) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setRegion(final String region) {
+        public PathAttributes setRegion(final String region) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setDisplayname(final String displayname) {
+        public PathAttributes setDisplayname(final String displayname) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setLink(final DescriptiveUrl link) {
+        public PathAttributes setLink(final DescriptiveUrl link) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setCustom(final Map<String, String> custom) {
+        public PathAttributes setCustom(final Map<String, String> custom) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setCustom(final String key, final String value) {
+        public PathAttributes setCustom(final String key, final String value) {
             return this;
         }
 
         @Override
-        public DefaultPathAttributes setVerdict(final Verdict verdict) {
+        public PathAttributes setVerdict(final Verdict verdict) {
             return this;
         }
     };

@@ -302,7 +302,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
      * @param size the size of file in bytes.
      */
     @Override
-    public DefaultPathAttributes setSize(final long size) {
+    public PathAttributes setSize(final long size) {
         this.size = size;
         return this;
     }
@@ -313,7 +313,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setQuota(final Quota.Space quota) {
+    public PathAttributes setQuota(final Quota.Space quota) {
         this.quota = quota;
         return this;
     }
@@ -324,7 +324,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setModificationDate(final long millis) {
+    public PathAttributes setModificationDate(final long millis) {
         this.modified = millis;
         return this;
     }
@@ -335,7 +335,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setCreationDate(final long millis) {
+    public PathAttributes setCreationDate(final long millis) {
         this.created = millis;
         return this;
     }
@@ -346,7 +346,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setAccessedDate(final long millis) {
+    public PathAttributes setAccessedDate(final long millis) {
         this.accessed = millis;
         return this;
     }
@@ -363,7 +363,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
      * @param p UNIX permissions
      */
     @Override
-    public DefaultPathAttributes setPermission(final Permission p) {
+    public PathAttributes setPermission(final Permission p) {
         this.permission = p;
         return this;
     }
@@ -374,7 +374,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setAcl(final Acl acl) {
+    public PathAttributes setAcl(final Acl acl) {
         this.acl = acl;
         return this;
     }
@@ -385,7 +385,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setOwner(final String o) {
+    public PathAttributes setOwner(final String o) {
         this.owner = o;
         return this;
     }
@@ -396,7 +396,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setGroup(final String g) {
+    public PathAttributes setGroup(final String g) {
         this.group = g;
         return this;
     }
@@ -407,7 +407,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setChecksum(final Checksum checksum) {
+    public PathAttributes setChecksum(final Checksum checksum) {
         this.checksum = checksum;
         return this;
     }
@@ -418,7 +418,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setETag(final String etag) {
+    public PathAttributes setETag(final String etag) {
         this.etag = etag;
         return this;
     }
@@ -435,7 +435,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
      * @param storageClass Storage redundancy identifier.
      */
     @Override
-    public DefaultPathAttributes setStorageClass(final String storageClass) {
+    public PathAttributes setStorageClass(final String storageClass) {
         this.storageClass = storageClass;
         return this;
     }
@@ -446,7 +446,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setEncryption(final Encryption.Algorithm encryption) {
+    public PathAttributes setEncryption(final Encryption.Algorithm encryption) {
         this.encryption = encryption;
         return this;
     }
@@ -467,7 +467,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
      * @param versionId Revision
      */
     @Override
-    public DefaultPathAttributes setVersionId(final String versionId) {
+    public PathAttributes setVersionId(final String versionId) {
         this.versionId = versionId;
         return this;
     }
@@ -483,7 +483,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setFileId(final String fileId) {
+    public PathAttributes setFileId(final String fileId) {
         this.fileId = fileId;
         return this;
     }
@@ -494,7 +494,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setLockId(final String lockId) {
+    public PathAttributes setLockId(final String lockId) {
         this.lockId = lockId;
         return this;
     }
@@ -505,7 +505,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setDirectoryId(final String directoryId) {
+    public PathAttributes setDirectoryId(final String directoryId) {
         this.directoryId = directoryId;
         return this;
     }
@@ -516,7 +516,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setRevision(final Long revision) {
+    public PathAttributes setRevision(final Long revision) {
         this.revision = revision;
         return this;
     }
@@ -527,7 +527,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setDecrypted(final Path decrypted) {
+    public PathAttributes setDecrypted(final Path decrypted) {
         this.decrypted = decrypted;
         return this;
     }
@@ -538,13 +538,13 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setEncrypted(final Path encrypted) {
+    public PathAttributes setEncrypted(final Path encrypted) {
         this.encrypted = encrypted;
         return this;
     }
 
     @Override
-    public DefaultPathAttributes setVault(final Path vault) {
+    public PathAttributes setVault(final Path vault) {
         this.vault = vault;
         return this;
     }
@@ -565,7 +565,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
      * @param duplicate Flag
      */
     @Override
-    public DefaultPathAttributes setDuplicate(final boolean duplicate) {
+    public PathAttributes setDuplicate(final boolean duplicate) {
         this.duplicate = duplicate;
         return this;
     }
@@ -576,7 +576,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setHidden(final boolean hidden) {
+    public PathAttributes setHidden(final boolean hidden) {
         this.hidden = hidden;
         return this;
     }
@@ -587,7 +587,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setTrashed(final boolean trashed) {
+    public PathAttributes setTrashed(final boolean trashed) {
         this.trashed = trashed;
         return this;
     }
@@ -598,7 +598,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setMetadata(final Map<String, String> metadata) {
+    public PathAttributes setMetadata(final Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
     }
@@ -609,7 +609,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setRegion(final String region) {
+    public PathAttributes setRegion(final String region) {
         this.region = region;
         return this;
     }
@@ -620,7 +620,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setDisplayname(final String displayname) {
+    public PathAttributes setDisplayname(final String displayname) {
         this.displayname = displayname;
         return this;
     }
@@ -631,7 +631,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setLink(final DescriptiveUrl link) {
+    public PathAttributes setLink(final DescriptiveUrl link) {
         this.link = link;
         return this;
     }
@@ -642,13 +642,13 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setCustom(final Map<String, String> custom) {
+    public PathAttributes setCustom(final Map<String, String> custom) {
         this.custom = custom;
         return this;
     }
 
     @Override
-    public DefaultPathAttributes setCustom(final String key, final String value) {
+    public PathAttributes setCustom(final String key, final String value) {
         custom = new HashMap<>(custom);
         custom.put(key, value);
         return this;
@@ -660,7 +660,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public DefaultPathAttributes setVerdict(final Verdict verdict) {
+    public PathAttributes setVerdict(final Verdict verdict) {
         this.verdict = verdict;
         return this;
     }
@@ -670,7 +670,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         if(this == o) {
             return true;
         }
-        if(!(o instanceof DefaultPathAttributes)) {
+        if(!(o instanceof PathAttributes)) {
             return false;
         }
         final DefaultPathAttributes that = (DefaultPathAttributes) o;
