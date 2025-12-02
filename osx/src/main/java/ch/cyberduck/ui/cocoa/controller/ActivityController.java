@@ -48,7 +48,7 @@ public class ActivityController extends WindowController {
 
     private final BackgroundActionRegistry registry;
 
-    private final Map<BackgroundAction, TaskController> tasks
+    private final Map<BackgroundAction<?>, TaskController> tasks
             = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public ActivityController() {
@@ -81,18 +81,18 @@ public class ActivityController extends WindowController {
         super.invalidate();
     }
 
-    private final AbstractCollectionListener<BackgroundAction> backgroundActionListener
-            = new AbstractCollectionListener<BackgroundAction>() {
+    private final AbstractCollectionListener<BackgroundAction<?>> backgroundActionListener
+            = new AbstractCollectionListener<BackgroundAction<?>>() {
 
         @Override
-        public void collectionItemAdded(final BackgroundAction action) {
+        public void collectionItemAdded(final BackgroundAction<?> action) {
             log.debug("Add background action {}", action);
             tasks.put(action, new TaskController(action));
             reload();
         }
 
         @Override
-        public void collectionItemRemoved(final BackgroundAction action) {
+        public void collectionItemRemoved(final BackgroundAction<?> action) {
             log.debug("Remove background action {}", action);
             final TaskController controller = tasks.remove(action);
             if(null == controller) {

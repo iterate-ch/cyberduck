@@ -65,7 +65,7 @@ public class TaskController extends BundleController {
             this.progress.startAnimation(null);
         }
         this.task.addListener(new BackgroundActionListener() {
-            public void start(BackgroundAction action) {
+            public void start(BackgroundAction<?> action) {
                 invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
@@ -74,7 +74,7 @@ public class TaskController extends BundleController {
                 });
             }
 
-            public void cancel(BackgroundAction action) {
+            public void cancel(BackgroundAction<?> action) {
                 invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
@@ -83,7 +83,7 @@ public class TaskController extends BundleController {
                 });
             }
 
-            public void stop(BackgroundAction action) {
+            public void stop(BackgroundAction<?> action) {
                 invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
