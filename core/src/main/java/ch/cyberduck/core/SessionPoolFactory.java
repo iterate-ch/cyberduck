@@ -88,7 +88,7 @@ public class SessionPoolFactory {
             case stateful:
                 if(Arrays.asList(usage).contains(Usage.browser)) {
                     log.info("Create new stateful connection pool for {}", bookmark);
-                    final Session<?> session = SessionFactory.create(new Host(bookmark).withCredentials(new Credentials(bookmark.getCredentials())), trust, key);
+                    final Session<?> session = SessionFactory.create(new Host(bookmark).setCredentials(new Credentials(bookmark.getCredentials())), trust, key);
                     return new StatefulSessionPool(connect, session, transcript, registry);
                 }
                 // Break through to default pool

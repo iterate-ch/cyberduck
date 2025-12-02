@@ -50,7 +50,7 @@ public class ProfilesSynchronizeWorkerTest {
     public void testRunCloudfrontEndpoint() throws Exception {
         // Registry in temporary folder
         final ProtocolFactory protocols = new ProtocolFactory(new HashSet<>(Collections.singletonList(new S3Protocol())));
-        final Host host = new HostParser(protocols, new S3Protocol()).get("s3://djynunjb246r8.cloudfront.net").withCredentials(
+        final Host host = new HostParser(protocols, new S3Protocol()).get("s3://djynunjb246r8.cloudfront.net").setCredentials(
                 new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")));
         final Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -98,7 +98,7 @@ public class ProfilesSynchronizeWorkerTest {
     public void testRunVirtualHostEndpoint() throws Exception {
         // Registry in temporary folder
         final ProtocolFactory protocols = new ProtocolFactory(new HashSet<>(Collections.singletonList(new S3Protocol())));
-        final Host host = new HostParser(protocols, new S3Protocol()).get("s3:/profiles.cyberduck.io").withCredentials(
+        final Host host = new HostParser(protocols, new S3Protocol()).get("s3:/profiles.cyberduck.io").setCredentials(
                 new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")));
         final Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());

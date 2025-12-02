@@ -331,28 +331,26 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
     /**
      * @param defaultpath The path to change the working directory to upon connecting
      */
-    public void setDefaultPath(final String defaultpath) {
+    public Host setDefaultPath(final String defaultpath) {
         this.defaultpath = defaultpath;
+        return this;
     }
 
     public Path getWorkdir() {
         return workdir;
     }
 
-    public void setWorkdir(final Path workdir) {
+    public Host setWorkdir(final Path workdir) {
         this.workdir = workdir;
+        return this;
     }
 
     public Credentials getCredentials() {
         return credentials;
     }
 
-    public void setCredentials(final Credentials credentials) {
+    public Host setCredentials(final Credentials credentials) {
         log.debug("Setting credentials for {} to {}", this, credentials);
-        this.credentials = credentials;
-    }
-
-    public Host withCredentials(final Credentials credentials) {
         this.credentials = credentials;
         return this;
     }
@@ -371,8 +369,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
     /**
      * @param protocol Connection profile
      */
-    public void setProtocol(final Protocol protocol) {
+    public Host setProtocol(final Protocol protocol) {
         this.protocol = protocol;
+        return this;
     }
 
     public String getUuid() {
@@ -382,8 +381,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
+    public Host setUuid(String uuid) {
         this.uuid = uuid;
+        return this;
     }
 
     /**
@@ -400,8 +400,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
      *
      * @param nickname Custom name
      */
-    public void setNickname(String nickname) {
+    public Host setNickname(String nickname) {
         this.nickname = nickname;
+        return this;
     }
 
     /**
@@ -414,8 +415,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
     /**
      * @param hostname Server
      */
-    public void setHostname(final String hostname) {
+    public Host setHostname(final String hostname) {
         this.hostname = StringUtils.trim(hostname);
+        return this;
     }
 
     /**
@@ -428,8 +430,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
     /**
      * @param port The port number to connect to or -1 to use the default port for this protocol
      */
-    public void setPort(final int port) {
+    public Host setPort(final int port) {
         this.port = -1 == port ? protocol.getDefaultPort() : port;
+        return this;
     }
 
     /**
@@ -448,8 +451,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
      *
      * @param encoding Control connection encoding
      */
-    public void setEncoding(final String encoding) {
+    public Host setEncoding(final String encoding) {
         this.encoding = encoding;
+        return this;
     }
 
     /**
@@ -460,8 +464,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
         return connectMode;
     }
 
-    public void setFTPConnectMode(final FTPConnectMode connectMode) {
+    public Host setFTPConnectMode(final FTPConnectMode connectMode) {
         this.connectMode = connectMode;
+        return this;
     }
 
     /**
@@ -476,8 +481,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
      *
      * @param transfer null to use the default value or -1 if no limit
      */
-    public void setTransfer(final TransferType transfer) {
+    public Host setTransferType(final TransferType transfer) {
         this.transfer = transfer;
+        return this;
     }
 
     /**
@@ -494,16 +500,18 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
      *
      * @param folder Absolute path
      */
-    public void setDownloadFolder(final Local folder) {
+    public Host setDownloadFolder(final Local folder) {
         downloadFolder = folder;
+        return this;
     }
 
     public Local getUploadFolder() {
         return uploadFolder;
     }
 
-    public void setUploadFolder(final Local folder) {
+    public Host setUploadFolder(final Local folder) {
         this.uploadFolder = folder;
+        return this;
     }
 
     /**
@@ -519,8 +527,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
      *
      * @param timezone Timezone of server
      */
-    public void setTimezone(final TimeZone timezone) {
+    public Host setTimezone(final TimeZone timezone) {
         this.timezone = timezone;
+        return this;
     }
 
     /**
@@ -541,10 +550,10 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
         return protocol.getProperties().get(key);
     }
 
-    public void setProperty(final String key, final String value) {
+    public Host setProperty(final String key, final String value) {
         final Map<String, String> overrides = new HashMap<>(this.getCustom());
         overrides.put(key, value);
-        this.setCustom(overrides);
+        return this.setCustom(overrides);
     }
 
     public String getRegion() {
@@ -554,12 +563,8 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
         return region;
     }
 
-    public void setRegion(final String region) {
+    public Host setRegion(final String region) {
         this.region = region;
-    }
-
-    public Host withRegion(final String region) {
-        this.setRegion(region);
         return this;
     }
 
@@ -573,8 +578,9 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
     /**
      * @param comment Notice
      */
-    public void setComment(final String comment) {
+    public Host setComment(final String comment) {
         this.comment = comment;
+        return this;
     }
 
     /**
@@ -584,12 +590,8 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
         return webURL;
     }
 
-    public void setWebURL(final String url) {
+    public Host setWebURL(final String url) {
         webURL = url;
-    }
-
-    public Host withWebURL(final String url) {
-        this.setWebURL(url);
         return this;
     }
 
@@ -605,40 +607,45 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
      *
      * @param timestamp Date and time
      */
-    public void setTimestamp(Date timestamp) {
+    public Host setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+        return this;
     }
 
     public Local getVolume() {
         return volume;
     }
 
-    public void setVolume(final Local volume) {
+    public Host setVolume(final Local volume) {
         this.volume = volume;
+        return this;
     }
 
     public Boolean getReadonly() {
         return readonly;
     }
 
-    public void setReadonly(final Boolean readonly) {
+    public Host setReadonly(final Boolean readonly) {
         this.readonly = readonly;
+        return this;
     }
 
     public Map<String, String> getCustom() {
         return null == custom ? Collections.emptyMap() : custom;
     }
 
-    public void setCustom(final Map<String, String> custom) {
+    public Host setCustom(final Map<String, String> custom) {
         this.custom = custom;
+        return this;
     }
 
     public Set<String> getLabels() {
         return null == labels ? Collections.emptySet() : labels;
     }
 
-    public void setLabels(final Set<String> labels) {
+    public Host setLabels(final Set<String> labels) {
         this.labels = labels;
+        return this;
     }
 
     @Override
