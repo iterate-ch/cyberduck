@@ -31,7 +31,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -42,8 +41,7 @@ import static org.junit.Assert.fail;
 @Category(TestcontainerTest.class)
 public abstract class AbstractSMBTest {
 
-    @ClassRule
-    public static TestContainer container = TestContainer.getInstance();
+    private static final TestContainer container = new TestContainer();
 
     @BeforeClass
     public static void start() {
@@ -100,13 +98,6 @@ public abstract class AbstractSMBTest {
             withEnv("LOCATION", "/smb");
             addExposedPort(SMB_PORT);
             waitingFor(Wait.forListeningPort());
-        }
-
-        static TestContainer getInstance() {
-            if(instance == null) {
-                instance = new TestContainer();
-            }
-            return instance;
         }
     }
 }
