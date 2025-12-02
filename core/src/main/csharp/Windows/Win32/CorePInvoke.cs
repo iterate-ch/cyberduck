@@ -105,18 +105,6 @@ public unsafe partial class CorePInvoke
         }
     }
 
-    /// <inheritdoc cref="PathCchCanonicalizeEx(PWSTR, nuint, PCWSTR, PATHCCH_OPTIONS)"/>
-    public static unsafe HRESULT PathCchCanonicalizeEx(ref Span<char> pszPathOut, string pszPathIn, PATHCCH_OPTIONS dwFlags)
-    {
-        fixed (char* ppszPathOut = pszPathOut)
-        {
-            PWSTR wstrpszPathOut = ppszPathOut;
-            HRESULT __result = CorePInvoke.PathCchCanonicalizeEx(wstrpszPathOut, (nuint)pszPathOut.Length, pszPathIn, dwFlags);
-            pszPathOut = pszPathOut.Slice(0, wstrpszPathOut.Length);
-            return __result;
-        }
-    }
-
     /// <inheritdoc cref="SHCreateAssociationRegistration(Guid*, object)"/>
     public static unsafe HRESULT SHCreateAssociationRegistration<T>(out T ppv) where T : class
     {

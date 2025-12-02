@@ -34,10 +34,7 @@ LoadLibrary
 LoadString
 MESSAGEBOX_RESULT
 OpenFileById
-PATHCCH_ALLOW_LONG_PATHS
 PATHCCH_MAX_CCH
-PathCchCanonicalizeEx
-PathCchStripPrefix
 PathParseIconLocation
 PBST_ERROR
 PBST_NORMAL
