@@ -670,7 +670,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         if(this == o) {
             return true;
         }
-        if(!(o instanceof PathAttributes)) {
+        if(!(o instanceof DefaultPathAttributes)) {
             return false;
         }
         final DefaultPathAttributes that = (DefaultPathAttributes) o;
