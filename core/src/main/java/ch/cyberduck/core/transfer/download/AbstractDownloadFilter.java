@@ -354,7 +354,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                             if(!checksum.equals(download)) {
                                 throw new ChecksumException(
                                         MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {2} checksum {0} of transfered data and {1} returned by the server", "Error"),
+                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {2} checksum {0} of transferred data and {1} returned by the server", "Error"),
                                                 download.algorithm.toString(), download.hash, checksum.hash, checksum.algorithm));
                             }
                         }

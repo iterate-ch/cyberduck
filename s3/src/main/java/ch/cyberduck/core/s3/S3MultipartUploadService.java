@@ -180,7 +180,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
                     final String reference = StringUtils.remove(complete.getEtag(), "\"");
                     if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                         throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between {2} checksum {0} of transfered data and {1} returned by the server",
+                                MessageFormat.format("Mismatch between {2} checksum {0} of transferred data and {1} returned by the server",
                                         expected, reference, HashAlgorithm.md5));
                     }
                 }

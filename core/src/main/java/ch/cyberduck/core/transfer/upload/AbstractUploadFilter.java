@@ -386,7 +386,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                             if(!checksum.equals(response)) {
                                 throw new ChecksumException(
                                         MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {2} checksum {0} of transfered data and {1} returned by the server", "Error"),
+                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {2} checksum {0} of transferred data and {1} returned by the server", "Error"),
                                                 response.hash, checksum.hash, response.algorithm.toString()));
                             }
                         }
