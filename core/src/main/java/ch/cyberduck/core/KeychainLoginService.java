@@ -36,18 +36,13 @@ public class KeychainLoginService implements LoginService {
 
     private final HostPasswordStore keychain;
 
-    public KeychainLoginService() {
-        this(PasswordStoreFactory.get());
-    }
-
     public KeychainLoginService(final HostPasswordStore keychain) {
         this.keychain = keychain;
     }
 
     @Override
-    public void validate(final Session<?> session, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
-        log.debug("Validate login credentials for {}", session);
-        final Host host = session.getHost();
+    public void validate(final Host host, final X509KeyManager keys, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
+        log.debug("Validate login credentials for {}", host);
         final Credentials credentials = host.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
@@ -96,9 +91,8 @@ public class KeychainLoginService implements LoginService {
             if(options.certificate) {
                 final String alias = host.getCredentials().getCertificate();
                 if(StringUtils.isNotBlank(alias)) {
-                    final X509KeyManager manager = session.getFeature(X509KeyManager.class);
-                    if(manager != null) {
-                        if(null == manager.getPrivateKey(alias)) {
+                    if(keys != null) {
+                        if(null == keys.getPrivateKey(alias)) {
                             log.warn("No private key found for alias {} in keychain", alias);
                             throw new LoginFailureException(LocaleFactory.localizedString("Provide additional login credentials", "Credentials"));
                         }

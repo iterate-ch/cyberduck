@@ -21,17 +21,18 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 public interface LoginService {
     /**
      * Obtain password from password store or prompt user for input
      *
-     * @param session Credentials
-     * @param pompt   Login prompt
+     * @param bookmark Credentials
+     * @param prompt   Login prompt
      * @param options Login mechanism features
      */
-    void validate(Session<?> session, LoginCallback pompt, LoginOptions options) throws ConnectionCanceledException, LoginFailureException;
+    void validate(Host bookmark, X509KeyManager keys, LoginCallback prompt, LoginOptions options) throws ConnectionCanceledException, LoginFailureException;
 
     /**
      * Login and prompt on failure

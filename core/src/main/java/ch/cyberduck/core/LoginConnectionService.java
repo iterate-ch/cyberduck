@@ -24,6 +24,7 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
+import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -93,7 +94,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Obtain password from keychain or prompt
         synchronized(login) {
-            login.validate(session, prompt, new LoginOptions(bookmark.getProtocol()));
+            login.validate(bookmark, session.getFeature(X509KeyManager.class), prompt, new LoginOptions(bookmark.getProtocol()));
         }
         this.connect(session, callback);
         return true;
