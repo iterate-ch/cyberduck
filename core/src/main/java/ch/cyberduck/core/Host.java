@@ -39,7 +39,7 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
      */
     private final Credentials cloudfront = new Credentials();
     /**
-     * Proxy configuration
+     * Jump host configuration for SSH bastion host connections
      */
     private Host jumphost;
     /**
@@ -361,10 +361,16 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
         return this;
     }
 
+    /**
+     * @return Jump host configuration for SSH bastion host connections
+     */
     public Host getJumphost() {
         return jumphost;
     }
 
+    /**
+     * @param jumphost Jump host configuration for SSH bastion host connections
+     */
     public void setJumphost(final Host jumphost) {
         this.jumphost = jumphost;
     }
