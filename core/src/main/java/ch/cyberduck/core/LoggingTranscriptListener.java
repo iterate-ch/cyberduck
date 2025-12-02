@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 public class LoggingTranscriptListener implements TranscriptListener {
     private static final Logger log = LogManager.getLogger("transcript");
-    private static final Logger audit = LogManager.getLogger("audit-transcript");
+    private static final Logger audit = LogManager.getLogger("audit.transcript");
 
     @Override
     public void log(final Type type, final String message) {
