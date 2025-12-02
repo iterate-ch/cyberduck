@@ -39,6 +39,10 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
      */
     private final Credentials cloudfront = new Credentials();
     /**
+     * Proxy configuration
+     */
+    private Host jumphost;
+    /**
      * The protocol identifier.
      */
     private Protocol protocol;
@@ -355,6 +359,14 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
     public Host withCredentials(final Credentials credentials) {
         this.credentials = credentials;
         return this;
+    }
+
+    public Host getJumphost() {
+        return jumphost;
+    }
+
+    public void setJumphost(final Host jumphost) {
+        this.jumphost = jumphost;
     }
 
     /**

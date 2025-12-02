@@ -43,6 +43,10 @@ public class KeychainLoginService implements LoginService {
     @Override
     public void validate(final Host host, final X509KeyManager keys, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
         log.debug("Validate login credentials for {}", host);
+        final Host jumphost = host.getJumphost();
+        if(null != jumphost) {
+            this.validate(jumphost, keys, prompt, new LoginOptions(jumphost.getProtocol()));
+        }
         final Credentials credentials = host.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
@@ -213,9 +217,12 @@ public class KeychainLoginService implements LoginService {
     public void save(final Host bookmark) {
         final Credentials credentials = bookmark.getCredentials();
         if(credentials.isSaved()) {
-            // Write credentials to keychain
+            // Write credentials to the password store
             try {
                 keychain.save(bookmark);
+                if(bookmark.getJumphost() != null) {
+                    keychain.save(bookmark.getJumphost());
+                }
             }
             catch(LocalAccessDeniedException e) {
                 log.error("Failure saving credentials for {} in keychain. {}", bookmark, e);
