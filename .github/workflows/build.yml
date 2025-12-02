@@ -46,5 +46,5 @@ jobs:
       - name: Build with Maven
         run: mvn --no-transfer-progress verify -DskipITs -DskipSign ${{ env.args }} --batch-mode -Drevision=0
       - name: Publish Test Report
-        if: ${{ always() }}
+        if: github.event.pull_request.head.repo.fork == false
         uses: scacap/action-surefire-report@v1.9.1
