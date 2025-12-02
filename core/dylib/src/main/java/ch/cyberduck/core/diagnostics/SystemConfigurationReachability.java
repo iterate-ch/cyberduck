@@ -19,6 +19,7 @@ package ch.cyberduck.core.diagnostics;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Proxy;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
@@ -49,6 +50,7 @@ public class SystemConfigurationReachability implements Reachability {
             this.proxy = proxy;
         }
 
+        @Delegate
         public void notify(final NSNotification notification) {
             log.debug("Received notification {}", notification);
             proxy.change();
