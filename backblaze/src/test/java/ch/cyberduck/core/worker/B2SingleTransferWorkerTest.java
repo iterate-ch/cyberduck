@@ -104,7 +104,7 @@ public class B2SingleTransferWorkerTest extends VaultTest {
                 return super.getProperty(key);
             }
         };
-        final B2Session session = new B2Session(host.withCredentials(new Credentials(
+        final B2Session session = new B2Session(host.setCredentials(new Credentials(
                 PROPERTIES.get("b2.user"), PROPERTIES.get("b2.password")
         )), new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)

@@ -107,7 +107,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
                         host, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
                     @Override
                     public Session create() {
-                        return new B2Session(host.withCredentials(new Credentials(
+                        return new B2Session(host.setCredentials(new Credentials(
                                 PROPERTIES.get("b2.user"), PROPERTIES.get("b2.password")
                         )), new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
                             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)

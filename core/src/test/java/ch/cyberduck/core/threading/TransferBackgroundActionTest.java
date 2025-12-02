@@ -71,7 +71,7 @@ public class TransferBackgroundActionTest {
             }
         };
         final Host host = new Host(new TestProtocol(), "l");
-        host.setTransfer(Host.TransferType.concurrent);
+        host.setTransferType(Host.TransferType.concurrent);
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new StatelessSessionPool(
                 new TestLoginConnectionService(), new NullSession(host),
                 new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), SessionPool.DISCONNECTED,

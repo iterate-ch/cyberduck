@@ -643,7 +643,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedTransferEvent()
         {
-            _host.setTransfer(View.SelectedTransferMode);
+            _host.setTransferType(View.SelectedTransferMode);
             ItemChanged();
         }
 
