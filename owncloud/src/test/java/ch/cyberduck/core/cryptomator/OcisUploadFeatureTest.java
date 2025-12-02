@@ -42,7 +42,6 @@ import ch.cyberduck.core.owncloud.OcisUploadFeature;
 import ch.cyberduck.core.owncloud.OwncloudAttributesFinderFeature;
 import ch.cyberduck.core.owncloud.OwncloudHomeFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.tus.TusCapabilities;
 import ch.cyberduck.core.tus.TusWriteFeature;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -94,7 +93,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
         writeStatus.setLength(content.length);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BytecountStreamListener counter = new BytecountStreamListener();
-        service.upload(new TusWriteFeature(capabilities, session.getClient()), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+        service.upload(new TusWriteFeature(capabilities, session.getClient()), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(test));

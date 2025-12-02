@@ -35,7 +35,6 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.tus.TusCapabilities;
 import ch.cyberduck.core.tus.TusWriteFeature;
 import ch.cyberduck.test.IntegrationTest;
@@ -75,7 +74,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             status.setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
             assertFalse(feature.append(file, status).append);
-            final Void response = feature.upload(new TusWriteFeature(capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+            final Void response = feature.upload(new TusWriteFeature(capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertTrue(status.isComplete());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
@@ -97,7 +96,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             status.setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
             assertFalse(feature.append(file, status).append);
-            final Void response = feature.upload(new TusWriteFeature(capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+            final Void response = feature.upload(new TusWriteFeature(capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertTrue(status.isComplete());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());

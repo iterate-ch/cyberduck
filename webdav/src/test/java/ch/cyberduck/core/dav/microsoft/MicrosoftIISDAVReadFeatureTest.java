@@ -31,7 +31,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -70,7 +69,7 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractMicrosoftIISDAVTest 
         new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         final ExecutorService service = Executors.newCachedThreadPool();
         final BlockingQueue<Future<Void>> queue = new LinkedBlockingQueue<>();
         final CompletionService<Void> completion = new ExecutorCompletionService<>(service, queue);

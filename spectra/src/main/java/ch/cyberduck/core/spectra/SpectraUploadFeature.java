@@ -30,8 +30,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-
 import org.jets3t.service.model.StorageObject;
 
 import java.util.List;
@@ -46,7 +44,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
 
     @Override
     public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle,
-                                final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+                                final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(Checksum.NONE == status.getChecksum()) {
             // The client-side checksum is passed to the BlackPearl gateway by supplying the applicable CRC HTTP header.
             // If this is done, the BlackPearl gateway verifies that the data received matches the checksum provided.
@@ -61,7 +59,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject> {
         StorageObject stored = null;
         for(TransferStatus chunk : chunks) {
             chunk.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), chunk));
-            stored = super.upload(write, file, local, throttle, progress, streamListener, chunk, callback, options);
+            stored = super.upload(write, file, local, throttle, progress, streamListener, chunk, callback);
         }
         return stored;
     }

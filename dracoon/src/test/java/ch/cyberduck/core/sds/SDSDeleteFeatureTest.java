@@ -34,7 +34,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoomPoliciesRequest;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -156,7 +155,7 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
         status.setLength(eicar.length);
         final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid);
         final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(eicar.length, attributes.getSize());

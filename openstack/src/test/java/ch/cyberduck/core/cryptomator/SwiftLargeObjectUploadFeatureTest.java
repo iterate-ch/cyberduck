@@ -41,7 +41,6 @@ import ch.cyberduck.core.openstack.SwiftReadFeature;
 import ch.cyberduck.core.openstack.SwiftRegionService;
 import ch.cyberduck.core.openstack.SwiftWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
@@ -90,8 +89,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        service.upload(new CryptoWriteFeature<>(session, new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null,
-                new UploadFilterOptions(session.getHost()));
+        service.upload(new CryptoWriteFeature<>(session, new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null
+        );
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertEquals(content.length, writeStatus.getResponse().getSize());

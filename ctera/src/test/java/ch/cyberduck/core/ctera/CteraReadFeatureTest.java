@@ -32,7 +32,6 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -79,7 +78,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         new DAVUploadFeature().upload(
                 new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         // Unknown length in status
         final TransferStatus status = new TransferStatus() {
             @Override
@@ -127,7 +126,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         new DAVUploadFeature().upload(
                 new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -155,7 +154,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         new DAVUploadFeature().upload(
                 new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);

@@ -48,7 +48,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -81,8 +80,8 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature().upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback(),
-                new UploadFilterOptions(session.getHost()));
+        new DAVUploadFeature().upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback()
+        );
         assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         final Transfer download = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
@@ -115,8 +114,8 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature().upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback(),
-                new UploadFilterOptions(session.getHost()));
+        new DAVUploadFeature().upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback()
+        );
         final AtomicBoolean failed = new AtomicBoolean();
         final Host host = new Host(session.getHost()) {
             @Override

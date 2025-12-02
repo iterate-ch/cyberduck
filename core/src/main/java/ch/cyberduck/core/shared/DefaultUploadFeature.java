@@ -33,7 +33,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,16 +45,16 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     @Override
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
                         final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
-                        final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
-        final Reply response = this.transfer(write, file, local, throttle, streamListener, status, status, status, callback, options);
+                        final ConnectionCallback callback) throws BackgroundException {
+        final Reply response = this.transfer(write, file, local, throttle, streamListener, status, status, status, callback);
         log.debug("Received response {}", response);
         return response;
     }
 
     protected Reply transfer(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                              final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress,
-                             final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
-        final InputStream in = this.decorate(local.getInputStream(), status, options);
+                             final ConnectionCallback callback) throws BackgroundException {
+        final InputStream in = this.decorate(local.getInputStream(), status);
         final StatusOutputStream<Reply> out = write.write(file, status, callback);
         new StreamCopier(cancel, progress)
                 .withOffset(status.getOffset())
@@ -68,12 +67,11 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     /**
      * Wrap input stream if checksum calculation is enabled.
      *
-     * @param in      File input stream
+     * @param in     File input stream
      * @param status
-     * @param options
      * @return Wrapped or same stream
      */
-    protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) throws BackgroundException {
+    protected InputStream decorate(final InputStream in, final TransferStatus status) throws BackgroundException {
         return in;
     }
 }

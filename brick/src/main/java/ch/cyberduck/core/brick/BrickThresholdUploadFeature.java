@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 public class BrickThresholdUploadFeature implements Upload<FileEntity> {
 
@@ -37,9 +36,9 @@ public class BrickThresholdUploadFeature implements Upload<FileEntity> {
     }
 
     @Override
-    public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+    public FileEntity upload(final Write<FileEntity> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(status.getLength() > 0) {
-            return new BrickUploadFeature(session).upload(write, file, local, throttle, progress, streamListener, status, callback, options);
+            return new BrickUploadFeature(session).upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
         else {
             new BrickTouchFeature(session).touch(write, file, status);

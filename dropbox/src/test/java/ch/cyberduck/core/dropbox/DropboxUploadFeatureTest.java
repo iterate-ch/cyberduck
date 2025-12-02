@@ -26,9 +26,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -65,7 +63,7 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         final Metadata metadata = feature.upload(new DropboxWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new DropboxFindFeature(session).find(test));
@@ -82,9 +80,9 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
         final NullInputStream n = new NullInputStream(1L);
         assertSame(NullInputStream.class, new DropboxUploadFeature() {
             @Override
-            protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) throws BackgroundException {
-                return super.decorate(in, status, options);
+            protected InputStream decorate(final InputStream in, final TransferStatus status) throws BackgroundException {
+                return super.decorate(in, status);
             }
-        }.decorate(n, new TransferStatus(), new UploadFilterOptions(session.getHost())).getClass());
+        }.decorate(n, new TransferStatus()).getClass());
     }
 }

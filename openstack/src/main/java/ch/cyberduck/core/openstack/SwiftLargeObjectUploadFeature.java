@@ -45,8 +45,6 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -100,7 +98,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                 final BandwidthThrottle throttle,
                                 final ProgressListener progress, final StreamListener streamListener,
                                 final TransferStatus status,
-                                final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+                                final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         final List<Path> existingSegments = new ArrayList<>();
         if(status.isAppend()) {
@@ -147,7 +145,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             else {
                 // Submit to queue
-                segments.add(this.submit(pool, write, segment, local, throttle, streamListener, status, offset, length, callback, options));
+                segments.add(this.submit(pool, write, segment, local, throttle, streamListener, status, offset, length, callback));
                 log.debug("Segment {} submitted with size {} and offset {}", segment, length, offset);
                 remaining -= length;
                 offset += length;
@@ -192,7 +190,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     private Future<StorageObject> submit(final ThreadPool pool, final Write<StorageObject> write, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
-                                         final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback, final UploadFilterOptions options) throws ConnectionCanceledException {
+                                         final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) throws ConnectionCanceledException {
         overall.validate();
         log.info("Submit part {} to queue with offset {} and length {}", segment, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
@@ -207,7 +205,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 status.setChecksum(write.checksum(segment, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 return SwiftLargeObjectUploadFeature.this.transfer(
-                        write, segment, local, throttle, counter, status, overall, status, callback, options);
+                        write, segment, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }

@@ -45,7 +45,6 @@ import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
@@ -93,7 +92,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
         final CryptoUploadFeature<EueWriteFeature.Chunk> feature = new CryptoUploadFeature<>(session,
                 new EueThresholdUploadService(session, fileid, registry),
                 cryptomator);
-        feature.upload(new CryptoWriteFeature<>(session, new EueWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+        feature.upload(new CryptoWriteFeature<>(session, new EueWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));
@@ -130,7 +129,7 @@ public class EueThresholdUploadServiceTest extends AbstractEueSessionTest {
         final CryptoUploadFeature<EueWriteFeature.Chunk> feature = new CryptoUploadFeature<>(session,
                 new EueThresholdUploadService(session, fileid, registry),
                 cryptomator);
-        feature.upload(new CryptoWriteFeature<>(session, new EueWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+        feature.upload(new CryptoWriteFeature<>(session, new EueWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));

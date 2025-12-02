@@ -41,8 +41,6 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,7 +76,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
 
     @Override
     public File upload(final Write<File> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                       final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+                       final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             if(status.getChecksum().algorithm != HashAlgorithm.sha1) {
@@ -92,7 +90,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(uploadSession.getPartSize(), remaining);
                 parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
-                        uploadSession.getId(), partNumber, offset, length, callback, options));
+                        uploadSession.getId(), partNumber, offset, length, callback));
                 remaining -= length;
                 offset += length;
             }
@@ -120,7 +118,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
 
     private Future<Part> submit(final ThreadPool pool, final Write<File> write, final Path file, final Local local,
                                 final BandwidthThrottle throttle, final StreamListener listener,
-                                final TransferStatus overall, final String uploadSessionId, final int partNumber, final long offset, final long length, final ConnectionCallback callback, final UploadFilterOptions options) {
+                                final TransferStatus overall, final String uploadSessionId, final int partNumber, final long offset, final long length, final ConnectionCallback callback) {
         log.info("Submit {} to queue with offset {} and length {}", file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
         return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Part>() {
@@ -139,7 +137,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File> {
                 parameters.put(OVERALL_LENGTH, String.valueOf(overall.getLength()));
                 status.setParameters(parameters);
                 final File response = BoxLargeUploadService.this.transfer(
-                        write, file, local, throttle, listener, status, overall, status, callback, options);
+                        write, file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", response, partNumber);
                 return new Part(response, status);
             }

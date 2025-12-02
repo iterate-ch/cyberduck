@@ -47,7 +47,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -147,7 +146,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 if(type == Upload.class) {
                     return (T) new S3MultipartUploadService(this, new S3AccessControlListFeature(this), 5 * 1024L * 1024L, 5) {
                         @Override
-                        protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) {
+                        protected InputStream decorate(final InputStream in, final TransferStatus status) {
                             if(failed.get()) {
                                 // Second attempt successful
                                 return in;
@@ -225,7 +224,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 if(type == Upload.class) {
                     return (T) new S3SingleUploadService(this) {
                         @Override
-                        protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) {
+                        protected InputStream decorate(final InputStream in, final TransferStatus status) {
                             if(failed.get()) {
                                 // Second attempt successful
                                 return in;

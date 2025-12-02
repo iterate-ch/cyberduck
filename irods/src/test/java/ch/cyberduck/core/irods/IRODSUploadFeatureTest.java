@@ -36,7 +36,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.test.VaultTest;
 
@@ -84,7 +83,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
             new IRODSUploadFeature(session).upload(
                     new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
                     status,
-                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledConnectionCallback());
             assertEquals(content.length / 2, count.getSent());
         }
         {
@@ -92,7 +91,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
             new IRODSUploadFeature(session).upload(
                     new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledConnectionCallback());
             assertEquals(content.length / 2, status.getOffset());
         }
         final byte[] buffer = new byte[content.length];
@@ -127,7 +126,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         new IRODSUploadFeature(session).upload(
-                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
         assertTrue(status.isComplete());
         assertEquals(content.length, count.getSent());
         final byte[] buffer = new byte[content.length];
@@ -168,7 +167,7 @@ public class IRODSUploadFeatureTest extends VaultTest {
                     }
                 },
                 status,
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         try {
             status.validate();
             fail();

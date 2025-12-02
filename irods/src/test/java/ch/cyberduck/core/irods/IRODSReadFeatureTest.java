@@ -38,7 +38,6 @@ import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.test.VaultTest;
 
@@ -140,7 +139,7 @@ public class IRODSReadFeatureTest extends VaultTest {
         new DefaultUploadFeature<Void>().upload(
                 new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);

@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
@@ -43,8 +42,8 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
     }
 
     @Override
-    public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
-        return proxy.upload(write, vault.encrypt(session, file), local, throttle, progress, streamListener, status.setDestinationLength(new CryptoTransferStatus(vault, status).getLength()), callback, options);
+    public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return proxy.upload(write, vault.encrypt(session, file), local, throttle, progress, streamListener, status.setDestinationLength(new CryptoTransferStatus(vault, status).getLength()), callback);
     }
 
     @Override

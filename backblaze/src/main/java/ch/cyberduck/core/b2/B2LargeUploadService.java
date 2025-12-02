@@ -39,8 +39,6 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -94,7 +92,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
 
     @Override
     public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle,
-                                 final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+                                 final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final long partSize;
         if(file.getType().contains(Path.Type.encrypted)) {
             // For uploads to vault part size must be a multiple of 32 * 1024. Recommended partsize from B2 API may not meet that requirement.
@@ -104,12 +102,12 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
             partSize = this.partSize;
         }
         return this.upload(write, file, local, throttle, progress, streamListener, status, callback,
-                partSize < status.getLength() ? partSize : PreferencesFactory.get().getLong("b2.upload.largeobject.size.minimum"), options);
+                partSize < status.getLength() ? partSize : PreferencesFactory.get().getLong("b2.upload.largeobject.size.minimum"));
     }
 
     public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local,
                                  final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
-                                 final ConnectionCallback callback, final Long partSize, final UploadFilterOptions options) throws BackgroundException {
+                                 final ConnectionCallback callback, final Long partSize) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("largeupload", concurrency);
         try {
             // Get the results of the uploads in the order they were submitted
@@ -171,7 +169,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
                 if(!skip) {
                     final long length = Math.min(Math.max((size / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(pool, write, file, local, throttle, streamListener, status, fileId, partNumber, offset, length, callback, options));
+                    parts.add(this.submit(pool, write, file, local, throttle, streamListener, status, fileId, partNumber, offset, length, callback));
                     log.debug("Part {} submitted with size {} and offset {}", partNumber, length, offset);
                     remaining -= length;
                     offset += length;
@@ -212,7 +210,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
                                                 final BandwidthThrottle throttle, final StreamListener listener,
                                                 final TransferStatus overall,
                                                 final String fileId, final int partNumber,
-                                                final Long offset, final Long length, final ConnectionCallback callback, final UploadFilterOptions options) throws ConnectionCanceledException {
+                                                final Long offset, final Long length, final ConnectionCallback callback) throws ConnectionCanceledException {
         overall.validate();
         log.info("Submit part {} of {} to queue with offset {} and length {}", partNumber, file, offset, length);
         final BytecountStreamListener counter = new BytecountStreamListener(listener);
@@ -230,7 +228,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
                 status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 status.setPart(partNumber);
-                return (B2UploadPartResponse) B2LargeUploadService.this.transfer(write, file, local, throttle, counter, status, overall, status, callback, options);
+                return (B2UploadPartResponse) B2LargeUploadService.this.transfer(write, file, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }

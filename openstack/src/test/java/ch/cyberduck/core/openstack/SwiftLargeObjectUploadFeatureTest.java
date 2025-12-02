@@ -23,7 +23,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -77,7 +76,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                         }
                     };
                 }
-            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, status, new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
@@ -92,7 +91,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session),
                 1 * 1024L * 1024L, 1).upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), append,
-                new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledLoginCallback());
         assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
@@ -124,19 +123,19 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final SwiftLargeObjectUploadFeature feature = new SwiftLargeObjectUploadFeature(session, regionService,
                 1024L * 1024L, 1) {
             @Override
-            public StorageObject transfer(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+            public StorageObject transfer(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
                 if(!interrupt.get()) {
                     if(status.getOffset() >= 1L * 1024L * 1024L) {
                         throw new ConnectionTimeoutException("Test");
                     }
                 }
-                return super.transfer(write, file, local, throttle, listener, status, cancel, progress, callback, options);
+                return super.transfer(write, file, local, throttle, listener, status, cancel, progress, callback);
             }
         };
         final BytecountStreamListener listener = new BytecountStreamListener();
         try {
             feature.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new Local(System.getProperty("java.io.tmpdir"), name),
-                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, status, new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
@@ -153,7 +152,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(1024L * 1024L).setOffset(1024L * 1024L);
         feature.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, append,
-            new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, listener.getSent());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
@@ -198,7 +197,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
             final BytecountStreamListener count = new BytecountStreamListener();
             final StorageObject object = upload.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
-                    status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    status, new DisabledConnectionCallback());
             assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
             assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
             assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
@@ -251,7 +250,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
             final BytecountStreamListener count = new BytecountStreamListener();
             upload.upload(new SwiftWriteFeature(session, regionService), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
-                    status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    status, new DisabledConnectionCallback());
 
             assertTrue(status.isComplete());
             assertEquals(content.length, status.getResponse().getSize());

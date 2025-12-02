@@ -30,7 +30,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -60,7 +59,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
             new DAVUploadFeature().upload(
                     new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledConnectionCallback());
         }
         catch(AccessDeniedException e) {
             assertEquals("Unexpected response (403 Forbidden). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -85,14 +84,14 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
             new DAVUploadFeature().upload(
                     new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             new DAVUploadFeature().upload(
                     new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());

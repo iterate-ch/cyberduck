@@ -29,7 +29,6 @@ import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -62,14 +61,14 @@ public class DefaultUploadFeatureTest extends AbstractFTPTest {
             final Void reply = new DefaultUploadFeature<Void>().upload(
                     new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             final Void reply = new DefaultUploadFeature<Void>().upload(
                     new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
-                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final Read read = session.getFeature(Read.class);

@@ -26,7 +26,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -55,7 +54,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             IOUtils.write(content, local.getOutputStream(false));
             final TransferStatus status = new TransferStatus().setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
-            service.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+            service.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
             assertTrue(new EueFindFeature(session, fileid).find(file));
@@ -69,7 +68,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
             IOUtils.write(content, local.getOutputStream(false));
             final TransferStatus status = new TransferStatus().setLength(content.length).setExists(true);
             final BytecountStreamListener count = new BytecountStreamListener();
-            service.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+            service.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
             assertTrue(new EueFindFeature(session, fileid).find(file));

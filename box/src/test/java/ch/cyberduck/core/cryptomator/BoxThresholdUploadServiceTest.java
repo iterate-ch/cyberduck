@@ -45,7 +45,6 @@ import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
@@ -95,7 +94,7 @@ public class BoxThresholdUploadServiceTest extends AbstractBoxTest {
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new BoxThresholdUploadService(session, fileid, registry),
                 cryptomator);
-        feature.upload(new BoxWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+        feature.upload(new BoxWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new BoxFindFeature(session, fileid)).find(test));

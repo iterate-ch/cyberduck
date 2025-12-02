@@ -42,7 +42,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
@@ -87,7 +86,7 @@ public class EueSingleUploadServiceTest extends AbstractEueSessionTest {
         final CryptoUploadFeature<EueWriteFeature.Chunk> feature = new CryptoUploadFeature<>(session,
                 new EueSingleUploadService(session, fileid),
                 cryptomator);
-        feature.upload(new CryptoWriteFeature<>(session, new EueWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null, new UploadFilterOptions(session.getHost()));
+        feature.upload(new CryptoWriteFeature<>(session, new EueWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));

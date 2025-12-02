@@ -30,7 +30,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -176,7 +175,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus().setLength(random.length);
         final EueWriteFeature.Chunk upload = new EueSingleUploadService(session, fileid).upload(new EueWriteFeature(session, fileid),
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertNotNull(upload.getResourceId());
         local.delete();
         assertTrue(new EueFindFeature(session, fileid).find(test));

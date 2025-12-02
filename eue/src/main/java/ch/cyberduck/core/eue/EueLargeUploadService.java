@@ -39,8 +39,6 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -80,7 +78,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
 
     @Override
     public EueWriteFeature.Chunk upload(final Write<EueWriteFeature.Chunk> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                                        final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+                                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             final List<Future<EueWriteFeature.Chunk>> parts = new ArrayList<>();
@@ -170,7 +168,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 status.setUrl(url);
                 final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.transfer(
-                        write, file, local, throttle, listener, status, overall, status, callback, new UploadFilterOptions(session.getHost()));
+                        write, file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", chunk, partNumber);
                 return chunk;
             }

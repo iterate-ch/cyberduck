@@ -40,7 +40,6 @@ import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
@@ -87,7 +86,7 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         final CryptoUploadFeature<StorageObject> m = new CryptoUploadFeature<>(session,
                 new S3SingleUploadService(session),
                 cryptomator);
-        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null, new UploadFilterOptions(session.getHost()));
+        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));

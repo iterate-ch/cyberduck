@@ -31,8 +31,6 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
@@ -48,7 +46,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
 
     @Override
     public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle,
-                                final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+                                final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion = session.getSignatureVersion();
         switch(signatureVersion) {
             case AWS4HMACSHA256:
@@ -59,7 +57,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
                 break;
         }
         try {
-            final StorageObject response = super.upload(write, file, local, throttle, progress, streamListener, status, callback, options);
+            final StorageObject response = super.upload(write, file, local, throttle, progress, streamListener, status, callback);
             if(null != response.getServerSideEncryptionAlgorithm()) {
                 log.warn("Skip checksum verification for {} with server side encryption enabled", file);
                 status.setChecksum(Checksum.NONE);
@@ -70,7 +68,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
             if(!session.getSignatureVersion().equals(signatureVersion)) {
                 // Retry if upload fails with Header "x-amz-content-sha256" set to the hex-encoded SHA256 hash of the
                 // request payload is required for AWS Version 4 request signing
-                return this.upload(write, file, local, throttle, progress, streamListener, status, callback, options);
+                return this.upload(write, file, local, throttle, progress, streamListener, status, callback);
             }
             throw e;
         }

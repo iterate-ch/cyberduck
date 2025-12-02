@@ -19,7 +19,6 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -55,7 +54,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature();
         upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DAVListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
         assertEquals(content.length, new DAVUploadFeature().append(test, status.setRemote(new DAVAttributesFinderFeature(session).find(test))).offset, 0L);
@@ -88,7 +87,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature();
         upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DAVListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
         assertEquals(content.length, new DAVUploadFeature().append(test, status.setRemote(new DAVAttributesFinderFeature(session).find(test))).offset, 0L);
@@ -124,7 +123,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
             assertNotEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
         }
         final PathAttributes attr1 = new DAVAttributesFinderFeature(session).find(test);
@@ -138,7 +137,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
             assertEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
             assertNotEquals(fileEtag, new DAVAttributesFinderFeature(session).find(test).getETag());
         }

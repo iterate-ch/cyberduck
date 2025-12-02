@@ -32,7 +32,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -60,7 +59,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session).upload(new BrickWriteFeature(session), source, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -80,7 +79,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session).upload(new BrickWriteFeature(session), sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -106,7 +105,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session).upload(new BrickWriteFeature(session), sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(folder));
         assertTrue(new BrickFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

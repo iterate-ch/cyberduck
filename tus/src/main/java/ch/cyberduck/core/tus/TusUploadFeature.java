@@ -41,8 +41,6 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
@@ -87,7 +85,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
 
     @Override
     public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                       final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+                       final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // In order to achieve parallel upload the Concatenation extension MAY be used.
         try {
             final List<Future<Void>> chunks = new ArrayList<>();
@@ -141,7 +139,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
             while(remaining > 0) {
                 final long length = Math.min(preferences.getInteger("tus.chunk.size"), remaining);
                 chunks.add(this.submit(write, file, local, throttle, streamListener, status,
-                        uploadUrl, offset, length, callback, options));
+                        uploadUrl, offset, length, callback));
                 remaining -= length;
                 offset += length;
             }
@@ -163,7 +161,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
     private Future<Void> submit(final Write<Void> write, final Path file, final Local local,
                                 final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus overall, final String uploadUrl,
-                                final long offset, final long length, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+                                final long offset, final long length, final ConnectionCallback callback) throws BackgroundException {
         overall.validate();
         log.info("Send part of {} with offset {} and length {}", file, offset, length);
         return ConcurrentUtils.constantFuture(new DefaultRetryCallable<>(host, new BackgroundExceptionCallable<Void>() {
@@ -180,7 +178,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void> {
                 parameters.put(UPLOAD_URL, uploadUrl);
                 status.setParameters(parameters);
                 final Void response = TusUploadFeature.this.transfer(
-                        write, file, local, throttle, listener, status, overall, status, callback, options);
+                        write, file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response {}", response);
                 return null;
             }

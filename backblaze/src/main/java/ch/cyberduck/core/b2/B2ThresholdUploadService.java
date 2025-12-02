@@ -27,8 +27,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,12 +59,12 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
 
     @Override
     public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
-                                 final TransferStatus status, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status)) {
-            return new B2LargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, callback, options);
+            return new B2LargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
         else {
-            return new B2SingleUploadService().upload(write, file, local, throttle, progress, streamListener, status, callback, options);
+            return new B2SingleUploadService().upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
     }
 

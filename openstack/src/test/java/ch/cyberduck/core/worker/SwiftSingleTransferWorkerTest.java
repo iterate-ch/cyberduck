@@ -38,8 +38,15 @@ import ch.cyberduck.core.openstack.SwiftRegionService;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.transfer.*;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.DisabledTransferPrompt;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.test.VaultTest;
 
@@ -94,7 +101,7 @@ public class SwiftSingleTransferWorkerTest extends VaultTest {
                     final SwiftRegionService regionService = new SwiftRegionService(this);
                     return (T) new SwiftLargeObjectUploadFeature(this, regionService, 1024L * 1024L, 5) {
                         @Override
-                        protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) {
+                        protected InputStream decorate(final InputStream in, final TransferStatus status) {
                             if(failed.get()) {
                                 // Second attempt successful
                                 return in;

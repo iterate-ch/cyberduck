@@ -26,7 +26,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -64,7 +63,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(status.isComplete());
@@ -99,7 +98,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(virtualhost, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(status.isComplete());
@@ -136,7 +135,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertEquals(random.length, status.getResponse().getSize());
@@ -160,8 +159,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus();
-        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null,
-                new UploadFilterOptions(session.getHost()));
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null
+        );
     }
 
     @Test
@@ -178,8 +177,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null,
-                new UploadFilterOptions(session.getHost()));
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null
+        );
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -204,7 +203,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setLength(content.length);
         status.setModified(System.currentTimeMillis());
         final BytecountStreamListener count = new BytecountStreamListener();
-        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null, new UploadFilterOptions(session.getHost()));
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -233,17 +232,17 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService feature = new S3MultipartUploadService(session, acl, 10L * 1024L * 1024L, 1) {
             @Override
-            public StorageObject transfer(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback, final UploadFilterOptions options) throws BackgroundException {
+            public StorageObject transfer(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
                 if(status.getOffset() >= 10L * 1024L * 1024L) {
                     throw new ConnectionTimeoutException("Test");
                 }
-                return super.transfer(write, file, local, throttle, listener, status, cancel, progress, callback, options);
+                return super.transfer(write, file, local, throttle, listener, status, cancel, progress, callback);
             }
         };
         try {
             feature.upload(new S3WriteFeature(session, acl), test, new Local(System.getProperty("java.io.tmpdir"), name),
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status,
-                    new DisabledLoginCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
@@ -260,7 +259,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(2L * 1024L * 1024L).setOffset(10L * 1024L * 1024L);
         new S3MultipartUploadService(session, acl, 10L * 1024L * 1024L, 1).upload(new S3WriteFeature(session, acl), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, append,
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         assertEquals(12L * 1024L * 1024L, count.getSent());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
@@ -304,7 +303,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                             };
                         }
                     }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status,
-                    new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledConnectionCallback());
         }
         catch(BackgroundException e) {
             // Expected
@@ -319,7 +318,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         new S3MultipartUploadService(session, acl, 10485760L, 1).upload(
                 new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), count, append,
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         assertEquals(32769L, count.getSent());
         assertTrue(append.isComplete());
         assertEquals(content.length, append.getResponse().getSize());

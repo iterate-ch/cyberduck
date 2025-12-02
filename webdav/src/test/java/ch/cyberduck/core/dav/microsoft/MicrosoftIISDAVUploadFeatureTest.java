@@ -30,7 +30,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -62,7 +61,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
@@ -82,7 +81,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         assertThrows(InteroperabilityException.class, () -> new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost())));
+                new DisabledConnectionCallback()));
         local.delete();
     }
 
@@ -101,7 +100,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }

@@ -43,7 +43,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -113,7 +112,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
                             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)
                             ) {
                                 @Override
-                                protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) {
+                                protected InputStream decorate(final InputStream in, final TransferStatus status) {
                                     if(failed.get()) {
                                         // Second attempt successful
                                         return in;

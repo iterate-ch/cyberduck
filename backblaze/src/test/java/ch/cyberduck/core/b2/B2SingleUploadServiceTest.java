@@ -28,7 +28,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -64,7 +63,7 @@ public class B2SingleUploadServiceTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2SingleUploadService upload = new B2SingleUploadService();
         upload.upload(new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                status, new DisabledConnectionCallback());
         assertEquals(checksum, new B2AttributesFinderFeature(session, fileid).find(test).getChecksum());
         status.validate();
         assertTrue(status.isComplete());

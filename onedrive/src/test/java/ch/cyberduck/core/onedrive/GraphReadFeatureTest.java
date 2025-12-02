@@ -32,7 +32,6 @@ import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -95,7 +94,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         new DefaultUploadFeature<DriveItem.Metadata>().upload(
                 new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -138,7 +137,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         new DefaultUploadFeature<DriveItem.Metadata>().upload(
                 new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);

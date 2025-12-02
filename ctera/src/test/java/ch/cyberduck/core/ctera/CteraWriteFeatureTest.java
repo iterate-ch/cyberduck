@@ -19,7 +19,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -60,7 +59,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature();
         upload.upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new CteraListService(session).list(test.getParent(), new DisabledListProgressListener())
                 .find(new SimplePathPredicate(test)).attributes().getSize(), 0L);
@@ -100,7 +99,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         }
         final PathAttributes attr1 = new CteraAttributesFinderFeature(session).find(test);
         Thread.sleep(1000L);
@@ -112,7 +111,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback(), new UploadFilterOptions(session.getHost()));
+                    new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         }
         final PathAttributes attr2 = new CteraAttributesFinderFeature(session).find(test);
         assertEquals(101L, attr2.getSize());

@@ -41,8 +41,15 @@ import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
-import ch.cyberduck.core.transfer.*;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.DisabledTransferPrompt;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.test.VaultTest;
 
@@ -103,7 +110,7 @@ public class B2SingleTransferWorkerTest extends VaultTest {
             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)
             ) {
                 @Override
-                protected InputStream decorate(final InputStream in, final TransferStatus status, final UploadFilterOptions options) {
+                protected InputStream decorate(final InputStream in, final TransferStatus status) {
                     if(failed.get()) {
                         // Second attempt successful
                         return in;
