@@ -701,6 +701,9 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         if(!Objects.equals(vault, that.vault)) {
             return false;
         }
+        if(!Objects.equals(lockId, that.lockId)) {
+            return false;
+        }
         return true;
     }
 
@@ -716,6 +719,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
         result = 31 * result + (verdict != null ? verdict.hashCode() : 0);
         result = 31 * result + (vault != null ? vault.hashCode() : 0);
+        result = 31 * result + (lockId != null ? lockId.hashCode() : 0);
         return result;
     }
 
