@@ -15,6 +15,8 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 public interface VaultMetadataUVFProvider extends VaultMetadataProvider {
@@ -25,12 +27,12 @@ public interface VaultMetadataUVFProvider extends VaultMetadataProvider {
 
     String getDirPath();
 
-    static VaultMetadataUVFProvider cast(VaultMetadataProvider provider) {
+    static VaultMetadataUVFProvider cast(VaultMetadataProvider provider) throws ConnectionCanceledException {
         if(provider instanceof VaultMetadataUVFProvider) {
             return (VaultMetadataUVFProvider) provider;
         }
         else {
-            throw new IllegalArgumentException("Unsupported metadata type " + provider.getClass());
+            throw new ConnectionCanceledException(new UnsupportedException(provider.getClass().getName()));
         }
     }
 }
