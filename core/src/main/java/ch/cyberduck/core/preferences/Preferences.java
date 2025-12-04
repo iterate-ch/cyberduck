@@ -420,7 +420,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         final Appender auditAppender = this.getAuditAppender(config, level);
         auditAppender.start();
         for(LoggerConfig logger : config.getLoggers().values()) {
-            if(logger.getName().startsWith("audit.")) {
+            if(StringUtils.startsWith(logger.getName(), "audit")) {
                 logger.addAppender(auditAppender, null, null);
             }
         }
