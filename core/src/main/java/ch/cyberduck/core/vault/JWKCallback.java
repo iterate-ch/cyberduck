@@ -18,19 +18,21 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 
 public interface JWKCallback extends PasswordCallback {
 
     @Override
     JWKCredentials prompt(Host bookmark, String title, String reason, LoginOptions options) throws LoginCanceledException;
 
-    static JWKCallback cast(PasswordCallback callback) {
+    static JWKCallback cast(PasswordCallback callback) throws ConnectionCanceledException {
         if(callback instanceof JWKCallback) {
             return (JWKCallback) callback;
         }
         else {
-            throw new IllegalArgumentException("Unsupported metadata type " + callback.getClass());
+            throw new ConnectionCanceledException(new UnsupportedException(callback.getClass().getName()));
         }
     }
 }
