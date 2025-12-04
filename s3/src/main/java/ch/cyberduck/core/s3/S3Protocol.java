@@ -18,9 +18,11 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
@@ -31,6 +33,7 @@ import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
 import ch.cyberduck.core.synchronization.ETagComparisonService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -115,6 +118,21 @@ public class S3Protocol extends AbstractProtocol {
     @Override
     public String getAuthorization() {
         return PreferencesFactory.get().getProperty("s3.signature.version");
+    }
+
+    @Override
+    public boolean validate(final Credentials credentials, final LoginOptions options) {
+        if(options.token) {
+            if(credentials.isTokenAuthentication()) {
+                if(StringUtils.isBlank(credentials.getTokens().getAccessKeyId())) {
+                    return false;
+                }
+                if(StringUtils.isBlank(credentials.getTokens().getSecretAccessKey())) {
+                    return false;
+                }
+            }
+        }
+        return super.validate(credentials, options);
     }
 
     public enum AuthenticationHeaderSignatureVersion {
