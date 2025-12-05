@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,18 +36,18 @@ public class KeychainLoginService implements LoginService {
 
     private final HostPasswordStore keychain;
 
-    public KeychainLoginService() {
-        this(PasswordStoreFactory.get());
-    }
-
     public KeychainLoginService(final HostPasswordStore keychain) {
         this.keychain = keychain;
     }
 
     @Override
-    public void validate(final Host bookmark, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
-        log.debug("Validate login credentials for {}", bookmark);
-        final Credentials credentials = bookmark.getCredentials();
+    public void validate(final Host host, final X509KeyManager keys, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
+        log.debug("Validate login credentials for {}", host);
+        final Host jumphost = host.getJumphost();
+        if(null != jumphost) {
+            this.validate(jumphost, keys, prompt, new LoginOptions(jumphost.getProtocol()));
+        }
+        final Credentials credentials = host.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
                 log.warn("Prompt to select identity file not readable {}", credentials.getIdentity());
@@ -54,12 +55,12 @@ public class KeychainLoginService implements LoginService {
             }
         }
         if(options.keychain) {
-            log.debug("Lookup credentials in keychain for {}", bookmark);
+            log.debug("Lookup credentials in keychain for {}", host);
             if(options.password) {
                 if(StringUtils.isBlank(credentials.getPassword())) {
-                    final String password = keychain.findLoginPassword(bookmark);
+                    final String password = keychain.findLoginPassword(host);
                     if(StringUtils.isNotBlank(password)) {
-                        log.info("Fetched password from keychain for {}", bookmark);
+                        log.info("Fetched password from keychain for {}", host);
                         // No need to reinsert found password to the keychain.
                         credentials.setPassword(password).setSaved(false);
                     }
@@ -67,52 +68,63 @@ public class KeychainLoginService implements LoginService {
             }
             if(options.token) {
                 if(StringUtils.isBlank(credentials.getToken())) {
-                    final String token = keychain.findLoginToken(bookmark);
+                    final String token = keychain.findLoginToken(host);
                     if(StringUtils.isNotBlank(token)) {
-                        log.info("Fetched token from keychain for {}", bookmark);
+                        log.info("Fetched token from keychain for {}", host);
                         // No need to reinsert found token to the keychain.
                         credentials.setToken(token).setSaved(false);
                     }
                 }
             }
             if(options.publickey) {
-                final String passphrase = keychain.findPrivateKeyPassphrase(bookmark);
+                final String passphrase = keychain.findPrivateKeyPassphrase(host);
                 if(StringUtils.isNotBlank(passphrase)) {
-                    log.info("Fetched private key passphrase from keychain for {}", bookmark);
+                    log.info("Fetched private key passphrase from keychain for {}", host);
                     // No need to reinsert found token to the keychain.
                     credentials.setIdentityPassphrase(passphrase).setSaved(false);
                 }
             }
             if(options.oauth) {
-                final OAuthTokens tokens = keychain.findOAuthTokens(bookmark);
+                final OAuthTokens tokens = keychain.findOAuthTokens(host);
                 if(tokens.validate()) {
-                    log.info("Fetched OAuth tokens {} from keychain for {}", tokens, bookmark);
+                    log.info("Fetched OAuth tokens {} from keychain for {}", tokens, host);
                     // No need to reinsert found token to the keychain.
                     credentials.setOauth(tokens).setSaved(tokens.isExpired());
                 }
             }
+            if(options.certificate) {
+                final String alias = host.getCredentials().getCertificate();
+                if(StringUtils.isNotBlank(alias)) {
+                    if(keys != null) {
+                        if(null == keys.getPrivateKey(alias)) {
+                            log.warn("No private key found for alias {} in keychain", alias);
+                            throw new LoginFailureException(LocaleFactory.localizedString("Provide additional login credentials", "Credentials"));
+                        }
+                    }
+                }
+            }
         }
-        if(!credentials.validate(bookmark.getProtocol(), options)) {
+        if(!credentials.validate(host.getProtocol(), options)) {
             log.warn("Failed validation of credentials {} with options {}", credentials, options);
-            final CredentialsConfigurator configurator = CredentialsConfiguratorFactory.get(bookmark.getProtocol());
+            final CredentialsConfigurator configurator = CredentialsConfiguratorFactory.get(host.getProtocol());
             log.debug("Auto configure credentials with {}", configurator);
-            final Credentials configuration = configurator.configure(bookmark);
-            if(configuration.validate(bookmark.getProtocol(), options)) {
-                bookmark.setCredentials(configuration);
-                log.info("Auto configured credentials {} for {}", configuration, bookmark);
+            final Credentials configuration = configurator.configure(host);
+            if(configuration.validate(host.getProtocol(), options)) {
+                host.setCredentials(configuration);
+                log.info("Auto configured credentials {} for {}", configuration, host);
                 return;
             }
             final StringAppender message = new StringAppender();
             if(options.password) {
                 message.append(MessageFormat.format(LocaleFactory.localizedString(
-                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)));
+                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
             }
             if(options.publickey) {
                 message.append(LocaleFactory.localizedString(
                         "Select the private key in PEM or PuTTY format", "Credentials"));
             }
             message.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-            this.prompt(bookmark, message.toString(), prompt, options);
+            this.prompt(host, message.toString(), prompt, options);
         }
         log.debug("Validated credentials {} with options {}", credentials, options);
     }
@@ -205,9 +217,12 @@ public class KeychainLoginService implements LoginService {
     public void save(final Host bookmark) {
         final Credentials credentials = bookmark.getCredentials();
         if(credentials.isSaved()) {
-            // Write credentials to keychain
+            // Write credentials to the password store
             try {
                 keychain.save(bookmark);
+                if(bookmark.getJumphost() != null) {
+                    keychain.save(bookmark.getJumphost());
+                }
             }
             catch(LocalAccessDeniedException e) {
                 log.error("Failure saving credentials for {} in keychain. {}", bookmark, e);
