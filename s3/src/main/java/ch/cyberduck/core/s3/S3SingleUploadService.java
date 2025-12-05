@@ -29,20 +29,13 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-public class S3SingleUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
+public class S3SingleUploadService extends HttpUploadFeature<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3SingleUploadService.class);
 
     private final S3Session session;
@@ -64,7 +57,12 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
                 break;
         }
         try {
-            return super.upload(write, file, local, throttle, progress, streamListener, status, callback);
+            final StorageObject response = super.upload(write, file, local, throttle, progress, streamListener, status, callback);
+            if(null != response.getServerSideEncryptionAlgorithm()) {
+                log.warn("Skip checksum verification for {} with server side encryption enabled", file);
+                status.setChecksum(Checksum.NONE);
+            }
+            return response;
         }
         catch(InteroperabilityException e) {
             if(!session.getSignatureVersion().equals(signatureVersion)) {
@@ -76,37 +74,4 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
         }
     }
 
-    @Override
-    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-        if(null == digest) {
-            log.warn("MD5 calculation disabled");
-            return super.decorate(in, null);
-        }
-        else {
-            return new DigestInputStream(in, digest);
-        }
-    }
-
-    @Override
-    protected MessageDigest digest() throws IOException {
-        MessageDigest digest = null;
-        if(HostPreferencesFactory.get(session.getHost()).getBoolean("queue.upload.checksum.calculate")) {
-            try {
-                digest = MessageDigest.getInstance("MD5");
-            }
-            catch(NoSuchAlgorithmException e) {
-                throw new IOException(e.getMessage(), e);
-            }
-        }
-        return digest;
-    }
-
-    @Override
-    protected void post(final Path file, final MessageDigest digest, final StorageObject response) throws BackgroundException {
-        if(null != response.getServerSideEncryptionAlgorithm()) {
-            log.warn("Skip checksum verification for {} with server side encryption enabled", file);
-            return;
-        }
-        this.verify(file, digest, Checksum.parse(response.getETag()));
-    }
 }

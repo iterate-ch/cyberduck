@@ -58,7 +58,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(
+        new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
@@ -78,7 +78,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         // Close connections in pool to require new NTLM handshake
         final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
         manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
-        assertThrows(InteroperabilityException.class, () -> new DAVUploadFeature(session).upload(
+        assertThrows(InteroperabilityException.class, () -> new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback()));
@@ -97,7 +97,7 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         // Close connections in pool to require new NTLM handshake
         final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
         manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
-        new DAVUploadFeature(session).upload(
+        new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());

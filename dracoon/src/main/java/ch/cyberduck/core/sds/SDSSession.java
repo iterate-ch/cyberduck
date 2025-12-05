@@ -606,7 +606,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
                 return (T) new SDSDirectS3UploadFeature(this, nodeid);
             }
-            return (T) new DefaultUploadFeature<Node>(this);
+            return (T) new DefaultUploadFeature<Node>();
         }
         if(type == MultipartWrite.class) {
             if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {

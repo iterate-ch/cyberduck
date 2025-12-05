@@ -49,7 +49,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +58,7 @@ import java.util.concurrent.Future;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
+public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject> {
     private static final Logger log = LogManager.getLogger(SwiftLargeObjectUploadFeature.class);
 
     private final SwiftSession session;
@@ -205,7 +204,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 status.setHeader(overall.getHeader());
                 status.setChecksum(write.checksum(segment, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
-                return SwiftLargeObjectUploadFeature.this.upload(
+                return SwiftLargeObjectUploadFeature.this.transfer(
                         write, segment, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));

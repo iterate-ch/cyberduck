@@ -58,14 +58,14 @@ public class DefaultUploadFeatureTest extends AbstractFTPTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
-            final Void reply = new DefaultUploadFeature<Void>(session).upload(
+            final Void reply = new DefaultUploadFeature<Void>().upload(
                     new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
-            final Void reply = new DefaultUploadFeature<Void>(session).upload(
+            final Void reply = new DefaultUploadFeature<Void>().upload(
                     new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());

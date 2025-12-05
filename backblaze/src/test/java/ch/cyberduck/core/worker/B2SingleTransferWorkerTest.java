@@ -48,6 +48,7 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.test.VaultTest;
@@ -61,7 +62,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
-import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
@@ -110,7 +110,7 @@ public class B2SingleTransferWorkerTest extends VaultTest {
             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)
             ) {
                 @Override
-                protected InputStream decorate(final InputStream in, final MessageDigest digest) {
+                protected InputStream decorate(final InputStream in, final TransferStatus status) {
                     if(failed.get()) {
                         // Second attempt successful
                         return in;

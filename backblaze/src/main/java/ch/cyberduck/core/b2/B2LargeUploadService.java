@@ -43,7 +43,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,7 +60,7 @@ import synapticloop.b2.response.BaseB2Response;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_CREATION_DATE_MILLIS;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
-public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
+public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response> {
     private static final Logger log = LogManager.getLogger(B2LargeUploadService.class);
 
     /**
@@ -229,7 +228,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 status.setPart(partNumber);
-                return (B2UploadPartResponse) B2LargeUploadService.this.upload(write, file, local, throttle, counter, status, overall, status, callback);
+                return (B2UploadPartResponse) B2LargeUploadService.this.transfer(write, file, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }

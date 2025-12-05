@@ -44,7 +44,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +53,7 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest> {
+public class BoxLargeUploadService extends HttpUploadFeature<File> {
     private static final Logger log = LogManager.getLogger(BoxLargeUploadService.class);
 
     public static final String UPLOAD_SESSION_ID = "uploadSessionId";
@@ -137,7 +136,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                 parameters.put(UPLOAD_SESSION_ID, uploadSessionId);
                 parameters.put(OVERALL_LENGTH, String.valueOf(overall.getLength()));
                 status.setParameters(parameters);
-                final File response = BoxLargeUploadService.this.upload(
+                final File response = BoxLargeUploadService.this.transfer(
                         write, file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", response, partNumber);
                 return new Part(response, status);

@@ -56,7 +56,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
-import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
@@ -113,7 +112,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
                             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)
                             ) {
                                 @Override
-                                protected InputStream decorate(final InputStream in, final MessageDigest digest) {
+                                protected InputStream decorate(final InputStream in, final TransferStatus status) {
                                     if(failed.get()) {
                                         // Second attempt successful
                                         return in;

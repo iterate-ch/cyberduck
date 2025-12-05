@@ -47,14 +47,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDigest> {
+public class BrickUploadFeature extends HttpUploadFeature<FileEntity> {
     private static final Logger log = LogManager.getLogger(BrickUploadFeature.class);
 
     /**
@@ -168,7 +167,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                BrickUploadFeature.super.upload(
+                BrickUploadFeature.super.transfer(
                         write, file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response for part number {}", partNumber);
                 return status;

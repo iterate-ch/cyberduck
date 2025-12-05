@@ -25,7 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class SFTPUploadFeature extends DefaultUploadFeature<Void> {
 
     public SFTPUploadFeature(final Session<?> session) {
-        super(session);
+        super();
     }
 
     @Override

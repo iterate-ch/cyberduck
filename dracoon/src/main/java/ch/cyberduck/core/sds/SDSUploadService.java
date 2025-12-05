@@ -147,20 +147,8 @@ public class SDSUploadService {
             }
             log.debug("Complete file upload for {} with token {}", file, uploadToken);
             final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(uploadToken, body, StringUtils.EMPTY);
-            if(!upload.isIsEncrypted()) {
-                final Checksum checksum = status.getChecksum();
-                if(Checksum.NONE != checksum) {
-                    final Checksum server = Checksum.parse(upload.getHash());
-                    if(Checksum.NONE != server) {
-                        if(checksum.algorithm.equals(server.algorithm)) {
-                            if(!server.equals(checksum)) {
-                                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                                checksum.hash, server.hash));
-                            }
-                        }
-                    }
-                }
+            if(upload.isIsEncrypted()) {
+                status.setChecksum(Checksum.NONE);
             }
             nodeid.cache(file, String.valueOf(upload.getId()));
             return upload;

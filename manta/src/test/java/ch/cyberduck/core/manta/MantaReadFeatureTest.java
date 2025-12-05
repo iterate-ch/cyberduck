@@ -97,7 +97,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<Void>(session).upload(
+        new DefaultUploadFeature<Void>().upload(
                 new MantaWriteFeature(session), test,
                 local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
@@ -133,7 +133,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<Void>(session).upload(
+        new DefaultUploadFeature<Void>().upload(
                 new MantaWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());

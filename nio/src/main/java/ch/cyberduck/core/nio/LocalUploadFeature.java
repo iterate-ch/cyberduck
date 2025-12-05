@@ -16,17 +16,12 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class LocalUploadFeature extends DefaultUploadFeature<Void> {
-
-    public LocalUploadFeature(final Session<?> session) {
-        super(session);
-    }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {

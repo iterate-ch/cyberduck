@@ -55,7 +55,6 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
-import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,7 +65,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
+public class S3MultipartUploadService extends HttpUploadFeature<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3MultipartUploadService.class);
 
     private final S3Session session;
@@ -181,8 +180,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     final String reference = StringUtils.remove(complete.getEtag(), "\"");
                     if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                         throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                        expected, reference));
+                                MessageFormat.format("Mismatch between {2} checksum {0} of transferred data and {1} returned by the server",
+                                        expected, reference, HashAlgorithm.md5));
                     }
                 }
             }
@@ -239,7 +238,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     metadata.put(HttpHeaders.CONTENT_MD5, md5.get().base64);
                     status.setMetadata(metadata);
                 }
-                final StorageObject part = S3MultipartUploadService.this.upload(
+                final StorageObject part = S3MultipartUploadService.this.transfer(
                         write, file, local, throttle, counter, status, overall, status, callback);
                 log.info("Received response {} for part number {}", part, partNumber);
                 // Populate part with response data that is accessible via the object's metadata

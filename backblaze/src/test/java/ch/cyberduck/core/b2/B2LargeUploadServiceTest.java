@@ -118,11 +118,11 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2LargeUploadService service = new B2LargeUploadService(session, fileid, 5 * 1000L * 1000L, 1) {
             @Override
-            public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+            public BaseB2Response transfer(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
                 if(!interrupt.get()) {
                     throw new ConnectionTimeoutException("Test");
                 }
-                return super.upload(write, file, local, throttle, listener, status, cancel, progress, callback);
+                return super.transfer(write, file, local, throttle, listener, status, cancel, progress, callback);
             }
         };
         try {
@@ -171,13 +171,13 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2LargeUploadService feature = new B2LargeUploadService(session, fileid, 5 * 1000L * 1000L, 1) {
             @Override
-            public BaseB2Response upload(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+            public BaseB2Response transfer(final Write<BaseB2Response> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
                 if(!interrupt.get()) {
                     if(status.getOffset() >= 5L * 1000L * 1000L) {
                         throw new ConnectionTimeoutException("Test");
                     }
                 }
-                return super.upload(write, file, local, throttle, listener, status, cancel, progress, callback);
+                return super.transfer(write, file, local, throttle, listener, status, cancel, progress, callback);
             }
         };
         final BytecountStreamListener count = new BytecountStreamListener();

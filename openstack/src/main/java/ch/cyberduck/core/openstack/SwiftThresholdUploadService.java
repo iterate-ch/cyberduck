@@ -69,7 +69,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
             feature = new SwiftLargeObjectUploadFeature(session, regionService);
         }
         else {
-            feature = new SwiftSmallObjectUploadFeature(session);
+            feature = new SwiftSmallObjectUploadFeature();
         }
         return feature.upload(write, file, local, throttle, progress, streamListener, status, callback);
     }
