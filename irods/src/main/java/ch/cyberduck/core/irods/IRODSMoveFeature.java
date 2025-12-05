@@ -1,8 +1,8 @@
 package ch.cyberduck.core.irods;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,11 +13,10 @@ package ch.cyberduck.core.irods;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -25,10 +24,11 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.pub.io.IRODSFile;
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
+import org.irods.irods4j.low_level.api.IRODSException;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -43,22 +43,24 @@ public class IRODSMoveFeature implements Move {
     }
 
     @Override
-    public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Path move(final Path file, final Path renamed, final TransferStatus status,
+                     final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.getClient();
-            final IRODSFile s = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-            if(!s.exists()) {
-                throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
+            final IRODSConnection conn = session.getClient();
+            if(!IRODSFilesystem.exists(conn.getRcComm(), file.getAbsolute())) {
+                throw new NotfoundException(String.format("[%s] doesn't exist", file.getAbsolute()));
             }
             if(status.isExists()) {
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
-            final IRODSFile d = fs.getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
-            s.renameTo(d);
+            IRODSFilesystem.rename(conn.getRcComm(), file.getAbsolute(), renamed.getAbsolute());
             return renamed;
         }
-        catch(JargonException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Cannot rename {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
     }
 
