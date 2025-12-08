@@ -31,11 +31,11 @@ namespace Ch.Cyberduck.Core.Local
                 try {
                     if (file.isFile())
                     {
-                        FileSystem.DeleteFile(file.getAbsolute(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                        FileSystem.DeleteFile(file.PlatformPath(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     }
                     else if (file.isDirectory())
                     {
-                        FileSystem.DeleteDirectory(file.getAbsolute(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                        FileSystem.DeleteDirectory(file.PlatformPath(), UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     }
                 }
                 catch(System.Exception e) {
