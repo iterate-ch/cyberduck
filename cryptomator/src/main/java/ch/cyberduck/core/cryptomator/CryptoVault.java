@@ -126,10 +126,10 @@ public class CryptoVault implements Vault {
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
         type.add(Path.Type.vault);
         if(home.isRoot()) {
-            this.vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
+            this.vault = new Path(home.getAbsolute(), type, new DefaultPathAttributes(home.attributes()));
         }
         else {
-            this.vault = new Path(home.getParent(), home.getName(), type, new PathAttributes(home.attributes()));
+            this.vault = new Path(home.getParent(), home.getName(), type, new DefaultPathAttributes(home.attributes()));
         }
     }
 
@@ -427,7 +427,7 @@ public class CryptoVault implements Vault {
                 parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
                 filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
             }
-            final PathAttributes attributes = new PathAttributes(file.attributes());
+            final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
             attributes.setDirectoryId(null);
             if(!file.isFile() && !metadata) {
                 // The directory is different from the metadata file used to resolve the actual folder
@@ -484,7 +484,7 @@ public class CryptoVault implements Vault {
                 final String cleartextFilename = fileNameCryptor.decryptFilename(
                         vaultVersion == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
-                final PathAttributes attributes = new PathAttributes(file.attributes());
+                final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
                         final Permission permission = new Permission(attributes.getPermission());

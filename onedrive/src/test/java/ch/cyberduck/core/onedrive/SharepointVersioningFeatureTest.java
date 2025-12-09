@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -74,7 +75,7 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
         }
         assertEquals(test.attributes().getFileId(), new GraphAttributesFinderFeature(session, fileid).find(test).getFileId());
         assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());
-        final PathAttributes initialAttributes = new PathAttributes(test.attributes());
+        final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
         assertNotNull(initialAttributes.getVersionId());
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();

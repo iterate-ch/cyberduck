@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <SignOutput>${msbuild.sign}</SignOutput>
     <SignTool>${signtool}</SignTool>
     <SignToolCSP>${signtool.csp}</SignToolCSP>
     <SignToolKC>${signtool.kc}</SignToolKC>

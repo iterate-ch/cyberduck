@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -142,7 +143,7 @@ public class GoogleStorageObjectListService implements ListService {
                 if(response.getPrefixes() != null) {
                     final List<Future<Path>> folders = new ArrayList<>();
                     for(String prefix : response.getPrefixes()) {
-                        final String key = StringUtils.chomp(prefix, String.valueOf(Path.DELIMITER));
+                        final String key = StringUtils.removeEnd(prefix, String.valueOf(Path.DELIMITER));
                         if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                             continue;
                         }
@@ -151,7 +152,7 @@ public class GoogleStorageObjectListService implements ListService {
                         }
                         else {
                             final Path file;
-                            final PathAttributes attributes = new PathAttributes();
+                            final PathAttributes attributes = new DefaultPathAttributes();
                             attributes.setRegion(bucket.attributes().getRegion());
                             if(null == delimiter) {
                                 // When searching for files recursively
@@ -206,9 +207,9 @@ public class GoogleStorageObjectListService implements ListService {
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
-                final PathAttributes attr = new PathAttributes();
+                final PathAttributes attr = new DefaultPathAttributes();
                 attr.setRegion(bucket.attributes().getRegion());
-                final String key = StringUtils.chomp(prefix, String.valueOf(Path.DELIMITER));
+                final String key = StringUtils.removeEnd(prefix, String.valueOf(Path.DELIMITER));
                 try {
                     final Storage.Objects.List list = session.getClient().objects().list(bucket.getName())
                             .setVersions(true)

@@ -15,6 +15,7 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Protocol;
@@ -37,32 +38,32 @@ public class ListFilteringFeatureTest {
         assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file))).test(
                 new Path(Home.root(), "F", EnumSet.of(Path.Type.file))
         ));
-        assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setVersionId("v1"))).test(
-                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setVersionId("v1"))
+        assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setVersionId("v1"))).test(
+                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setVersionId("v1"))
         ));
-        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setVersionId("v1"))).test(
-                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setVersionId("v2"))
+        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setVersionId("v1"))).test(
+                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setVersionId("v2"))
         ));
-        assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setVersionId("v1"))).test(
-                new Path(Home.root(), "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setVersionId("v2"))
+        assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.directory)).withAttributes(new DefaultPathAttributes().setVersionId("v1"))).test(
+                new Path(Home.root(), "f", EnumSet.of(Path.Type.directory)).withAttributes(new DefaultPathAttributes().setVersionId("v2"))
         ));
-        assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setFileId("v1"))).test(
-                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setFileId("v1"))
+        assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setFileId("v1"))).test(
+                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setFileId("v1"))
         ));
-        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setFileId("v1"))).test(
-                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setFileId("v2"))
+        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setFileId("v1"))).test(
+                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setFileId("v2"))
         ));
-        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setFileId("v1"))).test(
-                new Path(Home.root(), "f", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setFileId("v2"))
+        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.directory)).withAttributes(new DefaultPathAttributes().setFileId("v1"))).test(
+                new Path(Home.root(), "f", EnumSet.of(Path.Type.directory)).withAttributes(new DefaultPathAttributes().setFileId("v2"))
         ));
         assertTrue(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file))).test(
-                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setVersionId("v1"))
+                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setVersionId("v1"))
         ));
-        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setVersionId("v1"))).test(
-                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes())
+        assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setVersionId("v1"))).test(
+                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes())
         ));
         assertFalse(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.insensitive, new Path(Home.root(), "f", EnumSet.of(Path.Type.file))).test(
-                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes() {
+                new Path(Home.root(), "f", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes() {
                     @Override
                     public boolean isDuplicate() {
                         return true;

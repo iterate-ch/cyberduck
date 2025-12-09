@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -55,7 +56,7 @@ public class S3BucketListService implements RootListService {
             final AttributedList<Path> buckets = new AttributedList<>();
             // List all buckets owned
             for(StorageBucket b : session.getClient().listAllBuckets()) {
-                final PathAttributes attr = new PathAttributes();
+                final PathAttributes attr = new DefaultPathAttributes();
                 final Path bucket = new Path(PathNormalizer.normalize(b.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory), attr);
                 if(b.getOwner() != null) {
                     // Null if the owner is not available

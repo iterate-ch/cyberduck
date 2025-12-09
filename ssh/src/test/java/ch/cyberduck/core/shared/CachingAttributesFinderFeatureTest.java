@@ -3,6 +3,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.CachingAttributesFinderFeature;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -77,7 +78,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractSFTPTest {
             // Expected
         }
         cache.invalidate(workdir);
-        final PathAttributes newAttr = new PathAttributes();
+        final PathAttributes newAttr = new DefaultPathAttributes();
         assertSame(newAttr, new CachingAttributesFinderFeature(session, cache, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {

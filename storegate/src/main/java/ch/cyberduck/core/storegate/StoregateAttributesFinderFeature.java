@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -67,7 +68,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
 
     @Override
     public PathAttributes toAttributes(final File f) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         if(0 != f.getModified().getMillis()) {
             attrs.setModificationDate(f.getModified().getMillis());
         }
@@ -117,7 +118,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
     }
 
     public PathAttributes toAttributes(final RootFolder f) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         if(0 != f.getModified().getMillis()) {
             attrs.setModificationDate(f.getModified().getMillis());
         }

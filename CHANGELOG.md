@@ -1,5 +1,8 @@
 # Changelog
 
+[9.3.1](https://github.com/iterate-ch/cyberduck/compare/release-9-3-0...release-9-3-1)
+* [Bugfix] Validate tokens when using AWS S3 CLI connection profile (#17690)
+
 [9.3.0](https://github.com/iterate-ch/cyberduck/compare/release-9-2-4...release-9-3-0)
 * [Feature] Rewrite protocol implementation (Azure) ([#15967](https://trac.cyberduck.io/ticket/15967))
 * [Feature] Connect with Multi-Bucket Application Keys that grant access to a specific group of buckets within an

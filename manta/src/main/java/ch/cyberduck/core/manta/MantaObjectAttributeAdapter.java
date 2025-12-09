@@ -15,6 +15,7 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultWebUrlProvider;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
@@ -41,7 +42,7 @@ public final class MantaObjectAttributeAdapter implements AttributesAdapter<Mant
 
     @Override
     public PathAttributes toAttributes(final MantaObject object) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setPermission(new Permission(
                 session.isUserWritable(object) ? Permission.Action.all : Permission.Action.read,
                 Permission.Action.none,

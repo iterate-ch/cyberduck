@@ -29,7 +29,7 @@ public class ProfilesWorkerBackgroundAction extends WorkerBackgroundAction<Set<P
 
     public ProfilesWorkerBackgroundAction(final Controller controller, final ProfilesSynchronizeWorker worker) throws HostParserException {
         super(controller, SessionPoolFactory.create(controller,
-            HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url")).withCredentials(
+                HostParser.parse(PreferencesFactory.get().getProperty("profiles.discovery.updater.url")).setCredentials(
                 new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")))), worker);
     }
 }

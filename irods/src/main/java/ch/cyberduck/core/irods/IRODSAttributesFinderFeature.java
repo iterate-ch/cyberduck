@@ -15,6 +15,7 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -57,7 +58,7 @@ public class IRODSAttributesFinderFeature implements AttributesFinder, Attribute
 
     @Override
     public PathAttributes toAttributes(final ObjStat stats) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setModificationDate(stats.getModifiedAt().getTime());
         attributes.setCreationDate(stats.getCreatedAt().getTime());
         attributes.setSize(stats.getObjSize());

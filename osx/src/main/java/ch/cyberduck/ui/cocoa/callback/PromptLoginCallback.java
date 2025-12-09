@@ -104,7 +104,7 @@ public class PromptLoginCallback extends PromptPasswordCallback implements Login
                               final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         log.debug("Prompt for credentials for {}", username);
         final Credentials credentials = new Credentials(username).setSaved(options.save);
-        final LoginController alert = new LoginController(new Host(bookmark).withCredentials(credentials), title, reason, options);
+        final LoginController alert = new LoginController(new Host(bookmark).setCredentials(credentials), title, reason, options);
         final int option = controller.alert(alert);
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();

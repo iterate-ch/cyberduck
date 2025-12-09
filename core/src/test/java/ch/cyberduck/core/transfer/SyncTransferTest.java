@@ -18,20 +18,7 @@ package ch.cyberduck.core.transfer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalAttributes;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.NullTransferSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.synchronization.Comparison;
 
@@ -118,8 +105,8 @@ public class SyncTransferTest {
     @Test
     public void testFilterMirror() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
-        final Path a = new Path(p, "a", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setSize(2L));
-        final Path b = new Path(p, "b", EnumSet.of(Path.Type.file)).withAttributes(new PathAttributes().setSize(1L));
+        final Path a = new Path(p, "a", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setSize(2L));
+        final Path b = new Path(p, "b", EnumSet.of(Path.Type.file)).withAttributes(new DefaultPathAttributes().setSize(1L));
         final PathCache cache = new PathCache(1);
         cache.put(p, new AttributedList<>(Arrays.asList(a, b)));
         SyncTransfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));

@@ -2150,7 +2150,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    public void stop(final BackgroundAction action) {
+    public void stop(final BackgroundAction<?> action) {
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
@@ -2161,7 +2161,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    public void start(final BackgroundAction action) {
+    public void start(final BackgroundAction<?> action) {
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {

@@ -17,6 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -148,7 +149,7 @@ public class EueTrashFeatureTest extends AbstractEueSessionTest {
         try {
             // Skip file already in trash
             new EueTrashFeature(session, fileid).delete(Collections.singletonList(
-                    file.withAttributes(new PathAttributes().setFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                    file.withAttributes(new DefaultPathAttributes().setFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         catch(NotfoundException e) {
             fail();

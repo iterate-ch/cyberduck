@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -59,10 +60,10 @@ public class SharepointListService extends AbstractSharepointListService {
             final Site site = Site.byId(session.getClient(), "root");
             final Site.Metadata metadata = site.getMetadata(null); // query: null: Default return set.
             final EnumSet<Path.Type> type = EnumSet.copyOf(DEFAULT_NAME.getType());
-            final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes().setFileId(metadata.getId()));
+            final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new DefaultPathAttributes().setFileId(metadata.getId()));
             path.setSymlinkTarget(
                 new Path(SITES_NAME, metadata.getSiteCollection().getHostname(), SITES_NAME.getType(),
-                        new PathAttributes().setFileId(metadata.getId())));
+                        new DefaultPathAttributes().setFileId(metadata.getId())));
             return Optional.of(path);
         }
         catch(IOException ex) {

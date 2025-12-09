@@ -34,7 +34,7 @@
         <SignOutput Condition="'$(SignOutput)'==''">True</SignOutput>
     </PropertyGroup>
     <PropertyGroup>
-        <AppxPackageSigningEnabled>$(SignOutput)</AppxPackageSigningEnabled>
+        <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     </PropertyGroup>
     <ItemGroup>
         <None Include="Package.appxmanifest.template" />
@@ -68,4 +68,41 @@
     <ItemGroup>
         <ProjectReference Include="..\csharp\Cyberduck.csproj" />
     </ItemGroup>
+
+    <Target Name="ResolveLocalPackagePayload" BeforeTargets="_GenerateAppxPackageRecipeFile" Returns="@(AppxPackagePayload)">
+        <ItemGroup>
+            <_AppxPackagePayloadCopy Include="@(AppxPackagePayload)" Condition="Exists('$(TargetDir)%(TargetPath)')" />
+            <AppxPackagePayload Remove="@(_AppxPackagePayloadCopy)" />
+            <AppxPackagePayload Include="@(_AppxPackagePayloadCopy->'$(TargetDir)%(TargetPath)')" />
+        </ItemGroup>
+    </Target>
+    <Target Name="AppxPackagePayloadExecutable" DependsOnTargets="ResolveLocalPackagePayload" Returns="@(AppxPackagePayloadExecutable)">
+        <ItemGroup>
+            <AppxPackagePayloadExecutable Include="@(AppxPackagePayload)" Condition="'%(Extension)'=='.dll' Or '%(Extension)'=='.exe'" />
+        </ItemGroup>
+    </Target>
+    <Target Name="SignToolExecutablePath" DependsOnTargets="_GetSdkToolPaths" Returns="$(SignToolExecutablePath)">
+        <PropertyGroup>
+            <SignToolExecutable>$(SignAppxPackageExeFullPath)</SignToolExecutable>
+        </PropertyGroup>
+    </Target>
+    <Target Name="_CollectSignAppxPackagePayload" DependsOnTargets="AppxPackagePayloadExecutable;SignToolExecutablePath" Outputs="%(AppxPackagePayloadExecutable.Identity)">
+        <Exec Command="%22$(SignToolExecutable)%22 verify /q /pa %22%(AppxPackagePayloadExecutable.Identity)%22"
+            IgnoreStandardErrorWarningFormat="true"
+            IgnoreExitCode="true">
+            <Output TaskParameter="ExitCode" PropertyName="PayloadSigned" />
+        </Exec>
+
+        <ItemGroup>
+            <SignAppxPackagePayload Include="@(AppxPackagePayloadExecutable)" Condition="'$(PayloadSigned)'!='0'" />
+        </ItemGroup>
+    </Target>
+    <Target Name="SignAppxPackagePayload"
+        BeforeTargets="_GenerateAppxPackageFile"
+        DependsOnTargets="_CollectSignAppxPackagePayload;SignToolArgs"
+        Condition="'$(SignOutput)'=='true'">
+        <Exec Command="$(SignToolArgs) @(SignAppxPackagePayload->'%22%(TargetPath)%22', ' ')" 
+            WorkingDirectory="$(TargetDir)"
+            Condition="'@(SignAppxPackagePayload)'!=''" />
+    </Target>
 </Project>

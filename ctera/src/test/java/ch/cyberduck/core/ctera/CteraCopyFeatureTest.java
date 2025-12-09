@@ -17,6 +17,7 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -77,7 +78,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
         target.getParent().setAttributes(target.getParent().attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)));
         final CteraAttributesFinderFeature mock = mock(CteraAttributesFinderFeature.class);
         // target exists and not writable
-        when(mock.find(eq(target))).thenReturn(new PathAttributes().setAcl(new Acl(new Acl.CanonicalUser())));
+        when(mock.find(eq(target))).thenReturn(new DefaultPathAttributes().setAcl(new Acl(new Acl.CanonicalUser())));
         final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraCopyFeature(session).preflight(source, Optional.of(target)));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), target.getName())));
     }
@@ -92,7 +93,7 @@ public class CteraCopyFeatureTest extends AbstractCteraTest {
         target.getParent().setAttributes(target.getParent().attributes().setAcl(new Acl(new Acl.CanonicalUser())));
         final CteraAttributesFinderFeature mock = mock(CteraAttributesFinderFeature.class);
         // target exists and not writable
-        when(mock.find(eq(target))).thenReturn(new PathAttributes().setAcl(new Acl(new Acl.CanonicalUser())));
+        when(mock.find(eq(target))).thenReturn(new DefaultPathAttributes().setAcl(new Acl(new Acl.CanonicalUser())));
         final AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class, () -> new CteraCopyFeature(session).preflight(source, Optional.of(target)));
         assertTrue(accessDeniedException.getDetail().contains(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), target.getName())));
     }

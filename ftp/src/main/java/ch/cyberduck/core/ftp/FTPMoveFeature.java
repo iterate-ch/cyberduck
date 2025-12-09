@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -51,7 +52,7 @@ public class FTPMoveFeature implements Move {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
             // Copy original file attributes
-            return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).setVault(null));
+            return new Path(renamed).withAttributes(new DefaultPathAttributes(file.attributes()).setVault(null));
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot rename {0}", e, file);

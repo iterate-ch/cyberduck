@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -129,7 +130,7 @@ public class B2LargeCopyFeature implements Copy {
             session.getClient().finishLargeFileUpload(response.getFileId(), checksums.toArray(new String[checksums.size()]));
             log.info("Finished large file upload {} with {} parts", target, completed.size());
             fileid.cache(target, response.getFileId());
-            return new Path(target).withAttributes(new PathAttributes(source.attributes()).setVersionId(response.getFileId()));
+            return new Path(target).withAttributes(new DefaultPathAttributes(source.attributes()).setVersionId(response.getFileId()));
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(fileid).map("Cannot copy {0}", e, source);

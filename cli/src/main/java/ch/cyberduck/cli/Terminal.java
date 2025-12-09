@@ -379,10 +379,10 @@ public class Terminal {
         final TerminalTransferErrorCallback error;
         final Host host = transfer.getSource();
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
-            host.setTransfer(Host.TransferType.concurrent);
+            host.setTransferType(Host.TransferType.concurrent);
         }
         else {
-            host.setTransfer(Host.TransferType.newconnection);
+            host.setTransferType(Host.TransferType.newconnection);
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.quiet.name())) {
             error = new TerminalTransferErrorCallback(reader -> false);

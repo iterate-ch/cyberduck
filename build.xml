@@ -132,6 +132,10 @@
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
 
+        <condition property="msbuild.sign" value="false">
+            <isset property="skipSign"/>
+        </condition>
+        <property name="msbuild.sign" value="" />
         <condition property="msbuild.configuration" value="Debug">
             <equals arg1="${configuration}" arg2="debug"/>
         </condition>

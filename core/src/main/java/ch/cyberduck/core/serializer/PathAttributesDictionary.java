@@ -18,6 +18,7 @@ package ch.cyberduck.core.serializer;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.PathAttributes;
@@ -42,7 +43,7 @@ public class PathAttributesDictionary<T> {
 
     public PathAttributes deserialize(final T serialized) {
         final Deserializer<T> dict = factory.create(serialized);
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         final String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
             attributes.setSize(Long.parseLong(sizeObj));

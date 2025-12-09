@@ -53,7 +53,7 @@ public class RemoteProfilesFinderTest {
             }
         }));
         final Session session = new S3Session(new HostParser(protocols).get("s3:/profiles.cyberduck.io")
-                .withCredentials(new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name"))), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+                .setCredentials(new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name"))), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final Set<ProfileDescription> stream = finder.find();

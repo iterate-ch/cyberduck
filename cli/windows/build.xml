@@ -41,18 +41,12 @@
     </target>
 
     <target name="package" depends="restore,msbuild">
-        <condition property="msbuild.sign" value="false">
-            <istrue value="${skip}"/>
-        </condition>
-        <property name="msbuild.sign" value=""/>
-
         <msbuild buildfile="build.proj">
             <target name="Build"/>
 
             <property name="BuildProjectReferences" value="false"/>
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Installer" value="true" />
-            <property name="SignOutput" value="${msbuild.sign}" />
         </msbuild>
     </target>
 

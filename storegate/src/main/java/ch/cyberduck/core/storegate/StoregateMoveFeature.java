@@ -17,6 +17,7 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -72,7 +73,7 @@ public class StoregateMoveFeature implements Move {
             try {
                 switch(response.getStatusLine().getStatusCode()) {
                     case HttpStatus.SC_NO_CONTENT:
-                        final PathAttributes attr = new PathAttributes(file.attributes());
+                        final PathAttributes attr = new DefaultPathAttributes(file.attributes());
                         fileid.cache(file, null);
                         fileid.cache(renamed, attr.getFileId());
                         return new Path(renamed).withAttributes(attr);

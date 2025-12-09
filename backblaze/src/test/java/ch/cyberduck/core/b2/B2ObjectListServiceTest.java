@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -216,7 +217,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             assertEquals(Long.valueOf(1L), list.find(path -> path.attributes().isDuplicate()).attributes().getRevision());
         }
         // Add hide marker
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         {
             final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
             assertEquals(3, list.size());
@@ -337,14 +338,14 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         assertSame(folder1, list.find(new SimplePathPredicate(file1)).getParent());
         assertSame(folder1, list.find(new SimplePathPredicate(folder2)).getParent());
         // Nullify version to add delete marker
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(file2).withAttributes(new PathAttributes(file2.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(file2).withAttributes(new DefaultPathAttributes(file2.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()).list(folder2, new DisabledListProgressListener()).isEmpty());
         assertFalse(new B2ObjectListService(session, fileid).list(folder2, new DisabledListProgressListener()).isEmpty());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(folder2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new B2ObjectListService(session, fileid).list(folder2, new DisabledListProgressListener()).contains(file2));
         assertThrows(NotfoundException.class, () -> new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()).list(folder2, new DisabledListProgressListener()));
         // Nullify version to add delete marker
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(file1).withAttributes(new PathAttributes(file1.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(file1).withAttributes(new DefaultPathAttributes(file1.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()).list(folder1, new DisabledListProgressListener()).isEmpty());
         assertTrue(new B2ObjectListService(session, fileid).list(folder1, new DisabledListProgressListener()).contains(folder2));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(folder1), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -374,7 +375,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             assertFalse(foundFolder1.attributes().isDuplicate());
         }
         // Nullify version to add delete marker
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(file1).withAttributes(new PathAttributes(file1.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(file1).withAttributes(new DefaultPathAttributes(file1.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()).list(bucket, new DisabledListProgressListener()).isEmpty());
         {
             final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
@@ -411,7 +412,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             assertFalse(foundFolder2.attributes().isDuplicate());
         }
         // Nullify version to add delete marker
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new DefaultFindFeature(session).find(folder1, new DisabledListProgressListener()));
         assertTrue(new B2ObjectListService(session, fileid).list(folder1, new DisabledListProgressListener()).contains(folder2));
         assertTrue(new DefaultFindFeature(session).find(folder2, new DisabledListProgressListener()));

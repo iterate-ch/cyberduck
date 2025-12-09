@@ -82,7 +82,11 @@ public class FinderLocalAttributes extends LocalAttributes {
             }
             final NSDictionary dict = this.getNativeAttributes(path);
             // Returns an entry’s value given its key, or null if no value is associated with key.
-            return dict.objectForKey(name);
+            final NSObject value = dict.objectForKey(name);
+            if(null == value) {
+                throw new NotfoundException(name);
+            }
+            return value;
         }
         finally {
             local.release(resolved);

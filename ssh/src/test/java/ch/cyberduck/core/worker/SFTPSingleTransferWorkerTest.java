@@ -96,7 +96,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 }
                 return super.getProperty(key);
             }
-        }.withCredentials(new Credentials("test", "test"));
+        }.setCredentials(new Credentials("test", "test"));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             final SFTPWriteFeature write = new SFTPWriteFeature(this) {
                 @Override

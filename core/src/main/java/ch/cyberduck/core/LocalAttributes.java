@@ -27,13 +27,15 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Objects;
 
-public class LocalAttributes extends Attributes {
+public class LocalAttributes implements Attributes {
     private static final Logger log = LogManager.getLogger(LocalAttributes.class);
 
     private final String path;
@@ -42,13 +44,27 @@ public class LocalAttributes extends Attributes {
         this.path = path;
     }
 
+    private static BasicFileAttributes readAttributes(final String path) throws IOException {
+        return readAttributes(path, BasicFileAttributes.class);
+    }
+
+    private static <T extends BasicFileAttributes> T readAttributes(final String path, final Class<T> type) throws IOException {
+        try {
+            return Files.readAttributes(Paths.get(path), type, LinkOption.NOFOLLOW_LINKS);
+        }
+        catch(UnsupportedOperationException e) {
+            log.warn("Failure {} retrieving attributes of {}", e, path);
+            throw new IOException(e);
+        }
+    }
+
     @Override
     public long getModificationDate() {
         try {
-            return Files.getLastModifiedTime(Paths.get(path)).toMillis();
+            return readAttributes(path).lastModifiedTime().toMillis();
         }
         catch(IOException e) {
-            log.warn("Failure getting timestamp of {}. {}", path, e.getMessage());
+            log.warn("Failure {} getting timestamp of {}", e, path);
             return -1L;
         }
     }
@@ -58,7 +74,13 @@ public class LocalAttributes extends Attributes {
      */
     @Override
     public long getCreationDate() {
-        return this.getModificationDate();
+        try {
+            return readAttributes(path).creationTime().toMillis();
+        }
+        catch(IOException e) {
+            log.warn("Failure {} getting timestamp of {}", e, path);
+            return -1L;
+        }
     }
 
     /**
@@ -66,7 +88,13 @@ public class LocalAttributes extends Attributes {
      */
     @Override
     public long getAccessedDate() {
-        return this.getModificationDate();
+        try {
+            return readAttributes(path).lastAccessTime().toMillis();
+        }
+        catch(IOException e) {
+            log.warn("Failure {} getting timestamp of {}", e, path);
+            return -1L;
+        }
     }
 
     public void setModificationDate(final long timestamp) throws AccessDeniedException {
@@ -96,13 +124,13 @@ public class LocalAttributes extends Attributes {
     public Permission getPermission() {
         if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
             try {
-                return new LocalPermission(PosixFilePermissions.toString(Files.readAttributes(Paths.get(path), PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS).permissions()));
+                return new LocalPermission(PosixFilePermissions.toString(readAttributes(path, PosixFileAttributes.class).permissions()));
             }
             catch(IOException e) {
                 return Permission.EMPTY;
             }
         }
-        return Permission.EMPTY;
+        return new LocalPermission();
     }
 
     public void setPermission(final Permission permission) throws AccessDeniedException {
@@ -125,11 +153,27 @@ public class LocalAttributes extends Attributes {
 
     @Override
     public String getOwner() {
+        if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+            try {
+                return readAttributes(path, PosixFileAttributes.class).owner().getName();
+            }
+            catch(IOException e) {
+                return null;
+            }
+        }
         return null;
     }
 
     @Override
     public String getGroup() {
+        if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+            try {
+                return readAttributes(path, PosixFileAttributes.class).group().getName();
+            }
+            catch(IOException e) {
+                return null;
+            }
+        }
         return null;
     }
 

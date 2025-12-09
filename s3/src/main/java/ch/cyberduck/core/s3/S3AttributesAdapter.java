@@ -15,6 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.AttributesAdapter;
@@ -44,7 +45,7 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
 
     @Override
     public PathAttributes toAttributes(final StorageObject object) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(object.getContentLength());
         final Date lastmodified = object.getLastModifiedDate();
         if(lastmodified != null) {
