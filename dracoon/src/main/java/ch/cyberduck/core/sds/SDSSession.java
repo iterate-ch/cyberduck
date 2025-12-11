@@ -167,7 +167,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
                     if(null != wrapper.getTarget()) {
                         if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                            super.process(request, context);
+                            if(!StringUtils.contains(wrapper.getRequestLine().getUri(), "/api/v4/public")) {
+                                super.process(request, context);
+                            }
                         }
                     }
                 }
