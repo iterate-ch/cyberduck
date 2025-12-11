@@ -19,7 +19,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Encryptor;
 import ch.cyberduck.core.sds.io.swagger.client.JSON;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -42,8 +41,7 @@ import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class SDSTripleCryptEncryptorFeature implements Encryptor {
-    private static final Logger log = LogManager.getLogger(SDSTripleCryptEncryptorFeature.class);
+public class SDSTripleCryptEncryptorFeature {
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

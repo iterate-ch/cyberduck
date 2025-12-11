@@ -665,9 +665,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == Versioning.class) {
             return (T) new SDSVersioningFeature(this, nodeid);
         }
-        if(type == Encryptor.class) {
-            return (T) new SDSTripleCryptEncryptorFeature(this, nodeid);
-        }
         if(type == Scheduler.class) {
             return (T) scheduler;
         }
