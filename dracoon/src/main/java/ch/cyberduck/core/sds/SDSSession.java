@@ -97,7 +97,6 @@ import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIR
 public class SDSSession extends HttpSession<SDSApiClient> {
     private static final Logger log = LogManager.getLogger(SDSSession.class);
 
-    public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
 
     public static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
@@ -195,12 +194,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             )));
         }
         configuration.addInterceptorLast(authorizationService);
-        configuration.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) {
-                request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
-            }
-        });
         final CloseableHttpClient apache = configuration.build();
         final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),

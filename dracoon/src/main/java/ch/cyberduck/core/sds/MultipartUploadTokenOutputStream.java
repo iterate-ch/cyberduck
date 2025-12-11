@@ -85,7 +85,6 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
                         final HttpPost request = new HttpPost(uploadUrl);
                         request.setEntity(entity);
                         request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
-                        request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                         if(0L != overall.getLength() && 0 != content.length) {
                             final HttpRange range = HttpRange.byLength(offset, content.length);
                             final String header;
