@@ -147,20 +147,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     protected SDSApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) {
-                if(request instanceof HttpRequestWrapper) {
-                    final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-                    if(null != wrapper.getTarget()) {
-                        if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                            request.addHeader(HttpHeaders.AUTHORIZATION,
-                                    String.format("Basic %s", Base64.getEncoder().encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8))));
-                        }
-                    }
-                }
-            }
-        }).build(), host, prompt) {
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request instanceof HttpRequestWrapper) {
