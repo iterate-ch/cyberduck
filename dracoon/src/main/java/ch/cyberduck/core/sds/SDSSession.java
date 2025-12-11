@@ -228,16 +228,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
             case password:
-                if("x-dracoon-action:oauth".equals(CYBERDUCK_REDIRECT_URI)) {
-                    if(matcher.matches()) {
-                        if(new Version(matcher.group(1)).compareTo(new Version("4.15.0")) >= 0) {
-                            authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
-                        }
-                    }
-                    else {
-                        log.warn("Failure to parse software version {}", version);
-                    }
-                }
                 credentials.setOauth(authorizationService.validate(credentials.getOauth()));
                 break;
         }
