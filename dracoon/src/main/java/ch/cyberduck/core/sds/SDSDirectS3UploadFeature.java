@@ -149,7 +149,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                         final FileBuffer buffer = new FileBuffer(temporary);
                         new StreamCopier(status, StreamProgress.noop).withAutoclose(false).withLimit(length)
                                 .transfer(in, new BufferOutputStream(buffer));
-                        parts.add(this.submit(pool, write, file, temporary, buffer, throttle, streamListener, status,
+                        parts.add(this.submit(pool, new SDSDirectS3WriteFeature(session, nodeid), file, temporary, buffer, throttle, streamListener, status,
                                 presignedUrl.getUrl(), presignedUrl.getPartNumber(), 0L, length, callback));
                     }
                     else {
