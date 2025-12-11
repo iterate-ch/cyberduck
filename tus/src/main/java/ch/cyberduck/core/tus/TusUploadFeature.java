@@ -57,7 +57,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -67,7 +66,7 @@ import java.util.concurrent.Future;
 
 import static ch.cyberduck.core.tus.TusCapabilities.*;
 
-public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
+public class TusUploadFeature extends HttpUploadFeature<Void> {
     private static final Logger log = LogManager.getLogger(TusUploadFeature.class);
 
     public static final String UPLOAD_URL = "uploadUrl";
@@ -178,7 +177,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 final Map<String, String> parameters = new HashMap<>();
                 parameters.put(UPLOAD_URL, uploadUrl);
                 status.setParameters(parameters);
-                final Void response = TusUploadFeature.this.upload(
+                final Void response = TusUploadFeature.this.transfer(
                         write, file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response {}", response);
                 return null;

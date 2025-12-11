@@ -247,8 +247,8 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                                 }
                                 else {
                                     throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                            MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                                    HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
+                                            MessageFormat.format("Mismatch between {2} checksum {0} of transferred data and {1} returned by the server",
+                                                    cdash64, completedUploadResponse.getCdash64(), HashAlgorithm.cdash64));
                                 }
                             }
                             result.set(new EueWriteFeature.Chunk(resourceId, offset, cdash64));

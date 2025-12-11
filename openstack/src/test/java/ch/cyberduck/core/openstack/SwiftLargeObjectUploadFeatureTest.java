@@ -123,13 +123,13 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final SwiftLargeObjectUploadFeature feature = new SwiftLargeObjectUploadFeature(session, regionService,
                 1024L * 1024L, 1) {
             @Override
-            public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+            public StorageObject transfer(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
                 if(!interrupt.get()) {
                     if(status.getOffset() >= 1L * 1024L * 1024L) {
                         throw new ConnectionTimeoutException("Test");
                     }
                 }
-                return super.upload(write, file, local, throttle, listener, status, cancel, progress, callback);
+                return super.transfer(write, file, local, throttle, listener, status, cancel, progress, callback);
             }
         };
         final BytecountStreamListener listener = new BytecountStreamListener();
@@ -152,7 +152,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(1024L * 1024L).setOffset(1024L * 1024L);
         feature.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, append,
-            new DisabledLoginCallback());
+                new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, listener.getSent());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());

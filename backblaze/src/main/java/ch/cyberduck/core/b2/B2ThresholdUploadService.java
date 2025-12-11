@@ -64,7 +64,7 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
             return new B2LargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
         else {
-            return new B2SingleUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, callback);
+            return new B2SingleUploadService().upload(write, file, local, throttle, progress, streamListener, status, callback);
         }
     }
 

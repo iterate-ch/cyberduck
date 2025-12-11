@@ -88,24 +88,6 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                             case HttpStatus.SC_OK:
                                 log.info("Received response {} for part number {}", response, status.getPart());
                                 // Upload complete
-                                if(response.containsHeader("ETag")) {
-                                    if(file.getType().contains(Path.Type.encrypted)) {
-                                        log.warn("Skip checksum verification for {} with client side encryption enabled", file);
-                                    }
-                                    else {
-                                        if(HashAlgorithm.md5.equals(status.getChecksum().algorithm)) {
-                                            final Checksum etag = Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
-                                            if(!status.getChecksum().equals(etag)) {
-                                                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                                        MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                                                etag.algorithm.toString(), status.getChecksum().hash, etag.hash));
-                                            }
-                                        }
-                                    }
-                                }
-                                else {
-                                    log.debug("No ETag header in response available");
-                                }
                                 return null;
                             default:
                                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));

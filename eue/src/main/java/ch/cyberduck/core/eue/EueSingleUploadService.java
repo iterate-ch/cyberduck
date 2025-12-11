@@ -28,12 +28,11 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.security.MessageDigest;
 import java.util.Collections;
 
 import static ch.cyberduck.core.eue.EueWriteFeature.RESOURCE_ID;
 
-public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
+public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;

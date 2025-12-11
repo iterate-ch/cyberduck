@@ -22,39 +22,56 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 
 public class DefaultUploadFeature<Reply> implements Upload<Reply> {
-
-    private final Session<?> session;
-
-    public DefaultUploadFeature(final Session<?> session) {
-        this.session = session;
-    }
+    private static final Logger log = LogManager.getLogger(DefaultUploadFeature.class);
 
     @Override
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle,
                         final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
                         final ConnectionCallback callback) throws BackgroundException {
-        final InputStream in = local.getInputStream();
+        final Reply response = this.transfer(write, file, local, throttle, streamListener, status, status, status, callback);
+        log.debug("Received response {}", response);
+        return response;
+    }
+
+    protected Reply transfer(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                             final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress,
+                             final ConnectionCallback callback) throws BackgroundException {
+        final InputStream in = this.decorate(local.getInputStream(), status);
         final StatusOutputStream<Reply> out = write.write(file, status, callback);
-        new StreamCopier(status, status)
-            .withOffset(status.getOffset())
-            .withLimit(status.getLength())
-                .withListener(streamListener)
-            .transfer(in, new ThrottledOutputStream(out, throttle));
+        new StreamCopier(cancel, progress)
+                .withOffset(status.getOffset())
+                .withLimit(status.getLength())
+                .withListener(listener)
+                .transfer(in, new ThrottledOutputStream(out, throttle));
         return out.getStatus();
     }
 
+    /**
+     * Wrap input stream if checksum calculation is enabled.
+     *
+     * @param in     File input stream
+     * @param status
+     * @return Wrapped or same stream
+     */
+    protected InputStream decorate(final InputStream in, final TransferStatus status) throws BackgroundException {
+        return in;
+    }
 }

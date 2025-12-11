@@ -52,12 +52,12 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         out.close();
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpUploadFeature upload = new DAVUploadFeature(session);
+        final HttpUploadFeature upload = new DAVUploadFeature();
         upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DAVListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertEquals(content.length, new DAVUploadFeature(session).append(test, status.setRemote(new DAVAttributesFinderFeature(session).find(test))).offset, 0L);
+        assertEquals(content.length, new DAVUploadFeature().append(test, status.setRemote(new DAVAttributesFinderFeature(session).find(test))).offset, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
@@ -85,12 +85,12 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         out.close();
         status.setLength(TransferStatus.UNKNOWN_LENGTH);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpUploadFeature upload = new DAVUploadFeature(session);
+        final HttpUploadFeature upload = new DAVUploadFeature();
         upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DAVListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertEquals(content.length, new DAVUploadFeature(session).append(test, status.setRemote(new DAVAttributesFinderFeature(session).find(test))).offset, 0L);
+        assertEquals(content.length, new DAVUploadFeature().append(test, status.setRemote(new DAVAttributesFinderFeature(session).find(test))).offset, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
@@ -113,7 +113,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final Path folder = new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpUploadFeature upload = new DAVUploadFeature(session);
+        final HttpUploadFeature upload = new DAVUploadFeature();
         {
             final String folderEtag = new DAVAttributesFinderFeature(session).find(folder).getETag();
             final byte[] content = RandomUtils.nextBytes(100);

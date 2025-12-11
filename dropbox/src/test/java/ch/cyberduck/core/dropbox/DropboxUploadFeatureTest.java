@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -34,6 +35,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -47,7 +49,7 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testUploadSmall() throws Exception {
-        final DropboxUploadFeature feature = new DropboxUploadFeature(session);
+        final DropboxUploadFeature feature = new DropboxUploadFeature();
         final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new Path(root, name, EnumSet.of(Path.Type.file));
@@ -76,6 +78,11 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(NullInputStream.class, new DropboxUploadFeature(session).decorate(n, null).getClass());
+        assertSame(NullInputStream.class, new DropboxUploadFeature() {
+            @Override
+            protected InputStream decorate(final InputStream in, final TransferStatus status) throws BackgroundException {
+                return super.decorate(in, status);
+            }
+        }.decorate(n, new TransferStatus()).getClass());
     }
 }

@@ -17,12 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-import java.security.MessageDigest;
-
 import com.google.api.services.drive.model.File;
 
-public class DriveUploadFeature extends HttpUploadFeature<File, MessageDigest> {
-
-    public DriveUploadFeature(final DriveSession session) {
-    }
+public class DriveUploadFeature extends HttpUploadFeature<File> {
 }

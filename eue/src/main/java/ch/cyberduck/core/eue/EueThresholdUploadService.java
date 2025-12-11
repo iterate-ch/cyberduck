@@ -59,7 +59,7 @@ public class EueThresholdUploadService implements Upload<EueWriteFeature.Chunk> 
                 return new EueLargeUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, prompt);
             }
             // Write with multipart write feature for known file length sequentially 4MB chunks
-            return new EueUploadService(session).upload(write, file, local, throttle, progress, streamListener, status, prompt);
+            return new EueUploadService().upload(write, file, local, throttle, progress, streamListener, status, prompt);
         }
         // Write single chunk smaller than threshold
         return new EueSingleUploadService(session, fileid).upload(write, file, local, throttle, progress, streamListener, status, prompt);

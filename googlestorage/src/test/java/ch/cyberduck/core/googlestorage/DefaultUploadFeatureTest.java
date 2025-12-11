@@ -50,7 +50,7 @@ public class DefaultUploadFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testUpload() throws Exception {
-        final DefaultUploadFeature<StorageObject> m = new DefaultUploadFeature<>(session);
+        final DefaultUploadFeature<StorageObject> m = new DefaultUploadFeature<>();
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

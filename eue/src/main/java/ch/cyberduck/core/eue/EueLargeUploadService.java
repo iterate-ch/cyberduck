@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
+public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk> {
     private static final Logger log = LogManager.getLogger(EueLargeUploadService.class);
 
     private final EueSession session;
@@ -127,8 +127,8 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 }
                 else {
                     throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                            MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                    HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
+                            MessageFormat.format("Mismatch between {2} checksum {0} of transferred data and {1} returned by the server",
+                                    cdash64, completedUploadResponse.getCdash64(), HashAlgorithm.cdash64));
                 }
             }
             final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
@@ -167,7 +167,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 status.setHeader(overall.getHeader());
                 status.setChecksum(write.checksum(file, status).compute(local.getInputStream(), status));
                 status.setUrl(url);
-                final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.upload(
+                final EueWriteFeature.Chunk chunk = EueLargeUploadService.this.transfer(
                         write, file, local, throttle, listener, status, overall, status, callback);
                 log.info("Received response {} for part {}", chunk, partNumber);
                 return chunk;

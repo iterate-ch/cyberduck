@@ -65,7 +65,6 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +79,7 @@ import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDigest> {
+public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node> {
     private static final Logger log = LogManager.getLogger(SDSDirectS3UploadFeature.class);
 
     /**
@@ -257,7 +256,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setFilekey(overall.getFilekey());
-                final Node node = SDSDirectS3UploadFeature.super.upload(
+                final Node node = SDSDirectS3UploadFeature.super.transfer(
                         write, file, local, throttle, counter, status, overall, status, callback);
                 log.info("Received response for part number {}", partNumber);
                 // Delete temporary file if any

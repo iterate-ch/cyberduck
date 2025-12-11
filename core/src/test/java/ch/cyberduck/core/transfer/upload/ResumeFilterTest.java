@@ -241,7 +241,7 @@ public class ResumeFilterTest {
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new DefaultUploadFeature<>(session), new UploadFilterOptions(host).withTemporary(true));
+                new DefaultUploadFeature<>(), new UploadFilterOptions(host).withTemporary(true));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {

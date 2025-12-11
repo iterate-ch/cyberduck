@@ -66,7 +66,7 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractMicrosoftIISDAVTest 
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(
+        new DAVUploadFeature().upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
