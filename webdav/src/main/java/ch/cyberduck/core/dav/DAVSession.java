@@ -306,10 +306,10 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVReadFeature(this);
         }
         if(type == Write.class) {
-            return (T) new DAVWriteFeature(this, capabilities.expectcontinue);
+            return (T) new DAVWriteFeature(this, capabilities);
         }
         if(type == Upload.class) {
-            return (T) new DAVUploadFeature(this);
+            return (T) new DAVUploadFeature(this, capabilities);
         }
         if(type == Delete.class) {
             return (T) new DAVDeleteFeature(this);

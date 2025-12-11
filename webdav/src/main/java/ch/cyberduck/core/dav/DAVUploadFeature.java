@@ -27,13 +27,22 @@ import java.security.MessageDigest;
 
 public class DAVUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
 
-    public DAVUploadFeature(final DAVSession session) {
+    private final DAVSession.HttpCapabilities capabilities;
 
+    public DAVUploadFeature(final DAVSession session) {
+        this(session, new DAVSession.HttpCapabilities(session.getHost()));
+    }
+
+    public DAVUploadFeature(final DAVSession session, final DAVSession.HttpCapabilities capabilities) {
+        this.capabilities = capabilities;
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
+            return new Write.Append(false).withStatus(status);
+        }
+        if(capabilities.iis) {
             return new Write.Append(false).withStatus(status);
         }
         return new Write.Append(status.isExists()).withStatus(status);
