@@ -21,7 +21,6 @@ import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -99,7 +98,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final InputStream in = new GoogleStorageReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
+        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.INSTANCE);
         assertEquals(content.length, count.getRecv());
         assertEquals(content.length, status.getLength());
         in.close();

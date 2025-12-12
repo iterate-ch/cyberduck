@@ -31,11 +31,11 @@ public class BufferOutputStream extends ProxyOutputStream {
     private Long offset;
 
     public BufferOutputStream(final Buffer buffer) {
-        this(NullOutputStream.NULL_OUTPUT_STREAM, buffer, 0L);
+        this(NullOutputStream.INSTANCE, buffer, 0L);
     }
 
     public BufferOutputStream(final Buffer buffer, final Long offset) {
-        this(NullOutputStream.NULL_OUTPUT_STREAM, buffer, offset);
+        this(NullOutputStream.INSTANCE, buffer, offset);
     }
 
     public BufferOutputStream(final OutputStream proxy, final Buffer buffer, final Long offset) {

@@ -32,7 +32,7 @@ public class HttpResponseOutputStreamTest {
     @Test(expected = IOException.class)
     public void testClose() throws Exception {
         try {
-            new HttpResponseOutputStream<Void>(NullOutputStream.NULL_OUTPUT_STREAM, new VoidAttributesAdapter(), new TransferStatus()) {
+            new HttpResponseOutputStream<Void>(NullOutputStream.INSTANCE, new VoidAttributesAdapter(), new TransferStatus()) {
                 @Override
                 public Void getStatus() throws BackgroundException {
                     throw new InteroperabilityException("d");
