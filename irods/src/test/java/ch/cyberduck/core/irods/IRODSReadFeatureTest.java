@@ -38,8 +38,7 @@ import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
-import ch.cyberduck.test.VaultTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -57,14 +56,14 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
-public class IRODSReadFeatureTest extends VaultTest {
+@Category(TestcontainerTest.class)
+public class IRODSReadFeatureTest extends IRODSDockerComposeManager {
 
     @Test
     public void testRead() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -100,7 +99,7 @@ public class IRODSReadFeatureTest extends VaultTest {
     public void testReadNotFound() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -120,7 +119,7 @@ public class IRODSReadFeatureTest extends VaultTest {
     public void testReadRange() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));

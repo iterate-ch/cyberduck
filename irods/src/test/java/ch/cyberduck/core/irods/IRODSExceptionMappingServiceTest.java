@@ -18,12 +18,12 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
-import org.irods.jargon.core.exception.AuthenticationException;
-import org.irods.jargon.core.exception.CatNoAccessException;
-import org.irods.jargon.core.exception.FileNotFoundException;
+import org.irods.irods4j.low_level.api.IRODSErrorCodes;
+import org.irods.irods4j.low_level.api.IRODSException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -32,8 +32,9 @@ public class IRODSExceptionMappingServiceTest {
 
     @Test
     public void testMap() {
-        assertTrue(new IRODSExceptionMappingService().map(new CatNoAccessException("no access")) instanceof AccessDeniedException);
-        assertTrue(new IRODSExceptionMappingService().map(new FileNotFoundException("no file")) instanceof NotfoundException);
-        assertTrue(new IRODSExceptionMappingService().map(new AuthenticationException("no user")) instanceof LoginFailureException);
+        final IRODSExceptionMappingService mappingService = new IRODSExceptionMappingService();
+        assertTrue(mappingService.map(new IRODSException(IRODSErrorCodes.CAT_NO_ACCESS_PERMISSION, "no access")) instanceof AccessDeniedException);
+        assertTrue(mappingService.map(new IRODSException(IRODSErrorCodes.CAT_NO_ROWS_FOUND, "no file")) instanceof NotfoundException);
+        assertTrue(mappingService.map(new IRODSException(IRODSErrorCodes.AUTHENTICATION_ERROR, "no user")) instanceof LoginFailureException);
     }
 }

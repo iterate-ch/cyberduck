@@ -1,0 +1,27 @@
+name: cyberduck-irods-testing
+
+services:
+  irods-catalog:
+    build:
+      context: irods_catalog
+    environment:
+      - POSTGRES_PASSWORD=testpassword
+    restart: always
+
+  irods-catalog-provider:
+    build:
+      context: irods_catalog_provider_pam
+    init: true
+    ports:
+      - "1447:1247"
+    shm_size: 100mb
+    healthcheck:
+      test: ["CMD-SHELL", "su - irods -c 'ils || exit 1'"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+      start_interval: 10s
+    restart: always
+    depends_on:
+      - irods-catalog
