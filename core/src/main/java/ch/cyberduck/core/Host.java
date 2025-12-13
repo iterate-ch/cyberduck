@@ -39,6 +39,10 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
      */
     private final Credentials cloudfront = new Credentials();
     /**
+     * Jump host configuration for SSH bastion host connections
+     */
+    private Host jumphost;
+    /**
      * The protocol identifier.
      */
     private Protocol protocol;
@@ -353,6 +357,20 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
         log.debug("Setting credentials for {} to {}", this, credentials);
         this.credentials = credentials;
         return this;
+    }
+
+    /**
+     * @return Jump host configuration for SSH bastion host connections
+     */
+    public Host getJumphost() {
+        return jumphost;
+    }
+
+    /**
+     * @param jumphost Jump host configuration for SSH bastion host connections
+     */
+    public void setJumphost(final Host jumphost) {
+        this.jumphost = jumphost;
     }
 
     /**
