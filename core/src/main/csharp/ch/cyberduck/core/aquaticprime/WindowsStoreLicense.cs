@@ -74,7 +74,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
 
         public string getValue(string str)
         {
-            return LocaleFactory.localizedString("Unknown");
+            return null;
         }
 
         public bool isReceipt()
