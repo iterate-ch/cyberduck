@@ -24,7 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public abstract class DefaultHostPasswordStore implements HostPasswordStore {
@@ -198,7 +198,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     }
 
     protected static Set<String> getOAuthPrefix(final Host bookmark) {
-        final Set<String> prefix = new HashSet<>();
+        final Set<String> prefix = new LinkedHashSet<>();
         if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
             if(StringUtils.isNotBlank(bookmark.getProtocol().getOAuthClientId())) {
                 prefix.add(String.format("%s (%s)", bookmark.getProtocol().getOAuthClientId(), bookmark.getCredentials().getUsername()));
