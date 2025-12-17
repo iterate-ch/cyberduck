@@ -147,7 +147,7 @@ public class OAuth2AuthorizationService {
         log.warn("Missing tokens {} for {}", saved, host);
         final OAuthTokens tokens = this.authorize();
         log.debug("Retrieved tokens {} for {}", tokens, host);
-        return this.save(tokens);
+        return tokens;
     }
 
     /**
