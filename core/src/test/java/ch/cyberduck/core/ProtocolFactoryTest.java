@@ -196,7 +196,9 @@ public class ProtocolFactoryTest {
         };
         final ProtocolFactory f = new ProtocolFactory(Stream.of(baseProtocol, overrideProtocol).collect(Collectors.toSet()));
         assertEquals(overrideProtocol, f.forName("test", "test-provider2"));
+        assertEquals(overrideProtocol, f.forName("test:test-provider2"));
         assertEquals(baseProtocol, f.forName("test", "test-provider1"));
+        assertEquals(baseProtocol, f.forName("test:test-provider1"));
     }
 
     @Test

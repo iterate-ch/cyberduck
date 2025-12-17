@@ -28,10 +28,10 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
@@ -71,11 +71,11 @@ public class AbstractSFTPTest {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+        return new Object[]{VaultMetadata.Type.V8, VaultMetadata.Type.UVF};
     }
 
     @Parameterized.Parameter
-    public int vaultVersion;
+    public VaultMetadata.Type vaultVersion;
 
     @Before
     public void start() throws Exception {

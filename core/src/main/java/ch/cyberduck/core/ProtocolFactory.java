@@ -196,7 +196,8 @@ public final class ProtocolFactory {
      * @return Matching protocol or null if no match
      */
     public Protocol forName(final String identifier) {
-        return this.forName(identifier, null);
+        return this.forName(StringUtils.substringBefore(identifier, ":"),
+                StringUtils.substringAfter(identifier, ":"));
     }
 
     /**
@@ -273,7 +274,8 @@ public final class ProtocolFactory {
      * @return Matching protocol or default if no match
      */
     public Protocol forNameOrDefault(final String identifier) {
-        return forNameOrDefault(identifier, null);
+        return forNameOrDefault(StringUtils.substringBefore(identifier, ":"),
+                StringUtils.substringAfter(identifier, ":"));
     }
 
     /**
