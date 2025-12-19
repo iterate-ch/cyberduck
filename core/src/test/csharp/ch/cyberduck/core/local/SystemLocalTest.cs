@@ -51,12 +51,16 @@ namespace Ch.Cyberduck.Core.Local
 
         [Test, Sequential]
         public void TestPathCanonicalize(
-            [Values(
-                /* 00 */ "C:\\C:"
-            )] string path,
-            [Values(
-                /* 00 */ "C:\\C_"
-            )] string expected)
+            [Values([
+                /* 00 */ "C:\\C:",
+                /* 01 */ @"\\?\C:",
+                /* 02 */ @"\\?\C:\",
+            ])] string path,
+            [Values([
+                /* 00 */ "C:\\C_",
+                /* 01 */ "C:\\",
+                /* 02 */ "C:\\",
+            ])] string expected)
         {
             Assert.That(new SystemLocal(path).getAbsolute(), Is.EqualTo(expected));
         }

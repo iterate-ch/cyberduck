@@ -34,7 +34,13 @@ namespace Ch.Cyberduck.Core.Local
             { Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar };
 
         public SystemLocal(string parent, string name)
-            : this(Join(parent, name))
+            : this(
+#if NETCOREAPP
+                   Path.Join(parent, name)
+#else
+                   Join(parent, name)
+#endif
+            )
         {
         }
 
@@ -89,7 +95,7 @@ namespace Ch.Cyberduck.Core.Local
         public override bool exists()
         {
             var resolved = Resolve();
-            string path = resolved.getAbsolute();
+            string path = resolved.PlatformPath();
 #if NETCOREAPP
             return Path.Exists(path);
 #else
@@ -228,6 +234,7 @@ namespace Ch.Cyberduck.Core.Local
             return writer.ToString();
         }
 
+#if NETFRAMEWORK
         private static string Join(string root, string path)
         {
             // Path.Join doesn't exist in .NET Framework, need to replicate
@@ -236,5 +243,6 @@ namespace Ch.Cyberduck.Core.Local
                 ? string.Concat(root, path)
                 : string.Concat(root, Path.DirectorySeparatorChar, path);
         }
+#endif
     }
 }
