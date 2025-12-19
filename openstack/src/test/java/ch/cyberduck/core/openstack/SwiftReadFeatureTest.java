@@ -110,7 +110,7 @@ public class SwiftReadFeatureTest extends AbstractSwiftTest {
             EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         assertNotNull(in);
         final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
+        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.INSTANCE);
         assertEquals(182L, count.getRecv());
         assertEquals(182L, status.getLength());
         in.close();

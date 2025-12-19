@@ -132,9 +132,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
+    protected void logout() throws BackgroundException {
+        scheduler.shutdown(false);
+        super.logout();
+    }
+
+    @Override
     public void disconnect() throws BackgroundException {
         try {
-            scheduler.shutdown(false);
             if(client != null) {
                 client.shutdown();
             }

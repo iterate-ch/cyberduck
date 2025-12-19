@@ -50,6 +50,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrl;
 import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadPart;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptEncryptingInputStream;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -115,8 +116,11 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             final InputStream in;
-            if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
-                in = new SDSTripleCryptEncryptorFeature(session, nodeid).encrypt(file, local.getInputStream(), status);
+            if(status.getFilekey() != null) {
+                final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+                final FileKey fileKey = reader.readValue(status.getFilekey().array());
+                in = new TripleCryptEncryptingInputStream(session, local.getInputStream(),
+                        Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
             }
             else {
                 in = local.getInputStream();
@@ -143,13 +147,13 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 for(int partNumber = 1; remaining >= 0; partNumber++) {
                     final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                     final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
-                    if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
+                    if(status.getFilekey() != null) {
                         final Local temporary = temp.create(String.format("%s-%d", random, partNumber));
                         log.debug("Encrypted contents for part {} to {}", partNumber, temporary);
                         final FileBuffer buffer = new FileBuffer(temporary);
                         new StreamCopier(status, StreamProgress.noop).withAutoclose(false).withLimit(length)
                                 .transfer(in, new BufferOutputStream(buffer));
-                        parts.add(this.submit(pool, write, file, temporary, buffer, throttle, streamListener, status,
+                        parts.add(this.submit(pool, new SDSDirectS3WriteFeature(session, nodeid), file, temporary, buffer, throttle, streamListener, status,
                                 presignedUrl.getUrl(), presignedUrl.getPartNumber(), 0L, length, callback));
                     }
                     else {

@@ -97,7 +97,6 @@ import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIR
 public class SDSSession extends HttpSession<SDSApiClient> {
     private static final Logger log = LogManager.getLogger(SDSSession.class);
 
-    public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
 
     public static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
@@ -148,27 +147,16 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     protected SDSApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) {
-                if(request instanceof HttpRequestWrapper) {
-                    final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-                    if(null != wrapper.getTarget()) {
-                        if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                            request.addHeader(HttpHeaders.AUTHORIZATION,
-                                    String.format("Basic %s", Base64.getEncoder().encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8))));
-                        }
-                    }
-                }
-            }
-        }).build(), host, prompt) {
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request instanceof HttpRequestWrapper) {
                     final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
                     if(null != wrapper.getTarget()) {
                         if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                            super.process(request, context);
+                            if(!StringUtils.contains(wrapper.getRequestLine().getUri(), "/api/v4/public")) {
+                                super.process(request, context);
+                            }
                         }
                     }
                 }
@@ -195,12 +183,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             )));
         }
         configuration.addInterceptorLast(authorizationService);
-        configuration.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) {
-                request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
-            }
-        });
         final CloseableHttpClient apache = configuration.build();
         final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
@@ -235,16 +217,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
             case password:
-                if("x-dracoon-action:oauth".equals(CYBERDUCK_REDIRECT_URI)) {
-                    if(matcher.matches()) {
-                        if(new Version(matcher.group(1)).compareTo(new Version("4.15.0")) >= 0) {
-                            authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
-                        }
-                    }
-                    else {
-                        log.warn("Failure to parse software version {}", version);
-                    }
-                }
                 credentials.setOauth(authorizationService.validate(credentials.getOauth()));
                 break;
         }
@@ -263,24 +235,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         userAccount.set(new UserAccountWrapper(account));
         requiredKeyPairVersion = this.getRequiredKeyPairVersion();
         this.unlockTripleCryptKeyPair(prompt, userAccount.get(), requiredKeyPairVersion);
-        this.updateDirectS3UploadSetting();
-    }
-
-    private void updateDirectS3UploadSetting() {
-        boolean isS3DirectUploadSupported = false;
-        try {
-            if(this.generalSettingsInfo().isUseS3Storage()) {
-                final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
-                if(matcher.matches()) {
-                    isS3DirectUploadSupported = new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0;
-                }
-            }
-        }
-        catch(BackgroundException e) {
-            log.warn("Failure reading software version. {}", e.getMessage());
-            isS3DirectUploadSupported = true;
-        }
-        preferences.setProperty("sds.upload.s3.enable", String.valueOf(isS3DirectUploadSupported));
     }
 
     private UserKeyPair.Version getRequiredKeyPairVersion() {
@@ -580,9 +534,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
+    protected void logout() throws BackgroundException {
+        scheduler.shutdown(false);
+        super.logout();
+    }
+
+    @Override
     public void disconnect() throws BackgroundException {
         try {
-            scheduler.shutdown(false);
             nodeid.clear();
             if(client != null) {
                 client.getHttpClient().close();
@@ -603,22 +562,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Upload.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
-                return (T) new SDSDirectS3UploadFeature(this, nodeid);
-            }
-            return (T) new DefaultUploadFeature<Node>(this);
+            return (T) new SDSDirectS3UploadFeature(this, nodeid);
         }
         if(type == MultipartWrite.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
-                return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
-            }
-            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
+            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
         }
         if(type == Write.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("sds.upload.s3.enable")) {
-                return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
-            }
-            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
+            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
         }
         if(type == Directory.class) {
             return (T) new SDSDirectoryFeature(this, nodeid);
@@ -664,9 +614,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Versioning.class) {
             return (T) new SDSVersioningFeature(this, nodeid);
-        }
-        if(type == Encryptor.class) {
-            return (T) new SDSTripleCryptEncryptorFeature(this, nodeid);
         }
         if(type == Scheduler.class) {
             return (T) scheduler;

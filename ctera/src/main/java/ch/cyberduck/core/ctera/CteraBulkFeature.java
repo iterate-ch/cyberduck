@@ -20,7 +20,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ctera.model.DirectIO;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
@@ -85,7 +84,8 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                             }
                         }
                         else {
-                            throw new TransferCanceledException(String.format("Mismatch between number of segments and chunks for %s", file.getKey().remote));
+                            log.error("Mismatch between number of segments ({}) and chunks ({}) for {}",
+                                    segments.size(), metadata.chunks.size(), file.getKey().remote);
                         }
                     }
                     else {

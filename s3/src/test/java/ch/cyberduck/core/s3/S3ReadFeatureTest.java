@@ -160,7 +160,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final CountingInputStream in = new CountingInputStream(new S3ReadFeature(cloudfront).read(
                 new Path(file.getName(), EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
         final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
+        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.INSTANCE);
         assertEquals(content.length, count.getRecv());
         new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -177,7 +177,7 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         final CountingInputStream in = new CountingInputStream(new S3ReadFeature(virtualhost).read(
                 new Path(file.getName(), EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
         final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
+        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.INSTANCE);
         assertEquals(content.length, count.getRecv());
         new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
