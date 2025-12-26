@@ -5,24 +5,35 @@
         <key>Protocol</key>
         <string>irods</string>
         <key>Vendor</key>
-        <string>iplant</string>
+        <string>iRODS Consortium</string>
         <key>Description</key>
-        <string>iPlant Data Store</string>
+        <string>iRODS (Integrated Rule-Oriented Data System)</string>
+
         <key>Hostname Configurable</key>
         <false/>
         <key>Port Configurable</key>
         <false/>
+
         <key>Default Hostname</key>
-        <string>data.iplantcollaborative.org</string>
-        <key>Region</key>
-        <string>iplant</string>
+        <string>localhost</string>
         <key>Default Port</key>
-        <string>1247</string>
+        <string>1347</string>
+
         <key>Username Placeholder</key>
-        <string>iPlant username</string>
+        <string>iRODS username</string>
         <key>Password Placeholder</key>
-        <string>iPlant password</string>
+        <string>iRODS password</string>
+
+        <key>Region</key>
+        <string>tempZone</string>
+
         <key>Authorization</key>
-        <string>STANDARD</string>
+        <string>native</string>
+
+        <key>Properties</key>
+        <dict>
+            <key>Delete Objects Permanently</key>
+            <string>yes</string>
+        </dict>
     </dict>
 </plist>

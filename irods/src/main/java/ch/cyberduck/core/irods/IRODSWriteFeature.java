@@ -1,8 +1,8 @@
 package ch.cyberduck.core.irods;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,27 +13,29 @@ package ch.cyberduck.core.irods;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.exception.JargonRuntimeException;
-import org.irods.jargon.core.packinstr.DataObjInp;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.pub.io.IRODSFileOutputStream;
-import org.irods.jargon.core.pub.io.PackingIrodsOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.io.IRODSDataObjectOutputStream;
+import org.irods.irods4j.low_level.api.IRODSException;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class IRODSWriteFeature implements Write<Void> {
+
+    private static final Logger log = LogManager.getLogger(IRODSWriteFeature.class);
 
     private final IRODSSession session;
 
@@ -44,21 +46,17 @@ public class IRODSWriteFeature implements Write<Void> {
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            try {
-                final IRODSFileSystemAO fs = session.getClient();
-                final IRODSFileOutputStream out = fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
-                        file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE);
-                return new VoidStatusOutputStream(new PackingIrodsOutputStream(out));
-            }
-            catch(JargonRuntimeException e) {
-                if(e.getCause() instanceof JargonException) {
-                    throw (JargonException) e.getCause();
-                }
-                throw new DefaultExceptionMappingService().map(e);
-            }
+            final IRODSConnection conn = session.getClient();
+            boolean append = status.isAppend();
+            boolean truncate = !append;
+            final OutputStream out = new IRODSDataObjectOutputStream(conn.getRcComm(), file.getAbsolute(), truncate, append);
+            return new VoidStatusOutputStream(out);
         }
-        catch(JargonException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Uploading {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Uploading {0} failed", e, file);
         }
     }
 }
