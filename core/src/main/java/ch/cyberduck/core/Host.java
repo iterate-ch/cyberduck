@@ -228,6 +228,7 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
         this.port = other.port;
         this.hostname = other.hostname;
         this.credentials = new Credentials(other.credentials);
+        this.jumphost = other.jumphost;
         this.uuid = other.uuid;
         this.nickname = other.nickname;
         this.defaultpath = other.defaultpath;
