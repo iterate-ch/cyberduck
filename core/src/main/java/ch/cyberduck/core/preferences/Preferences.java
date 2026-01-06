@@ -438,23 +438,16 @@ public abstract class Preferences implements Locales, PreferencesReader {
                         IfFileName.createNameCondition(String.format("%s-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
                 },
                 null, new NullConfiguration());
-        final Appender appender = RollingFileAppender.newBuilder()
+        return RollingFileAppender.newBuilder()
                 .setName(RollingFileAppender.class.getName())
                 .withFileName(active.getAbsolute())
                 .withFilePattern(archives.getAbsolute())
                 .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
                 .withStrategy(DefaultRolloverStrategy.newBuilder().
                         withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                        withCustomActions(new Action[]{new AbstractAction() {
-                            @Override
-                            public boolean execute() {
-                                log.info("Running version {} on {}", getVersion(), getSystem());
-                                return true;
-                            }
-                        }, deleteAction}).build())
+                        withCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
                 .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
                 .build();
-        return appender;
     }
 
     private Appender getAuditAppender(final Configuration config, final String level) {
@@ -468,23 +461,16 @@ public abstract class Preferences implements Locales, PreferencesReader {
                         IfFileName.createNameCondition(String.format("%s-audit-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
                 },
                 null, new NullConfiguration());
-        final Appender appender = RollingFileAppender.newBuilder()
+        return RollingFileAppender.newBuilder()
                 .setName(RollingFileAppender.class.getName())
                 .withFileName(active.getAbsolute())
                 .withFilePattern(archives.getAbsolute())
                 .withPolicy(SizeBasedTriggeringPolicy.createPolicy("50MB"))
                 .withStrategy(DefaultRolloverStrategy.newBuilder().
                         withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                        withCustomActions(new Action[]{new AbstractAction() {
-                            @Override
-                            public boolean execute() {
-                                log.info("Running version {} on {}", getVersion(), getSystem());
-                                return true;
-                            }
-                        }, deleteAction}).build())
+                        withCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
                 .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
                 .build();
-        return appender;
     }
 
     protected void setFactories() {
@@ -614,5 +600,19 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 this.getProperty("os.name"),
                 this.getProperty("os.version"),
                 this.getProperty("os.arch"));
+    }
+
+    private static final class ApplicationVersionAction extends AbstractAction {
+        private final Preferences preferences;
+
+        public ApplicationVersionAction(final Preferences preferences) {
+            this.preferences = preferences;
+        }
+
+        @Override
+        public boolean execute() {
+            log.info("Running version {} on {}", preferences.getVersion(), preferences.getSystem());
+            return true;
+        }
     }
 }

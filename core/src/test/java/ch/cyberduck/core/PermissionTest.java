@@ -153,6 +153,11 @@ public class PermissionTest {
     }
 
     @Test
+    public void testInitMode() {
+        assertEquals(new Permission("rwxr-x---"), new Permission("0750"));
+    }
+
+    @Test
     public void testImplies() {
         assertTrue(new Permission("r--------").getUser().implies(Permission.Action.read));
         assertTrue(new Permission("r-x------").getUser().implies(Permission.Action.execute));

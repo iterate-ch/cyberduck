@@ -13,14 +13,15 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   -->
-<Configuration>
+<Configuration xmlns="https://logging.apache.org/xml/ns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="https://logging.apache.org/xml/ns https://logging.apache.org/xml/ns/log4j-config-2.xsd">
     <Appenders>
         <Null name="disabled"/>
     </Appenders>
     <Loggers>
-        <Logger name="org.apache.http.wire" additivity="false" level="error"/>
-        <Logger name="org.apache.http.headers" additivity="false" level="error"/>
-        <Root level="error">
+        <Logger name="org.apache.http.wire" additivity="false" level="ERROR"/>
+        <Logger name="org.apache.http.headers" additivity="false" level="ERROR"/>
+        <Root level="ERROR">
             <AppenderRef ref="disabled"/>
         </Root>
     </Loggers>
