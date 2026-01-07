@@ -284,7 +284,7 @@ namespace Ch.Cyberduck.Core.Local
                     return;
                 }
 
-                using var pidl = ILCreateFromPathSafe(local.NativePath());
+                using var pidl = ILCreateFromPathSafe(local.getAbsolute());
                 if (pidl.IsInvalid)
                 {
                     return;

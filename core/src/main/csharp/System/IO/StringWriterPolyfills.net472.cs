@@ -1,6 +1,4 @@
-﻿#if NETFRAMEWORK
-
-namespace System.IO;
+﻿namespace System.IO;
 
 public static class StringWriterPolyfills
 {
@@ -12,5 +10,3 @@ public static class StringWriterPolyfills
         }
     }
 }
-
-#endif

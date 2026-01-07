@@ -6,6 +6,9 @@ using CoreLocal = ch.cyberduck.core.Local;
 
 namespace Ch.Cyberduck.Core.Local;
 
+// This class must never appear in any stack traces.
+// IKVM doesn't support `ReadOnlySpan<>` in method signatures.
+
 internal static class PlatformLocalSupport
 {
     private const string UncPathPrefix = @"\\?\";
