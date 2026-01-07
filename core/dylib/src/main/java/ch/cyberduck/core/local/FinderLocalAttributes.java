@@ -96,6 +96,9 @@ public class FinderLocalAttributes extends LocalAttributes {
     @Override
     public long getSize() {
         try {
+            if(local.isDirectory()) {
+                return -1L;
+            }
             final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSize);
             if(object.isKindOfClass(Rococoa.createClass("NSNumber", NSNumber._Class.class))) {
                 final NSNumber number = Rococoa.cast(object, NSNumber.class);
