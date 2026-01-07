@@ -17,7 +17,6 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -58,17 +57,15 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
 
-public class BrickSession extends HttpSession<CloseableHttpClient> {
+public class BrickSession extends HttpSession<BrickApiClient> {
     private static final Logger log = LogManager.getLogger(BrickSession.class);
 
     private BrickUnauthorizedRetryStrategy retryHandler;
@@ -78,13 +75,13 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     }
 
     @Override
-    protected CloseableHttpClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
+    protected BrickApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 retryHandler = new BrickUnauthorizedRetryStrategy(this, prompt, cancel)));
         configuration.addInterceptorLast(retryHandler);
         configuration.addInterceptorLast(new BrickPreferencesRequestInterceptor());
-        return configuration.build();
+        return new BrickApiClient(host, configuration.build());
     }
 
     @Override
@@ -114,11 +111,8 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
     public void disconnect() throws BackgroundException {
         try {
             if(client != null) {
-                client.close();
+                client.getHttpClient().close();
             }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
             super.disconnect();
