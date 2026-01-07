@@ -39,7 +39,7 @@ public class BrickTimestampFeature implements Timestamp {
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(null != status.getModified()) {
-                final FileEntity response = new FilesApi(new BrickApiClient(session))
+                final FileEntity response = new FilesApi(session.getClient())
                         .patchFilesPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
                                 new FilesPathBody().providedMtime(status.getModified() != null ? new DateTime(status.getModified()) : null));
                 status.setResponse(new BrickAttributesFinderFeature(session).toAttributes(response));

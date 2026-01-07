@@ -18,7 +18,6 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FileActionsApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.CopyPathBody;
@@ -51,7 +50,7 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
     @Override
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final BrickApiClient client = new BrickApiClient(session);
+            final BrickApiClient client = session.getClient();
             if(status.isExists()) {
                 log.warn("Delete file {} to be replaced with {}", target, file);
                 new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());

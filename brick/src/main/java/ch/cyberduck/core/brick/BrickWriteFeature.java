@@ -81,7 +81,8 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                     final HttpPut request = new HttpPut(uploadUri);
                     request.setEntity(entity);
                     request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
-                    final HttpResponse response = session.getClient().execute(request);
+                    final BrickApiClient client = session.getClient();
+                    final HttpResponse response = client.getClient().execute(request);
                     // Validate response
                     try {
                         switch(response.getStatusLine().getStatusCode()) {

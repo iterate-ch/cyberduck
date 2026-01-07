@@ -41,7 +41,7 @@ public class BrickDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path f : files.keySet()) {
             try {
-                new FilesApi(new BrickApiClient(session)).deleteFilesPath(
+                new FilesApi(session.getClient()).deleteFilesPath(
                     StringUtils.removeStart(f.getAbsolute(), String.valueOf(Path.DELIMITER)), f.isDirectory());
             }
             catch(ApiException e) {

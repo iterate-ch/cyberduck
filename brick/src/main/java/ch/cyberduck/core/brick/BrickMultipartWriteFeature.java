@@ -117,7 +117,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                     public TransferStatus call() throws BackgroundException {
                         final List<FileUploadPartEntity> uploadPartEntities;
                         try {
-                            uploadPartEntities = new FileActionsApi(new BrickApiClient(session))
+                            uploadPartEntities = new FileActionsApi(session.getClient())
                                     .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
                         }
                         catch(ApiException e) {
@@ -177,7 +177,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                 }
                 else {
                     try {
-                        response.set(new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
+                        response.set(new FilesApi(session.getClient()).postFilesPath(new FilesPathBody()
                                 .providedMtime(null != overall.getModified() ? new DateTime(overall.getModified()) : null)
                                 .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
                                 .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))

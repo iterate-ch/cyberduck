@@ -16,6 +16,7 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.ConnectionTimeoutFactory;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.brick.io.swagger.client.ApiClient;
@@ -24,6 +25,7 @@ import ch.cyberduck.core.brick.io.swagger.client.JSON;
 import ch.cyberduck.core.brick.io.swagger.client.Pair;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -43,22 +45,28 @@ public class BrickApiClient extends ApiClient {
         Logger.getLogger("org.glassfish.jersey.client.ClientExecutorProvidersConfigurator").setLevel(java.util.logging.Level.SEVERE);
     }
 
-    private final BrickSession session;
+    private final Host host;
+    private final CloseableHttpClient client;
 
-    public BrickApiClient(final BrickSession session) {
-        this.session = session;
+    public BrickApiClient(final Host host, final CloseableHttpClient client) {
+        this.host = host;
+        this.client = client;
         this.setHttpClient(ClientBuilder.newClient(new ClientConfig()
                 .register(new InputStreamProvider())
                 .register(MultiPartFeature.class)
                 .register(new JSON())
                 .register(JacksonFeature.class)
-                .connectorProvider(new HttpComponentsProvider(session.getClient())))
+                .connectorProvider(new HttpComponentsProvider(client)))
         );
-        final int timeout = ConnectionTimeoutFactory.get(session.getHost()).getTimeout() * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(host).getTimeout() * 1000;
         this.setConnectTimeout(timeout);
         this.setReadTimeout(timeout);
         this.setUserAgent(new PreferencesUseragentProvider().get());
         this.setBasePath("https://app.files.com/api/rest/v1");
+    }
+
+    public CloseableHttpClient getClient() {
+        return client;
     }
 
     @Override
@@ -70,7 +78,7 @@ public class BrickApiClient extends ApiClient {
     @Override
     public <T> T invokeAPI(final String path, final String method, final List<Pair> queryParams, final Object body, final Map<String, String> headerParams, final Map<String, Object> formParams, final String accept, final String contentType, final String[] authNames, final GenericType<T> returnType) throws ApiException {
         try {
-            this.setBasePath(String.format("%s/api/rest/v1", new HostUrlProvider().withUsername(false).get(session.getHost())));
+            this.setBasePath(String.format("%s/api/rest/v1", new HostUrlProvider().withUsername(false).get(host)));
             return super.invokeAPI(path, method, queryParams, body, headerParams, formParams, accept, contentType, authNames, returnType);
         }
         catch(ProcessingException e) {
