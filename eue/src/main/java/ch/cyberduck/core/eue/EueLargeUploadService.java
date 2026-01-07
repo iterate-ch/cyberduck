@@ -97,6 +97,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
                 uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
             }
+            log.debug("Upload {} to {}", file, uploadUri);
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final long length = Math.min(chunksize, remaining);
                 parts.add(this.submit(pool, write, file, local, throttle, streamListener, status,
