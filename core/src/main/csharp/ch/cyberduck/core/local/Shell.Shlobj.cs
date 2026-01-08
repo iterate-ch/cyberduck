@@ -31,8 +31,13 @@ public static partial class Shell
         return parent;
     }
 
+    public static Exception ItemIdListFromDisplayName(string displayName, out SafeITEMIDLISTHandle handle)
+    {
+        return Marshal.GetExceptionForHR(CorePInvoke.SHParseDisplayName(displayName, null, SFGAO_FLAGS.SFGAO_FILESYSTEM, out handle, out _).Value);
+    }
+
     public static Exception ItemIdListFromLocal(CoreLocal local, out SafeITEMIDLISTHandle handle)
     {
-        return Marshal.GetExceptionForHR(CorePInvoke.SHParseDisplayName(local.getAbsolute(), null, SFGAO_FLAGS.SFGAO_FILESYSTEM, out handle, out _).Value);
+        return ItemIdListFromDisplayName(local.getAbsolute(), out handle);
     }
 }
