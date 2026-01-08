@@ -18,13 +18,16 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
+import com.google.common.base.Throwables;
 import com.hierynomus.mssmb.SMB1NotSupportedException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 
@@ -34,15 +37,18 @@ public class SMBTransportExceptionMappingService extends AbstractExceptionMappin
     @Override
     public BackgroundException map(final IOException failure) {
         log.warn("Map failure {}", failure.toString());
-        final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, failure.getMessage());
-        if(failure instanceof SMB1NotSupportedException) {
-            return new UnsupportedException(buffer.toString(), failure);
-        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SMBRuntimeException) {
                 return new SMBExceptionMappingService().map((SMBRuntimeException) cause);
             }
+            if(cause instanceof ExecutionException) {
+                return new DefaultExceptionMappingService().map(Throwables.getRootCause(cause));
+            }
+        }
+        final StringBuilder buffer = new StringBuilder();
+        this.append(buffer, failure.getMessage());
+        if(failure instanceof SMB1NotSupportedException) {
+            return new UnsupportedException(buffer.toString(), failure);
         }
         return new ConnectionRefusedException(buffer.toString(), failure);
     }
