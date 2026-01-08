@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;
 using Windows.Win32.Security.Credentials;
 using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.System.Com;
+using Windows.Win32.System.SystemServices;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.Common;
 
@@ -122,42 +125,56 @@ public unsafe partial class CorePInvoke
     public static unsafe LRESULT SendMessage(HWND hWnd, uint Msg, WPARAM wParam, PCWSTR lParam)
         => SendMessage(hWnd, Msg, wParam, (nint)lParam.Value);
 
-    /// <inheritdoc cref="ILCreateFromPath(PCWSTR)"/>
-    public static unsafe SafeITEMIDLISTHandle ILCreateFromPathSafe(string pszPath)
+    /// <inheritdoc cref="SHParseDisplayName(PCWSTR, IBindCtx, ITEMIDLIST**, uint, uint*)" />
+    public static unsafe HRESULT SHParseDisplayName(string pszName, IBindCtx pbc, SFGAO_FLAGS sfgaoIn, out SafeITEMIDLISTHandle ppidl, out SFGAO_FLAGS sfgaoOut)
     {
-        fixed (char* pszPathLocal = pszPath)
+        fixed (SFGAO_FLAGS* sfgaoOutLocal = &sfgaoOut)
         {
-            ITEMIDLIST* __result = ILCreateFromPath(pszPathLocal);
-            return new((nint)__result, true);
+            var __result = SHParseDisplayName(pszName, pbc, out var ppidlLocal, (uint)sfgaoIn, (uint*)sfgaoOutLocal);
+            ppidl = new((nint)ppidlLocal, true);
+            return __result;
         }
     }
 
     /// <inheritdoc cref="SHOpenFolderAndSelectItems(ITEMIDLIST*, uint, ITEMIDLIST**, uint)"/>
-    public static unsafe HRESULT SHOpenFolderAndSelectItems(SafeITEMIDLISTHandle pidlFolder, in ReadOnlySpan<PITEMIDLIST> apidl, uint dwFlags)
+    public static unsafe HRESULT SHOpenFolderAndSelectItems(SafeITEMIDLISTHandle pidlFolder, SafeITEMIDLISTHandle apidl)
     {
-        bool hPidlFolderAddRef = false;
+        bool pidlFolderAddRef = false;
+        bool apidlAddRef = false;
         try
         {
-            fixed (PITEMIDLIST* apidlLocal = apidl)
+            ITEMIDLIST* pidlFolderLocal;
+            if (pidlFolder is not null)
             {
-                ITEMIDLIST* pidlFolderLocal;
-                if (pidlFolder is not null)
-                {
-                    pidlFolder.DangerousAddRef(ref hPidlFolderAddRef);
-                    pidlFolderLocal = (ITEMIDLIST*)pidlFolder.DangerousGetHandle();
-                }
-                else
-                {
-                    pidlFolderLocal = (ITEMIDLIST*)IntPtr.Zero;
-                }
-
-                HRESULT __result = SHOpenFolderAndSelectItems(pidlFolderLocal, (uint)apidl.Length, (ITEMIDLIST**)apidlLocal, dwFlags);
-                return __result;
+                pidlFolder.DangerousAddRef(ref pidlFolderAddRef);
+                pidlFolderLocal = (ITEMIDLIST*)pidlFolder.DangerousGetHandle();
             }
+            else
+            {
+                throw new ArgumentNullException(nameof(pidlFolder));
+            }
+
+            ITEMIDLIST* apidlLocal;
+            if (apidl is not null)
+            {
+                apidl.DangerousAddRef(ref apidlAddRef);
+                apidlLocal = (ITEMIDLIST*)apidl.DangerousGetHandle();
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(apidl));
+            }
+
+            return SHOpenFolderAndSelectItems(pidlFolderLocal, 1, &apidlLocal, 0);
         }
         finally
         {
-            if (hPidlFolderAddRef)
+            if (apidlAddRef)
+            {
+                apidl.DangerousRelease();
+            }
+
+            if (pidlFolderAddRef)
             {
                 pidlFolder.DangerousRelease();
             }
@@ -183,37 +200,6 @@ public unsafe partial class CorePInvoke
         }
     }
 
-    /// <inheritdoc cref="SHCreateItemFromIDList(ITEMIDLIST*, Guid*, void**)"/>
-    public static unsafe HRESULT SHCreateItemFromIDList<T>(in SafeITEMIDLISTHandle pidl, out T ppv) where T : class
-    {
-        bool hPidlAddRef = false;
-        try
-        {
-            ITEMIDLIST* pidlLocal;
-            if (pidl is not null)
-            {
-                pidl.DangerousAddRef(ref hPidlAddRef);
-                pidlLocal = (ITEMIDLIST*)pidl.DangerousGetHandle();
-            }
-            else
-            {
-                pidlLocal = (ITEMIDLIST*)IntPtr.Zero;
-            }
-
-            Guid riid = typeof(T).GUID;
-            HRESULT __result = SHCreateItemFromIDList(pidlLocal, &riid, out var ppvLocal);
-            ppv = (T)ppvLocal;
-            return __result;
-        }
-        finally
-        {
-            if (hPidlAddRef)
-            {
-                pidl.DangerousRelease();
-            }
-        }
-    }
-
     /// <inheritdoc cref="SHGetFileInfo(PCWSTR, FILE_FLAGS_AND_ATTRIBUTES, SHFILEINFOW*, uint, SHGFI_FLAGS)"/>
     public static unsafe nuint SHGetFileInfo(string pszPath, FILE_FLAGS_AND_ATTRIBUTES dwFileAttributes, in SHFILEINFOW sfi, SHGFI_FLAGS uFlags)
     {
@@ -222,5 +208,149 @@ public unsafe partial class CorePInvoke
         {
             return SHGetFileInfo(pszPathLocal, dwFileAttributes, psfiLocal, (uint)Marshal.SizeOf<SHFILEINFOW>(), uFlags);
         }
+    }
+
+    /// <inheritdoc cref="ILFindLastID(ITEMIDLIST*)" />
+    public static unsafe SafeITEMIDLISTHandle ILFindLastID(in SafeITEMIDLISTHandle pidl)
+    {
+        bool pidlAddRef = false;
+        try
+        {
+            ITEMIDLIST* pidlLocal;
+            if (pidl is not null)
+            {
+                pidl.DangerousAddRef(ref pidlAddRef);
+                pidlLocal = (ITEMIDLIST*)pidl.DangerousGetHandle();
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(pidl));
+            }
+
+            return new((nint)ILFindLastID(pidlLocal), false);
+        }
+        finally
+        {
+            if (pidlAddRef)
+            {
+                pidl.DangerousRelease();
+            }
+        }
+    }
+
+    /// <inheritdoc cref="ILRemoveLastID(ITEMIDLIST*)" />
+    public static unsafe BOOL ILRemoveLastID(SafeITEMIDLISTHandle pidl)
+    {
+        bool pidlAddRef = false;
+        try
+        {
+            ITEMIDLIST* pidlLocal;
+            if (pidl is not null)
+            {
+                pidl.DangerousAddRef(ref pidlAddRef);
+                pidlLocal = (ITEMIDLIST*)pidl.DangerousGetHandle();
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(pidl));
+            }
+
+            return ILRemoveLastID(pidlLocal);
+        }
+        finally
+        {
+            if (pidlAddRef)
+            {
+                pidl.DangerousRelease();
+            }
+        }
+    }
+
+    /// <inheritdoc cref="ILClone(ITEMIDLIST*)" />
+    public static unsafe SafeITEMIDLISTHandle ILClone(in SafeITEMIDLISTHandle pidl, bool leaveOpen = false)
+    {
+        bool pidlAddRef = false;
+        try
+        {
+            ITEMIDLIST* pidlLocal;
+            if (pidl is not null)
+            {
+                pidl.DangerousAddRef(ref pidlAddRef);
+                pidlLocal = (ITEMIDLIST*)pidl.DangerousGetHandle();
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(pidl));
+            }
+
+            return new((nint)ILClone(pidlLocal), true);
+        }
+        finally
+        {
+            if (pidlAddRef)
+            {
+                pidl.DangerousRelease();
+
+                if (!leaveOpen)
+                {
+                    pidl.Dispose();
+                }
+            }
+        }
+    }
+
+    /// <inheritdoc cref="SHCreateDataObject(ITEMIDLIST*, uint, ITEMIDLIST**, IDataObject, Guid*, out object)" />
+    public static unsafe HRESULT SHCreateDataObject(SafeITEMIDLISTHandle pidlFolder, SafeITEMIDLISTHandle apidl, out IDataObject ppv)
+    {
+        bool pidlFolderAddRef = false;
+        bool apidlAddRef = false;
+        try
+        {
+            ITEMIDLIST* pidlFolderLocal;
+            if (pidlFolder is not null)
+            {
+                pidlFolder.DangerousAddRef(ref pidlFolderAddRef);
+                pidlFolderLocal = (ITEMIDLIST*)pidlFolder.DangerousGetHandle();
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(pidlFolder));
+            }
+
+            ITEMIDLIST* apidlLocal;
+            if (apidl is not null)
+            {
+                apidl.DangerousAddRef(ref apidlAddRef);
+                apidlLocal = (ITEMIDLIST*)apidl.DangerousGetHandle();
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(apidl));
+            }
+
+            return LocalExternFunction(pidlFolderLocal, 1, &apidlLocal, null, typeof(IDataObject).GUID, out ppv);
+        }
+        finally
+        {
+            if (apidlAddRef)
+            {
+                apidl.DangerousRelease();
+            }
+
+            if (pidlFolderAddRef)
+            {
+                pidlFolder.DangerousRelease();
+            }
+        }
+
+        [DllImport("SHELL32.dll", ExactSpelling = true, EntryPoint = "SHCreateDataObject")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+        static extern unsafe HRESULT LocalExternFunction(
+            [Optional] ITEMIDLIST* pidlFolder,
+            uint cidl,
+            [Optional] ITEMIDLIST** apidl,
+            IDataObject pdtInner,
+            in Guid riid,
+            [MarshalAs(UnmanagedType.Interface)] out IDataObject ppv);
     }
 }

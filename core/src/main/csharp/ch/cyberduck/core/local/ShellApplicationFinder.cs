@@ -16,23 +16,22 @@
 // feedback@cyberduck.io
 //
 
-using ch.cyberduck.core.cache;
-using ch.cyberduck.core.local;
-using Ch.Cyberduck.Core.I18n;
-using java.util;
-using org.apache.commons.io;
-using org.apache.logging.log4j;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using ch.cyberduck.core.cache;
+using ch.cyberduck.core.local;
+using Ch.Cyberduck.Core.I18n;
+using java.util;
+using org.apache.commons.io;
+using org.apache.logging.log4j;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
-using Windows.Win32.UI.Shell.Common;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Shell.ASSOC_FILTER;
 using static Windows.Win32.UI.Shell.ASSOCIATIONLEVEL;
@@ -257,6 +256,8 @@ namespace Ch.Cyberduck.Core.Local
 
         public class ShellApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
         {
+            private static Logger Log = LogManager.getLogger(typeof(ShellApplication));
+
             private readonly IAssocHandler handler;
             private readonly int iconIndex;
             private readonly string iconPath;
@@ -280,19 +281,69 @@ namespace Ch.Cyberduck.Core.Local
             {
                 if (SynchronizationContext.Current == null)
                 {
-                    sync.Send(d => Launch(local), null);
+                    sync.Send(d => Launch((ch.cyberduck.core.Local)d), local);
                     return;
                 }
 
-                using var pidl = ILCreateFromPathSafe(local.getAbsolute());
-                if (pidl.IsInvalid)
+                IDataObject pdo = null;
+                try
                 {
-                    return;
-                }
+                    SafeITEMIDLISTHandle item = null;
+                    SafeITEMIDLISTHandle folder = null;
+                    try
+                    {
+                        if (Shell.ItemIdListFromLocal(local, out item) is { } shellError)
+                        {
+                            if (Log.isDebugEnabled())
+                            {
+                                Log.debug($"{this}: Creating ItemIdList from {local}", shellError);
+                            }
 
-                SHCreateItemFromIDList(pidl, out IShellItem ppv);
-                ppv.BindToHandler(null, BHID_DataObject, out IDataObject pdo);
-                handler.Invoke(pdo);
+                            return;
+                        }
+
+                        if ((folder = Shell.GetParent(ref item)).IsInvalid)
+                        {
+                            if (Log.isDebugEnabled())
+                            {
+                                Log.debug($"{this}: Did not find IDL parent for {local}");
+                            }
+
+                            return;
+                        }
+
+                        if (SHCreateDataObject(folder, item, out pdo) is { Failed: true, Value: { } dataObjectError })
+                        {
+                            if (Log.isDebugEnabled())
+                            {
+                                Log.debug($"{this}: Create IDataObject for Handler", Marshal.GetExceptionForHR(dataObjectError));
+                            }
+
+                            return;
+                        }
+                    }
+                    finally
+                    {
+                        folder?.Dispose();
+                        item?.Dispose();
+                    }
+
+                    try
+                    {
+                        handler.Invoke(pdo);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.warn($"{this}: Failed invoking handler for {local}", e);
+                    }
+                }
+                finally
+                {
+                    if (pdo != null)
+                    {
+                        Marshal.FinalReleaseComObject(pdo);
+                    }
+                }
             }
         }
 

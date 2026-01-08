@@ -1,5 +1,4 @@
 ﻿ASSOCF
-BHID_DataObject
 CLSID_QueryAssociations
 CoTaskMemFree
 CreateFile
@@ -24,9 +23,10 @@ HWND_TOPMOST
 IApplicationAssociationRegistration
 IAssocHandler
 IAssocHandlerInvoker
-IDataObject
 IExtractIconW
-ILCreateFromPath
+ILClone
+ILFindLastID
+ILRemoveLastID 
 IQueryAssociations
 IShellItem
 KNOWN_FOLDER_FLAG
@@ -49,7 +49,7 @@ SetWindowPos
 SetWindowText
 SHAssocEnumHandlers
 SHCreateAssociationRegistration
-SHCreateItemFromIDList
+SHCreateDataObject
 Shell_GetCachedImageIndex
 ShellExecuteEx
 SHGetFileInfo
