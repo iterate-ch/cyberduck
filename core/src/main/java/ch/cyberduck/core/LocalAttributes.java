@@ -177,9 +177,24 @@ public class LocalAttributes implements Attributes {
         return null;
     }
 
+    private static Permission.Action toAction(final String path) {
+        Permission.Action actions = Permission.Action.none;
+        final Path p = Paths.get(path);
+        if(Files.isReadable(p)) {
+            actions = actions.or(Permission.Action.read);
+        }
+        if(Files.isWritable(p)) {
+            actions = actions.or(Permission.Action.write);
+        }
+        if(Files.isExecutable(p)) {
+            actions = actions.or(Permission.Action.execute);
+        }
+        return actions;
+    }
+
     protected class LocalPermission extends Permission {
         public LocalPermission() {
-            //
+            super(toAction(path), Action.none, Action.none);
         }
 
         public LocalPermission(final String mode) {
