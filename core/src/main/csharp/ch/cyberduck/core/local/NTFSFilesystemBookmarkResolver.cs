@@ -15,16 +15,13 @@ using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.local;
 using Microsoft.Win32.SafeHandles;
 using org.apache.logging.log4j;
 using Windows.Win32;
 using Windows.Win32.Storage.FileSystem;
-using Windows.Win32.UI.Shell;
 using CoreLocal = ch.cyberduck.core.Local;
-using NetPath = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
 {

@@ -145,7 +145,9 @@ public unsafe partial class CorePInvoke
     {
         fixed (char* pszPathLocal = pszPath)
         {
+#pragma warning disable RS0030
             ITEMIDLIST* __result = ILCreateFromPath(pszPathLocal);
+#pragma warning restore RS0030
             return new((nint)__result, true);
         }
     }
