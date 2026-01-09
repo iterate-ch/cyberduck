@@ -40,6 +40,8 @@
     <LangVersion>12</LangVersion>
 
     <BuildProjectReferences Condition=" '$(BuildProjectReferences)'=='' And '$(BuildingInsideVisualStudio)'!='True' ">false</BuildProjectReferences>
+
+    <WarningsAsErrors>RS0030;$(WarnAsError)</WarningsAsErrors>
   </PropertyGroup>
   
   <ItemDefinitionGroup>
@@ -53,5 +55,9 @@
   <PropertyGroup>
     <SignToolExecutablePath>$(PATH)</SignToolExecutablePath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)src\main\msbuild\BannedSymbols.*.txt" Link="%(Filename)%(Extension)" />
+  </ItemGroup>
 
 </Project>

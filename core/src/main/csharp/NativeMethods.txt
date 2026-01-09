@@ -1,4 +1,5 @@
 ﻿ASSOCF
+BHID_DataObject
 CLSID_QueryAssociations
 CoTaskMemFree
 CreateFile
@@ -25,6 +26,7 @@ IAssocHandler
 IAssocHandlerInvoker
 IExtractIconW
 ILClone
+ILCreateFromPath
 ILFindLastID
 ILRemoveLastID 
 IQueryAssociations
@@ -34,7 +36,10 @@ LoadLibrary
 LoadString
 MESSAGEBOX_RESULT
 OpenFileById
+PATHCCH_ALLOW_LONG_PATHS
 PATHCCH_MAX_CCH
+PathCchCanonicalizeEx
+PathCchStripPrefix
 PathParseIconLocation
 PBST_ERROR
 PBST_NORMAL
@@ -50,6 +55,7 @@ SetWindowText
 SHAssocEnumHandlers
 SHCreateAssociationRegistration
 SHCreateDataObject
+SHCreateItemFromIDList
 Shell_GetCachedImageIndex
 ShellExecuteEx
 SHGetFileInfo
