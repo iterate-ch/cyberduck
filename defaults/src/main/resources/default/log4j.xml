@@ -19,6 +19,7 @@
         <Null name="disabled"/>
     </Appenders>
     <Loggers>
+        <Logger name="com.google.api.client.http.HttpTransport" additivity="false" level="ERROR"/>
         <Logger name="org.apache.http.wire" additivity="false" level="ERROR"/>
         <Logger name="org.apache.http.headers" additivity="false" level="ERROR"/>
         <Root level="ERROR">
