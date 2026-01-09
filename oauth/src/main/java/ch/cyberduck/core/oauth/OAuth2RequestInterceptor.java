@@ -15,6 +15,7 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
@@ -45,7 +46,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     private static final Logger log = LogManager.getLogger(OAuth2RequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
-    private final Host host;
+    private final Credentials credentials;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt) throws LoginCanceledException {
         this(client, host,
@@ -62,14 +63,14 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
         super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
-        this.host = host;
+        this.credentials = host.getCredentials();
     }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         lock.lock();
         try {
-            final OAuthTokens tokens = host.getCredentials().getOauth();
+            final OAuthTokens tokens = credentials.getOauth();
             if(tokens.isExpired()) {
                 try {
                     this.save(this.authorizeWithRefreshToken(tokens));
