@@ -70,10 +70,10 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         lock.lock();
         try {
-            final OAuthTokens tokens = credentials.getOauth();
+            OAuthTokens tokens = credentials.getOauth();
             if(tokens.isExpired()) {
                 try {
-                    this.save(this.authorizeWithRefreshToken(tokens));
+                    tokens = this.save(this.authorizeWithRefreshToken(tokens));
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure {} refreshing OAuth tokens {}", e, tokens);
