@@ -460,8 +460,10 @@ public class CryptoVault implements Vault {
             encrypted.attributes().setDecrypted(file);
         }
         // Add reference for vault
-        file.attributes().setVault(home);
-        encrypted.attributes().setVault(home);
+        if(!new SimplePathPredicate(file).test(home)) {
+            file.attributes().setVault(home);
+            encrypted.attributes().setVault(home);
+        }
         return encrypted;
     }
 
@@ -504,8 +506,6 @@ public class CryptoVault implements Vault {
                 }
                 // Add reference to encrypted file
                 attributes.setEncrypted(file);
-                // Add reference for vault
-                attributes.setVault(home);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
                 type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
                 type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
@@ -514,6 +514,10 @@ public class CryptoVault implements Vault {
                 final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
                 if(type.contains(Path.Type.symboliclink)) {
                     decrypted.setSymlinkTarget(file.getSymlinkTarget());
+                }
+                if(!new SimplePathPredicate(decrypted).test(home)) {
+                    // Add reference for vault
+                    attributes.setVault(home);
                 }
                 return decrypted;
             }
