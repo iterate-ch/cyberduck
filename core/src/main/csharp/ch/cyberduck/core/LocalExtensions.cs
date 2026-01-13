@@ -6,9 +6,9 @@ namespace Ch.Cyberduck.Core;
 
 public static class LocalExtensions
 {
-    /// <inheritdoc cref="SystemLocal.ToNativePath(CoreLocal)"/>
+    /// <inheritdoc cref="PlatformLocalSupport.ToNativePath(CoreLocal)"/>
     public static string NativePath(this CoreLocal local) => PlatformLocalSupport.ToNativePath(local);
 
-    /// <inheritdoc cref="SystemLocal.ToPlatformPath(CoreLocal)"/>
+    /// <inheritdoc cref="PlatformLocalSupport.ToPlatformPath(CoreLocal)"/>
     public static string PlatformPath(this CoreLocal local) => PlatformLocalSupport.ToPlatformPath(local);
 }

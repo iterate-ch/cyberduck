@@ -237,6 +237,16 @@ namespace Ch.Cyberduck.Core.Local
 #if NETFRAMEWORK
         private static string Join(string root, string path)
         {
+            if (string.IsNullOrEmpty(root))
+            {
+                return path;
+            }
+
+            if (string.IsNullOrEmpty(path))
+            {
+                return root;
+            }
+
             // Path.Join doesn't exist in .NET Framework, need to replicate
             bool hasDirectorySeparator = IsDirectorySeparator(root[root.Length - 1]) || IsDirectorySeparator(path[0]);
             return hasDirectorySeparator

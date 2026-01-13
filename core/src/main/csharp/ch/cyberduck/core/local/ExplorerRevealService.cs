@@ -26,7 +26,7 @@ namespace Ch.Cyberduck.Core.Local;
 
 public sealed class ExplorerRevealService : RevealService
 {
-    private static Logger Log = LogManager.getLogger(typeof(ExplorerRevealService));
+    private static readonly Logger Log = LogManager.getLogger(typeof(ExplorerRevealService));
 
     public unsafe bool reveal(CoreLocal l, bool select)
     {

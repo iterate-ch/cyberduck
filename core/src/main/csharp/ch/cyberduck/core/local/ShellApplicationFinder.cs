@@ -256,7 +256,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public class ShellApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
         {
-            private static Logger Log = LogManager.getLogger(typeof(ShellApplication));
+            private static readonly Logger Log = LogManager.getLogger(typeof(ShellApplication));
 
             private readonly IAssocHandler handler;
             private readonly int iconIndex;
