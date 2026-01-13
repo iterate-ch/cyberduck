@@ -262,7 +262,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             return (T) new EueReadFeature(this, resourceid);
         }
         if(type == Write.class) {
-            return (T) new EueThresholdWriteFeature(this, resourceid);
+            return (T) new EueWriteFeature(this, resourceid);
         }
         if(type == MultipartWrite.class) {
             return (T) new EueMultipartWriteFeature(this, resourceid);
