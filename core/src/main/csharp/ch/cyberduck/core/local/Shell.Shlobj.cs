@@ -8,27 +8,27 @@ namespace Ch.Cyberduck.Core.Local;
 
 public static partial class Shell
 {
-    public static SafeITEMIDLISTHandle GetParent(ref SafeITEMIDLISTHandle handle)
+    /// <summary>
+    /// Tries to extract the last item id in a PIDLIST_ABSOLUTE into <paramref name="child" />, and copies the remainder into <paramref name="parent" />.
+    /// </summary>
+    /// <param name="child">A IDLIST_ABSOLUTE, which receives the last ID on return.</param>
+    /// <param name="parent">Receives the original <paramref name="child"/> IDLIST, with the last item zeroed.</param>
+    /// <returns>True on success, and false on any failure.</returns>
+    /// <remarks>Callers are responsible to cleanup resources after returning.</remarks>
+    public static bool GetParent(ref SafeITEMIDLISTHandle child, out SafeITEMIDLISTHandle parent)
     {
-        SafeITEMIDLISTHandle child;
-        if ((child = CorePInvoke.ILFindLastID(handle)).IsInvalid)
+        parent = child;
+        if ((child = CorePInvoke.ILFindLastID(parent)).IsInvalid)
         {
-            return null;
+            return false;
         }
 
         if ((child = CorePInvoke.ILClone(child)).IsInvalid)
         {
-            return null;
+            return false;
         }
 
-        var parent = handle;
-        handle = child;
-        if (!CorePInvoke.ILRemoveLastID(parent))
-        {
-            parent.Dispose();
-        }
-
-        return parent;
+        return CorePInvoke.ILRemoveLastID(parent);
     }
 
     public static Exception ItemIdListFromDisplayName(string displayName, out SafeITEMIDLISTHandle handle)

@@ -302,7 +302,7 @@ namespace Ch.Cyberduck.Core.Local
                             return;
                         }
 
-                        if ((folder = Shell.GetParent(ref item)).IsInvalid)
+                        if (!Shell.GetParent(ref item, out folder))
                         {
                             if (Log.isDebugEnabled())
                             {

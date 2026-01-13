@@ -49,7 +49,7 @@ public sealed class ExplorerRevealService : RevealService
                 return false;
             }
 
-            if ((parent = Shell.GetParent(ref selectItem)) is not { IsInvalid: false })
+            if (!Shell.GetParent(ref selectItem, out parent))
             {
                 if (Log.isDebugEnabled())
                 {
