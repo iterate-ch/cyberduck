@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Core.Local
                 if (local.isDirectory()) {
                     return -1L;
                 }
-                return new FileInfo(resolved.getAbsolute()).Length;
+                return new FileInfo(resolved.PlatformPath()).Length;
             }
             catch (Exception e)
             {

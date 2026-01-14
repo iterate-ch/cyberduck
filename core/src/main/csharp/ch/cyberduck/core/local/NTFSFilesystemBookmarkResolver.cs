@@ -15,16 +15,13 @@ using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.local;
 using Microsoft.Win32.SafeHandles;
 using org.apache.logging.log4j;
 using Windows.Win32;
 using Windows.Win32.Storage.FileSystem;
-using Windows.Win32.UI.Shell;
 using CoreLocal = ch.cyberduck.core.Local;
-using NetPath = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
 {
@@ -36,22 +33,9 @@ namespace Ch.Cyberduck.Core.Local
 
         public string create(CoreLocal file, bool prompt)
         {
-            Span<char> finalNameBuffer = new char[CorePInvoke.PATHCCH_MAX_CCH];
-            if (CorePInvoke.PathCchCanonicalizeEx(
-                ref finalNameBuffer,
-                NetPath.GetFullPath(file.getAbsolute()),
-                PATHCCH_OPTIONS.PATHCCH_ALLOW_LONG_PATHS | PATHCCH_OPTIONS.PATHCCH_FORCE_ENABLE_LONG_NAME_PROCESS) is
-                {
-                    Failed: true,
-                    Value: { } error
-                })
-            {
-                goto error;
-            }
-
             FILE_ID_INFO info;
             using (var handle = CorePInvoke.CreateFile(
-                lpFileName: finalNameBuffer,
+                lpFileName: file.NativePath(),
                 dwDesiredAccess: 0,
                 dwShareMode: (FILE_SHARE_MODE)7,
                 lpSecurityAttributes: null,
@@ -139,28 +123,7 @@ namespace Ch.Cyberduck.Core.Local
                     throw new LocalAccessDeniedException(bookmark);
                 }
 
-                /*
-                 * OpenJDK 8 and .NET 8 are implicitely long-path aware,
-                 * thus we don't need to carry the long path-prefix,
-                 * which for OpenJDK means long-path prefixed paths fail.
-                 */
-                if (CorePInvoke.PathCchStripPrefix(ref finalNameBuffer, length) is
-                    {
-                        Failed: true, /* PathCchStripPrefix is Success (S_OK (0), S_FALSE(1)) or Failed (HRESULT, <0) */
-                        Value: { } stripPrefixError
-                    })
-                {
-                    var errorCode = Marshal.GetHRForLastWin32Error();
-                    Log.warn(
-#if NETCOREAPP
-                        $"Path Strip Prefix \"{finalNameBuffer}\" ({errorCode:X8})");
-#else
-                        $"Path Strip Prefix \"{finalNameBuffer.ToString()}\" ({errorCode:X8})");
-#endif
-                    throw new LocalAccessDeniedException(bookmark);
-                }
-
-                return LocalFactory.get(finalNameBuffer.ToString()).setBookmark(bookmark);
+                return new SystemLocal(finalNameBuffer.Slice(0, (int)length).ToString()).setBookmark(bookmark);
             }
             finally
             {
@@ -191,7 +154,7 @@ namespace Ch.Cyberduck.Core.Local
                 try
                 {
                     result = CorePInvoke.CreateFile(
-                        lpFileName: local.getAbsolute(),
+                        lpFileName: local.NativePath(),
                         dwDesiredAccess: 0,
                         dwShareMode: (FILE_SHARE_MODE)7,
                         lpSecurityAttributes: null, dwCreationDisposition: FILE_CREATION_DISPOSITION.OPEN_EXISTING,

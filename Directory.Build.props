@@ -54,4 +54,8 @@
     <SignToolExecutablePath>$(PATH)</SignToolExecutablePath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)src\main\msbuild\BannedSymbols.*.txt" Link="%(Filename)%(Extension)" />
+  </ItemGroup>
+
 </Project>

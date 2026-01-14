@@ -17,41 +17,59 @@
 // 
 
 using ch.cyberduck.core.local;
-using System;
+using org.apache.logging.log4j;
 using Windows.Win32;
 using static Windows.Win32.CorePInvoke;
+using CoreLocal = ch.cyberduck.core.Local;
 
-namespace Ch.Cyberduck.Core.Local
+namespace Ch.Cyberduck.Core.Local;
+
+public sealed class ExplorerRevealService : RevealService
 {
-    public sealed class ExplorerRevealService : RevealService
+    private static readonly Logger Log = LogManager.getLogger(typeof(ExplorerRevealService));
+
+    public unsafe bool reveal(CoreLocal l, bool select)
     {
-        public unsafe bool reveal(ch.cyberduck.core.Local l, bool select)
+        if (!select)
         {
-            if (!select)
-            {
-                return ApplicationLauncherFactory.get().open(l);
-            }
+            return ApplicationLauncherFactory.get().open(l);
+        }
 
-            using var nativeFolder = ILCreateFromPathSafe(l.getParent().getAbsolute());
-            if (nativeFolder.IsInvalid)
+        SafeITEMIDLISTHandle selectItem = null;
+        SafeITEMIDLISTHandle parent = null;
+        try
+        {
+            if (Shell.ItemIdListFromLocal(l, out selectItem) is { } error)
             {
+                if (Log.isDebugEnabled())
+                {
+                    Log.debug($"Create IdList {l}", error);
+                }
+
                 return false;
             }
 
-            using var nativeFile = ILCreateFromPathSafe(l.getAbsolute());
-            if (nativeFile.IsInvalid)
+            if (!Shell.GetParent(ref selectItem, out parent))
             {
+                if (Log.isDebugEnabled())
+                {
+                    Log.debug($"Could not get parent IDL of {l}");
+                }
+
                 return false;
             }
 
-            ReadOnlySpan<PITEMIDLIST> target = select ? [nativeFile.Value] : [];
-            SHOpenFolderAndSelectItems(nativeFolder, target, 0);
-            return true;
+            return SHOpenFolderAndSelectItems(parent, selectItem).Succeeded;
         }
-
-        public bool reveal(ch.cyberduck.core.Local file)
+        finally
         {
-            return reveal(file, true);
+            parent?.Dispose();
+            selectItem?.Dispose();
         }
+    }
+
+    public bool reveal(CoreLocal file)
+    {
+        return reveal(file, true);
     }
 }

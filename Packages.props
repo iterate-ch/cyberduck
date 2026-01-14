@@ -40,6 +40,7 @@
     <PackageReference Update="System.Runtime.Caching" Version="8.0.0" />
     <PackageReference Update="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
 
+    <GlobalPackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.3.4" />
     <GlobalPackageReference Include="MSBuildTasks" Version="1.5.0.235" GeneratePathProperty="true" />
   </ItemGroup>
 </Project>

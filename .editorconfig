@@ -25,6 +25,9 @@ indent_size = 2
 [*.{cs,vb}]
 dotnet_sort_system_directives_first = true
 
+[*.{cs,vb}]
+dotnet_diagnostic.RS0030.severity = error
+
 [*.java]
 ij_java_align_consecutive_assignments = false
 ij_java_align_consecutive_variable_declarations = false
@@ -290,3 +293,6 @@ ij_java_wrap_first_method_in_call_chain = false
 ij_java_wrap_long_lines = false
 ij_java_wrap_semicolon_after_call_chain = false
 ij_java_continuation_indent_size = 8
+
+[*/Microsoft.Windows.CsWin32.SourceGenerator/*.cs]
+generated_code = true

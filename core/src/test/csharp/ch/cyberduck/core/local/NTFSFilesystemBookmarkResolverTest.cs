@@ -17,8 +17,8 @@ public class NTFSFilesystemBookmarkResolverTest
         new DefaultLocalTouchFeature().touch(file);
         NTFSFilesystemBookmarkResolver resolver = new(file);
         var bookmark = resolver.create(file);
-        Assert.That(bookmark, new NotConstraint(new NullConstraint()));
+        Assert.That(bookmark, Is.Not.Null);
         CoreLocal resolved = (CoreLocal)resolver.resolve(bookmark);
-        Assert.That(resolved, new EqualConstraint(file));
+        Assert.That(resolved, Is.EqualTo(file));
     }
 }
