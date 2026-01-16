@@ -20,9 +20,12 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +69,15 @@ public class S3PresignedUrlProvider {
                     return String.format(endpoint, region);
                 }
                 return bookmark.getHostname();
+            }
+
+            @Override
+            protected String getVirtualPath() {
+                final String context = bookmark.getProtocol().getContext();
+                if(StringUtils.isNotBlank(context) && !Scheme.isURL(context)) {
+                    return PathNormalizer.normalize(context);
+                }
+                return StringUtils.EMPTY;
             }
 
             @Override
