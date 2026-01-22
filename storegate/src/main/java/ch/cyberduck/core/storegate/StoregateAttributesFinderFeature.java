@@ -34,8 +34,11 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StoregateAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
+    private static final Logger log = LogManager.getLogger(StoregateAttributesFinderFeature.class);
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
@@ -53,6 +56,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
                 for(RootFolder r : session.roots()) {
                     if(StringUtils.equalsIgnoreCase(file.getName(), PathNormalizer.name(r.getPath()))
                             || StringUtils.equalsIgnoreCase(file.getName(), PathNormalizer.name(r.getName()))) {
+                        log.debug("Found root folder match for {}", file);
                         return this.toAttributes(r);
                     }
                 }

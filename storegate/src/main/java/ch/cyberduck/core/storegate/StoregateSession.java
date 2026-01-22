@@ -177,6 +177,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             credentials.setUsername(me.getUsername());
             // Get root folders
             roots = new SettingsApi(client).settingsGetRootfolders();
+            log.debug("Retrieved {} root folders", roots.size());
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map(e);
