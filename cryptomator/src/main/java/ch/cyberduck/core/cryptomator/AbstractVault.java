@@ -230,13 +230,11 @@ public abstract class AbstractVault implements Vault {
                 return decrypted;
             }
             catch(AuthenticationFailedException e) {
-                throw new CryptoAuthenticationException(
-                        "Failure to decrypt due to an unauthentic ciphertext", e);
+                throw new CryptoAuthenticationException("Failure to decrypt due to an unauthentic ciphertext", e).withFile(file);
             }
         }
         else {
-            throw new CryptoFilenameMismatchException(
-                    String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern));
+            throw new CryptoFilenameMismatchException(String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern)).withFile(file);
         }
     }
 

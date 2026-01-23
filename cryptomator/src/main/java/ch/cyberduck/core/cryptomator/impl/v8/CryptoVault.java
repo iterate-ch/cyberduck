@@ -360,7 +360,7 @@ public class CryptoVault extends AbstractVault {
             return MasterkeyFile.read(reader);
         }
         catch(JsonParseException | IllegalArgumentException | IllegalStateException | IOException e) {
-            throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
+            throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e).withFile(file);
         }
     }
 
