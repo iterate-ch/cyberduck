@@ -24,8 +24,8 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -78,7 +78,7 @@ public class TripleCryptKeyPair {
                     keychain.addPassword(toServiceName(bookmark, keypair.getUserPublicKey().getVersion()),
                             toAccountName(bookmark), credentials.getPassword());
                 }
-                catch(LocalAccessDeniedException e) {
+                catch(AccessDeniedException e) {
                     log.error("Failure {} saving credentials for {} in password store", e, bookmark);
                 }
             }
