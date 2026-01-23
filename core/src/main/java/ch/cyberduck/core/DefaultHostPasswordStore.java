@@ -17,7 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -50,7 +50,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                     bookmark.getHostname(), StringUtils.isEmpty(credentials.getUsername()) ?
                             bookmark.getProtocol().getPasswordPlaceholder() : credentials.getUsername());
         }
-        catch(LocalAccessDeniedException e) {
+        catch(AccessDeniedException e) {
             log.warn("Failure {} searching in keychain", e.getMessage());
             return null;
         }
@@ -76,7 +76,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                             bookmark.getProtocol().getTokenPlaceholder() :
                             String.format("%s (%s)", bookmark.getProtocol().getTokenPlaceholder(), credentials.getUsername()));
         }
-        catch(LocalAccessDeniedException e) {
+        catch(AccessDeniedException e) {
             log.warn("Failure {} searching in keychain", e.getMessage());
             return null;
         }
@@ -121,7 +121,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 }
                 return passphrase;
             }
-            catch(LocalAccessDeniedException e) {
+            catch(AccessDeniedException e) {
                 log.warn("Failure {} searching in keychain", e.getMessage());
                 return null;
             }
@@ -157,7 +157,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
                 }
                 // Continue with deprecated descriptors
             }
-            catch(LocalAccessDeniedException e) {
+            catch(AccessDeniedException e) {
                 log.warn("Failure {} searching in keychain", e.getMessage());
                 return OAuthTokens.EMPTY;
             }
@@ -221,7 +221,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     }
 
     @Override
-    public void save(final Host bookmark) throws LocalAccessDeniedException {
+    public void save(final Host bookmark) throws AccessDeniedException {
         if(StringUtils.isEmpty(bookmark.getHostname())) {
             log.warn("No hostname given");
             return;
@@ -282,7 +282,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     }
 
     @Override
-    public void delete(final Host bookmark) throws LocalAccessDeniedException {
+    public void delete(final Host bookmark) throws AccessDeniedException {
         log.info("Delete password for bookmark {}", bookmark);
         final Credentials credentials = bookmark.getCredentials();
         final Protocol protocol = bookmark.getProtocol();

@@ -34,7 +34,7 @@ import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.ui.LoginInputValidator;
 
@@ -174,7 +174,7 @@ public class DefaultBookmarkController extends BookmarkController {
                     StringUtils.strip(passwordField.stringValue())
                 );
             }
-            catch(LocalAccessDeniedException e) {
+            catch(AccessDeniedException e) {
                 log.error("Failure saving credentials for {} in keychain. {}", bookmark, e);
             }
         }

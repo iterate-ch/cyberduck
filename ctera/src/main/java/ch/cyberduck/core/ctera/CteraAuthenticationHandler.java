@@ -150,7 +150,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
      *
      * @return Same tokens saved
      */
-    public CteraTokens save(final CteraTokens tokens) throws LocalAccessDeniedException {
+    public CteraTokens save(final CteraTokens tokens) throws AccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
         final Credentials credentials = host.getCredentials();
         credentials
