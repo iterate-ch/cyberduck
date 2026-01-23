@@ -16,8 +16,8 @@ package ch.cyberduck.core.oauth;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -155,7 +155,7 @@ public class OAuth2AuthorizationService {
      *
      * @return Same tokens saved
      */
-    public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
+    public OAuthTokens save(final OAuthTokens tokens) throws AccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
         credentials.setOauth(tokens).setSaved(new LoginOptions().save);
         switch(flowType) {

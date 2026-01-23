@@ -17,9 +17,9 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -224,7 +224,7 @@ public class KeychainLoginService implements LoginService {
                     keychain.save(bookmark.getJumphost());
                 }
             }
-            catch(LocalAccessDeniedException e) {
+            catch(AccessDeniedException e) {
                 log.error("Failure saving credentials for {} in keychain. {}", bookmark, e);
             }
         }
