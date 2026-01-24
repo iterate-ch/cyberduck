@@ -145,7 +145,6 @@ public class AzureWriteFeature implements Write<Void> {
                     }
                     else {
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
-                                .setMetadata(metadata)
                                 .setHeaders(headers)
                                 .setMetadata(metadata);
                         out = client.getBlockBlobClient().getBlobOutputStream(options);
@@ -158,7 +157,6 @@ public class AzureWriteFeature implements Write<Void> {
                     case APPEND_BLOB: {
                         final AppendBlobClient append = client.getAppendBlobClient();
                         final AppendBlobCreateOptions options = new AppendBlobCreateOptions()
-                                .setMetadata(metadata)
                                 .setHeaders(headers)
                                 .setMetadata(metadata);
                         append.createWithResponse(options, null, null);
@@ -168,7 +166,6 @@ public class AzureWriteFeature implements Write<Void> {
                     default: {
                         final BlockBlobClient block = client.getBlockBlobClient();
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
-                                .setMetadata(metadata)
                                 .setHeaders(headers)
                                 .setMetadata(metadata);
                         out = block.getBlobOutputStream(options);
