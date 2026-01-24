@@ -141,7 +141,9 @@ public class AzureWriteFeature implements Write<Void> {
                     // Existing block blob type
                     final PathAttributes attr = new AzureAttributesFinderFeature(session).find(file);
                     if(BlobType.APPEND_BLOB == BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE))) {
-                        out = client.getAppendBlobClient().getBlobOutputStream(true);
+                        final AppendBlobClient append = client.getAppendBlobClient();
+                        // No BlockBlobOutputStreamOptions
+                        out = append.getBlobOutputStream(true);
                     }
                     else {
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
