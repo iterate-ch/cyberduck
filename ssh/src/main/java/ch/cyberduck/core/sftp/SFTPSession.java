@@ -29,8 +29,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.auth.SFTPAgentAuthentication;
@@ -41,10 +39,8 @@ import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.compression.JcraftDelayedZlibCompression;
 import ch.cyberduck.core.sftp.compression.JcraftZlibCompression;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
-import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
-import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
@@ -96,8 +92,6 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = LogManager.getLogger(SFTPSession.class);
 
-    private final PreferencesReader preferences = HostPreferencesFactory.get(host);
-
     private SFTPEngine sftp;
     private StateDisconnectListener disconnectListener;
     private NegotiatedAlgorithms algorithms;
@@ -148,20 +142,14 @@ public class SFTPSession extends Session<SSHClient> {
         final SSHClient connection = this.toClient(key, configuration);
         try {
             // Look for jump host configuration
-            final Host proxy = new OpenSSHJumpHostConfigurator().getJumphost(host.getHostname());
+            final Host proxy = host.getJumphost();
             if(null != proxy) {
                 log.info("Connect using jump host configuration {}", proxy);
                 final SSHClient hop = this.toClient(key, configuration);
                 hop.connect(proxy.getHostname(), proxy.getPort());
-                final Credentials proxyCredentials = new OpenSSHCredentialsConfigurator().configure(proxy);
-                proxy.setCredentials(proxyCredentials);
-                final KeychainLoginService service = new KeychainLoginService();
-                service.validate(proxy, prompt, new LoginOptions(proxy.getProtocol()));
                 // Authenticate with jump host
                 this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
                 log.debug("Authenticated with jump host {}", proxy);
-                // Write credentials to keychain
-                service.save(proxy);
                 final DirectConnection tunnel = hop.newDirectConnection(
                         new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
                 // Connect to internal host
@@ -289,7 +277,10 @@ public class SFTPSession extends Session<SSHClient> {
                     defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator()));
                     break;
             }
-            final String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
+            String configuration = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
+            if(null == configuration) {
+                configuration = System.getenv("SSH_AUTH_SOCK");
+            }
             if(configuration != null) {
                 final String identityAgent = LocalFactory.get(configuration).getAbsolute();
                 log.debug("Determined identity agent {} for {}", identityAgent, host.getHostname());
@@ -404,20 +395,22 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void logout() throws BackgroundException {
         try {
-            if(null == sftp) {
-                return;
+            if(null != sftp) {
+                sftp.close();
             }
-            sftp.close();
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
         }
+        finally {
+            super.logout();
+        }
     }
 
     @Override
-    public void disconnect() {
+    public void disconnect() throws BackgroundException {
         try {
             client.close();
         }

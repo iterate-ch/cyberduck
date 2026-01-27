@@ -48,7 +48,7 @@ public class BoxFileidProviderTest extends AbstractBoxTest {
         final BoxFileidProvider nodeid = new BoxFileidProvider(session);
         final Path home = new DefaultHomeFinderService(session).find();
         final String name = String.format("%s%s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
-        final Path file = new BoxTouchFeature(session, nodeid).touch(new Path(home, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new BoxTouchFeature(session, nodeid).touch(new BoxWriteFeature(session, nodeid), new Path(home, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         nodeid.clear();
         final String nodeId = nodeid.getFileId(new Path(home, name, EnumSet.of(Path.Type.file)));
         assertNotNull(nodeId);

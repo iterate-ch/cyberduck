@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 public interface PasswordStore {
@@ -28,7 +29,7 @@ public interface PasswordStore {
      * @param accountName Account
      * @return Password if found or null otherwise
      */
-    String getPassword(String serviceName, String accountName) throws LocalAccessDeniedException;
+    String getPassword(String serviceName, String accountName) throws AccessDeniedException;
 
     /**
      * Add generic password for application
@@ -38,7 +39,7 @@ public interface PasswordStore {
      * @param password    Password to save for service
      * @throws LocalAccessDeniedException Failure accessing keychain
      */
-    void addPassword(String serviceName, String accountName, String password) throws LocalAccessDeniedException;
+    void addPassword(String serviceName, String accountName, String password) throws AccessDeniedException;
 
     /**
      * Find internet password
@@ -48,7 +49,7 @@ public interface PasswordStore {
      * @param hostname Hostname
      * @param user     Credentials  @return Password if found or null otherwise
      */
-    String getPassword(Scheme scheme, int port, String hostname, String user) throws LocalAccessDeniedException;
+    String getPassword(Scheme scheme, int port, String hostname, String user) throws AccessDeniedException;
 
     /**
      * Save internet password
@@ -60,14 +61,14 @@ public interface PasswordStore {
      * @param password Password to save for service
      * @throws LocalAccessDeniedException Failure accessing keychain
      */
-    void addPassword(Scheme scheme, int port, String hostname, String user, String password) throws LocalAccessDeniedException;
+    void addPassword(Scheme scheme, int port, String hostname, String user, String password) throws AccessDeniedException;
 
     /**
      * @param serviceName Service
      * @param user        Credentials
      * @throws LocalAccessDeniedException Failure accessing keychain
      */
-    void deletePassword(String serviceName, String user) throws LocalAccessDeniedException;
+    void deletePassword(String serviceName, String user) throws AccessDeniedException;
 
     /**
      * @param scheme   Protocol scheme
@@ -76,5 +77,5 @@ public interface PasswordStore {
      * @param user     Credentials
      * @throws LocalAccessDeniedException Failure accessing keychain
      */
-    void deletePassword(Scheme scheme, int port, String hostname, String user) throws LocalAccessDeniedException;
+    void deletePassword(Scheme scheme, int port, String hostname, String user) throws AccessDeniedException;
 }

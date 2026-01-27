@@ -63,7 +63,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new S3TouchFeature(session, acl).touch(
-                new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                         new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertFalse(new S3FindFeature(session, acl).find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
@@ -88,7 +88,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(virtualhost, acl).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new S3TouchFeature(virtualhost, acl).touch(
-                new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                         new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         assertFalse(new S3FindFeature(virtualhost, acl).find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));

@@ -15,6 +15,7 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -110,7 +111,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
     protected PathAttributes head(final Path file) throws IOException {
         final Map<String, String> headers = session.getClient().execute(
                 new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         try {
             attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
         }
@@ -143,7 +144,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
 
     @Override
     public PathAttributes toAttributes(final DavResource resource) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         final Map<QName, String> properties = resource.getCustomPropsNS();
         if(null != properties && properties.containsKey(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE)) {
             final String value = properties.get(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);

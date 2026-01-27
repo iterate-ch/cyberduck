@@ -60,11 +60,6 @@
             </fileset>
         </copy>
 
-        <condition property="msbuild.sign" value="false">
-            <istrue value="${skip}" />
-        </condition>
-        <property name="msbuild.sign" value="" />
-
         <copy todir="${build}/generated" overwrite="True" encoding="UTF-8" outputencoding="UTF-8">
             <fileset dir="${module}/src/main/package">
                 <include name="**/*.template"/>

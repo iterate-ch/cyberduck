@@ -40,9 +40,13 @@ public class NotificationServiceUpdateHandler implements Handler, NotificationSe
     @Override
     public boolean handle(final UpdateChecker.Update item) {
         notifications.notify(item.getRevision(), "Updater", LocaleFactory.localizedString("Software Update", "Updater"),
-                MessageFormat.format(LocaleFactory.localizedString("Version {0} is now available", "Updater"), item.getDisplayVersionString()),
+                this.toMessage(item),
                 String.format("%s…", LocaleFactory.localizedString("Install and Relaunch", "Updater")));
         return false;
+    }
+
+    protected String toMessage(final UpdateChecker.Update item) {
+        return MessageFormat.format(LocaleFactory.localizedString("Version {0} is now available", "Updater"), item.getDisplayVersionString());
     }
 
     @Override

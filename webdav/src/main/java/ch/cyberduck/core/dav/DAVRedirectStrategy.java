@@ -17,7 +17,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.http.RedirectCallback;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -54,7 +54,7 @@ public class DAVRedirectStrategy extends SardineRedirectStrategy {
 
     @Override
     protected URI createLocationURI(final String location) throws ProtocolException {
-        return super.createLocationURI(StringUtils.replaceAll(location, " ", "%20"));
+        return super.createLocationURI(RegExUtils.replaceAll(location, " ", "%20"));
     }
 
     private HttpUriRequest copyEntity(final HttpEntityEnclosingRequestBase redirect, final HttpRequest original) {

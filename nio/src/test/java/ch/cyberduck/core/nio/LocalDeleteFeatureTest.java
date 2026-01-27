@@ -44,9 +44,9 @@ public class LocalDeleteFeatureTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(new LocalHomeFinderFeature().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(file, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
         final Path folder = new Path(new LocalHomeFinderFeature().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());
         new LocalDeleteFeature(session).delete(new ArrayList<>(Arrays.asList(file, folder)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(Files.exists(session.toPath(file)));
         assertFalse(Files.exists(session.toPath(folder)));
@@ -58,9 +58,9 @@ public class LocalDeleteFeatureTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path folder = new Path(new LocalHomeFinderFeature().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
+        new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(file, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
         final Path symlink = new Path(new LocalHomeFinderFeature().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new LocalSymlinkFeature(session).symlink(symlink, folder.getAbsolute());
         new LocalDeleteFeature(session).delete(new ArrayList<>(Collections.singletonList(symlink)), new DisabledLoginCallback(), new Delete.DisabledCallback());

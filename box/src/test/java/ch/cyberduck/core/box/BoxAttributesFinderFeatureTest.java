@@ -39,7 +39,7 @@ public class BoxAttributesFinderFeatureTest extends AbstractBoxTest {
     public void testFindNotFound() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BoxAttributesFinderFeature f = new BoxAttributesFinderFeature(session, fileid);
         try {
@@ -62,10 +62,10 @@ public class BoxAttributesFinderFeatureTest extends AbstractBoxTest {
     public void testFindFile() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long folderModification = new BoxAttributesFinderFeature(session, fileid).find(folder).getModificationDate();
         final Path test = new BoxTouchFeature(session, fileid)
-                .touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+                .touch(new BoxWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         assertEquals(folderModification, new BoxAttributesFinderFeature(session, fileid).find(folder).getModificationDate(), 0L);
         final BoxAttributesFinderFeature f = new BoxAttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
@@ -91,8 +91,8 @@ public class BoxAttributesFinderFeatureTest extends AbstractBoxTest {
     public void testFindDirectory() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new BoxDirectoryFeature(session, fileid).mkdir(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final BoxAttributesFinderFeature f = new BoxAttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
         assertNotEquals(-1L, attributes.getSize());

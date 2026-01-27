@@ -20,10 +20,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
@@ -46,11 +46,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     private static final Logger log = LogManager.getLogger(OAuth2RequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
-
-    /**
-     * Currently valid tokens
-     */
-    private OAuthTokens tokens = OAuthTokens.EMPTY;
+    private final Credentials credentials;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt) throws LoginCanceledException {
         this(client, host,
@@ -58,8 +54,8 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthTokenUrl()),
                 Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthAuthorizationUrl()),
-                host.getProtocol().getOAuthClientId(),
-                host.getProtocol().getOAuthClientSecret(),
+                null == host.getProperty(Profile.OAUTH_CLIENT_ID_KEY) ? host.getProtocol().getOAuthClientId() : host.getProperty(Profile.OAUTH_CLIENT_ID_KEY),
+                null == host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY) ? host.getProtocol().getOAuthClientSecret() : host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY),
                 host.getProtocol().getOAuthScopes(),
                 host.getProtocol().isOAuthPKCE(), prompt);
     }
@@ -67,69 +63,17 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
         super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
-    }
-
-    @Override
-    public Credentials validate() throws BackgroundException {
-        final Credentials credentials = super.validate();
-        tokens = credentials.getOauth();
-        return credentials;
-    }
-
-    @Override
-    public OAuthTokens authorize() throws BackgroundException {
-        lock.lock();
-        try {
-            return tokens = super.authorize();
-        }
-        finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Refresh with cached refresh token
-     */
-    public OAuthTokens refresh() throws BackgroundException {
-        lock.lock();
-        try {
-            return tokens = this.refresh(tokens);
-        }
-        finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * @param previous Refresh token
-     */
-    @Override
-    public OAuthTokens refresh(final OAuthTokens previous) throws BackgroundException {
-        lock.lock();
-        try {
-            return tokens = super.refresh(previous);
-        }
-        catch(LoginFailureException e) {
-            log.warn("Failure {} refreshing OAuth tokens", e.getMessage());
-            return tokens = this.authorize();
-        }
-        finally {
-            lock.unlock();
-        }
+        this.credentials = host.getCredentials();
     }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         lock.lock();
         try {
+            OAuthTokens tokens = credentials.getOauth();
             if(tokens.isExpired()) {
                 try {
-                    final OAuthTokens previous = tokens;
-                    final OAuthTokens refreshed = this.refresh(tokens);
-                    // Skip saving tokens when not changed
-                    if(!refreshed.equals(previous)) {
-                        this.save(refreshed);
-                    }
+                    tokens = this.save(this.authorizeWithRefreshToken(tokens));
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure {} refreshing OAuth tokens {}", e, tokens);
@@ -169,15 +113,5 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor withParameter(final String key, final String value) {
         super.withParameter(key, value);
         return this;
-    }
-
-    public OAuthTokens getTokens() {
-        lock.lock();
-        try {
-            return tokens;
-        }
-        finally {
-            lock.unlock();
-        }
     }
 }

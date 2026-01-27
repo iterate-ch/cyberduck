@@ -22,8 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class DirectIO {
 
-    public String wrapped_key;
-
+    public EncryptInfo encrypt_info;
     public List<Chunk> chunks;
 
     public static final class Chunk {
@@ -40,10 +39,26 @@ public final class DirectIO {
         }
     }
 
+    public static class EncryptInfo {
+
+        public String wrapped_key;
+        public boolean data_encrypted;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("EncryptInfo{");
+            sb.append("wrapped_key='").append(wrapped_key).append('\'');
+            sb.append(", data_encrypted=").append(data_encrypted);
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DirectIO{");
-        sb.append("chunks=").append(chunks);
+        sb.append("encrypt_info=").append(encrypt_info);
+        sb.append(", chunks=").append(chunks);
         sb.append('}');
         return sb.toString();
     }

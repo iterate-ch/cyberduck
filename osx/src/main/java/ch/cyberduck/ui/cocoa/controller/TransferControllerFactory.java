@@ -44,6 +44,7 @@ public final class TransferControllerFactory {
                         super.invalidate();
                     }
                 };
+                shared.loadBundle();
             }
             return shared;
         }

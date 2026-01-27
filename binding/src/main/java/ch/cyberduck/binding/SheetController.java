@@ -83,10 +83,11 @@ public abstract class SheetController extends WindowController implements InputV
             }
         }
         handlers.forEach(h -> h.closed(window, option));
-        if(handlers.isEmpty()) {
-            log.warn("No close handlers for {}", this);
-            window.performClose(null);
-        }
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
         handlers.clear();
     }
 
@@ -99,23 +100,16 @@ public abstract class SheetController extends WindowController implements InputV
         log.warn("Return code {} not handled", returncode);
     }
 
-    @Delegate
-    // Handle keyboard esc event when not running as sheet
-    public void cancel(ID sender) {
-        this.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
-    }
-
     /**
      * Implementation with no bundle loaded but window reference only
      */
     public static class NoBundleSheetController extends SheetController {
-        public NoBundleSheetController(final NSWindow window) {
-            this(window, InputValidator.disabled);
+        public NoBundleSheetController() {
+            this(InputValidator.disabled);
         }
 
-        public NoBundleSheetController(final NSWindow window, final InputValidator callback) {
+        public NoBundleSheetController(final InputValidator callback) {
             super(callback);
-            this.setWindow(window);
         }
 
         @Override

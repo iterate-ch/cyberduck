@@ -42,7 +42,7 @@ public class FTPMFMTTimestampFeatureTest extends AbstractFTPTest {
         final Path home = new FTPWorkdirService(session).find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new FTPTouchFeature(session).touch(test, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         new FTPMFMTTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified / 1000 * 1000, new FTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

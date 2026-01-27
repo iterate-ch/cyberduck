@@ -46,9 +46,9 @@ public class LocalTouchFeatureTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalTouchFeature(session).touch(test, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), test, new TransferStatus());
         // Test override
-        new LocalTouchFeature(session).touch(test, new TransferStatus());
+        new LocalTouchFeature(session).touch(new LocalWriteFeature(session), test, new TransferStatus());
         assertTrue(new LocalFindFeature(session).find(test));
         final AttributedList<Path> list = new LocalListService(session).list(workdir, new DisabledListProgressListener());
         assertTrue(list.contains(test));

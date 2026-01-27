@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive.features;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -28,10 +29,14 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
+import org.nuxeo.onedrive.client.types.File;
 import org.nuxeo.onedrive.client.types.FileSystemInfo;
+import org.nuxeo.onedrive.client.types.Hashes;
 import org.nuxeo.onedrive.client.types.Publication;
 
 import java.io.IOException;
@@ -50,7 +55,12 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     }
 
     static Optional<DescriptiveUrl> getWebUrl(final DriveItem.Metadata metadata) {
-        return Optional.of(new DescriptiveUrl(metadata.getWebUrl(), DescriptiveUrl.Type.http));
+        final String webUrl = metadata.getWebUrl();
+        if(StringUtils.isBlank(webUrl)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new DescriptiveUrl(webUrl, DescriptiveUrl.Type.http));
     }
 
     @Override
@@ -77,12 +87,22 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e.getCause(), file);
+        }
     }
 
     @Override
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setETag(metadata.getETag());
+        final File file = metadata.getFile();
+        if(file != null) {
+            final Hashes hashes = file.getHashes();
+            if(hashes != null) {
+                attributes.setVersionId(hashes.getQuickXorHash());
+            }
+        }
         Optional<DescriptiveUrl> webUrl = getWebUrl(metadata);
         if(metadata.isPackage()) {
             webUrl.ifPresent(url -> attributes.setSize(UrlFileWriterFactory.get().write(url).getBytes(Charset.defaultCharset()).length));
@@ -90,26 +110,34 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
         else if(null != metadata.getSize()) {
             attributes.setSize(metadata.getSize());
         }
-        setId(attributes, session.getFileId(metadata));
+        attributes.setFileId(session.getFileId(metadata));
         webUrl.ifPresent(attributes::setLink);
         final FileSystemInfo info = metadata.getFacet(FileSystemInfo.class);
         if(null != info) {
-            if(-1L == info.getLastModifiedDateTime().toInstant().toEpochMilli()) {
-                attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+            if(info.getLastModifiedDateTime().toInstant().toEpochMilli() <= 0L) {
+                if(metadata.getLastModifiedDateTime().toInstant().toEpochMilli() >= 0L) {
+                    attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+                }
             }
             else {
                 attributes.setModificationDate(info.getLastModifiedDateTime().toInstant().toEpochMilli());
             }
-            if(-1 == info.getCreatedDateTime().toInstant().toEpochMilli()) {
-                attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+            if(info.getCreatedDateTime().toInstant().toEpochMilli() <= 0L) {
+                if(metadata.getCreatedDateTime().toInstant().toEpochMilli() >= 0L) {
+                    attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+                }
             }
             else {
                 attributes.setCreationDate(info.getCreatedDateTime().toInstant().toEpochMilli());
             }
         }
         else {
-            attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
-            attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+            if(metadata.getLastModifiedDateTime().toInstant().toEpochMilli() >= 0L) {
+                attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+            }
+            if(metadata.getCreatedDateTime().toInstant().toEpochMilli() >= 0L) {
+                attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+            }
         }
         final Publication publication = metadata.getPublication();
         if(null != publication && publication.getLevel() == Publication.State.checkout) {
@@ -119,15 +147,11 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     }
 
     public PathAttributes toAttributes(final DriveItem.Metadata metadata, final DriveItemVersion version) {
-        final PathAttributes attributes = toAttributes(metadata);
+        final PathAttributes attributes = this.toAttributes(metadata);
         attributes.setVersionId(version.getId());
         attributes.setDuplicate(true);
         attributes.setSize(version.getSize());
         attributes.setModificationDate(version.getLastModifiedDateTime().toInstant().toEpochMilli());
         return attributes;
-    }
-
-    private void setId(final PathAttributes attributes, final String id) {
-        attributes.setFileId(id);
     }
 }

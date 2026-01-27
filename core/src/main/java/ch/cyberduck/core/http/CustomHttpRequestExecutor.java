@@ -77,11 +77,11 @@ public class CustomHttpRequestExecutor extends HttpRequestExecutor {
                     case "X-Auth-Key":
                     case "X-Auth-Token":
                     case "X-FilesAPI-Key":
-                        listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(),
+                        listener.log(TranscriptListener.Type.requestheader, String.format("%s: %s", header.getName(),
                                 StringUtils.repeat("*", Integer.min(8, StringUtils.length(header.getValue())))));
                         break;
                     default:
-                        listener.log(TranscriptListener.Type.request, header.toString());
+                        listener.log(TranscriptListener.Type.requestheader, header.toString());
                         break;
                 }
             }
@@ -98,9 +98,9 @@ public class CustomHttpRequestExecutor extends HttpRequestExecutor {
                             case HttpPut.METHOD_NAME:
                             case HttpPost.METHOD_NAME:
                             case HttpPatch.METHOD_NAME:
-                                if(Arrays.asList(response.getAllHeaders()).stream()
+                                if(Arrays.stream(response.getAllHeaders())
                                         .filter(header -> HttpHeaders.WWW_AUTHENTICATE.equals(header.getName()))
-                                        .filter(header -> "NTLM".equals(header.getValue())).findAny().isPresent()) {
+                                        .anyMatch(header -> "NTLM".equals(header.getValue()))) {
                                     // Unauthenticated connection cannot proceed with PUT
                                     final HttpResponseException preflight = new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
                                     preflight.initCause(new RetriableAccessDeniedException(String.format("Authentication cannot proceed for %s",
@@ -126,7 +126,7 @@ public class CustomHttpRequestExecutor extends HttpRequestExecutor {
         synchronized(listener) {
             listener.log(TranscriptListener.Type.response, response.getStatusLine().toString());
             for(Header header : response.getAllHeaders()) {
-                listener.log(TranscriptListener.Type.response, header.toString());
+                listener.log(TranscriptListener.Type.responseheader, header.toString());
             }
         }
     }

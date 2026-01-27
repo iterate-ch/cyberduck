@@ -2150,7 +2150,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    public void stop(final BackgroundAction action) {
+    public void stop(final BackgroundAction<?> action) {
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
@@ -2161,7 +2161,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    public void start(final BackgroundAction action) {
+    public void start(final BackgroundAction<?> action) {
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
@@ -2403,8 +2403,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
-        final AlertController sheet = new FolderController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
-                feature != null ? feature.getLocations() : Collections.emptySet(), feature != null ? feature.getDefault() : Location.unknown, new FolderController.Callback() {
+        final Path selected = this.getSelectedPath();
+        final Path workdir = this.getWorkdirFromSelection();
+        final AlertController sheet = new FolderController(workdir, selected, cache,
+                feature != null ? feature.getLocations(workdir) : Collections.emptySet(), feature != null ? feature.getDefault(workdir) : Location.unknown, new FolderController.Callback() {
 
             @Override
             public void callback(final Path folder, final String region) {
@@ -2412,7 +2414,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         new CreateDirectoryWorker(folder, region) {
                             @Override
                             public void cleanup(final Path folder) {
-                                reload(workdir, Collections.singletonList(folder), Collections.singletonList(folder));
+                                reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         }));
             }
@@ -2423,8 +2425,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void createEncryptedVaultButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
-        final AlertController sheet = new VaultController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
-                feature != null ? feature.getLocations() : Collections.emptySet(), feature != null ? feature.getDefault() : Location.unknown, new VaultController.Callback() {
+        final Path selected = this.getSelectedPath();
+        final Path workdir = this.getWorkdirFromSelection();
+        final AlertController sheet = new VaultController(workdir, selected, cache,
+                feature != null ? feature.getLocations(workdir) : Collections.emptySet(), feature != null ? feature.getDefault(workdir) : Location.unknown, new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
@@ -2434,7 +2438,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))) {
                             @Override
                             public void cleanup(final Path vault) {
-                                reload(workdir, Collections.singletonList(folder), Collections.singletonList(folder));
+                                reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         })
                 );
@@ -3595,8 +3599,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         },
         bookmarks,
-        history,
-        rendezvous;
+        history {
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("history", 16);
+            }
+        },
+        rendezvous {
+            @Override
+            public NSImage image() {
+                return IconCacheFactory.<NSImage>get().iconNamed("bonjour", 16);
+            }
+        };
 
         public static BookmarkSwitchSegement byPosition(final int position) {
             return BookmarkSwitchSegement.values()[position];

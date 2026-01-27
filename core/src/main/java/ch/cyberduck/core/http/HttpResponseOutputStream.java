@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public abstract class HttpResponseOutputStream<Reply> extends StatusOutputStream<Reply> {
-    private static final Logger log = LogManager.getLogger(StatusOutputStream.class);
+    private static final Logger log = LogManager.getLogger(HttpResponseOutputStream.class);
 
     private final AttributesAdapter<Reply> attributes;
     private final TransferStatus status;

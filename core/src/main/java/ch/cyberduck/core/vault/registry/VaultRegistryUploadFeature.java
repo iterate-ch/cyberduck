@@ -42,19 +42,14 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Output upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return (Output) registry.find(session, file).getFeature(session, Upload.class, proxy).upload(file, local, throttle, progress, streamListener, status, callback);
+    public Output upload(final Write<Output> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return (Output) registry.find(session, file).getFeature(session, Upload.class, proxy).upload(
+                write, file, local, throttle, progress, streamListener, status, callback);
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Upload.class, proxy).append(file, status);
-    }
-
-    @Override
-    public Upload<Output> withWriter(final Write<Output> writer) {
-        proxy.withWriter(writer);
-        return this;
     }
 
     @Override

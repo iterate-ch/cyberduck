@@ -52,6 +52,7 @@ public class ApplicationPreferences<T> : DefaultPreferences
     public override void deleteProperty(string property)
     {
         propertyStore.DeleteProperty(property);
+        propertyStore.Save();
     }
 
     public string GetDefaultLanguage()
@@ -126,6 +127,7 @@ public class ApplicationPreferences<T> : DefaultPreferences
     public override void setProperty(string property, string value)
     {
         propertyStore[property] = value;
+        propertyStore.Save();
     }
 
     public override List systemLocales() => locales.systemLocales();

@@ -40,7 +40,7 @@ public class VaultRegistryVersionIdProvider implements VersionIdProvider {
 
     @Override
     public void clear() {
-        //
+        proxy.clear();
     }
 
     @Override

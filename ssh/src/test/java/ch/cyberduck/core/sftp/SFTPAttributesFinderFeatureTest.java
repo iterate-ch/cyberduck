@@ -27,7 +27,7 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SFTPDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), test, new TransferStatus());
         final SFTPAttributesFinderFeature f = new SFTPAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertNotNull(attributes);
@@ -43,7 +43,7 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testFindSymbolicLink() throws Exception {
-        final Path file = new SFTPTouchFeature(session).touch(new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path symlink = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPSymlinkFeature(session).symlink(symlink, file.getAbsolute());
         final SFTPAttributesFinderFeature f = new SFTPAttributesFinderFeature(session);

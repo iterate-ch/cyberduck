@@ -41,7 +41,6 @@ import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.irods.jargon.core.pub.domain.ObjStat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -132,18 +131,15 @@ public class IRODSWriteFeatureTest extends VaultTest {
 
         final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
         final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
-                }
-                catch(BackgroundException e) {
-                    fail();
-                }
-                finally {
-                    cw1.countDown();
-                }
+        new Thread(() -> {
+            try {
+                new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
+            }
+            catch(BackgroundException e) {
+                fail();
+            }
+            finally {
+                cw1.countDown();
             }
         }).start();
         new Thread(new Runnable() {
@@ -236,7 +232,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
 
             assertEquals(0L, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
-            final StatusOutputStream<ObjStat> out = feature.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = feature.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -255,6 +251,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
             final byte[] newcontent = RandomUtils.nextBytes(10);
 
             final TransferStatus status = new TransferStatus();
+            status.setExists(true);
             status.setAppend(false);
             status.setLength(newcontent.length);
             status.setRemote(new IRODSAttributesFinderFeature(session).find(test));
@@ -262,15 +259,14 @@ public class IRODSWriteFeatureTest extends VaultTest {
             assertTrue(new IRODSUploadFeature(session).append(test, status).append);
             assertEquals(content.length, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
-            final StatusOutputStream<ObjStat> out = feature.write(test, status, new DisabledConnectionCallback());
-            assertNotNull(out);
+            final StatusOutputStream<Void> out = feature.write(test, status, new DisabledConnectionCallback());
+            assertNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
             assertTrue(session.getFeature(Find.class).find(test));
 
             final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(newcontent.length, attributes.getSize());
-            assertEquals(new IRODSAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
 
             final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
             final byte[] buffer = new byte[newcontent.length];
@@ -329,6 +325,7 @@ public class IRODSWriteFeatureTest extends VaultTest {
         final byte[] content_append = RandomUtils.nextBytes(100);
 
         final TransferStatus status_append = new TransferStatus();
+        status_append.setExists(true);
         status_append.setAppend(true);
         status_append.setLength(content_append.length);
         status_append.setRemote(new IRODSAttributesFinderFeature(session).find(test));

@@ -63,7 +63,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     public S3WriteFeature(final S3Session session, final S3AccessControlListFeature acl) {
         super(new S3AttributesAdapter(session.getHost()));
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
     }
 
@@ -130,7 +130,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         if(!Acl.EMPTY.equals(status.getAcl())) {
             if(status.getAcl().isCanned()) {
                 log.debug("Set canned ACL {} for {}", status.getAcl(), file);
-                object.setAcl(acl.toAcl(status.getAcl()));
+                object.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);
             }

@@ -44,7 +44,6 @@ import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
@@ -52,7 +51,6 @@ import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -91,7 +89,6 @@ public class DAVSession extends HttpSession<DAVClient> {
     private static final Logger log = LogManager.getLogger(DAVSession.class);
 
     private final RedirectCallback redirect;
-    private final PreferencesReader preferences = HostPreferencesFactory.get(host);
     private final HttpCapabilities capabilities = new HttpCapabilities(preferences);
 
     private OAuth2RequestInterceptor authorizationService;
@@ -121,7 +118,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             }
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+                    new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         }
         configuration.setRedirectStrategy(new DAVRedirectStrategy(redirect));
         configuration.addInterceptorLast(new MicrosoftIISPersistentAuthResponseInterceptor());
@@ -129,22 +126,23 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
             client.shutdown();
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
+        super.disconnect();
     }
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final Credentials credentials = host.getCredentials();
         if(host.getProtocol().isOAuthConfigurable()) {
-            authorizationService.validate();
+            credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         }
         if(host.getProtocol().isPasswordConfigurable()) {
-            final Credentials credentials = host.getCredentials();
             final String domain, username;
             if(credentials.getUsername().contains("\\")) {
                 domain = StringUtils.substringBefore(credentials.getUsername(), "\\");
@@ -152,7 +150,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             }
             else {
                 username = credentials.getUsername();
-                domain = HostPreferencesFactory.get(host).getProperty("webdav.ntlm.domain");
+                domain = preferences.getProperty("webdav.ntlm.domain");
             }
             for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
                 client.setCredentials(
@@ -308,10 +306,10 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVReadFeature(this);
         }
         if(type == Write.class) {
-            return (T) new DAVWriteFeature(this, capabilities.expectcontinue);
+            return (T) new DAVWriteFeature(this, capabilities);
         }
         if(type == Upload.class) {
-            return (T) new DAVUploadFeature(new DAVWriteFeature(this, capabilities.expectcontinue));
+            return (T) new DAVUploadFeature(this, capabilities);
         }
         if(type == Delete.class) {
             return (T) new DAVDeleteFeature(this);

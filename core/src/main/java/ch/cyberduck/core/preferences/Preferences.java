@@ -242,7 +242,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         if(defaults.exists()) {
             log.debug("Load defaults from {}", defaults);
             final Properties props = new Properties();
-            try (final InputStream in = defaults.getInputStream()) {
+            try(final InputStream in = defaults.getInputStream()) {
                 props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
             }
             catch(IllegalArgumentException | AccessDeniedException | IOException e) {
@@ -411,74 +411,66 @@ public abstract class Preferences implements Locales, PreferencesReader {
     }
 
     protected void configureAppenders(final String level) {
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        final Configuration config = ctx.getConfiguration();
+        final Appender defaultAppender = this.getDefaultAppender(config, level);
+        defaultAppender.start();
+        config.addAppender(defaultAppender);
+        config.getRootLogger().addAppender(defaultAppender, null, null);
+        final Appender auditAppender = this.getAuditAppender(config, level);
+        auditAppender.start();
+        for(LoggerConfig logger : config.getLoggers().values()) {
+            if(StringUtils.startsWith(logger.getName(), "audit")) {
+                logger.addAppender(auditAppender, null, null);
+            }
+        }
+        ctx.updateLoggers();
+    }
+
+    private Appender getDefaultAppender(final Configuration config, final String level) {
         final String logfolder = LogDirectoryFinderFactory.get().find().getAbsolute();
         final String appname = StringUtils.replaceChars(StringUtils.lowerCase(this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY);
         final Local active = LocalFactory.get(logfolder, String.format("%s.log", appname));
         final Local archives = LocalFactory.get(logfolder, String.format("%s-%%d{yyyy-MM-dd'T'HHmmss}.log.zip", appname));
-        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        final Configuration config = ctx.getConfiguration();
         final DeleteAction deleteAction = DeleteAction.createDeleteAction(logfolder, false, 1, false,
                 PathSortByModificationTime.createSorter(true),
                 new PathCondition[]{
                         IfFileName.createNameCondition(String.format("%s-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
                 },
                 null, new NullConfiguration());
-        final Appender appender = RollingFileAppender.newBuilder()
+        return RollingFileAppender.newBuilder()
                 .setName(RollingFileAppender.class.getName())
                 .withFileName(active.getAbsolute())
                 .withFilePattern(archives.getAbsolute())
                 .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
                 .withStrategy(DefaultRolloverStrategy.newBuilder().
                         withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                        withCustomActions(new Action[]{new AbstractAction() {
-                            @Override
-                            public boolean execute() {
-                                log.info("Running version {}", getVersion());
-                                return true;
-                            }
-                        }, deleteAction}).build())
+                        withCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
                 .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
                 .build();
-        appender.start();
-        config.addAppender(appender);
-        config.getRootLogger().addAppender(appender, null, null);
-        ctx.updateLoggers();
     }
 
-    @Override
-    public List<String> getList(final String property) {
-        final String value = this.getProperty(property);
-        return PreferencesReader.toList(value);
-    }
-
-    @Override
-    public int getInteger(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toInteger(v);
-    }
-
-    @Override
-    public float getFloat(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toFloat(v);
-    }
-
-    @Override
-    public long getLong(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toLong(v);
-    }
-
-    @Override
-    public double getDouble(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toDouble(v);
-    }
-
-    @Override
-    public boolean getBoolean(final String key) {
-        final String v = this.getProperty(key);
-        return PreferencesReader.toBoolean(v);
+    private Appender getAuditAppender(final Configuration config, final String level) {
+        final String logfolder = LogDirectoryFinderFactory.get().find().getAbsolute();
+        final String appname = StringUtils.replaceChars(StringUtils.lowerCase(this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY);
+        final Local active = LocalFactory.get(logfolder, String.format("%s-audit.log", appname));
+        final Local archives = LocalFactory.get(logfolder, String.format("%s-audit-%%d{yyyy-MM-dd'T'HHmmss}.log.zip", appname));
+        final DeleteAction deleteAction = DeleteAction.createDeleteAction(logfolder, false, 1, false,
+                PathSortByModificationTime.createSorter(true),
+                new PathCondition[]{
+                        IfFileName.createNameCondition(String.format("%s-audit-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
+                },
+                null, new NullConfiguration());
+        return RollingFileAppender.newBuilder()
+                .setName(RollingFileAppender.class.getName())
+                .withFileName(active.getAbsolute())
+                .withFilePattern(archives.getAbsolute())
+                .withPolicy(SizeBasedTriggeringPolicy.createPolicy("50MB"))
+                .withStrategy(DefaultRolloverStrategy.newBuilder().
+                        withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
+                        withCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
+                .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
+                .build();
     }
 
     protected void setFactories() {
@@ -548,7 +540,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("factory.connectiontimeout.class", DefaultConnectionTimeout.class.getName());
         this.setDefault("factory.hardwareaddress.class", NetworkInterfaceHardwareAddress.class.getName());
         this.setDefault("factory.authorizationcodeprovider.class", "ch.cyberduck.core.oauth.BrowserOAuth2AuthorizationCodeProvider");
-        this.setDefault("factory.s3.pathcontainerservice.class", "ch.cyberduck.core.s3.S3PathContainerService");
     }
 
     /**
@@ -602,5 +593,26 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 this.getProperty("application.version"),
                 this.getProperty("application.revision"),
                 this.getProperty("application.hash"));
+    }
+
+    public String getSystem() {
+        return String.format("%s %s (%s)",
+                this.getProperty("os.name"),
+                this.getProperty("os.version"),
+                this.getProperty("os.arch"));
+    }
+
+    private static final class ApplicationVersionAction extends AbstractAction {
+        private final Preferences preferences;
+
+        public ApplicationVersionAction(final Preferences preferences) {
+            this.preferences = preferences;
+        }
+
+        @Override
+        public boolean execute() {
+            log.info("Running version {} on {}", preferences.getVersion(), preferences.getSystem());
+            return true;
+        }
     }
 }

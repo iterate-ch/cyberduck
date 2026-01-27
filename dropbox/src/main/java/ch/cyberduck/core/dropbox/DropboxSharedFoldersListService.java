@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -67,7 +68,7 @@ public class DropboxSharedFoldersListService implements ListService {
     }
 
     protected Path parse(final Path directory, final SharedFolderMetadata metadata) {
-        final PathAttributes attr = new PathAttributes();
+        final PathAttributes attr = new DefaultPathAttributes();
         return new Path(directory, PathNormalizer.name(metadata.getName()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared), attr);
     }

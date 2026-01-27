@@ -29,7 +29,6 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -157,7 +156,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
                     keychain.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
                         credentials.getPassword());
                 }
-                catch(LocalAccessDeniedException e) {
+                catch(AccessDeniedException e) {
                     log.error("Failure {} saving credentials for {} in password store", e, bookmark);
                 }
             }
@@ -166,7 +165,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
                     keychain.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
                         bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
                 }
-                catch(LocalAccessDeniedException e) {
+                catch(AccessDeniedException e) {
                     log.error("Failure {} saving credentials for {} in password store", e, bookmark);
                 }
                 // Reset password in memory

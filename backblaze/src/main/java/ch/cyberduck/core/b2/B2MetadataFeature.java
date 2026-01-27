@@ -38,7 +38,7 @@ public class B2MetadataFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getDefault() {
+    public Map<String, String> getDefault(final Path file) {
         return HostPreferencesFactory.get(session.getHost()).getMap("b2.metadata.default");
     }
 

@@ -52,7 +52,7 @@ public class GoogleStorageDeleteFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testDeleteContainer() throws Exception {
         final Path container = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        new GoogleStorageDirectoryFeature(session).mkdir(container, new TransferStatus().setRegion("us"));
+        new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), container, new TransferStatus().setRegion("us"));
         assertTrue(new GoogleStorageFindFeature(session).find(container));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new GoogleStorageFindFeature(session).find(container));
@@ -61,9 +61,9 @@ public class GoogleStorageDeleteFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testDeletedWithMarker() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(new Path(container,
+        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), new Path(container,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new GoogleStorageTouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         assertNotEquals(PathAttributes.EMPTY, new GoogleStorageAttributesFinderFeature(session).find(test));
         // Add delete marker

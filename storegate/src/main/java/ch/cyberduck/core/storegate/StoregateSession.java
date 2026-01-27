@@ -31,13 +31,10 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -100,7 +97,6 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     @Override
     protected StoregateApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        final PreferencesReader preferences = HostPreferencesFactory.get(host);
         authorizationService = new OAuth2RequestInterceptor(configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) {
@@ -116,7 +112,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         // Force login even if browser session already exists
         authorizationService.withParameter("prompt", "login");
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
         final StoregateApiClient client = new StoregateApiClient(apache);
@@ -137,7 +133,8 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
 
     @Override
     public void login(final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         try {
             final HttpRequestBase request = new HttpPost(
                     new HostUrlProvider().withUsername(false).withPath(true).get(
@@ -180,6 +177,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             credentials.setUsername(me.getUsername());
             // Get root folders
             roots = new SettingsApi(client).settingsGetRootfolders();
+            log.debug("Retrieved {} root folders", roots.size());
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map(e);
@@ -194,9 +192,14 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     }
 
     @Override
-    protected void logout() {
-        client.getHttpClient().close();
+    public void disconnect() throws BackgroundException {
         fileid.clear();
+        try {
+            client.getHttpClient().close();
+        }
+        finally {
+            super.disconnect();
+        }
     }
 
     @Override

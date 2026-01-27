@@ -33,7 +33,6 @@ public abstract class AbstractAssumeRoleWithWebIdentityTest {
     private static final ComposeContainer container = new ComposeContainer(
             new File(AbstractAssumeRoleWithWebIdentityTest.class.getResource("/testcontainer/docker-compose.yml").getFile()))
             .withPull(false)
-            .withLocalCompose(true)
             .withExposedService("keycloak-1", 8080, Wait.forListeningPort())
             .withExposedService("minio-1", 9000, Wait.forListeningPort());
 

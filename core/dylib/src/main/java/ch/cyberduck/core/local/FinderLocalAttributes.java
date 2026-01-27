@@ -82,7 +82,11 @@ public class FinderLocalAttributes extends LocalAttributes {
             }
             final NSDictionary dict = this.getNativeAttributes(path);
             // Returns an entry’s value given its key, or null if no value is associated with key.
-            return dict.objectForKey(name);
+            final NSObject value = dict.objectForKey(name);
+            if(null == value) {
+                throw new NotfoundException(name);
+            }
+            return value;
         }
         finally {
             local.release(resolved);
@@ -92,6 +96,9 @@ public class FinderLocalAttributes extends LocalAttributes {
     @Override
     public long getSize() {
         try {
+            if(local.isDirectory()) {
+                return -1L;
+            }
             final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSize);
             if(object.isKindOfClass(Rococoa.createClass("NSNumber", NSNumber._Class.class))) {
                 final NSNumber number = Rococoa.cast(object, NSNumber.class);
@@ -113,6 +120,20 @@ public class FinderLocalAttributes extends LocalAttributes {
     public long getCreationDate() {
         try {
             final NSObject object = this.getNativeAttribute(NSFileManager.NSFileCreationDate);
+            if(object.isKindOfClass(Rococoa.createClass("NSDate", NSDate._Class.class))) {
+                return (long) (Rococoa.cast(object, NSDate.class).timeIntervalSince1970() * 1000);
+            }
+            return -1;
+        }
+        catch(AccessDeniedException | NotfoundException e) {
+            return -1;
+        }
+    }
+
+    @Override
+    public long getModificationDate() {
+        try {
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFileModificationDate);
             if(object.isKindOfClass(Rococoa.createClass("NSDate", NSDate._Class.class))) {
                 return (long) (Rococoa.cast(object, NSDate.class).timeIntervalSince1970() * 1000);
             }

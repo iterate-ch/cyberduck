@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -57,7 +58,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final AttributesFinder f = new DefaultAttributesFinderFeature(session);
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new DriveTouchFeature(session, fileid).touch(new Path(
+        final Path file = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(
                 DriveHomeFinderService.MYDRIVE_FOLDER, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String initialFileid = file.attributes().getFileId();
         assertNotNull(initialFileid);
@@ -81,10 +82,10 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDriveTest {
         final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
         IOUtils.copy(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals(initialFileid, f.find(file.withAttributes(new PathAttributes(file.attributes()).setFileId(initialFileid))).getFileId());
+        assertEquals(initialFileid, f.find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setFileId(initialFileid))).getFileId());
         final String newFileid = out.getStatus().getId();
-        assertEquals(newFileid, f.find(file.withAttributes(new PathAttributes(file.attributes()).setFileId(newFileid))).getFileId());
-        assertNotEquals(initialFileid, f.find(file.withAttributes(new PathAttributes(file.attributes()).setFileId(newFileid))).getFileId());
+        assertEquals(newFileid, f.find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setFileId(newFileid))).getFileId());
+        assertNotEquals(initialFileid, f.find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setFileId(newFileid))).getFileId());
         assertEquals(out.getStatus().getId(), f.find(file).getFileId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

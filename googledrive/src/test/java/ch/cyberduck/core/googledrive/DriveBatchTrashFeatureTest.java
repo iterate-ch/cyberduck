@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -48,12 +49,12 @@ public class DriveBatchTrashFeatureTest extends AbstractDriveTest {
     public void testDeleteFromTrash() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path file = new DriveTouchFeature(session, fileid).touch(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String fileId = file.attributes().getFileId();
         new DriveBatchTrashFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new DriveFindFeature(session, fileid).find(file));
-        assertTrue(new DriveFindFeature(session, fileid).find(file.withAttributes(new PathAttributes().setFileId(fileId))));
-        final PathAttributes attributesInTrash = new DriveAttributesFinderFeature(session, fileid).find(file.withAttributes(new PathAttributes().setFileId(fileId)));
+        assertTrue(new DriveFindFeature(session, fileid).find(file.withAttributes(new DefaultPathAttributes().setFileId(fileId))));
+        final PathAttributes attributesInTrash = new DriveAttributesFinderFeature(session, fileid).find(file.withAttributes(new DefaultPathAttributes().setFileId(fileId)));
         assertTrue(attributesInTrash.isTrashed());
         new DriveBatchTrashFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(attributesInTrash)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new DriveFindFeature(session, fileid).find(file.withAttributes(attributesInTrash)));

@@ -122,7 +122,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             {
                 final NSMenuItem item = NSMenuItem.itemWithTitle(LocaleFactory.get().localize("History", "Localizable"), null, StringUtils.EMPTY);
                 item.setEnabled(true);
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("history.tiff", 16));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("history", 16));
                 item.setTarget(this.id());
                 item.setAction(Foundation.selector("historyMenuClicked:"));
                 historyMenu.setSupermenu(null);
@@ -132,7 +132,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             {
                 final NSMenuItem item = NSMenuItem.itemWithTitle(LocaleFactory.get().localize("Bonjour", "Main"), null, StringUtils.EMPTY);
                 item.setEnabled(true);
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("rendezvous.tiff", 16));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("bonjour", 16));
                 rendezvousMenu.setSupermenu(null);
                 item.setSubmenu(rendezvousMenu);
                 menu.addItem(item);

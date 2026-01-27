@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -8,7 +9,6 @@ import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullUploadFeature;
-import ch.cyberduck.core.NullWriteFeature;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
@@ -151,7 +151,7 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                        .withAttributes(new PathAttributes().setSize(3L))));
+                        .withAttributes(new DefaultPathAttributes().setSize(3L))));
                 listener.chunk(folder, list);
                 return list;
             }
@@ -190,7 +190,7 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                        .withAttributes(new PathAttributes().setSize(2L))));
+                        .withAttributes(new DefaultPathAttributes().setSize(2L))));
                 listener.chunk(folder, list);
                 return list;
             }
@@ -235,13 +235,13 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                        .withAttributes(new PathAttributes().setSize(4L))));
+                        .withAttributes(new DefaultPathAttributes().setSize(4L))));
                 listener.chunk(folder, list);
                 return list;
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new DefaultUploadFeature<>(new NullWriteFeature()), new UploadFilterOptions(host).withTemporary(true));
+                new DefaultUploadFeature<>(session), new UploadFilterOptions(host).withTemporary(true));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {

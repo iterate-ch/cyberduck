@@ -22,12 +22,14 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * Stores the login credentials
  */
-public class Credentials implements Comparable<Credentials> {
+public class Credentials implements CredentialsHolder, Comparable<Credentials> {
 
     /**
      * The login name
@@ -38,13 +40,26 @@ public class Credentials implements Comparable<Credentials> {
      * The login password
      */
     private String password = StringUtils.EMPTY;
+    /**
+     * Temporary access tokens
+     */
     private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
+    /**
+     * OIDC tokens
+     */
     private OAuthTokens oauth = OAuthTokens.EMPTY;
+    /**
+     * Custom protocol dependent properties related to authentication
+     */
+    private final Map<String, String> properties = new HashMap<>();
 
     /**
      * Private key identity for SSH public key authentication.
      */
     private Local identity;
+    /**
+     * Passphrase for private key identity for SSH public key authentication.
+     */
     private String identityPassphrase = StringUtils.EMPTY;
 
     /**
@@ -67,8 +82,9 @@ public class Credentials implements Comparable<Credentials> {
     public Credentials(final Credentials copy) {
         this.user = copy.user;
         this.password = copy.password;
-        this.tokens = copy.tokens;
-        this.oauth = copy.oauth;
+        this.tokens = TemporaryAccessTokens.EMPTY == copy.tokens ? TemporaryAccessTokens.EMPTY : new TemporaryAccessTokens(copy.tokens);
+        this.oauth = OAuthTokens.EMPTY == copy.oauth ? OAuthTokens.EMPTY : new OAuthTokens(copy.oauth);
+        this.properties.putAll(copy.properties);
         this.identity = copy.identity;
         this.identityPassphrase = copy.identityPassphrase;
         this.certificate = copy.certificate;
@@ -97,22 +113,21 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * @return The login identification
      */
+    @Override
     public String getUsername() {
         return user;
     }
 
-    public void setUsername(final String user) {
+    @Override
+    public Credentials setUsername(final String user) {
         this.user = user;
-    }
-
-    public Credentials withUsername(final String user) {
-        this.setUsername((user));
         return this;
     }
 
     /**
      * @return The login secret
      */
+    @Override
     public String getPassword() {
         if(StringUtils.isEmpty(password)) {
             if(this.isAnonymousLogin()) {
@@ -122,57 +137,49 @@ public class Credentials implements Comparable<Credentials> {
         return password;
     }
 
-    public void setPassword(final String password) {
+    @Override
+    public Credentials setPassword(final String password) {
         this.password = password;
-    }
-
-    public Credentials withPassword(final String password) {
-        this.setPassword(password);
         return this;
     }
 
+    @Override
     public String getToken() {
         return tokens.getSessionToken();
     }
 
-    public void setToken(final String token) {
+    @Override
+    public Credentials setToken(final String token) {
         this.tokens = new TemporaryAccessTokens(token);
-    }
-
-    public Credentials withToken(final String token) {
-        this.setToken(token);
         return this;
     }
 
+    @Override
     public TemporaryAccessTokens getTokens() {
         return tokens;
     }
 
-    public void setTokens(final TemporaryAccessTokens tokens) {
+    @Override
+    public Credentials setTokens(final TemporaryAccessTokens tokens) {
         this.tokens = tokens;
-    }
-
-    public Credentials withTokens(final TemporaryAccessTokens tokens) {
-        this.setTokens(tokens);
         return this;
     }
 
+    @Override
     public OAuthTokens getOauth() {
         return oauth;
     }
 
-    public void setOauth(final OAuthTokens oauth) {
+    @Override
+    public Credentials setOauth(final OAuthTokens oauth) {
         this.oauth = oauth;
-    }
-
-    public Credentials withOauth(final OAuthTokens oauth) {
-        this.setOauth(oauth);
         return this;
     }
 
     /**
      * @return true if the password will be added to the system keychain when logged in successfully
      */
+    @Override
     public boolean isSaved() {
         return saved;
     }
@@ -182,32 +189,45 @@ public class Credentials implements Comparable<Credentials> {
      *
      * @param saved If true, the password of the login is added to the keychain upon successful login
      */
-    public void setSaved(final boolean saved) {
+    @Override
+    public Credentials setSaved(final boolean saved) {
         this.saved = saved;
-    }
-
-    public Credentials withSaved(final boolean saved) {
-        this.setSaved(saved);
         return this;
     }
 
     /**
      * @return true if the username is anonymous.
      */
+    @Override
     public boolean isAnonymousLogin() {
         return StringUtils.equals(user, PreferencesFactory.get().getProperty("connection.login.anon.name"));
     }
 
+    @Override
     public boolean isPasswordAuthentication() {
+        return this.isPasswordAuthentication(false);
+    }
+
+    /**
+     * @param allowblank Allow blank password
+     */
+    @Override
+    public boolean isPasswordAuthentication(final boolean allowblank) {
+        if(allowblank) {
+            // Allow blank password
+            return Objects.nonNull(password);
+        }
         return StringUtils.isNotBlank(password);
     }
 
+    @Override
     public boolean isTokenAuthentication() {
-        return StringUtils.isNotBlank(tokens.getSessionToken());
+        return tokens != TemporaryAccessTokens.EMPTY;
     }
 
+    @Override
     public boolean isOAuthAuthentication() {
-        return oauth.validate();
+        return oauth != OAuthTokens.EMPTY;
     }
 
     /**
@@ -217,6 +237,7 @@ public class Credentials implements Comparable<Credentials> {
      * specified
      * @see #setIdentity
      */
+    @Override
     public boolean isPublicKeyAuthentication() {
         if(null == identity) {
             return false;
@@ -224,14 +245,10 @@ public class Credentials implements Comparable<Credentials> {
         return identity.exists();
     }
 
-    public Credentials withIdentity(final Local file) {
-        this.identity = file;
-        return this;
-    }
-
     /**
      * @return The path to the private key file to use for public key authentication
      */
+    @Override
     public Local getIdentity() {
         return identity;
     }
@@ -241,31 +258,35 @@ public class Credentials implements Comparable<Credentials> {
      *
      * @param file Private key file
      */
-    public void setIdentity(final Local file) {
+    @Override
+    public Credentials setIdentity(final Local file) {
         this.identity = file;
+        return this;
     }
 
+    @Override
     public String getIdentityPassphrase() {
         return identityPassphrase;
     }
 
-    public void setIdentityPassphrase(final String identityPassphrase) {
-        this.identityPassphrase = identityPassphrase;
-    }
-
-    public Credentials withIdentityPassphrase(final String identityPassphrase) {
+    @Override
+    public Credentials setIdentityPassphrase(final String identityPassphrase) {
         this.identityPassphrase = identityPassphrase;
         return this;
     }
 
+    @Override
     public String getCertificate() {
         return certificate;
     }
 
-    public void setCertificate(final String certificate) {
+    @Override
+    public Credentials setCertificate(final String certificate) {
         this.certificate = certificate;
+        return this;
     }
 
+    @Override
     public boolean isCertificateAuthentication() {
         if(null == certificate) {
             return false;
@@ -273,11 +294,23 @@ public class Credentials implements Comparable<Credentials> {
         return true;
     }
 
+    @Override
+    public Credentials setProperty(final String key, final String value) {
+        properties.put(key, value);
+        return this;
+    }
+
+    @Override
+    public String getProperty(final String key) {
+        return properties.get(key);
+    }
+
     /**
      * @param protocol The protocol to verify against.
      * @param options  Options
      * @return True if the login credential are valid for the given protocol.
      */
+    @Override
     public boolean validate(final Protocol protocol, final LoginOptions options) {
         return protocol.validate(this, options);
     }
@@ -285,6 +318,7 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * Clear secrets in memory
      */
+    @Override
     public void reset() {
         this.setPassword(StringUtils.EMPTY);
         this.setToken(StringUtils.EMPTY);
@@ -337,6 +371,7 @@ public class Credentials implements Comparable<Credentials> {
         sb.append(", tokens='").append(tokens).append('\'');
         sb.append(", oauth='").append(oauth).append('\'');
         sb.append(", identity=").append(identity);
+        sb.append(", properties=").append(properties);
         sb.append('}');
         return sb.toString();
     }

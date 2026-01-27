@@ -156,6 +156,7 @@ public abstract class LicenseFactory extends Factory<License> {
     private static final License EMPTY_LICENSE = new License() {
         @Override
         public boolean verify(final LicenseVerifierCallback callback) {
+            callback.failure(new InvalidLicenseException());
             return false;
         }
 

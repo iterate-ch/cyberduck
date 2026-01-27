@@ -27,12 +27,11 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -59,6 +58,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
      * Encapsulating all the information of the remote host
      */
     protected final Host host;
+    protected final HostPreferences preferences;
 
     private Metrics metrics = new DisabledMetrics();
 
@@ -106,6 +106,10 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
         return this;
     }
 
+    public VaultRegistry getRegistry() {
+        return registry;
+    }
+
     public enum State {
         opening,
         open,
@@ -115,6 +119,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
 
     protected Session(final Host h) {
         this.host = h;
+        this.preferences = HostPreferencesFactory.get(host);
     }
 
     /**
@@ -175,6 +180,7 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
             }
         }
         finally {
+            preferences.clear();
             state = State.closed;
             log.debug("Connection did close to {}", host);
         }
@@ -194,12 +200,15 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
         }
     }
 
-    protected abstract void logout() throws BackgroundException;
+    protected void logout() throws BackgroundException {
+        log.debug("Reset credentials for {}", host);
+        host.getCredentials().reset();
+    }
 
     /**
      * Close the connection to the remote host. Subsequent calls to #getClient() must return null.
      */
-    protected void disconnect() {
+    protected void disconnect() throws BackgroundException {
         state = State.closed;
         listeners.clear();
     }
@@ -282,10 +291,10 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
-            return (T) new DefaultUploadFeature(this.getFeature(Write.class));
+            return (T) new DefaultUploadFeature<>(this);
         }
         if(type == Download.class) {
-            return (T) new DefaultDownloadFeature(this.getFeature(Read.class));
+            return (T) new DefaultDownloadFeature(this);
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();

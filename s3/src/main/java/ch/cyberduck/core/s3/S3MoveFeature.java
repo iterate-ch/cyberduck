@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -38,8 +40,6 @@ import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import java.util.Collections;
 import java.util.Optional;
 
-import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
-
 public class S3MoveFeature implements Move {
 
     private final S3Session session;
@@ -49,7 +49,7 @@ public class S3MoveFeature implements Move {
 
     public S3MoveFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.proxy = new S3ThresholdCopyFeature(session, acl);
         this.delete = new S3DefaultDeleteFeature(session, acl);
     }
@@ -57,7 +57,7 @@ public class S3MoveFeature implements Move {
     @Override
     public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         Path target;
-        if(source.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {
+        if(source.attributes().isTrashed()) {
             // Delete marker, copy not supported but we have to retain the delete marker at the target
             target = new Path(renamed);
             target.attributes().setVersionId(null);
@@ -70,7 +70,7 @@ public class S3MoveFeature implements Move {
                         String.valueOf(Path.DELIMITER), 1, null, null, false);
                 if(marker.getItems().length == 1) {
                     final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
-                    target.attributes().setVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                    target.attributes().setVersionId(markerObject.getVersionId()).setTrashed(true);
                     delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
                 }
                 else {
@@ -83,15 +83,15 @@ public class S3MoveFeature implements Move {
         }
         else {
             try {
-                target = proxy.copy(source, renamed, status.setLength(source.attributes().getSize()), connectionCallback, new DisabledStreamListener());
+                target = proxy.copy(source, renamed, status, connectionCallback, new DisabledStreamListener());
                 // Copy source path and nullify version id to add a delete marker
-                delete.delete(Collections.singletonMap(new Path(source).withAttributes(new PathAttributes(source.attributes()).setVersionId(null)), status),
+                delete.delete(Collections.singletonMap(new Path(source).withAttributes(new DefaultPathAttributes(source.attributes()).setVersionId(null)), status),
                         connectionCallback, callback);
             }
             catch(NotfoundException e) {
                 if(source.getType().contains(Path.Type.placeholder)) {
                     // No placeholder object to copy, create a new one at the target
-                    target = session.getFeature(Directory.class).mkdir(renamed, new TransferStatus().setRegion(source.attributes().getRegion()));
+                    target = session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), renamed, status);
                 }
                 else {
                     throw e;

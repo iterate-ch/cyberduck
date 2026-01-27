@@ -41,12 +41,12 @@ public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
     @Test
     public void testDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path level1 = new DropboxDirectoryFeature(session).mkdir(new Path(home,
+        final Path level1 = new DropboxDirectoryFeature(session).mkdir(new DropboxWriteFeature(session), new Path(home,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         assertTrue(new DefaultFindFeature(session).find(level1));
         assertTrue(new DropboxFindFeature(session).find(level1));
-        assertThrows(ConflictException.class, () -> new DropboxDirectoryFeature(session).mkdir(level1, new TransferStatus()));
-        final Path level2 = new DropboxDirectoryFeature(session).mkdir(new Path(level1,
+        assertThrows(ConflictException.class, () -> new DropboxDirectoryFeature(session).mkdir(new DropboxWriteFeature(session), level1, new TransferStatus()));
+        final Path level2 = new DropboxDirectoryFeature(session).mkdir(new DropboxWriteFeature(session), new Path(level1,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         assertTrue(new DefaultFindFeature(session).find(level2));
         assertTrue(new DropboxFindFeature(session).find(level2));

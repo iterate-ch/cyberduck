@@ -43,12 +43,12 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
     @Test
     public void testCreateContainer() throws Exception {
         final SwiftRegionService region = new SwiftRegionService(session);
-        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, region, new SwiftWriteFeature(session, region));
+        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, region);
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path container = feature.mkdir(test, new TransferStatus().setRegion("ORD"));
+        final Path container = feature.mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus().setRegion("ORD"));
         assertTrue(new SwiftFindFeature(session, region).find(container));
         // Can create again regardless if exists
-        feature.mkdir(test, new TransferStatus());
+        feature.mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
         new SwiftDeleteFeature(session, region).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session, region).find(container));
     }
@@ -72,9 +72,9 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
         final SwiftRegionService region = new SwiftRegionService(session);
-        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, region, new SwiftWriteFeature(session, region));
-        final Path parent = feature.mkdir(new Path(container, parentname, EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path placeholder = feature.mkdir(new Path(parent, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, region);
+        final Path parent = feature.mkdir(new SwiftWriteFeature(session, region), new Path(container, parentname, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path placeholder = feature.mkdir(new SwiftWriteFeature(session, region), new Path(parent, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session, region).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));

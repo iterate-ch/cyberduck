@@ -42,7 +42,7 @@ public class SFTPAgentAuthenticationTest {
     @Test
     public void filterIdentitiesMatch() {
         final SFTPAgentAuthentication authentication = new SFTPAgentAuthentication(new SSHClient(), new OpenSSHAgentAuthenticator(new AgentProxy(null)));
-        final Credentials credentials = new Credentials("user").withIdentity(new Local("mykey") {
+        final Credentials credentials = new Credentials("user").setIdentity(new Local("mykey") {
             @Override
             public boolean exists() {
                 return true;
@@ -66,7 +66,7 @@ public class SFTPAgentAuthenticationTest {
     @Test
     public void filterIdentitiesNoMatch() {
         final SFTPAgentAuthentication authentication = new SFTPAgentAuthentication(new SSHClient(), new OpenSSHAgentAuthenticator(new AgentProxy(null)));
-        final Credentials credentials = new Credentials("user").withIdentity(new Local("mykey") {
+        final Credentials credentials = new Credentials("user").setIdentity(new Local("mykey") {
             @Override
             public boolean exists() {
                 return true;

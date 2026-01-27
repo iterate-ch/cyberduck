@@ -20,7 +20,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ctera.model.DirectIO;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
@@ -80,19 +79,20 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                                 }
                                 segment.setUrl(metadata.chunks.get(i).url);
                                 final Map<String, String> parameters = new HashMap<>(segment.getParameters());
-                                parameters.put("wrapped_key", metadata.wrapped_key);
+                                parameters.put(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY, metadata.encrypt_info.wrapped_key);
                                 segment.setParameters(parameters);
                             }
                         }
                         else {
-                            throw new TransferCanceledException(String.format("Mismatch between number of segments and chunks for %s", file.getKey().remote));
+                            log.error("Mismatch between number of segments ({}) and chunks ({}) for {}",
+                                    segments.size(), metadata.chunks.size(), file.getKey().remote);
                         }
                     }
                     else {
                         if(0L == status.getOffset()) {
                             status.setUrl(metadata.chunks.get(0).url);
                             final Map<String, String> parameters = new HashMap<>(status.getParameters());
-                            parameters.put("wrapped_key", metadata.wrapped_key);
+                            parameters.put(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY, metadata.encrypt_info.wrapped_key);
                             status.setParameters(parameters);
                         }
                         else {
@@ -106,7 +106,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
     }
 
     private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
-        final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withPath(false)
+        final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withUsername(false).withPath(false)
                 .get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
         return session.getClient().getClient().execute(request, new AbstractResponseHandler<DirectIO>() {
             @Override

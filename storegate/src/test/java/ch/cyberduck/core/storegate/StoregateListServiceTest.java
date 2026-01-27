@@ -84,10 +84,10 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
     public void testList() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final TransferStatus status = new TransferStatus();
         status.setHidden(true);
-        final Path file = new StoregateTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final Path file = new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final AttributedList<Path> list = new StoregateListService(session, nodeid).list(folder, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertTrue(list.contains(file));
@@ -101,11 +101,11 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
     public void testListWithHiddenFile() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         status.setHidden(true);
-        new StoregateTouchFeature(session, nodeid).touch(file, status);
+        new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), file, status);
         final AttributedList<Path> list = new StoregateListService(session, nodeid).list(folder, new IndexedListProgressListener() {
             @Override
             public void message(final String message) {
@@ -128,7 +128,7 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
     public void testListEmptyFolder() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new StoregateWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AtomicBoolean callback = new AtomicBoolean();
         assertTrue(new StoregateListService(session, nodeid).list(folder, new DisabledListProgressListener() {
             @Override

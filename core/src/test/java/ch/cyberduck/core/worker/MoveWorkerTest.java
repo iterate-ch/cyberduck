@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -69,18 +71,13 @@ public class MoveWorkerTest {
                                 count.incrementAndGet();
                             }
                         }
-
-                        @Override
-                        public boolean isRecursive() {
-                            return false;
-                        }
                     };
                 }
                 if(type == Directory.class) {
                     return (T) new Directory<Void>() {
 
                         @Override
-                        public Path mkdir(final Path folder, final TransferStatus status) {
+                        public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) {
                             return folder;
                         }
                     };
@@ -88,7 +85,7 @@ public class MoveWorkerTest {
                 if(type == Move.class) {
                     return (T) new Move() {
                         private final AtomicInteger count = new AtomicInteger();
-                        private final PathAttributes attr = new PathAttributes().setSize(1L);
+                        private final PathAttributes attr = new DefaultPathAttributes().setSize(1L);
 
                         @Override
                         public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {

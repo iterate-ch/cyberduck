@@ -393,7 +393,7 @@ public class UploadTransferTest {
                     return (T) new AttributesFinder() {
                         @Override
                         public PathAttributes find(final Path file, final ListProgressListener listener) {
-                            return new PathAttributes();
+                            return new DefaultPathAttributes();
                         }
                     };
                 }

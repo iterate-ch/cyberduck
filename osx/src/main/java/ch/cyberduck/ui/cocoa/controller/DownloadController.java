@@ -45,7 +45,7 @@ public class DownloadController extends AlertController {
     private static final Logger log = LogManager.getLogger(DownloadController.class);
 
     @Outlet
-    protected final NSTextField urlField = NSTextField.textFieldWithString(StringUtils.EMPTY);
+    private NSTextField urlField;
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
     private final String url;
@@ -71,6 +71,7 @@ public class DownloadController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
+        urlField = NSTextField.textFieldWithString(StringUtils.EMPTY);
         urlField.cell().setWraps(false);
         urlField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(StringUtils.EMPTY, TRUNCATE_MIDDLE_ATTRIBUTES));
         return urlField;

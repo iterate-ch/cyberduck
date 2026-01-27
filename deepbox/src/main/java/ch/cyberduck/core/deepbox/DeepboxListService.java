@@ -17,6 +17,8 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -37,9 +39,7 @@ import ch.cyberduck.core.deepbox.io.swagger.client.model.Overview;
 import ch.cyberduck.core.deepcloud.DeepcloudExceptionMappingService;
 import ch.cyberduck.core.deepcloud.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.deepcloud.io.swagger.client.model.CompanyRoles;
-import ch.cyberduck.core.deepcloud.io.swagger.client.model.StructureEnum;
 import ch.cyberduck.core.deepcloud.io.swagger.client.model.UserFull;
-import ch.cyberduck.core.deepcloud.io.swagger.client.model.VerificationStateEnum;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -330,7 +330,7 @@ public class DeepboxListService implements ListService {
                 }
                 while(offset < size);
                 final Path shared = new Path(directory, containerService.getPinnedLocalization(SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                if(!new SharedWithMeListService(companyId).list(shared, listener).isEmpty()) {
+                if(!new SharedWithMeListService(companyId).list(shared, new DisabledListProgressListener()).isEmpty()) {
                     list.add(shared);
                     listener.chunk(directory, list);
                 }
@@ -360,7 +360,7 @@ public class DeepboxListService implements ListService {
                     list.add(new Path(directory,
                             String.format("%s (%s)", DeepboxPathNormalizer.name(box.getCompany().getDisplayName()), DeepboxPathNormalizer.name(box.getBoxName())),
                             EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            new PathAttributes().setFileId(box.getBoxNodeId()).setCustom(DeepboxIdProvider.DEEPBOX_NAME_PROEPRTY_KEY, box.getDeepBoxName()))
+                            new DefaultPathAttributes().setFileId(box.getBoxNodeId()).setCustom(DeepboxIdProvider.DEEPBOX_NAME_PROEPRTY_KEY, box.getDeepBoxName()))
                     );
                 }
                 // Mark duplicates
@@ -382,11 +382,6 @@ public class DeepboxListService implements ListService {
                 final UsersApi rest = new UsersApi(session.getDeepcloudClient());
                 final UserFull user = rest.usersMeList();
                 for(CompanyRoles company : user.getCompanies()) {
-                    if(company.getStructure() == StructureEnum.PERSONAL) {
-                        if(company.getVerificationState() == VerificationStateEnum.NONE) {
-                            continue;
-                        }
-                    }
                     list.add(new Path(directory, DeepboxPathNormalizer.name(company.getDisplayName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                             attributes.toAttributes(company))
                     );

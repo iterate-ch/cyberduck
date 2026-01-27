@@ -19,11 +19,11 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>9.2.0-SNAPSHOT</version>
+        <version>9.4.0-SNAPSHOT</version>
     </parent>
     <artifactId>onedrive</artifactId>
     <properties>
-        <onedrive-java-client-version>3.2.3</onedrive-java-client-version>
+        <onedrive-java-client-version>3.3.0</onedrive-java-client-version>
     </properties>
     <dependencies>
         <dependency>

@@ -35,7 +35,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -69,7 +68,7 @@ public class SwiftSession extends HttpSession<Client> {
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
     private final DelegatingSchedulerFeature scheduler = new DelegatingSchedulerFeature(
-            HostPreferencesFactory.get(host).getBoolean("openstack.account.preload") ? new SwiftAccountLoader(this) {
+            preferences.getBoolean("openstack.account.preload") ? new SwiftAccountLoader(this) {
                 @Override
                 protected Map<Region, AccountInfo> operate(final PasswordCallback callback) throws BackgroundException {
                     final Map<Region, AccountInfo> result = super.operate(callback);
@@ -78,7 +77,7 @@ public class SwiftSession extends HttpSession<Client> {
                     return result;
                 }
             } : Scheduler.noop,
-            HostPreferencesFactory.get(host).getBoolean("openstack.cdn.preload") ? new SwiftDistributionConfigurationLoader(this) {
+            preferences.getBoolean("openstack.cdn.preload") ? new SwiftDistributionConfigurationLoader(this) {
                 @Override
                 protected Map<Path, Set<Distribution>> operate(final PasswordCallback callback) throws BackgroundException {
                     final Map<Path, Set<Distribution>> result = super.operate(callback);
@@ -103,12 +102,22 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     protected void logout() throws BackgroundException {
+        scheduler.shutdown(false);
+        super.logout();
+    }
+
+    @Override
+    public void disconnect() throws BackgroundException {
         try {
-            scheduler.shutdown(false);
-            client.disconnect();
+            if(client != null) {
+                client.disconnect();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            super.disconnect();
         }
     }
 
@@ -163,10 +172,10 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftWriteFeature(this, regionService);
         }
         if(type == Upload.class) {
-            return (T) new SwiftThresholdUploadService(this, regionService, new SwiftWriteFeature(this, regionService));
+            return (T) new SwiftThresholdUploadService(this, regionService);
         }
         if(type == Directory.class) {
-            return (T) new SwiftDirectoryFeature(this, regionService, new SwiftWriteFeature(this, regionService));
+            return (T) new SwiftDirectoryFeature(this, regionService);
         }
         if(type == Delete.class) {
             return (T) new SwiftThresholdDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);

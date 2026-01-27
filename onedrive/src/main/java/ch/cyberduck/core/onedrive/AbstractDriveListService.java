@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
@@ -34,7 +35,7 @@ public abstract class AbstractDriveListService extends AbstractListService<Drive
 
     @Override
     protected Path toPath(final Drive.Metadata metadata, final Path directory) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setFileId(metadata.getId());
         final Quota quota = metadata.getQuota();
         if(quota != null) {
@@ -43,16 +44,15 @@ public abstract class AbstractDriveListService extends AbstractListService<Drive
                 attributes.setSize(used);
             }
         }
-        String name = metadata.getName();
-        if(StringUtils.isBlank(metadata.getName())) {
-            name = metadata.getId();
-        }
-        return new Path(directory, name, EnumSet.of(Path.Type.directory, Path.Type.volume), attributes);
+        return new Path(directory, metadata.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes);
     }
 
     @Override
     protected boolean filter(final Path directory, final Metadata metadata) {
         if(StringUtils.isBlank(metadata.getId())) {
+            return false;
+        }
+        if(StringUtils.isBlank(metadata.getName())) {
             return false;
         }
         return super.filter(directory, metadata);

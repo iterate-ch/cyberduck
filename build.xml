@@ -136,6 +136,10 @@
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar" />
         </taskdef>
 
+        <condition property="msbuild.sign" value="false">
+            <isset property="skipSign"/>
+        </condition>
+        <property name="msbuild.sign" value="" />
         <condition property="msbuild.configuration" value="Debug">
             <equals arg1="${configuration}" arg2="debug" />
         </condition>
@@ -147,7 +151,9 @@
             <isset property="skipSign"/>
         </condition>
         <property name="msbuild.sign" value=""/>
-        
+
+        <property name="signtool" value="cng" />
+        <property name="revision" value="0" />
         <copy todir="${build}/generated/msbuild" overwrite="True">
             <resources>
                 <fileset dir="${home}/src/template/msbuild" erroronmissingdir="false" />

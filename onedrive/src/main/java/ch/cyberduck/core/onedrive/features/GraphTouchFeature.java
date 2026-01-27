@@ -24,6 +24,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
@@ -47,7 +49,7 @@ public class GraphTouchFeature implements Touch<DriveItem.Metadata> {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<DriveItem.Metadata> writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final DriveItem folder = session.getItem(file.getParent());
             final DriveItem.Metadata metadata = Files.createFile(folder, URIEncoder.encode(file.getName()),
@@ -61,6 +63,9 @@ public class GraphTouchFeature implements Touch<DriveItem.Metadata> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
+        }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Cannot create {0}", e.getCause(), file);
         }
     }
 

@@ -62,13 +62,18 @@ public class SDSDelegatingCopyFeature implements Copy {
     @Override
     public void preflight(final Path source, final Optional<Path> target) throws BackgroundException {
         if(proxy.isSupported(source, target)) {
-            return;
+            proxy.preflight(source, target);
         }
-        copy.preflight(source, target);
+        else {
+            copy.preflight(source, target);
+        }
     }
 
     @Override
     public EnumSet<Flags> features(final Path source, final Path target) {
-        return proxy.features(source, target);
+        if(proxy.isSupported(source, Optional.of(target))) {
+            return proxy.features(source, target);
+        }
+        return copy.features(source, target);
     }
 }

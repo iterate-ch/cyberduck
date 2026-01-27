@@ -43,11 +43,11 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
     @Test
     public void testCopyFile() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path file = new SMBTouchFeature(session).touch(new Path(home,
+        final Path file = new SMBTouchFeature(session).touch(new SMBWriteFeature(session), new Path(home,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new SMBAttributesFinderFeature(session).find(file);
         final Path destinationFolder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path fileCopied = new SMBCopyFeature(session).copy(file, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(attr, new SMBAttributesFinderFeature(session).find(fileCopied));
@@ -61,13 +61,13 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
     public void testCopyToExistingFile() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path sourceFolder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path destinationFolder = new SMBDirectoryFeature(session).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path file = new SMBTouchFeature(session).touch(new Path(sourceFolder,
+                new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new SMBTouchFeature(session).touch(new SMBWriteFeature(session), new Path(sourceFolder,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SMBTouchFeature(session).touch(copy, new TransferStatus());
+        new SMBTouchFeature(session).touch(new SMBWriteFeature(session), copy, new TransferStatus());
         new SMBCopyFeature(session).copy(file, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         ListService list = new SMBListService(session);
         assertTrue(list.list(sourceFolder, new DisabledListProgressListener()).contains(file));

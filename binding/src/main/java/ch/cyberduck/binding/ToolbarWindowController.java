@@ -26,7 +26,6 @@ import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSMutableArray;
-import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -65,12 +64,6 @@ public abstract class ToolbarWindowController extends WindowController implement
      * @return Content for the tabs.
      */
     protected abstract Map<Label, NSView> getPanels();
-
-    @Override
-    public void windowDidBecomeKey(NSNotification notification) {
-        this.resize();
-        super.windowDidBecomeKey(notification);
-    }
 
     protected static class Label {
         public String identifier;

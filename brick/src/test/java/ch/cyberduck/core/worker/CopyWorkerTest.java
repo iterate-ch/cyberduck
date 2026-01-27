@@ -58,7 +58,7 @@ public class CopyWorkerTest extends AbstractBrickTest {
         final byte[] random = RandomUtils.nextBytes(3247);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(source, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), source, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -78,12 +78,12 @@ public class CopyWorkerTest extends AbstractBrickTest {
         final byte[] random = RandomUtils.nextBytes(3247);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BrickDirectoryFeature(session).mkdir(targetFolder, new TransferStatus());
+        new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), targetFolder, new TransferStatus());
         assertTrue(new BrickFindFeature(session).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -98,13 +98,13 @@ public class CopyWorkerTest extends AbstractBrickTest {
     public void testCopyDirectory() throws Exception {
 
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path folder = new BrickDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), sourceFile.getName());
         final byte[] random = RandomUtils.nextBytes(3247);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
-        new BrickUploadFeature(session, new BrickWriteFeature(session)).upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new BrickUploadFeature(session).upload(new BrickWriteFeature(session), sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(folder));
         assertTrue(new BrickFindFeature(session).find(sourceFile));

@@ -41,42 +41,37 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
     private final SwiftRegionService regionService;
     private final Long threshold;
 
-    private Write<StorageObject> writer;
-
-    public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService,
-                                       final SwiftWriteFeature writer) {
-        this(session, regionService, writer, HostPreferencesFactory.get(session.getHost()).getLong("openstack.upload.largeobject.threshold"));
+    public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService) {
+        this(session, regionService, HostPreferencesFactory.get(session.getHost()).getLong("openstack.upload.largeobject.threshold"));
     }
 
 
     public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService,
-                                       final SwiftWriteFeature writer,
                                        final Long threshold) {
         this.session = session;
         this.regionService = regionService;
-        this.writer = writer;
         this.threshold = threshold;
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         if(this.threshold(status)) {
-            return new SwiftLargeObjectUploadFeature(session, regionService, writer).append(file, status);
+            return new SwiftLargeObjectUploadFeature(session, regionService).append(file, status);
         }
         return new Write.Append(false).withStatus(status);
     }
 
     @Override
-    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
+    public StorageObject upload(final Write<StorageObject> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Upload<StorageObject> feature;
         if(this.threshold(status)) {
-            feature = new SwiftLargeObjectUploadFeature(session, regionService, writer);
+            feature = new SwiftLargeObjectUploadFeature(session, regionService);
         }
         else {
-            feature = new SwiftSmallObjectUploadFeature(session, writer);
+            feature = new SwiftSmallObjectUploadFeature(session);
         }
-        return feature.upload(file, local, throttle, progress, streamListener, status, callback);
+        return feature.upload(write, file, local, throttle, progress, streamListener, status, callback);
     }
 
     protected boolean threshold(final TransferStatus status) {
@@ -93,9 +88,4 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
         return false;
     }
 
-    @Override
-    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return this;
-    }
 }

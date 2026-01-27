@@ -1,5 +1,6 @@
 package ch.cyberduck.core.transfer.upload;
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -37,7 +38,7 @@ public class RenameFilterTest {
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
-                return new PathAttributes();
+                return new DefaultPathAttributes();
             }
         };
         final Find find = new Find() {
@@ -78,7 +79,7 @@ public class RenameFilterTest {
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
-                return new PathAttributes();
+                return new DefaultPathAttributes();
             }
         };
         final Find find = new Find() {

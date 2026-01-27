@@ -48,7 +48,7 @@ public class ActivityController extends WindowController {
 
     private final BackgroundActionRegistry registry;
 
-    private final Map<BackgroundAction, TaskController> tasks
+    private final Map<BackgroundAction<?>, TaskController> tasks
             = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public ActivityController() {
@@ -68,9 +68,7 @@ public class ActivityController extends WindowController {
         final BackgroundAction[] actions = registry.toArray(
                 new BackgroundAction[registry.size()]);
         for(final BackgroundAction action : actions) {
-            final TaskController c = new TaskController(action);
-            c.loadBundle();
-            tasks.put(action, c);
+            tasks.put(action, new TaskController(action));
         }
         this.reload();
     }
@@ -83,18 +81,18 @@ public class ActivityController extends WindowController {
         super.invalidate();
     }
 
-    private final AbstractCollectionListener<BackgroundAction> backgroundActionListener
-            = new AbstractCollectionListener<BackgroundAction>() {
+    private final AbstractCollectionListener<BackgroundAction<?>> backgroundActionListener
+            = new AbstractCollectionListener<BackgroundAction<?>>() {
 
         @Override
-        public void collectionItemAdded(final BackgroundAction action) {
+        public void collectionItemAdded(final BackgroundAction<?> action) {
             log.debug("Add background action {}", action);
             tasks.put(action, new TaskController(action));
             reload();
         }
 
         @Override
-        public void collectionItemRemoved(final BackgroundAction action) {
+        public void collectionItemRemoved(final BackgroundAction<?> action) {
             log.debug("Remove background action {}", action);
             final TaskController controller = tasks.remove(action);
             if(null == controller) {
@@ -125,6 +123,7 @@ public class ActivityController extends WindowController {
     public void setWindow(NSWindow window) {
         window.setContentMinSize(window.frame().size);
         window.setTitle(LocaleFactory.localizedString("Activity"));
+        window.setHidesOnDeactivate(false);
         super.setWindow(window);
     }
 
@@ -203,6 +202,7 @@ public class ActivityController extends WindowController {
                 if(null == controller) {
                     return null;
                 }
+                controller.loadBundle();
                 return controller.view();
             }
         }).id());

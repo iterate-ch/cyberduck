@@ -95,11 +95,8 @@ public class NextcloudSession extends DAVSession {
         if(type == ListService.class) {
             return (T) new NextcloudListService(this);
         }
-        if(type == Directory.class) {
-            return (T) new DAVDirectoryFeature(this, new NextcloudAttributesFinderFeature(this));
-        }
         if(type == Touch.class) {
-            return (T) new DAVTouchFeature(new NextcloudWriteFeature(this));
+            return (T) new DAVTouchFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new NextcloudAttributesFinderFeature(this);
@@ -110,7 +107,7 @@ public class NextcloudSession extends DAVSession {
             }
         }
         if(type == Upload.class) {
-            return (T) new HttpUploadFeature(new NextcloudWriteFeature(this));
+            return (T) new HttpUploadFeature();
         }
         if(type == Write.class) {
             return (T) new NextcloudWriteFeature(this);

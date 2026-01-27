@@ -42,7 +42,7 @@ public class SFTPTimestampFeatureTest extends AbstractSFTPTest {
     public void testSetTimestamp() throws Exception {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test, new TransferStatus());
+        new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(modified)), new SFTPAttributesFinderFeature(session).find(test).getModificationDate());
@@ -55,7 +55,7 @@ public class SFTPTimestampFeatureTest extends AbstractSFTPTest {
     public void testSetTimestampDirectory() throws Exception {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SFTPDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), test, new TransferStatus());
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(modified)), new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0);

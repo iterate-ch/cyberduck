@@ -69,7 +69,7 @@ namespace Ch.Cyberduck.Core
             }
 
             [MethodImpl(MethodImplOptions.NoInlining)]
-            static string PackagePath() => Package.Current.InstalledPath;
+            static string PackagePath() => Package.Current.InstalledLocation.Path;
         }
 
         public static void AssemblyInfo<T>()

@@ -276,6 +276,8 @@
         <string>${SPARKLEFEED}</string>
         <key>SUEnableAutomaticChecks</key>
         <false/>
+        <key>NSDockTilePlugIn</key>
+        <string>Cyberduck Dock Plugin.docktileplugin</string>
         #endif
         <key>NSServices</key>
         <array>

@@ -61,7 +61,7 @@ public class S3VersioningFeature implements Versioning {
     public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.acl = acl;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override
@@ -180,7 +180,7 @@ public class S3VersioningFeature implements Versioning {
                     // Apply non standard ACL
                     final Acl list = acl.getPermission(file);
                     if(list.isEditable()) {
-                        destination.setAcl(acl.toAcl(list));
+                        destination.setAcl(S3AccessControlListFeature.toAcl(list));
                     }
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
@@ -190,7 +190,7 @@ public class S3VersioningFeature implements Versioning {
                 final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                         bucketname, containerService.getKey(file), bucketname, destination, false);
-                if(file.getParent().attributes().getCustom().containsKey(S3VersionedObjectListService.KEY_DELETE_MARKER)) {
+                if(file.getParent().attributes().isTrashed()) {
                     // revert placeholder
                     session.getClient().deleteVersionedObject(
                             file.getParent().attributes().getVersionId(),

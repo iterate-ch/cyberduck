@@ -1,5 +1,49 @@
 # Changelog
 
+[9.3.1](https://github.com/iterate-ch/cyberduck/compare/release-9-3-0...release-9-3-1)
+* [Bugfix] Validate tokens when using AWS S3 CLI connection profile (#17690)
+
+[9.3.0](https://github.com/iterate-ch/cyberduck/compare/release-9-2-4...release-9-3-0)
+* [Feature] Rewrite protocol implementation (Azure) ([#15967](https://trac.cyberduck.io/ticket/15967))
+* [Feature] Connect with Multi-Bucket Application Keys that grant access to a specific group of buckets within an
+  account, including the option to limit access based on a single file prefix (
+  B2) ([#17139](https://trac.cyberduck.io/ticket/17139))
+* [Feature] Connect with connection profile obtaining temporary credentials from AWS Security Token Service (STS) by
+  assuming role with optional Multi-Factor Authentication (MFA) input (
+  S3) ([#17437](https://trac.cyberduck.io/ticket/17437))
+* [Feature] Connect with connection profile obtaining temporary credentials from AWS Security Token Service (STS) by
+  getting session token with optional Multi-Factor Authentication (MFA) input (
+  S3) ([#17506](https://trac.cyberduck.io/ticket/17506))
+* [Bugfix] Fix race conditions in FTP socket closure that cause intermittent errors (FTP)
+* [Bugfix] Default to read identity agent location from SSH_AUTH_SOCK environment variable with no custom
+  configuration (SFTP)
+
+[9.2.4](https://github.com/iterate-ch/cyberduck/compare/release-9-2-3...release-9-2-4)
+* [Bugfix] Unable to close connection window with "Cancel" (macOS) ([#17366](https://trac.cyberduck.io/ticket/17366))
+* [Bugfix] Choose "Cancel" in upload prompt continues transfer (
+  macOS) ([#17358](https://trac.cyberduck.io/ticket/17358))
+* [Bugfix] Change button styles for bottom bar of window (macOS) ([#17407](https://trac.cyberduck.io/ticket/17407))
+* [Bugfix] Resumable uploads fail with Basic authentication (ownCloud)
+* [Bugfix] Include "Add to My Files" shortcuts (OneDrive)
+* [Bugfix] Exclude non-accessible "Personal Vault" (OneDrive) ([#17318](https://trac.cyberduck.io/ticket/17318))
+* [Bugfix] Cache connection profiles loaded in Preferences → Profiles ([#17432](https://trac.cyberduck.io/ticket/17432))
+
+[9.2.3](https://github.com/iterate-ch/cyberduck/compare/release-9-2-2...release-9-2-3)
+* [Bugfix] Failure opening application (Windows)
+
+[9.2.2](https://github.com/iterate-ch/cyberduck/compare/release-9-2-1...release-9-2-2)
+* [Bugfix] Remove Dock Tile Plugin (macOS, Mac App Store)
+
+[9.2.1](https://github.com/iterate-ch/cyberduck/compare/release-9-2-0...release-9-2-1)
+* [Bugfix] Unable to enter username in login prompt (macOS)
+
+[9.2.0](https://github.com/iterate-ch/cyberduck/compare/release-9-1-7...release-9-2-0)
+* [Feature] Updated runtime (Windows) ([#16854](https://trac.cyberduck.io/ticket/16854))
+* [Feature] Add plugin to set application icon (macOS) ([#17170](https://trac.cyberduck.io/ticket/17170))
+* [Feature] Support for Mexico (Central) region (S3)
+* [Feature] Support for Asia Pacific (Thailand) region (S3)
+* [Feature] Support for Asia Pacific (Taipei) region (S3)
+
 [9.1.7](https://github.com/iterate-ch/cyberduck/compare/release-9-1-6...release-9-1-7)
 * [Bugfix] Timeout error when attempting to connect using public key authentication (SFTP) (Windows)
 * [Bugfix] Use SHA-2 thumbprints to save trusted server certificates (Windows)

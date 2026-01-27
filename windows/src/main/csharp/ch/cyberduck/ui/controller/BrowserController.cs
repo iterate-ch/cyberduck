@@ -1687,7 +1687,7 @@ namespace Ch.Cyberduck.Ui.Controller
             for (int i = 0; i < _pasteboard.size(); i++)
             {
                 Path next = (Path)_pasteboard.get(i);
-                Path renamed = new Path(parent, next.getName(), next.getType(), new PathAttributes(next.attributes()));
+                Path renamed = new Path(parent, next.getName(), next.getType(), new DefaultPathAttributes(next.attributes()));
                 files.Add(next, renamed);
             }
             _pasteboard.clear();
@@ -2098,8 +2098,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Location feature = (Location)Pool.getFeature(typeof(Location));
             FolderController fc = new FolderController(ObjectFactory.GetInstance<INewFolderPromptView>(), this,
                 feature != null
-                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations())
-                    : new List<Location.Name>(), feature != null ? feature.getDefault() : Location.unknown);
+                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations(Workdir))
+                    : new List<Location.Name>(), feature != null ? feature.getDefault(Workdir) : Location.unknown);
             fc.Show();
         }
 
@@ -2108,8 +2108,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Location feature = (Location)Pool.getFeature(typeof(Location));
             FolderController fc = new VaultController(ObjectFactory.GetInstance<INewVaultPromptView>(), this,
                 feature != null
-                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations())
-                    : new List<Location.Name>(), feature != null ? feature.getDefault() : Location.unknown);
+                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations(Workdir))
+                    : new List<Location.Name>(), feature != null ? feature.getDefault(Workdir) : Location.unknown);
             fc.Show();
         }
 

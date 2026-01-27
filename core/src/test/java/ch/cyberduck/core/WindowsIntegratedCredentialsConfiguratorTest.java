@@ -18,15 +18,16 @@ package ch.cyberduck.core;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 public class WindowsIntegratedCredentialsConfiguratorTest {
 
     @Test
     public void testConfigure() {
-        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.linux));
+        assumeFalse(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
         final Host bookmark = new Host(new TestProtocol());
-        assertSame(bookmark.getCredentials(), new WindowsIntegratedCredentialsConfigurator().configure(bookmark));
+        assertEquals(bookmark.getCredentials(), new WindowsIntegratedCredentialsConfigurator().configure(bookmark));
     }
 
     @Test

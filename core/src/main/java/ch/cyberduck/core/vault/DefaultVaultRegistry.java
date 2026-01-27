@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
@@ -56,29 +57,34 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
 
     @Override
     public boolean add(final Vault vault) {
+        log.debug("Add vault {} to registry", vault);
         return super.add(vault);
     }
 
     @Override
     public boolean close(final Path directory) {
-        return this.removeIf(vault -> {
-            if(new SimplePathPredicate(vault.getHome()).test(directory)) {
-                vault.close();
-                directory.attributes().setVault(null);
-                return true;
-            }
-            return false;
-        });
+        try {
+            return this.removeIf(vault -> {
+                if(new SimplePathPredicate(vault.getHome()).test(directory)) {
+                    vault.close();
+                    return true;
+                }
+                return false;
+            });
+        }
+        finally {
+            directory.attributes().setVault(null);
+        }
     }
 
     @Override
-    public boolean contains(final Path directory) {
+    public boolean contains(final Path directory, final boolean recursive) {
         for(Vault vault : this) {
-            if(directory.equals(vault.getHome())) {
+            if(new SimplePathPredicate(vault.getHome()).test(directory)) {
                 return true;
             }
-            if(directory.isChild(vault.getHome())) {
-                return true;
+            if(recursive) {
+                return vault.contains(directory);
             }
         }
         return false;
@@ -92,14 +98,14 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public Vault find(final Session session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
+    public Vault find(final Session<?> session, final Path file, final boolean autoload) throws VaultUnlockCancelException {
         for(Vault vault : this) {
             if(vault.contains(file)) {
                 log.debug("Found vault {} for file {}", vault, file);
                 return vault;
             }
         }
-        if(unlock) {
+        if(autoload) {
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
             if(file.attributes().getVault() != null) {
                 return listener.load(session, file.attributes().getVault(),
@@ -128,6 +134,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         return this._getFeature(session, type, proxy);
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T _getFeature(final Session<?> session, final Class<T> type, final T proxy) {
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
@@ -229,6 +236,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == Versioning.class) {
             return (T) new VaultRegistryVersioningFeature(session, (Versioning) proxy, this);
+        }
+        if(type == PathContainerService.class) {
+            return (T) new VaultRegistryPathContainerService(session, (PathContainerService) proxy, this);
         }
         return proxy;
     }

@@ -18,7 +18,10 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
@@ -28,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.security.AWSSessionCredentials;
 
 public class S3PresignedUrlProvider {
     private static final Logger log = LogManager.getLogger(S3PresignedUrlProvider.class);
@@ -50,9 +54,12 @@ public class S3PresignedUrlProvider {
      * @param expiry Milliseconds
      * @return a URL signed in such a way as to grant access to an S3 resource to whoever uses it.
      */
-    public String create(final String secret, final String bucket, final String region, final String key, final String method, final long expiry) {
+    public String create(final Credentials credentials, final String bucket, final String region, final String key, final String method, final long expiry) {
         final Host bookmark = session.getHost();
-        return new RestS3Service(new AWSCredentials(StringUtils.strip(bookmark.getCredentials().getUsername()), StringUtils.strip(secret))) {
+        return new RestS3Service(credentials.getTokens().validate() ?
+                new AWSSessionCredentials(credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey(),
+                        credentials.getTokens().getSessionToken()) :
+                new AWSCredentials(credentials.getTokens().getAccessKeyId(), credentials.getTokens().getSecretAccessKey())) {
             @Override
             public String getEndpoint() {
                 if(S3Session.isAwsHostname(bookmark.getHostname())) {
@@ -62,6 +69,15 @@ public class S3PresignedUrlProvider {
                     return String.format(endpoint, region);
                 }
                 return bookmark.getHostname();
+            }
+
+            @Override
+            protected String getVirtualPath() {
+                final String context = bookmark.getProtocol().getContext();
+                if(StringUtils.isNotBlank(context) && !Scheme.isURL(context)) {
+                    return PathNormalizer.normalize(context);
+                }
+                return StringUtils.EMPTY;
             }
 
             @Override

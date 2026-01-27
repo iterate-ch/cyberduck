@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
@@ -28,8 +29,9 @@ import java.text.MessageFormat;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.CreateFolderResult;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.Metadata;
 
-public class DropboxDirectoryFeature implements Directory<String> {
+public class DropboxDirectoryFeature implements Directory<Metadata> {
 
     private final DropboxSession session;
     private final PathContainerService containerService;
@@ -40,7 +42,7 @@ public class DropboxDirectoryFeature implements Directory<String> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Metadata> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             final CreateFolderResult result = new DbxUserFilesRequests(session.getClient(folder.getParent()))
                     .createFolderV2(containerService.getKey(folder), false);

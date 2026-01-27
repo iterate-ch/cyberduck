@@ -19,8 +19,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -28,6 +26,8 @@ import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Restore;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.s3.S3CredentialsStrategy;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -73,7 +73,7 @@ public class Glacier implements Restore {
      */
     @Override
     public void restore(final Path file, final LoginCallback prompt) throws BackgroundException {
-        final Path container = session.getFeature(PathContainerService.class).getContainer(file);
+        final Path container = new S3PathContainerService(session.getHost()).getContainer(file);
         try {
             try {
                 final AmazonS3 client = client(container);
@@ -81,9 +81,9 @@ public class Glacier implements Restore {
                 // This is the default option for the GLACIER and DEEP_ARCHIVE retrieval requests that do not specify
                 // the retrieval option. S3 Standard retrievals typically complete within 3-5 hours from the GLACIER
                 // storage class and typically complete within 12 hours from the DEEP_ARCHIVE storage class.
-                client.restoreObjectV2(new RestoreObjectRequest(container.getName(), session.getFeature(PathContainerService.class).getKey(file))
-                    // To restore a specific object version, you can provide a version ID. If you don't provide a version ID, Amazon S3 restores the current version.
-                    .withVersionId(file.attributes().getVersionId())
+                client.restoreObjectV2(new RestoreObjectRequest(container.getName(), new S3PathContainerService(session.getHost()).getKey(file))
+                        // To restore a specific object version, you can provide a version ID. If you don't provide a version ID, Amazon S3 restores the current version.
+                        .withVersionId(file.attributes().getVersionId())
                         .withExpirationInDays(HostPreferencesFactory.get(session.getHost()).getInteger("s3.glacier.restore.expiration.days"))
                         .withGlacierJobParameters(new GlacierJobParameters().withTier(HostPreferencesFactory.get(session.getHost()).getProperty("s3.glacier.restore.tier")))
                 );
@@ -102,16 +102,13 @@ public class Glacier implements Restore {
     @Override
     public boolean isRestorable(final Path file) {
         return StringUtils.equals("GLACIER", file.attributes().getStorageClass()) ||
-            StringUtils.equals("DEEP_ARCHIVE", file.attributes().getStorageClass());
+                StringUtils.equals("DEEP_ARCHIVE", file.attributes().getStorageClass());
     }
 
     private AmazonS3 client(final Path container) throws BackgroundException {
         final AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard()
-            .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()))
-            .withClientConfiguration(configuration);
-        if(session.getClient().isAuthenticatedConnection()) {
-            builder.withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()));
-        }
+                .withClientConfiguration(configuration)
+                .withCredentials(S3CredentialsStrategy.toCredentialsProvider(session.getAuthentication().get()));
         final Location.Name region = this.getRegion(container);
         if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             if(Location.unknown.equals(region)) {
@@ -123,7 +120,7 @@ public class Glacier implements Restore {
         }
         else {
             builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
-                new HostUrlProvider(false).get(session.getHost()), region.getIdentifier()));
+                    new HostUrlProvider(false).get(session.getHost()), region.getIdentifier()));
         }
         return builder.build();
     }

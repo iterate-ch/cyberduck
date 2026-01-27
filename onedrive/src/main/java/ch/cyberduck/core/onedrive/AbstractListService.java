@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
@@ -55,7 +56,12 @@ public abstract class AbstractListService<T> implements ListService {
                     log.debug("Filtering metadata {} in {}", metadata, directory);
                     continue;
                 }
-                children.add(toPath(metadata, directory));
+                final Path path = toPath(metadata, directory);
+                if (StringUtils.isBlank(path.attributes().getFileId())) {
+                    log.warn("Filtering inaccessible {} for {}", path, metadata);
+                    continue;
+                }
+                children.add(path);
             }
         }
         catch(OneDriveRuntimeException e) { // this catches iterator.hasNext in iterate()

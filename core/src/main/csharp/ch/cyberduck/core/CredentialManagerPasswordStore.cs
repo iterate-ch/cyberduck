@@ -194,7 +194,10 @@ namespace Ch.Cyberduck.Core
             }
             if (credential.isTokenAuthentication())
             {
-                winCred.Attributes["Token"] = credential.getToken();
+                if (credential.getToken() != null)
+                {
+                    winCred.Attributes["Token"] = credential.getToken();
+                }
             }
             if (credential.isOAuthAuthentication())
             {

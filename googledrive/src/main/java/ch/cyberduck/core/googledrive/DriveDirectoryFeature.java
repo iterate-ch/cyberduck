@@ -15,15 +15,16 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -34,7 +35,7 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.TeamDrive;
 
-public class DriveDirectoryFeature implements Directory<VersionId> {
+public class DriveDirectoryFeature implements Directory<File> {
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
@@ -45,13 +46,13 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<File> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(folder.getParent())) {
                 final TeamDrive execute = session.getClient().teamdrives().create(
                         new UUIDRandomStringService().random(), new TeamDrive().setName(folder.getName())
                 ).execute();
-                return folder.withAttributes(new PathAttributes(folder.attributes()).setFileId(execute.getId()));
+                return folder.withAttributes(new DefaultPathAttributes(folder.attributes()).setFileId(execute.getId()));
             }
             else {
                 try {

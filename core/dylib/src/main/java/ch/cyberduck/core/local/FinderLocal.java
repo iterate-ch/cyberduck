@@ -25,9 +25,7 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 
@@ -49,13 +47,6 @@ public class FinderLocal extends Local {
     private static final Local APP_PACKAGE = new BundleApplicationResourcesFinder().find();
     private static final Local TEMPORARY = new TemporarySupportDirectoryFinder().find();
     private static final Local GROUP_CONTAINER = new SecurityApplicationGroupSupportDirectoryFinder().find();
-
-    static {
-        Native.load("core");
-    }
-
-    private static final FilesystemBookmarkResolver<NSURL> resolver
-            = FilesystemBookmarkResolverFactory.get();
 
     public FinderLocal(final Local parent, final String name) {
         super(parent, name);
@@ -156,7 +147,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public NSURL lock(final boolean interactive) throws AccessDeniedException {
-        return this.lock(interactive, resolver);
+        return this.lock(interactive, FilesystemBookmarkResolverFactory.get());
     }
 
     protected NSURL lock(final boolean interactive, final FilesystemBookmarkResolver<NSURL> resolver) throws AccessDeniedException {
@@ -237,19 +228,6 @@ public class FinderLocal extends Local {
         }
         return new LockReleaseProxyInputStream(super.getInputStream(resolved.path()), resolved);
     }
-
-    private static String resolveAlias(final String absolute) {
-        if(PreferencesFactory.get().getBoolean("local.alias.resolve")) {
-            return resolveAliasNative(absolute);
-        }
-        return absolute;
-    }
-
-    /**
-     * @param absolute The absolute path of the alias file.
-     * @return The absolute path this alias is pointing to.
-     */
-    private static native String resolveAliasNative(String absolute);
 
     @Override
     public FinderLocalAttributes attributes() {

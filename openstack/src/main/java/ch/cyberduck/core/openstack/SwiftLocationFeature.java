@@ -59,12 +59,12 @@ public class SwiftLocationFeature implements Location {
     }
 
     @Override
-    public Name getDefault() {
+    public Name getDefault(final Path file) {
         return Location.unknown;
     }
 
     @Override
-    public Set<Name> getLocations() {
+    public Set<Name> getLocations(final Path file) {
         final Set<Name> locations = new LinkedHashSet<>();
         if(StringUtils.isNotBlank(session.getHost().getRegion())) {
             locations.add(new SwiftRegion(session.getHost().getRegion()));

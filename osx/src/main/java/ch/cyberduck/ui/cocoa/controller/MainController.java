@@ -21,7 +21,6 @@ import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.SystemAlertController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
@@ -168,8 +167,6 @@ public class MainController extends BundleController implements NSApplication.De
     private boolean displayDonationPrompt = true;
 
     @Outlet
-    private SheetController donationController;
-    @Outlet
     private NSMenu applicationMenu;
     @Outlet
     private NSMenu encodingMenu;
@@ -216,10 +213,10 @@ public class MainController extends BundleController implements NSApplication.De
                 browsers.remove(controller);
             }
         });
+        controller.display();
         if(StringUtils.isNotBlank(frame)) {
             controller.window().setFrameUsingName(frame);
         }
-        controller.display();
         browsers.add(controller);
         return controller;
     }
@@ -635,7 +632,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
 
                     }.id());
-                    alert.runModal();
+                    this.alert(alert);
                 }
                 return true;
             }
@@ -891,10 +888,6 @@ public class MainController extends BundleController implements NSApplication.De
         NSWindow.setAllowsAutomaticWindowTabbing(true);
         // Load main menu
         this.loadBundle();
-        if(preferences.getBoolean("queue.window.open.default")) {
-            final TransferController c = TransferControllerFactory.get();
-            c.display();
-        }
         final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
         final AbstractHostCollection sessions = SessionsCollection.defaultCollection();
         this.background(new AbstractBackgroundAction<Void>() {
@@ -947,6 +940,14 @@ public class MainController extends BundleController implements NSApplication.De
                 final TransferCollection transfers = TransferCollection.defaultCollection();
                 transfers.load();
                 return null;
+            }
+
+            @Override
+            public void cleanup() {
+                if(preferences.getBoolean("queue.window.open.default")) {
+                    final TransferController c = TransferControllerFactory.get();
+                    c.display();
+                }
             }
         });
         final Rendezvous bonjour = RendezvousFactory.instance();
@@ -1155,8 +1156,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
             // Make sure prompt is not loaded twice upon next quit event
             displayDonationPrompt = false;
-            donationController = new DonateAlertController(app);
-            this.alert(donationController);
+            this.alert(new DonateAlertController(app));
             // Delay application termination. Dismissing the donation dialog will reply to quit.
             return NSApplication.NSTerminateLater;
         }

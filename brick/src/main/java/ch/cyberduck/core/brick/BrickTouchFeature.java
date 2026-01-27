@@ -22,6 +22,7 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -36,9 +37,9 @@ public class BrickTouchFeature implements Touch<FileEntity> {
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<FileEntity> writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final BrickUploadFeature upload = new BrickUploadFeature(session, new BrickWriteFeature(session));
+            final BrickUploadFeature upload = new BrickUploadFeature(session);
             final FileUploadPartEntity uploadPartEntity = upload.startUpload(file);
             status.setLength(0L).setOffset(0L);
             status.setUrl(uploadPartEntity.getUploadUri());

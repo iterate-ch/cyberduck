@@ -21,6 +21,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.vault.DisabledVault;
 import ch.cyberduck.core.vault.VaultCredentials;
 
@@ -80,13 +81,25 @@ public interface Vault {
 
     long toCleartextSize(final long cleartextFileOffset, long ciphertextFileSize) throws BackgroundException;
 
+    /**
+     * Wrap feature with encryption
+     *
+     * @param session  Connection
+     * @param type     Feature type to wrap
+     * @param delegate Actual feature to wrap
+     * @return Wrapped feature
+     * @throws UnsupportedException Unsupported feature
+     */
     @SuppressWarnings("unchecked")
-    <T> T getFeature(Session<?> session, Class<T> type, T delegate);
+    <T> T getFeature(Session<?> session, Class<T> type, T delegate) throws UnsupportedException;
 
     Vault DISABLED = new DisabledVault();
 
     State getState();
 
+    /**
+     * @return Root directory of vault
+     */
     Path getHome();
 
     enum State {

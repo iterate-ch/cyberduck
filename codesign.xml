@@ -23,25 +23,29 @@
 
     <property name="installer.certificate" value=""/>
     <condition property="installer.keychain" value="${env.KEYCHAIN_PATH}"
-               else="${user.home}/Library/Keychains/codesign.keychain">
+               else="${user.home}/Library/Keychains/login.keychain-db">
         <isset property="env.KEYCHAIN_PATH"/>
     </condition>
 
     <property name="codesign.certificate" value=""/>
     <condition property="codesign.keychain" value="${env.KEYCHAIN_PATH}"
-               else="${user.home}/Library/Keychains/codesign.keychain">
+               else="${user.home}/Library/Keychains/login.keychain-db">
         <isset property="env.KEYCHAIN_PATH"/>
     </condition>
 
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>
+    <property name="codesign.provisionprofile" value="${setup}/app/${codesign.provisionprofile.name}"/>
     <!-- Enable hardened runtime -->
     <property name="codesign.options" value="--force --options runtime"/>
     <property name="codesign.arg"
               value="--entitlements ${setup}/app/default.entitlements --requirements ${codesign.requirement}"/>
 
     <target name="codesign" depends="dotclean,compile-codesign-requirement">
+        <copy tofile="${bundle}/${bundle.contents}/embedded.provisionprofile" overwrite="true" failonerror="false">
+            <file file="${codesign.provisionprofile}"/>
+        </copy>
         <echo
             message="Code signing ${bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg} from ${codesign.keychain}"/>
         <apply executable="/usr/bin/xcrun" failonerror="true"
@@ -73,6 +77,7 @@
                 <include name="**/*.dylib"/>
             </fileset>
             <fileset dir="${bundle}/${bundle.plugins}">
+                <include name="*.docktileplugin"/>
                 <include name="*.jre"/>
             </fileset>
             <srcfile/>

@@ -16,7 +16,7 @@ jobs:
         working-directory: ./i18n/src/main/resources
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -29,7 +29,7 @@ jobs:
           TX_HOSTNAME: ${{ secrets.TRANSIFEX_HOSTNAME }}
           TX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN }}
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         if: success()
         with:
           branch: i18n/

@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2VersionIdProvider;
+import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -68,7 +69,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(bucket, name, EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
+        session.getFeature(Touch.class).touch(new B2WriteFeature(session, fileid), file, new TransferStatus());
         final Attributes lookup = f.find(file);
         assertEquals(0L, lookup.getSize());
         // Test cache

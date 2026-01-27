@@ -37,7 +37,7 @@ import com.dropbox.core.v2.files.LockFileResultEntry;
 import com.dropbox.core.v2.files.UnlockFileArg;
 
 public class DropboxLockFeature implements Lock<String> {
-    private static final Logger log = LogManager.getLogger(DropboxSession.class);
+    private static final Logger log = LogManager.getLogger(DropboxLockFeature.class);
 
     private final DropboxSession session;
     private final PathContainerService containerService;

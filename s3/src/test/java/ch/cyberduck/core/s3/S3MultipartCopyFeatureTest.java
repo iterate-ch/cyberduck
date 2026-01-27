@@ -55,12 +55,14 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        test.attributes().setSize(content.length);
+        // Set remote attributes
+        test.withAttributes(status.getResponse());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-
         final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, acl);
-        feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+        final Path copied = feature.copy(test, copy, status, new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(session, acl).find(test));
+        assertNotEquals(test.attributes().getETag(), copied.attributes().getETag());
+        assertNotEquals(test.attributes().getChecksum(), copied.attributes().getETag());
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session, acl).find(copy));

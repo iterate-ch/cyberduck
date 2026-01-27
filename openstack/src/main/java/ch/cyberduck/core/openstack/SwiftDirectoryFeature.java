@@ -42,24 +42,17 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
     private final SwiftSession session;
     private final SwiftRegionService regionService;
 
-    private Write<StorageObject> writer;
-
     public SwiftDirectoryFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
     }
 
     public SwiftDirectoryFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftWriteFeature(session, regionService));
-    }
-
-    public SwiftDirectoryFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer) {
         this.session = session;
         this.regionService = regionService;
-        this.writer = writer;
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<StorageObject> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
                 // Create container at top level
@@ -82,9 +75,4 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
         }
     }
 
-    @Override
-    public SwiftDirectoryFeature withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return this;
-    }
 }

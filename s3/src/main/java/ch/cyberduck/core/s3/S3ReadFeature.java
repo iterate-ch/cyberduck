@@ -50,7 +50,7 @@ public class S3ReadFeature implements Read {
 
     public S3ReadFeature(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

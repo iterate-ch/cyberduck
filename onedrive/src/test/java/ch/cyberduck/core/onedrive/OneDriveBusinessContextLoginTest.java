@@ -50,7 +50,7 @@ public class OneDriveBusinessContextLoginTest {
     public void testLogin() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/Microsoft SharePoint.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Microsoft SharePoint.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         final OneDriveSession session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -60,23 +60,18 @@ public class OneDriveBusinessContextLoginTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore() {
-                @Override
-                public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                    if("Microsoft OneDrive Business OAuth2 Access Token".equals(user)) {
-                        return System.getProperties().getProperty("onedrive.business.accesstoken");
+                new DisabledPasswordStore() {
+                    @Override
+                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
+                        if("Microsoft OneDrive Business OAuth2 Access Token".equals(user)) {
+                            return System.getProperties().getProperty("onedrive.business.accesstoken");
+                        }
+                        if("Microsoft OneDrive Business OAuth2 Refresh Token".equals(user)) {
+                            return System.getProperties().getProperty("onedrive.business.refreshtoken");
+                        }
+                        return null;
                     }
-                    if("Microsoft OneDrive Business OAuth2 Refresh Token".equals(user)) {
-                        return System.getProperties().getProperty("onedrive.business.refreshtoken");
-                    }
-                    return null;
-                }
-
-                @Override
-                public String getPassword(String hostname, String user) {
-                    return super.getPassword(hostname, user);
-                }
-            }, new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                }, new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         assertEquals("/b!9prv2DvXt0Cua27a0kKBHlYP69u02QdCtkueQRimv8UsYPDHr-_uQoMvBiuYAjdH", (new OneDriveHomeFinderService().find().getAbsolute()));
     }
 }

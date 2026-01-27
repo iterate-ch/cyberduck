@@ -37,7 +37,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.random.SecureRandomProviderFactory;
@@ -230,17 +229,17 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     protected Connection connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final SMBClient client = new SMBClient(SmbConfig.builder()
-                    .withWorkStationName(HostPreferencesFactory.get(host).getProperty("smb.ntlm.workstation"))
+                    .withWorkStationName(preferences.getProperty("smb.ntlm.workstation"))
                     .withSocketFactory(new ProxySocketFactory(host))
-                    .withTimeout(ConnectionTimeoutFactory.get(HostPreferencesFactory.get(host)).getTimeout(), TimeUnit.SECONDS)
-                    .withSoTimeout(HostPreferencesFactory.get(host).getLong("smb.socket.timeout"), TimeUnit.SECONDS)
+                    .withTimeout(ConnectionTimeoutFactory.get(preferences).getTimeout(), TimeUnit.SECONDS)
+                    .withSoTimeout(preferences.getLong("smb.socket.timeout"), TimeUnit.SECONDS)
                     .withAuthenticators(new NtlmAuthenticator.Factory())
-                    .withDfsEnabled(HostPreferencesFactory.get(host).getBoolean("smb.dfs.enable"))
-                    .withEncryptData(HostPreferencesFactory.get(host).getBoolean("smb.encrypt.enable"))
-                    .withSigningEnabled(HostPreferencesFactory.get(host).getBoolean("smb.signing.enable"))
-                    .withSigningRequired(HostPreferencesFactory.get(host).getBoolean("smb.signing.required"))
+                    .withDfsEnabled(preferences.getBoolean("smb.dfs.enable"))
+                    .withEncryptData(preferences.getBoolean("smb.encrypt.enable"))
+                    .withSigningEnabled(preferences.getBoolean("smb.signing.enable"))
+                    .withSigningRequired(preferences.getBoolean("smb.signing.required"))
                     .withRandomProvider(SecureRandomProviderFactory.get().provide())
-                    .withMultiProtocolNegotiate(HostPreferencesFactory.get(host).getBoolean("smb.protocol.negotiate.enable"))
+                    .withMultiProtocolNegotiate(preferences.getBoolean("smb.protocol.negotiate.enable"))
                     .withTransportLayerFactory(new AsyncDirectTcpTransportFactory<>())
                     .build());
             final Connection connection = client.connect(getHost().getHostname(), getHost().getPort());
@@ -275,10 +274,11 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
             }
             else {
                 username = credentials.getUsername();
-                domain = HostPreferencesFactory.get(host).getProperty("smb.domain.default");
+                domain = preferences.getProperty("smb.domain.default");
             }
             context = new AuthenticationContext(username, credentials.getPassword().toCharArray(), domain);
         }
+        log.debug("Login with context {}", context);
         try {
             shares = new SMBRootListService(this, prompt, session = client.authenticate(context));
         }
@@ -341,22 +341,25 @@ public class SMBSession extends ch.cyberduck.core.Session<Connection> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
-        if(session != null) {
-            try {
+    public void logout() throws BackgroundException {
+        try {
+            if(session != null) {
                 session.logoff();
             }
-            catch(SMBRuntimeException e) {
-                throw new SMBExceptionMappingService().map(e);
-            }
-            catch(TransportException e) {
-                throw new BackgroundException(e);
-            }
+        }
+        catch(SMBRuntimeException e) {
+            throw new SMBExceptionMappingService().map(e);
+        }
+        catch(TransportException | IllegalStateException e) {
+            throw new BackgroundException(e);
+        }
+        finally {
+            super.logout();
         }
     }
 
     @Override
-    protected void disconnect() {
+    protected void disconnect() throws BackgroundException {
         try {
             client.close();
         }

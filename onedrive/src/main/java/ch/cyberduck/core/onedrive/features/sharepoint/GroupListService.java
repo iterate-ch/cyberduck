@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive.features.sharepoint;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.onedrive.AbstractListService;
@@ -50,21 +51,17 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
 
     @Override
     protected Path toPath(final GroupItem.Metadata metadata, final Path directory) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setFileId(metadata.getId());
-        final String name;
-        if(StringUtils.isBlank(metadata.getDisplayName())) {
-            name = metadata.getId();
-        }
-        else {
-            name = metadata.getDisplayName();
-        }
-        return new Path(directory, name, EnumSet.of(Path.Type.volume, Path.Type.directory, Path.Type.placeholder), attributes);
+        return new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.volume, Path.Type.directory, Path.Type.placeholder), attributes);
     }
 
     @Override
     protected boolean filter(final Path directory, final GroupItem.Metadata metadata) {
         if(StringUtils.isBlank(metadata.getId())) {
+            return false;
+        }
+        if(StringUtils.isBlank(metadata.getDisplayName())) {
             return false;
         }
         return super.filter(directory, metadata);

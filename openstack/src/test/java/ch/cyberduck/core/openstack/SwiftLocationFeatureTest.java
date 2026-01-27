@@ -2,6 +2,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -19,7 +20,7 @@ public class SwiftLocationFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testGetLocations() throws Exception {
-        final Set<Location.Name> locations = new SwiftLocationFeature(session).getLocations();
+        final Set<Location.Name> locations = new SwiftLocationFeature(session).getLocations(Home.root());
         assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("DFW")));
         assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("ORD")));
         assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("SYD")));

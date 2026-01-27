@@ -143,7 +143,7 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
                     return (T) write;
                 }
                 if(type == Upload.class) {
-                    return (T) new SpectraUploadFeature(this, write, new SpectraBulkService(this));
+                    return (T) new SpectraUploadFeature(new SpectraBulkService(this));
                 }
                 return super._getFeature(type);
             }
@@ -152,8 +152,8 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(session.getHost(), test, local);
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {

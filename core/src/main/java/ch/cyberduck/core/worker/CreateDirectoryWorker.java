@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -54,23 +56,24 @@ public class CreateDirectoryWorker extends Worker<Path> {
         final Directory feature = session.getFeature(Directory.class);
         log.debug("Run with feature {}", feature);
         final TransferStatus status = new TransferStatus().setLength(0L);
+        final Path container = session.getFeature(PathContainerService.class).getContainer(folder);
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
-            status.setEncryption(encryption.getDefault(folder));
+            status.setEncryption(encryption.getDefault(container));
         }
         status.setModified(System.currentTimeMillis());
         if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {
             final UnixPermission permission = session.getFeature(UnixPermission.class);
             if(permission != null) {
-                status.setPermission(permission.getDefault(EnumSet.of(Path.Type.directory)));
+                status.setPermission(permission.getDefault(folder.getParent(), EnumSet.of(Path.Type.directory)));
             }
             final AclPermission acl = session.getFeature(AclPermission.class);
             if(acl != null) {
-                status.setAcl(acl.getDefault(folder));
+                status.setAcl(acl.getDefault(container));
             }
         }
         status.setRegion(region);
-        final Path result = feature.mkdir(folder, status);
+        final Path result = feature.mkdir(session.getFeature(Write.class), folder, status);
         if(PathAttributes.EMPTY.equals(result.attributes())) {
             return new Path(folder).withAttributes(session.getFeature(AttributesFinder.class).find(result));
         }

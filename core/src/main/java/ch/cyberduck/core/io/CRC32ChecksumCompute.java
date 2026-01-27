@@ -35,6 +35,7 @@ public class CRC32ChecksumCompute extends AbstractChecksumCompute {
             byte[] buffer = new byte[16384];
             int bytesRead;
             while((bytesRead = normalized.read(buffer, 0, buffer.length)) != -1) {
+                status.validate();
                 crc32.update(buffer, 0, bytesRead);
             }
         }
@@ -44,6 +45,6 @@ public class CRC32ChecksumCompute extends AbstractChecksumCompute {
         finally {
             IOUtils.closeQuietly(normalized);
         }
-        return new Checksum(HashAlgorithm.crc32, Long.toHexString(crc32.getValue()));
+        return new Checksum(HashAlgorithm.crc32, String.format("%08x", crc32.getValue()));
     }
 }

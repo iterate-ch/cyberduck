@@ -15,16 +15,14 @@ package ch.cyberduck.core.hubic;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 
 import com.google.auto.service.AutoService;
 
 @AutoService(Protocol.class)
-public class HubicProtocol extends AbstractProtocol {
+public class HubicProtocol extends SwiftProtocol {
 
     @Override
     public String getIdentifier() {
@@ -34,11 +32,6 @@ public class HubicProtocol extends AbstractProtocol {
     @Override
     public String getDescription() {
         return "hubiC";
-    }
-
-    @Override
-    public Scheme getScheme() {
-        return Scheme.https;
     }
 
     @Override
@@ -74,11 +67,6 @@ public class HubicProtocol extends AbstractProtocol {
     @Override
     public String getPasswordPlaceholder() {
         return LocaleFactory.localizedString("Authorization code", "Credentials");
-    }
-
-    @Override
-    public DirectoryTimestamp getDirectoryTimestamp() {
-        return DirectoryTimestamp.explicit;
     }
 
     @Override

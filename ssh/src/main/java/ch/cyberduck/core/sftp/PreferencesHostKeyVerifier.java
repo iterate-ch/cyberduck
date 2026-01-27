@@ -77,6 +77,7 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
     @Override
     protected void allow(final Host host, final PublicKey key, final boolean persist) {
         if(persist) {
+            log.debug("Save host key {} to preferences for {}", key, host);
             preferences.setProperty(this.toFormat(host, key), Base64.toBase64String(key.getEncoded()));
         }
     }

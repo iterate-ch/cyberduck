@@ -1,21 +1,18 @@
 package ch.cyberduck.core.azure;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2024 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.AbstractProtocol;
@@ -26,11 +23,17 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.synchronization.ChainedComparisonService;
+import ch.cyberduck.core.synchronization.ChecksumComparisonService;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.ETagComparisonService;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
+
+import org.apache.commons.codec.binary.Base64;
 
 import java.util.Comparator;
 
-import com.microsoft.azure.storage.core.Base64;
 import com.google.auto.service.AutoService;
 
 @AutoService(Protocol.class)
@@ -80,7 +83,10 @@ public class AzureProtocol extends AbstractProtocol {
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         if(super.validate(credentials, options)) {
             if(options.password) {
-                return Base64.validateIsBase64String(credentials.getPassword());
+                if(credentials.getPassword().length() % 4 != 0) {
+                    return false;
+                }
+                return Base64.isBase64(credentials.getPassword());
             }
             return true;
         }
@@ -107,6 +113,9 @@ public class AzureProtocol extends AbstractProtocol {
     public <T> T getFeature(final Class<T> type) {
         if(type == PathContainerService.class) {
             return (T) new DirectoryDelimiterPathContainerService();
+        }
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ChainedComparisonService(new ChecksumComparisonService(), new ETagComparisonService()), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

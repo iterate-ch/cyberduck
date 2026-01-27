@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -58,7 +59,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
         super(session);
         this.session = session;
         this.attributes = new S3AttributesFinderFeature(session, acl);
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.metadata = metadata;
     }
 
@@ -119,12 +120,12 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
                     log.debug("Handle common prefix {}", common);
-                    final String key = StringUtils.chomp(URIEncoder.decode(common), String.valueOf(Path.DELIMITER));
+                    final String key = StringUtils.removeEnd(URIEncoder.decode(common), String.valueOf(Path.DELIMITER));
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         continue;
                     }
                     final Path f;
-                    final PathAttributes attr = new PathAttributes();
+                    final PathAttributes attr = new DefaultPathAttributes();
                     attr.setRegion(bucket.attributes().getRegion());
                     if(null == delimiter) {
                         f = new Path(String.format("%s/%s", bucket.getAbsolute(), key),

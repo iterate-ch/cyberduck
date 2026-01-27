@@ -23,7 +23,7 @@
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageVersion Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.100" />
     <PackageVersion Include="ExceptionReporter " Version="2.4.2" />
-    <PackageVersion Include="IKVM" Version="8.11.2" />
+    <PackageVersion Include="IKVM" Version="8.13.3" />
     <PackageVersion Include="iterate-ch.IKVM.MSBuild.SkipDuplicates" Version="1.1.0" />
     <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="17.1.0" />
     <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
@@ -46,7 +46,11 @@
     <PackageVersion Include="WixToolset.Bal.wixext" Version="5.0.2" />
     <PackageVersion Include="WixToolset.Heat" Version="5.0.2" />
     <PackageVersion Include="WixToolset.NetFx.wixext" Version="5.0.2" />
-    <PackageVersion Include="WixToolset.Util.wixext" Version="5.0.2" />    
+    <PackageVersion Include="WixToolset.Util.wixext" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <GlobalPackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.3.4" />
   </ItemGroup>
 
   <PropertyGroup>

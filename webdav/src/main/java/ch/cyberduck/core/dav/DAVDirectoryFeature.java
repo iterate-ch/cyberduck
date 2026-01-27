@@ -19,8 +19,8 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -28,20 +28,16 @@ import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-public class DAVDirectoryFeature implements Directory<String> {
+public class DAVDirectoryFeature implements Directory<Void> {
 
     private final DAVSession session;
 
     public DAVDirectoryFeature(final DAVSession session) {
-        this(session, new DAVAttributesFinderFeature(session));
-    }
-
-    public DAVDirectoryFeature(final DAVSession session, final AttributesFinder attributes) {
         this.session = session;
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             session.getClient().createDirectory(new DAVPathEncoder().encode(folder));
         }

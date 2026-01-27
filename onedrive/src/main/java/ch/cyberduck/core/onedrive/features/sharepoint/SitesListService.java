@@ -1,6 +1,7 @@
 package ch.cyberduck.core.onedrive.features.sharepoint;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
@@ -63,6 +64,9 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
         if(StringUtils.isBlank(metadata.getId())) {
             return false;
         }
+        if(StringUtils.isBlank(metadata.getName())) {
+            return false;
+        }
         if(!session.isSingleSite() && directory.getParent().isRoot()) {
             if(metadata.getRoot() == null) {
                 return false;
@@ -114,7 +118,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
 
     @Override
     protected Path toPath(final Site.Metadata metadata, final Path directory) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setFileId(metadata.getId());
         attributes.setDisplayname(metadata.getDisplayName());
         attributes.setLink(new DescriptiveUrl(metadata.getWebUrl()));

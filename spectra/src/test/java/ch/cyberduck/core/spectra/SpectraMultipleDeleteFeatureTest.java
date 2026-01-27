@@ -42,8 +42,8 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractSpectraTest {
 
     @Test
     public void testDeleteFile() throws Exception {
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1024);
         final HttpResponseOutputStream<StorageObject> out = new SpectraWriteFeature(session).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
@@ -57,10 +57,10 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractSpectraTest {
 
     @Test
     public void testDeletePlaceholder() throws Exception {
-        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path container = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new SpectraDirectoryFeature(session).mkdir(
+                new SpectraWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(test));
         new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SpectraFindFeature(session).find(test));

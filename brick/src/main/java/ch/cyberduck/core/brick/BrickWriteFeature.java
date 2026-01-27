@@ -68,7 +68,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
         final String uploadUri;
         FileUploadPartEntity uploadPartEntity = null;
         if(StringUtils.isBlank(status.getUrl())) {
-            uploadPartEntity = new BrickUploadFeature(session, this).startUpload(file);
+            uploadPartEntity = new BrickUploadFeature(session).startUpload(file);
             uploadUri = uploadPartEntity.getUploadUri();
         }
         else {
@@ -81,7 +81,8 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                     final HttpPut request = new HttpPut(uploadUri);
                     request.setEntity(entity);
                     request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
-                    final HttpResponse response = session.getClient().execute(request);
+                    final BrickApiClient client = session.getClient();
+                    final HttpResponse response = client.getClient().execute(request);
                     // Validate response
                     try {
                         switch(response.getStatusLine().getStatusCode()) {
@@ -149,7 +150,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                     }
                     super.close();
                     try {
-                        new BrickUploadFeature(session, BrickWriteFeature.this)
+                        new BrickUploadFeature(session)
                                 .completeUpload(file, ref, status, Collections.singletonList(status));
                     }
                     catch(BackgroundException e) {

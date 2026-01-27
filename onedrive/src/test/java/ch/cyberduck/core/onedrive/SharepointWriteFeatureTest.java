@@ -30,10 +30,10 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -60,7 +60,7 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
         final ListService list = new SharepointListService(session, fileid);
         final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path container = drives.get(0);
-        final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final PathAttributes folderAttributes = new GraphAttributesFinderFeature(session, fileid).find(folder);
         final String folderEtag = folderAttributes.getETag();
         final long folderTimestamp = folderAttributes.getModificationDate();
@@ -68,7 +68,7 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final String id = new GraphTouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getFileId();
+        final String id = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), file, new TransferStatus()).attributes().getFileId();
         final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(out.getStatus());
@@ -77,7 +77,7 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
         assertEquals(Protocol.DirectoryTimestamp.explicit, session.getHost().getProtocol().getDirectoryTimestamp());
         assertEquals(folderEtag, new GraphAttributesFinderFeature(session, fileid).find(folder).getETag());
         assertEquals(folderTimestamp, new GraphAttributesFinderFeature(session, fileid).find(folder).getModificationDate());
-        assertTrue(new DefaultFindFeature(session).find(file));
+        assertTrue(new GraphFindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

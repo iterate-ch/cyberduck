@@ -755,11 +755,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void AddTranscriptEntry(TranscriptListener.Type request, string entry)
         {
             transcriptBox.SelectionFont = FixedFont;
-            if (request == TranscriptListener.Type.request)
+            if (request == TranscriptListener.Type.request || request == TranscriptListener.Type.requestheader)
             {
                 transcriptBox.SelectionColor = Color.Black;
             }
-            else if (request == TranscriptListener.Type.response)
+            else if (request == TranscriptListener.Type.response || request == TranscriptListener.Type.responseheader)
             {
                 transcriptBox.SelectionColor = Color.DarkGray;
             }

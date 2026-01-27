@@ -56,7 +56,7 @@ public class S3TransferAccelerationServiceTest extends AbstractS3Test {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {
-                    case request:
+                    case requestheader:
                         if("Host: test-eu-central-1-cyberduck.s3-accelerate.dualstack.amazonaws.com".equals(message)) {
                             b.set(true);
                         }

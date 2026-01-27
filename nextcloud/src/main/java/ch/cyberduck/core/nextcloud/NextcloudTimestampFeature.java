@@ -15,31 +15,11 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
-
-import java.io.IOException;
-import java.util.Optional;
-
-import com.github.sardine.DavResource;
 
 public class NextcloudTimestampFeature extends DAVTimestampFeature {
 
-    private final NextcloudSession session;
-
     public NextcloudTimestampFeature(final NextcloudSession session) {
-        super(session);
-        this.session = session;
-    }
-
-    @Override
-    protected DavResource getResource(final Path file) throws BackgroundException, IOException {
-        final Optional<DavResource> optional = new NextcloudAttributesFinderFeature(session).list(file).stream().findFirst();
-        if(!optional.isPresent()) {
-            throw new NotfoundException(file.getAbsolute());
-        }
-        return optional.get();
+        super(session, new NextcloudAttributesFinderFeature(session));
     }
 }

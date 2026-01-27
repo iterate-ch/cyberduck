@@ -46,14 +46,11 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -81,7 +78,6 @@ import java.io.IOException;
 public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     private static final Logger log = LogManager.getLogger(DeepboxSession.class);
 
-    private final HostPreferences preferences = HostPreferencesFactory.get(host);
     private final DeepboxIdProvider fileid = new DeepboxIdProvider(this);
 
     private DeepcloudApiClient deepcloudClient;
@@ -115,7 +111,7 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         configuration.addInterceptorLast(authorizationService);
         final String locale = this.pinLocalization();
         configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request.addHeader("Accept-Language", locale));
@@ -169,7 +165,8 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         try {
             final Me me = new UserRestControllerApi(client).usersMe(null, null);
             log.debug("Authenticated for user {}", me);
@@ -185,8 +182,15 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
     }
 
     @Override
-    protected void logout() {
-        client.getHttpClient().close();
+    public void disconnect() throws BackgroundException {
+        try {
+            if(client != null) {
+                client.getHttpClient().close();
+            }
+        }
+        finally {
+            super.disconnect();
+        }
     }
 
     @Override
@@ -242,8 +246,9 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
 
     public String getStage() {
         // For now, required for descriptive URL, API forthcoming
-        // api.[<stage>.]deepbox.swiss
+        // api.[<stage>.]deepbox.swiss, defaults to app if no stage is specified
         String hostname = this.getHost().getHostname();
-        return hostname.replaceAll("^api\\.", "").replaceAll("deepbox\\.swiss$", "");
+        final String stage = hostname.replaceAll("^api\\.", "").replaceAll("deepbox\\.swiss$", "");
+        return StringUtils.isBlank(stage) ? "app." : stage;
     }
 }

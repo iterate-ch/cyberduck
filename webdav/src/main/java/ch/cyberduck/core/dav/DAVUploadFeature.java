@@ -23,16 +23,22 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.MessageDigest;
 
 public class DAVUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
+    private static final Logger log = LogManager.getLogger(DAVUploadFeature.class);
+
+    private final DAVSession.HttpCapabilities capabilities;
 
     public DAVUploadFeature(final DAVSession session) {
-        super(new DAVWriteFeature(session));
+        this(session, new DAVSession.HttpCapabilities(session.getHost()));
     }
 
-    public DAVUploadFeature(final Write<Void> writer) {
-        super(writer);
+    public DAVUploadFeature(final DAVSession session, final DAVSession.HttpCapabilities capabilities) {
+        this.capabilities = capabilities;
     }
 
     @Override
@@ -40,6 +46,11 @@ public class DAVUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
             return new Write.Append(false).withStatus(status);
         }
-        return new Write.Append(status.isExists()).withStatus(status);
+        if(capabilities.iis) {
+            return new Write.Append(false).withStatus(status);
+        }
+        final Write.Append append = new Write.Append(status.isExists()).withStatus(status);
+        log.debug("Determined append {} for file {} with status {}", append, file, status);
+        return append;
     }
 }

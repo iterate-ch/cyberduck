@@ -16,6 +16,7 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -44,16 +45,16 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DeepboxTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), test, new TransferStatus());
         final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         try {
-            assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
-            assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(new PathAttributes())));
+            assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new DefaultPathAttributes())));
+            assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(new DefaultPathAttributes())));
         }
         finally {
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test.withAttributes(new PathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(copy.withAttributes(new PathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test.withAttributes(new DefaultPathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(copy.withAttributes(new DefaultPathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 
@@ -61,11 +62,11 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
     public void testCopyDirectory() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new DeepboxDirectoryFeature(session, fileid).mkdir(new Path(documents,
+        final Path directory = new DeepboxDirectoryFeature(session, fileid).mkdir(new DeepboxWriteFeature(session, fileid), new Path(documents,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(UnsupportedException.class, () -> new DeepboxCopyFeature(session, fileid).preflight(directory, Optional.of(copy)));
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(directory.withAttributes(new PathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(directory.withAttributes(new DefaultPathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -85,26 +86,26 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final Path trash = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory, Path.Type.volume));
 
         final Path test = new DeepboxTouchFeature(session, fileid).touch(
-                new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DeepboxWriteFeature(session, fileid), new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new DeepboxTouchFeature(session, fileid).touch(
-                new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DeepboxWriteFeature(session, fileid), new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path targetInTrash = new Path(trash, target.getName(), target.getType());
 
         final PathAttributes originalTestAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(test);
         final PathAttributes originalTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(target);
 
         new DeepboxCopyFeature(session, fileid).copy(test, target, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
-        assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new PathAttributes())));
-        assertTrue(new DeepboxFindFeature(session, fileid).find(target.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, fileid).find(target.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(targetInTrash));
 
-        final PathAttributes overriddenTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(target.withAttributes(new PathAttributes()));
+        final PathAttributes overriddenTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(target.withAttributes(new DefaultPathAttributes()));
         assertNotNull(originalTestAttributes.getFileId());
         assertNotEquals(originalTestAttributes.getFileId(), overriddenTargetAttributes.getFileId());
         assertNotEquals(originalTestAttributes.getModificationDate(), overriddenTargetAttributes.getModificationDate());
         assertEquals(originalTestAttributes.getChecksum(), overriddenTargetAttributes.getChecksum());
 
-        final PathAttributes trashedTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(targetInTrash.withAttributes(new PathAttributes()));
+        final PathAttributes trashedTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(targetInTrash.withAttributes(new DefaultPathAttributes()));
         assertNotNull(originalTargetAttributes.getFileId());
         assertEquals(originalTargetAttributes.getFileId(), trashedTargetAttributes.getFileId());
         assertEquals(originalTargetAttributes.getModificationDate(), trashedTargetAttributes.getModificationDate());

@@ -42,16 +42,10 @@ public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2Authorizati
     @Override
     public String prompt(final Host bookmark, final LoginCallback prompt, final String authorizationCodeUrl, final String redirectUri, final String state) throws BackgroundException {
         log.debug("Evaluate redirect URI {}", redirectUri);
-        if(StringUtils.endsWith(URIEncoder.decode(redirectUri), ":oauth")) {
-            return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(
-                    bookmark, prompt, authorizationCodeUrl, redirectUri, state);
-        }
-        if(StringUtils.contains(redirectUri, "://oauth")) {
-            return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(
-                    bookmark, prompt, authorizationCodeUrl, redirectUri, state);
+        if(StringUtils.endsWith(URIEncoder.decode(redirectUri), ":oauth") || StringUtils.contains(redirectUri, "://oauth")) {
+            return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(bookmark, prompt, authorizationCodeUrl, redirectUri, state);
         }
         log.debug("Prompt for authentication code for state {}", state);
-        return new PromptOAuth2AuthorizationCodeProvider().prompt(
-                bookmark, prompt, authorizationCodeUrl, redirectUri, state);
+        return new PromptOAuth2AuthorizationCodeProvider().prompt(bookmark, prompt, authorizationCodeUrl, redirectUri, state);
     }
 }

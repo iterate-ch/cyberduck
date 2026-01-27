@@ -52,11 +52,11 @@ public class S3MetadataFeature implements Headers {
     public S3MetadataFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.acl = acl;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override
-    public Map<String, String> getDefault() {
+    public Map<String, String> getDefault(final Path file) {
         return HostPreferencesFactory.get(session.getHost()).getMap("s3.metadata.default");
     }
 
@@ -75,7 +75,7 @@ public class S3MetadataFeature implements Headers {
                 // Apply non-standard ACL
                 final Acl list = acl.getPermission(file);
                 if(list.isEditable()) {
-                    target.setAcl(acl.toAcl(list));
+                    target.setAcl(S3AccessControlListFeature.toAcl(list));
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {

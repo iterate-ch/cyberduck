@@ -17,7 +17,7 @@ public class PathAttributesTest {
 
     @Test
     public void testCopy() {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(1L);
         attributes.setQuota(new Quota.Space(1L, 10L));
         attributes.setModificationDate(System.currentTimeMillis());
@@ -31,7 +31,7 @@ public class PathAttributesTest {
         attributes.setVerdict(PathAttributes.Verdict.pending);
         attributes.setTrashed(true);
         attributes.setHidden(true);
-        final PathAttributes clone = new PathAttributes(attributes);
+        final PathAttributes clone = new DefaultPathAttributes(attributes);
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
         assertEquals(clone, attributes);
@@ -49,7 +49,7 @@ public class PathAttributesTest {
 
     @Test
     public void testPermissions() {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         assertNull(attributes.getOwner());
         assertNull(attributes.getGroup());
         assertNotNull(attributes.getPermission());
@@ -59,17 +59,17 @@ public class PathAttributesTest {
 
     @Test
     public void testEquals() {
-        assertEquals(new PathAttributes(), new PathAttributes());
-        final PathAttributes r1 = new PathAttributes();
+        assertEquals(new DefaultPathAttributes(), new DefaultPathAttributes());
+        final PathAttributes r1 = new DefaultPathAttributes();
         r1.setVersionId("r1");
-        final PathAttributes r2 = new PathAttributes();
+        final PathAttributes r2 = new DefaultPathAttributes();
         r2.setVersionId("r2");
         assertNotEquals(r1, r2);
     }
 
     @Test
     public void testSerialize() {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(100);
         attributes.setModificationDate(System.currentTimeMillis());
         attributes.setPermission(new Permission("644"));

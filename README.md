@@ -25,7 +25,11 @@ Source code is available licensed under the [GNU General Public License Version 
 
 ## Localizations
 
-Translations to new languages are welcome. We use [Transifex](https://www.transifex.com/cyberduck/cyberduck/dashboard/) to localize resources. Current available localizations are _English_, _Czech_, _Dutch_, _Finnish_, _French_, _German_, _Italian_, _Japanese_, _Korean_, _Norwegian_, _Portuguese_, _Slovak_, _Spanish_, _Chinese (Traditional & Simplified Han)_, _Russian_, _Swedish_, _Hungarian_, _Danish_, _Polish_, _Indonesian_, _Catalan_, _Welsh_, _Thai_, _Turkish_, _Hebrew_, _Latvian_, _Greek_, _Serbian_, _Georgian_ and _Slovenian_.
+Translations to new languages are welcome. We use [Transifex](https://app.transifex.com/cyberduck/cyberduck/dashboard/)
+to localize resources. Current available localizations are _English_, _Czech_, _Dutch_, _Finnish_, _French_, _German_,
+_Italian_, _Japanese_, _Korean_, _Norwegian_, _Portuguese_, _Slovak_, _Spanish_, _Chinese (Traditional & Simplified
+Han)_, _Russian_, _Swedish_, _Hungarian_, _Danish_, _Polish_, _Indonesian_, _Catalan_, _Welsh_, _Thai_, _Turkish_,
+_Hebrew_, _Latvian_, _Greek_, _Serbian_, _Georgian_ and _Slovenian_.
 
 Make sure to subscribe to the [localization mailing list](http://lists.cyberduck.ch/mailman/listinfo/cyberduck-localization).
 
@@ -115,6 +119,19 @@ Make sure that `MSBuild`, `mvn`, `ant` and `java` are on your `PATH`-environment
 
 Additionally include the latest Windows Sdk-binary folder in your `PATH`-environment variable:
 * `%ProgramFiles(x86)%\Windows Kits\10\bin\10.0.<Latest>.0\x64`
+
+#### NuGet Configuration
+
+To build on Windows, you need to configure NuGet with credentials to access GitHub Package Registry sources. Create a GitHub [personal access token (classic)](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry) with at least `read:packages` permissions.
+
+Then, in the Cyberduck repository root directory, run the following commands in Terminal (PowerShell or Command Prompt):
+
+```sh
+dotnet nuget update source gh-ikvmnet -u "YourUsername" -p "YourPAT"
+dotnet nuget update source gh-iterate-ch -u "YourUsername" -p "YourPAT"
+```
+
+Replace `YourUsername` with your GitHub username and `YourPAT` with your personal access token.
 
 ## Building
 

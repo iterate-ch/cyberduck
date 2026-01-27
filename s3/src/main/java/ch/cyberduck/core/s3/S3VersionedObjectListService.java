@@ -16,6 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -45,20 +46,16 @@ import org.jets3t.service.model.S3Version;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class S3VersionedObjectListService extends S3AbstractListService implements ListService {
     private static final Logger log = LogManager.getLogger(S3VersionedObjectListService.class);
-
-    public static final String KEY_DELETE_MARKER = "delete_marker";
 
     private final PathContainerService containerService;
     private final S3Session session;
@@ -88,7 +85,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         this.session = session;
         this.attributes = new S3AttributesFinderFeature(session, acl);
         this.concurrency = concurrency;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.metadata = metadata;
     }
 
@@ -118,17 +115,15 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
-                    final PathAttributes attr = new PathAttributes();
+                    final PathAttributes attr = new DefaultPathAttributes();
                     attr.setVersionId(marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
                     }
                     attr.setRevision(++revision);
-                    attr.setDuplicate(marker.isDeleteMarker() && marker.isLatest() || !marker.isLatest());
-                    if(marker.isDeleteMarker()) {
-                        attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, String.valueOf(true)));
-                    }
+                    attr.setDuplicate(!marker.isLatest());
+                    attr.setTrashed(marker.isDeleteMarker());
                     attr.setModificationDate(marker.getLastModified().getTime());
                     attr.setRegion(bucket.attributes().getRegion());
                     if(marker instanceof S3Version) {
@@ -162,11 +157,14 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, URIEncoder.decode(common))).test(directory)) {
                         continue;
                     }
+                    log.debug("Handle common prefix {}", common);
                     folders.add(this.submit(pool, bucket, directory, URIEncoder.decode(common)));
                 }
                 for(Future<Path> f : folders) {
                     try {
-                        objects.add(Uninterruptibles.getUninterruptibly(f));
+                        final Path resolved = Uninterruptibles.getUninterruptibly(f);
+                        log.debug("Resolved common prefix {}", resolved);
+                        objects.add(resolved);
                     }
                     catch(ExecutionException e) {
                         log.warn("Listing versioned objects failed with execution failure {}", e.getMessage());
@@ -221,9 +219,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
-                final PathAttributes attr = new PathAttributes();
+                final PathAttributes attr = new DefaultPathAttributes();
                 attr.setRegion(bucket.attributes().getRegion());
-                final String key = StringUtils.chomp(prefix, String.valueOf(Path.DELIMITER));
+                final String key = StringUtils.removeEnd(prefix, String.valueOf(Path.DELIMITER));
                 try {
                     final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
                             bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix, null, 1,
@@ -233,7 +231,8 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         if(URIEncoder.decode(version.getKey()).equals(prefix)) {
                             attr.setVersionId(version.getVersionId());
                             if(version.isDeleteMarker()) {
-                                attr.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                log.debug("Set trashed attribute for prefix {}", key);
+                                attr.setTrashed(true);
                             }
                         }
                         // No placeholder but objects inside; need to check if all of them are deleted
@@ -241,6 +240,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                                 bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix,
                                 null, 1, null, false);
                         if(unversioned.getObjects().length == 0) {
+                            log.debug("Set duplicate attribute for prefix {}", key);
                             attr.setDuplicate(true);
                         }
                     }

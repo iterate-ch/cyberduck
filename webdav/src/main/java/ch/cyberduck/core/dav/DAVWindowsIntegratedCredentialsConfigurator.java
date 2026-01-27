@@ -34,7 +34,7 @@ public class DAVWindowsIntegratedCredentialsConfigurator implements CredentialsC
         if(HostPreferencesFactory.get(host).getBoolean("webdav.ntlm.windows.authentication.enable")) {
             return proxy.configure(host);
         }
-        return CredentialsConfigurator.DISABLED.configure(host);
+        return host.getCredentials();
     }
 
     @Override

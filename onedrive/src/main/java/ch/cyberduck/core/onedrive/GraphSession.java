@@ -28,12 +28,10 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.onedrive.features.*;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.BufferWriteFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -44,13 +42,16 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 import org.nuxeo.onedrive.client.Users;
@@ -80,7 +81,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     public abstract String getFileId(final DriveItem.Metadata metadata);
 
-    public ODataQuery getQuery(ODataQuery query) {
+    public ODataQuery select(ODataQuery query) {
         if(query == null) {
             query = new ODataQuery();
         }
@@ -96,6 +97,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
                 // Drive Item properties
                 DriveItem.Property.File, /*Usage: Determines File */
+                DriveItem.Property.CTag, /*Usage: File Checksum/Version Comparison */
                 DriveItem.Property.FileSystemInfo, /*Usage: FileSystemInfo like Created and Modified */
                 DriveItem.Property.Folder, /*Usage: Determines Folder */
                 DriveItem.Property.Package, /*Usage: Determines OneNote */
@@ -110,8 +112,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         return this.getItem(currentPath, true);
     }
 
-    public DriveItem.Metadata getMetadata(final DriveItem item, ODataQuery query) throws IOException {
-        return item.getMetadata(getQuery(query));
+    public DriveItem.Metadata getMetadata(final DriveItem item, final ODataQuery query) throws IOException {
+        return item.getMetadata(this.select(query));
     }
 
     public abstract DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException;
@@ -140,7 +142,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
      *
      * @param file The file path for which the container details should be retrieved.
      * @return An instance of {@code ContainerItem} representing the container details of the specified file path.
-     *         Returns {@code ContainerItem.EMPTY} if no container details are found.
+     * Returns {@code ContainerItem.EMPTY} if no container details are found.
      */
     public abstract ContainerItem getContainer(Path file);
 
@@ -166,8 +168,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                 .withParameter("prompt", "select_account");
         configuration.addInterceptorLast(authorizationService);
+        configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request
+                .addHeader(new BasicHeader("Prefer", "Include-Feature=AddToOneDrive")));
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         final RequestExecutor executor = new GraphCommonsHttpRequestExecutor(configuration.build()) {
             @Override
             public void addAuthorizationHeader(final Set<RequestHeader> headers) {
@@ -212,7 +216,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         try {
             user = Users.get(User.getCurrent(client), new ODataQuery().select(User.Select.values()));
             final String account = user.getUserPrincipalName();
@@ -225,18 +230,24 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map(e.getCause());
+        }
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
-            client.getExecutor().close();
+            fileid.clear();
+            if(client != null) {
+                client.getExecutor().close();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            fileid.clear();
+            super.disconnect();
         }
     }
 
@@ -277,7 +288,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphFindFeature(this, fileid);
         }
         if(type == Timestamp.class) {
-            if(HostPreferencesFactory.get(host).getBoolean("onedrive.timestamp.enable")) {
+            if(preferences.getBoolean("onedrive.timestamp.enable")) {
                 return (T) new GraphTimestampFeature(this, fileid);
             }
         }
@@ -288,7 +299,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphUrlProvider();
         }
         if(type == Share.class) {
-            return (T) new GraphSharedLinkFeature(this);
+            return (T) new GraphSharedLinkFeature(this, fileid);
         }
         if(type == Versioning.class) {
             return (T) new GraphVersioningFeature(this, fileid);

@@ -46,7 +46,7 @@ public class S3LoggingFeature implements Logging {
 
     public S3LoggingFeature(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

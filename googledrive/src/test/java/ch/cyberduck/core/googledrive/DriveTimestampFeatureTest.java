@@ -39,7 +39,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
     public void testSetTimestamp() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
-        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));
         final long modified = System.currentTimeMillis();
         final TransferStatus status = new TransferStatus().setModified(modified);
@@ -57,7 +57,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path test = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());

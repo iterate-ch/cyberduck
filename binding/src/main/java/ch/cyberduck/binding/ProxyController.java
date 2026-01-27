@@ -163,6 +163,7 @@ public class ProxyController extends AbstractController {
      * @return Selected alert option by user
      */
     public int alert(final SheetController sheet, final SheetCallback callback, final AlertRunner runner, final CountDownLatch signal) {
+        log.debug("Alert with runner {} and callback {}", runner, callback);
         alerts.add(runner);
         final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
         final CountDownLatch state = new CountDownLatch(1);
@@ -198,17 +199,16 @@ public class ProxyController extends AbstractController {
     }
 
     protected AlertRunner alertFor(final SheetController sheet) {
-        final ModalWindowAlertRunner runner = new ModalWindowAlertRunner(sheet);
-        sheet.addHandler(runner);
-        return runner;
+        return new ModalWindowAlertRunner(sheet);
     }
 
     public static class RegularWindowAlertRunner implements AlertRunner, AlertRunner.CloseHandler {
-        private final WindowController controller;
+        private final SheetController controller;
         private final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
 
-        public RegularWindowAlertRunner(final WindowController controller) {
+        public RegularWindowAlertRunner(final SheetController controller) {
             this.controller = controller;
+            this.controller.addHandler(this);
         }
 
         @Override
@@ -244,8 +244,8 @@ public class ProxyController extends AbstractController {
      * Floating window ordered front
      */
     public static class FloatingWindowAlertRunner extends RegularWindowAlertRunner {
-        public FloatingWindowAlertRunner(final WindowController sheet) {
-            super(sheet);
+        public FloatingWindowAlertRunner(final SheetController controller) {
+            super(controller);
         }
 
         @Override
@@ -262,17 +262,17 @@ public class ProxyController extends AbstractController {
      * Floating window in modal run loop
      */
     public static class ModalWindowAlertRunner extends FloatingWindowAlertRunner implements AlertRunner.CloseHandler {
-        public ModalWindowAlertRunner(final WindowController sheet) {
-            super(sheet);
+        public ModalWindowAlertRunner(final SheetController controller) {
+            super(controller);
         }
 
         @Override
         public void closed(final NSWindow sheet, final int returncode) {
-            // Close window
-            super.closed(sheet, returncode);
             log.debug("Stop modal with return code {}", returncode);
             // The result code you want returned from the runModalForWindow:
             NSApplication.sharedApplication().stopModalWithCode(returncode);
+            // Close window
+            sheet.close();
         }
 
         /**
@@ -286,11 +286,10 @@ public class ProxyController extends AbstractController {
         public void alert(final NSWindow sheet, final SheetCallback callback) {
             sheet.setPreventsApplicationTerminationWhenModal(false);
             sheet.setLevel(NSWindow.NSWindowLevel.NSModalPanelWindowLevel);
-            sheet.center();
-            super.alert(sheet, callback);
             // This method runs a modal event loop for the specified window synchronously. It displays the specified window, makes it key,
             // starts the run loop, and processes events for that window.
             log.debug("Run modal for window {} with callback {}", sheet, callback);
+            // You do not need to show the window yourself
             callback.callback(NSApplication.sharedApplication().runModalForWindow(sheet).intValue());
         }
     }

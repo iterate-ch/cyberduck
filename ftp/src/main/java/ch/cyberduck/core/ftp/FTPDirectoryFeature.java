@@ -21,13 +21,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
 
-public class FTPDirectoryFeature implements Directory<Integer> {
+public class FTPDirectoryFeature implements Directory<Void> {
 
     private final FTPSession session;
 
@@ -36,7 +37,7 @@ public class FTPDirectoryFeature implements Directory<Integer> {
     }
 
     @Override
-    public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(!session.getClient().makeDirectory(folder.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());

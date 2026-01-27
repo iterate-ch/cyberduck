@@ -31,12 +31,10 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -82,10 +80,10 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
                 .withParameter("token_access_type", "offline");
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
-        if(HostPreferencesFactory.get(host).getBoolean("dropbox.limit.requests.enable")) {
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+        if(preferences.getBoolean("dropbox.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-                    HostPreferencesFactory.get(host).getInteger("dropbox.limit.requests.second")
+                    preferences.getInteger("dropbox.limit.requests.second")
             )));
         }
         final CloseableHttpClient client = configuration.build();
@@ -97,8 +95,9 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         try {
-            final Credentials credentials = authorizationService.validate();
             final FullAccount account = new DbxUserUsersRequests(client).getCurrentAccount();
             log.debug("Authenticated as user {}", account);
             credentials.setUsername(account.getEmail());
@@ -125,12 +124,15 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
             ((DropboxCommonsHttpRequestExecutor) client.getRequestConfig().getHttpRequestor()).close();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            super.disconnect();
         }
     }
 
@@ -147,7 +149,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxWriteFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new DropboxUploadFeature(this, new DropboxWriteFeature(this));
+            return (T) new DropboxUploadFeature(this);
         }
         if(type == Directory.class) {
             return (T) new DropboxDirectoryFeature(this);

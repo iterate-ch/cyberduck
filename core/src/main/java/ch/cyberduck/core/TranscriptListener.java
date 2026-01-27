@@ -22,7 +22,9 @@ public interface TranscriptListener {
 
     enum Type {
         request,
-        response
+        requestheader,
+        response,
+        responseheader
     }
 
     /**

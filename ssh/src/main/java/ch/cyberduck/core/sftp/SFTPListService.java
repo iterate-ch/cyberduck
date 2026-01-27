@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
@@ -34,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -150,5 +152,13 @@ public class SFTPListService implements ListService {
             }
         }
         return true;
+    }
+
+    @Override
+    public void preflight(final Path directory) throws BackgroundException {
+        if(!directory.attributes().getPermission().isExecutable() || !directory.attributes().getPermission().isReadable()) {
+            throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Listing directory {0} failed", "Error"),
+                    directory.getName())).withFile(directory);
+        }
     }
 }

@@ -30,7 +30,7 @@ public class BufferSegmentingOutputStream extends SegmentingOutputStream {
     private final Buffer buffer;
 
     public BufferSegmentingOutputStream(final OutputStream proxy, final Long threshold, final Buffer buffer) {
-        super(NullOutputStream.NULL_OUTPUT_STREAM, threshold, new BufferOutputStream(buffer));
+        super(NullOutputStream.INSTANCE, threshold, new BufferOutputStream(buffer));
         this.proxy = proxy;
         this.buffer = buffer;
     }

@@ -75,7 +75,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                         return "a";
                     }
                     if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
-                        return System.getProperties().getProperty("googlestorage.refreshtoken");
+                        return PROPERTIES.get("googlestorage.refreshtoken");
                     }
                     return null;
                 }

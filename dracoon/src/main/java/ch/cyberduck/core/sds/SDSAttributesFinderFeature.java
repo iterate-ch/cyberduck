@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -53,7 +54,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             // {"code":400,"message":"Bad Request","debugInfo":"Node ID must be positive.","errorCode":-80001}
-            final PathAttributes attributes = new PathAttributes();
+            final PathAttributes attributes = new DefaultPathAttributes();
             if(session.userAccount().isUserInRole(SDSPermissionsFeature.ROOM_MANAGER_ROLE)) {
                 // We need to map user roles to ACLs in order to decide if creating a top-level room is allowed
                 final Acl acl = new Acl();

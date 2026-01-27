@@ -56,7 +56,7 @@ public class CommandLineUriParser {
             host.setDefaultPath(directory.getParent().getAbsolute());
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.udt.name())) {
-            host.setTransfer(Host.TransferType.udt);
+            host.setTransferType(Host.TransferType.udt);
         }
         log.debug("Parsed {} as {}", uri, host);
         return host;

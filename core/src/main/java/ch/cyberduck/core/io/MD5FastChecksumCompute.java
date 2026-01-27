@@ -18,6 +18,7 @@ package ch.cyberduck.core.io;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumCanceledException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -41,12 +42,13 @@ public class MD5FastChecksumCompute extends AbstractChecksumCompute {
                 this.normalize(in, status), status));
     }
 
-    protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancelation) throws ChecksumException, ChecksumCanceledException {
+    protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancelation) throws ChecksumException, ConnectionCanceledException {
         final MD5 md = new MD5();
         try {
             byte[] buffer = new byte[16384];
             int bytesRead;
             while((bytesRead = in.read(buffer, 0, buffer.length)) != -1) {
+                cancelation.validate();
                 md.Update(buffer, 0, bytesRead);
             }
         }

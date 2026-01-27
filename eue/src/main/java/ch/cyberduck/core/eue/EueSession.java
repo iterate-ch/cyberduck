@@ -33,13 +33,10 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -82,8 +79,6 @@ import com.google.gson.JsonParser;
 public class EueSession extends HttpSession<CloseableHttpClient> {
     private static final Logger log = LogManager.getLogger(EueSession.class);
 
-    private final HostPreferences preferences = HostPreferencesFactory.get(host);
-
     private OAuth2RequestInterceptor authorizationService;
 
     private String basePath;
@@ -110,7 +105,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
@@ -166,7 +161,8 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         try {
             final StringBuilder url = new StringBuilder();
             url.append(host.getProtocol().getScheme().toString()).append("://");
@@ -218,15 +214,18 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
-            client.close();
+            resourceid.clear();
+            if(client != null) {
+                client.close();
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            resourceid.clear();
+            super.disconnect();
         }
     }
 
@@ -263,7 +262,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             return (T) new EueReadFeature(this, resourceid);
         }
         if(type == Write.class) {
-            return (T) new EueThresholdWriteFeature(this, resourceid);
+            return (T) new EueWriteFeature(this, resourceid);
         }
         if(type == MultipartWrite.class) {
             return (T) new EueMultipartWriteFeature(this, resourceid);

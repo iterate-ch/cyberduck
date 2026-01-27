@@ -88,7 +88,6 @@ public abstract class AbstractS3Test extends VaultTest {
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
-        session.getHost().getCredentials().setPassword(PROPERTIES.get("s3.secret"));
     }
 
     @Before
@@ -109,7 +108,6 @@ public abstract class AbstractS3Test extends VaultTest {
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(virtualhost, new DisabledCancelCallback());
-        virtualhost.getHost().getCredentials().setPassword(PROPERTIES.get("s3.secret"));
     }
 
     @Before
@@ -117,7 +115,7 @@ public abstract class AbstractS3Test extends VaultTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
-        final Host host = new Host(profile, "d4fobtprygi46.cloudfront.net", new Credentials("anonymous")).withRegion("eu-central-1");
+        final Host host = new Host(profile, "d4fobtprygi46.cloudfront.net", new Credentials("anonymous")).setRegion("eu-central-1");
         cloudfront = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -128,6 +126,5 @@ public abstract class AbstractS3Test extends VaultTest {
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(cloudfront, new DisabledCancelCallback());
-        cloudfront.getHost().getCredentials().setPassword(PROPERTIES.get("s3.secret"));
     }
 }

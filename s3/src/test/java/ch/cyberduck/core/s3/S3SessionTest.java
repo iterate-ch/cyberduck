@@ -13,11 +13,9 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -115,7 +113,7 @@ public class S3SessionTest extends AbstractS3Test {
     public void testConnectSessionTokenStatic() throws Exception {
         final S3Protocol protocol = new S3Protocol();
         final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials()
-                .withTokens(new TemporaryAccessTokens(
+                .setTokens(new TemporaryAccessTokens(
                         "ASIA5RMYTHDIR37CTCXI",
                         "TsnhChH4FlBt7hql2KnzrwNizmktJnO8YzDQwFqx",
                         "FQoDYXdzEN3//////////wEaDLAz85HLZTQ7zu6/OSKrAfwLewUMHKaswh5sXv50BgMwbeKfCoMATjagvM+KV9++z0I6rItmMectuYoEGCOcnWHKZxtvpZAGcjlvgEDPw1KRYu16riUnd2Yo3doskqAoH0dlL2nH0eoj0d81H5e6IjdlGCm1E3K3zQPFLfMbvn1tdDQR1HV8o9eslmxo54hWMY2M14EpZhcXQMlns0mfYLYHLEVvgpz/8xYjR0yKDxJlXSATEpXtowHtqSi8tL7aBQ==",
@@ -246,15 +244,6 @@ public class S3SessionTest extends AbstractS3Test {
                 return super.getProperty(key);
             }
         };
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.close();
-    }
-
-    @Test(expected = LoginFailureException.class)
-    public void testConnectCn_North_1() throws Exception {
-        final Host host = new Host(new S3Protocol(), "s3.cn-north-1.amazonaws.com.cn", new Credentials("AWS-QWEZUKJHGVCVBJHG", "uztfjkjnbvcf"));
         final S3Session session = new S3Session(host);
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());

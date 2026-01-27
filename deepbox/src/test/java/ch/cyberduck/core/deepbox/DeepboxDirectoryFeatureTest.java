@@ -16,6 +16,7 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -46,7 +47,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
-        assertThrows(NotfoundException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        assertThrows(NotfoundException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
     @Test
@@ -56,7 +57,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
-        assertThrows(NotfoundException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        assertThrows(NotfoundException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
     @Test
@@ -66,7 +67,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
-        assertThrows(NotfoundException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        assertThrows(NotfoundException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
     @Test
@@ -76,7 +77,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
-        assertThrows(AccessDeniedException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        assertThrows(AccessDeniedException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
     @Test
@@ -86,7 +87,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (1 Christian Gruber)", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
-        assertThrows(AccessDeniedException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        assertThrows(AccessDeniedException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
     @Test
@@ -96,7 +97,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Inbox", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
-        assertThrows(InteroperabilityException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        assertThrows(InteroperabilityException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
     @Test
@@ -106,7 +107,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (1 Christian Gruber)/Inbox", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
-        assertThrows(InteroperabilityException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        assertThrows(InteroperabilityException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
     @Test
@@ -116,7 +117,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(AccessDeniedException.class, () -> directory.preflight(parent, folder.getName()));
-        assertThrows(AccessDeniedException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        assertThrows(AccessDeniedException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
     @Test
@@ -125,12 +126,12 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        directory.mkdir(folder, new TransferStatus());
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes()), new DisabledListProgressListener()));
+        directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new DefaultPathAttributes()), new DisabledListProgressListener()));
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertThrows(NotfoundException.class, () -> nodeid.getFileId(folder.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes())));
+        assertThrows(NotfoundException.class, () -> nodeid.getFileId(folder.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new DefaultPathAttributes())));
     }
 
     @Test
@@ -139,7 +140,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        directory.mkdir(folder, new TransferStatus());
+        directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
@@ -147,12 +148,12 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
 
     @Test
     public void testNoDuplicates() throws Exception {
-        final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new DeepboxDirectoryFeature(session, fileid).mkdir(new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        new DeepboxDirectoryFeature(session, fileid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(documents)), test.getName());
-        assertTrue(new DeepboxFindFeature(session, fileid).find(test));
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path test = new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        new DeepboxDirectoryFeature(session, nodeid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, nodeid).find(documents)), test.getName());
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(test));
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -161,9 +162,9 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/Bookkeeping", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        directory.mkdir(folder, new TransferStatus());
+        directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
-        assertThrows(ConflictException.class, () -> directory.mkdir(folder, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
     }

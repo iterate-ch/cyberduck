@@ -21,7 +21,6 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,13 +29,14 @@ public class BrickCredentialsConfigurator implements CredentialsConfigurator {
 
     @Override
     public Credentials configure(final Host host) {
-        if(StringUtils.isBlank(host.getCredentials().getToken())) {
-            final Credentials credentials = new Credentials(host.getCredentials());
-            log.debug("Set new random token for {}", host);
-            credentials.setToken(new AlphanumericRandomStringService().random());
+        final Credentials credentials = new Credentials(host.getCredentials());
+        if(credentials.isTokenAuthentication()) {
+            log.warn("Skip auto configuration of credentials for {}", host);
             return credentials;
         }
-        return CredentialsConfigurator.DISABLED.configure(host);
+        log.debug("Set new random token for {}", host);
+        credentials.setToken(new AlphanumericRandomStringService().random());
+        return credentials;
     }
 
     @Override

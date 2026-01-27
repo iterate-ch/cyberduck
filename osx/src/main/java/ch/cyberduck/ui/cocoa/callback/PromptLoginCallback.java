@@ -24,7 +24,6 @@ import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
@@ -58,19 +57,16 @@ public class PromptLoginCallback extends PromptPasswordCallback implements Login
     private final ProxyController controller;
     private final NSWindow window;
 
-    @Outlet
-    private NSOpenPanel select;
-
     public PromptLoginCallback(final ProxyController controller) {
         super(controller);
         this.controller = controller;
-        this.window = null;
-    }
+        if(controller instanceof WindowController) {
+            this.window = ((WindowController) controller).window();
+        }
+        else {
+            this.window = null;
 
-    public PromptLoginCallback(final WindowController controller) {
-        super(controller);
-        this.controller = controller;
-        this.window = controller.window();
+        }
     }
 
     @Override
@@ -107,8 +103,8 @@ public class PromptLoginCallback extends PromptPasswordCallback implements Login
     public Credentials prompt(final Host bookmark, final String username,
                               final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         log.debug("Prompt for credentials for {}", username);
-        final Credentials credentials = new Credentials(username).withSaved(options.save);
-        final LoginController alert = new LoginController(new Host(bookmark).withCredentials(credentials), title, reason, options);
+        final Credentials credentials = new Credentials(username).setSaved(options.save);
+        final LoginController alert = new LoginController(new Host(bookmark).setCredentials(credentials), title, reason, options);
         final int option = controller.alert(alert);
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
@@ -117,10 +113,24 @@ public class PromptLoginCallback extends PromptPasswordCallback implements Login
     }
 
     public Local select(final Local identity) throws LoginCanceledException {
-        final int option = controller.alert(new SheetController.NoBundleSheetController(select), new AlertRunner() {
+        final SheetController.NoBundleSheetController sheet = new SheetController.NoBundleSheetController() {
+            @Outlet
+            private NSOpenPanel select;
+
+            @Override
+            public void loadBundle() {
+                select = NSOpenPanel.openPanel();
+            }
+
+            @Override
+            public NSWindow window() {
+                return select;
+            }
+        };
+        final int option = controller.alert(sheet, new AlertRunner() {
             @Override
             public void alert(final NSWindow sheet, final SheetCallback callback) {
-                select = NSOpenPanel.openPanel();
+                final NSOpenPanel select = Rococoa.cast(sheet, NSOpenPanel.class);
                 select.setCanChooseDirectories(false);
                 select.setCanChooseFiles(true);
                 select.setAllowsMultipleSelection(false);
@@ -138,9 +148,9 @@ public class PromptLoginCallback extends PromptPasswordCallback implements Login
             }
         });
         if(option == SheetCallback.DEFAULT_OPTION) {
-            final NSObject url = select.URLs().lastObject();
+            final NSURL url = Rococoa.cast(Rococoa.cast(sheet.window(), NSOpenPanel.class).URLs().lastObject(), NSURL.class);
             if(url != null) {
-                final Local selected = LocalFactory.get(Rococoa.cast(url, NSURL.class).path());
+                final Local selected = LocalFactory.get(url.path());
                 return selected.setBookmark(FilesystemBookmarkResolverFactory.get().create(selected));
             }
         }

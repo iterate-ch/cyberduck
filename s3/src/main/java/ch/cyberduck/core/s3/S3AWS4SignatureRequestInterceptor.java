@@ -15,6 +15,8 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +30,6 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 import org.jets3t.service.utils.SignatureUtils;
 
@@ -44,9 +45,10 @@ import java.util.stream.Collectors;
 import com.amazonaws.auth.internal.SignerConstants;
 
 import static com.amazonaws.services.s3.Headers.S3_ALTERNATE_DATE;
+import static com.amazonaws.services.s3.Headers.SECURITY_TOKEN;
 
 public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor {
-    private static final Logger log = LogManager.getLogger(S3Session.class);
+    private static final Logger log = LogManager.getLogger(S3AWS4SignatureRequestInterceptor.class);
 
     private final S3Session session;
 
@@ -56,86 +58,95 @@ public class S3AWS4SignatureRequestInterceptor implements HttpRequestInterceptor
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws IOException {
-        if(!session.getClient().isAuthenticatedConnection()) {
-            log.warn("Skip authentication request {}", request);
-            return;
-        }
-        final ProviderCredentials credentials = session.getClient().getProviderCredentials();
-        final String bucketName;
-        if(context.getAttribute("bucket") == null) {
-            log.warn("No bucket name in context {}", context);
-            bucketName = StringUtils.EMPTY;
-        }
-        else {
-            bucketName = context.getAttribute("bucket").toString();
-        }
-        log.debug("Use bucket name {} from context", bucketName);
-        final URI uri;
         try {
-            uri = new URI(request.getRequestLine().getUri());
+            final Credentials credentials = session.getAuthentication().get();
+            if(credentials.isAnonymousLogin()) {
+                log.warn("Skip authentication request {}", request);
+                return;
+            }
+            if(StringUtils.isNotBlank(credentials.getToken())) {
+                request.setHeader(SECURITY_TOKEN, credentials.getToken());
+            }
+            final String bucketName;
+            if(context.getAttribute("bucket") == null) {
+                log.warn("No bucket name in context {}", context);
+                bucketName = StringUtils.EMPTY;
+            }
+            else {
+                bucketName = context.getAttribute("bucket").toString();
+            }
+            log.debug("Use bucket name {} from context", bucketName);
+            final URI uri;
+            try {
+                uri = new URI(request.getRequestLine().getUri());
+            }
+            catch(URISyntaxException e) {
+                throw new IOException(e);
+            }
+            String region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucketName);
+            if(null == region) {
+                final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
+                if(host != null) {
+                    try {
+                        region = SignatureUtils.awsRegionForRequest(new URI(host.toURI()));
+                        log.debug("Determined region {} from URI {}", region, host.toURI());
+                    }
+                    catch(URISyntaxException e) {
+                        throw new IOException(e);
+                    }
+                }
+                if(region != null) {
+                    log.debug("Cache region {} for bucket {}", region, bucketName);
+                    session.getClient().getRegionEndpointCache().putRegionForBucketName(bucketName, region);
+                }
+            }
+            if(null == region) {
+                region = session.getHost().getRegion();
+                log.debug("Determined region {} from {}", region, session.getHost());
+            }
+            if(null == region) {
+                region = HostPreferencesFactory.get(session.getHost()).getProperty("s3.location");
+                log.debug("Determined region {} from defaults", region);
+            }
+            final HttpUriRequest message = (HttpUriRequest) request;
+            String requestPayloadHexSHA256Hash =
+                    SignatureUtils.awsV4GetOrCalculatePayloadHash(message);
+            message.setHeader(SignerConstants.X_AMZ_CONTENT_SHA256, requestPayloadHexSHA256Hash);
+            // Generate AWS-flavoured ISO8601 timestamp string
+            final String timestampISO8601 = message.getFirstHeader(S3_ALTERNATE_DATE).getValue();
+            // Canonical request string
+            final String canonicalRequestString =
+                    SignatureUtils.awsV4BuildCanonicalRequestString(uri,
+                            request.getRequestLine().getMethod(), this.getHeaders(request), requestPayloadHexSHA256Hash);
+            // String to sign
+            final String stringToSign = SignatureUtils.awsV4BuildStringToSign(
+                    session.getSignatureVersion().toString(), canonicalRequestString,
+                    timestampISO8601, region);
+            // Signing key
+            final byte[] signingKey = SignatureUtils.awsV4BuildSigningKey(
+                    credentials.getTokens().getSecretAccessKey(), timestampISO8601, region);
+            // Request signature
+            final String signature = ServiceUtils.toHex(ServiceUtils.hmacSHA256(
+                    signingKey, ServiceUtils.stringToBytes(stringToSign)));
+            // Authorization header value
+            final String authorizationHeaderValue =
+                    SignatureUtils.awsV4BuildAuthorizationHeaderValue(
+                            credentials.getTokens().getAccessKeyId(), signature,
+                            session.getSignatureVersion().toString(), canonicalRequestString,
+                            timestampISO8601, region);
+            message.setHeader(HttpHeaders.AUTHORIZATION, authorizationHeaderValue);
         }
-        catch(URISyntaxException e) {
+        catch(BackgroundException e) {
+            log.warn("Error {} retrieving credentials", e.toString());
             throw new IOException(e);
         }
-        String region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucketName);
-        if(null == region) {
-            final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
-            if(host != null) {
-                try {
-                    region = SignatureUtils.awsRegionForRequest(new URI(host.toURI()));
-                    log.debug("Determined region {} from URI {}", region, host.toURI());
-                }
-                catch(URISyntaxException e) {
-                    throw new IOException(e);
-                }
-            }
-            if(region != null) {
-                log.debug("Cache region {} for bucket {}", region, bucketName);
-                session.getClient().getRegionEndpointCache().putRegionForBucketName(bucketName, region);
-            }
-        }
-        if(null == region) {
-            region = session.getHost().getRegion();
-            log.debug("Determined region {} from {}", region, session.getHost());
-        }
-        if(null == region) {
-            region = HostPreferencesFactory.get(session.getHost()).getProperty("s3.location");
-            log.debug("Determined region {} from defaults", region);
-        }
-        final HttpUriRequest message = (HttpUriRequest) request;
-        String requestPayloadHexSHA256Hash =
-                SignatureUtils.awsV4GetOrCalculatePayloadHash(message);
-        message.setHeader(SignerConstants.X_AMZ_CONTENT_SHA256, requestPayloadHexSHA256Hash);
-        // Generate AWS-flavoured ISO8601 timestamp string
-        final String timestampISO8601 = message.getFirstHeader(S3_ALTERNATE_DATE).getValue();
-        // Canonical request string
-        final String canonicalRequestString =
-                SignatureUtils.awsV4BuildCanonicalRequestString(uri,
-                        request.getRequestLine().getMethod(), this.getHeaders(request), requestPayloadHexSHA256Hash);
-        // String to sign
-        final String stringToSign = SignatureUtils.awsV4BuildStringToSign(
-                session.getSignatureVersion().toString(), canonicalRequestString,
-                timestampISO8601, region);
-        // Signing key
-        final byte[] signingKey = SignatureUtils.awsV4BuildSigningKey(
-                credentials.getSecretKey(), timestampISO8601, region);
-        // Request signature
-        final String signature = ServiceUtils.toHex(ServiceUtils.hmacSHA256(
-                signingKey, ServiceUtils.stringToBytes(stringToSign)));
-        // Authorization header value
-        final String authorizationHeaderValue =
-                SignatureUtils.awsV4BuildAuthorizationHeaderValue(
-                        credentials.getAccessKey(), signature,
-                        session.getSignatureVersion().toString(), canonicalRequestString,
-                        timestampISO8601, region);
-        message.setHeader(HttpHeaders.AUTHORIZATION, authorizationHeaderValue);
     }
 
     final class HttpHeaderFilter implements Predicate<Header> {
         @Override
         public boolean test(final Header header) {
-            return !HostPreferencesFactory.get(session.getHost()).getList("s3.signature.headers.exclude").stream()
-                    .filter(s -> StringUtils.equalsIgnoreCase(s, header.getName())).findAny().isPresent();
+            return HostPreferencesFactory.get(session.getHost()).getList("s3.signature.headers.exclude").stream()
+                    .noneMatch(s -> StringUtils.equalsIgnoreCase(s, header.getName()));
         }
     }
 

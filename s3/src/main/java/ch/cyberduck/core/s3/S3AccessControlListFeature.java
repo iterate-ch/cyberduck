@@ -70,7 +70,7 @@ public class S3AccessControlListFeature implements AclPermission {
 
     public S3AccessControlListFeature(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     private boolean isBucketOwnerEnforced(final Path bucket) throws BackgroundException {
@@ -127,10 +127,10 @@ public class S3AccessControlListFeature implements AclPermission {
                 // bucket's existing ACL already allows write access by the anonymous user.
                 // In general, you can only access the ACL of a bucket if the ACL already in place
                 // for that bucket (in S3) allows you to do so.
-                acl = this.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
+                acl = S3AccessControlListFeature.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
             }
             else {
-                acl = this.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
+                acl = S3AccessControlListFeature.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
             }
             if(this.isBucketOwnerEnforced(bucket)) {
@@ -158,7 +158,7 @@ public class S3AccessControlListFeature implements AclPermission {
     public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             // Read owner from bucket
-            final AccessControlList list = this.toAcl(status.getAcl());
+            final AccessControlList list = toAcl(status.getAcl());
             final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
                 session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
@@ -185,7 +185,7 @@ public class S3AccessControlListFeature implements AclPermission {
      * @param acl Edited ACL
      * @return ACL to write to server
      */
-    protected AccessControlList toAcl(final Acl acl) {
+    protected static AccessControlList toAcl(final Acl acl) {
         if(Acl.EMPTY.equals(acl)) {
             return null;
         }
@@ -255,7 +255,7 @@ public class S3AccessControlListFeature implements AclPermission {
      * @param list ACL from server
      * @return Editable ACL
      */
-    protected Acl toAcl(final AccessControlList list) {
+    protected static Acl toAcl(final AccessControlList list) {
         if(null == list) {
             return Acl.EMPTY;
         }
@@ -329,7 +329,7 @@ public class S3AccessControlListFeature implements AclPermission {
     }
 
     @Override
-    public List<Acl.User> getAvailableAclUsers() {
+    public List<Acl.User> getAvailableAclUsers(final List<Path> files) {
         return new ArrayList<>(Arrays.asList(
                 new Acl.CanonicalUser(),
                 new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED, false) {

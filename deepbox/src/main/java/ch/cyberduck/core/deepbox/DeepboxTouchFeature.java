@@ -34,7 +34,7 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Node> {
     private final DeepboxPathContainerService containerService;
 
     public DeepboxTouchFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
-        super(new DeepboxWriteFeature(session, fileid));
+        super(session);
         this.containerService = new DeepboxPathContainerService(session, fileid);
     }
 

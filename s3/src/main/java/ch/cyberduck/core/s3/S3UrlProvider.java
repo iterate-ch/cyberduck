@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.HostWebUrlProvider;
@@ -60,7 +61,7 @@ public class S3UrlProvider implements UrlProvider {
     public S3UrlProvider(final S3Session session, final Map<Path, Set<Distribution>> distributions) {
         this.session = session;
         this.distributions = distributions;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override
@@ -202,23 +203,20 @@ public class S3UrlProvider implements UrlProvider {
 
         @Override
         public String getUrl() {
-            final String secret;
+            final Credentials credentials;
             try {
-                secret = session.getAuthentication().get().getPassword();
+                credentials = session.getAuthentication().get();
             }
             catch(BackgroundException e) {
                 log.error("Failure retrieving secret required to sign temporary URL", e);
                 return DescriptiveUrl.EMPTY.getUrl();
             }
-            if(StringUtils.isBlank(secret)) {
-                log.error("No secret found in password store required to sign temporary URL");
-                return DescriptiveUrl.EMPTY.getUrl();
-            }
             String region = session.getHost().getRegion();
             final Path bucket = containerService.getContainer(file);
+            final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();
             if(session.isConnected()) {
-                if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(bucket.getName())) {
-                    region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucket.getName());
+                if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(bucketname)) {
+                    region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucketname);
                 }
             }
             if(StringUtils.isBlank(region)) {
@@ -230,8 +228,8 @@ public class S3UrlProvider implements UrlProvider {
                 }
             }
             return new S3PresignedUrlProvider(session).create(
-                    secret,
-                    bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(),
+                    credentials,
+                    bucketname,
                     region, containerService.getKey(file),
                     "GET", expiry.getTimeInMillis());
         }

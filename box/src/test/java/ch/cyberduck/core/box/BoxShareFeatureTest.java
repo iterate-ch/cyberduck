@@ -38,7 +38,7 @@ public class BoxShareFeatureTest extends AbstractBoxTest {
     @Test
     public void testFolder() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        final Path directory = new BoxDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(),
+        final Path directory = new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(),
                 EnumSet.of(Path.Type.directory)), new TransferStatus());
         final BoxShareFeature feature = new BoxShareFeature(session, fileid);
         assertTrue(feature.isSupported(directory, Share.Type.download));
@@ -51,7 +51,7 @@ public class BoxShareFeatureTest extends AbstractBoxTest {
     public void testFile() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new BoxTouchFeature(session, fileid).touch(
-                new Path(Home.root(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new BoxWriteFeature(session, fileid), new Path(Home.root(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final BoxShareFeature feature = new BoxShareFeature(session, fileid);
         assertTrue(feature.isSupported(test, Share.Type.download));
         assertFalse(feature.isSupported(test, Share.Type.upload));

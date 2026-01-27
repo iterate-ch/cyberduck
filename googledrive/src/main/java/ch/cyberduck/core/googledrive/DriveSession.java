@@ -26,17 +26,14 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -67,16 +64,16 @@ public class DriveSession extends HttpSession<Drive> {
     }
 
     @Override
-    protected Drive connect(final ProxyFinder proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException, ConnectionCanceledException {
+    protected Drive connect(final ProxyFinder proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                new ExecutionCountServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService))));
-        if(HostPreferencesFactory.get(host).getBoolean("googledrive.limit.requests.enable")) {
+                new OAuth2ErrorResponseInterceptor(host, authorizationService)));
+        if(preferences.getBoolean("googledrive.limit.requests.enable")) {
             configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-                    HostPreferencesFactory.get(host).getInteger("googledrive.limit.requests.second")
+                    preferences.getInteger("googledrive.limit.requests.second")
             )));
         }
         transport = new ApacheHttpTransport(configuration.build());
@@ -88,7 +85,8 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     public void login(final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Credentials credentials = authorizationService.validate();
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         final About about;
         try {
             about = client.about().get().setFields("user").execute();
@@ -101,15 +99,16 @@ public class DriveSession extends HttpSession<Drive> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
+            fileid.clear();
             transport.shutdown();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            fileid.clear();
+            super.disconnect();
         }
     }
 
@@ -130,7 +129,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveWriteFeature(this, fileid);
         }
         if(type == Upload.class) {
-            return (T) new DriveUploadFeature(this, fileid);
+            return (T) new DriveUploadFeature(this);
         }
         if(type == Directory.class) {
             return (T) new DriveDirectoryFeature(this, fileid);

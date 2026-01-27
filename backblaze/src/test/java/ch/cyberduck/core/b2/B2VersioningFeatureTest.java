@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -48,9 +49,9 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
     public void testRevert() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path room = new B2DirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path ignored = new B2TouchFeature(session, fileid).touch(new Path(room, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path ignored = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), new Path(room, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             // Make sure there is another versioned copy of a file not to be included when listing
             final byte[] content = RandomUtils.nextBytes(245);
@@ -60,7 +61,7 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
         assertTrue(new B2FindFeature(session, fileid).find(ignored));
-        final PathAttributes initialAttributes = new PathAttributes(test.attributes());
+        final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();

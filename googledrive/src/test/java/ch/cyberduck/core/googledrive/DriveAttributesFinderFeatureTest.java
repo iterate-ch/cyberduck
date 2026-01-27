@@ -77,7 +77,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFindFolderInSharedDriveAsDefaultPath() throws Exception {
         final Path test = new Path(new Path(DriveHomeFinderService.SHARED_DRIVES_NAME, "iterate", EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, new DriveFileIdProvider(session));
         assertNotEquals(PathAttributes.EMPTY, f.find(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -87,7 +87,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFind() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
@@ -100,10 +100,10 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testDuplicatesWithSameName() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path version1 = new DriveTouchFeature(session, fileid).touch(
-                new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
         assertEquals(version1.attributes(), f.find(version1));
         final AttributedList<Path> listBeforeDelete = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
@@ -114,7 +114,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertTrue(listAfterDelete.contains(version1));
         assertTrue(listAfterDelete.find(new DefaultPathPredicate(version1)).attributes().isTrashed());
         final Path version2 = new DriveTouchFeature(session, fileid).touch(
-                new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotEquals(f.find(version1), f.find(version2));
         final AttributedList<Path> listAfterReupload = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listAfterReupload.contains(version2));
@@ -126,7 +126,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testFindDirectory() throws Exception {
         final Path file = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveDirectoryFeature(session, fileid).mkdir(file, new TransferStatus());
+        new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), file, new TransferStatus());
         final PathAttributes attributes = new DriveAttributesFinderFeature(session, fileid).find(file);
         assertNotNull(attributes);
         assertEquals(-1L, attributes.getSize());
@@ -140,7 +140,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testMissingShortcutTarget() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
         final File shortcut = session.getClient().files().create(new File()
@@ -171,8 +171,8 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testChangedFileId() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path room = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new DriveTouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DriveWriteFeature(session, fileid), new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getFileId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server

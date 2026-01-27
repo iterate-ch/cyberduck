@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -38,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.BaseStorageItem;
 import org.jets3t.service.model.S3Object;
 
 import java.text.MessageFormat;
@@ -55,7 +57,7 @@ public class S3CopyFeature implements Copy {
     public S3CopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.acl = acl;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override
@@ -78,19 +80,21 @@ public class S3CopyFeature implements Copy {
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn("Ignore failure {}", e.getMessage());
+                status.setAcl(acl.getDefault(target));
             }
         }
         final S3Object destination = new S3WriteFeature(session, acl).getDetails(target, status);
-        destination.setAcl(acl.toAcl(status.getAcl()));
+        destination.setAcl(S3AccessControlListFeature.toAcl(status.getAcl()));
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));
-        final String versionId = this.copy(source, destination, status, listener);
-        return new Path(target).withAttributes(new PathAttributes(source.attributes()).setVersionId(
-                HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable") ? versionId : null));
+        final CopyResult result = this.copy(source, destination, status, listener);
+        return new Path(target).withAttributes(new DefaultPathAttributes(source.attributes())
+                .setVersionId(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable") ? result.versionId : null)
+                .setETag(StringUtils.remove(result.etag, '"')));
     }
 
-    protected String copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
+    protected CopyResult copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
         try {
             // Copying object applying the metadata of the original
             final Path bucket = containerService.getContainer(source);
@@ -100,7 +104,10 @@ public class S3CopyFeature implements Copy {
                     destination.getBucketName(), destination, false);
             listener.sent(status.getLength());
             final Map complete = (Map) stringObjectMap.get(Constants.KEY_FOR_COMPLETE_METADATA);
-            return (String) complete.get(Constants.AMZ_VERSION_ID);
+            return new CopyResult(
+                    (String) complete.get(Constants.AMZ_VERSION_ID),
+                    (String) complete.get(BaseStorageItem.METADATA_HEADER_ETAG)
+            );
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -116,6 +123,16 @@ public class S3CopyFeature implements Copy {
             if(containerService.isContainer(target.get())) {
                 throw new UnsupportedException(MessageFormat.format(LocaleFactory.localizedString("Cannot copy {0}", "Error"), source.getName())).withFile(source);
             }
+        }
+    }
+
+    protected static final class CopyResult {
+        public final String versionId;
+        public final String etag;
+
+        public CopyResult(final String versionId, final String length) {
+            this.versionId = versionId;
+            this.etag = length;
         }
     }
 }

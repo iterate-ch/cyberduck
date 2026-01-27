@@ -143,7 +143,7 @@ public abstract class BundleController extends ProxyController {
     /**
      * @return The top level view object or null if unknown
      */
-    protected NSView view() {
+    public NSView view() {
         return null;
     }
 

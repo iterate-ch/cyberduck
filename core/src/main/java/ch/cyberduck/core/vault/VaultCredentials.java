@@ -24,8 +24,8 @@ public class VaultCredentials extends Credentials {
     }
 
     @Override
-    public VaultCredentials withSaved(final boolean saved) {
-        super.withSaved(saved);
+    public VaultCredentials setSaved(final boolean saved) {
+        super.setSaved(saved);
         return this;
     }
 }

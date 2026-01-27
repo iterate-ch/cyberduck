@@ -145,6 +145,9 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
             if(errSecItemNotFound == err) {
                 return null;
             }
+            if(errSecUserCanceled == err) {
+                return null;
+            }
             log.error("Failure reading credentials for {} in keychain", serviceName);
             throw new LocalAccessDeniedException(SecurityFunctions.library.SecCopyErrorMessageString(err, null));
         }

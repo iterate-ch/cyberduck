@@ -18,13 +18,14 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
 import ch.cyberduck.core.synchronization.ETagComparisonService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,21 +41,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.amazonaws.auth.AWSCredentialsProviderChain;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.google.auto.service.AutoService;
 
 @AutoService(Protocol.class)
 public class S3Protocol extends AbstractProtocol {
     private static final Logger log = LogManager.getLogger(S3Protocol.class);
 
-    private final AWSCredentialsConfigurator credentials = new AWSCredentialsConfigurator(
-            new AWSCredentialsProviderChain(
-                    new ProfileCredentialsProvider(),
-                    new EnvironmentVariableCredentialsProvider()
-            )
-    );
+    private final CredentialsConfigurator credentials = new S3CredentialsConfigurator();
 
     @Override
     public String getName() {
@@ -112,7 +106,7 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public String getTokenPlaceholder() {
-        return LocaleFactory.localizedString("MFA Authentication Code", "S3");
+        return LocaleFactory.localizedString("Session Token", "S3");
     }
 
     @Override
@@ -124,6 +118,21 @@ public class S3Protocol extends AbstractProtocol {
     @Override
     public String getAuthorization() {
         return PreferencesFactory.get().getProperty("s3.signature.version");
+    }
+
+    @Override
+    public boolean validate(final Credentials credentials, final LoginOptions options) {
+        if(options.token) {
+            if(credentials.isTokenAuthentication()) {
+                if(StringUtils.isBlank(credentials.getTokens().getAccessKeyId())) {
+                    return false;
+                }
+                if(StringUtils.isBlank(credentials.getTokens().getSecretAccessKey())) {
+                    return false;
+                }
+            }
+        }
+        return super.validate(credentials, options);
     }
 
     public enum AuthenticationHeaderSignatureVersion {
@@ -179,6 +188,7 @@ public class S3Protocol extends AbstractProtocol {
             return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
         }
         if(type == CredentialsConfigurator.class) {
+            // Fetching configuration from AWS CLI
             return (T) credentials;
         }
         return super.getFeature(type);

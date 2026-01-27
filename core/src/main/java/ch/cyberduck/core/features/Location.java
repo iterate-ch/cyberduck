@@ -32,12 +32,12 @@ public interface Location {
     /**
      * @return Default region for new containers
      */
-    Name getDefault();
+    Name getDefault(Path file);
 
     /**
      * @return Available regions
      */
-    Set<Name> getLocations();
+    Set<Name> getLocations(Path file);
 
     /**
      * @param file File or folder
@@ -91,12 +91,12 @@ public interface Location {
 
     Location disabled = new Location() {
         @Override
-        public Name getDefault() {
+        public Name getDefault(final Path file) {
             return unknown;
         }
 
         @Override
-        public Set<Name> getLocations() {
+        public Set<Name> getLocations(final Path file) {
             return Collections.emptySet();
         }
 

@@ -31,7 +31,6 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
@@ -58,35 +57,35 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
     /**
      * Use Expect directive
      */
-    private final boolean expect;
+    private final DAVSession.HttpCapabilities capabilities;
 
     public DAVWriteFeature(final DAVSession session) {
-        this(session, HostPreferencesFactory.get(session.getHost()).getBoolean("webdav.expect-continue"));
+        this(session, new DAVSession.HttpCapabilities(session.getHost()));
     }
 
-    public DAVWriteFeature(final DAVSession session, final boolean expect) {
+    public DAVWriteFeature(final DAVSession session, final DAVSession.HttpCapabilities capabilities) {
         super(new VoidAttributesAdapter());
         this.session = session;
-        this.expect = expect;
+        this.capabilities = capabilities;
     }
 
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            return this.write(file, this.toHeaders(file, status, expect), status);
+            return this.write(file, this.toHeaders(file, status, capabilities.expectcontinue), status);
         }
         catch(ConflictException e) {
-            if(expect) {
+            if(capabilities.expectcontinue) {
                 if(null != status.getLockId()) {
                     // Handle 412 Precondition Failed with expired token
                     log.warn("Retry failure {} with lock id {} removed", e, status.getLockId());
-                    return this.write(file, this.toHeaders(file, status.setLockId(null), expect), status);
+                    return this.write(file, this.toHeaders(file, status.setLockId(null), capabilities.expectcontinue), status);
                 }
             }
             throw e;
         }
         catch(InteroperabilityException e) {
-            if(expect) {
+            if(capabilities.expectcontinue) {
                 // Handle 417 Expectation Failed
                 log.warn("Retry failure {} with Expect: Continue removed", e.getMessage());
                 return this.write(file, this.toHeaders(file, status.setLockId(null), false), status);
@@ -153,6 +152,9 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
 
     @Override
     public EnumSet<Flags> features(final Path file) {
+        if(capabilities.iis) {
+            return EnumSet.noneOf(Flags.class);
+        }
         return EnumSet.of(Flags.random);
     }
 }

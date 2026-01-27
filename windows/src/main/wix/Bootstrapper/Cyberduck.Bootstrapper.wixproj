@@ -1,4 +1,4 @@
-<Project Sdk="WixToolset.Sdk">
+﻿<Project Sdk="WixToolset.Sdk">
   <PropertyGroup>
     <OutputName>Cyberduck-Installer-$(FileVersion)</OutputName>
     <Platforms>x64</Platforms>

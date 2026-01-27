@@ -44,6 +44,7 @@ import com.github.sardine.util.SardineUtil;
 public class DAVTimestampFeature implements Timestamp {
 
     private final DAVSession session;
+    private final DAVAttributesFinderFeature attributes;
 
     public static final QName LAST_MODIFIED_DEFAULT_NAMESPACE =
             SardineUtil.createQNameWithDefaultNamespace("lastmodified");
@@ -62,7 +63,12 @@ public class DAVTimestampFeature implements Timestamp {
             SardineUtil.createQNameWithCustomNamespace("lastmodified_server");
 
     public DAVTimestampFeature(final DAVSession session) {
+        this(session, new DAVAttributesFinderFeature(session));
+    }
+
+    public DAVTimestampFeature(final DAVSession session, final DAVAttributesFinderFeature attributes) {
         this.session = session;
+        this.attributes = attributes;
     }
 
     @Override
@@ -73,7 +79,7 @@ public class DAVTimestampFeature implements Timestamp {
                 final DavResource resource = this.getResource(file);
                 session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getModified()), Collections.emptyList(),
                         this.getCustomHeaders(file, status));
-                status.setResponse(new DAVAttributesFinderFeature(session).toAttributes(resource).setModificationDate(
+                status.setResponse(attributes.toAttributes(resource).setModificationDate(
                         Timestamp.toSeconds(status.getModified())));
             }
         }
@@ -92,7 +98,7 @@ public class DAVTimestampFeature implements Timestamp {
      * @return Latest properties
      */
     protected DavResource getResource(final Path file) throws BackgroundException, IOException {
-        final Optional<DavResource> optional = new DAVAttributesFinderFeature(session).list(file).stream().findFirst();
+        final Optional<DavResource> optional = attributes.list(file).stream().findFirst();
         if(!optional.isPresent()) {
             throw new NotfoundException(file.getAbsolute());
         }

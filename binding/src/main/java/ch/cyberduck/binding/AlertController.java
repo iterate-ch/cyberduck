@@ -66,6 +66,10 @@ public abstract class AlertController extends SheetController implements InputVa
 
     public abstract NSAlert loadAlert();
 
+    public NSAlert alert() {
+        return alert;
+    }
+
     @Override
     public void loadBundle() {
         alert = this.loadAlert();
@@ -81,6 +85,12 @@ public abstract class AlertController extends SheetController implements InputVa
         this.setWindow(window);
         // Layout alert view on main thread
         this.focus(alert);
+    }
+
+    @Override
+    public void setWindow(final NSWindow window) {
+        super.setWindow(window);
+        window.setReleasedWhenClosed(false);
     }
 
     protected void focus(final NSAlert alert) {

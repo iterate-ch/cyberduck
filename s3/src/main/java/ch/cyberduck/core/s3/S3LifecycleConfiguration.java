@@ -42,7 +42,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
 
     public S3LifecycleConfiguration(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
     }
 
     @Override

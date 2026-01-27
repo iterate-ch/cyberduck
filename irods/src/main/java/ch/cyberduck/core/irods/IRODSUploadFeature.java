@@ -51,7 +51,7 @@ import org.irods.jargon.core.transfer.TransferControlBlock;
 import java.io.File;
 import java.text.MessageFormat;
 
-public class IRODSUploadFeature implements Upload<Checksum> {
+public class IRODSUploadFeature implements Upload<Void> {
     private static final Logger log = LogManager.getLogger(IRODSUploadFeature.class);
 
     private final IRODSSession session;
@@ -61,9 +61,9 @@ public class IRODSUploadFeature implements Upload<Checksum> {
     }
 
     @Override
-    public Checksum upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                           final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
-                           final ConnectionCallback callback) throws BackgroundException {
+    public Void upload(final Write<Void> write, final Path file, final Local local, final BandwidthThrottle throttle,
+                       final ProgressListener progress, final StreamListener streamListener, final TransferStatus status,
+                       final ConnectionCallback callback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
@@ -83,8 +83,8 @@ public class IRODSUploadFeature implements Upload<Checksum> {
             ), block);
             if(status.isComplete()) {
                 final DataObjectChecksumUtilitiesAO checksum = fs
-                    .getIRODSAccessObjectFactory()
-                    .getDataObjectChecksumUtilitiesAO(fs.getIRODSAccount());
+                        .getIRODSAccessObjectFactory()
+                        .getDataObjectChecksumUtilitiesAO(fs.getIRODSAccount());
                 final ChecksumValue value = checksum.computeChecksumOnDataObject(f);
                 final Checksum fingerprint = Checksum.parse(value.getChecksumStringValue());
                 if(null == fingerprint) {
@@ -98,12 +98,11 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                         final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream(), new TransferStatus(status));
                         if(!expected.equals(fingerprint)) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                    fingerprint.algorithm.toString(), expected, fingerprint.hash));
+                                    MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                            fingerprint.algorithm.toString(), expected, fingerprint.hash));
                         }
                     }
                 }
-                return fingerprint;
             }
             return null;
         }
@@ -115,10 +114,5 @@ public class IRODSUploadFeature implements Upload<Checksum> {
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Write.Append(status.isExists()).withStatus(status);
-    }
-
-    @Override
-    public Upload<Checksum> withWriter(final Write<Checksum> writer) {
-        return this;
     }
 }

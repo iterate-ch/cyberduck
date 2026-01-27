@@ -1043,7 +1043,7 @@ public class InfoController extends ToolbarWindowController {
 
     public void aclAddButtonClicked(NSMenuItem sender) {
         final AclPermission feature = session.getFeature(AclPermission.class);
-        for(Acl.User grantee : feature.getAvailableAclUsers()) {
+        for(Acl.User grantee : feature.getAvailableAclUsers(files)) {
             if(sender.representedObject().equals(grantee.getPlaceholder())) {
                 this.addAclItem(new Acl.UserAndRole(grantee, new Acl.Role(StringUtils.EMPTY)));
             }
@@ -1919,7 +1919,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             final Path file = this.getSelected();
             if(session.getFeature(Redundancy.class) != null) {
-                for(String redundancy : session.getFeature(Redundancy.class).getClasses()) {
+                for(String redundancy : session.getFeature(Redundancy.class).getClasses(file)) {
                     storageClassPopup.addItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
                     storageClassPopup.lastItem().setRepresentedObject(redundancy);
                 }
@@ -2227,7 +2227,7 @@ public class InfoController extends ToolbarWindowController {
             aclAddButton.removeAllItems();
             this.aclAddButton.addItemWithTitle(StringUtils.EMPTY);
             this.aclAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("NSActionTemplate"));
-            for(Acl.User user : feature.getAvailableAclUsers()) {
+            for(Acl.User user : feature.getAvailableAclUsers(files)) {
                 this.aclAddButton.addItemWithTitle(user.getPlaceholder());
                 this.aclAddButton.lastItem().setAction(Foundation.selector("aclAddButtonClicked:"));
                 this.aclAddButton.lastItem().setTarget(this.id());

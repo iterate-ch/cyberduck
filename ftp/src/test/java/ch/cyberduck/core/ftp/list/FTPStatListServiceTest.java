@@ -26,6 +26,7 @@ import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPTouchFeature;
 import ch.cyberduck.core.ftp.FTPWorkdirService;
+import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,7 +54,7 @@ public class FTPStatListServiceTest extends AbstractFTPTest {
             new CompositeFileEntryParser(Collections.singletonList(new UnixFTPEntryParser())));
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new FTPTouchFeature(session).touch(file, new TransferStatus());
+        new FTPTouchFeature(session).touch(new FTPWriteFeature(session), file, new TransferStatus());
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
         assertTrue(list.contains(file));
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

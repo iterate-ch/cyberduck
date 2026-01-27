@@ -29,6 +29,7 @@ import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
 
@@ -71,6 +72,9 @@ public class GraphVersioningFeature implements Versioning {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot revert file", e, file);
         }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Cannot revert file", e.getCause(), file);
+        }
     }
 
     @Override
@@ -94,6 +98,9 @@ public class GraphVersioningFeature implements Versioning {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e.getCause(), file);
         }
         return versions;
     }

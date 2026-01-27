@@ -23,11 +23,6 @@ public class UnifiedSystemLogTranscriptListener implements TranscriptListener {
 
     @Override
     public void log(final Type type, final String message) {
-        switch(type) {
-            case request:
-            case response:
-                appender.log(UnifiedSystemLogAppender.OS_LOG_TYPE_INFO, "transcript", message);
-                break;
-        }
+        appender.log(UnifiedSystemLogAppender.OS_LOG_TYPE_INFO, "transcript", message);
     }
 }

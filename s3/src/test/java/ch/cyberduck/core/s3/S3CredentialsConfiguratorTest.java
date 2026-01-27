@@ -16,12 +16,9 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -34,15 +31,15 @@ public class S3CredentialsConfiguratorTest {
 
     @Test
     public void testConfigure() throws Exception {
-        new S3CredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
+        new S3CredentialsConfigurator()
                 .reload().configure(new Host(new TestProtocol()));
     }
 
     @Test
     public void readFailureForInvalidAWSCredentialsProfileEntry() throws Exception {
         final Credentials credentials = new Credentials("test_s3_profile");
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath()),
-                new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath())
+        )
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials));
         assertEquals(credentials, verify);
     }
@@ -50,10 +47,10 @@ public class S3CredentialsConfiguratorTest {
     @Test
     public void readSuccessForValidAWSCredentialsProfileEntry() throws Exception {
         final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
-                , new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
+        )
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("test_s3_profile")));
-        assertEquals("EXAMPLEKEYID", verify.getUsername());
-        assertEquals("EXAMPLESECRETKEY", verify.getPassword());
+        assertEquals("test_s3_profile", verify.getUsername());
+        assertEquals("", verify.getPassword());
         assertEquals("EXAMPLEKEYID", verify.getTokens().getAccessKeyId());
         assertEquals("EXAMPLESECRETKEY", verify.getTokens().getSecretAccessKey());
         assertEquals("EXAMPLETOKEN", verify.getTokens().getSessionToken());
@@ -62,7 +59,7 @@ public class S3CredentialsConfiguratorTest {
     @Test
     public void readSSOCachedTemporaryTokens() throws Exception {
         final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
-                , new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
+        )
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("ReadOnlyAccess-189584543480")));
         assertEquals("TESTACCESSKEY", verify.getTokens().getAccessKeyId());
         assertEquals("TESTSECRETKEY", verify.getTokens().getSecretAccessKey());

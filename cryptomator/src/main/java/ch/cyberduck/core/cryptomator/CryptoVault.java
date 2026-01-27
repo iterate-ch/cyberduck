@@ -126,10 +126,10 @@ public class CryptoVault implements Vault {
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
         type.add(Path.Type.vault);
         if(home.isRoot()) {
-            this.vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
+            this.vault = new Path(home.getAbsolute(), type, new DefaultPathAttributes(home.attributes()));
         }
         else {
-            this.vault = new Path(home.getParent(), home.getName(), type, new PathAttributes(home.attributes()));
+            this.vault = new Path(home.getParent(), home.getName(), type, new DefaultPathAttributes(home.attributes()));
         }
     }
 
@@ -164,11 +164,11 @@ public class CryptoVault implements Vault {
         // Obtain non encrypted directory writer
         final Directory<?> directory = session._getFeature(Directory.class);
         final TransferStatus status = new TransferStatus().setRegion(region);
-        final Encryption encryption = session.getFeature(Encryption.class);
+        final Encryption encryption = session._getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
         }
-        final Path vault = directory.mkdir(home, status);
+        final Path vault = directory.mkdir(session._getFeature(Write.class), home, status);
         new ContentWriter(session).write(masterkey, mkArray.toByteArray());
         if(VAULT_VERSION == version) {
             // Create vaultconfig.cryptomator
@@ -191,9 +191,9 @@ public class CryptoVault implements Vault {
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         log.debug("Create vault root directory at {}", secondLevel);
-        directory.mkdir(dataDir, status);
-        directory.mkdir(firstLevel, status);
-        directory.mkdir(secondLevel, status);
+        directory.mkdir(session._getFeature(Write.class), dataDir, status);
+        directory.mkdir(session._getFeature(Write.class), firstLevel, status);
+        directory.mkdir(session._getFeature(Write.class), secondLevel, status);
         return vault;
     }
 
@@ -220,23 +220,28 @@ public class CryptoVault implements Vault {
     }
 
     private VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
+        final MasterkeyFile masterkeyFile = this.readMasterkeyFile(session, masterkey);
         try {
-            final String token = new ContentReader(session).read(config);
-            return parseVaultConfigFromJWT(token).withMasterkeyFile(this.readMasterkeyFile(session, masterkey));
+            return parseVaultConfigFromJWT(new ContentReader(session).read(config))
+                    .withMasterkeyFile(masterkeyFile);
         }
         catch(NotfoundException e) {
-            log.debug("Ignore failure reading {}", config);
-            final MasterkeyFile mkfile = this.readMasterkeyFile(session, masterkey);
-            return new VaultConfig(mkfile.version,
-                    mkfile.version == VAULT_VERSION_DEPRECATED ?
-                            CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD :
-                            CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
-                    CryptorProvider.Scheme.SIV_CTRMAC, null, null).withMasterkeyFile(mkfile);
+            log.debug("Ignore failure reading vault configuration {}", config);
+            return parseVaultConfigFromMasterKey(masterkeyFile)
+                    .withMasterkeyFile(masterkeyFile);
         }
     }
 
+    private static VaultConfig parseVaultConfigFromMasterKey(final MasterkeyFile masterkeyFile) {
+        return new VaultConfig(masterkeyFile.version,
+                masterkeyFile.version == VAULT_VERSION_DEPRECATED ?
+                        CryptoFilenameV6Provider.DEFAULT_NAME_SHORTENING_THRESHOLD :
+                        CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
+                CryptorProvider.Scheme.SIV_CTRMAC, null, null);
+    }
 
-    public static VaultConfig parseVaultConfigFromJWT(final String token) {
+
+    private static VaultConfig parseVaultConfigFromJWT(final String token) {
         final DecodedJWT decoded = JWT.decode(token);
         return new VaultConfig(
                 decoded.getClaim(JSON_KEY_VAULTVERSION).asInt(),
@@ -245,13 +250,13 @@ public class CryptoVault implements Vault {
                 decoded.getAlgorithm(), decoded);
     }
 
-    private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path masterkey) throws BackgroundException {
-        log.debug("Read master key {}", masterkey);
-        try (Reader reader = new ContentReader(session).getReader(masterkey)) {
+    private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path file) throws BackgroundException {
+        log.debug("Read master key {}", file);
+        try(Reader reader = new ContentReader(session).getReader(file)) {
             return MasterkeyFile.read(reader);
         }
         catch(JsonParseException | IllegalArgumentException | IllegalStateException | IOException e) {
-            throw new VaultException(String.format("Failure reading vault master key file %s", masterkey.getName()), e);
+            throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
         }
     }
 
@@ -281,7 +286,7 @@ public class CryptoVault implements Vault {
             }
         }
         else {
-            credentials = new VaultCredentials(passphrase).withSaved(false);
+            credentials = new VaultCredentials(passphrase).setSaved(false);
         }
         try {
             this.open(vaultConfig, credentials.getPassword());
@@ -387,10 +392,7 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
-        if(this.isUnlocked()) {
-            return new SimplePathPredicate(file).test(home) || file.isChild(home);
-        }
-        return false;
+        return new SimplePathPredicate(file).test(home) || file.isChild(home);
     }
 
     @Override
@@ -425,7 +427,7 @@ public class CryptoVault implements Vault {
                 parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
                 filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
             }
-            final PathAttributes attributes = new PathAttributes(file.attributes());
+            final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
             attributes.setDirectoryId(null);
             if(!file.isFile() && !metadata) {
                 // The directory is different from the metadata file used to resolve the actual folder
@@ -458,8 +460,10 @@ public class CryptoVault implements Vault {
             encrypted.attributes().setDecrypted(file);
         }
         // Add reference for vault
-        file.attributes().setVault(home);
-        encrypted.attributes().setVault(home);
+        if(!new SimplePathPredicate(file).test(home)) {
+            file.attributes().setVault(home);
+            encrypted.attributes().setVault(home);
+        }
         return encrypted;
     }
 
@@ -482,7 +486,7 @@ public class CryptoVault implements Vault {
                 final String cleartextFilename = fileNameCryptor.decryptFilename(
                         vaultVersion == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
-                final PathAttributes attributes = new PathAttributes(file.attributes());
+                final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
                         final Permission permission = new Permission(attributes.getPermission());
@@ -502,8 +506,6 @@ public class CryptoVault implements Vault {
                 }
                 // Add reference to encrypted file
                 attributes.setEncrypted(file);
-                // Add reference for vault
-                attributes.setVault(home);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
                 type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
                 type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
@@ -512,6 +514,10 @@ public class CryptoVault implements Vault {
                 final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
                 if(type.contains(Path.Type.symboliclink)) {
                     decrypted.setSymlinkTarget(file.getSymlinkTarget());
+                }
+                if(!new SimplePathPredicate(decrypted).test(home)) {
+                    // Add reference for vault
+                    attributes.setVault(home);
                 }
                 return decrypted;
             }
@@ -630,19 +636,19 @@ public class CryptoVault implements Vault {
             }
             if(type == Touch.class) {
                 // Use default touch feature because touch with remote implementation will not add encrypted file header
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Write.class)), session._getFeature(Write.class), this);
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
             }
             if(type == Directory.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                        new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class), this) :
-                        new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class), this)
+                        new CryptoDirectoryV6Feature(session, (Directory) delegate, this) :
+                        new CryptoDirectoryV7Feature(session, (Directory) delegate, this)
                 );
             }
             if(type == Upload.class) {
-                return (T) new CryptoUploadFeature(session, (Upload) delegate, session._getFeature(Write.class), this);
+                return (T) new CryptoUploadFeature(session, (Upload) delegate, this);
             }
             if(type == Download.class) {
-                return (T) new CryptoDownloadFeature(session, (Download) delegate, session._getFeature(Read.class), this);
+                return (T) new CryptoDownloadFeature(session, (Download) delegate, this);
             }
             if(type == Read.class) {
                 return (T) new CryptoReadFeature(session, (Read) delegate, this);
@@ -694,7 +700,7 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
             }
             if(type == Bulk.class) {
-                return (T) new CryptoBulkFeature(session, (Bulk) delegate, session._getFeature(Delete.class), this);
+                return (T) new CryptoBulkFeature(session, (Bulk) delegate, this);
             }
             if(type == UnixPermission.class) {
                 return (T) new CryptoUnixPermission(session, (UnixPermission) delegate, this);

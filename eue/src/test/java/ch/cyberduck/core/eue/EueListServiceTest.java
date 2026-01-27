@@ -17,6 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -51,14 +52,14 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path root = new Path("/", EnumSet.of(directory));
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder.getParent(), new DisabledListProgressListener());
         assertNotNull(list.find(new SimplePathPredicate(folder)));
         for(Path bucket : list) {
             assertEquals(bucket.attributes(), new EueAttributesFinderFeature(session, fileid).find(bucket, new DisabledListProgressListener()));
         }
         assertNotNull(list.find(f -> f.attributes().getFileId().equals(EueResourceIdProvider.TRASH)));
-        assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new PathAttributes().setFileId("TRASH"))));
+        assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new DefaultPathAttributes().setFileId("TRASH"))));
         assertEquals(folder.attributes().getFileId(), list.find(new SimplePathPredicate(folder)).attributes().getFileId());
         assertSame(root, list.find(new SimplePathPredicate(folder)).getParent());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -74,7 +75,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
     @Test
     public void testListForSharedFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         createFile(fileid, file, RandomUtils.nextBytes(0));
         assertTrue(new EueFindFeature(session, fileid).find(file));
@@ -89,8 +90,8 @@ public class EueListServiceTest extends AbstractEueSessionTest {
     @Test
     public void testListForSharedFolder() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path folder2 = new EueDirectoryFeature(session, fileid).mkdir(new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+        final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path folder2 = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         assertTrue(new EueFindFeature(session, fileid).find(folder2));
         final ShareCreationResponseEntry shareCreationResponseEntry = createShare(fileid, folder2);
         final String shareName = shareCreationResponseEntry.getEntity().getName();
@@ -104,7 +105,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
     public void testListContainingFolder() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         final AtomicBoolean callback = new AtomicBoolean();
         assertTrue(new EueListService(session, fileid).list(folder, new DisabledListProgressListener() {
             @Override
@@ -115,7 +116,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         }).isEmpty());
         assertTrue(callback.get());
         final Path subfolder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         assertTrue(new EueListService(session, fileid).list(subfolder, new DisabledListProgressListener()).isEmpty());
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
@@ -131,11 +132,11 @@ public class EueListServiceTest extends AbstractEueSessionTest {
     public void testListContainingFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+                new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         assertTrue(new EueListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
         final String filename = String.format("%s%s", new AlphanumericRandomStringService().random(), new NFDNormalizer().normalize("ä"));
         final Path file = new EueTouchFeature(session, fileid)
-                .touch(new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
+                .touch(new EueWriteFeature(session, fileid), new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L));
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertNotNull(list.find(new DefaultPathPredicate(file)));

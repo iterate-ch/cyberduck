@@ -17,6 +17,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.CachingAttributesFinderFeature;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
@@ -76,7 +77,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path file = new S3TouchFeature(session, acl).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String initialVersion = file.attributes().getVersionId();
         assertNotNull(initialVersion);
         final PathAttributes lookup = f.find(file);
@@ -108,19 +109,19 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(file, status, new DisabledConnectionCallback());
         IOUtils.copy(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals(initialVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(initialVersion))).getVersionId());
+        assertEquals(initialVersion, f.find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(initialVersion))).getVersionId());
         final String newVersion = ((S3Object) out.getStatus()).getVersionId();
         try {
-            f.find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(newVersion)));
+            f.find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(newVersion)));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
         cache.clear();
-        assertEquals(newVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(newVersion))).getVersionId());
+        assertEquals(newVersion, f.find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(newVersion))).getVersionId());
         assertEquals(newVersion, f.find(file.withAttributes(PathAttributes.EMPTY)).getVersionId());
-        assertNotEquals(initialVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).setVersionId(newVersion))).getVersionId());
+        assertNotEquals(initialVersion, f.find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(newVersion))).getVersionId());
         assertEquals(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()).getVersionId(), f.find(file).getVersionId());
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

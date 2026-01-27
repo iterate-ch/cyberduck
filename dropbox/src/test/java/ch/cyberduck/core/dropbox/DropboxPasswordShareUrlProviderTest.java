@@ -47,19 +47,19 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
     @Ignore
     public void testSharePasswordProtected() throws Exception {
         final Path file = new DropboxTouchFeature(session).touch(
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
         final DescriptiveUrl url = provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new Credentials().withPassword(new AlphanumericRandomStringService().random());
+                return new Credentials().setPassword(new AlphanumericRandomStringService().random());
             }
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(url, provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new Credentials().withPassword(new AlphanumericRandomStringService().random());
+                return new Credentials().setPassword(new AlphanumericRandomStringService().random());
             }
         }));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
@@ -68,7 +68,7 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
     @Test
     public void testShareFileDownloadPublic() throws Exception {
         final Path file = new DropboxTouchFeature(session).touch(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
         final DescriptiveUrl url = provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
@@ -89,12 +89,12 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
     @Test
     public void testShareFileDownloadPassword() throws Exception {
         final Path file = new DropboxTouchFeature(session).touch(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
         assertThrows(InteroperabilityException.class, () -> provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                return new Credentials().withPassword(new AlphanumericRandomStringService().random());
+                return new Credentials().setPassword(new AlphanumericRandomStringService().random());
             }
         }));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
@@ -103,7 +103,7 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
     @Test
     public void testShareDownloadFolderPublic() throws Exception {
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
         final DescriptiveUrl url = provider.toDownloadUrl(folder, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
@@ -126,7 +126,7 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
         final Path root = new DefaultHomeFinderService(session).find();
         assertFalse(new DropboxPasswordShareFeature(session).isSupported(root, Share.Type.upload));
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
-                new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new DropboxWriteFeature(session), new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareFeature provider = new DropboxPasswordShareFeature(session);
         assertNotEquals(DescriptiveUrl.EMPTY, provider.toUploadUrl(folder, Share.Sharee.world, null, new DisabledPasswordCallback() {
             @Override

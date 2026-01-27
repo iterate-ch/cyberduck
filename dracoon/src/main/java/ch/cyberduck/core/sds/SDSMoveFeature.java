@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -102,7 +103,7 @@ public class SDSMoveFeature implements Move {
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);
                 // Copy original file attributes
-                return new Path(renamed).withAttributes(new PathAttributes(file.attributes()).setVersionId(String.valueOf(nodeId)));
+                return new Path(renamed).withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(String.valueOf(nodeId)));
             }
         }
         catch(ApiException e) {

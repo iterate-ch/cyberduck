@@ -15,7 +15,9 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -27,22 +29,19 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.http.ExecutionCountServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.stream.Collectors;
 
 import synapticloop.b2.B2ApiClient;
 import synapticloop.b2.exception.B2ApiException;
@@ -51,12 +50,10 @@ import synapticloop.b2.response.B2AuthorizeAccountResponse;
 public class B2Session extends HttpSession<B2ApiClient> {
     private static final Logger log = LogManager.getLogger(B2Session.class);
 
-    private final HostPreferences preferences = HostPreferencesFactory.get(host);
-
     private B2ErrorResponseInterceptor retryHandler;
 
     private final B2VersionIdProvider fileid = new B2VersionIdProvider(this);
-    private final B2ListService listService = new B2ListService(this, fileid);
+    private final AttributedList<Path> buckets = new AttributedList<>();
 
     public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -66,21 +63,22 @@ public class B2Session extends HttpSession<B2ApiClient> {
     protected B2ApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(
-                host, new ExecutionCountServiceUnavailableRetryStrategy(retryHandler = new B2ErrorResponseInterceptor(this, fileid))));
+                host, retryHandler = new B2ErrorResponseInterceptor(this, fileid)));
         configuration.addInterceptorLast(retryHandler);
         return new B2ApiClient(configuration.build());
     }
 
     @Override
-    public void logout() throws BackgroundException {
+    public void disconnect() throws BackgroundException {
         try {
+            fileid.clear();
             client.close();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            fileid.clear();
+            super.disconnect();
         }
     }
 
@@ -92,10 +90,10 @@ public class B2Session extends HttpSession<B2ApiClient> {
             // Save tokens for 401 error response when expired
             final B2AuthorizeAccountResponse response = client.authenticate(accountId, applicationKey);
             // When present, access is restricted to one bucket
-            if(StringUtils.isNotBlank(response.getBucketId())) {
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setVersionId(response.getBucketId());
-                listService.withBucket(new Path(PathNormalizer.normalize(response.getBucketName()), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
+            if(!response.getBuckets().isEmpty()) {
+                buckets.addAll(response.getBuckets().entrySet().stream().map(entry ->
+                        new Path(PathNormalizer.normalize(entry.getValue()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                                new DefaultPathAttributes().setVersionId(entry.getKey()))).collect(Collectors.toSet()));
             }
             retryHandler.setTokens(accountId, applicationKey, response.getAuthorizationToken());
             if(preferences.getBoolean("b2.upload.largeobject.auto")) {
@@ -120,7 +118,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) listService;
+            return (T) new B2ListService(this, fileid, buckets);
         }
         if(type == Touch.class) {
             return (T) new B2TouchFeature(this, fileid);
@@ -162,7 +160,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return (T) new B2AttributesFinderFeature(this, fileid);
         }
         if(type == AclPermission.class) {
-            return (T) new B2BucketTypeFeature(this, fileid);
+            return (T) new B2BucketTypeAclFeature(this, fileid);
         }
         if(type == Location.class) {
             return (T) new B2BucketTypeFeature(this, fileid);

@@ -59,7 +59,7 @@ public class DefaultDownloadFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session, acl).touch(
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
@@ -78,8 +78,8 @@ public class DefaultDownloadFeatureTest extends AbstractS3Test {
             test.attributes().setVersionId(((S3Object) out.getStatus()).getVersionId());
             final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
             final TransferStatus readStatus = new TransferStatus().setLength(content.length);
-            new DefaultDownloadFeature(new S3ReadFeature(session)).download(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            new DefaultDownloadFeature(session).download(
+                    new S3ReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 readStatus,
                 new DisabledConnectionCallback());
             final byte[] buffer = new byte[content.length];

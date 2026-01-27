@@ -16,9 +16,7 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -43,7 +41,6 @@ public class PromptPasswordCallback implements PasswordCallback {
             return;
         }
         alert.setPasswordFieldText(input);
-        alert.passwordFieldTextDidChange(NSNotification.notificationWithName(NSControl.NSControlTextDidChangeNotification, input));
         alert.closeSheetWithOption(SheetCallback.ALTERNATE_OPTION);
     }
 
@@ -52,7 +49,7 @@ public class PromptPasswordCallback implements PasswordCallback {
         if(suppressed) {
             throw new LoginCanceledException();
         }
-        final Credentials credentials = new Credentials().withSaved(options.save);
+        final Credentials credentials = new Credentials().setSaved(options.save);
         alert = new PasswordController(bookmark, credentials, title, reason, options);
         final int option = controller.alert(alert);
         if(option == SheetCallback.CANCEL_OPTION) {

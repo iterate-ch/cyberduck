@@ -65,11 +65,11 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
     public void testFind() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(room.attributes().getPermission().isExecutable());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
-                new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new StoregateWriteFeature(session, nodeid), new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new StoregateAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(attr, new StoregateAttributesFinderFeature(session, nodeid).find(new Path(test.getParent(), StringUtils.upperCase(test.getName()), test.getType())));
         assertEquals(attr, new StoregateAttributesFinderFeature(session, nodeid).find(new Path(test.getParent(), StringUtils.lowerCase(test.getName()), test.getType())));
@@ -90,9 +90,9 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
     public void testChangedNodeId() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                new StoregateWriteFeature(session, nodeid), new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getFileId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server

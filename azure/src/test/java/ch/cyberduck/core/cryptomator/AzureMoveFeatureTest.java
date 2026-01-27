@@ -28,10 +28,12 @@ import ch.cyberduck.core.azure.AzureMoveFeature;
 import ch.cyberduck.core.azure.AzureTouchFeature;
 import ch.cyberduck.core.azure.AzureWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -60,25 +62,25 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
-        final Path folder = cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session, null)).mkdir(
-                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path file = new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path folder = cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(
+                cryptomator.getFeature(session, Write.class, new AzureWriteFeature(session)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new CryptoTouchFeature<>(session, new AzureTouchFeature(session), cryptomator).touch(
+                new CryptoWriteFeature<>(session, new AzureWriteFeature(session), cryptomator), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
-        final Move move = cryptomator.getFeature(session, Move.class, new AzureMoveFeature(session, null));
+        final Move move = cryptomator.getFeature(session, Move.class, new AzureMoveFeature(session));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session, null)).find(file));
-        assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session, null)).find(fileRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(file));
+        assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session, null)).find(folder));
-        assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session, null)).find(folderRenamed));
+        assertFalse(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(folder));
+        assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
-        assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session, null)).find(fileRenamedInRenamedFolder));
-        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, null)).delete(Arrays.asList(
+        assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(fileRenamedInRenamedFolder));
+        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(
                 fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

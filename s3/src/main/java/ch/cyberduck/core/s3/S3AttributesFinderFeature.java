@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.CancellingListProgressListener;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -36,9 +37,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
-import java.util.Collections;
-
-import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 
 public class S3AttributesFinderFeature implements AttributesFinder {
     private static final Logger log = LogManager.getLogger(S3AttributesFinderFeature.class);
@@ -49,7 +47,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
 
     public S3AttributesFinderFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
     }
 
@@ -59,15 +57,15 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         if(containerService.isContainer(file)) {
-            final PathAttributes attributes = new PathAttributes();
+            final PathAttributes attributes = new DefaultPathAttributes();
             log.debug("Read location for bucket {}", file);
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
         }
         if(file.getType().contains(Path.Type.upload)) {
-            final Write.Append append = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl).append(file, new TransferStatus());
+            final Write.Append append = new S3MultipartUploadService(session, acl).append(file, new TransferStatus());
             if(append.append) {
-                return new PathAttributes().setSize(append.offset);
+                return new DefaultPathAttributes().setSize(append.offset);
             }
             throw new NotfoundException(file.getAbsolute());
         }
@@ -83,9 +81,8 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     case 405:
                         log.debug("Mark file {} as delete marker", file);
                         // Only DELETE method is allowed for delete markers
-                        attr = new PathAttributes();
-                        attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                        attr.setDuplicate(true);
+                        attr = new DefaultPathAttributes();
+                        attr.setTrashed(true);
                         return attr;
                 }
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -133,9 +130,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             }
             else {
                 if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.multipart.lookup")) {
-                    final Write.Append append = new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl).append(file, new TransferStatus());
+                    final Write.Append append = new S3MultipartUploadService(session, acl).append(file, new TransferStatus());
                     if(append.append) {
-                        return new PathAttributes().setSize(append.offset);
+                        return new DefaultPathAttributes().setSize(append.offset);
                     }
                 }
             }

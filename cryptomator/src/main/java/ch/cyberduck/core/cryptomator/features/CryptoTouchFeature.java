@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -37,24 +38,24 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     private final Touch<Reply> proxy;
     private final CryptoVault vault;
 
-    public CryptoTouchFeature(final Session<?> session, final Touch<Reply> proxy, final Write<Reply> writer, final CryptoVault cryptomator) {
+    public CryptoTouchFeature(final Session<?> session, final Touch<Reply> proxy, final CryptoVault cryptomator) {
         this.session = session;
-        this.proxy = proxy.withWriter(new CryptoWriteFeature<>(session, writer, cryptomator));
+        this.proxy = proxy;
         this.vault = cryptomator;
     }
 
     @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Write<Reply> writer, final Path file, final TransferStatus status) throws BackgroundException {
         // Write header
         final FileHeader header = vault.getFileHeaderCryptor().create();
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
-        final Path target = proxy.touch(vault.encrypt(session, file), new TransferStatus(status) {
+        final Path target = proxy.touch(writer, vault.encrypt(session, file), new TransferStatus(status) {
             @Override
             public TransferStatus setResponse(final PathAttributes attributes) {
                 status.setResponse(attributes);
                 // Will be converted back to clear text when decrypting file below set in default touch feature implementation using writer.
-                super.setResponse(new PathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                super.setResponse(new DefaultPathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
                 return this;
             }
         });

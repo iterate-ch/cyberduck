@@ -107,7 +107,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                         break;
                     default:
                         log.warn("Unknown key format for file {}", privKey.getName());
-                        throw new LoginFailureException(String.format("Unknown key format for file %s", privKey.getName()));
+                        return false;
                 }
                 provider.init(new InputStreamReader(privKey.getInputStream(), StandardCharsets.UTF_8),
                         pubKey != null ? new InputStreamReader(pubKey.getInputStream(), StandardCharsets.UTF_8) : null,

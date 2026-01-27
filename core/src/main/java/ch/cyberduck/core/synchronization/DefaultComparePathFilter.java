@@ -18,6 +18,7 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -67,7 +68,7 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                     return Comparison.equal;
                 }
                 final PathAttributes remote = attribute.find(file);
-                final PathAttributes current = new PathAttributes()
+                final PathAttributes current = new DefaultPathAttributes()
                         .setModificationDate(local.attributes().getModificationDate())
                         .setSize(local.attributes().getSize());
                 // We must always compare the size because the download filter will have already created a temporary 0 byte file
