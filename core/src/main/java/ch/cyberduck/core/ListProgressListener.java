@@ -43,6 +43,11 @@ public interface ListProgressListener extends ProgressListener {
         //
     }
 
+    @Override
+    default void message(String message) {
+        //
+    }
+
     /**
      * Reset listener status for reuse
      *
