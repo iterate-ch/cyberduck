@@ -20,11 +20,20 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.security.PublicKey;
 
 public interface HostKeyCallback {
 
+    /**
+     * Verifies the given public key for the specified host.
+     *
+     * @param hostname the host for which the key verification is to be performed
+     * @param key      the public key to be verified
+     * @return true if the key is verified successfully, false otherwise
+     * @throws ConnectionCanceledException Verification canceled by user
+     * @throws BackgroundException         Unknown verification failure
+     */
     boolean verify(Host hostname, PublicKey key) throws BackgroundException;
-
 }
