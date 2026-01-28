@@ -175,7 +175,7 @@ public class SFTPSession extends Session<SSHClient> {
         connection.setSocketFactory(new ProxySocketFactory(host));
         connection.addHostKeyVerifier(new HostKeyVerifier() {
             @Override
-            public boolean verify(String hostname, int port, PublicKey publicKey) {
+            public boolean verify(final String hostname, final int port, final PublicKey publicKey) {
                 try {
                     return key.verify(host, publicKey);
                 }
