@@ -200,7 +200,6 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     log.warn("Ignore failure {} running Personal Agent Context Service (PACS) request", e.getMessage());
                 }
             }
-            userShares.set(this.userShares());
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map(e);
@@ -237,13 +236,13 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         this.basePath = basePath;
     }
 
-    public UserSharesModel userShares() throws BackgroundException {
+    public UserSharesModel userShares() {
         if(userShares.get() == null) {
             try {
                 userShares.set(new GetUserSharesApi(new EueApiClient(this)).shareGet(null, null));
             }
             catch(ApiException e) {
-                throw new EueExceptionMappingService().map(e);
+                log.warn("Failure {} retrieving user shares", e.toString());
             }
         }
         return userShares.get();
@@ -298,7 +297,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             return (T) new EueThresholdUploadService(this, resourceid, registry);
         }
         if(type == UrlProvider.class) {
-            return (T) new EueShareUrlProvider(host, userShares.get());
+            return (T) new EueShareUrlProvider(host, this.userShares());
         }
         if(type == Share.class) {
             return (T) new EueShareFeature(this, resourceid);
