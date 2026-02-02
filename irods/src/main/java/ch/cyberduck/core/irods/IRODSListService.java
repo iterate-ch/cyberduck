@@ -1,8 +1,8 @@
 package ch.cyberduck.core.irods;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,11 +13,10 @@ package ch.cyberduck.core.irods;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -26,18 +25,15 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.Checksum;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.pub.domain.ObjStat;
-import org.irods.jargon.core.pub.io.IRODSFile;
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.vfs.CollectionEntry;
+import org.irods.irods4j.high_level.vfs.IRODSCollectionIterator;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
+import org.irods.irods4j.low_level.api.IRODSException;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.EnumSet;
 
 public class IRODSListService implements ListService {
@@ -51,34 +47,48 @@ public class IRODSListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            final AttributedList<Path> children = new AttributedList<Path>();
-            final IRODSFileSystemAO fs = session.getClient();
-            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(directory.getAbsolute());
-            if(!f.exists()) {
-                throw new NotfoundException(directory.getAbsolute());
+            final IRODSConnection conn = session.getClient();
+
+            String logicalPath = directory.getAbsolute();
+            if(!IRODSFilesystem.exists(conn.getRcComm(), logicalPath)) {
+                throw new NotfoundException(logicalPath);
             }
-            for(File file : fs.getListInDirWithFileFilter(f, TrueFileFilter.TRUE)) {
-                final String normalized = PathNormalizer.normalize(file.getAbsolutePath(), true);
+
+            final AttributedList<Path> children = new AttributedList<Path>();
+
+            for(CollectionEntry entry : new IRODSCollectionIterator(conn.getRcComm(), logicalPath)) {
+                final String normalized = PathNormalizer.normalize(entry.path(), true);
                 if(StringUtils.equals(normalized, directory.getAbsolute())) {
                     continue;
                 }
-                final PathAttributes attributes = new DefaultPathAttributes();
-                final ObjStat stats = fs.getObjStat(file.getAbsolutePath());
-                attributes.setModificationDate(stats.getModifiedAt().getTime());
-                attributes.setCreationDate(stats.getCreatedAt().getTime());
-                attributes.setSize(stats.getObjSize());
-                attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(stats.getChecksum()))));
-                attributes.setOwner(stats.getOwnerName());
-                attributes.setGroup(stats.getOwnerZone());
-                children.add(new Path(directory, PathNormalizer.name(normalized),
-                        file.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
-                        attributes));
+
+                PathAttributes attrs = new DefaultPathAttributes();
+                attrs.setCreationDate(entry.createdAt() * 1000L);
+                attrs.setModificationDate(entry.modifiedAt() * 1000L);
+
+                EnumSet<Path.Type> type = EnumSet.of(Path.Type.file);
+
+                if(entry.isCollection()) {
+                    attrs.setDirectoryId(entry.id());
+                    type = EnumSet.of(Path.Type.directory);
+                }
+                else if(entry.isDataObject()) {
+                    attrs.setFileId(entry.id());
+                    attrs.setSize(entry.dataSize());
+                    attrs.setChecksum(IRODSChecksumUtils.toChecksum(entry.checksum()));
+                }
+
+                children.add(new Path(directory, PathNormalizer.name(normalized), type, attrs));
                 listener.chunk(directory, children);
             }
+
             return children;
         }
-        catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map("Listing directory {0} failed", e, directory);
+        catch(IRODSException e) {
+            throw new IRODSExceptionMappingService().map("Listing {0} failed", e, directory);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Listing {0} failed", e, directory);
         }
     }
 }

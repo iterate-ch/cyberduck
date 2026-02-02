@@ -25,6 +25,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.irods</groupId>
+            <artifactId>irods4j</artifactId>
+            <version>0.6.0-java8</version>
+        </dependency>
+        <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
@@ -37,40 +42,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.iterate.jargon</groupId>
-            <artifactId>jargon-core</artifactId>
-            <version>4.2.0.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.claymoresystems</groupId>
-                    <artifactId>puretls</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.globus.jglobus</groupId>
-                    <artifactId>cog-jglobus</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.perf4j</groupId>
-                    <artifactId>perf4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>testcontainers</artifactId>
+            <groupId>org.testcontainers</groupId>
+            <version>2.0.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
 

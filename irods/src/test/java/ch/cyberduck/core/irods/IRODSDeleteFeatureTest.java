@@ -30,8 +30,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
-import ch.cyberduck.test.VaultTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -44,14 +43,14 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
-public class IRODSDeleteFeatureTest extends VaultTest {
+@Category(TestcontainerTest.class)
+public class IRODSDeleteFeatureTest extends IRODSDockerComposeManager {
 
     @Test
     public void testDeleteDirectory() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -76,7 +75,7 @@ public class IRODSDeleteFeatureTest extends VaultTest {
     public void testDeleteNotFound() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
