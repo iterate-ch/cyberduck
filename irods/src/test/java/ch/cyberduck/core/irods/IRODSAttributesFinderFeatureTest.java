@@ -29,8 +29,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
-import ch.cyberduck.test.VaultTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -43,14 +42,14 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-@Category(IntegrationTest.class)
-public class IRODSAttributesFinderFeatureTest extends VaultTest {
+@Category(TestcontainerTest.class)
+public class IRODSAttributesFinderFeatureTest extends IRODSDockerComposeManager {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -64,7 +63,7 @@ public class IRODSAttributesFinderFeatureTest extends VaultTest {
     public void testFind() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
@@ -81,8 +80,6 @@ public class IRODSAttributesFinderFeatureTest extends VaultTest {
         assertEquals(folderTimestamp, f.find(folder).getModificationDate());
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        assertEquals("iterate", attributes.getOwner());
-        assertEquals("iplant", attributes.getGroup());
         new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new IRODSFindFeature(session).find(test));
         session.close();

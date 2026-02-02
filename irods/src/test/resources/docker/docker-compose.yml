@@ -1,0 +1,27 @@
+name: cyberduck-irods-testing
+
+services:
+  irods-catalog:
+    build:
+      context: irods_catalog
+    environment:
+      - POSTGRES_PASSWORD=testpassword
+    restart: always
+
+  irods-catalog-provider:
+    build:
+      context: irods_catalog_provider
+    init: true
+    ports:
+      - "1347:1247"
+    shm_size: 100mb
+    healthcheck:
+      test: ["CMD", 'echo -e "\x00\x00\x00\x33<MsgHeader_PI><type>HEARTBEAT</type></MsgHeader_PI>" | (exec 3<>/dev/tcp/127.0.0.1/1247; cat >&3; cat <&3; exec 3<&-)']
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+      start_interval: 10s
+    restart: always
+    depends_on:
+      - irods-catalog

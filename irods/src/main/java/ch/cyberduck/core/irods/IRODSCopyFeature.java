@@ -1,8 +1,8 @@
 package ch.cyberduck.core.irods;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,25 +13,22 @@ package ch.cyberduck.core.irods;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
-import org.apache.commons.lang3.StringUtils;
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.DataTransferOperations;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.transfer.DefaultTransferControlBlock;
-import org.irods.jargon.core.transfer.TransferStatus;
-import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
+import org.irods.irods4j.low_level.api.IRODSException;
+
+import java.io.IOException;
 import java.util.EnumSet;
 
 public class IRODSCopyFeature implements Copy {
@@ -43,36 +40,27 @@ public class IRODSCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status,
+                     final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.getClient();
-            final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
-                .getDataTransferOperations(fs.getIRODSAccount());
-            transfer.copy(fs.getIRODSFileFactory().instanceIRODSFile(source.getAbsolute()),
-                fs.getIRODSFileFactory().instanceIRODSFile(target.getAbsolute()), new TransferStatusCallbackListener() {
-                    @Override
-                    public FileStatusCallbackResponse statusCallback(final TransferStatus transferStatus) {
-                        return FileStatusCallbackResponse.CONTINUE;
-                    }
+            final IRODSConnection conn = session.getClient();
+            final String from = source.getAbsolute();
+            final String to = target.getAbsolute();
 
-                    @Override
-                    public void overallStatusCallback(final TransferStatus transferStatus) {
-                        switch(transferStatus.getTransferState()) {
-                            case OVERALL_COMPLETION:
-                                listener.sent(status.getLength());
-                        }
-                    }
+            int options = IRODSFilesystem.CopyOptions.RECURSIVE;
+            if(status.isExists()) {
+                options |= IRODSFilesystem.CopyOptions.OVERWRITE_EXISTING;
+            }
 
-                    @Override
-                    public CallbackResponse transferAsksWhetherToForceOperation(final String irodsAbsolutePath, final boolean isCollection) {
-                        return CallbackResponse.YES_THIS_FILE;
-                    }
-                }, DefaultTransferControlBlock.instance(StringUtils.EMPTY,
-                            HostPreferencesFactory.get(session.getHost()).getInteger("connection.retry")));
+            IRODSFilesystem.copy(conn.getRcComm(), from, to, options);
+
             return target;
         }
-        catch(JargonException e) {
+        catch(IRODSException e) {
             throw new IRODSExceptionMappingService().map("Cannot copy {0}", e, source);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
 

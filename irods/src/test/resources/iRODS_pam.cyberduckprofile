@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>irods</string>
+        <key>Vendor</key>
+        <string>iRODS Consortium</string>
+        <key>Description</key>
+        <string>iRODS (Integrated Rule-Oriented Data System)</string>
+
+        <key>Hostname Configurable</key>
+        <false/>
+        <key>Port Configurable</key>
+        <false/>
+
+        <key>Default Hostname</key>
+        <string>localhost</string>
+        <key>Default Port</key>
+        <string>1447</string>
+
+        <key>Username Placeholder</key>
+        <string>iRODS username</string>
+        <key>Password Placeholder</key>
+        <string>iRODS password</string>
+
+        <key>Region</key>
+        <string>tempZone</string>
+
+        <key>Authorization</key>
+        <string>pam_password</string>
+
+        <key>Properties</key>
+        <dict>
+            <key>Client Server Negotiation</key>
+            <string>CS_NEG_REQUIRE</string>
+        </dict>
+    </dict>
+</plist>
