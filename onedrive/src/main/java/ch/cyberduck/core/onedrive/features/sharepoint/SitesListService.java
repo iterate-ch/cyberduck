@@ -99,7 +99,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
     }
 
     private static boolean isInvalid(final String input) {
-        if(input == null || input.length() == 0) {
+        if(input == null || input.isEmpty()) {
             // fast fallback, empty strings
             return false;
         }
@@ -110,7 +110,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
             }
             return false;
         }
-        catch(IllegalArgumentException illegalArgumentException) {
+        catch(IllegalArgumentException e) {
             // invalid UUID, possibly bad.
             return true;
         }
@@ -136,23 +136,19 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
                     return file != test && file.getName().equals(test.getName());
                 }
             });
-            if(result.size() > 0) {
+            if(!result.isEmpty()) {
                 final Set<Integer> set = duplicates.getOrDefault(file.getName(), new HashSet<>());
                 set.add(i);
                 duplicates.put(file.getName(), set);
             }
         }
-
         for(Set<Integer> set : duplicates.values()) {
             for(Integer i : set) {
                 final Path file = list.get(i);
-
                 final URI webLink = URI.create(file.attributes().getLink().getUrl());
                 final String[] path = webLink.getPath().split(String.valueOf(Path.DELIMITER));
                 final String suffix = path[path.length - 2];
-
                 final Path rename = new Path(file.getParent(), String.format("%s (%s)", file.getName(), suffix), file.getType(), file.attributes());
-
                 list.set(i, rename);
             }
         }
