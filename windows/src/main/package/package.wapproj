@@ -60,6 +60,7 @@
     <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
     <ItemGroup>
         <ProjectReference Include="..\csharp\Cyberduck.csproj" />
+        <PackageReference Include="IKVM" ExcludeAssets="build;buildTransitive;buildMultiTargeting" />
     </ItemGroup>
 
     <Target Name="ResolveLocalPackagePayload" BeforeTargets="_GenerateAppxPackageRecipeFile" Returns="@(AppxPackagePayload)">

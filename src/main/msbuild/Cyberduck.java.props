@@ -22,9 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IKVM">
-      <PrivateAssets>build;buildMultitargeting;buildTransitive</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="IKVM" />
   </ItemGroup>
 
 </Project>
