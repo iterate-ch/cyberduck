@@ -89,8 +89,6 @@ public abstract class WindowController extends BundleController implements NSWin
         this.window.recalculateKeyViewLoop();
         this.window.setReleasedWhenClosed(true);
         this.window.setDelegate(this.id());
-        this.window.setCollectionBehavior(window.collectionBehavior()
-                | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorTransient);
     }
 
     public NSWindow window() {
@@ -202,6 +200,8 @@ public abstract class WindowController extends BundleController implements NSWin
     @Delegate
     public void windowWillClose(final NSNotification notification) {
         window.endEditingFor(null);
+        // Workaround for macOS 26.x bug where closed windows leave an invisible rect that intercepts mouse events
+        window.setFrame_display_animate(new NSRect(new NSPoint(0, 0), new NSSize(0, 0)), false, false);
         log.debug("Window will close {}", notification);
         for(WindowListener listener : listeners.toArray(new WindowListener[listeners.size()])) {
             listener.windowWillClose();
