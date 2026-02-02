@@ -243,6 +243,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             }
             catch(ApiException e) {
                 log.warn("Failure {} retrieving user shares", e.toString());
+                userShares.set(new UserSharesModel());
             }
         }
         return userShares.get();
