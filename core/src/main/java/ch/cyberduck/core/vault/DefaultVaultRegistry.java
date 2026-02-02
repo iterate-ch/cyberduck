@@ -84,7 +84,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
                 return true;
             }
             if(recursive) {
-                return vault.contains(directory);
+                if(vault.contains(directory)) {
+                    return true;
+                }
             }
         }
         return false;
