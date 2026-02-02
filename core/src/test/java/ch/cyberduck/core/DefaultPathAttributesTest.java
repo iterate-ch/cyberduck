@@ -13,11 +13,11 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class PathAttributesTest {
+public class DefaultPathAttributesTest {
 
     @Test
     public void testCopy() {
-        final PathAttributes attributes = new DefaultPathAttributes();
+        final DefaultPathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(1L);
         attributes.setQuota(new Quota.Space(1L, 10L));
         attributes.setModificationDate(System.currentTimeMillis());
@@ -31,10 +31,11 @@ public class PathAttributesTest {
         attributes.setVerdict(PathAttributes.Verdict.pending);
         attributes.setTrashed(true);
         attributes.setHidden(true);
-        final PathAttributes clone = new DefaultPathAttributes(attributes);
+        final DefaultPathAttributes clone = new DefaultPathAttributes(attributes);
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
         assertEquals(clone, attributes);
+        assertEquals(clone.hashCode(), attributes.hashCode());
         attributes.setSize(2L);
         assertEquals(1L, clone.getSize());
         attributes.setVersionId("b");
@@ -49,7 +50,7 @@ public class PathAttributesTest {
 
     @Test
     public void testPermissions() {
-        final PathAttributes attributes = new DefaultPathAttributes();
+        final DefaultPathAttributes attributes = new DefaultPathAttributes();
         assertNull(attributes.getOwner());
         assertNull(attributes.getGroup());
         assertNotNull(attributes.getPermission());
@@ -60,16 +61,18 @@ public class PathAttributesTest {
     @Test
     public void testEquals() {
         assertEquals(new DefaultPathAttributes(), new DefaultPathAttributes());
-        final PathAttributes r1 = new DefaultPathAttributes();
+        assertEquals(new DefaultPathAttributes().hashCode(), new DefaultPathAttributes().hashCode());
+        final DefaultPathAttributes r1 = new DefaultPathAttributes();
         r1.setVersionId("r1");
-        final PathAttributes r2 = new DefaultPathAttributes();
+        final DefaultPathAttributes r2 = new DefaultPathAttributes();
         r2.setVersionId("r2");
         assertNotEquals(r1, r2);
+        assertNotEquals(r1.hashCode(), r2.hashCode());
     }
 
     @Test
     public void testSerialize() {
-        final PathAttributes attributes = new DefaultPathAttributes();
+        final DefaultPathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(100);
         attributes.setModificationDate(System.currentTimeMillis());
         attributes.setPermission(new Permission("644"));
@@ -104,6 +107,7 @@ public class PathAttributesTest {
         assertEquals(attributes.getVerdict(), deserialized.getVerdict());
         assertEquals(attributes.getCustom(), deserialized.getCustom());
         assertEquals(attributes, deserialized);
+        assertEquals(attributes.hashCode(), deserialized.hashCode());
         assertFalse(deserialized.isTrashed());
         assertTrue(deserialized.isHidden());
     }

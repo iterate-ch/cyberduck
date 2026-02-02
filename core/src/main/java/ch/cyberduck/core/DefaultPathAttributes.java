@@ -674,10 +674,10 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
             return false;
         }
         final DefaultPathAttributes that = (DefaultPathAttributes) o;
-        if(modified != that.modified) {
+        if(size != that.size) {
             return false;
         }
-        if(size != that.size) {
+        if(modified != that.modified) {
             return false;
         }
         if(!Objects.equals(checksum, that.checksum)) {
@@ -698,7 +698,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         if(!Objects.equals(revision, that.revision)) {
             return false;
         }
-        if(!Objects.equals(vault, that.vault)) {
+        if(!Objects.equals(verdict, that.verdict)) {
             return false;
         }
         if(!Objects.equals(lockId, that.lockId)) {
@@ -711,14 +711,13 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     public int hashCode() {
         int result = (int) (size ^ (size >>> 32));
         result = 31 * result + (int) (modified ^ (modified >>> 32));
+        result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
         result = 31 * result + (permission != null ? permission.hashCode() : 0);
         result = 31 * result + (acl != null ? acl.hashCode() : 0);
-        result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
         result = 31 * result + (fileId != null ? fileId.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
         result = 31 * result + (verdict != null ? verdict.hashCode() : 0);
-        result = 31 * result + (vault != null ? vault.hashCode() : 0);
         result = 31 * result + (lockId != null ? lockId.hashCode() : 0);
         return result;
     }
