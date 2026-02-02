@@ -19,12 +19,12 @@
     <RuntimeIdentifier Condition=" '$(RuntimeIdentifier)'=='win7-x64'">win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
-  <Target Name="SignIntermediateAssembly" AfterTargets="CoreCompile" DependsOnTargets="UsesSignTool" Condition="'$(SignOutput)'=='true'">
-    <Exec Command="$(SignTool) &quot;@(IntermediateAssembly)&quot;" EnvironmentVariables="$(SignToolPath)" />
+  <Target Name="SignIntermediateAssembly" AfterTargets="CoreCompile" DependsOnTargets="SignToolArgs" Condition="'$(SignOutput)'=='true'">
+    <Exec Command="$(SignToolArgs) &quot;@(IntermediateAssembly)&quot;" EnvironmentVariables="@(SignToolPath)" />
   </Target>
 
-  <Target Name="SignAppHost" BeforeTargets="Compile" DependsOnTargets="_CreateAppHost;UsesSignTool" Condition="'$(AppHostIntermediatePath)'!='' And '$(SignOutput)'=='true'">
-    <Exec Command="$(SignTool) &quot;$(AppHostIntermediatePath)&quot;" EnvironmentVariables="$(SignToolPath)" />
+  <Target Name="SignAppHost" BeforeTargets="Compile" DependsOnTargets="_CreateAppHost;SignToolArgs" Condition="'$(AppHostIntermediatePath)'!='' And '$(SignOutput)'=='true'">
+    <Exec Command="$(SignToolArgs) &quot;$(AppHostIntermediatePath)&quot;" EnvironmentVariables="@(SignToolPath)" />
   </Target>
 
   <PropertyGroup Condition=" '$(NETCoreSdkVersion)'!='' ">

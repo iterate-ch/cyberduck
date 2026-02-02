@@ -2,16 +2,8 @@
 
   <Import Project="Cyberduck.References.props" />
 
-  <Target Name="UsesSignTool" Outputs="$(SignTool);$(SignToolPath)">
-    <ItemGroup>
-      <SignToolPath Include="$(WindowsSDK_ExecutablePath)" />
-    </ItemGroup>
-    <PropertyGroup>
-      <SignTool>SignTool.exe sign /d "$(AppName)" /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n "iterate GmbH"</SignTool>
-      <SignToolPath>PATH=@(SignToolPath, '%3B')</SignToolPath>
-    </PropertyGroup>
-  </Target>
-
   <Import Project="Cyberduck.NuGet.targets" />
+
+  <Import Project="Cyberduck.Sign.targets" />
 
 </Project>

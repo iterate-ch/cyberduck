@@ -7,6 +7,6 @@
     </DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\csharp\duck.csproj" SetPlatform="$(Platform)" Publish="true" />
+    <ProjectReference Include="..\..\csharp\duck.csproj" SetPlatform="Platform=$(Platform)" Publish="true" />
   </ItemGroup>
 </Project>

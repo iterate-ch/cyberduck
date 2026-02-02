@@ -48,4 +48,9 @@
     <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <Import Project="Cyberduck.MSVC.Toolset.props" />
+
 </Project>

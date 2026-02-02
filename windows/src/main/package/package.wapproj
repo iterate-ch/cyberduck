@@ -74,12 +74,12 @@
             <AppxPackagePayloadExecutable Include="@(AppxPackagePayload)" Condition="'%(Extension)'=='.dll' Or '%(Extension)'=='.exe'" />
         </ItemGroup>
     </Target>
-    <Target Name="SignToolExecutablePath" DependsOnTargets="_GetSdkToolPaths" Returns="$(SignToolExecutablePath)">
+    <Target Name="SignToolExecutableName" DependsOnTargets="_GetSdkToolPaths" Returns="$(SignToolExecutableName)">
         <PropertyGroup>
-            <SignToolExecutable>$(SignAppxPackageExeFullPath)</SignToolExecutable>
+            <SignToolExecutableName>$(SignAppxPackageExeFullPath)</SignToolExecutableName>
         </PropertyGroup>
     </Target>
-    <Target Name="_CollectSignAppxPackagePayload" DependsOnTargets="AppxPackagePayloadExecutable;SignToolExecutablePath" Outputs="%(AppxPackagePayloadExecutable.Identity)">
+    <Target Name="_CollectSignAppxPackagePayload" DependsOnTargets="AppxPackagePayloadExecutable;SignToolExecutableName" Outputs="%(AppxPackagePayloadExecutable.Identity)">
         <Exec Command="%22$(SignToolExecutable)%22 verify /q /pa %22%(AppxPackagePayloadExecutable.Identity)%22"
             IgnoreStandardErrorWarningFormat="true"
             IgnoreExitCode="true">

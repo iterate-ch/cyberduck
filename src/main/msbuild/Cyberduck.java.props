@@ -18,11 +18,13 @@
       IKVM0111: Emitted NoClassDefFoundError
     -->
     <NoWarn>IKVM0100;IKVM0101;IKVM0105;IKVM0111;$(NoWarn)</NoWarn>
-    <AfterMicrosoftNETSdkTargets>$(MSBuildThisFileDirectory)Cyberduck.java.After.targets</AfterMicrosoftNETSdkTargets>
+    <AfterMicrosoftNETSdkTargets>$(MSBuildThisFileDirectory)Cyberduck.java.After.targets;$(AfterMicrosoftNETSdkTargets)</AfterMicrosoftNETSdkTargets>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IKVM" />
+    <PackageReference Include="IKVM">
+      <PrivateAssets>build;buildMultitargeting;buildTransitive</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
