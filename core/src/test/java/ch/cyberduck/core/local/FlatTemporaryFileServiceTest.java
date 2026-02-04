@@ -54,11 +54,11 @@ public class FlatTemporaryFileServiceTest {
     public void testCreateFile() {
         final String temp = StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), File.separator);
         final String s = FileSystems.getDefault().getSeparator();
-        assertEquals(String.format("%s%su%s-196513505-f", temp, s, s),
+        assertEquals(String.format("%s%su%s1742810335-f", temp, s, s),
                 new FlatTemporaryFileService().create("u", new Path("/p/f", EnumSet.of(Path.Type.file))).getAbsolute());
         final Path file = new Path("/p/f", EnumSet.of(Path.Type.file));
         file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%s-196513505-f", temp, s, s),
+        assertEquals(String.format("%s%su%s1742810335-f", temp, s, s),
                 new FlatTemporaryFileService().create("u", file).getAbsolute());
     }
 
@@ -68,7 +68,7 @@ public class FlatTemporaryFileServiceTest {
         final String s = FileSystems.getDefault().getSeparator();
         final Path file = new Path("/container", EnumSet.of(Path.Type.directory));
         file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%s-196513505-container", temp, s, s),
+        assertEquals(String.format("%s%su%s1742810335-container", temp, s, s),
                 new FlatTemporaryFileService().create("u", file).getAbsolute());
     }
 
@@ -100,7 +100,7 @@ public class FlatTemporaryFileServiceTest {
         final Local local = new FlatTemporaryFileService().create("UID", file);
         assertTrue(local.getParent().exists());
         final String localFile = local.getAbsolute();
-        assertEquals(String.format("%s/%s/1234944045-%s", temp, "UID", testPathFile).replace('/', File.separatorChar), localFile);
+        assertEquals(String.format("%s/%s/1788986385-%s", temp, "UID", testPathFile).replace('/', File.separatorChar), localFile);
         assertNotEquals(String.format("%s/%s%s/2/1234944045-%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
     }
 
