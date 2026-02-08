@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -33,8 +34,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -94,6 +97,40 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             return false;
         }).map(Map.Entry::getValue).findFirst().orElse(StringUtils.isBlank(host.getCredentials().getUsername()) ? profiles.get("default") : null);
         if(null != profile) {
+            if(profile.isProcessBasedProfile()) {
+                // Uses external process to retrieve temporary credentials
+                final String command = profile.getCredentialProcess();
+                final ObjectMapper mapper = JsonMapper.builder()
+                        .serializationInclusion(Include.NON_NULL)
+                        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+                        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                        .visibility(PropertyAccessor.FIELD, Visibility.ANY).build();
+                List<String> cmd = new ArrayList<>();
+                switch(Factory.Platform.getDefault()) {
+                    case windows:
+                        cmd.add("cmd");
+                        cmd.add("/c");
+                        break;
+                    default:
+                        cmd.add("sh");
+                        cmd.add("-c");
+                        break;
+                }
+                cmd.add(command);
+                final ProcessBuilder builder = new ProcessBuilder(cmd);
+                try {
+                    final Process process = builder.start();
+                    try(InputStream reader = process.getInputStream()) {
+                        final CachedCredential cached = mapper.readValue(reader, CachedCredential.class);
+                        return credentials.setTokens(new TemporaryAccessTokens(
+                                cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
+                    }
+                }
+                catch(IOException e) {
+                    log.warn("Failure \"{}\" parsing cached credentials from {}", e.getMessage(), command);
+                    return credentials;
+                }
+            }
             if(profile.isRoleBasedProfile()) {
                 log.debug("Configure credentials from role based profile {}", profile.getProfileName());
                 if(StringUtils.isBlank(profile.getRoleSourceProfile())) {
