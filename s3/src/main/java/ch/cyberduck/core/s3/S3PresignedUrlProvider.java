@@ -22,6 +22,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
@@ -86,7 +87,9 @@ public class S3PresignedUrlProvider {
             }
         }.createSignedUrlUsingSignatureVersion(
                 session.getSignatureVersion().toString(),
-                region, method, bucket, key, null, null, expiry / 1000, false, true,
+                region, method,
+                preferences.getBoolean("s3.bucket.virtualhost.disable") ? URIEncoder.encode(bucket) : bucket,
+                key, null, null, expiry / 1000, false, true,
                 preferences.getBoolean("s3.bucket.virtualhost.disable"));
     }
 }
