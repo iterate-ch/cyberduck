@@ -98,7 +98,15 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * Add default metadata
      */
     protected S3Object getDetails(final Path file, final TransferStatus status) {
-        final S3Object object = new S3Object(containerService.getKey(file));
+        final S3Object object = new S3Object(containerService.getKey(file)) {
+            @Override
+            public long getContentLength() {
+                if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
+                    return status.getLength();
+                }
+                return super.getContentLength();
+            }
+        };
         final String mime = status.getMime();
         if(StringUtils.isNotBlank(mime)) {
             object.setContentType(mime);
@@ -144,9 +152,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             // Interoperable with rsync
             final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_CREATION_DATE, status.getCreated());
             object.addMetadata(String.format("%s%s", session.getRestMetadataPrefix(), header.getName()), header.getValue());
-        }
-        if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
-            object.setContentLength(status.getLength());
         }
         return object;
     }

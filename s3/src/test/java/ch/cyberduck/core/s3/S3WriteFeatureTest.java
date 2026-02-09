@@ -33,7 +33,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        final byte[] content = RandomUtils.nextBytes(1033);
+        final byte[] content = RandomUtils.nextBytes(RandomUtils.nextInt(1, 2096));
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
         status.setAcl(Acl.CANNED_PUBLIC_READ);
@@ -51,7 +51,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setModified(1630305150672L).setCreated(1695159781972L);
-        final byte[] content = RandomUtils.nextBytes(1033);
+        final byte[] content = RandomUtils.nextBytes(RandomUtils.nextInt(1, 2096));
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -84,7 +84,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
+        final byte[] content = RandomUtils.nextBytes(RandomUtils.nextInt(1, 2096));
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         try {
             feature.write(file, status, new DisabledConnectionCallback());
@@ -109,7 +109,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
+        final byte[] content = RandomUtils.nextBytes(RandomUtils.nextInt(1, 2096));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
@@ -146,7 +146,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
+        final byte[] content = RandomUtils.nextBytes(RandomUtils.nextInt(1, 2096));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
@@ -162,17 +162,18 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     }
 
     @Test
-    public void testWriteAWS4Signature() throws Exception {
+    public void testWrite() throws Exception {
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
+        final byte[] content = RandomUtils.nextBytes(1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
+        assertEquals(content.length, status.getResponse().getSize());
         final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(status.getResponse().getETag(), attr.getETag());
@@ -181,11 +182,30 @@ public class S3WriteFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    public void testWriteVirtualHostBucket() throws Exception {
+        final S3WriteFeature feature = new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost));
+        final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] content = RandomUtils.nextBytes(1024);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        assertEquals(content.length, status.getResponse().getSize());
+        final PathAttributes attr = new S3AttributesFinderFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).find(file);
+        assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
+        assertEquals(status.getResponse().getETag(), attr.getETag());
+        assertEquals(content.length, attr.getSize());
+        new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testWriteVersionedBucket() throws Exception {
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
+        final byte[] content = RandomUtils.nextBytes(RandomUtils.nextInt(1, 2096));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
