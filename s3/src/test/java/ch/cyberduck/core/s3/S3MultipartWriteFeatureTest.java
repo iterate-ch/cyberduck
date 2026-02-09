@@ -48,6 +48,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         in.close();
         out.close();
         assertNotNull(out.getStatus());
+        assertEquals(content.length, status.getResponse().getSize());
         assertEquals(content.length, out.getStatus().getContentLength());
         assertTrue(new S3FindFeature(session, acl).find(file));
         final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(file);
@@ -78,6 +79,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         in.close();
         out.close();
         assertNotNull(out.getStatus());
+        assertEquals(content.length, status.getResponse().getSize());
         assertEquals(content.length, out.getStatus().getContentLength());
         assertTrue(new S3FindFeature(virtualhost, acl).find(file));
         final PathAttributes attr = new S3AttributesFinderFeature(virtualhost, acl).find(file);
