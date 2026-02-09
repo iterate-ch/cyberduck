@@ -18,8 +18,8 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.impl.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.cryptomator.impl.uvf.DefaultVaultMetadataUVFProvider;
-import ch.cyberduck.core.cryptomator.impl.v8.DefaultVaultMetadataV8Provider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -96,7 +96,7 @@ public class CryptoVaultProvider implements VaultProvider {
     public AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials, final VaultMetadata metadata) throws BackgroundException {
         switch(metadata.type) {
             case V8:
-                return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(metadata.root).create(session, region, new DefaultVaultMetadataV8Provider(credentials));
+                return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(metadata.root).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             case UVF:
                 //TODO plain UVF
                 return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(metadata.root).create(session, region, new DefaultVaultMetadataUVFProvider());

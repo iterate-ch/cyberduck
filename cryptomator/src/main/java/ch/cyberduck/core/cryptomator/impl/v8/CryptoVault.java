@@ -35,6 +35,8 @@ import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV8Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
+import ch.cyberduck.core.cryptomator.impl.DefaultVaultMetadataCredentialsProvider;
+import ch.cyberduck.core.cryptomator.impl.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -213,12 +215,12 @@ public class CryptoVault extends AbstractVault {
     }
 
     public AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
-        return this.create(session, region, new DefaultVaultMetadataV8Provider(credentials));
+        return this.create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
     }
 
     @Override
     public AbstractVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
-        final VaultMetadataV8Provider provider = VaultMetadataV8Provider.cast(metadata);
+        final VaultMetadataCredentialsProvider provider = VaultMetadataCredentialsProvider.cast(metadata);
         final VaultCredentials credentials = provider.getCredentials();
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {

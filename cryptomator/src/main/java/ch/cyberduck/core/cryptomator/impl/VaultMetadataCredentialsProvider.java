@@ -1,7 +1,7 @@
-package ch.cyberduck.core.cryptomator.impl.v8;
+package ch.cyberduck.core.cryptomator.impl;
 
 /*
- * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,13 +18,13 @@ package ch.cyberduck.core.cryptomator.impl.v8;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 
-public interface VaultMetadataV8Provider extends VaultMetadataProvider {
+public interface VaultMetadataCredentialsProvider extends VaultMetadataProvider {
 
     VaultCredentials getCredentials();
 
-    static VaultMetadataV8Provider cast(VaultMetadataProvider provider) {
-        if(provider instanceof VaultMetadataV8Provider) {
-            return (VaultMetadataV8Provider) provider;
+    static VaultMetadataCredentialsProvider cast(VaultMetadataProvider provider) {
+        if(provider instanceof VaultMetadataCredentialsProvider) {
+            return (VaultMetadataCredentialsProvider) provider;
         }
         else {
             throw new IllegalArgumentException("Unsupported metadata type " + provider.getClass());

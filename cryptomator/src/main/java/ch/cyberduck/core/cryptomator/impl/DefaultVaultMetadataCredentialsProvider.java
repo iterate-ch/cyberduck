@@ -1,7 +1,7 @@
-package ch.cyberduck.core.cryptomator.impl.v8;
+package ch.cyberduck.core.cryptomator.impl;
 
 /*
- * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,11 +17,11 @@ package ch.cyberduck.core.cryptomator.impl.v8;
 
 import ch.cyberduck.core.vault.VaultCredentials;
 
-public class DefaultVaultMetadataV8Provider implements VaultMetadataV8Provider {
+public class DefaultVaultMetadataCredentialsProvider implements VaultMetadataCredentialsProvider {
 
     private VaultCredentials credentials;
 
-    public DefaultVaultMetadataV8Provider(final VaultCredentials credentials) {
+    public DefaultVaultMetadataCredentialsProvider(final VaultCredentials credentials) {
         this.credentials = credentials;
     }
 
