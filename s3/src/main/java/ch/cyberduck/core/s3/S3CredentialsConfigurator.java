@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -123,7 +124,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     try(InputStream reader = process.getInputStream()) {
                         final CachedCredential cached = mapper.readValue(reader, CachedCredential.class);
                         return credentials.setTokens(new TemporaryAccessTokens(
-                                cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
+                                cached.accessKey, cached.secretKey, cached.sessionToken, cached.getExpiration()));
                     }
                 }
                 catch(IOException e) {
@@ -152,7 +153,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         }
                         // No further token exchange required
                         return credentials.setTokens(new TemporaryAccessTokens(
-                                cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
+                                cached.accessKey, cached.secretKey, cached.sessionToken, cached.getExpiration()));
                     }
                     else {
                         // If a profile defines the role_arn property then the profile is treated as an assume role profile
@@ -174,7 +175,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         return credentials;
                     }
                     return credentials.setTokens(new TemporaryAccessTokens(
-                            cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
+                            cached.accessKey, cached.secretKey, cached.sessionToken, cached.getExpiration()));
                 }
                 log.debug("Set credentials from profile {}", profile.getProfileName());
                 return credentials
@@ -278,7 +279,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     log.warn("Failure parsing SSO credentials.");
                     return null;
                 }
-                final Instant expiration = Instant.parse(cached.credentials.expiration);
+                final Instant expiration = Instant.ofEpochMilli(cached.credentials.getExpiration());
                 if(expiration.isBefore(Instant.now())) {
                     log.warn("Expired AWS SSO credentials.");
                     return null;
@@ -313,6 +314,15 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         private String sessionToken;
         @JsonProperty("Expiration")
         private String expiration;
+
+        public Long getExpiration() {
+            try {
+                return Instant.parse(expiration).toEpochMilli();
+            }
+            catch(DateTimeParseException e) {
+                return -1L;
+            }
+        }
     }
 
     /**
