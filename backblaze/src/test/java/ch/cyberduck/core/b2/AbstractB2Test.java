@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
@@ -65,9 +64,7 @@ public class AbstractB2Test extends VaultTest {
                 this.getClass().getResourceAsStream("/B2.cyberduckprofile"));
         session = new B2Session(
                 new Host(profile, profile.getDefaultHostname(),
-                        new Credentials(
-                                PROPERTIES.get("b2.user"), PROPERTIES.get("b2.password")
-                        )), new DefaultX509TrustManager(), new DefaultX509KeyManager());
+                        new Credentials(PROPERTIES.get("b2.user"))), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -75,7 +72,7 @@ public class AbstractB2Test extends VaultTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
 }

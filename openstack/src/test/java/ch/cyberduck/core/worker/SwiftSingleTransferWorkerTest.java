@@ -21,7 +21,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -79,7 +78,7 @@ public class SwiftSingleTransferWorkerTest extends VaultTest {
         IOUtils.write(content, out);
         out.close();
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                PROPERTIES.get("rackspace.user"), PROPERTIES.get("rackspace.password")
+                PROPERTIES.get("rackspace.user")
         )) {
             @Override
             public String getProperty(final String key) {
@@ -124,8 +123,8 @@ public class SwiftSingleTransferWorkerTest extends VaultTest {
         };
         new LoginConnectionService(new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
-                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                new TestPasswordStore(),
+                new DisabledProgressListener()).check(session, new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

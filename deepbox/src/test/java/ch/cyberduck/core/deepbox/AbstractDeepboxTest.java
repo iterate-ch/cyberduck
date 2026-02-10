@@ -19,14 +19,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -36,12 +34,8 @@ import ch.cyberduck.test.VaultTest;
 import org.junit.After;
 import org.junit.Before;
 
-import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.fail;
 
@@ -99,57 +93,5 @@ public class AbstractDeepboxTest extends VaultTest {
                 new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
         return session;
-    }
-
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        final Map<String, String> map = Stream.of(
-                        new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp1@gmail.com)", "deepbox.deepboxapp1"),
-                        new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp2@gmail.com)", "deepbox.deepboxapp2"),
-                        new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp3@gmail.com)", "deepbox.deepboxapp3"),
-                        new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxapp4@gmail.com)", "deepbox.deepboxapp4"),
-                        new AbstractMap.SimpleImmutableEntry<>("deepbox-desktop-app-int (deepboxpeninna+deepboxappshare@gmail.com)", "deepbox.deepboxappshare"))
-                .collect(Collectors.toMap(AbstractMap.SimpleImmutableEntry::getKey, AbstractMap.SimpleImmutableEntry::getValue));
-
-        @Override
-        public String getPassword(final String serviceName, final String accountName) {
-            if(accountName.endsWith("OAuth2 Token Expiry")) {
-                final String prefix = accountName.replace(" OAuth2 Token Expiry", "");
-                return PROPERTIES.get(String.format("%s.tokenexpiry", map.get(prefix)));
-            }
-            return null;
-        }
-
-        @Override
-        public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-            if(user.endsWith("OAuth2 Access Token")) {
-                final String prefix = user.replace(" OAuth2 Access Token", "");
-                return PROPERTIES.get(String.format("%s.accesstoken", map.get(prefix)));
-            }
-            if(user.endsWith("OAuth2 Refresh Token")) {
-                final String prefix = user.replace(" OAuth2 Refresh Token", "");
-                return PROPERTIES.get(String.format("%s.refreshtoken", map.get(prefix)));
-            }
-            return null;
-        }
-
-        @Override
-        public void addPassword(final String serviceName, final String accountName, final String password) {
-            if(accountName.endsWith("OAuth2 Token Expiry")) {
-                final String prefix = accountName.replace(" OAuth2 Token Expiry", "");
-                VaultTest.add(String.format("%s.tokenexpiry", map.get(prefix)), password);
-            }
-        }
-
-        @Override
-        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
-            if(user.endsWith("OAuth2 Access Token")) {
-                final String prefix = user.replace(" OAuth2 Access Token", "");
-                VaultTest.add(String.format("%s.accesstoken", map.get(prefix)), password);
-            }
-            if(user.endsWith("OAuth2 Refresh Token")) {
-                final String prefix = user.replace(" OAuth2 Refresh Token", "");
-                VaultTest.add(String.format("%s.refreshtoken", map.get(prefix)), password);
-            }
-        }
     }
 }

@@ -52,7 +52,7 @@ public class AzureSessionTest extends AbstractAzureTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new AzureProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
-        final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(profile, PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user"), null, PROPERTIES.get("azure.token")
         ));
         final AzureSession session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -73,7 +73,7 @@ public class AzureSessionTest extends AbstractAzureTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new AzureProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
-        final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(profile, PROPERTIES.get("azure.hostname"), new Credentials(
                 null, null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=invalid"));
         final AzureSession session = new AzureSession(host);
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -100,7 +100,7 @@ public class AzureSessionTest extends AbstractAzureTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidKey() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(new AzureProtocol(), PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user"), "6h9BmTcabGajIE/AVGzgu9JcC15JjrzkjdAIe+2daRK8XlyVdYT6zHtFMwXOtrlCw74jX9R0w4GN56vKQjOpVA=="
         ));
         final AzureSession session = new AzureSession(host);
@@ -116,7 +116,7 @@ public class AzureSessionTest extends AbstractAzureTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectKeyNotBase64() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(new AzureProtocol(), PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user"), "6h9B"
         ));
         final AzureSession session = new AzureSession(host);

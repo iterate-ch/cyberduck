@@ -84,12 +84,12 @@ public class CteraSession extends DAVSession {
         configuration.disableRedirectHandling();
         if(preferences.getBoolean("ctera.download.directio.enable")) {
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    authentication = new CteraAuthenticationHandler(this, prompt), directio = new CteraDirectIOInterceptor(this)));
+                    authentication = new CteraAuthenticationHandler(this, keychain, prompt), directio = new CteraDirectIOInterceptor(this)));
             configuration.addInterceptorFirst(directio);
         }
         else {
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    authentication = new CteraAuthenticationHandler(this, prompt)));
+                    authentication = new CteraAuthenticationHandler(this, keychain, prompt)));
         }
         configuration.addInterceptorFirst(new CteraCookieInterceptor());
         final DAVClient client = new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
@@ -265,7 +265,7 @@ public class CteraSession extends DAVSession {
             return null;
         }
         if(type == CustomActions.class) {
-            return (T) new CteraCustomActions(this);
+            return (T) new CteraCustomActions(this, keychain);
         }
         if(type == UrlProvider.class) {
             return (T) new CteraUrlProvider(host);

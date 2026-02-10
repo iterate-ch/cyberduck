@@ -22,7 +22,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -95,7 +94,7 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
                 return Scheme.http;
             }
         }, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
-                PROPERTIES.get("spectra.user"), PROPERTIES.get("spectra.key")
+                PROPERTIES.get("spectra.user")
         ));
         final BytecountStreamListener counter = new BytecountStreamListener();
         final AtomicBoolean failed = new AtomicBoolean();
@@ -150,8 +149,8 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
         };
         new LoginConnectionService(new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
-                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                new TestPasswordStore(),
+                new DisabledProgressListener()).check(session, new DisabledCancelCallback());
         final Path container = new SpectraDirectoryFeature(session).mkdir(
                 new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
