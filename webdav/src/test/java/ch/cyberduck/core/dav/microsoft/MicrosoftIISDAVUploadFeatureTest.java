@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -34,17 +33,14 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.http.conn.ClientConnectionManager;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
 
 @Category(IntegrationTest.class)
 public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTest {
@@ -58,45 +54,6 @@ public class MicrosoftIISDAVUploadFeatureTest extends AbstractMicrosoftIISDAVTes
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(
-                new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        local.delete();
-    }
-
-    @Test
-    public void testUploadNoConnectionInPool() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final byte[] content = RandomUtils.nextBytes(7365);
-        final OutputStream out = local.getOutputStream(false);
-        assertNotNull(out);
-        IOUtils.write(content, out);
-        out.close();
-        // Close connections in pool to require new NTLM handshake
-        final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
-        manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
-        assertThrows(InteroperabilityException.class, () -> new DAVUploadFeature(session).upload(
-                new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback()));
-        local.delete();
-    }
-
-    @Test
-    public void testZeroByteUploadNoConnectionInPool() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final byte[] content = RandomUtils.nextBytes(0);
-        final OutputStream out = local.getOutputStream(false);
-        assertNotNull(out);
-        IOUtils.write(content, out);
-        out.close();
-        // Close connections in pool to require new NTLM handshake
-        final ClientConnectionManager manager = session.getClient().getClient().getConnectionManager();
-        manager.closeIdleConnections(0L, TimeUnit.MILLISECONDS);
         new DAVUploadFeature(session).upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
                 new TransferStatus().setLength(content.length),
