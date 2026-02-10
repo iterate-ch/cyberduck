@@ -25,7 +25,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.MacUniqueIdService;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
@@ -91,7 +90,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     private final Host host;
     private final LoginCallback prompt;
 
-    private final HostPasswordStore store = PasswordStoreFactory.get();
+    private final HostPasswordStore keychain;
 
     /**
      * Currently valid tokens
@@ -101,9 +100,10 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
     private String username = StringUtils.EMPTY;
     private String password = StringUtils.EMPTY;
 
-    public CteraAuthenticationHandler(final CteraSession session, final LoginCallback prompt) {
+    public CteraAuthenticationHandler(final CteraSession session, final HostPasswordStore keychain, final LoginCallback prompt) {
         this.session = session;
         this.host = session.getHost();
+        this.keychain = keychain;
         this.prompt = prompt;
     }
 
@@ -158,7 +158,7 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
                 .setPassword(password)
                 .setSaved(new LoginOptions().save);
         if(credentials.isSaved()) {
-            store.save(host);
+            keychain.save(host);
         }
         return tokens;
     }
