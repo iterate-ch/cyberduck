@@ -20,7 +20,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -105,7 +104,7 @@ public class B2SingleTransferWorkerTest extends VaultTest {
             }
         };
         final B2Session session = new B2Session(host.setCredentials(new Credentials(
-                PROPERTIES.get("b2.user"), PROPERTIES.get("b2.password")
+                PROPERTIES.get("b2.user")
         )), new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)
             ) {
@@ -139,8 +138,8 @@ public class B2SingleTransferWorkerTest extends VaultTest {
         };
         new LoginConnectionService(new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
-                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                new TestPasswordStore(),
+                new DisabledProgressListener()).check(session, new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(host, test, local);

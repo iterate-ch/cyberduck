@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
@@ -64,7 +63,7 @@ public class AbstractBrickTest extends VaultTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Brick.cyberduckprofile"));
         final Host host = new Host(profile, "mountainduck.files.com", new Credentials(
-                PROPERTIES.get("brick.user"), PROPERTIES.get("brick.password")
+                PROPERTIES.get("brick.user")
         ));
         session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -73,7 +72,7 @@ public class AbstractBrickTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
+        }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
 }

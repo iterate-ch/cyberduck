@@ -15,15 +15,11 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.test.VaultTest;
 
 import org.junit.runners.Parameterized;
 
@@ -51,11 +47,6 @@ public abstract class AbstractOneDriveTest extends AbstractGraphTest {
     }
 
     @Override
-    protected HostPasswordStore passwordStore() {
-        return new TestPasswordStore();
-    }
-
-    @Override
     protected String user() {
         return PROPERTIES.get("onedrive.user");
     }
@@ -63,43 +54,5 @@ public abstract class AbstractOneDriveTest extends AbstractGraphTest {
     @Override
     protected GraphSession session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         return (session = new OneDriveSession(host, trust, key));
-    }
-
-    public final static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(final String serviceName, final String accountName) {
-            if(accountName.equals("Microsoft OneDrive (sharepoint@iterategmbh.onmicrosoft.com) OAuth2 Token Expiry")) {
-                return PROPERTIES.get("onedrive.tokenexpiry");
-            }
-            return null;
-        }
-
-        @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.endsWith("Microsoft OneDrive (sharepoint@iterategmbh.onmicrosoft.com) OAuth2 Access Token")) {
-                return PROPERTIES.get("onedrive.accesstoken");
-            }
-            if(user.endsWith("Microsoft OneDrive (sharepoint@iterategmbh.onmicrosoft.com) OAuth2 Refresh Token")) {
-                return PROPERTIES.get("onedrive.refreshtoken");
-            }
-            return null;
-        }
-
-        @Override
-        public void addPassword(final String serviceName, final String accountName, final String password) {
-            if(accountName.equals("Microsoft OneDrive (sharepoint@iterategmbh.onmicrosoft.com) OAuth2 Token Expiry")) {
-                VaultTest.add("onedrive.tokenexpiry", password);
-            }
-        }
-
-        @Override
-        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
-            if(user.equals("Microsoft OneDrive (sharepoint@iterategmbh.onmicrosoft.com) OAuth2 Access Token")) {
-                VaultTest.add("onedrive.accesstoken", password);
-            }
-            if(user.equals("Microsoft OneDrive (sharepoint@iterategmbh.onmicrosoft.com) OAuth2 Refresh Token")) {
-                VaultTest.add("onedrive.refreshtoken", password);
-            }
-        }
     }
 }

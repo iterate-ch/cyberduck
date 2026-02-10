@@ -15,6 +15,14 @@ package ch.cyberduck.test;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultHostPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
+import org.apache.commons.lang3.StringUtils;
 import org.junit.BeforeClass;
 
 import java.util.HashMap;
@@ -34,7 +42,7 @@ public class VaultTest {
     protected static Map<String, String> PROPERTIES;
 
     @BeforeClass
-    public static void credentials() {
+    public static void vault() {
         final VaultConfig config;
         try {
             config = new VaultConfig()
@@ -50,17 +58,69 @@ public class VaultTest {
             PROPERTIES = VAULT.logical().read(VAULT_PATH).getData();
         }
         catch(VaultException e) {
-            throw new RuntimeException("Failed to initialize vault", e);
+            throw new RuntimeException(e);
         }
     }
 
-    public static void add(final String key, final String value) {
-        PROPERTIES.put(key, value);
-        try {
-            VAULT.logical().write(VAULT_PATH, new HashMap<>(PROPERTIES));
+    @BeforeClass
+    public static void register() {
+        PreferencesFactory.get().setDefault("factory.passwordstore.class", TestPasswordStore.class.getName());
+    }
+
+    public static class TestPasswordStore extends DefaultHostPasswordStore {
+
+        private final HostUrlProvider provider = new HostUrlProvider().withPath(false);
+
+        @Override
+        public void save(final Host bookmark) throws AccessDeniedException {
+            super.save(bookmark);
+            try {
+                VAULT.logical().write(VAULT_PATH, new HashMap<>(PROPERTIES));
+            }
+            catch(VaultException e) {
+                throw new AccessDeniedException(e.getMessage(), e);
+            }
         }
-        catch(VaultException e) {
-            throw new RuntimeException("Failure adding key/value", e);
+
+        @Override
+        public void delete(final Host bookmark) throws AccessDeniedException {
+            super.delete(bookmark);
+            try {
+                VAULT.logical().write(VAULT_PATH, new HashMap<>(PROPERTIES));
+            }
+            catch(VaultException e) {
+                throw new AccessDeniedException(e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public void addPassword(final String serviceName, final String accountName, final String password) throws AccessDeniedException {
+            PROPERTIES.put(String.format("%s/%s", serviceName, accountName), password);
+        }
+
+        @Override
+        public String getPassword(final String serviceName, final String accountName) throws AccessDeniedException {
+            return PROPERTIES.get(String.format("%s/%s", serviceName, accountName));
+        }
+
+        @Override
+        public void deletePassword(final String serviceName, final String user) {
+            PROPERTIES.remove(String.format("%s/%s", serviceName, user));
+        }
+
+        @Override
+        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) throws AccessDeniedException {
+            PROPERTIES.put(provider.get(scheme, port, user, hostname, StringUtils.EMPTY), password);
+        }
+
+        @Override
+        public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) throws AccessDeniedException {
+            return PROPERTIES.get(provider.get(scheme, port, user, hostname, StringUtils.EMPTY));
+        }
+
+        @Override
+        public void deletePassword(final Scheme scheme, final int port, final String hostname, final String user) {
+            PROPERTIES.remove(provider.get(scheme, port, user, hostname, StringUtils.EMPTY));
         }
     }
 }

@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
@@ -54,7 +53,7 @@ public class AbstractSpectraTest extends VaultTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Spectra S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
-                PROPERTIES.get("spectra.user"), PROPERTIES.get("spectra.key")
+                PROPERTIES.get("spectra.user")
         ));
         session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -65,7 +64,7 @@ public class AbstractSpectraTest extends VaultTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), new DisabledProgressListener());
         connect.check(session, new DisabledCancelCallback());
     }
 }

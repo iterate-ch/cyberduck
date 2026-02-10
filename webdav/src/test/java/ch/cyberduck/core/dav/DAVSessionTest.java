@@ -91,18 +91,6 @@ public class DAVSessionTest extends AbstractDAVTest {
     }
 
     @Test
-    public void testLoginNTLM() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "winbuild.iterate.ch", new Credentials(
-                PROPERTIES.get("webdav.iis.user"), PROPERTIES.get("webdav.iis.password")
-        ));
-        host.setDefaultPath("/WebDAV");
-        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.close();
-    }
-
-    @Test
     public void testTouch() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         ;

@@ -66,42 +66,4 @@ public class AbstractDropboxTest extends VaultTest {
                 new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
-
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(final String serviceName, final String accountName) {
-            if(accountName.equals("Dropbox (cyberduck) OAuth2 Token Expiry")) {
-                return PROPERTIES.get("dropbox.tokenexpiry");
-            }
-            return null;
-        }
-
-        @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("Dropbox (cyberduck) OAuth2 Access Token")) {
-                return PROPERTIES.get("dropbox.accesstoken");
-            }
-            if(user.equals("Dropbox (cyberduck) OAuth2 Refresh Token")) {
-                return PROPERTIES.get("dropbox.refreshtoken");
-            }
-            return null;
-        }
-
-        @Override
-        public void addPassword(final String serviceName, final String accountName, final String password) {
-            if(accountName.equals("Dropbox (cyberduck) OAuth2 Token Expiry")) {
-                VaultTest.add("dropbox.tokenexpiry", password);
-            }
-        }
-
-        @Override
-        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
-            if(user.equals("Dropbox (cyberduck) OAuth2 Access Token")) {
-                VaultTest.add("dropbox.accesstoken", password);
-            }
-            if(user.equals("Dropbox (cyberduck) OAuth2 Refresh Token")) {
-                VaultTest.add("dropbox.refreshtoken", password);
-            }
-        }
-    }
 }

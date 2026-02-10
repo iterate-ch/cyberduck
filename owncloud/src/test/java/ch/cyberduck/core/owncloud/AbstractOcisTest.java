@@ -19,14 +19,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -79,49 +77,5 @@ public class AbstractOcisTest extends VaultTest {
             }
         }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
-    }
-
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(final String serviceName, final String accountName) {
-            if(accountName.equals("ownCloud Infinite Scale (admin) OAuth2 Token Expiry")) {
-                return PROPERTIES.get("ocis.tokenexpiry");
-            }
-            return null;
-        }
-
-        @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("ownCloud Infinite Scale (admin) OAuth2 Access Token")) {
-                return PROPERTIES.get("ocis.accesstoken");
-            }
-            if(user.equals("ownCloud Infinite Scale (admin) OIDC Id Token")) {
-                return PROPERTIES.get("ocis.idtoken");
-            }
-            if(user.equals("ownCloud Infinite Scale (admin) OAuth2 Refresh Token")) {
-                return PROPERTIES.get("ocis.refreshtoken");
-            }
-            return null;
-        }
-
-        @Override
-        public void addPassword(final String serviceName, final String accountName, final String password) {
-            if(accountName.equals("ownCloud Infinite Scale (admin) OAuth2 Token Expiry")) {
-                VaultTest.add("ocis.tokenexpiry", password);
-            }
-        }
-
-        @Override
-        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
-            if(user.equals("ownCloud Infinite Scale (admin) OAuth2 Access Token")) {
-                VaultTest.add("ocis.accesstoken", password);
-            }
-            if(user.equals("ownCloud Infinite Scale (admin) OIDC Id Token")) {
-                VaultTest.add("ocis.idtoken", password);
-            }
-            if(user.equals("ownCloud Infinite Scale (admin) OAuth2 Refresh Token")) {
-                VaultTest.add("ocis.refreshtoken", password);
-            }
-        }
     }
 }
