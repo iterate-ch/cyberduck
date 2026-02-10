@@ -265,7 +265,7 @@ public class CteraSession extends DAVSession {
             return null;
         }
         if(type == CustomActions.class) {
-            return (T) new CteraCustomActions(this);
+            return (T) new CteraCustomActions(this, keychain);
         }
         if(type == UrlProvider.class) {
             return (T) new CteraUrlProvider(host);
