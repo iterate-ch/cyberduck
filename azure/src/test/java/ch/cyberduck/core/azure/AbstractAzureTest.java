@@ -46,7 +46,7 @@ public class AbstractAzureTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(new AzureProtocol(), PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user")
         ));
         session = new AzureSession(host);
