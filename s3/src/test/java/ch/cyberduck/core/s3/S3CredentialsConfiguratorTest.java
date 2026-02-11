@@ -57,13 +57,30 @@ public class S3CredentialsConfiguratorTest {
     }
 
     @Test
-    public void readSSOCachedTemporaryTokens() throws Exception {
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
-                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("ReadOnlyAccess-189584543480")));
-        assertEquals("TESTACCESSKEY", verify.getTokens().getAccessKeyId());
-        assertEquals("TESTSECRETKEY", verify.getTokens().getSecretAccessKey());
-        assertEquals("TESTSESSIONTOKEN", verify.getTokens().getSessionToken());
-        assertEquals(3497005724000L, verify.getTokens().getExpiryInMilliseconds(), 0L);
+    public void readSSO() throws Exception {
+        final CredentialsConfigurator configurator = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
+                .reload();
+        {
+            final Credentials verify = configurator.configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("sso_default")));
+            assertEquals("https://my-sso-portal.awsapps.com/start", verify.getProperty("sso_start_url"));
+            assertEquals("us-east-1", verify.getProperty("sso_region"));
+            assertEquals("roledefault", verify.getProperty("sso_role_name"));
+            assertEquals("111122223333", verify.getProperty("sso_account_id"));
+        }
+        {
+            final Credentials verify = configurator.configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("sso_prod")));
+            assertEquals("https://my-sso-portal.awsapps.com/start", verify.getProperty("sso_start_url"));
+            assertEquals("eu-west-1", verify.getProperty("sso_region"));
+            assertEquals("roleprod", verify.getProperty("sso_role_name"));
+            assertEquals("111122223333", verify.getProperty("sso_account_id"));
+        }
+        {
+            final Credentials verify = configurator.configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("sso_dev")));
+            assertEquals("https://my-sso-portal.awsapps.com/start", verify.getProperty("sso_start_url"));
+            assertEquals("eu-west-1", verify.getProperty("sso_region"));
+            assertEquals("roledev", verify.getProperty("sso_role_name"));
+            assertEquals("111122223333", verify.getProperty("sso_account_id"));
+        }
     }
 
     @Test
