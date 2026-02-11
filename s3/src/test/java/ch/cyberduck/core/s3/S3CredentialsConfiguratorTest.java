@@ -16,6 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
