@@ -165,8 +165,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
                     }
                 }
             }
-        }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-                .withParameter("prompt", "select_account");
+        }.setRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+                .setParameter("prompt", "select_account");
         configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast((HttpRequestInterceptor) (request, context) -> request
                 .addHeader(new BasicHeader("Prefer", "Include-Feature=AddToOneDrive")));

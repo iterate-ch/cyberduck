@@ -260,9 +260,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                                                                  final LoginCallback prompt) throws LoginCanceledException {
         if(host.getProtocol().isOAuthConfigurable()) {
             final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
-                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                    .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             if(host.getProtocol().getAuthorization() != null) {
-                oauth.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+                oauth.setFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             }
             log.debug("Add interceptor {}", oauth);
             configuration.addInterceptorLast(oauth);

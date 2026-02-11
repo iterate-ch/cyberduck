@@ -107,8 +107,8 @@ public class DeepboxSession extends HttpSession<DeepboxApiClient> {
                 }
             }
         }
-                .withFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode)
-                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
+                .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode)
+                .setRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new OAuth2ErrorResponseInterceptor(host, authorizationService)));

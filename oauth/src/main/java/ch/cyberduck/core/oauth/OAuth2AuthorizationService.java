@@ -69,12 +69,14 @@ public class OAuth2AuthorizationService {
      * Static long-lived credentials
      */
     private final Credentials credentials;
-    private final String tokenServerUrl;
-    private final String authorizationServerUrl;
     private final LoginCallback prompt;
 
-    private final String clientid;
-    private final String clientsecret;
+    private String clientid;
+    private String clientsecret;
+    private String tokenServerUrl;
+    private String authorizationServerUrl;
+    private String redirectUri = OOB_REDIRECT_URI;
+    private FlowType flowType = FlowType.AuthorizationCode;
 
     private final List<String> scopes;
     private final boolean pkce;
@@ -84,9 +86,6 @@ public class OAuth2AuthorizationService {
 
     private Credential.AccessMethod method
             = BearerToken.authorizationHeaderAccessMethod();
-
-    private String redirectUri = OOB_REDIRECT_URI;
-    private FlowType flowType = FlowType.AuthorizationCode;
 
     private final HttpTransport transport;
 
@@ -327,22 +326,42 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    public OAuth2AuthorizationService withMethod(final Credential.AccessMethod method) {
+    public OAuth2AuthorizationService setClientid(final String clientid) {
+        this.clientid = clientid;
+        return this;
+    }
+
+    public OAuth2AuthorizationService setClientsecret(final String clientsecret) {
+        this.clientsecret = clientsecret;
+        return this;
+    }
+
+    public OAuth2AuthorizationService setTokenServerUrl(final String tokenServerUrl) {
+        this.tokenServerUrl = tokenServerUrl;
+        return this;
+    }
+
+    public OAuth2AuthorizationService setAuthorizationServerUrl(final String authorizationServerUrl) {
+        this.authorizationServerUrl = authorizationServerUrl;
+        return this;
+    }
+
+    public OAuth2AuthorizationService setMethod(final Credential.AccessMethod method) {
         this.method = method;
         return this;
     }
 
-    public OAuth2AuthorizationService withRedirectUri(final String redirectUri) {
+    public OAuth2AuthorizationService setRedirectUri(final String redirectUri) {
         this.redirectUri = redirectUri;
         return this;
     }
 
-    public OAuth2AuthorizationService withFlowType(final FlowType flowType) {
+    public OAuth2AuthorizationService setFlowType(final FlowType flowType) {
         this.flowType = flowType;
         return this;
     }
 
-    public OAuth2AuthorizationService withParameter(final String key, final String value) {
+    public OAuth2AuthorizationService setParameter(final String key, final String value) {
         additionalParameters.put(key, value);
         return this;
     }
