@@ -97,26 +97,26 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
 
 
     @Override
-    public OAuth2RequestInterceptor withMethod(final Credential.AccessMethod method) {
-        super.withMethod(method);
+    public OAuth2RequestInterceptor setMethod(final Credential.AccessMethod method) {
+        super.setMethod(method);
         return this;
     }
 
     @Override
-    public OAuth2RequestInterceptor withRedirectUri(final String redirectUri) {
-        super.withRedirectUri(redirectUri);
+    public OAuth2RequestInterceptor setRedirectUri(final String redirectUri) {
+        super.setRedirectUri(redirectUri);
         return this;
     }
 
     @Override
-    public OAuth2RequestInterceptor withFlowType(final FlowType flowType) {
-        super.withFlowType(flowType);
+    public OAuth2RequestInterceptor setFlowType(final FlowType flowType) {
+        super.setFlowType(flowType);
         return this;
     }
 
     @Override
-    public OAuth2RequestInterceptor withParameter(final String key, final String value) {
-        super.withParameter(key, value);
+    public OAuth2RequestInterceptor setParameter(final String key, final String value) {
+        super.setParameter(key, value);
         return this;
     }
 }
