@@ -102,13 +102,21 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
             else {
                 log.debug("Configure credentials from basic profile {}", profile.getProfileName());
-                final Map<String, String> profileProperties = profile.getProperties();
-                if(profileProperties.containsKey("sso_start_url")) {
-                    log.debug("Configure with SSO properties {}", profileProperties);
-                    credentials.setProperty(Profile.SSO_START_URL_KEY, profileProperties.get("sso_start_url"));
-                    credentials.setProperty(Profile.SSO_ACCOUNT_ID_KEY, profileProperties.get("sso_account_id"));
-                    credentials.setProperty(Profile.SSO_ROLE_NAME_KEY, profileProperties.get("sso_role_name"));
-                    credentials.setProperty(Profile.SSO_REGION_KEY, profileProperties.get("sso_region"));
+                if(profile.getProperties().containsKey("sso_start_url") || profile.getProperties().containsKey("sso_session")) {
+                    log.debug("Configure with SSO properties {}", profile.getProperties());
+                    profile.getProperties().forEach(credentials::setProperty);
+                    if(profile.getProperties().containsKey("sso_session")) {
+                        // The sso-session section of the config file is used to group configuration variables for acquiring SSO access tokens
+                        // Example section definition line: [sso-session my-sso]
+                        final BasicProfile ssoProfile = profiles.get(String.format("sso-session %s", profile.getProperties().get("sso_session")));
+                        if(null == ssoProfile) {
+                            log.warn("Missing SSO profile with name {}", profile.getProperties().get("sso_session"));
+                        }
+                        else {
+                            log.debug("Configure with SSO properties {} from {}", ssoProfile.getProperties(), ssoProfile);
+                            ssoProfile.getProperties().forEach(credentials::setProperty);
+                        }
+                    }
                     return credentials;
                 }
                 log.debug("Set credentials from profile {}", profile.getProfileName());

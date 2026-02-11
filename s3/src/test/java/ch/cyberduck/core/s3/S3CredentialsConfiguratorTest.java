@@ -16,6 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.TestProtocol;
@@ -38,16 +39,14 @@ public class S3CredentialsConfiguratorTest {
     @Test
     public void readFailureForInvalidAWSCredentialsProfileEntry() throws Exception {
         final Credentials credentials = new Credentials("test_s3_profile");
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath())
-        )
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials));
         assertEquals(credentials, verify);
     }
 
     @Test
     public void readSuccessForValidAWSCredentialsProfileEntry() throws Exception {
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
-        )
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("test_s3_profile")));
         assertEquals("test_s3_profile", verify.getUsername());
         assertEquals("", verify.getPassword());
@@ -57,13 +56,29 @@ public class S3CredentialsConfiguratorTest {
     }
 
     @Test
-    public void readSSOCachedTemporaryTokens() throws Exception {
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
-        )
-                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("ReadOnlyAccess-189584543480")));
-        assertEquals("TESTACCESSKEY", verify.getTokens().getAccessKeyId());
-        assertEquals("TESTSECRETKEY", verify.getTokens().getSecretAccessKey());
-        assertEquals("TESTSESSIONTOKEN", verify.getTokens().getSessionToken());
-        assertEquals(3497005724000L, verify.getTokens().getExpiryInMilliseconds(), 0L);
+    public void readSSO() throws Exception {
+        final CredentialsConfigurator configurator = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
+                .reload();
+        {
+            final Credentials verify = configurator.configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("sso_default")));
+            assertEquals("https://my-sso-portal.awsapps.com/start", verify.getProperty("sso_start_url"));
+            assertEquals("us-east-1", verify.getProperty("sso_region"));
+            assertEquals("roledefault", verify.getProperty("sso_role_name"));
+            assertEquals("111122223333", verify.getProperty("sso_account_id"));
+        }
+        {
+            final Credentials verify = configurator.configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("sso_prod")));
+            assertEquals("https://my-sso-portal.awsapps.com/start", verify.getProperty("sso_start_url"));
+            assertEquals("eu-west-1", verify.getProperty("sso_region"));
+            assertEquals("roleprod", verify.getProperty("sso_role_name"));
+            assertEquals("111122223333", verify.getProperty("sso_account_id"));
+        }
+        {
+            final Credentials verify = configurator.configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("sso_dev")));
+            assertEquals("https://my-sso-portal.awsapps.com/start", verify.getProperty("sso_start_url"));
+            assertEquals("eu-west-1", verify.getProperty("sso_region"));
+            assertEquals("roledev", verify.getProperty("sso_role_name"));
+            assertEquals("111122223333", verify.getProperty("sso_account_id"));
+        }
     }
 }
