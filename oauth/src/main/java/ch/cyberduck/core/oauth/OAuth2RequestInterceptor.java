@@ -18,6 +18,7 @@ package ch.cyberduck.core.oauth;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Profile;
@@ -54,8 +55,12 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthTokenUrl()),
                 Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthAuthorizationUrl()),
-                null == host.getProperty(Profile.OAUTH_CLIENT_ID_KEY) ? host.getProtocol().getOAuthClientId() : host.getProperty(Profile.OAUTH_CLIENT_ID_KEY),
-                null == host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY) ? host.getProtocol().getOAuthClientSecret() : host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY),
+                prompt(host, prompt, Profile.OAUTH_CLIENT_ID_KEY, LocaleFactory.localizedString(
+                                Profile.OAUTH_CLIENT_ID_KEY, "Credentials"),
+                        null == host.getProperty(Profile.OAUTH_CLIENT_ID_KEY) ? host.getProtocol().getOAuthClientId() : host.getProperty(Profile.OAUTH_CLIENT_ID_KEY)),
+                prompt(host, prompt, Profile.OAUTH_CLIENT_SECRET_KEY, LocaleFactory.localizedString(
+                                Profile.OAUTH_CLIENT_SECRET_KEY, "Credentials"),
+                        null == host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY) ? host.getProtocol().getOAuthClientSecret() : host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY)),
                 host.getProtocol().getOAuthScopes(),
                 host.getProtocol().isOAuthPKCE(), prompt);
     }
