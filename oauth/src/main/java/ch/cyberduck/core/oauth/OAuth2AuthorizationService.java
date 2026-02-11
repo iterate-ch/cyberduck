@@ -15,7 +15,20 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -94,7 +107,7 @@ public class OAuth2AuthorizationService {
     public OAuth2AuthorizationService(final HttpClient client, final Host host,
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
-                                      final LoginCallback prompt) throws LoginCanceledException {
+                                      final LoginCallback prompt) {
         this(new ApacheHttpTransport(client), host,
                 tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
     }
@@ -102,17 +115,15 @@ public class OAuth2AuthorizationService {
     public OAuth2AuthorizationService(final HttpTransport transport, final Host host,
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
-                                      final LoginCallback prompt) throws LoginCanceledException {
+                                      final LoginCallback prompt) {
         this.transport = transport;
         this.host = host;
         this.credentials = host.getCredentials();
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.prompt = prompt;
-        this.clientid = prompt(host, prompt, Profile.OAUTH_CLIENT_ID_KEY, LocaleFactory.localizedString(
-                Profile.OAUTH_CLIENT_ID_KEY, "Credentials"), StringUtils.isBlank(clientid) ? null : clientid);
-        this.clientsecret = prompt(host, prompt, Profile.OAUTH_CLIENT_SECRET_KEY, LocaleFactory.localizedString(
-                Profile.OAUTH_CLIENT_SECRET_KEY, "Credentials"), clientsecret);
+        this.clientid = clientid;
+        this.clientsecret = clientsecret;
         this.scopes = scopes;
         this.pkce = pkce;
     }
@@ -435,7 +446,7 @@ public class OAuth2AuthorizationService {
     /**
      * Prompt for value if missing
      */
-    private static String prompt(final Host bookmark, final PasswordCallback prompt,
+    protected static String prompt(final Host bookmark, final PasswordCallback prompt,
                                  final String property, final String message, final String value) throws LoginCanceledException {
         if(null == value) {
             final Credentials input = prompt.prompt(bookmark, message,
