@@ -81,15 +81,20 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                 }
             }
             if(StringUtils.isNotBlank(tokens.getAccessToken())) {
-                log.info("Authorizing service request with OAuth2 tokens {}", tokens);
-                request.removeHeaders(HttpHeaders.AUTHORIZATION);
-                request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
+                this.addAuthorizationHeader(request, tokens);
             }
         }
         finally {
             lock.unlock();
         }
     }
+
+    protected void addAuthorizationHeader(final HttpRequest request, final OAuthTokens tokens) {
+        log.info("Authorizing service request with OAuth2 tokens {}", tokens);
+        request.removeHeaders(HttpHeaders.AUTHORIZATION);
+        request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
+    }
+
 
     @Override
     public OAuth2RequestInterceptor withMethod(final Credential.AccessMethod method) {
