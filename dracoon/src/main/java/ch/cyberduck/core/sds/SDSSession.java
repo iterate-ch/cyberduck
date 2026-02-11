@@ -58,9 +58,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.http.HttpException;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -162,14 +160,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 }
             }
         }
-                .withFlowType(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization()) == SDSProtocol.Authorization.password
+                .setFlowType(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization()) == SDSProtocol.Authorization.password
                         ? OAuth2AuthorizationService.FlowType.PasswordGrant : OAuth2AuthorizationService.FlowType.AuthorizationCode)
-                .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
+                .setRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
                         Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                                 host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
                 );
         try {
-            authorizationService.withParameter("user_agent_info", Base64.getEncoder().encodeToString(InetAddress.getLocalHost().getHostName().getBytes(StandardCharsets.UTF_8)));
+            authorizationService.setParameter("user_agent_info", Base64.getEncoder().encodeToString(InetAddress.getLocalHost().getHostName().getBytes(StandardCharsets.UTF_8)));
         }
         catch(UnknownHostException e) {
             throw new DefaultIOExceptionMappingService().map(e);

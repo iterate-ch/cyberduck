@@ -104,13 +104,13 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                         String.format("Basic %s", Base64.getEncoder().encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8))));
             }
         }).build(), host, prompt)
-                .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
+                .setRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
                         Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                                 host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
                 )
-                .withParameter("login_hint", preferences.getProperty("storegate.login.hint"));
+                .setParameter("login_hint", preferences.getProperty("storegate.login.hint"));
         // Force login even if browser session already exists
-        authorizationService.withParameter("prompt", "login");
+        authorizationService.setParameter("prompt", "login");
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         configuration.addInterceptorLast(authorizationService);
