@@ -55,7 +55,7 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
         // Create metadata file for directory
         final Path directoryMetadataFile = vault.encrypt(session, folder, true);
         log.debug("Write metadata {} for folder {}", directoryMetadataFile, folder);
-        new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
+        directoryMetadataFile.setAttributes(new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8), status));
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
