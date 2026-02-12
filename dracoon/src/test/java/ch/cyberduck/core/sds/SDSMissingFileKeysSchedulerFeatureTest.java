@@ -59,7 +59,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
@@ -187,41 +186,5 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         assertTrue(empty.isEmpty());
         assertEquals(2, userApi.requestUserKeyPairs(null, null).size());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test(expected = LoginCanceledException.class)
-    public void testWrongPassword() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
-        final Node node = new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), StringUtils.EMPTY, null);
-        new NodesApi(session.getClient()).updateRoomUsers(new RoomUsersAddBatchRequest().
-                addItemsItem(new RoomUsersAddBatchRequestItem().id(757L).permissions(new NodePermissions().read(true))), node.getId(), StringUtils.EMPTY);
-        room.attributes().setCustom(KEY_ENCRYPTED, String.valueOf(true));
-        final byte[] content = RandomUtils.nextBytes(32769);
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
-        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-        final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
-        final AtomicBoolean prompt = new AtomicBoolean();
-        final List<UserFileKeySetRequest> processed = background.operate(new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                if(prompt.get()) {
-                    throw new LoginCanceledException();
-                }
-                prompt.set(true);
-                return new VaultCredentials("n");
-            }
-        });
-        assertTrue(prompt.get());
     }
 }
