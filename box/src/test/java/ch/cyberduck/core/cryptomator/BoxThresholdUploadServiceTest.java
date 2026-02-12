@@ -36,6 +36,7 @@ import ch.cyberduck.core.box.BoxWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -81,6 +82,7 @@ public class BoxThresholdUploadServiceTest extends AbstractBoxTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
+        registry.add(cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(50240000);
         IOUtils.write(content, local.getOutputStream(false));
@@ -94,8 +96,10 @@ public class BoxThresholdUploadServiceTest extends AbstractBoxTest {
         final CryptoUploadFeature feature = new CryptoUploadFeature<>(session,
                 new BoxThresholdUploadService(session, fileid, registry),
                 cryptomator);
-        feature.upload(new BoxWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
+        feature.upload(
+                new CryptoWriteFeature<>(session, new BoxWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
+        assertEquals(content.length, writeStatus.getResponse().getSize());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new BoxFindFeature(session, fileid)).find(test));
         assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new BoxAttributesFinderFeature(session, fileid)).find(test).getSize());
