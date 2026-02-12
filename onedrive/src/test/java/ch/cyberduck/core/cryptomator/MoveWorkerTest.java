@@ -247,7 +247,8 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
                 cryptomator.getFeature(session, Write.class, new GraphWriteFeature(session, fileid)), encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<DriveItem.Metadata>(
-                session), cryptomator).touch(new GraphWriteFeature(session, fileid), encryptedFile, new TransferStatus());
+                session), cryptomator).touch(
+                cryptomator.getFeature(session, Write.class, new GraphWriteFeature(session, fileid)), encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         assertEquals(0L, cryptomator.getFeature(session, AttributesFinder.class, new GraphAttributesFinderFeature(session, fileid)).find(encryptedFile).getSize());
         // move file outside vault
