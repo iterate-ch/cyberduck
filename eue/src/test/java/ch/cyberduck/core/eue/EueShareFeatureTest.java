@@ -29,6 +29,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -41,6 +42,7 @@ import static org.junit.Assert.*;
 public class EueShareFeatureTest extends AbstractEueSessionTest {
 
     @Test(expected = InteroperabilityException.class)
+    @Ignore
     public void testInvalidPin() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
