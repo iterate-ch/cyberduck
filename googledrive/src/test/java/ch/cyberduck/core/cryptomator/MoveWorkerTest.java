@@ -112,7 +112,8 @@ public class MoveWorkerTest extends AbstractDriveTest {
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<File>(session), cryptomator).touch(new DriveWriteFeature(session, fileid), source, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<File>(session), cryptomator).touch(
+                cryptomator.getFeature(session, Write.class, new DriveWriteFeature(session, fileid)), source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         final Path targetFolder = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, fileid)).mkdir(
                 cryptomator.getFeature(session, Write.class, new DriveWriteFeature(session, fileid)), new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
