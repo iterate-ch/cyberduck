@@ -95,6 +95,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
                 cryptomator.getFeature(session, Write.class, new GraphWriteFeature(session, fileid)), new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
         final String id = test.attributes().getFileId();
+        assertTrue(cryptomator.getFeature(session, Find.class, new GraphFindFeature(session, fileid)).find(test));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new GraphAttributesFinderFeature(session, fileid)).find(test);
         assertEquals(id, attributes.getFileId());
