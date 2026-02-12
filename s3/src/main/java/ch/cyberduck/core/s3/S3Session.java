@@ -37,7 +37,6 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
@@ -53,6 +52,8 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.sso.IdentityCenterCredentialsStrategy;
+import ch.cyberduck.core.sso.RegisterClientOAuth2RequestInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAuthorizationService;
@@ -257,8 +258,19 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
-                                                                 final LoginCallback prompt) throws LoginCanceledException {
+                                                                 final LoginCallback prompt) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
+            if(host.getProtocol().getOAuthScopes().contains("sso:account:access")) {
+                log.debug("Configure SSO");
+                final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt)
+                        .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode);
+                log.debug("Add interceptor {}", oauth);
+                configuration.addInterceptorLast(oauth);
+                final IdentityCenterCredentialsStrategy strategy = new IdentityCenterCredentialsStrategy(
+                        oauth, host, trust, key, prompt);
+                log.debug("Return authenticator {}", strategy);
+                return strategy;
+            }
             final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
                     .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             if(host.getProtocol().getAuthorization() != null) {
