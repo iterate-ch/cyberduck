@@ -50,6 +50,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     private final X509TrustManager trust;
     private final X509KeyManager key;
 
+    private final String startUrl;
     private final String issuerUrl;
 
     private String clientId = null;
@@ -61,8 +62,9 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         this.host = host;
         this.trust = trust;
         this.key = key;
-        this.issuerUrl = prompt(host, prompt, Profile.SSO_START_URL_KEY, LocaleFactory.localizedString(
+        this.startUrl = prompt(host, prompt, Profile.SSO_START_URL_KEY, LocaleFactory.localizedString(
                 "SSO Start Url", "Credentials"), host.getProperty(Profile.SSO_START_URL_KEY));
+        this.issuerUrl = startUrl;
     }
 
     @Override
@@ -78,11 +80,12 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
      *
      * @param issuerUrl The IAM Identity Center Issuer URL associated with an instance of IAM Identity Center
      */
-    public void registerClient(final String issuerUrl) throws BackgroundException {
-        final AWSSSOOIDC client = AWSSSOOIDCClientBuilder.standard()
+    public void registerClient(final String startUrl, final String issuerUrl) throws BackgroundException {
+        final AWSSSOOIDCClientBuilder configuration = AWSSSOOIDCClientBuilder.standard()
                 .withRegion("us-east-1")
                 .withClientConfiguration(new CustomClientConfiguration(host,
-                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key)).build();
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key));
+        final AWSSSOOIDC client = configuration.build();
         log.debug("Registering client with issuer {}", issuerUrl);
         try {
             final RegisterClientResult registration = client.registerClient(new RegisterClientRequest()
@@ -98,8 +101,9 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
             log.debug("Client registerd with {}", registration);
             this.setClientid(registration.getClientId());
             this.setClientsecret(registration.getClientSecret());
-            this.setAuthorizationServerUrl(registration.getAuthorizationEndpoint());
-            this.setTokenServerUrl(registration.getTokenEndpoint());
+            this.setParameter("start_url", startUrl);
+            this.setAuthorizationServerUrl(String.format("%s/authorize", configuration.getEndpoint().getServiceEndpoint()));
+            this.setTokenServerUrl(String.format("%s/token", configuration.getEndpoint().getServiceEndpoint()));
             this.clientIdExpiry = registration.getClientSecretExpiresAt() * 1000;
         }
         catch(AmazonClientException e) {
@@ -109,7 +113,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
 
     @Override
     public OAuthTokens authorize() throws BackgroundException {
-        this.registerClient(issuerUrl);
+        this.registerClient(startUrl, issuerUrl);
         return super.authorize();
     }
 
@@ -118,11 +122,11 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         // Registers client if missing; persists registration details
         if(StringUtils.isBlank(clientId)) {
             log.debug("Client ID not found for {}, registering new client", host);
-            this.registerClient(issuerUrl);
+            this.registerClient(startUrl, issuerUrl);
         }
         if(System.currentTimeMillis() >= clientIdExpiry) {
             log.warn("Client registration expired for {}", host);
-            this.registerClient(issuerUrl);
+            this.registerClient(startUrl, issuerUrl);
         }
         return super.authorizeWithRefreshToken(tokens);
     }
