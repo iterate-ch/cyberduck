@@ -28,8 +28,8 @@ import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,7 +112,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
         if(properties.getContentMd5() != null) {
             attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
         }
-        attributes.setETag(properties.getETag());
+        attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(properties.getETag(), "\""), "\""));
         final Map<String, String> custom = new HashMap<>();
         custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
         attributes.setCustom(custom);

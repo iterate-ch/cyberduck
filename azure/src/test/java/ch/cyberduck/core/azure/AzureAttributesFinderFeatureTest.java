@@ -10,6 +10,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -50,6 +51,7 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
         assertEquals(0L, attributes.getSize());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertNotNull(attributes.getETag());
+        assertEquals(attributes.getETag(), new DefaultAttributesFinderFeature(session).find(test).getETag());
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -61,6 +63,7 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
         final PathAttributes attributes = f.find(container);
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertNotNull(attributes.getETag());
+        assertEquals(attributes.getETag(), new DefaultAttributesFinderFeature(session).find(container).getETag());
         new AzureDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
