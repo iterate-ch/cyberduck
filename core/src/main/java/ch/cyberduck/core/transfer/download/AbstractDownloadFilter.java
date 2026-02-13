@@ -155,7 +155,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         status.setRemote(attributes);
         if(options.timestamp) {
-            status.setModified(attributes.getModificationDate());
+            if(-1L != attributes.getModificationDate()) {
+                status.setModified(attributes.getModificationDate());
+            }
         }
         if(options.permissions) {
             Permission permission = Permission.EMPTY;
