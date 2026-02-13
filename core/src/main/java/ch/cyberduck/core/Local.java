@@ -431,9 +431,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public String toURL() {
-        return String.format("file:%s", path);
+        return Paths.get(path).toUri().toString();
     }
-
 
     public InputStream getInputStream() throws AccessDeniedException {
         return this.getInputStream(path);
