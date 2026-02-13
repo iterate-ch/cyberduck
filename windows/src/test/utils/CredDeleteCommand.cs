@@ -13,7 +13,7 @@ internal static class CredDeleteCommand
 {
     internal static unsafe void Invoke(ParseResult result)
     {
-        var patternValues = result.GetValue(Program.CredMatch);
+        var patternValues = result.GetValue(CredMatch);
         Regex[] patterns = null;
         if (patternValues is not null)
         {
@@ -36,14 +36,14 @@ internal static class CredDeleteCommand
 
             foreach (ref readonly var credential in new ReadOnlySpan<PCREDENTIALW>(credentials, (int)count))
             {
-                bool? matched;
-                if ((matched = patterns?.Any(credential.Value.TargetName.ToString().Match)) is false)
+                bool matched = false;
+                if (patterns.Length > 0 && !(matched = patterns.Any(credential.Value.TargetName.ToString().Match)))
                 {
                     continue;
                 }
 
                 Console.WriteLine($"{credential.Value.TargetName} ({credential.Value.UserName})");
-                if (matched is true)
+                if (matched)
                 {
                     if (!PInvoke.CredDelete(credential.Value.TargetName, credential.Value.Type, 0))
                     {
