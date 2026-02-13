@@ -15,6 +15,8 @@ package ch.cyberduck.core.transfer.download;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.transfer.download.features.SegmentedFeatureFilter;
+
 import org.junit.Test;
 
 import static ch.cyberduck.core.transfer.download.AbstractDownloadFilterTest.Unit.GiB;
@@ -45,47 +47,47 @@ public class AbstractDownloadFilterTest {
         final SegmentSizePair[] tests = new SegmentSizePair[]{
             // split 20 MiB on one connection down to two 10 MiB segments
             new SegmentSizePair(
-                convertSize(20, MiB), 1,
-                convertSize(10, MiB), convertSize(128, MiB), 128)
+                    convertSize(20, MiB), 1,
+                    convertSize(10, MiB), convertSize(128, MiB), 128)
                 .withExpected(convertSize(10, MiB)),
             // split 16 GiB down to 128 segments of size 128 MiB
             new SegmentSizePair(
-                convertSize(16, GiB), 1,
-                convertSize(10, MiB), convertSize(128, MiB), 128)
+                    convertSize(16, GiB), 1,
+                    convertSize(10, MiB), convertSize(128, MiB), 128)
                 .withExpected(convertSize(128, MiB)),
             // halving allowed segments increases segment size for 16 GiB file
             new SegmentSizePair(
-                convertSize(16, GiB), 1,
-                convertSize(10, MiB), convertSize(128, MiB), 64)
+                    convertSize(16, GiB), 1,
+                    convertSize(10, MiB), convertSize(128, MiB), 64)
                 .withExpected(convertSize(256, MiB)),
             // doubling file size
             new SegmentSizePair(
-                convertSize(32, GiB), 1,
-                convertSize(10, MiB), convertSize(128, MiB), 128)
+                    convertSize(32, GiB), 1,
+                    convertSize(10, MiB), convertSize(128, MiB), 128)
                 .withExpected(convertSize(256, MiB)),
             new SegmentSizePair(
-                convertSize(20, MiB) + 1, 1,
-                convertSize(10, MiB), convertSize(128, MiB), 128)
+                    convertSize(20, MiB) + 1, 1,
+                    convertSize(10, MiB), convertSize(128, MiB), 128)
                 .withExpected(convertSize(5, MiB)),
             new SegmentSizePair(
-                convertSize(20, GiB), 1,
-                convertSize(10, MiB), convertSize(128, MiB), 128)
+                    convertSize(20, GiB), 1,
+                    convertSize(10, MiB), convertSize(128, MiB), 128)
                 .withExpected(convertSize(256, MiB)),
             new SegmentSizePair(
-                4893263872L, 2,
-                convertSize(10, MiB), convertSize(128, MiB), 128)
+                    4893263872L, 2,
+                    convertSize(10, MiB), convertSize(128, MiB), 128)
                 .withExpected(38228624L)
         };
 
         for(final SegmentSizePair test : tests) {
             assertEquals(test.toString(), test.expected,
-                AbstractDownloadFilter.findSegmentSize(
+                SegmentedFeatureFilter.findSegmentSize(
                     test.length, test.connections, test.segmentThreshold,
                     test.segmentSizeMaximum, test.segmentCount));
         }
     }
 
-    class SegmentSizePair {
+    static class SegmentSizePair {
         public final long length;
         public final int connections;
         public final long segmentThreshold;
