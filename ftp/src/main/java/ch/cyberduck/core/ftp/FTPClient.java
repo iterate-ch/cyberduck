@@ -46,12 +46,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 public class FTPClient extends FTPSClient {
     private static final Logger log = LogManager.getLogger(FTPClient.class);
@@ -60,13 +56,8 @@ public class FTPClient extends FTPSClient {
 
     private Protocol protocol;
 
-    /**
-     * Map of FEAT responses. If null, has not been initialised.
-     */
-    private Map<String, Set<String>> features;
-
     private final Preferences preferences
-        = PreferencesFactory.get();
+            = PreferencesFactory.get();
 
     public FTPClient(final Protocol protocol, final SSLSocketFactory f, final SSLContext c) {
         super(false, c);
@@ -166,15 +157,15 @@ public class FTPClient extends FTPSClient {
     protected void sslNegotiation() throws IOException {
         if(protocol.isSecure()) {
             final SSLSocket socket = (SSLSocket) sslSocketFactory.createSocket(_socket_,
-                _socket_.getInetAddress().getHostName(), _socket_.getPort(), false);
+                    _socket_.getInetAddress().getHostName(), _socket_.getPort(), false);
             socket.setEnableSessionCreation(true);
             socket.setUseClientMode(true);
             socket.startHandshake();
             _socket_ = socket;
             _controlInput_ = new BufferedReader(new InputStreamReader(
-                socket.getInputStream(), getControlEncoding()));
+                    socket.getInputStream(), getControlEncoding()));
             _controlOutput_ = new BufferedWriter(new OutputStreamWriter(
-                socket.getOutputStream(), getControlEncoding()));
+                    socket.getOutputStream(), getControlEncoding()));
         }
     }
 
@@ -188,7 +179,7 @@ public class FTPClient extends FTPSClient {
         Socket socket = _openDataConnection_(command, pathname);
 
         BufferedReader reader = new BufferedReader(
-            new InputStreamReader(socket.getInputStream(), getControlEncoding()));
+                new InputStreamReader(socket.getInputStream(), getControlEncoding()));
         ArrayList<String> results = new ArrayList<String>();
         String line;
         while((line = reader.readLine()) != null) {
@@ -205,121 +196,34 @@ public class FTPClient extends FTPSClient {
         return results;
     }
 
-    /**
-     * Query the server for a supported feature, and returns its values (if any). Caches the parsed response to avoid
-     * resending the command repeatedly.
-     *
-     * @return if the feature is present, returns the feature values (empty array if none) Returns {@code null} if the
-     * feature is not found or the command failed. Check {@link #getReplyCode()} or {@link #getReplyString()} if so.
-     * @throws IOException
-     * @since 3.0
-     */
-    public String[] featureValues(String feature) throws IOException {
-        if(!initFeatureMap()) {
-            return null;
+    @Override
+    public String getSystemType() {
+        try {
+            return super.getSystemType();
         }
-        Set<String> entries = features.get(feature.toUpperCase(Locale.ROOT));
-        if(entries != null) {
-            return entries.toArray(new String[entries.size()]);
+        catch(IOException e) {
+            return StringUtils.EMPTY;
         }
-        return null;
     }
 
-    /**
-     * Query the server for a supported feature, and returns the its value (if any). Caches the parsed response to avoid
-     * resending the command repeatedly.
-     *
-     * @return if the feature is present, returns the feature value or the empty string if the feature exists but has no
-     * value. Returns {@code null} if the feature is not found or the command failed. Check {@link #getReplyCode()} or
-     * {@link #getReplyString()} if so.
-     * @throws IOException
-     * @since 3.0
-     */
-    public String featureValue(String feature) throws IOException {
-        String[] values = featureValues(feature);
-        if(values != null) {
-            return values[0];
+    @Override
+    public boolean hasFeature(final String feature, final String value) {
+        try {
+            return super.hasFeature(feature, value);
         }
-        return null;
-    }
-
-    /**
-     * Query the server for a supported feature. Caches the parsed response to avoid resending the command repeatedly.
-     *
-     * @param feature the name of the feature; it is converted to upper case.
-     * @return {@code true} if the feature is present, {@code false} if the feature is not present or the {@link
-     * #feat()} command failed. Check {@link #getReplyCode()} or {@link #getReplyString()} if it is necessary to
-     * distinguish these cases.
-     * @throws IOException
-     * @since 3.0
-     */
-    public boolean hasFeature(String feature) throws IOException {
-        if(!initFeatureMap()) {
+        catch(IOException e) {
             return false;
         }
-        return features.containsKey(feature.toUpperCase(Locale.ROOT));
     }
 
-    /**
-     * Query the server for a supported feature with particular value, for example "AUTH SSL" or "AUTH TLS". Caches the
-     * parsed response to avoid resending the command repeatedly.
-     *
-     * @param feature the name of the feature; it is converted to upper case.
-     * @param value   the value to find.
-     * @return {@code true} if the feature is present, {@code false} if the feature is not present or the {@link
-     * #feat()} command failed. Check {@link #getReplyCode()} or {@link #getReplyString()} if it is necessary to
-     * distinguish these cases.
-     * @throws IOException
-     * @since 3.0
-     */
-    public boolean hasFeature(String feature, String value) throws IOException {
-        if(!initFeatureMap()) {
+    @Override
+    public boolean hasFeature(String feature) {
+        try {
+            return super.hasFeature(feature);
+        }
+        catch(IOException e) {
             return false;
         }
-        Set<String> entries = features.get(feature.toUpperCase(Locale.ROOT));
-        if(entries != null) {
-            return entries.contains(value);
-        }
-        return false;
-    }
-
-    /*
-     * Create the feature map if not already created.
-     */
-    private boolean initFeatureMap() throws IOException {
-        if(features == null) {
-            // Don't create map here, because next line may throw exception
-            final int reply = feat();
-            if(FTPReply.NOT_LOGGED_IN == reply) {
-                return false;
-            }
-            else {
-                // we init the map here, so we don't keep trying if we know the command will fail
-                features = new HashMap<String, Set<String>>();
-            }
-            boolean success = FTPReply.isPositiveCompletion(reply);
-            if(!success) {
-                return false;
-            }
-            for(String l : getReplyStrings()) {
-                if(l.startsWith(" ")) { // it's a FEAT entry
-                    String key;
-                    String value = "";
-                    int varsep = l.indexOf(' ', 1);
-                    if(varsep > 0) {
-                        key = l.substring(1, varsep);
-                        value = l.substring(varsep + 1);
-                    }
-                    else {
-                        key = l.substring(1);
-                    }
-                    key = key.toUpperCase(Locale.ROOT);
-                    Set<String> entries = features.computeIfAbsent(key, k -> new HashSet<String>());
-                    entries.add(value);
-                }
-            }
-        }
-        return true;
     }
 
     @Override
