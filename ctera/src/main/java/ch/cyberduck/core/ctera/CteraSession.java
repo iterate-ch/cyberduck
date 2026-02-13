@@ -63,6 +63,7 @@ public class CteraSession extends DAVSession {
     protected PublicInfo info;
 
     private final HostPasswordStore keychain;
+    private final FileIdProvider fileid = new DefaultFileIdProvider(this);
     private final VersionIdProvider versionid = new DefaultVersionIdProvider(this);
 
     private APICredentials apiCredentials;
@@ -233,6 +234,7 @@ public class CteraSession extends DAVSession {
 
     @Override
     public void disconnect() throws BackgroundException {
+        fileid.clear();
         versionid.clear();
         super.disconnect();
     }
@@ -241,10 +243,10 @@ public class CteraSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == VersionIdProvider.class) {
-            if(preferences.getBoolean("ctera.download.directio.enable")) {
-                return (T) versionid;
-            }
-            return null;
+            return (T) versionid;
+        }
+        if(type == FileIdProvider.class) {
+            return (T) fileid;
         }
         if(type == Touch.class) {
             return (T) new CteraTouchFeature(this);
