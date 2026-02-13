@@ -15,12 +15,10 @@ package ch.cyberduck.core.ftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -31,19 +29,18 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 @Category(IntegrationTest.class)
 public class FTPMDTMTimestampFeatureTest extends AbstractFTPTest {
 
-    @Test(expected = BackgroundException.class)
+    @Test
     public void testSetTimestamp() throws Exception {
         final Path home = new FTPWorkdirService(session).find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
-        new FTPMDTMTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals(modified / 1000 * 1000, new FTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
+        assertThrows(BackgroundException.class, () -> new FTPMDTMTimestampFeature(session).setTimestamp(test, modified));
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
