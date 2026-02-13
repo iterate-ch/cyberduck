@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -85,11 +86,14 @@ public class GraphMoveFeature implements Move {
         }
         final DriveItem item = session.getItem(file);
         try {
-            final DriveItem.Metadata metadata = Files.patch(item, patchOperation);
-            final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).toAttributes(metadata);
+            final Optional<DriveItem.Metadata> metadata = Files.patch(item, patchOperation);
             fileid.cache(file, null);
-            fileid.cache(renamed, attributes.getFileId());
-            return new Path(renamed).withAttributes(attributes);
+            if(metadata.isPresent()) {
+                final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).toAttributes(metadata.get());
+                fileid.cache(renamed, attributes.getFileId());
+                return new Path(renamed).withAttributes(attributes);
+            }
+            return new Path(renamed).withAttributes(new DefaultPathAttributes(file.attributes()).setVault(null));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Cannot rename {0}", e, file);
