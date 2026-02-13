@@ -39,6 +39,7 @@
     <PackageVersion Include="ReactiveUI" Version="17.1.50" />
     <PackageVersion Include="ReactiveUI.WPF" Version="17.1.50" />
     <PackageVersion Include="StructureMap" Version="2.6.4.1" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.3" />
     <PackageVersion Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
     <PackageVersion Include="System.Memory" Version="4.5.5" />
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.0" />

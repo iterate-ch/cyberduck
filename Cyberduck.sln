@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.2.11415.280 d18.0
+VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8B08EF96-10D6-4F35-94C1-986F9F0F1506}"
 EndProject
@@ -60,6 +60,8 @@ EndProject
 Project("{DAEA77DE-8320-43BA-BA7C-EF5C12478AB5}") = "Cyberduck.Cryptomator", "cryptomator\dll\Cyberduck.Cryptomator.ikvmproj", "{7EFC0398-8F4D-4850-BBE3-A0CC85410559}"
 EndProject
 Project("{DAEA77DE-8320-43BA-BA7C-EF5C12478AB5}") = "Cyberduck.Cli", "cli\dll\Cyberduck.Cli.ikvmproj", "{2D33598A-21A1-4117-82DC-250F4CE8D5E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test-utils", "windows\src\test\utils\test-utils.csproj", "{BBCC0F0C-0135-AAAB-DB32-CC4E28BC88E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -141,6 +143,10 @@ Global
 		{2D33598A-21A1-4117-82DC-250F4CE8D5E5}.Debug|x64.Build.0 = Debug|Any CPU
 		{2D33598A-21A1-4117-82DC-250F4CE8D5E5}.Release|x64.ActiveCfg = Release|Any CPU
 		{2D33598A-21A1-4117-82DC-250F4CE8D5E5}.Release|x64.Build.0 = Release|Any CPU
+		{BBCC0F0C-0135-AAAB-DB32-CC4E28BC88E0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BBCC0F0C-0135-AAAB-DB32-CC4E28BC88E0}.Debug|x64.Build.0 = Debug|Any CPU
+		{BBCC0F0C-0135-AAAB-DB32-CC4E28BC88E0}.Release|x64.ActiveCfg = Release|Any CPU
+		{BBCC0F0C-0135-AAAB-DB32-CC4E28BC88E0}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,6 +174,7 @@ Global
 		{9C7B827F-AE30-44C4-A210-E49DF883C720} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
 		{7EFC0398-8F4D-4850-BBE3-A0CC85410559} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
 		{2D33598A-21A1-4117-82DC-250F4CE8D5E5} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
+		{BBCC0F0C-0135-AAAB-DB32-CC4E28BC88E0} = {8B08EF96-10D6-4F35-94C1-986F9F0F1506}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {289E6003-15D5-4377-ADA6-2E7093785BCD}
