@@ -132,7 +132,7 @@ public class FinderLocalTest {
 
     @Test
     public void testToUrl() {
-        assertEquals("file:/c/file", new FinderLocal("/c/file").toURL());
+        assertEquals("file:///c/file", new FinderLocal("/c/file").toURL());
     }
 
     @Test

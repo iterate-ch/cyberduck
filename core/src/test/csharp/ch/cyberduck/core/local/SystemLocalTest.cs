@@ -80,6 +80,13 @@ namespace Ch.Cyberduck.Core.Local
         }
 
         [Test]
+        public void TestToURL()
+        {
+            Assert.That(new SystemLocal(@"C:\Directory\File.ext").toURL(), Is.EqualTo("file:///C:/Directory/File.ext"));
+            Assert.That(new SystemLocal(@"\\?\C:\Directory\File.ext").toURL(), Is.EqualTo("file:///C:/Directory/File.ext"));
+        }
+
+        [Test]
         public void TestPathToLocal()
         {
             const string PUBLIC_PATH = @"C:\Users\Public";
