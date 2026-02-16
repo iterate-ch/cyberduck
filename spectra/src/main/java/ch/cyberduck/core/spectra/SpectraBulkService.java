@@ -101,7 +101,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      */
     @Override
     public Set<UUID> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+        final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
         final Map<Path, List<Ds3Object>> objects = new HashMap<Path, List<Ds3Object>>();
         for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
             final Path file = item.getKey().remote;
@@ -193,7 +193,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
             final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
             log.debug("Cancel job {}", job);
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             client.cancelJobSpectraS3(new CancelJobSpectraS3Request(job));
         }
         catch(FailedRequestException e) {
@@ -227,7 +227,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
             log.debug("Query status for job {}", job);
             // Fetch current list from server
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             // For GET, the client may need to issue multiple GET requests for a single object if it has
             // been broken up into multiple pieces due to its large size
             // For PUT, This will allocate a working window of job chunks, if possible, and return a list of
@@ -329,7 +329,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     protected void clear() throws BackgroundException {
         try {
             // Cancel all active jobs to remove references to cached objects
-            final Ds3Client ds3Client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client ds3Client = new SpectraClientBuilder().wrap(session, session.getHost());
             ds3Client.cancelAllActiveJobsSpectraS3(new CancelAllActiveJobsSpectraS3Request());
             // Clear cache
             final RequestEntityRestStorageService client = session.getClient();
