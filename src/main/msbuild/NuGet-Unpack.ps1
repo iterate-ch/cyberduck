@@ -11,23 +11,22 @@ if (-not (Test-Path -Path $PackagesListPath -PathType Leaf)) {
 }
 
 $NugetParent = [System.IO.Path]::GetDirectoryName($PackagesListPath)
-$CachePath = "$NugetParent\cache"
 $PackagesPath = "$NugetParent\packages"
 
 foreach ($line in Get-Content $PackagesListPath) {
     $line = $line.Trim()
-    if ($line -notmatch "\s*(?<group>[^:]+):(?<artifact>[^:]+):(?<type>[^:]+):(?<version>[^:]+):(?<scope>[^:]+)$") {
+    if ($line -notmatch "\s*(?<group>[^:]+):(?<artifact>[^:]+):(?<type>[^:]+):(?<version>[^:]+):(?<scope>[^:]+):(?<path>.*)$") {
         continue
     }
 
     $artifact = $Matches["artifact"]
     $version = $Matches["version"]
 
-    $NupkgFile = "$CachePath\$artifact-$version.nupkg"
-    $NupkgZip = "$CachePath\$artifact-$version.zip"
-    $TargetDirectory = "$PackagesPath\$artifact\$version"
-    Copy-Item $NupkgFile $NupkgZip
-    Expand-Archive $NupkgZip $TargetDirectory -Force
-    Remove-Item $NupkgZip
+    $NupkgFile = $Matches["path"]
+    $PackageName = [System.IO.Path]::GetFileNameWithoutExtension((tar.exe tf "$NupkgFile" '*.nuspec'))
+    $TargetDirectory = "$PackagesPath\$PackageName\$version"
+    New-Item -Force -Type Directory $TargetDirectory
+    Get-ChildItem $TargetDirectory | Remove-Item -Recurse -Force
+    tar.exe xf $NupkgFile -C $TargetDirectory
     Set-Content "$TargetDirectory\.nupkg.metadata" '{}'
 }

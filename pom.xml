@@ -1073,13 +1073,12 @@
                                     <id>generate-nupkgs</id>
                                     <phase>generate-sources</phase>
                                     <goals>
-                                        <goal>copy-dependencies</goal>
-                                        <goal>collect</goal>
+                                        <goal>resolve</goal>
                                     </goals>
                                     <configuration>
-                                        <includeTypes>nupkg</includeTypes>
                                         <outputFile>${project.build.directory}/.nuget/packages.list</outputFile>
-                                        <outputDirectory>${project.build.directory}/.nuget/cache</outputDirectory>
+                                        <outputAbsoluteArtifactFilename>true</outputAbsoluteArtifactFilename>
+                                        <includeTypes>nupkg</includeTypes>
                                     </configuration>
                                 </execution>
                                 <execution>
