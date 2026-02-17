@@ -19,7 +19,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.DefaultVaultMetadataCredentialsProvider;
-import ch.cyberduck.core.cryptomator.impl.uvf.DefaultVaultMetadataUVFProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
@@ -74,7 +73,6 @@ public class CryptoVaultProvider implements VaultProvider {
         return null;
     }
 
-    //TODO prompt parameter wegnehmen?
     @Override
     public synchronized AbstractVault provide(final Session<?> session, final VaultMetadata metadata) {
         switch(metadata.type) {
@@ -91,7 +89,6 @@ public class CryptoVaultProvider implements VaultProvider {
     }
 
     //TODO create methode braucht es glaube ich nicht unbedingt
-
     @Override
     public AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials, final VaultMetadata metadata) throws BackgroundException {
         switch(metadata.type) {
@@ -99,7 +96,7 @@ public class CryptoVaultProvider implements VaultProvider {
                 return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(metadata.root).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             case UVF:
                 //TODO plain UVF
-                return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(metadata.root).create(session, region, new DefaultVaultMetadataUVFProvider());
+                return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(metadata.root).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             default:
                 log.error("Unknown vault type {}", metadata.type);
                 // TODO schmeissen, DISABLED zurück geben geht nicht weil kein AbstractVault
