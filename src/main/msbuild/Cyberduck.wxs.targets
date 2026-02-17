@@ -1,7 +1,5 @@
 <Project>
 
-  <Import Project="Cyberduck.MSVC.Toolset.props" />
-
   <Target Name="ResolveLocalBindPaths" DependsOnTargets="ResolveReferences" Returns="@(BindPathPayload)">
     <ItemGroup>
       <BindPathPayload Include="%(BindPath.Identity)\**" />
@@ -16,7 +14,8 @@
     <Exec Command="%22$(SignToolExecutableName)%22 verify /q /pa %22%(BindPathPayloadExecutable.Identity)%22"
       EnvironmentVariables="@(SignToolPath)"
       IgnoreStandardErrorWarningFormat="true"
-      IgnoreExitCode="true">
+      IgnoreExitCode="true"
+      Condition="'@(BindPathPayloadExecutable)'!=''">
       <Output TaskParameter="ExitCode" PropertyName="PayloadSigned" />
     </Exec>
 
