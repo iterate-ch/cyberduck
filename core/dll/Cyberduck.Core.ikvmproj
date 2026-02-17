@@ -5,7 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="iterate-ch.IKVM.MSBuild.SkipDuplicates" />
+    <PackageReference Include="iterate-ch.IKVM.MSBuild.SkipDuplicates">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
 
     <Convert Include="$(TargetBuildDir)*.jar" />
   </ItemGroup>
