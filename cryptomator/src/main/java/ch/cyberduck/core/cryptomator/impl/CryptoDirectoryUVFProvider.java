@@ -44,16 +44,6 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV8Provider {
         this.vault = vault;
     }
 
-    //TODO kann das auch ersetzt werden mit der impl der superklasse? hier wird load verwendet? nötig?
-    @Override
-    public String toEncrypted(final Session<?> session, final Path parent, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
-        final DirectoryMetadata dirMetadata = load(session, parent);
-        this.vault.getCryptor().directoryContentCryptor().fileNameEncryptor(dirMetadata).encrypt(filename);
-        final String ciphertextName = this.vault.getCryptor().directoryContentCryptor().fileNameEncryptor(dirMetadata).encrypt(filename);
-        log.debug("Encrypted filename {} to {}", filename, ciphertextName);
-        return filenameProvider.deflate(session, ciphertextName);
-    }
-
     protected DirectoryMetadata load(final Session<?> session, final Path directory) throws BackgroundException {
         if(new SimplePathPredicate(home).test(directory)) {
             return vault.getRootDirId();
@@ -71,7 +61,7 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV8Provider {
         }
         catch(NotfoundException e) {
             log.warn("Missing directory ID for folder {}", directory);
-            return this.getOrCreateDirectoryId(session, directory);
+            return this.createDirectoryId(directory);
         }
     }
 }
