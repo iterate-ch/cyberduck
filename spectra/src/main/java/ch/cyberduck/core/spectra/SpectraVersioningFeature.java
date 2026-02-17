@@ -62,7 +62,7 @@ public class SpectraVersioningFeature implements Versioning {
 
     @Override
     public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
-        final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+        final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
         final Path container = containerService.getContainer(file);
         if(container.isRoot()) {
             return VersioningConfiguration.empty();
@@ -98,7 +98,7 @@ public class SpectraVersioningFeature implements Versioning {
                 }
                 else {
                     log.debug("Enable bucket versioning for {}", container);
-                    final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+                    final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
                     final GetBucketSpectraS3Response bucket = client.getBucketSpectraS3(new GetBucketSpectraS3Request(container.getName()));
                     final UUID id = bucket.getBucketResult().getDataPolicyId();
                     client.modifyDataPolicySpectraS3(new ModifyDataPolicySpectraS3Request(id).withVersioning(VersioningLevel.KEEP_MULTIPLE_VERSIONS));
@@ -127,7 +127,7 @@ public class SpectraVersioningFeature implements Versioning {
 
     @Override
     public void revert(final Path file) throws BackgroundException {
-        final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+        final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
         final Path container = containerService.getContainer(file);
         try {
             client.undeleteObjectSpectraS3(new UndeleteObjectSpectraS3Request(container.getName(), containerService.getKey(file)));
