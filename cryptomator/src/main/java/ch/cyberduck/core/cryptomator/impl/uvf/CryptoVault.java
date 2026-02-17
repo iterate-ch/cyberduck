@@ -17,7 +17,6 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -26,7 +25,6 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.AbstractVault;
@@ -85,6 +83,7 @@ import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEHeader;
+import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.JWEObjectJSON;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MultiDecrypter;
@@ -142,8 +141,9 @@ public class CryptoVault extends AbstractVault {
                 final JWEHeader header = new JWEHeader.Builder(JWEAlgorithm.PBES2_HS512_A256KW, EncryptionMethod.A256GCM)
                         .jwkURL(URI.create("jwks.json"))
                         .contentType("json")
-                        .criticalParams(Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM))
-                        .customParam(UVF_SPEC_VERSION_KEY_PARAM, 1)
+                        // Probably a bug - refer to https://bitbucket.org/connect2id/nimbus-jose-jwt/issues/610/critical-headers-and
+                        //.criticalParams(Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM))
+                        //.customParam(UVF_SPEC_VERSION_KEY_PARAM, 1)
                         .keyID("org.cryptomator.uvf.vaultpassword")
                         .build();
                 final String kid = Base64.getUrlEncoder().encodeToString(new AlphanumericRandomStringService(4).random().getBytes(StandardCharsets.UTF_8));
@@ -162,9 +162,9 @@ public class CryptoVault extends AbstractVault {
                     put("kdf", "HKDF-SHA512");
                     put("kdfSalt", Base64.getUrlEncoder().encodeToString(kdfSalt));
                 }});
-                final JWEObjectJSON builder = new JWEObjectJSON(header, payload);
-                builder.encrypt(new PasswordBasedEncrypter(credentials.getPassword(), PBKDF2_SALT_LENGTH, PBKDF2_ITERATION_COUNT));
-                final byte[] encryptedMetadata = builder.serializeGeneral().getBytes(StandardCharsets.US_ASCII);
+                final JWEObject jwe = new JWEObject(header, payload);
+                jwe.encrypt(new PasswordBasedEncrypter(credentials.getPassword(), PBKDF2_SALT_LENGTH, PBKDF2_ITERATION_COUNT));
+                final byte[] encryptedMetadata = jwe.serialize().getBytes(StandardCharsets.US_ASCII);
                 this.uploadTemplate(session, region, this.computeRootDirIdHash(payload.toString()), this.computeRootDirUvf(payload.toString()), encryptedMetadata);
             }
             catch(JOSEException | JsonProcessingException e) {
@@ -231,13 +231,13 @@ public class CryptoVault extends AbstractVault {
     // load -> unlock -> open
     @Override
     public CryptoVault load(final Session<?> session, final PasswordCallback callback, final VaultMetadataProvider metadata) throws BackgroundException {
-        final JWEObjectJSON jweObject;
+        final Payload payload;
 
         if(metadata instanceof VaultMetadataCredentialsProvider) {
             final Host bookmark = session.getHost();
             String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
-            jweObject = this.unlock(session, callback, bookmark, passphrase);
+            payload = this.unlock(session, callback, bookmark, passphrase).getPayload();
         }
         else if(metadata instanceof VaultMetadataUVFProvider) {
             final VaultMetadataUVFProvider metadataProvider = VaultMetadataUVFProvider.cast(metadata);
@@ -245,8 +245,9 @@ public class CryptoVault extends AbstractVault {
             try {
                 final String jwe = new String(metadataProvider.getMetadata(), StandardCharsets.US_ASCII);
                 final JWK jwk = JWKCallback.cast(callback).prompt(session.getHost(), StringUtils.EMPTY, StringUtils.EMPTY, new LoginOptions()).getKey();
-                jweObject = JWEObjectJSON.parse(jwe);
+                final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
                 jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM)));
+                payload = jweObject.getPayload();
             }
             catch(ParseException | JOSEException e) {
                 throw new VaultException("Failure retrieving key material", e);
@@ -257,7 +258,7 @@ public class CryptoVault extends AbstractVault {
             throw new VaultException("Unsupported metadata provider: " + metadata.getClass().getName());
         }
 
-        masterKey = UVFMasterkey.fromDecryptedPayload(jweObject.getPayload().toString());
+        masterKey = UVFMasterkey.fromDecryptedPayload(payload.toString());
         final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
         log.debug("Initialized crypto provider {}", provider);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
@@ -267,7 +268,7 @@ public class CryptoVault extends AbstractVault {
         return this;
     }
 
-    public JWEObjectJSON unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+    public JWEObject unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
         log.debug("Read UVF metadata {}", masterkeyPath);
         final String vaultUVF = new ContentReader(session).read(masterkeyPath);
         return this.unlock(vaultUVF, passphrase, bookmark, prompt,
@@ -275,8 +276,8 @@ public class CryptoVault extends AbstractVault {
         );
     }
 
-    private JWEObjectJSON unlock(final String vaultUVF, final String passphrase, final Host bookmark, final PasswordCallback prompt,
-                                 final String message) throws BackgroundException {
+    private JWEObject unlock(final String vaultUVF, final String passphrase, final Host bookmark, final PasswordCallback prompt,
+                             final String message) throws BackgroundException {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = prompt.prompt(
@@ -296,10 +297,12 @@ public class CryptoVault extends AbstractVault {
             credentials = new VaultCredentials(passphrase).setSaved(false);
         }
         try {
-            final JWEObjectJSON jweObject;
+            final JWEObject jweObject;
             try {
-                jweObject = JWEObjectJSON.parse(vaultUVF);
-                jweObject.decrypt(new PasswordBasedDecrypter(passphrase));
+
+                jweObject = JWEObject.parse(vaultUVF);
+                ;
+                jweObject.decrypt(new PasswordBasedDecrypter(credentials.getPassword()));
             }
             catch(ParseException e) {
                 throw new VaultException("Failure retrieving key material", e);
@@ -319,67 +322,9 @@ public class CryptoVault extends AbstractVault {
     }
 
     @Override
-    public Path encrypt(Session<?> session, Path file, boolean metadata) throws BackgroundException {
-        final Path encrypted;
-        if(file.isFile() || metadata) {
-            if(file.getType().contains(Path.Type.vault)) {
-                log.warn("Skip file {} because it is marked as an internal vault path", file);
-                return file;
-            }
-            if(new SimplePathPredicate(file).test(this.getHome())) {
-                log.warn("Skip vault home {} because the root has no metadata file", file);
-                return file;
-            }
-            final Path parent;
-            final String filename;
-            if(file.getType().contains(Path.Type.encrypted)) {
-                final Path decrypted = file.attributes().getDecrypted();
-                parent = this.getDirectoryProvider().toEncrypted(session, decrypted.getParent());
-                filename = this.getDirectoryProvider().toEncrypted(session, decrypted.getParent(), decrypted.getName(), decrypted.getType());
-            }
-            else {
-                parent = this.getDirectoryProvider().toEncrypted(session, file.getParent());
-                // / diff to AbstractVault.encrypt
-                filename = this.getDirectoryProvider().toEncrypted(session, file.getParent(), file.getName(), file.getType());
-                // \ diff to AbstractVault.decrypt
-            }
-            final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
-            if(!file.isFile() && !metadata) {
-                // The directory is different from the metadata file used to resolve the actual folder
-                attributes.setVersionId(null);
-                attributes.setFileId(null);
-            }
-            // Translate file size
-            attributes.setSize(this.toCiphertextSize(0L, file.attributes().getSize()));
-            final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-            type.remove(Path.Type.decrypted);
-            type.add(Path.Type.encrypted);
-            encrypted = new Path(parent, filename, type, attributes);
-        }
-        else {
-            if(file.getType().contains(Path.Type.encrypted)) {
-                log.warn("Skip file {} because it is already marked as an encrypted path", file);
-                return file;
-            }
-            if(file.getType().contains(Path.Type.vault)) {
-                return this.getDirectoryProvider().toEncrypted(session, this.getHome());
-            }
-            encrypted = this.getDirectoryProvider().toEncrypted(session, file);
-        }
-        // Add reference to decrypted file
-        if(!file.getType().contains(Path.Type.encrypted)) {
-            encrypted.attributes().setDecrypted(file);
-        }
-        // Add reference for vault
-        file.attributes().setVaultMetadata(this.getMetadata());
-        encrypted.attributes().setVaultMetadata(this.getMetadata());
-        return encrypted;
-    }
-
-    @Override
     public synchronized void close() {
         super.close();
-        cryptor.destroy();
+        cryptor = null;
     }
 
     @Override
