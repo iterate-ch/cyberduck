@@ -56,7 +56,7 @@ public class FTPListService implements ListService {
     private final FTPSession session;
 
     protected final Map<Command, ListService> implementations
-        = new HashMap<>();
+            = new HashMap<>();
 
     public enum Command {
         stat(FTPCmd.STAT),
@@ -133,51 +133,46 @@ public class FTPListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        try {
-            if(implementations.containsKey(Command.mlsd)) {
-                // Note that there is no distinct FEAT output for MLSD. The presence of the MLST feature
-                // indicates that both MLST and MLSD are supported.
-                if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
-                    try {
-                        return this.post(directory, implementations.get(Command.mlsd).list(directory, listener), listener);
-                    }
-                    catch(InteroperabilityException e) {
-                        this.remove(Command.mlsd);
-                    }
+        if(implementations.containsKey(Command.mlsd)) {
+            // Note that there is no distinct FEAT output for MLSD. The presence of the MLST feature
+            // indicates that both MLST and MLSD are supported.
+            if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
+                try {
+                    return this.post(directory, implementations.get(Command.mlsd).list(directory, listener), listener);
                 }
-                else {
+                catch(InteroperabilityException e) {
                     this.remove(Command.mlsd);
                 }
             }
-            if(implementations.containsKey(Command.stat)) {
-                try {
-                    return this.post(directory, implementations.get(Command.stat).list(directory, listener), listener);
-                }
-                catch(InteroperabilityException | AccessDeniedException | NotfoundException e) {
-                    this.remove(Command.stat);
-                }
-            }
-            if(implementations.containsKey(Command.lista)) {
-                try {
-                    return this.post(directory, implementations.get(Command.lista).list(directory, listener), listener);
-                }
-                catch(FTPInvalidListException e) {
-                    // Empty directory listing. #7737
-                }
-                catch(InteroperabilityException e) {
-                    this.remove(Command.lista);
-                }
-            }
-            try {
-                return this.post(directory, implementations.get(Command.list).list(directory, listener), listener);
-            }
-            catch(FTPInvalidListException f) {
-                // Empty directory listing
-                return this.post(directory, f.getParsed(), listener);
+            else {
+                this.remove(Command.mlsd);
             }
         }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
+        if(implementations.containsKey(Command.stat)) {
+            try {
+                return this.post(directory, implementations.get(Command.stat).list(directory, listener), listener);
+            }
+            catch(InteroperabilityException | AccessDeniedException | NotfoundException e) {
+                this.remove(Command.stat);
+            }
+        }
+        if(implementations.containsKey(Command.lista)) {
+            try {
+                return this.post(directory, implementations.get(Command.lista).list(directory, listener), listener);
+            }
+            catch(FTPInvalidListException e) {
+                // Empty directory listing. #7737
+            }
+            catch(InteroperabilityException e) {
+                this.remove(Command.lista);
+            }
+        }
+        try {
+            return this.post(directory, implementations.get(Command.list).list(directory, listener), listener);
+        }
+        catch(FTPInvalidListException f) {
+            // Empty directory listing
+            return this.post(directory, f.getParsed(), listener);
         }
     }
 

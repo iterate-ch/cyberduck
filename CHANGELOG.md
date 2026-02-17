@@ -1,5 +1,14 @@
 # Changelog
 
+[9.4.0](https://github.com/iterate-ch/cyberduck/compare/release-9-3-1...release-9-4-0)
+
+* [Feature] Rewrite protocol implementation (iRODS)
+* [Bugfix] Do not preemptively save OAuth tokens with no username (Box, Dropbox, Google Drive, Google Storage, OneDrive)
+* [Bugfix] Fail when reading private key for selected certificate fails (WebDAV)
+* [Bugfix] Validate jumphost configuration on connect (SFTP)
+* [Bugfix] Include context path in presigned URLs (S3)
+* [Bugfix] Previous file versions missing in Info → Versions (Dropbox)
+
 [9.3.1](https://github.com/iterate-ch/cyberduck/compare/release-9-3-0...release-9-3-1)
 * [Bugfix] Validate tokens when using AWS S3 CLI connection profile (#17690)
 

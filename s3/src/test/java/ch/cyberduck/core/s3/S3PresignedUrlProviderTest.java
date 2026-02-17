@@ -144,7 +144,7 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
             }
         };
         final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
-                "cyberduck", "eu-central-1", "f", "GET", expiry.getTimeInMillis());
+                "cyberduck", "my-eu-central-1", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
         assertEquals("cyberduck.wasabisys.com", URI.create(url).getHost());
     }
@@ -173,7 +173,7 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
 
     @Test
     public void testDnsBucketNamingDisabled() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+        final Host host = new Host(new S3Protocol(), "mys3", new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         )) {
             @Override
@@ -193,10 +193,11 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
-                "test-bucket", "region", "f", "GET", expiry.getTimeInMillis());
+                "test bucket", "region", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
-        assertEquals("s3.dualstack.region.amazonaws.com", URI.create(url).getHost());
-        assertEquals("/test-bucket/f", URI.create(url).getPath());
+        assertEquals("mys3", URI.create(url).getHost());
+        assertEquals("/test%20bucket/f", URI.create(url).getRawPath());
+        assertEquals("/test bucket/f", URI.create(url).getPath());
     }
 
     @Test

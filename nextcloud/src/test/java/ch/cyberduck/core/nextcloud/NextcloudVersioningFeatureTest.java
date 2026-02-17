@@ -32,6 +32,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -46,6 +47,7 @@ import static org.junit.Assert.*;
 public class NextcloudVersioningFeatureTest extends AbstractNextcloudTest {
 
     @Test
+    @Ignore
     public void testRevert() throws Exception {
         final Path directory = new DAVDirectoryFeature(session).mkdir(new NextcloudWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());

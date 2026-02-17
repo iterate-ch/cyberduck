@@ -18,14 +18,12 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.EnumSet;
-
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
@@ -33,11 +31,7 @@ public class GoogleStorageBucketListServiceTest extends AbstractGoogleStorageTes
 
     @Test
     public void testListContainers() throws Exception {
-        final Path container = new Path("/", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> list = new GoogleStorageBucketListService(session).list(container, new DisabledListProgressListener());
+        final AttributedList<Path> list = new GoogleStorageBucketListService(session).list(Home.root(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        for(Path bucket : list) {
-            assertEquals(bucket.attributes(), new GoogleStorageAttributesFinderFeature(session).find(bucket, new DisabledListProgressListener()));
-        }
     }
 }

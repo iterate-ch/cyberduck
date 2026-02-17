@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
@@ -66,7 +65,7 @@ public abstract class AbstractGraphTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(), passwordStore(),
+        }, new DisabledHostKeyCallback(), new TestPasswordStore(),
             new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
@@ -74,8 +73,6 @@ public abstract class AbstractGraphTest extends VaultTest {
     protected abstract Protocol protocol();
 
     protected abstract InputStream profile();
-
-    protected abstract HostPasswordStore passwordStore();
 
     protected abstract GraphSession session(final Host host, final X509TrustManager trust, final X509KeyManager key);
 

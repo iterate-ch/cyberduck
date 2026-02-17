@@ -255,7 +255,8 @@ public class CopyWorkerTest extends AbstractDriveTest {
         cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, fileid)).mkdir(
                 cryptomator.getFeature(session, Write.class, new DriveWriteFeature(session, fileid)), encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<File>(session), cryptomator).touch(new DriveWriteFeature(session, fileid), encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<File>(session), cryptomator).touch(
+                cryptomator.getFeature(session, Write.class, new DriveWriteFeature(session, fileid)), encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move file outside vault
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

@@ -19,14 +19,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -57,7 +55,7 @@ public class AbstractMicrosoftIISDAVTest extends VaultTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/DAV.cyberduckprofile"));
         session = new DAVSession(new Host(profile, "winbuild.iterate.ch", profile.getDefaultPort(), "/WebDAV", new Credentials(
-                PROPERTIES.get("webdav.iis.user"), PROPERTIES.get("webdav.iis.password")
+                PROPERTIES.get("webdav.iis.user")
         )), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -72,12 +70,5 @@ public class AbstractMicrosoftIISDAVTest extends VaultTest {
             }
         }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
-    }
-
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            return PROPERTIES.get("webdav.iis.password");
-        }
     }
 }

@@ -84,29 +84,31 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                 }
                 final Map<Path, Path> recursive = this.compile(copy, list, entry.getKey(), entry.getValue());
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                    if(r.getKey().isDirectory() && !copy.isRecursive(r.getKey(), r.getValue())) {
+                    final Path s = r.getKey();
+                    final Path t = r.getValue();
+                    if(s.isDirectory() && !copy.isRecursive(s, t)) {
                         // Create directory unless copy implementation is recursive
                         final Directory directory = session.getFeature(Directory.class);
-                        result.put(r.getKey(), directory.mkdir(session.getFeature(Write.class), r.getValue(),
-                                new TransferStatus().setLength(0L).setRegion(r.getKey().attributes().getRegion())));
+                        result.put(s, directory.mkdir(session.getFeature(Write.class), t,
+                                new TransferStatus().setLength(0L).setRegion(s.attributes().getRegion())));
                     }
                     else {
                         final TransferStatus status = new TransferStatus()
-                                .setMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                                .setRegion(r.getKey().attributes().getRegion())
-                                .setModified(r.getKey().attributes().getModificationDate())
-                                .setCreated(r.getKey().attributes().getCreationDate())
-                                .setAcl(r.getKey().attributes().getAcl())
-                                .setPermission(r.getKey().attributes().getPermission())
-                                .setEncryption(r.getKey().attributes().getEncryption())
-                                .setStorageClass(r.getKey().attributes().getStorageClass())
-                                .setExists(new CachingFindFeature(session, cache).find(r.getValue()))
-                                .setLength(r.getKey().attributes().getSize());
-                        final Path copied = copy.copy(r.getKey(), r.getValue(), status, callback, new DisabledStreamListener());
+                                .setMime(new MappingMimeTypeService().getMime(t.getName()))
+                                .setRegion(s.attributes().getRegion())
+                                .setModified(-1L != s.attributes().getModificationDate() ? s.attributes().getModificationDate() : null)
+                                .setCreated(-1L != s.attributes().getCreationDate() ? s.attributes().getCreationDate() : null)
+                                .setAcl(s.attributes().getAcl())
+                                .setPermission(s.attributes().getPermission())
+                                .setEncryption(s.attributes().getEncryption())
+                                .setStorageClass(s.attributes().getStorageClass())
+                                .setExists(new CachingFindFeature(session, cache).find(t))
+                                .setLength(s.attributes().getSize());
+                        final Path copied = copy.copy(s, t, status, callback, new DisabledStreamListener());
                         if(PathAttributes.EMPTY.equals(copied.attributes())) {
                             copied.withAttributes(session.getFeature(AttributesFinder.class).find(copied));
                         }
-                        result.put(r.getKey(), copied);
+                        result.put(s, copied);
                     }
                 }
             }

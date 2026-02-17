@@ -76,7 +76,7 @@ public abstract class AbstractS3Test extends VaultTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
+                PROPERTIES.get("s3.key")
         ));
         session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -86,7 +86,7 @@ public abstract class AbstractS3Test extends VaultTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
 
@@ -96,7 +96,7 @@ public abstract class AbstractS3Test extends VaultTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
-                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
+                PROPERTIES.get("s3.key")
         ));
         virtualhost = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -106,7 +106,7 @@ public abstract class AbstractS3Test extends VaultTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), new DisabledProgressListener());
         login.check(virtualhost, new DisabledCancelCallback());
     }
 

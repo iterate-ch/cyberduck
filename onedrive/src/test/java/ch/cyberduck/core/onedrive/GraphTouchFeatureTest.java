@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
@@ -54,7 +55,9 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
     public void testTouch() throws Exception {
         final Path file = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(new OneDriveHomeFinderService().find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(file.attributes().getFileId(), new GraphAttributesFinderFeature(session, fileid).find(file).getFileId());
+        final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(file);
+        assertEquals(file.attributes().getFileId(), attr.getFileId());
+        assertEquals(file.attributes().getVersionId(), attr.getVersionId());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -77,7 +77,8 @@ public class MoveWorkerTest extends AbstractFTPTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
-                session), cryptomator).touch(new FTPWriteFeature(session), source, new TransferStatus());
+                session), cryptomator).touch(
+                cryptomator.getFeature(session, Write.class, new FTPWriteFeature(session)), source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
@@ -97,13 +98,14 @@ public class MoveWorkerTest extends AbstractFTPTest {
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
-                session), cryptomator).touch(new FTPWriteFeature(session), source, new TransferStatus());
+                session), cryptomator).touch(
+                cryptomator.getFeature(session, Write.class, new FTPWriteFeature(session)), source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new FTPWriteFeature(session)), targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session)
-                , PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session),
+                PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
