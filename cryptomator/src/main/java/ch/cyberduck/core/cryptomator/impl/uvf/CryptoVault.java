@@ -166,6 +166,7 @@ public class CryptoVault extends AbstractVault {
                 jwe.encrypt(new PasswordBasedEncrypter(credentials.getPassword(), PBKDF2_SALT_LENGTH, PBKDF2_ITERATION_COUNT));
                 final byte[] encryptedMetadata = jwe.serialize().getBytes(StandardCharsets.US_ASCII);
                 this.uploadTemplate(session, region, this.computeRootDirIdHash(payload.toString()), this.computeRootDirUvf(payload.toString()), encryptedMetadata);
+                this.open(payload);
             }
             catch(JOSEException | JsonProcessingException e) {
                 throw new VaultException("Failure creating vault ", e);
@@ -258,6 +259,11 @@ public class CryptoVault extends AbstractVault {
             throw new VaultException("Unsupported metadata provider: " + metadata.getClass().getName());
         }
 
+        this.open(payload);
+        return this;
+    }
+
+    private void open(Payload payload) {
         masterKey = UVFMasterkey.fromDecryptedPayload(payload.toString());
         final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
         log.debug("Initialized crypto provider {}", provider);
@@ -265,7 +271,6 @@ public class CryptoVault extends AbstractVault {
         this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE);
         this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
         this.nonceSize = 12;
-        return this;
     }
 
     public JWEObject unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
@@ -301,7 +306,6 @@ public class CryptoVault extends AbstractVault {
             try {
 
                 jweObject = JWEObject.parse(vaultUVF);
-                ;
                 jweObject.decrypt(new PasswordBasedDecrypter(credentials.getPassword()));
             }
             catch(ParseException e) {
