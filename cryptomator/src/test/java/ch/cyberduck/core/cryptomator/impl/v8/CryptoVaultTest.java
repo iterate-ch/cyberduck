@@ -38,10 +38,10 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.PathDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
-import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -107,13 +107,11 @@ public class CryptoVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptoVault vault = new CryptoVault(home);
-        vault.load(session, new DisabledPasswordCallback() {
-            @Override
+        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
-        }, new VaultMetadataProvider() {
-        });
+        }));
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
@@ -192,13 +190,11 @@ public class CryptoVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptoVault vault = new CryptoVault(home);
-        assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
-            @Override
+        assertEquals(home, vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
-        }, new VaultMetadataProvider() {
-        }).getHome());
+        })).getHome());
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
@@ -244,13 +240,11 @@ public class CryptoVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptoVault vault = new CryptoVault(home);
-        assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
-            @Override
+        assertEquals(home, vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
-        }, new VaultMetadataProvider() {
-        }).getHome());
+        })).getHome());
         assertEquals(Vault.State.open, vault.getState());
         assertEquals(home, new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())));
         vault.close();
@@ -296,8 +290,7 @@ public class CryptoVaultTest {
         final AtomicBoolean prompt = new AtomicBoolean();
         final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
         try {
-            vault.load(session, new DisabledPasswordCallback() {
-                @Override
+            vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     if(!prompt.get()) {
                         assertEquals("Provide your passphrase to unlock the Cryptomator Vault /", reason);
@@ -309,8 +302,7 @@ public class CryptoVaultTest {
                         throw new LoginCanceledException();
                     }
                 }
-            }, new VaultMetadataProvider() {
-            });
+            }));
             fail();
         }
         catch(LoginCanceledException e) {
@@ -355,13 +347,11 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
         try {
-            vault.load(session, new DisabledPasswordCallback() {
-                @Override
+            vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     throw new LoginCanceledException();
                 }
-            }, new VaultMetadataProvider() {
-            });
+            }));
             fail();
         }
         catch(LoginCanceledException e) {
@@ -405,13 +395,11 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
         try {
-            vault.load(session, new DisabledPasswordCallback() {
-                @Override
+            vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                     return new VaultCredentials(null);
                 }
-            }, new VaultMetadataProvider() {
-            });
+            }));
             fail();
         }
         catch(LoginCanceledException e) {

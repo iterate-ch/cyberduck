@@ -1,7 +1,7 @@
-package ch.cyberduck.core.cryptomator.impl.uvf;
+package ch.cyberduck.core.vault;
 
 /*
- * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,9 +17,8 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
-import ch.cyberduck.core.vault.VaultMetadataProvider;
 
-public interface VaultMetadataUVFProvider extends VaultMetadataProvider {
+public interface VaultMetadataUVFProvider extends VaultMetadataCallbackProvider {
 
     byte[] getMetadata();
 

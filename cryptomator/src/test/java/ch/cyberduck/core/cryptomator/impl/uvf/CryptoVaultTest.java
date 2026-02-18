@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
 
@@ -78,12 +79,11 @@ public class CryptoVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault vault = new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(home);
-        vault.load(session, new DisabledPasswordCallback() {
-            @Override
+        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("mypassphrase");
             }
-        }, new DefaultVaultMetadataCredentialsProvider(null));
+        }));
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v3"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v3"));
         assertEquals(Vault.State.open, vault.getState());

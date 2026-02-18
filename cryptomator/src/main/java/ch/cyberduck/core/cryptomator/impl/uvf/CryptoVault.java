@@ -52,7 +52,9 @@ import ch.cyberduck.core.vault.JWKCallback;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.vault.VaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
+import ch.cyberduck.core.vault.VaultMetadataUVFProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -165,7 +167,7 @@ public class CryptoVault extends AbstractVault {
                 final JWEObject jwe = new JWEObject(header, payload);
                 jwe.encrypt(new PasswordBasedEncrypter(credentials.getPassword(), PBKDF2_SALT_LENGTH, PBKDF2_ITERATION_COUNT));
                 final byte[] encryptedMetadata = jwe.serialize().getBytes(StandardCharsets.US_ASCII);
-                this.uploadTemplate(session, region, this.computeRootDirIdHash(payload.toString()), this.computeRootDirUvf(payload.toString()), encryptedMetadata);
+                this.uploadTemplate(session, region, this.computeRootDirIdHash(payload.toString()), encryptedMetadata, this.computeRootDirUvf(payload.toString()));
                 this.open(payload);
             }
             catch(JOSEException | JsonProcessingException e) {
@@ -206,8 +208,7 @@ public class CryptoVault extends AbstractVault {
         directory.mkdir(session._getFeature(Write.class), secondLevel, status);
 
         // vault.uvf
-        new ContentWriter(session).write(new Path(home, PreferencesFactory.get().getProperty("cryptomator.vault.config.filename"),
-                EnumSet.of(Path.Type.file, Path.Type.vault)), vaultUvf);
+        new ContentWriter(session).write(this.getConfig(), vaultUvf);
         // dir.uvf
         new ContentWriter(session).write(new Path(secondLevel, "dir.uvf", EnumSet.of(Path.Type.file)), dirUvf);
     }
@@ -231,21 +232,14 @@ public class CryptoVault extends AbstractVault {
 
     // load -> unlock -> open
     @Override
-    public CryptoVault load(final Session<?> session, final PasswordCallback callback, final VaultMetadataProvider metadata) throws BackgroundException {
+    public CryptoVault load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
         final Payload payload;
 
-        if(metadata instanceof VaultMetadataCredentialsProvider) {
-            final Host bookmark = session.getHost();
-            String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
-            payload = this.unlock(session, callback, bookmark, passphrase).getPayload();
-        }
-        else if(metadata instanceof VaultMetadataUVFProvider) {
-            final VaultMetadataUVFProvider metadataProvider = VaultMetadataUVFProvider.cast(metadata);
-
+        if(metadata instanceof VaultMetadataUVFProvider) {
+            final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
             try {
-                final String jwe = new String(metadataProvider.getMetadata(), StandardCharsets.US_ASCII);
-                final JWK jwk = JWKCallback.cast(callback).prompt(session.getHost(), StringUtils.EMPTY, StringUtils.EMPTY, new LoginOptions()).getKey();
+                final String jwe = new String(provider.getMetadata(), StandardCharsets.US_ASCII);
+                final JWK jwk = JWKCallback.cast(provider.getPasswordCallback()).prompt(session.getHost(), StringUtils.EMPTY, StringUtils.EMPTY, new LoginOptions()).getKey();
                 final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
                 jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM)));
                 payload = jweObject.getPayload();
@@ -254,7 +248,13 @@ public class CryptoVault extends AbstractVault {
                 throw new VaultException("Failure retrieving key material", e);
             }
         }
-
+        else if(metadata instanceof VaultMetadataCallbackProvider) {
+            VaultMetadataCallbackProvider provider = VaultMetadataCallbackProvider.cast(metadata);
+            final Host bookmark = session.getHost();
+            String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
+                    new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
+            payload = this.unlock(session, provider.getPasswordCallback(), bookmark, passphrase).getPayload();
+        }
         else {
             throw new VaultException("Unsupported metadata provider: " + metadata.getClass().getName());
         }
@@ -275,7 +275,7 @@ public class CryptoVault extends AbstractVault {
 
     public JWEObject unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
         log.debug("Read UVF metadata {}", masterkeyPath);
-        final String vaultUVF = new ContentReader(session).read(masterkeyPath);
+        final String vaultUVF = new String(new ContentReader(session).readBytes(masterkeyPath), StandardCharsets.US_ASCII);
         return this.unlock(vaultUVF, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
         );
@@ -343,8 +343,7 @@ public class CryptoVault extends AbstractVault {
 
     @Override
     public Path getConfig() {
-        //TODO: implement
-        return null;
+        return masterkeyPath;
     }
 
     @Override

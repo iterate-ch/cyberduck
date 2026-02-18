@@ -53,6 +53,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.vault.VaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.logging.log4j.LogManager;
@@ -281,16 +282,20 @@ public class CryptoVault extends AbstractVault {
     }
 
     @Override
-    public Vault load(final Session<?> session, final PasswordCallback prompt, final VaultMetadataProvider provider) throws BackgroundException {
-        final Host bookmark = session.getHost();
-        String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
-        if(null == passphrase) {
-            // Legacy
-            passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+    public Vault load(final Session<?> session, final VaultMetadataProvider provider) throws BackgroundException {
+        if(provider instanceof VaultMetadataCallbackProvider) {
+            VaultMetadataCallbackProvider callback = VaultMetadataCallbackProvider.cast(provider);
+            final Host bookmark = session.getHost();
+            String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
+            if(null == passphrase) {
+                // Legacy
+                passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+                        new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
+            }
+            return this.unlock(session, callback.getPasswordCallback(), bookmark, passphrase);
         }
-        return this.unlock(session, prompt, bookmark, passphrase);
+        throw new VaultException("Unsupported metadata provider: " + provider.getClass().getName());
     }
 
     public Vault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {

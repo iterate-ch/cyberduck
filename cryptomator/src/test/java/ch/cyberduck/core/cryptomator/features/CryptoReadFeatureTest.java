@@ -16,10 +16,7 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -28,7 +25,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.commons.io.IOUtils;
@@ -82,13 +78,7 @@ public class CryptoReadFeatureTest {
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptoVault vault = new CryptoVault(home);
 
-        assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
-                    @Override
-                    public Credentials prompt(final Host bookmark, final String title, final String reason,
-                                              final LoginOptions options) {
-                        return new VaultCredentials("vault");
-                    }
-                }, new VaultMetadataProvider() {
+        assertEquals(home, vault.load(session, new VaultMetadataProvider() {
                 }).
 
                 getHome());
@@ -159,12 +149,7 @@ public class CryptoReadFeatureTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptoVault vault = new CryptoVault(home);
-        assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault");
-            }
-        }, new VaultMetadataProvider() {
+        assertEquals(home, vault.load(session, new VaultMetadataProvider() {
         }).getHome());
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
         {

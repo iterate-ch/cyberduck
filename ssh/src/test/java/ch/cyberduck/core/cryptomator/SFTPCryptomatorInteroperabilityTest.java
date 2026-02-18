@@ -24,7 +24,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
@@ -38,7 +37,6 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
-import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 
@@ -150,12 +148,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vaultPath = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, new VaultMetadata(vaultPath, VaultMetadata.Type.V8));
-        cryptomator.load(session, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials(passphrase);
-            }
-        }, new VaultMetadataProvider() {
+        cryptomator.load(session, new VaultMetadataProvider() {
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         Path p = new Path(new Path(vaultPath, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
@@ -186,12 +179,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vaultPath = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, new VaultMetadata(vaultPath, VaultMetadata.Type.V8));
-        cryptomator.load(session, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials(passphrase);
-            }
-        }, new VaultMetadataProvider() {
+        cryptomator.load(session, new VaultMetadataProvider() {
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         Path p = new Path(new Path(vaultPath, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));

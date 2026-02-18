@@ -30,8 +30,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -107,13 +107,11 @@ public class CryptoDirectoryV8ProviderTest {
         };
         final Path home = new Path("/vault", EnumSet.of((Path.Type.directory)));
         final CryptoVault vault = new CryptoVault(home);
-        vault.load(session, new DisabledPasswordCallback() {
-            @Override
+        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
-        }, new VaultMetadataProvider() {
-        });
+        }));
         final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider());
         assertNotNull(provider.toEncrypted(session, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));

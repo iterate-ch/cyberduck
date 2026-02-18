@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator.impl.uvf;
+package ch.cyberduck.core.vault;
 
 /*
  * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
@@ -15,20 +15,16 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
  * GNU General Public License for more details.
  */
 
-public class DefaultVaultMetadataUVFProvider implements VaultMetadataUVFProvider {
+import ch.cyberduck.core.PasswordCallback;
 
-    @Override
-    public byte[] getMetadata() {
-        return new byte[0];
-    }
+public interface VaultMetadataCallbackProvider extends VaultMetadataProvider {
 
-    @Override
-    public byte[] getRootDirectoryMetadata() {
-        return new byte[0];
-    }
+    PasswordCallback getPasswordCallback();
 
-    @Override
-    public String getDirPath() {
-        return "";
+    static VaultMetadataCallbackProvider cast(VaultMetadataProvider provider) {
+        if(provider instanceof VaultMetadataCallbackProvider) {
+            return (VaultMetadataCallbackProvider) provider;
+        }
+        return null;
     }
 }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,7 +41,7 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Vault load(final Session<?> session, final PasswordCallback prompt, final VaultMetadataProvider provider) {
+    public Vault load(final Session<?> session, final VaultMetadataProvider provider) {
         return this;
     }
 

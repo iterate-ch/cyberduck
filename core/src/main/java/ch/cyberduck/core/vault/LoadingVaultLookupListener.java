@@ -43,9 +43,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
             log.info("Loading vault for session {}", session);
             final Vault vault = VaultProviderFactory.get(session).provide(session, metadata);
             try {
-                // TODO provide correct metadata provider
-                registry.add(vault.load(session, prompt, new VaultMetadataProvider() {
-                }));
+                registry.add(vault.load(session, new DefaultVaultMetadataCallbackProvider(prompt)));
                 return vault;
             }
             catch(BackgroundException e) {

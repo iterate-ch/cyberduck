@@ -35,8 +35,8 @@ import ch.cyberduck.core.sts.AbstractAssumeRoleWithWebIdentityTest;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
-import ch.cyberduck.core.vault.VaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.TestcontainerTest;
@@ -138,13 +138,14 @@ public class UVFIntegrationTest {
                 final VaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback());
                 bookmark.setDefaultPath("/" + bucketName);
                 final CryptoVault vault = new CryptoVault(new DefaultPathHomeFeature(bookmark).find());
-                vaults.add(vault.load(storage, new DisabledPasswordCallback() {
-                    @Override
-                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                        return new Credentials().setPassword(jwe);
-                    }
-                }, new VaultMetadataProvider() {
-                }));
+                vaults.add(vault.load(storage, new DefaultVaultMetadataCallbackProvider(
+                        new DisabledPasswordCallback() {
+                            @Override
+                            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                                return new Credentials().setPassword(jwe);
+                            }
+                        }
+                )));
                 final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
                 storage.withRegistry(vaults);
                 try(final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(jwe)) {

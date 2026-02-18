@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -47,7 +46,7 @@ public interface Vault {
      * @throws BackgroundException    Failure reading master key from server
      * @throws NotfoundException      No master key file in home
      */
-    Vault load(Session<?> session, PasswordCallback prompt, VaultMetadataProvider provider) throws BackgroundException;
+    Vault load(Session<?> session, VaultMetadataProvider provider) throws BackgroundException;
 
     /**
      * Close vault
