@@ -5,13 +5,18 @@
     and these already import Microsoft.Cpp.MSVC.Toolset.Common.props.
   -->
 
-  <!-- Adapted from Microsoft.Cpp.MSVC.Toolset.Common.props -->
+  <PropertyGroup>
+    <_LatestWindowsTargetPlatformVersion>$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion(Windows, 10.0))</_LatestWindowsTargetPlatformVersion>
+    <WindowsSdkDir>$([Microsoft.Build.Utilities.ToolLocationHelper]::GetPlatformSDKLocation(Windows, 10.0))</WindowsSdkDir>
+    <WindowsSDK_ExecutablePath_x86>$(WindowsSdkDir)bin\$(_LatestWindowsTargetPlatformVersion)\x86\</WindowsSDK_ExecutablePath_x86>
+    <WindowsSDK_ExecutablePath_x64>$(WindowsSdkDir)bin\$(_LatestWindowsTargetPlatformVersion)\x64\</WindowsSDK_ExecutablePath_x64>
+    <WindowsSDK_ExecutablePath_arm64>$(WindowsSdkDir)bin\$(_LatestWindowsTargetPlatformVersion)\arm64\</WindowsSDK_ExecutablePath_arm64>
+  </PropertyGroup>
 
-  <Import Project="$(VCTargetsPath)Microsoft.Cpp.WindowsSDK.props" />
+  <!-- Adapted from Microsoft.Cpp.MSVC.Toolset.Common.props -->
 
   <!-- Microsoft.Cpp.Common.props: Inlined -->
   <PropertyGroup>
-    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <VSInstallDir>$(VsInstallRoot)\</VSInstallDir>
     <VCIDEInstallDir>$(VSInstallDir)Common7\IDE\VC\</VCIDEInstallDir>
   </PropertyGroup>
