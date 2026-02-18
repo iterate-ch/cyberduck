@@ -305,12 +305,7 @@ public abstract class AbstractVault implements Vault {
                 return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
             }
             if(type == Directory.class) {
-                //TODO
                 return (T) new CryptoDirectoryV7Feature(session, (Directory) delegate, this);
-//                return (T) (this.getVersion() == VAULT_VERSION_DEPRECATED ?
-//                        new CryptoDirectoryV6Feature(session, (Directory) delegate, this) :
-//                        new CryptoDirectoryV7Feature(session, (Directory) delegate, this)
-//                );
             }
             if(type == Upload.class) {
                 return (T) new CryptoUploadFeature(session, (Upload) delegate, this);
@@ -351,7 +346,7 @@ public abstract class AbstractVault implements Vault {
                 return (T) new CryptoVersionIdProvider(session, (VersionIdProvider) delegate, this);
             }
             if(type == Delete.class) {
-                return (T) new CryptoDeleteV7Feature(session, (Delete) delegate, this);
+                return (T) new CryptoDeleteFeature(session, (Delete) delegate, this);
                 //TODO
 //                return (T) (this.getVersion() == VAULT_VERSION_DEPRECATED ?
 //                        new CryptoDeleteV6Feature(session, (Delete) delegate, this) :
@@ -359,7 +354,7 @@ public abstract class AbstractVault implements Vault {
             }
             if(type == Trash.class) {
                 //TODO
-                return (T) new CryptoDeleteV7Feature(session, (Delete) delegate, this);
+                return (T) new CryptoDeleteFeature(session, (Delete) delegate, this);
 //                return (T) (this.getVersion() == VAULT_VERSION_DEPRECATED ?
 //                        new CryptoDeleteV6Feature(session, (Delete) delegate, this) :
 //                        new CryptoDeleteV7Feature(session, (Delete) delegate, this));

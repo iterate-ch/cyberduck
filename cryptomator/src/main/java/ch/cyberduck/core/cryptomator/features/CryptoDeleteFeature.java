@@ -40,15 +40,15 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-public class CryptoDeleteV7Feature implements Delete, Trash {
-    private static final Logger log = LogManager.getLogger(CryptoDeleteV7Feature.class);
+public class CryptoDeleteFeature implements Delete, Trash {
+    private static final Logger log = LogManager.getLogger(CryptoDeleteFeature.class);
 
     private final Session<?> session;
     private final Delete proxy;
     private final AbstractVault vault;
     private final CryptoFilename filenameProvider;
 
-    public CryptoDeleteV7Feature(final Session<?> session, final Delete proxy, final AbstractVault vault) {
+    public CryptoDeleteFeature(final Session<?> session, final Delete proxy, final AbstractVault vault) {
         this.session = session;
         this.proxy = proxy;
         this.vault = vault;
@@ -120,6 +120,14 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                     if(find.find(dataRoot)) {
                         for(Path d : session._getFeature(ListService.class).list(dataRoot, new DisabledListProgressListener()).toList()) {
                             metadata.addAll(session._getFeature(ListService.class).list(d, new DisabledListProgressListener()).toList());
+                            final List<Path> folders = session._getFeature(ListService.class).list(d, new DisabledListProgressListener()).toList();
+                            for(Path folder : folders) {
+                                metadata.add(folder);
+                                final Path backup = new Path(folder, vault.getBackupDirectoryMetadataFilename(), EnumSet.of(Path.Type.file));
+                                if(find.find(backup)) {
+                                    metadata.add(backup);
+                                }
+                            }
                             metadata.add(d);
                         }
                         metadata.add(dataRoot);

@@ -100,7 +100,7 @@ public class CryptoVault extends AbstractVault {
     private static final String REGULAR_FILE_EXTENSION = ".uvf";
     private static final String FILENAME_DIRECTORYID = "dir";
     private static final String DIRECTORY_METADATA_FILENAME = String.format("%s%s", FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
-    private static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
+    private static final String BACKUP_FILENAME_DIRECTORYID = FILENAME_DIRECTORYID;
     private static final String BACKUP_DIRECTORY_METADATA_FILENAME = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
 
     private static final Pattern FILENAME_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)" + REGULAR_FILE_EXTENSION);
