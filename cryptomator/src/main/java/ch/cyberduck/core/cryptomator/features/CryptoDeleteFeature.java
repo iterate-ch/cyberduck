@@ -119,14 +119,13 @@ public class CryptoDeleteFeature implements Delete, Trash {
                     final Path dataRoot = new Path(f, "d", f.getType());
                     if(find.find(dataRoot)) {
                         for(Path d : session._getFeature(ListService.class).list(dataRoot, new DisabledListProgressListener()).toList()) {
-                            metadata.addAll(session._getFeature(ListService.class).list(d, new DisabledListProgressListener()).toList());
                             final List<Path> folders = session._getFeature(ListService.class).list(d, new DisabledListProgressListener()).toList();
                             for(Path folder : folders) {
-                                metadata.add(folder);
                                 final Path backup = new Path(folder, vault.getBackupDirectoryMetadataFilename(), EnumSet.of(Path.Type.file));
                                 if(find.find(backup)) {
                                     metadata.add(backup);
                                 }
+                                metadata.add(folder);
                             }
                             metadata.add(d);
                         }
