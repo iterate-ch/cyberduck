@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="$(TargetBuildDir)profiles\*.cyberduckprofile" LinkBase="profiles" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(TargetBuildDir)lib\$(Platform)\jnidispatch.dll;$(TargetBuildDir)lib\$(Platform)\winsparkle.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(CyberduckDir)cyberduck-application.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(CyberduckDir)cyberduck-document.ico" CopyToOutputDirectory="PreserveNewest" />

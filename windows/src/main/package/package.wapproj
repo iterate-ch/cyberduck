@@ -22,6 +22,7 @@
         <ProjectGuid>55cdd736-9a8a-4091-ac99-60e2f9c73269</ProjectGuid>
         <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>
         <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
+        <AssetTargetFallback>net472;$(AssetTargetFallback)</AssetTargetFallback>
         <EntryPointProjectUniqueName>..\csharp\Cyberduck.csproj</EntryPointProjectUniqueName>
         <!-- Unsupported with IKVM -->
         <AppxSymbolPackageEnabled>false</AppxSymbolPackageEnabled>
@@ -50,13 +51,17 @@
         <Content Include="$(ModulePath)\src\resources\CyberduckAppx.150x150.png">
             <Link>Images\CyberduckAppx.150x150.png</Link>
         </Content>
-        <Content Include="$(CyberduckDir)profiles\default\*.cyberduckprofile">
-            <Link>Profiles\%(Filename)%(Extension)</Link>
-        </Content>
         <Content Include="$(CyberduckDir)Acknowledgments.rtf;$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
             <Link>%(Filename)%(Extension)</Link>
         </Content>
     </ItemGroup>
+
+    <Target Name="FlattenPackage" BeforeTargets="_ConvertItems">
+        <ItemGroup>
+            <_FilteredNonWapProjProjectOutput Update="@(_FilteredNonWapProjProjectOutput)" SourceProject="" Condition="'%(SourceProject)'!=''" />
+        </ItemGroup>
+    </Target>
+
     <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
     <ItemGroup>
         <ProjectReference Include="..\csharp\Cyberduck.csproj" />
@@ -81,7 +86,7 @@
         </PropertyGroup>
     </Target>
     <Target Name="_CollectSignAppxPackagePayload" DependsOnTargets="AppxPackagePayloadExecutable;SignToolExecutableName" Outputs="%(AppxPackagePayloadExecutable.Identity)">
-        <Exec Command="%22$(SignToolExecutable)%22 verify /q /pa %22%(AppxPackagePayloadExecutable.Identity)%22"
+        <Exec Command="%22$(SignToolExecutableName)%22 verify /q /pa %22%(AppxPackagePayloadExecutable.Identity)%22"
             IgnoreStandardErrorWarningFormat="true"
             IgnoreExitCode="true">
             <Output TaskParameter="ExitCode" PropertyName="PayloadSigned" />
@@ -95,7 +100,7 @@
         BeforeTargets="_GenerateAppxPackageFile"
         DependsOnTargets="_CollectSignAppxPackagePayload;SignToolArgs"
         Condition="'$(SignOutput)'=='true'">
-        <Exec Command="$(SignToolArgs) @(SignAppxPackagePayload->'%22%(TargetPath)%22', ' ')" 
+        <Exec Command="$(SignToolArgs) @(SignAppxPackagePayload->'%22%(TargetPath)%22', ' ')"
             WorkingDirectory="$(TargetDir)"
             Condition="'@(SignAppxPackagePayload)'!=''" />
     </Target>

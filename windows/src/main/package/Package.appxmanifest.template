@@ -112,7 +112,7 @@
                         <uap:DisplayName>Cyberduck OAuth</uap:DisplayName>
                     </uap:Protocol>
                 </uap:Extension>
-                <uap5:Extension Category="windows.appExecutionAlias" Executable="Cyberduck\Cyberduck.exe"
+                <uap5:Extension Category="windows.appExecutionAlias" Executable="Cyberduck.exe"
                   EntryPoint="Windows.FullTrustApplication">
                     <uap5:AppExecutionAlias>
                         <uap5:ExecutionAlias Alias="Cyberduck.exe" />
