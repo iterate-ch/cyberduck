@@ -45,8 +45,6 @@ public class ApplicationPreferences<T> : DefaultPreferences
         this.locales = locales;
         SetEnvironmentInfo();
         this.propertyStore = propertyStore.New();
-
-        JavaSystem.setProperty("jna.boot.library.path", AppContext.BaseDirectory);
     }
 
     public override List applicationLocales() => locales.applicationLocales();
@@ -146,6 +144,8 @@ public class ApplicationPreferences<T> : DefaultPreferences
     protected override void setDefaults()
     {
         base.setDefaults();
+
+        JavaSystem.setProperty("jna.boot.library.path", AppContext.BaseDirectory);
 
         this.setDefault("os.version", Environment.OSVersion.Version.ToString());
 

@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.Build.Traversal">
+  <ItemGroup>
+    <ProjectReference Include="src/main/csharp/Cyberduck.Core.Refresh.csproj" SetPlatform="Platform=x64" />
+    <ProjectReference Include="src/main/csharp/Cyberduck.Core.Refresh.csproj" SetPlatform="Platform=arm64" />
+  </ItemGroup>
+</Project>

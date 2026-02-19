@@ -30,13 +30,13 @@
     <property name="chocolatey.target" value="${build.deploy}"/>
 
     <target name="restore" depends="msbuild">
-        <msbuild buildfile="build.proj">
+        <msbuild buildfile="dirs.proj">
             <target name="Restore" />
         </msbuild>
     </target>
 
     <target name="build" depends="restore,msbuild">
-        <msbuild buildfile="build.proj">
+        <msbuild buildfile="dirs.proj">
             <target name="Build" />
 
             <property name="BuildModule" value="Project" />
@@ -49,10 +49,11 @@
             <target name="Test" />
 
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Platform" value="x64" />
         </msbuild>
     </target>
 
-    <target name="package" depends="msbuild">
+    <target name="package" depends="version,msbuild">
         <copy todir="${build}">
             <fileset dir="${home}">
                 <include name="*.ico"/>
@@ -69,7 +70,7 @@
             <globmapper from="*.template" to="*"/>
         </copy>
 
-        <msbuild buildfile="build.proj">
+        <msbuild buildfile="dirs.proj">
             <target name="Build" />
 
             <property name="BuildModule" value="Installer" />

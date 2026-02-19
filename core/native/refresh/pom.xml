@@ -28,7 +28,7 @@
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>install-dll</id>
+                                <id>install-nupkg</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
@@ -36,14 +36,8 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <classifier>net472</classifier>
-                                            <type>dll</type>
-                                            <file>${project.build.directory}/net472/Cyberduck.Core.Refresh.dll</file>
-                                        </artifact>
-                                        <artifact>
-                                            <classifier>net8.0</classifier>
-                                            <type>dll</type>
-                                            <file>${project.build.directory}/net8.0-windows10.0.22621.0/Cyberduck.Core.Refresh.dll</file>
+                                            <type>nupkg</type>
+                                            <file>${project.build.directory}/Cyberduck.Core.Refresh.${project.version}.nupkg</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -59,15 +53,7 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core.Native</artifactId>
-                    <classifier>net472</classifier>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Core.Native</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
