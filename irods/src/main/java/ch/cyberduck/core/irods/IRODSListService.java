@@ -34,6 +34,7 @@ import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
 import org.irods.irods4j.low_level.api.IRODSException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 public class IRODSListService implements ListService {
@@ -69,7 +70,7 @@ public class IRODSListService implements ListService {
                 EnumSet<Path.Type> type = EnumSet.of(Path.Type.file);
 
                 if(entry.isCollection()) {
-                    attrs.setDirectoryId(entry.id());
+                    attrs.setDirectoryId(entry.id().getBytes(StandardCharsets.US_ASCII));
                     type = EnumSet.of(Path.Type.directory);
                 }
                 else if(entry.isDataObject()) {

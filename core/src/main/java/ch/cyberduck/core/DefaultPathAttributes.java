@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -146,6 +147,10 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
      */
     private Path vault;
     /**
+     * Cryptomator vault metadata
+     */
+    private VaultMetadata vaultMetadata;
+    /**
      * Cryptomator decrypted path
      */
     private Path decrypted;
@@ -156,7 +161,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     /**
      * Unique identifier for cryptomator
      */
-    private String directoryId;
+    private byte[] directoryId;
 
     private Map<String, String> custom = Collections.emptyMap();
 
@@ -500,12 +505,12 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public String getDirectoryId() {
+    public byte[] getDirectoryId() {
         return directoryId;
     }
 
     @Override
-    public PathAttributes setDirectoryId(final String directoryId) {
+    public PathAttributes setDirectoryId(final byte[] directoryId) {
         this.directoryId = directoryId;
         return this;
     }
@@ -552,6 +557,17 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     @Override
     public Path getVault() {
         return vault;
+    }
+
+    @Override
+    public VaultMetadata getVaultMetadata() {
+        return vaultMetadata;
+    }
+
+    @Override
+    public PathAttributes setVaultMetadata(final VaultMetadata vaultMetadata) {
+        this.vaultMetadata = vaultMetadata;
+        return this;
     }
 
     @Override

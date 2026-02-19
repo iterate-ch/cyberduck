@@ -19,6 +19,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.cryptomator.cryptolib.api.DirectoryMetadata;
+
 import java.util.EnumSet;
 
 public interface CryptoDirectory {
@@ -27,21 +29,20 @@ public interface CryptoDirectory {
      * Get encrypted filename for given clear text filename with id of parent encrypted directory.
      *
      * @param session     Connection
-     * @param directoryId Parent folder directory id
+     * @param parent      Parent folder
      * @param filename    Clear text filename
      * @param type        File type
      * @return Encrypted filename
      */
-    String toEncrypted(Session<?> session, String directoryId, String filename, EnumSet<Path.Type> type) throws BackgroundException;
+    String toEncrypted(Session<?> session, Path parent, String filename, EnumSet<Path.Type> type) throws BackgroundException;
 
     /**
      * Get encrypted reference for clear text directory path.
      *
-     * @param session     Connection
-     * @param directoryId Directory ID or null to read directory id from metadata file
-     * @param directory   Clear text
+     * @param session   Connection
+     * @param directory Clear text
      */
-    Path toEncrypted(Session<?> session, String directoryId, Path directory) throws BackgroundException;
+    Path toEncrypted(Session<?> session, Path directory) throws BackgroundException;
 
     /**
      * Remove from cache
@@ -49,4 +50,8 @@ public interface CryptoDirectory {
     void delete(Path directory);
 
     void destroy();
+
+    DirectoryMetadata getOrCreateDirectoryId(Session<?> session, Path directory) throws BackgroundException;
+
+    DirectoryMetadata createDirectoryId(final Path directory);
 }

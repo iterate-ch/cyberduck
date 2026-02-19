@@ -61,6 +61,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -87,6 +88,8 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
 
     @Test
     public void testUpload() throws Exception {
+        PreferencesFactory.get().setProperty("factory.vaultprovider.class", CryptoVaultProvider.class.getName());
+
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -103,15 +106,14 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
         final OutputStream out2 = localFile2.getOutputStream(false);
         IOUtils.write(content, out2);
         out2.close();
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("test");
             }
         }));
-        PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(dir1, localDirectory1)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
@@ -145,12 +147,12 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
 
     @Test
     public void testDownload() throws Exception {
-        PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());
+        PreferencesFactory.get().setProperty("factory.vaultprovider.class", CryptoVaultProvider.class.getName());
 
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -178,7 +180,7 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(file1, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

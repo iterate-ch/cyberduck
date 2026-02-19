@@ -15,14 +15,14 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
-import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -40,15 +40,15 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-public class CryptoDeleteV7Feature implements Delete, Trash {
-    private static final Logger log = LogManager.getLogger(CryptoDeleteV7Feature.class);
+public class CryptoDeleteFeature implements Delete, Trash {
+    private static final Logger log = LogManager.getLogger(CryptoDeleteFeature.class);
 
     private final Session<?> session;
     private final Delete proxy;
-    private final CryptoVault vault;
+    private final AbstractVault vault;
     private final CryptoFilename filenameProvider;
 
-    public CryptoDeleteV7Feature(final Session<?> session, final Delete proxy, final CryptoVault vault) {
+    public CryptoDeleteFeature(final Session<?> session, final Delete proxy, final AbstractVault vault) {
         this.session = session;
         this.proxy = proxy;
         this.vault = vault;
@@ -62,8 +62,8 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
             if(!f.equals(vault.getHome())) {
                 final Path encrypt = vault.encrypt(session, f);
                 if(f.isDirectory()) {
-                    final Path backup = new Path(encrypt, CryptoDirectoryV7Provider.BACKUP_DIRECTORY_METADATAFILE,
-                            EnumSet.of(Path.Type.file));
+                    final Path backup = new Path(encrypt, vault.getBackupDirectoryMetadataFilename(),
+                            EnumSet.of(AbstractPath.Type.file));
                     try {
                         log.debug("Deleting directory id backup file {}", backup);
                         proxy.delete(Collections.singletonList(backup), prompt, callback);
@@ -87,7 +87,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                 }
                 final Path metadata = vault.encrypt(session, f, true);
                 if(f.isDirectory()) {
-                    final Path metadataFile = new Path(metadata, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file));
+                    final Path metadataFile = new Path(metadata, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file));
                     log.debug("Add metadata file {}", metadataFile);
                     metadataFiles.add(metadataFile);
                     metadataFiles.add(metadata);
@@ -119,13 +119,20 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                     final Path dataRoot = new Path(f, "d", f.getType());
                     if(find.find(dataRoot)) {
                         for(Path d : session._getFeature(ListService.class).list(dataRoot, new DisabledListProgressListener()).toList()) {
-                            metadata.addAll(session._getFeature(ListService.class).list(d, new DisabledListProgressListener()).toList());
+                            final List<Path> folders = session._getFeature(ListService.class).list(d, new DisabledListProgressListener()).toList();
+                            for(Path folder : folders) {
+                                final Path backup = new Path(folder, vault.getBackupDirectoryMetadataFilename(), EnumSet.of(Path.Type.file));
+                                if(find.find(backup)) {
+                                    metadata.add(backup);
+                                }
+                                metadata.add(folder);
+                            }
                             metadata.add(d);
                         }
                         metadata.add(dataRoot);
                     }
-                    if(vault.getMasterkey() != null) {
-                        metadata.add(vault.getMasterkey());
+                    if(vault.getMasterkeyPath() != null) {
+                        metadata.add(vault.getMasterkeyPath());
                     }
                     if(find.find(vault.getConfig())) {
                         metadata.add(vault.getConfig());

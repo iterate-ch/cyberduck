@@ -22,6 +22,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.vault.VaultMetadata;
 
 import java.util.Map;
 
@@ -116,7 +117,7 @@ public interface PathAttributes extends Attributes, Serializable {
         }
 
         @Override
-        public PathAttributes setDirectoryId(final String directoryId) {
+        public PathAttributes setDirectoryId(final byte[] directoryId) {
             return this;
         }
 
@@ -271,9 +272,9 @@ public interface PathAttributes extends Attributes, Serializable {
 
     PathAttributes setLockId(String lockId);
 
-    String getDirectoryId();
+    byte[] getDirectoryId();
 
-    PathAttributes setDirectoryId(String directoryId);
+    PathAttributes setDirectoryId(byte[] directoryId);
 
     /**
      * @return The incrementing revision number of the file or null if not versioned.
@@ -299,6 +300,10 @@ public interface PathAttributes extends Attributes, Serializable {
     PathAttributes setVault(Path vault);
 
     Path getVault();
+
+    VaultMetadata getVaultMetadata();
+
+    PathAttributes setVaultMetadata(VaultMetadata vaultMetadata);
 
     /**
      * If the path should not be displayed in a browser by default unless the user explicitly chooses to show hidden

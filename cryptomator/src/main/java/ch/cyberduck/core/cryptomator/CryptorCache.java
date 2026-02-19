@@ -20,6 +20,7 @@ import ch.cyberduck.core.cache.LRUCache;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.FileNameCryptor;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public class CryptorCache {
 
     public static final BaseEncoding BASE32 = BaseEncoding.base32();
 
-    private final LRUCache<String, String> directoryIdCache = LRUCache.build(250);
+    private final LRUCache<ByteBuffer, String> directoryIdCache = LRUCache.build(250);
     private final LRUCache<CacheKey, String> decryptCache = LRUCache.build(5000);
     private final LRUCache<CacheKey, String> encryptCache = LRUCache.build(5000);
 
@@ -39,11 +40,12 @@ public class CryptorCache {
         this.impl = impl;
     }
 
-    public String hashDirectoryId(final String cleartextDirectoryId) {
-        if(!directoryIdCache.contains(cleartextDirectoryId)) {
-            directoryIdCache.put(cleartextDirectoryId, impl.hashDirectoryId(cleartextDirectoryId));
+    public String hashDirectoryId(final byte[] cleartextDirectoryId) {
+        final ByteBuffer wrap = ByteBuffer.wrap(cleartextDirectoryId);
+        if(!directoryIdCache.contains(wrap)) {
+            directoryIdCache.put(wrap, impl.hashDirectoryId(cleartextDirectoryId));
         }
-        return directoryIdCache.get(cleartextDirectoryId);
+        return directoryIdCache.get(wrap);
     }
 
     public String encryptFilename(final BaseEncoding encoding, final String cleartextName, final byte[] associatedData) {
