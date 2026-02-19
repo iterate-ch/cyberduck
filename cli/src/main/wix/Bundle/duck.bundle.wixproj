@@ -3,7 +3,8 @@
     <OutputName>duck-$(FileVersion)-$(Platform)</OutputName>
     <Platforms>x64;arm64</Platforms>
     <DefineConstants>
-      ProductVersion=$(FileVersion)
+      ProductVersion=$(FileVersion);
+      $(DefineConstants)
     </DefineConstants>
   </PropertyGroup>
   <ItemGroup>

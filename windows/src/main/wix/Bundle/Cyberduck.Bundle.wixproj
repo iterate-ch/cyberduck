@@ -3,11 +3,11 @@
     <OutputName>Cyberduck-Installer-$(FileVersion)</OutputName>
     <Platforms>x64</Platforms>
     <DefineConstants>
-      CyberduckDir=$(CyberduckDir);
+      ProductVersion=$(FileVersion);
       $(DefineConstants)
     </DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\csharp\Cyberduck.csproj" SetPlatform="Platform=x64" Publish="true" />
+    <ProjectReference Include="..\..\csharp\Cyberduck.csproj" SetPlatform="Platform=$(Platform)" Publish="true" />
   </ItemGroup>
 </Project>

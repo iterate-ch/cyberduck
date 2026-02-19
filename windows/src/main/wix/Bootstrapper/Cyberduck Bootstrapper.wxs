@@ -1,7 +1,7 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
-  <Bundle Name="Cyberduck" Version="!(bind.packageVersion.Setup)" Manufacturer="iterate GmbH" UpgradeCode="69C1D059-4B45-4220-A82C-DAE80C9CD8E0" IconSourceFile="$(var.CyberduckDir)cyberduck-application.ico">
+  <Bundle Name="Cyberduck" Version="!(bind.packageVersion.Setup)" Manufacturer="iterate GmbH" UpgradeCode="69C1D059-4B45-4220-A82C-DAE80C9CD8E0" IconSourceFile="$(CyberduckDir)cyberduck-application.ico">
     <BootstrapperApplication>
-      <bal:WixStandardBootstrapperApplication LicenseUrl="" LogoFile="$(var.SetupDir)banner.png" LogoSideFile="$(var.SetupDir)welcome.bmp" ThemeFile="InstallerTheme.xml" Theme="hyperlinkSidebarLicense" />
+      <bal:WixStandardBootstrapperApplication LicenseUrl="" LogoFile="$(SetupDir)banner.png" LogoSideFile="$(SetupDir)welcome.bmp" ThemeFile="InstallerTheme.xml" Theme="hyperlinkSidebarLicense" />
     </BootstrapperApplication>
     <Variable Name="InstallFolder" Type="formatted" Value="[ProgramFiles64Folder]Cyberduck" />
     <Variable Name="InstallBonjour" bal:Overridable="yes" Type="numeric" Value="1" />
@@ -22,7 +22,7 @@
       <MsiPackage Id="Setup" Compressed="yes" SourceFile="$(Cyberduck.Bundle.TargetPath)" Vital="yes">
         <MsiProperty Name="INSTALLFOLDER" Value="[InstallFolder]" />
       </MsiPackage>
-      <MsiPackage SourceFile="$(var.SetupDir)Bonjour64.msi" Compressed="yes" Permanent="yes" Visible="yes" Vital="no" InstallCondition="NOT InstallBonjour=0" />
+      <MsiPackage SourceFile="$(SetupDir)Bonjour64.msi" Compressed="yes" Permanent="yes" Visible="yes" Vital="no" InstallCondition="NOT InstallBonjour=0" />
     </Chain>
   </Bundle>
 </Wix>

@@ -1,9 +1,8 @@
 ﻿<Project Sdk="WixToolset.Sdk">
   <PropertyGroup>
     <OutputName>Cyberduck-Installer-$(FileVersion)</OutputName>
-    <Platforms>x64</Platforms>
     <OutputType>Bundle</OutputType>
-    <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir)</DefineConstants>
+    <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir);ProductVersion=$(FileVersion);$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.NetFx.wixext" />
@@ -11,7 +10,7 @@
     <PackageReference Include="WixToolset.Util.wixext" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Bundle\Cyberduck.Bundle.wixproj" />
+    <ProjectReference Include="..\Bundle\Cyberduck.Bundle.wixproj" Platforms="x64" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="InstallerTheme.xml" />

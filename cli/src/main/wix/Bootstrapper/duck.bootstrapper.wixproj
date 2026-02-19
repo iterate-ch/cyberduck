@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputName>duck-$(FileVersion)</OutputName>
     <OutputType>Bundle</OutputType>
-    <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir);ProductVersion=$(FileVersion)</DefineConstants>
+    <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir);ProductVersion=$(FileVersion);$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.Bal.wixext" />
