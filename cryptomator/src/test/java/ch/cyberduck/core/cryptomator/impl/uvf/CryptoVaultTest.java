@@ -78,7 +78,7 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault vault = new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(home);
+        final CryptoVault vault = new CryptoVault(home);
         vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("mypassphrase");
@@ -185,7 +185,7 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault vault = new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(home);
+        final CryptoVault vault = new CryptoVault(home);
         final DefaultVaultMetadataCredentialsProvider provider = new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("mypassphrase"));
         vault.create(session, null, provider);
     }
