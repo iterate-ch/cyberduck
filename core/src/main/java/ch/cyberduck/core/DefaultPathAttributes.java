@@ -197,7 +197,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         metadata = new HashMap<>(copy.getMetadata());
         custom = new HashMap<>(copy.getCustom());
         verdict = copy.getVerdict();
-        vault = copy.getVault();
+        vaultMetadata = copy.getVaultMetadata();
         decrypted = copy.getDecrypted();
         encrypted = copy.getEncrypted();
         directoryId = copy.getDirectoryId();
@@ -284,6 +284,16 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
             }
             else {
                 dict.setObjectForKey(vault, "Vault");
+            }
+        }
+        if(vaultMetadata != null) {
+            if(vaultMetadata.root != null) {
+                if(vaultMetadata.root.attributes() == this) {
+                    log.debug("Skip serializing vault attribute {} to avoid recursion", vault);
+                }
+                else {
+                    dict.setObjectForKey(vaultMetadata, "VaultMetadata");
+                }
             }
         }
         if(!custom.isEmpty()) {
@@ -720,7 +730,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         if(!Objects.equals(lockId, that.lockId)) {
             return false;
         }
-        if(!Objects.equals(vault, that.vault)) {
+        if(!Objects.equals(vaultMetadata, that.vaultMetadata)) {
             return false;
         }
         return true;
@@ -738,7 +748,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
         result = 31 * result + (verdict != null ? verdict.hashCode() : 0);
         result = 31 * result + (lockId != null ? lockId.hashCode() : 0);
-        result = 31 * result + (vault != null ? vault.hashCode() : 0);
+        result = 31 * result + (vaultMetadata != null ? vaultMetadata.hashCode() : 0);
         return result;
     }
 
