@@ -191,7 +191,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
-                new VaultMetadata(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), vaultVersion));
+                new VaultMetadata(vault, vaultVersion));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoTouchFeature<>(session, new DAVTouchFeature(session), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
