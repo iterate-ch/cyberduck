@@ -51,7 +51,7 @@ public class CryptoMoveV7Feature implements Move {
         if(file.isDirectory()) {
             if(!proxy.isRecursive(file, renamed)) {
                 proxy.move(new Path(sourceEncrypted, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file)),
-                        new Path(targetEncrypted, vault.getBackupDirectoryMetadataFilename(), EnumSet.of(Path.Type.file)),
+                        new Path(targetEncrypted, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file)),
                         new TransferStatus(status), callback, connectionCallback);
             }
             vault.getDirectoryProvider().delete(file);
