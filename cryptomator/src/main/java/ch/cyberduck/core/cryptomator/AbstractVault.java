@@ -227,6 +227,10 @@ public abstract class AbstractVault implements Vault {
                 if(type.contains(Path.Type.symboliclink)) {
                     decrypted.setSymlinkTarget(file.getSymlinkTarget());
                 }
+                if(!new SimplePathPredicate(decrypted).test(this.getHome())) {
+                    // Add reference for vault
+                    attributes.setVault(this.getHome());
+                }
                 return decrypted;
             }
             catch(AuthenticationFailedException e) {
