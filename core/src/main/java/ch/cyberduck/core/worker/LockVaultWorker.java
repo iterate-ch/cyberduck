@@ -36,7 +36,9 @@ public class LockVaultWorker extends Worker<Path> {
 
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
-        registry.close(vault);
+        if(registry.close(vault)) {
+            vault.attributes().setVault(null);
+        }
         return vault;
     }
 
