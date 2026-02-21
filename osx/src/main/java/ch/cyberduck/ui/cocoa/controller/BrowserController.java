@@ -2456,7 +2456,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 @Override
                 public void cleanup(final Path vault) {
                     if(vault != null) {
-                        reload(vault, Collections.singleton(vault), Collections.emptyList(), true);
+                        reload(directory, Collections.singleton(directory), Collections.emptyList(), true);
                     }
                 }
             }));

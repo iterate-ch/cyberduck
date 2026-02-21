@@ -3796,7 +3796,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (vault != null)
                     {
-                        _controller.Reload((Path)vault, new HashSet<Path>() { (Path)vault }, new List<Path>(), true);
+                        _controller.Reload(_directory, new HashSet<Path>() { _directory }, new List<Path>(), true);
                     }
                 }
             }
