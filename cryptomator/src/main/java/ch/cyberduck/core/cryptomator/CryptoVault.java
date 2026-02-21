@@ -216,7 +216,8 @@ public class CryptoVault implements Vault {
             passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
         }
-        return this.unlock(session, prompt, bookmark, passphrase);
+        this.unlock(session, prompt, bookmark, passphrase);
+        return this;
     }
 
     private VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
@@ -260,12 +261,11 @@ public class CryptoVault implements Vault {
         }
     }
 
-    public CryptoVault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+    public void unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
         final VaultConfig vaultConfig = this.readVaultConfig(session);
         this.unlock(vaultConfig, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
         );
-        return this;
     }
 
     public void unlock(final VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,
