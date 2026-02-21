@@ -50,6 +50,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     private final X509TrustManager trust;
     private final X509KeyManager key;
 
+    private final String region;
     private final String startUrl;
     private final String issuerUrl;
 
@@ -62,6 +63,8 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         this.host = host;
         this.trust = trust;
         this.key = key;
+        this.region = prompt(host, prompt, Profile.SSO_REGION_KEY, LocaleFactory.localizedString(
+                "SSO Region", "Credentials"), host.getProperty(Profile.SSO_REGION_KEY));
         this.startUrl = prompt(host, prompt, Profile.SSO_START_URL_KEY, LocaleFactory.localizedString(
                 "SSO Start Url", "Credentials"), host.getProperty(Profile.SSO_START_URL_KEY));
         this.issuerUrl = startUrl;
@@ -82,7 +85,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
      */
     public void registerClient(final String startUrl, final String issuerUrl) throws BackgroundException {
         final AWSSSOOIDCClientBuilder configuration = AWSSSOOIDCClientBuilder.standard()
-                .withRegion("us-east-1")
+                .withRegion(region)
                 .withClientConfiguration(new CustomClientConfiguration(host,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key));
         final AWSSSOOIDC client = configuration.build();
