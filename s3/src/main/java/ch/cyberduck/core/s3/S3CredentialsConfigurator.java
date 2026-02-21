@@ -128,7 +128,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     }
                 }
                 catch(IOException e) {
-                    log.warn("Failure \"{}\" parsing cached credentials from {}", e.getMessage(), command);
+                    log.warn("Failure \"{}\" parsing credentials from output of command {}", e.getMessage(), command);
                     return credentials;
                 }
             }
