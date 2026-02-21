@@ -76,4 +76,20 @@ public class S3CredentialsConfiguratorTest {
         assertEquals("PROCESSSESSIONTOKEN", verify.getTokens().getSessionToken());
         assertEquals(3497005724000L, verify.getTokens().getExpiryInMilliseconds(), 0L);
     }
+
+    @Test
+    public void readCredentialProcessTokensExitCode() throws Exception {
+        assumeFalse(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
+        final Credentials credentials = new Credentials("credential_process_profile_error_exit");
+        assertEquals(credentials, new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
+                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials)));
+    }
+
+    @Test
+    public void readCredentialProcessTokensParseError() throws Exception {
+        assumeFalse(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
+        final Credentials credentials = new Credentials("credential_process_profile_parser_error");
+        assertEquals(credentials, new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
+                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials)));
+    }
 }
