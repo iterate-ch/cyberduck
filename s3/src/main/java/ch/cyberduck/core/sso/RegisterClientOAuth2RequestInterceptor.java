@@ -89,15 +89,16 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
      * @param issuerUrl The IAM Identity Center Issuer URL associated with an instance of IAM Identity Center
      */
     public void registerClient(final String startUrl, final String issuerUrl) throws BackgroundException {
+        final String endpoint = String.format("https://oidc.%s.amazonaws.com", region);
         final AWSSSOOIDCClientBuilder configuration = AWSSSOOIDCClientBuilder.standard()
                 .withRegion(region)
                 .withClientConfiguration(new CustomClientConfiguration(host,
-                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key));
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, String.format("oidc.%s.amazonaws.com", region)), key));
         final AWSSSOOIDC client = configuration.build();
         log.debug("Registering client with issuer {}", issuerUrl);
         try {
             try(ServerSocket temp = new ServerSocket(0)) {
-                final String redirectUri = String.format("http://%s:%d",
+                final String redirectUri = String.format("http://%s:%d/oauth/callback",
                         InetAddress.getLoopbackAddress().getHostAddress(), temp.getLocalPort());
                 final RegisterClientResult registration = client.registerClient(new RegisterClientRequest()
                         // The friendly name of the client.
@@ -113,8 +114,8 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
                 this.setClientid(registration.getClientId());
                 this.setClientsecret(registration.getClientSecret());
                 this.setParameter("start_url", startUrl);
-                this.setAuthorizationServerUrl(String.format("%s/authorize", configuration.getEndpoint().getServiceEndpoint()));
-                this.setTokenServerUrl(String.format("%s/token", configuration.getEndpoint().getServiceEndpoint()));
+                this.setAuthorizationServerUrl(String.format("%s/authorize", endpoint));
+                this.setTokenServerUrl(String.format("%s/token", endpoint));
                 this.setRedirectUri(redirectUri);
                 this.clientIdExpiry = registration.getClientSecretExpiresAt() * 1000;
             }
