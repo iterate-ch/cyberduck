@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
@@ -68,7 +69,8 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
             final HttpServer server = HttpServer.create(new InetSocketAddress(
                     URI.create(redirectUri).getHost(), URI.create(redirectUri).getPort()), 0);
             // Create handler for OAuth callback
-            server.createContext(URI.create(redirectUri).getRawPath(), new HttpHandler() {
+            server.createContext(StringUtils.isBlank(URI.create(redirectUri).getRawPath()) ?
+                    String.valueOf(Path.DELIMITER) : URI.create(redirectUri).getRawPath(), new HttpHandler() {
                 @Override
                 public void handle(final HttpExchange exchange) throws IOException {
                     log.debug("Received callback with query {}", exchange.getRequestURI().getQuery());
