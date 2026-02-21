@@ -123,11 +123,20 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     final Process process = builder.start();
                     try(InputStream reader = process.getInputStream()) {
                         final CachedCredential cached = mapper.readValue(reader, CachedCredential.class);
-                        return credentials.setTokens(new TemporaryAccessTokens(
+                        credentials.setTokens(new TemporaryAccessTokens(
                                 cached.accessKey, cached.secretKey, cached.sessionToken, cached.getExpiration()));
+                        process.waitFor();
+                        if(process.exitValue() != 0) {
+                            throw new IOException(String.format("Unexpected exit code %d for process %s", process.exitValue(), command));
+                        }
+                        return credentials;
+                    }
+
+                    finally {
+                        process.destroy();
                     }
                 }
-                catch(IOException e) {
+                catch(IOException | InterruptedException e) {
                     log.warn("Failure \"{}\" parsing credentials from output of command {}", e.getMessage(), command);
                     return credentials;
                 }
