@@ -296,8 +296,16 @@ public interface PathAttributes extends Attributes, Serializable {
 
     PathAttributes setEncrypted(Path encrypted);
 
+    /**
+     * Set the vault root directory when part of a vault
+     */
     PathAttributes setVault(Path vault);
 
+    /**
+     * Returns the vault root directory associated with the file.
+     *
+     * @return Null when path is not part of a vault
+     */
     Path getVault();
 
     /**
