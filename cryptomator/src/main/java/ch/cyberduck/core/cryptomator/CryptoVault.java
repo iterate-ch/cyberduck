@@ -118,7 +118,7 @@ public class CryptoVault implements Vault {
     }
 
     public CryptoVault(final Path home, final String masterkey, final String config, final byte[] pepper) {
-        this.home = home;
+        this.home = new Path(home).withAttributes(PathAttributes.EMPTY);
         this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
         this.config = new Path(home, config, EnumSet.of(Path.Type.file, Path.Type.vault));
         this.pepper = pepper;

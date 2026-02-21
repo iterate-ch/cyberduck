@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.UUIDRandomStringService;
@@ -111,11 +112,20 @@ public class CryptoVaultTest {
                 return new VaultCredentials("vault123");
             }
         });
+        assertEquals(home, vault.getHome());
+        assertNotSame(home, vault.getHome());
+        assertSame(PathAttributes.EMPTY, vault.getHome().attributes());
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
         assertNotSame(home, vault.encrypt(session, home));
         assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
+        assertEquals(vault.getHome(), vault.encrypt(session, home).attributes().getVault());
+        assertEquals(vault.getHome(), home.attributes().getVault());
+        assertEquals(vault.getHome(), new PathDictionary<>().deserialize(vault.getHome().serialize(SerializerFactory.get())));
+        assertEquals(home, new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())));
+        assertEquals(home, new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())).attributes().getVault());
+        assertEquals(home.attributes(), new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())).attributes());
         final Path directory = new Path(home, "dir", EnumSet.of(Path.Type.directory));
         assertNull(directory.attributes().getVault());
         assertEquals(home, vault.encrypt(session, directory).attributes().getVault());

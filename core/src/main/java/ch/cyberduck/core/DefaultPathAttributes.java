@@ -274,12 +274,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
             dict.setStringForKey(storageClass, "Storage Class");
         }
         if(vault != null) {
-            if(vault.attributes() == this) {
-                log.debug("Skip serializing vault attribute {} to avoid recursion", vault);
-            }
-            else {
-                dict.setObjectForKey(vault, "Vault");
-            }
+            dict.setObjectForKey(vault, "Vault");
         }
         if(!custom.isEmpty()) {
             dict.setMapForKey(custom, "Custom");
