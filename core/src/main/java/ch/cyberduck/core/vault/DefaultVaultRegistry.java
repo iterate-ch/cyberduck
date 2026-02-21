@@ -109,19 +109,17 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(autoload) {
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
-            if(file.attributes().getVault() != null) {
-                return listener.load(session, file.attributes().getVault(),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+            Path directory = file;
+            do {
+                if(directory.attributes().getVault() != null) {
+                    return listener.load(session, directory.attributes().getVault(),
+                            HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                            HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                            HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+                }
+                directory = directory.getParent();
             }
-            final Path directory = file.getParent();
-            if(directory.attributes().getVault() != null) {
-                return listener.load(session, directory.attributes().getVault(),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
-            }
+            while(!directory.isRoot());
         }
         return Vault.DISABLED;
     }
