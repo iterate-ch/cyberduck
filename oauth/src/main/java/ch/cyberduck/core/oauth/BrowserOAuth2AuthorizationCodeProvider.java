@@ -28,6 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2AuthorizationCodeProvider {
     private static final Logger log = LogManager.getLogger(BrowserOAuth2AuthorizationCodeProvider.class);
 
@@ -44,6 +48,14 @@ public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2Authorizati
         log.debug("Evaluate redirect URI {}", redirectUri);
         if(StringUtils.endsWith(URIEncoder.decode(redirectUri), ":oauth") || StringUtils.contains(redirectUri, "://oauth")) {
             return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(bookmark, prompt, authorizationCodeUrl, redirectUri, state);
+        }
+        try {
+            if(StringUtils.equals(new URI(redirectUri).getHost(), InetAddress.getLoopbackAddress().getHostAddress())) {
+                return new LoopbackOAuth2AuthorizationCodeProvider().prompt(bookmark, prompt, authorizationCodeUrl, redirectUri, state);
+            }
+        }
+        catch(URISyntaxException e) {
+            log.warn("Invalid redirect URI {}", redirectUri);
         }
         log.debug("Prompt for authentication code for state {}", state);
         return new PromptOAuth2AuthorizationCodeProvider().prompt(bookmark, prompt, authorizationCodeUrl, redirectUri, state);

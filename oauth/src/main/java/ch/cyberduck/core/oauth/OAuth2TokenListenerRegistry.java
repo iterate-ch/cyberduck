@@ -37,15 +37,19 @@ public class OAuth2TokenListenerRegistry {
         listeners.put(state, listener);
     }
 
-    public void notify(final String state, final String token) {
+    /**
+     * @return False on unknown state
+     */
+    public boolean notify(final String state, final String token) {
         final OAuth2TokenListener listener = listeners.get(state);
         if(null == listener) {
             log.error("Missing listener for state {}", state);
-            return;
+            return false;
         }
         listeners.remove(state);
         log.debug("Notify listener for state {} with token {}", state, token);
         listener.callback(token);
+        return true;
     }
 
     public void shutdown() {
