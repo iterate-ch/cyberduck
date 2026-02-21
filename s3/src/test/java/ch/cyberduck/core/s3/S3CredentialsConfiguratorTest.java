@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.TestProtocol;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assume;
 import org.junit.Test;
 
 import java.io.File;
@@ -64,6 +65,18 @@ public class S3CredentialsConfiguratorTest {
         assertEquals("TESTACCESSKEY", verify.getTokens().getAccessKeyId());
         assertEquals("TESTSECRETKEY", verify.getTokens().getSecretAccessKey());
         assertEquals("TESTSESSIONTOKEN", verify.getTokens().getSessionToken());
+        assertEquals(3497005724000L, verify.getTokens().getExpiryInMilliseconds(), 0L);
+    }
+
+    @Test
+    public void readCredentialProcessTokens() throws Exception {
+        Assume.assumeFalse("credential_process via sh not supported on Windows", System.getProperty("os.name", "").toLowerCase().contains("win"));
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
+        )
+                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("credential_process_profile")));
+        assertEquals("PROCESSACCESSKEY", verify.getTokens().getAccessKeyId());
+        assertEquals("PROCESSSECRETKEY", verify.getTokens().getSecretAccessKey());
+        assertEquals("PROCESSSESSIONTOKEN", verify.getTokens().getSessionToken());
         assertEquals(3497005724000L, verify.getTokens().getExpiryInMilliseconds(), 0L);
     }
 }
