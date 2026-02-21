@@ -131,7 +131,6 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         }
                         return credentials;
                     }
-
                     finally {
                         process.destroy();
                     }
