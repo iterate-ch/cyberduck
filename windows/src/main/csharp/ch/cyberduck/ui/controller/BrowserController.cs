@@ -361,7 +361,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (directory.attributes().getVault() != null)
             {
                 // Lock and remove all open vaults
-                LockVaultAction lockVault = new LockVaultAction(this, Pool.getVaultRegistry(), directory.attributes().getVault());
+                LockVaultAction lockVault = new LockVaultAction(this, Pool.getVaultRegistry(), directory);
                 Background(lockVault);
             }
             else

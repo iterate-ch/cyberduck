@@ -2452,7 +2452,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Path directory = new UploadTargetFinder(workdir).find(this.getSelectedPath());
         if(directory.attributes().getVault() != null) {
             // Lock and remove all open vaults
-            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory.attributes().getVault()) {
+            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory) {
                 @Override
                 public void cleanup(final Path vault) {
                     if(vault != null) {
