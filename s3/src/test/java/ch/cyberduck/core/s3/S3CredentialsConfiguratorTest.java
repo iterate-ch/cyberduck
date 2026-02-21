@@ -39,16 +39,14 @@ public class S3CredentialsConfiguratorTest {
     @Test
     public void readFailureForInvalidAWSCredentialsProfileEntry() throws Exception {
         final Credentials credentials = new Credentials("test_s3_profile");
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath())
-        )
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials));
         assertEquals(credentials, verify);
     }
 
     @Test
     public void readSuccessForValidAWSCredentialsProfileEntry() throws Exception {
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
-        )
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("test_s3_profile")));
         assertEquals("test_s3_profile", verify.getUsername());
         assertEquals("", verify.getPassword());
@@ -59,8 +57,7 @@ public class S3CredentialsConfiguratorTest {
 
     @Test
     public void readSSOCachedTemporaryTokens() throws Exception {
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
-        )
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("ReadOnlyAccess-189584543480")));
         assertEquals("TESTACCESSKEY", verify.getTokens().getAccessKeyId());
         assertEquals("TESTSECRETKEY", verify.getTokens().getSecretAccessKey());
@@ -71,8 +68,7 @@ public class S3CredentialsConfiguratorTest {
     @Test
     public void readCredentialProcessTokens() throws Exception {
         Assume.assumeFalse("credential_process via sh not supported on Windows", System.getProperty("os.name", "").toLowerCase().contains("win"));
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
-        )
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("credential_process_profile")));
         assertEquals("PROCESSACCESSKEY", verify.getTokens().getAccessKeyId());
         assertEquals("PROCESSSECRETKEY", verify.getTokens().getSecretAccessKey());
