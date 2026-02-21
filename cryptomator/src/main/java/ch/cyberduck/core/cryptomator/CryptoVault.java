@@ -459,9 +459,6 @@ public class CryptoVault implements Vault {
         if(!file.getType().contains(Path.Type.encrypted)) {
             encrypted.attributes().setDecrypted(file);
         }
-        // Add reference for vault
-        file.attributes().setVault(home);
-        encrypted.attributes().setVault(home);
         return encrypted;
     }
 
@@ -513,8 +510,6 @@ public class CryptoVault implements Vault {
                 if(type.contains(Path.Type.symboliclink)) {
                     decrypted.setSymlinkTarget(file.getSymlinkTarget());
                 }
-                // Add reference for vault
-                attributes.setVault(home);
                 return decrypted;
             }
             catch(AuthenticationFailedException e) {

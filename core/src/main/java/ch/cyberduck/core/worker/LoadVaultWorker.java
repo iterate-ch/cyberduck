@@ -38,10 +38,14 @@ public class LoadVaultWorker extends Worker<Vault> {
 
     @Override
     public Vault run(final Session<?> session) throws BackgroundException {
-        return listener.load(session, directory,
+        final Vault vault = listener.load(session, directory,
                 HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
                 HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
                 HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+        if(Vault.DISABLED != vault) {
+            directory.attributes().setVault(vault.getHome());
+        }
+        return vault;
     }
 
     @Override
