@@ -38,7 +38,8 @@
         <!-- Obtained from client registration with IAM Identity Center OIDC API RegisterClient -->
         <string/>
         <key>OAuth Redirect Url</key>
-        <string>${oauth.application.identifier}:oauth</string>
+        <!-- Obtained from client registration with IAM Identity Center OIDC API RegisterClient -->
+        <string/>
         <key>Scopes</key>
         <array>
             <string>sso:account:access</string>

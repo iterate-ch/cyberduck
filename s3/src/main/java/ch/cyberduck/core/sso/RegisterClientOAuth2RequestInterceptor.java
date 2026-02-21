@@ -15,6 +15,7 @@ package ch.cyberduck.core.sso;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -36,6 +37,10 @@ import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.ssooidc.AWSSSOOIDC;
@@ -91,23 +96,31 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         final AWSSSOOIDC client = configuration.build();
         log.debug("Registering client with issuer {}", issuerUrl);
         try {
-            final RegisterClientResult registration = client.registerClient(new RegisterClientRequest()
-                    // The friendly name of the client.
-                    .withClientName(new PreferencesUseragentProvider().get())
-                    // The service supports only public as a client type.
-                    .withClientType("public")
-                    .withIssuerUrl(issuerUrl)
-                    .withGrantTypes("authorization_code", "refresh_token")
-                    // SSO registration scopes
-                    .withScopes(host.getProtocol().getOAuthScopes())
-                    .withRedirectUris(host.getProtocol().getOAuthRedirectUrl()));
-            log.debug("Client registerd with {}", registration);
-            this.setClientid(registration.getClientId());
-            this.setClientsecret(registration.getClientSecret());
-            this.setParameter("start_url", startUrl);
-            this.setAuthorizationServerUrl(String.format("%s/authorize", configuration.getEndpoint().getServiceEndpoint()));
-            this.setTokenServerUrl(String.format("%s/token", configuration.getEndpoint().getServiceEndpoint()));
-            this.clientIdExpiry = registration.getClientSecretExpiresAt() * 1000;
+            try(ServerSocket temp = new ServerSocket(0)) {
+                final String redirectUri = String.format("http://%s:%d",
+                        InetAddress.getLoopbackAddress().getHostAddress(), temp.getLocalPort());
+                final RegisterClientResult registration = client.registerClient(new RegisterClientRequest()
+                        // The friendly name of the client.
+                        .withClientName(new PreferencesUseragentProvider().get())
+                        // The service supports only public as a client type.
+                        .withClientType("public")
+                        .withIssuerUrl(issuerUrl)
+                        .withGrantTypes("authorization_code", "refresh_token")
+                        // SSO registration scopes
+                        .withScopes(host.getProtocol().getOAuthScopes())
+                        .withRedirectUris(redirectUri));
+                log.debug("Client registerd with {}", registration);
+                this.setClientid(registration.getClientId());
+                this.setClientsecret(registration.getClientSecret());
+                this.setParameter("start_url", startUrl);
+                this.setAuthorizationServerUrl(String.format("%s/authorize", configuration.getEndpoint().getServiceEndpoint()));
+                this.setTokenServerUrl(String.format("%s/token", configuration.getEndpoint().getServiceEndpoint()));
+                this.setRedirectUri(redirectUri);
+                this.clientIdExpiry = registration.getClientSecretExpiresAt() * 1000;
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
         catch(AmazonClientException e) {
             throw new AmazonServiceExceptionMappingService().map(e);
