@@ -3825,7 +3825,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (vault != null)
                     {
-                        _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>() { ((Vault)vault).getHome() }, new List<Path>(), true);
+                        _controller.Reload(_directory, new HashSet<Path>() { _directory }, new List<Path>(), true);
                     }
                 }
             }
