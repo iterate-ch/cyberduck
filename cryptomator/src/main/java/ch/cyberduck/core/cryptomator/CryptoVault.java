@@ -460,10 +460,8 @@ public class CryptoVault implements Vault {
             encrypted.attributes().setDecrypted(file);
         }
         // Add reference for vault
-        if(!new SimplePathPredicate(file).test(home)) {
-            file.attributes().setVault(home);
-            encrypted.attributes().setVault(home);
-        }
+        file.attributes().setVault(home);
+        encrypted.attributes().setVault(home);
         return encrypted;
     }
 
@@ -515,10 +513,8 @@ public class CryptoVault implements Vault {
                 if(type.contains(Path.Type.symboliclink)) {
                     decrypted.setSymlinkTarget(file.getSymlinkTarget());
                 }
-                if(!new SimplePathPredicate(decrypted).test(home)) {
-                    // Add reference for vault
-                    attributes.setVault(home);
-                }
+                // Add reference for vault
+                attributes.setVault(home);
                 return decrypted;
             }
             catch(AuthenticationFailedException e) {
