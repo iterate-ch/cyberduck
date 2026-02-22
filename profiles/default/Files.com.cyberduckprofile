@@ -34,11 +34,11 @@
         <key>Port Configurable</key>
         <false/>
         <key>Username Configurable</key>
-        <true/>
+        <false/>
         <key>Password Configurable</key>
-        <true/>
+        <false/>
         <key>Token Configurable</key>
-        <true/>
+        <false/>
         <key>Anonymous Configurable</key>
         <false/>
         <key>Certificate Configurable</key>
