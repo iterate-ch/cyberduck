@@ -38,7 +38,7 @@
         <key>Username Configurable</key>
         <true/>
         <key>Username Placeholder</key>
-        <string>Profile Name in ~/.aws/credentials</string>
+        <string>Profile Name in ~/.aws/config</string>
         <key>Properties</key>
         <array>
         </array>
