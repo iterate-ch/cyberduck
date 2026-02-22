@@ -27,17 +27,16 @@ import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -87,12 +86,8 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                     }
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
                     if(oauth.notify(state, code)) {
-                        final String response = "<!DOCTYPE html><html><body><script>window.close();</script></body></html>";
-                        exchange.getResponseHeaders().add("Content-Type", "text/html; charset=UTF-8");
-                        exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
-                        try(final OutputStream os = exchange.getResponseBody()) {
-                            os.write(response.getBytes(StandardCharsets.UTF_8));
-                        }
+                        exchange.getResponseHeaders().add(HttpHeaders.LOCATION, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
+                        exchange.sendResponseHeaders(302, 0L);
                     }
                     else {
                         exchange.sendResponseHeaders(400, 0);
