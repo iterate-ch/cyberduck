@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+  ~ Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
   ~ https://cyberduck.io/
   ~
   ~ This program is free software; you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
   ~ This program is distributed in the hope that it will be useful,
@@ -25,21 +25,6 @@
         <string>AWS S3 (IAM Identity Center)</string>
         <key>Hostname Configurable</key>
         <false/>
-        <key>OAuth Authorization Url</key>
-        <!-- Obtained from client registration with IAM Identity Center OIDC API RegisterClient -->
-        <string/>
-        <key>OAuth Token Url</key>
-        <!-- Obtained from client registration with IAM Identity Center OIDC API RegisterClient -->
-        <string/>
-        <key>OAuth Client ID</key>
-        <!-- Obtained from client registration with IAM Identity Center OIDC API RegisterClient -->
-        <string/>
-        <key>OAuth Client Secret</key>
-        <!-- Obtained from client registration with IAM Identity Center OIDC API RegisterClient -->
-        <string/>
-        <key>OAuth Redirect Url</key>
-        <!-- Obtained from client registration with IAM Identity Center OIDC API RegisterClient -->
-        <string/>
         <key>Scopes</key>
         <array>
             <string>sso:account:access</string>
