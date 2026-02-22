@@ -49,6 +49,8 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
      */
     private final OAuth2RequestInterceptor oauth;
     private final Host host;
+
+    private final String region;
     private final String accountId;
     private final String roleName;
 
@@ -57,6 +59,8 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
         super(host, trust, key);
         this.oauth = oauth;
         this.host = host;
+        this.region = prompt(host, prompt, Profile.SSO_REGION_KEY, LocaleFactory.localizedString(
+                "SSO Region", "Credentials"), host.getProperty(Profile.SSO_REGION_KEY));
         this.accountId = prompt(host, prompt, Profile.SSO_ACCOUNT_ID_KEY, LocaleFactory.localizedString(
                 "AWS Account ID", "Credentials"), host.getProperty(Profile.SSO_ACCOUNT_ID_KEY));
         this.roleName = prompt(host, prompt, Profile.SSO_ROLE_NAME_KEY, LocaleFactory.localizedString(
@@ -65,7 +69,7 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
 
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         final OAuthTokens accessKey = oauth.validate(credentials.getOauth());
-        final RoleCredentials roleCredentials = this.getRoleCredentials(accessKey, accountId, roleName);
+        final RoleCredentials roleCredentials = this.getRoleCredentials(accessKey, region, accountId, roleName);
         log.debug("Received temporary access tokens {}", roleCredentials);
         return new TemporaryAccessTokens(roleCredentials.getAccessKeyId(),
                 roleCredentials.getSecretAccessKey(), roleCredentials.getSessionToken(), roleCredentials.getExpiration());
