@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 
 public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2AuthorizationCodeProvider {
     private static final Logger log = LogManager.getLogger(BrowserOAuth2AuthorizationCodeProvider.class);
@@ -50,11 +51,11 @@ public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2Authorizati
             return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(bookmark, prompt, authorizationCodeUrl, redirectUri, state);
         }
         try {
-            if(StringUtils.equals(new URI(redirectUri).getHost(), InetAddress.getLoopbackAddress().getHostAddress())) {
+            if(InetAddress.getByName(new URI(redirectUri).getHost()).isLoopbackAddress()) {
                 return new LoopbackOAuth2AuthorizationCodeProvider().prompt(bookmark, prompt, authorizationCodeUrl, redirectUri, state);
             }
         }
-        catch(URISyntaxException e) {
+        catch(URISyntaxException | UnknownHostException e) {
             log.warn("Invalid redirect URI {}", redirectUri);
         }
         log.debug("Prompt for authentication code for state {}", state);
