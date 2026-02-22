@@ -20,7 +20,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
@@ -68,8 +67,8 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
     }
 
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
-        final OAuthTokens accessKey = oauth.validate(credentials.getOauth());
-        final RoleCredentials roleCredentials = this.getRoleCredentials(accessKey, region, accountId, roleName);
+        final RoleCredentials roleCredentials = this.getRoleCredentials(
+                oauth.save(oauth.validate(credentials.getOauth())), region, accountId, roleName);
         log.debug("Received temporary access tokens {}", roleCredentials);
         return new TemporaryAccessTokens(roleCredentials.getAccessKeyId(),
                 roleCredentials.getSecretAccessKey(), roleCredentials.getSessionToken(), roleCredentials.getExpiration());
