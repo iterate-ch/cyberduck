@@ -378,6 +378,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Action
     public void usernameFieldTextDidEndEditing(final NSNotification sender) {
         bookmark.getCredentials().setUsername(StringUtils.trim(usernameField.stringValue()));
+        bookmark.setCredentials(CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark));
         this.update();
     }
 
