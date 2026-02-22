@@ -75,13 +75,6 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         this.issuerUrl = startUrl;
     }
 
-    @Override
-    public OAuth2AuthorizationService setClientid(final String clientid) {
-        this.clientId = clientid;
-        return super.setClientid(clientid);
-    }
-
-
     /**
      * Registers a public client with IAM Identity Center. This allows clients to perform authorization using
      * the authorization code grant with Proof Key for Code Exchange (PKCE)
