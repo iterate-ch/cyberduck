@@ -19,19 +19,16 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,11 +55,11 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
         super(host, trust, key);
         this.oauth = oauth;
         this.host = host;
-        this.region = prompt(host, prompt, Profile.SSO_REGION_KEY, LocaleFactory.localizedString(
+        this.region = OAuth2AuthorizationService.prompt(host, prompt, Profile.SSO_REGION_KEY, LocaleFactory.localizedString(
                 "SSO Region", "Credentials"), host.getProperty(Profile.SSO_REGION_KEY));
-        this.accountId = prompt(host, prompt, Profile.SSO_ACCOUNT_ID_KEY, LocaleFactory.localizedString(
+        this.accountId = OAuth2AuthorizationService.prompt(host, prompt, Profile.SSO_ACCOUNT_ID_KEY, LocaleFactory.localizedString(
                 "AWS Account ID", "Credentials"), host.getProperty(Profile.SSO_ACCOUNT_ID_KEY));
-        this.roleName = prompt(host, prompt, Profile.SSO_ROLE_NAME_KEY, LocaleFactory.localizedString(
+        this.roleName = OAuth2AuthorizationService.prompt(host, prompt, Profile.SSO_ROLE_NAME_KEY, LocaleFactory.localizedString(
                 "Permission set name", "Credentials"), host.getProperty(Profile.SSO_ROLE_NAME_KEY));
     }
 
@@ -90,26 +87,5 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
         finally {
             lock.unlock();
         }
-    }
-
-    /**
-     * Prompt for value if missing
-     */
-    private static String prompt(final Host bookmark, final PasswordCallback prompt,
-                                 final String property, final String message, final String value) throws LoginCanceledException {
-        if(null == value) {
-            final Credentials input = prompt.prompt(bookmark, message,
-                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    new LoginOptions().icon(bookmark.getProtocol().disk())
-                            .passwordPlaceholder(message).password(false));
-            if(input.isSaved()) {
-                HostPreferencesFactory.get(bookmark).setProperty(property, input.getPassword());
-            }
-            return input.getPassword();
-        }
-        if(StringUtils.isBlank(value)) {
-            return null;
-        }
-        return value;
     }
 }
