@@ -78,10 +78,6 @@ public class OAuth2AuthorizationService {
             = new GsonFactory();
 
     private final Host host;
-    /**
-     * Static long-lived credentials
-     */
-    private final Credentials credentials;
     private final LoginCallback prompt;
 
     private String clientid;
@@ -118,7 +114,6 @@ public class OAuth2AuthorizationService {
                                       final LoginCallback prompt) {
         this.transport = transport;
         this.host = host;
-        this.credentials = host.getCredentials();
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.prompt = prompt;
@@ -167,6 +162,7 @@ public class OAuth2AuthorizationService {
      */
     public OAuthTokens save(final OAuthTokens tokens) throws AccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
+        final Credentials credentials = host.getCredentials();
         credentials.setOauth(tokens).setSaved(new LoginOptions().save);
         switch(flowType) {
             case PasswordGrant:
@@ -209,7 +205,7 @@ public class OAuth2AuthorizationService {
                 response = this.authorizeWithCode(prompt);
                 break;
             case PasswordGrant:
-                response = this.authorizeWithPassword(credentials);
+                response = this.authorizeWithPassword(host.getCredentials());
                 break;
             default:
                 throw new LoginCanceledException();
