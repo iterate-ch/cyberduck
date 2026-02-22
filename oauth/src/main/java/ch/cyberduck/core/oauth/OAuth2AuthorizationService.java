@@ -261,6 +261,13 @@ public class OAuth2AuthorizationService {
         if(StringUtils.isBlank(authorizationCode)) {
             throw new LoginCanceledException();
         }
+        return this.exchangeToken(flow, authorizationCode);
+    }
+
+    /**
+     * Exchanges authorization code for access and refresh tokens
+     */
+    protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode) throws BackgroundException {
         try {
             log.debug("Request tokens for authentication code {}", authorizationCode);
             // Swap the given authorization token for access/refresh tokens
