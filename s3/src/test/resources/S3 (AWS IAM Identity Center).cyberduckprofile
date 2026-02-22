@@ -49,7 +49,9 @@
         <key>Password Configurable</key>
         <false/>
         <key>Username Configurable</key>
-        <false/>
+        <true/>
+        <key>Username Placeholder</key>
+        <string>Profile Name in ~/.aws/credentials</string>
         <key>Properties</key>
         <array>
         </array>
