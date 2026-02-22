@@ -349,9 +349,21 @@ public class OAuth2AuthorizationService {
         return this;
     }
 
+    public String getClientid() {
+        return clientid;
+    }
+
+    public List<String> getScopes() {
+        return scopes;
+    }
+
     public OAuth2AuthorizationService setClientsecret(final String clientsecret) {
         this.clientsecret = clientsecret;
         return this;
+    }
+
+    public String getClientsecret() {
+        return clientsecret;
     }
 
     public OAuth2AuthorizationService setTokenServerUrl(final String tokenServerUrl) {
@@ -374,14 +386,26 @@ public class OAuth2AuthorizationService {
         return this;
     }
 
+    public String getRedirectUri() {
+        return redirectUri;
+    }
+
     public OAuth2AuthorizationService setFlowType(final FlowType flowType) {
         this.flowType = flowType;
         return this;
     }
 
+    public FlowType getFlowType() {
+        return flowType;
+    }
+
     public OAuth2AuthorizationService setParameter(final String key, final String value) {
         additionalParameters.put(key, value);
         return this;
+    }
+
+    public Map<String, String> getAdditionalParameters() {
+        return additionalParameters;
     }
 
     public enum FlowType {
