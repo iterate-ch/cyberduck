@@ -126,6 +126,9 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         catch(AmazonClientException e) {
             throw new AmazonServiceExceptionMappingService().map(e);
         }
+        finally {
+            client.shutdown();
+        }
     }
 
     @Override
