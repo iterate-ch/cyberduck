@@ -47,14 +47,17 @@ public class IdentityCenterAuthorizationService {
     }
 
     /**
+     * Retrieves role credentials using the provided SSO access token, AWS region, account ID, and role name.
      *
      * @param tokens    The token issued by the CreateToken API call. For more information, see CreateToken in the IAM Identity Center OIDC API Reference Guide.
+     * @param region    The AWS region where the request should be made.
      * @param accountId The identifier for the AWS account that is assigned to the user.
      * @param roleName  The friendly name of the role that is assigned to the user.
      * @return Short-lived access tokens
      */
-    public RoleCredentials getRoleCredentials(final OAuthTokens tokens, final String accountId, final String roleName) throws BackgroundException {
+    public RoleCredentials getRoleCredentials(final OAuthTokens tokens, final String region, final String accountId, final String roleName) throws BackgroundException {
         final AWSSSO client = AWSSSOClient.builder()
+                .withRegion(region)
                 .withClientConfiguration(new CustomClientConfiguration(host,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key)).build();
         try {
