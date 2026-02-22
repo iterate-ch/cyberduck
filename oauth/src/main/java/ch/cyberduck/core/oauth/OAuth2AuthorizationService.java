@@ -409,8 +409,18 @@ public class OAuth2AuthorizationService {
     }
 
     public enum FlowType {
-        AuthorizationCode,
-        PasswordGrant
+        AuthorizationCode {
+            @Override
+            public String toString() {
+                return "authorization_code";
+            }
+        },
+        PasswordGrant {
+            @Override
+            public String toString() {
+                return "password";
+            }
+        }
     }
 
     public static final class PermissiveTokenResponse extends GenericJson {
@@ -478,7 +488,7 @@ public class OAuth2AuthorizationService {
      * Prompt for value if missing
      */
     protected static String prompt(final Host bookmark, final PasswordCallback prompt,
-                                 final String property, final String message, final String value) throws LoginCanceledException {
+                                   final String property, final String message, final String value) throws LoginCanceledException {
         if(null == value) {
             final Credentials input = prompt.prompt(bookmark, message,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
