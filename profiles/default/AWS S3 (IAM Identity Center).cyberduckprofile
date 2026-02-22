@@ -18,9 +18,9 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>s3</string>
+        <string>s3-iam</string>
         <key>Vendor</key>
-        <string>s3-iam-identity-center</string>
+        <string>iterate GmbH</string>
         <key>Bundled</key>
         <true/>
         <key>Description</key>
