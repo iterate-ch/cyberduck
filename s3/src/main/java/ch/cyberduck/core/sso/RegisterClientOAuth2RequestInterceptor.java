@@ -26,27 +26,30 @@ import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.ssooidc.AWSSSOOIDC;
 import com.amazonaws.services.ssooidc.AWSSSOOIDCClientBuilder;
+import com.amazonaws.services.ssooidc.model.CreateTokenRequest;
+import com.amazonaws.services.ssooidc.model.CreateTokenResult;
 import com.amazonaws.services.ssooidc.model.RegisterClientRequest;
 import com.amazonaws.services.ssooidc.model.RegisterClientResult;
+import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
+import com.google.api.client.auth.openidconnect.IdTokenResponse;
 
 public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterceptor {
     private static final Logger log = LogManager.getLogger(RegisterClientOAuth2RequestInterceptor.class);
@@ -59,8 +62,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     private final String startUrl;
     private final String issuerUrl;
 
-    private String clientId = null;
-    private Long clientIdExpiry = -1L;
+    private Long clientIdExpiry = null;
 
     public RegisterClientOAuth2RequestInterceptor(final HttpClient client, final Host host,
                                                   final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws LoginCanceledException {
@@ -133,11 +135,11 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     @Override
     public OAuthTokens authorizeWithRefreshToken(final OAuthTokens tokens) throws BackgroundException {
         // Registers client if missing; persists registration details
-        if(StringUtils.isBlank(clientId)) {
+        if(null == clientIdExpiry) {
             log.debug("Client ID not found for {}, registering new client", host);
             this.registerClient(startUrl, issuerUrl);
         }
-        if(System.currentTimeMillis() >= clientIdExpiry) {
+        else if(System.currentTimeMillis() >= clientIdExpiry) {
             log.warn("Client registration expired for {}", host);
             this.registerClient(startUrl, issuerUrl);
         }
@@ -147,5 +149,44 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     @Override
     protected void addAuthorizationHeader(final HttpRequest request, final OAuthTokens tokens) {
         // Skip setting header later set in interceptor for AWS4 signature
+    }
+
+    /**
+     * Send token request as application/json instead of default application/x-www-form-urlencoded
+     */
+    @Override
+    protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode) throws BackgroundException {
+        final AWSSSOOIDCClientBuilder configuration = AWSSSOOIDCClientBuilder.standard()
+                .withRegion(region)
+                .withClientConfiguration(new CustomClientConfiguration(host,
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, String.format("oidc.%s.amazonaws.com", region)), key));
+        final AWSSSOOIDC client = configuration.build();
+        try {
+            // Use reflection to access the pkce field from AuthorizationCodeFlow
+            final Field pkceField = AuthorizationCodeFlow.class.getDeclaredField("pkce");
+            pkceField.setAccessible(true);
+            final Object pkce = pkceField.get(flow);
+            // Get the code verifier using reflection
+            final Field codeVerifierField = pkce.getClass().getDeclaredField("verifier");
+            codeVerifierField.setAccessible(true);
+            final String codeVerifier = (String) codeVerifierField.get(pkce);
+            final CreateTokenRequest tokenRequest = new CreateTokenRequest()
+                    .withClientId(this.getClientid())
+                    .withClientSecret(this.getClientsecret())
+                    .withGrantType(this.getFlowType().toString())
+                    .withCode(authorizationCode)
+                    .withRedirectUri(this.getRedirectUri())
+                    .withCodeVerifier(codeVerifier);
+            final CreateTokenResult tokenResponse = client.createToken(tokenRequest);
+            return new IdTokenResponse()
+                    .setAccessToken(tokenResponse.getAccessToken())
+                    .setRefreshToken(tokenResponse.getRefreshToken());
+        }
+        catch(NoSuchFieldException | IllegalAccessException e) {
+            throw new DefaultIOExceptionMappingService().map(new IOException("Failed to access PKCE verifier field", e));
+        }
+        finally {
+            client.shutdown();
+        }
     }
 }
