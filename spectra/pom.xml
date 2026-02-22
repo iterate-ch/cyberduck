@@ -44,19 +44,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.iterate.spectralogic</groupId>
+            <groupId>com.spectralogic.ds3</groupId>
             <artifactId>ds3-sdk</artifactId>
-            <version>${ds3-sdk-version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.datatype</groupId>
-                    <artifactId>jackson-datatype-jdk8</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.codehaus.woodstox</groupId>
-                    <artifactId>woodstox-core-asl</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>5.6.3</version>
         </dependency>
     </dependencies>
 
