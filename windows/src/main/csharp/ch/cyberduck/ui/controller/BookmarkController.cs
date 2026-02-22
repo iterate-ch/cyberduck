@@ -228,7 +228,6 @@ namespace Ch.Cyberduck.Ui.Controller
         internal void View_ChangedUsernameEvent()
         {
             _host.getCredentials().setUsername(View.Username);
-            _host.setCredentials(CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host));
             ItemChanged();
             Update();
         }
