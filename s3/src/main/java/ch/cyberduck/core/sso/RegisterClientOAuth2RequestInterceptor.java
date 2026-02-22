@@ -106,7 +106,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
                         // SSO registration scopes
                         .withScopes(host.getProtocol().getOAuthScopes())
                         .withRedirectUris(redirectUri));
-                log.debug("Client registerd with {}", registration);
+                log.debug("Client registered with {}", registration);
                 this.setClientid(registration.getClientId());
                 this.setClientsecret(registration.getClientSecret());
                 this.setParameter("start_url", startUrl);
