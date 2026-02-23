@@ -39,6 +39,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -67,6 +68,7 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
         try {
             final HttpServer server = HttpServer.create(new InetSocketAddress(
                     URI.create(redirectUri).getHost(), URI.create(redirectUri).getPort()), 0);
+            final ExecutorService executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("oauth"));
             // Create handler for OAuth callback
             server.createContext(StringUtils.isBlank(URI.create(redirectUri).getRawPath()) ?
                     String.valueOf(Path.DELIMITER) : URI.create(redirectUri).getRawPath(), new HttpHandler() {
@@ -95,7 +97,7 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                     IOUtils.close(exchange.getResponseBody());
                 }
             });
-            server.setExecutor(Executors.newSingleThreadExecutor(new NamedThreadFactory("oauth")));
+            server.setExecutor(executor);
             server.start();
             log.info("Started OAuth callback server {}", server);
             try {
@@ -110,6 +112,7 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
             }
             finally {
                 server.stop(0);
+                executor.shutdown();
             }
         }
         catch(IOException e) {
