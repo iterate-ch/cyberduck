@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 
 import com.amazonaws.AmazonClientException;
@@ -95,7 +95,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         try {
             try(ServerSocket temp = new ServerSocket(0)) {
                 final String redirectUri = String.format("http://%s:%d/oauth/callback",
-                        InetAddress.getLoopbackAddress().getHostAddress(), temp.getLocalPort());
+                        Inet4Address.getLoopbackAddress().getHostAddress(), temp.getLocalPort());
                 final RegisterClientResult registration = client.registerClient(new RegisterClientRequest()
                         // The friendly name of the client.
                         .withClientName(new PreferencesUseragentProvider().get())
