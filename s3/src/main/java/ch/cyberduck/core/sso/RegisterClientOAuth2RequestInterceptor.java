@@ -63,6 +63,11 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     private final String startUrl;
     private final String issuerUrl;
 
+    /**
+     * The duration (in milliseconds) after which the client ID expires.
+     * This variable is used to track the validity of the client registration with the Identity Center.
+     * When the specified time elapses, the client must renew its registration.
+     */
     private Long clientIdExpiry = null;
 
     public RegisterClientOAuth2RequestInterceptor(final HttpClient client, final Host host,
