@@ -131,11 +131,6 @@ public interface PathAttributes extends Attributes, Serializable {
         }
 
         @Override
-        public PathAttributes setVault(final Path vault) {
-            return this;
-        }
-
-        @Override
         public PathAttributes setDuplicate(final boolean duplicate) {
             return this;
         }
@@ -283,18 +278,6 @@ public interface PathAttributes extends Attributes, Serializable {
     Path getDecrypted();
 
     PathAttributes setDecrypted(Path decrypted);
-
-    /**
-     * Set the vault root directory when part of a vault
-     */
-    PathAttributes setVault(Path vault);
-
-    /**
-     * Returns the vault root directory associated with the file.
-     *
-     * @return Null when path is not part of a vault
-     */
-    Path getVault();
 
     /**
      * If the path should not be displayed in a browser by default unless the user explicitly chooses to show hidden

@@ -119,12 +119,12 @@ public class CryptoVault implements Vault {
 
     public CryptoVault(final Path home, final String masterkey, final String config, final byte[] pepper) {
         this.home = new Path(home).withAttributes(PathAttributes.EMPTY);
-        this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
-        this.config = new Path(home, config, EnumSet.of(Path.Type.file, Path.Type.vault));
+        this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vaultmetadata));
+        this.config = new Path(home, config, EnumSet.of(Path.Type.file, Path.Type.vaultmetadata));
         this.pepper = pepper;
         // New vault home with vault flag set for internal use
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
-        type.add(Path.Type.vault);
+        type.add(Path.Type.vaultmetadata);
         if(home.isRoot()) {
             this.vault = new Path(home.getAbsolute(), type, new DefaultPathAttributes(home.attributes()));
         }
@@ -412,7 +412,7 @@ public class CryptoVault implements Vault {
         }
         final Path encrypted;
         if(file.isFile() || metadata) {
-            if(file.getType().contains(Path.Type.vault)) {
+            if(file.getType().contains(Path.Type.vaultmetadata)) {
                 log.warn("Skip file {} because it is marked as an internal vault path", file);
                 return file;
             }
@@ -441,7 +441,7 @@ public class CryptoVault implements Vault {
             encrypted = new Path(parent, filename, type, attributes);
         }
         else {
-            if(file.getType().contains(Path.Type.vault)) {
+            if(file.getType().contains(Path.Type.vaultmetadata)) {
                 return directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
             }
             encrypted = directoryProvider.toEncrypted(session, directoryId, file);
@@ -459,7 +459,7 @@ public class CryptoVault implements Vault {
             log.warn("Skip file {} because it is already marked as an decrypted path", file);
             return file;
         }
-        if(file.getType().contains(Path.Type.vault)) {
+        if(file.getType().contains(Path.Type.vaultmetadata)) {
             log.warn("Skip file {} because it is marked as an internal vault path", file);
             return file;
         }

@@ -24,6 +24,7 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.vault.VaultLookupListener;
 
 import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
 import java.util.Objects;
 
 public class LoadVaultWorker extends Worker<Vault> {
@@ -43,7 +44,9 @@ public class LoadVaultWorker extends Worker<Vault> {
                 HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
                 HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
         if(Vault.DISABLED != vault) {
-            directory.attributes().setVault(vault.getHome());
+            final EnumSet<Path.Type> type = directory.getType();
+            type.add(Path.Type.vault);
+            directory.setType(type);
         }
         return vault;
     }

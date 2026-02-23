@@ -116,7 +116,7 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
         final Path first = new Path(metadataRoot, filename.substring(0, 2), metadataRoot.getType());
         // Intermediate directory
         final Path second = new Path(first, filename.substring(2, 4), metadataRoot.getType());
-        return new Path(second, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted, Path.Type.vault));
+        return new Path(second, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted, Path.Type.vaultmetadata));
     }
 
     @Override

@@ -105,7 +105,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(autoload) {
             Path directory = file;
             do {
-                if(directory.getType().contains(Path.Type.decrypted)) {
+                if(directory.getType().contains(Path.Type.vault)) {
                     final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
                     return listener.load(session, directory,
                             HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),

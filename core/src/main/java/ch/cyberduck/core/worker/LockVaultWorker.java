@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Objects;
 
 public class LockVaultWorker extends Worker<Path> {
@@ -37,7 +38,9 @@ public class LockVaultWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         if(registry.close(directory)) {
-            directory.attributes().setVault(null);
+            final EnumSet<Path.Type> type = directory.getType();
+            type.remove(Path.Type.vault);
+            directory.setType(type);
         }
         return directory;
     }

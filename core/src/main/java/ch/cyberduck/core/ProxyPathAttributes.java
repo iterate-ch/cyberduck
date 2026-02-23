@@ -186,16 +186,6 @@ public class ProxyPathAttributes implements PathAttributes {
     }
 
     @Override
-    public PathAttributes setVault(final Path vault) {
-        return proxy.setVault(vault);
-    }
-
-    @Override
-    public Path getVault() {
-        return proxy.getVault();
-    }
-
-    @Override
     public boolean isDuplicate() {
         return proxy.isDuplicate();
     }
