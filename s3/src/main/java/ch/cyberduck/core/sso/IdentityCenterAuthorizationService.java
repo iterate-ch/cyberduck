@@ -72,5 +72,8 @@ public class IdentityCenterAuthorizationService {
         catch(AmazonClientException e) {
             throw new AmazonServiceExceptionMappingService().map(e);
         }
+        finally {
+            client.shutdown();
+        }
     }
 }
