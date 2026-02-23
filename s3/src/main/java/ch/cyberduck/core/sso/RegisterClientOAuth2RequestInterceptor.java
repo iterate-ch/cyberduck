@@ -68,7 +68,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
      * This variable is used to track the validity of the client registration with the Identity Center.
      * When the specified time elapses, the client must renew its registration.
      */
-    private Long clientIdExpiry = null;
+    private Long clientIdExpiry = -1L;
 
     public RegisterClientOAuth2RequestInterceptor(final HttpClient client, final Host host,
                                                   final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws LoginCanceledException {
@@ -134,7 +134,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
 
     @Override
     public OAuthTokens authorize() throws BackgroundException {
-        if(null == clientIdExpiry) {
+        if(-1L == clientIdExpiry) {
             this.registerClient(startUrl, issuerUrl);
         }
         return super.authorize();
@@ -143,7 +143,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     @Override
     public OAuthTokens authorizeWithRefreshToken(final OAuthTokens tokens) throws BackgroundException {
         // Registers client if missing; persists registration details
-        if(null == clientIdExpiry || System.currentTimeMillis() >= clientIdExpiry) {
+        if(System.currentTimeMillis() >= clientIdExpiry) {
             log.warn("Client registration expired for {} at {}", host, clientIdExpiry);
             this.registerClient(startUrl, issuerUrl);
         }
