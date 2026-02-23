@@ -129,7 +129,9 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
 
     @Override
     public OAuthTokens authorize() throws BackgroundException {
-        this.registerClient(startUrl, issuerUrl);
+        if(null == clientIdExpiry) {
+            this.registerClient(startUrl, issuerUrl);
+        }
         return super.authorize();
     }
 
