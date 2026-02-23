@@ -358,7 +358,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_LockUnlockVault()
         {
             Path directory = new UploadTargetFinder(Workdir).find(SelectedPath);
-            if (directory.attributes().getVault() != null)
+            if (Pool.getVaultRegistry().contains(directory))
             {
                 // Lock and remove all open vaults
                 LockVaultAction lockVault = new LockVaultAction(this, Pool.getVaultRegistry(), directory);
