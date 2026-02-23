@@ -138,12 +138,8 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     @Override
     public OAuthTokens authorizeWithRefreshToken(final OAuthTokens tokens) throws BackgroundException {
         // Registers client if missing; persists registration details
-        if(null == clientIdExpiry) {
-            log.debug("Client ID not found for {}, registering new client", host);
-            this.registerClient(startUrl, issuerUrl);
-        }
-        else if(System.currentTimeMillis() >= clientIdExpiry) {
-            log.warn("Client registration expired for {}", host);
+        if(null == clientIdExpiry || System.currentTimeMillis() >= clientIdExpiry) {
+            log.warn("Client registration expired for {} at {}", host, clientIdExpiry);
             this.registerClient(startUrl, issuerUrl);
         }
         return super.authorizeWithRefreshToken(tokens);
