@@ -406,6 +406,10 @@ public class CryptoVault implements Vault {
     }
 
     public Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
+        if(file.getType().contains(Path.Type.encrypted)) {
+            log.warn("Skip file {} because it is already marked as an encrypted path", file);
+            return file;
+        }
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {
@@ -416,17 +420,8 @@ public class CryptoVault implements Vault {
                 log.warn("Skip vault home {} because the root has no metadata file", file);
                 return file;
             }
-            final Path parent;
-            final String filename;
-            if(file.getType().contains(Path.Type.encrypted)) {
-                final Path decrypted = file.attributes().getDecrypted();
-                parent = directoryProvider.toEncrypted(session, decrypted.getParent().attributes().getDirectoryId(), decrypted.getParent());
-                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), decrypted.getName(), decrypted.getType());
-            }
-            else {
-                parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
-                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            }
+            final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
+            final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
             final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
             attributes.setDirectoryId(null);
             if(!file.isFile() && !metadata) {
@@ -446,10 +441,6 @@ public class CryptoVault implements Vault {
             encrypted = new Path(parent, filename, type, attributes);
         }
         else {
-            if(file.getType().contains(Path.Type.encrypted)) {
-                log.warn("Skip file {} because it is already marked as an encrypted path", file);
-                return file;
-            }
             if(file.getType().contains(Path.Type.vault)) {
                 return directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
             }
