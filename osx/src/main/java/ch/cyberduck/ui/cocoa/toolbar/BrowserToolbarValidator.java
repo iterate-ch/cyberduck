@@ -241,7 +241,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(Foundation.selector("createEncryptedVaultButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getVaultRegistry() != VaultRegistry.DISABLED &&
-                    null == controller.workdir().attributes().getVault() &&
+                    !controller.getSession().getVaultRegistry().contains(controller.workdir()) &&
                     controller.getSession().getFeature(Directory.class).isSupported(
                             new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
                     );

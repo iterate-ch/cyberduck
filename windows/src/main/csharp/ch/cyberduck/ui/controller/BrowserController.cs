@@ -2069,7 +2069,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewVault()
         {
             return IsMounted() && Pool.getVaultRegistry() != VaultRegistry.DISABLED &&
-                   null == Workdir.attributes().getVault() &&
+                   !Pool.getVaultRegistry().contains(Workdir) &&
                    ((Directory)Pool.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
