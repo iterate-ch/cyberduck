@@ -150,10 +150,6 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
      */
     private Path decrypted;
     /**
-     * Cryptomator encrypted path.
-     */
-    private Path encrypted;
-    /**
      * Unique identifier for cryptomator
      */
     private String directoryId;
@@ -194,7 +190,6 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         verdict = copy.getVerdict();
         vault = copy.getVault();
         decrypted = copy.getDecrypted();
-        encrypted = copy.getEncrypted();
         directoryId = copy.getDirectoryId();
     }
 
@@ -524,17 +519,6 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     @Override
     public PathAttributes setDecrypted(final Path decrypted) {
         this.decrypted = decrypted;
-        return this;
-    }
-
-    @Override
-    public Path getEncrypted() {
-        return encrypted;
-    }
-
-    @Override
-    public PathAttributes setEncrypted(final Path encrypted) {
-        this.encrypted = encrypted;
         return this;
     }
 

@@ -499,8 +499,6 @@ public class CryptoVault implements Vault {
                     // Translate file size
                     attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
                 }
-                // Add reference to encrypted file
-                attributes.setEncrypted(file);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
                 type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
                 type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);

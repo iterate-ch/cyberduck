@@ -131,11 +131,6 @@ public interface PathAttributes extends Attributes, Serializable {
         }
 
         @Override
-        public PathAttributes setEncrypted(final Path encrypted) {
-            return this;
-        }
-
-        @Override
         public PathAttributes setVault(final Path vault) {
             return this;
         }
@@ -288,13 +283,6 @@ public interface PathAttributes extends Attributes, Serializable {
     Path getDecrypted();
 
     PathAttributes setDecrypted(Path decrypted);
-
-    /**
-     * @return Null if path is missing flag decrypted
-     */
-    Path getEncrypted();
-
-    PathAttributes setEncrypted(Path encrypted);
 
     /**
      * Set the vault root directory when part of a vault
