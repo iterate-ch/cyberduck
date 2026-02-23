@@ -103,11 +103,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             }
         }
         if(autoload) {
-            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
             Path directory = file;
             do {
-                if(directory.attributes().getVault() != null) {
-                    return listener.load(session, directory.attributes().getVault(),
+                if(directory.getType().contains(Path.Type.decrypted)) {
+                    final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
+                    return listener.load(session, directory,
                             HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
                             HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
                             HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
