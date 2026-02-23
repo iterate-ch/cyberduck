@@ -91,8 +91,8 @@ public class LoopbackOAuth2AuthorizationCodeProvider extends BrowserOAuth2Author
                     }
                     else {
                         exchange.sendResponseHeaders(400, 0);
-                        IOUtils.close(exchange.getResponseBody());
                     }
+                    IOUtils.close(exchange.getResponseBody());
                 }
             });
             server.setExecutor(Executors.newSingleThreadExecutor(new NamedThreadFactory("oauth")));
