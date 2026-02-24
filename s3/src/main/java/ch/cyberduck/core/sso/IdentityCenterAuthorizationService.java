@@ -94,13 +94,18 @@ public class IdentityCenterAuthorizationService {
                     nextToken = result.getNextToken();
                 }
                 while(null != nextToken);
-                accountId = prompt(host, prompt.getFeature(LocationCallback.class), list.stream().map(info -> new Location.Name(info.getAccountId()) {
-                    @Override
-                    public String toString() {
-                        return info.getAccountName();
-                    }
-                }).collect(Collectors.toSet()), Profile.SSO_ACCOUNT_ID_KEY, LocaleFactory.localizedString(
-                        String.format("AWS Account ID (%s)", Profile.SSO_ACCOUNT_ID_KEY), "Credentials"), host.getProperty(Profile.SSO_ACCOUNT_ID_KEY)).getIdentifier();
+                if(list.size() == 1) {
+                    accountId = list.get(0).getAccountId();
+                }
+                else {
+                    accountId = prompt(host, prompt.getFeature(LocationCallback.class), list.stream().map(info -> new Location.Name(info.getAccountId()) {
+                        @Override
+                        public String toString() {
+                            return info.getAccountName();
+                        }
+                    }).collect(Collectors.toSet()), Profile.SSO_ACCOUNT_ID_KEY, LocaleFactory.localizedString(
+                            String.format("AWS Account ID (%s)", Profile.SSO_ACCOUNT_ID_KEY), "Credentials"), host.getProperty(Profile.SSO_ACCOUNT_ID_KEY)).getIdentifier();
+                }
             }
             if(null == roleName) {
                 final List<RoleInfo> list = new ArrayList<>();
@@ -114,9 +119,14 @@ public class IdentityCenterAuthorizationService {
                     nextToken = result.getNextToken();
                 }
                 while(null != nextToken);
-                roleName = prompt(host, prompt.getFeature(LocationCallback.class), list.stream().map(info -> new Location.Name(info.getRoleName())).collect(Collectors.toSet()),
-                        Profile.SSO_ROLE_NAME_KEY, LocaleFactory.localizedString(
-                                String.format("Permission set name (%s)", Profile.SSO_ROLE_NAME_KEY), "Credentials"), host.getProperty(Profile.SSO_ROLE_NAME_KEY)).getIdentifier();
+                if(list.size() == 1) {
+                    roleName = list.get(0).getRoleName();
+                }
+                else {
+                    roleName = prompt(host, prompt.getFeature(LocationCallback.class), list.stream().map(info -> new Location.Name(info.getRoleName())).collect(Collectors.toSet()),
+                            Profile.SSO_ROLE_NAME_KEY, LocaleFactory.localizedString(
+                                    String.format("Permission set name (%s)", Profile.SSO_ROLE_NAME_KEY), "Credentials"), host.getProperty(Profile.SSO_ROLE_NAME_KEY)).getIdentifier();
+                }
             }
             log.debug("Getting role credentials for account {} and role {} with access token {}",
                     accountId, roleName, tokens);
