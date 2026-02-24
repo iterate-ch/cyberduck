@@ -87,11 +87,16 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
             configurator.reload();
             final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
             if(!profiles.isEmpty()) {
-                final String profile = IdentityCenterAuthorizationService.prompt(host, prompt.getFeature(LocationCallback.class),
-                        profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
-                        LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
-                log.debug("Configuring credentials from profile {}", profile);
-                host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));
+                try {
+                    final String profile = IdentityCenterAuthorizationService.prompt(host, prompt.getFeature(LocationCallback.class),
+                            profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
+                            LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
+                    log.debug("Configuring credentials from profile {}", profile);
+                    host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));
+                }
+                catch(ConnectionCanceledException e) {
+                    // Continue with manual configuration
+                }
             }
         }
         this.trust = trust;
