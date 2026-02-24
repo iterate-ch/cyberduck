@@ -30,6 +30,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LocationCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -155,5 +156,13 @@ public class PromptLoginCallback extends PromptPasswordCallback implements Login
             }
         }
         throw new LoginCanceledException();
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == LocationCallback.class) {
+            return type.cast(new PromptLocationCallback(controller));
+        }
+        return null;
     }
 }
