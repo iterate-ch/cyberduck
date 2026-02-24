@@ -482,6 +482,14 @@ public class OAuth2AuthorizationService {
 
     /**
      * Prompt for value if missing
+     *
+     * @param bookmark Host bookmark
+     * @param prompt   Password callback for user input
+     * @param property Property key for storing value
+     * @param message  Prompt message for user
+     * @param value    Current value, if null prompt for input
+     * @return Prompted value
+     * @throws LoginCanceledException If user cancels the prompt
      */
     public static String prompt(final Host bookmark, final PasswordCallback prompt,
                                 final String property, final String message, final String value) throws LoginCanceledException {
