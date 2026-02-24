@@ -181,6 +181,10 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         return this;
     }
 
+    public Map<String, BasicProfile> getProfiles() {
+        return profiles;
+    }
+
     /**
      * Implementation of AbstractProfilesConfigFileScanner that groups profile properties into a map while scanning
      * through the credentials profile.
