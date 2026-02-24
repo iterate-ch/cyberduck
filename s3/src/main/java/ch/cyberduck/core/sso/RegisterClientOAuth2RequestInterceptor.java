@@ -18,6 +18,7 @@ package ch.cyberduck.core.sso;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LocationCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -25,7 +26,7 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.s3.S3CredentialsConfigurator;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -71,13 +72,14 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
     private Long clientIdExpiry = -1L;
 
     public RegisterClientOAuth2RequestInterceptor(final HttpClient client, final Host host,
-                                                  final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws LoginCanceledException {
+                                                  final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws ConnectionCanceledException {
         super(client, host, null, null, null, null, host.getProtocol().getOAuthScopes(), true, prompt);
         this.host = host.setCredentials(new S3CredentialsConfigurator().reload().configure(host));
         this.trust = trust;
         this.key = key;
-        this.region = prompt(host, prompt, Profile.SSO_REGION_KEY, LocaleFactory.localizedString(
-                String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"), host.getProperty(Profile.SSO_REGION_KEY));
+        this.region = IdentityCenterAuthorizationService.prompt(host, prompt.getFeature(LocationCallback.class), host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
+                LocaleFactory.localizedString(String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"),
+                host.getProperty(Profile.SSO_REGION_KEY)).getIdentifier();
         this.startUrl = prompt(host, prompt, Profile.SSO_START_URL_KEY, LocaleFactory.localizedString(
                 String.format("Issuer URL (%s)", Profile.SSO_START_URL_KEY), "Credentials"), host.getProperty(Profile.SSO_START_URL_KEY));
         this.issuerUrl = startUrl;
@@ -183,6 +185,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
                     .withCodeVerifier(codeVerifier);
             final CreateTokenResult tokenResponse = client.createToken(tokenRequest);
             return new IdTokenResponse()
+                    .setExpiresInSeconds(tokenResponse.getExpiresIn().longValue())
                     .setAccessToken(tokenResponse.getAccessToken())
                     .setRefreshToken(tokenResponse.getRefreshToken());
         }
