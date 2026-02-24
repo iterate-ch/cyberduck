@@ -158,7 +158,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
             else {
                 log.debug("Configure credentials from basic profile {}", profile.getProfileName());
-                if(profile.getProperties().containsKey("sso_start_url") || profile.getProperties().containsKey("sso_session")) {
+                if(toSsoPredicate().test(profile)) {
                     log.debug("Configure with SSO properties {}", profile.getProperties());
                     profile.getProperties().forEach(credentials::setProperty);
                     if(profile.getProperties().containsKey("sso_session")) {
