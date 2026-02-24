@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.aws.AmazonSSOOIDCExceptionMappingService;
 import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -51,6 +52,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.services.ssooidc.AWSSSOOIDC;
 import com.amazonaws.services.ssooidc.AWSSSOOIDCClientBuilder;
+import com.amazonaws.services.ssooidc.model.AWSSSOOIDCException;
 import com.amazonaws.services.ssooidc.model.CreateTokenRequest;
 import com.amazonaws.services.ssooidc.model.CreateTokenResult;
 import com.amazonaws.services.ssooidc.model.RegisterClientRequest;
@@ -149,6 +151,9 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
+        }
+        catch(AWSSSOOIDCException e) {
+            throw new AmazonSSOOIDCExceptionMappingService().map(e);
         }
         catch(AmazonClientException e) {
             throw new AmazonServiceExceptionMappingService().map(e);
