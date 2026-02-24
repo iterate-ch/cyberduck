@@ -78,7 +78,7 @@ public class VaultRegistryTrashFeature implements Trash {
     @Override
     public EnumSet<Flags> features(final Path file) {
         try {
-            return registry.find(session, file).getFeature(session, Trash.class, proxy).features(file);
+            return registry.find(session, file, false).getFeature(session, Trash.class, proxy).features(file);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.features(file);
