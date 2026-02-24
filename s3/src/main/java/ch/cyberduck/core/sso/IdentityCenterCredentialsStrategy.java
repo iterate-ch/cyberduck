@@ -18,12 +18,12 @@ package ch.cyberduck.core.sso;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LocationCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -51,16 +51,15 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
     private final String roleName;
 
     public IdentityCenterCredentialsStrategy(final OAuth2RequestInterceptor oauth, final Host host,
-                                             final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws LoginCanceledException {
-        super(host, trust, key);
+                                             final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws ConnectionCanceledException {
+        super(host, trust, key, prompt);
         this.oauth = oauth;
         this.host = host;
-        this.region = OAuth2AuthorizationService.prompt(host, prompt, Profile.SSO_REGION_KEY, LocaleFactory.localizedString(
-                String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"), host.getProperty(Profile.SSO_REGION_KEY));
-        this.accountId = OAuth2AuthorizationService.prompt(host, prompt, Profile.SSO_ACCOUNT_ID_KEY, LocaleFactory.localizedString(
-                String.format("AWS Account ID (%s)", Profile.SSO_ACCOUNT_ID_KEY), "Credentials"), host.getProperty(Profile.SSO_ACCOUNT_ID_KEY));
-        this.roleName = OAuth2AuthorizationService.prompt(host, prompt, Profile.SSO_ROLE_NAME_KEY, LocaleFactory.localizedString(
-                String.format("Permission set name (%s)", Profile.SSO_ROLE_NAME_KEY), "Credentials"), host.getProperty(Profile.SSO_ROLE_NAME_KEY));
+        this.region = prompt(host, prompt.getFeature(LocationCallback.class), host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
+                LocaleFactory.localizedString(String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"),
+                host.getProperty(Profile.SSO_REGION_KEY)).getIdentifier();
+        this.accountId = host.getProperty(Profile.SSO_ACCOUNT_ID_KEY);
+        this.roleName = host.getProperty(Profile.SSO_ROLE_NAME_KEY);
     }
 
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
