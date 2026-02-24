@@ -36,11 +36,15 @@ public class RegionController extends AlertController {
     @Outlet
     private final NSPopUpButton regionPopup = NSPopUpButton.buttonPullsDown(false);
 
+    private final String title;
+    private final String message;
     private final Set<Location.Name> regions;
     private final Location.Name defaultRegion;
     private final RegionController.Callback callback;
 
-    public RegionController(final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
+    public RegionController(final String title, final String message, final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
+        this.title = title;
+        this.message = message;
         this.regions = regions;
         this.defaultRegion = defaultRegion;
         this.callback = callback;
@@ -50,8 +54,7 @@ public class RegionController extends AlertController {
     public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-        alert.setMessageText(LocaleFactory.localizedString("Choose Region", "Folder"));
-        final String message = LocaleFactory.localizedString("Select the region for the new folder", "Folder");
+        alert.setMessageText(title);
         alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Choose"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
@@ -72,6 +75,9 @@ public class RegionController extends AlertController {
                 regionPopup.selectItem(regionPopup.lastItem());
             }
         });
+        if(null == regionPopup.selectedItem()) {
+            regionPopup.selectItem(regionPopup.lastItem());
+        }
         return regionPopup;
     }
 

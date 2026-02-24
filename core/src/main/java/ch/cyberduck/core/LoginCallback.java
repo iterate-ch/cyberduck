@@ -18,7 +18,11 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Location;
+
+import java.util.Set;
 
 public interface LoginCallback extends ConnectionCallback {
 
@@ -45,6 +49,16 @@ public interface LoginCallback extends ConnectionCallback {
 
     @SuppressWarnings("unchecked")
     default <T> T getFeature(final Class<T> type) {
+        if(type == LocationCallback.class) {
+            return (T) new LocationCallback() {
+                @Override
+                public Location.Name select(final Host bookmark, final String title, final String message,
+                                            final Set<Location.Name> regions, final Location.Name defaultRegion) throws ConnectionCanceledException {
+                    return new Location.Name(prompt(bookmark, title, message, new LoginOptions().icon(bookmark.getProtocol().disk())
+                            .passwordPlaceholder(message).password(false)).getPassword());
+                }
+            };
+        }
         return null;
     }
 }
