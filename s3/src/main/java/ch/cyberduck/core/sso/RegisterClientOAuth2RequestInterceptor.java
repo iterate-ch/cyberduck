@@ -44,11 +44,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.services.ssooidc.AWSSSOOIDC;
 import com.amazonaws.services.ssooidc.AWSSSOOIDCClientBuilder;
 import com.amazonaws.services.ssooidc.model.CreateTokenRequest;
@@ -57,6 +57,8 @@ import com.amazonaws.services.ssooidc.model.RegisterClientRequest;
 import com.amazonaws.services.ssooidc.model.RegisterClientResult;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.openidconnect.IdTokenResponse;
+
+import static ch.cyberduck.core.s3.S3CredentialsConfigurator.toSsoPredicate;
 
 public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterceptor {
     private static final Logger log = LogManager.getLogger(RegisterClientOAuth2RequestInterceptor.class);
@@ -83,12 +85,10 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         if(null == host.getProperty(Profile.SSO_START_URL_KEY)) {
             final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator();
             configurator.reload();
-            final Set<String> profiles = configurator.getProfiles().entrySet().stream()
-                    .filter(e -> e.getValue().getProperties().containsKey("sso_start_url")
-                            || e.getValue().getProperties().containsKey("sso_session")).map(Map.Entry::getKey).collect(Collectors.toSet());
+            final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
             if(!profiles.isEmpty()) {
                 final String profile = IdentityCenterAuthorizationService.prompt(host, prompt.getFeature(LocationCallback.class),
-                        profiles.stream().map(Location.Name::new).collect(Collectors.toSet()), null,
+                        profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
                         LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
                 log.debug("Configuring credentials from profile {}", profile);
                 host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));

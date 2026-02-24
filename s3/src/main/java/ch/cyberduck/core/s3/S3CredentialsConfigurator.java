@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 import com.amazonaws.auth.profile.internal.AbstractProfilesConfigFileScanner;
 import com.amazonaws.auth.profile.internal.AllProfiles;
@@ -102,7 +103,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             }
             else {
                 log.debug("Configure credentials from basic profile {}", profile.getProfileName());
-                if(profile.getProperties().containsKey("sso_start_url") || profile.getProperties().containsKey("sso_session")) {
+                if(toSsoPredicate().test(profile)) {
                     log.debug("Configure with SSO properties {}", profile.getProperties());
                     profile.getProperties().forEach(credentials::setProperty);
                     if(profile.getProperties().containsKey("sso_session")) {
@@ -183,6 +184,11 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
 
     public Map<String, BasicProfile> getProfiles() {
         return profiles;
+    }
+
+    public static Predicate<BasicProfile> toSsoPredicate() {
+        return e -> e.getProperties().containsKey("sso_start_url")
+                || e.getProperties().containsKey("sso_session");
     }
 
     /**
