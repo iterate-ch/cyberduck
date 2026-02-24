@@ -35,8 +35,10 @@ import ch.cyberduck.core.sts.AbstractAssumeRoleWithWebIdentityTest;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
+import ch.cyberduck.core.vault.DefaultJWKCallback;
+import ch.cyberduck.core.vault.DefaultVaultMetadataUVFProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.JWKCredentials;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.TestcontainerTest;
@@ -55,6 +57,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,6 +66,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWEObjectJSON;
+import com.nimbusds.jose.crypto.MultiDecrypter;
+import com.nimbusds.jose.jwk.JWK;
 
 import static org.junit.Assert.*;
 
@@ -86,7 +94,7 @@ public class UVFIntegrationTest {
 
 
     @Test
-    public void listMinio() throws BackgroundException, IOException {
+    public void listMinio() throws BackgroundException, IOException, ParseException, JOSEException {
         container.start();
         try {
             final String bucketName = "cyberduckbucket";
@@ -104,20 +112,37 @@ public class UVFIntegrationTest {
                     "/d/6L/HPWBEU3OJP2EZUCP4CV3HHL47BXVEX/5qTOPMA1BouBRhz_G7qfmKety92geI4=.uvf", // -> /subdir/bar.txt
                     "/d/6L/HPWBEU3OJP2EZUCP4CV3HHL47BXVEX/dir.uvf" // /subdir
             );
+
             final String jwe = "{\n" +
-                    "    \"fileFormat\": \"AES-256-GCM-32k\",\n" +
-                    "    \"nameFormat\": \"AES-SIV-512-B64URL\",\n" +
-                    "    \"seeds\": {\n" +
-                    "        \"HDm38g\": \"ypeBEsobvcr6wjGzmiPcTaeG7_gUfE5yuYB3ha_uSLs\",\n" +
-                    "        \"gBryKw\": \"PiPoFgA5WUoziU9lZOGxNIu9egCI1CxKy3PurtWcAJ0\",\n" +
-                    "        \"QBsJFg\": \"Ln0sA6lQeuJl7PW1NWiFpTOTogKdJBOUmXJloaJa78Y\"\n" +
-                    "    },\n" +
-                    "    \"initialSeed\": \"HDm38i\",\n" +
-                    "    \"latestSeed\": \"QBsJFo\",\n" +
-                    "    \"kdf\": \"HKDF-SHA512\",\n" +
-                    "    \"kdfSalt\": \"NIlr89R7FhochyP4yuXZmDqCnQ0dBB3UZ2D-6oiIjr8\",\n" +
-                    "    \"org.example.customfield\": 42\n" +
-                    "}";
+                    "  \"ciphertext\": \"eQ2THqVXAK58w_hEaJhjlEOWSO4CDYQnle4mEDb50qSoVsZ8JnKd3wCrhxrjQPzz_T9eIej_eZH8FZ9h6PWUSeraOr5GHiQ_UjRqrRQEHSFRf3OBHFv2vHMljDzR5CDsLtzEcsW07zlAvgTns8D1P9uAFzjcttMcDxHjbywSwySH1v8ZS4mcCmh5AyF1RdzxZaj3hH7n7Aga6rUuPV6kYQu18AZS0OB97mtXpNRjI5is5zefr_Jc5jal1gux6KZ_wvBbmVFde34cVFKyvBHIbRVMvoN-yFTXY0voDw1uOrOOR4u6Bbyy7Xt4UwdrLXlsC97m-XBD6ntZVgfSXY088m7m8Zfr0bHEdU2QlaO4TR-QAKwZV9Pc93vyl9WXlVzrc2eYE3ahl8D8jG8BSMVMu5AiMZBZHOwpg1LCydccZIIby8STTfu4lxfHhqRB1T3Sn-96ys_5VC2ljlsFXr2kZhHXePr3V6TgXJEYtom0C0pnJJOGZ4D1tuV1ATP7HjCl1ZJYjFUXSMDC36QlB_yPbgjV4_yulLMRaRLohazSgOG_Rqp2pYlsZEXsrXIgnJvjmH5XaJS253tioes66swH5med6LY4RddcklZAUgNUwgA6Hrz8gSgeDHNxcZpv3UJtbUVF6i5i_k0b0VfAbH7HhZwE8zfuyaEPhNQeHFCNtP8Cx5Fzmo_BDpDevWhhBsPqg0C4klnBgRJoIrSFOwC2lgDgOU1HqY9D2nIIGB6ydE42e_olx64OF9ejcT8\",\n" +
+                    "  \"protected\": \"eyJ1dmYuc3BlYy52ZXJzaW9uIjoxLCJjdHkiOiJqc29uIiwiZW5jIjoiQTI1NkdDTSIsImNyaXQiOlsidXZmLnNwZWMudmVyc2lvbiJdLCJqa3UiOiJqd2tzLmpzb24iLCJjbG91ZC5rYXR0YS5vcmlnaW4iOiJodHRwczovL2V4YW1wbGUuY29tL2dhdGV3YXkvYXBpL3ZhdWx0cy9jZTFjMDAyZC01ZTQ4LTQ4MzktOTFhYy05ZDU4NmRmY2EyODAvdXZmL3ZhdWx0LnV2ZiJ9\",\n" +
+                    "  \"recipients\":\n" +
+                    "    [\n" +
+                    "      {\n" +
+                    "        \"encrypted_key\": \"8D5sicCjOKxZg7s-YhcgBKD2SS5I8vYndoJ-n6QTgZVbR9kKKLF14w\",\n" +
+                    "        \"header\": { \"alg\": \"A256KW\", \"kid\": \"org.cryptomator.hub.memberkey\" }\n" +
+                    "      },\n" +
+                    "      {\n" +
+                    "        \"encrypted_key\": \"JV7oU02ZNRRE3vBCr5Y4xLxj5FbSvHRJtl4mRCPdq_XvK-M4cO06HQ\",\n" +
+                    "        \"header\":\n" +
+                    "          {\n" +
+                    "            \"epk\":\n" +
+                    "              {\n" +
+                    "                \"kty\": \"EC\",\n" +
+                    "                \"crv\": \"P-384\",\n" +
+                    "                \"x\": \"R5RmzCeRY9W1Ppne5qzI6LmngOqXn_AWDFecgjM7Czj-LcISnr5-bGakgrG6Tzwq\",\n" +
+                    "                \"y\": \"u82mFKUdm1tIHR9Odcy61m4OG0okOV22cgTjAxaxKpMdgydLwQgLCFEhO-AsKJ_Q\"\n" +
+                    "              },\n" +
+                    "            \"alg\": \"ECDH-ES+A256KW\",\n" +
+                    "            \"kid\": \"org.cryptomator.hub.recoverykey.Dt9mG3_scsyFbHMo3gEIpsEuseYOVSYnPFp33Wy84f0\"\n" +
+                    "          }\n" +
+                    "      }\n" +
+                    "    ],\n" +
+                    "  \"tag\": \"74MqMasCFF6I35662Ta8Lw\",\n" +
+                    "  \"iv\": \"Tj-UdKHo6at0uJ89\"\n" +
+                    "}\n";
+
+            final String memberKey = "{\"kty\":\"oct\",\"kid\":\"org.cryptomator.hub.memberkey\",\"k\":\"Cef44vELUgYnhdijvVex7_20QsSytylDbvyOR1083uA\",\"alg\":\"A256KW\"}";
 
             try {
                 for(final String fi : files) {
@@ -138,17 +163,14 @@ public class UVFIntegrationTest {
                 final VaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback());
                 bookmark.setDefaultPath("/" + bucketName);
                 final CryptoVault vault = new CryptoVault(new DefaultPathHomeFeature(bookmark).find());
-                vaults.add(vault.load(storage, new DefaultVaultMetadataCallbackProvider(
-                        new DisabledPasswordCallback() {
-                            @Override
-                            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                                return new Credentials().setPassword(jwe);
-                            }
-                        }
-                )));
+                vaults.add(vault.load(storage, new DefaultVaultMetadataUVFProvider(jwe.getBytes(StandardCharsets.US_ASCII), null, null, new DefaultJWKCallback(new JWKCredentials(JWK.parse(memberKey))))));
                 final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
                 storage.withRegistry(vaults);
-                try(final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(jwe)) {
+
+                final JWK jwk = JWK.parse(memberKey);
+                final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
+                jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton("uvf.spec.version")));
+                try(final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(jweObject.getPayload().toString())) {
                     assertArrayEquals(masterKey.rootDirId(), vault.getMasterkey().rootDirId());
                 }
 
