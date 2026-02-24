@@ -38,9 +38,7 @@
         <key>Password Configurable</key>
         <false/>
         <key>Username Configurable</key>
-        <true/>
-        <key>Username Placeholder</key>
-        <string>Profile Name in ~/.aws/config</string>
+        <false/>
         <key>Regions</key>
         <array>
             <string>af-south-1</string>
