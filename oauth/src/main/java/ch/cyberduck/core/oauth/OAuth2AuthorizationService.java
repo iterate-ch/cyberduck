@@ -43,6 +43,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -492,14 +493,16 @@ public class OAuth2AuthorizationService {
      * @throws LoginCanceledException If user cancels the prompt
      */
     public static String prompt(final Host bookmark, final PasswordCallback prompt,
-                                final String property, final String message, final String value) throws LoginCanceledException {
+                                @Nullable final String property, final String message, final String value) throws LoginCanceledException {
         if(null == value) {
             final Credentials input = prompt.prompt(bookmark, message,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     new LoginOptions().icon(bookmark.getProtocol().disk())
                             .passwordPlaceholder(message).password(false));
             if(input.isSaved()) {
-                HostPreferencesFactory.get(bookmark).setProperty(property, input.getPassword());
+                if(null != property) {
+                    HostPreferencesFactory.get(bookmark).setProperty(property, input.getPassword());
+                }
             }
             return input.getPassword();
         }
