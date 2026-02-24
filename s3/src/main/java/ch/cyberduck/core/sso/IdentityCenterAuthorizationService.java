@@ -135,11 +135,13 @@ public class IdentityCenterAuthorizationService {
     }
 
     public static Location.Name prompt(final Host bookmark, final LocationCallback prompt, final Set<Location.Name> options,
-                                       final String property, final String message, final String value) throws ConnectionCanceledException {
+                                       @Nullable final String property, final String message, final String value) throws ConnectionCanceledException {
         if(null == value) {
             final Location.Name input = prompt.select(bookmark,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), message, options, null);
-            HostPreferencesFactory.get(bookmark).setProperty(property, input.getIdentifier());
+            if(null != property) {
+                HostPreferencesFactory.get(bookmark).setProperty(property, input.getIdentifier());
+            }
             return input;
         }
         return new Location.Name(value);
