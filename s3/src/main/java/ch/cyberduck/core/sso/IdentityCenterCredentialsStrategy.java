@@ -56,11 +56,11 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
         this.oauth = oauth;
         this.host = host;
         this.region = OAuth2AuthorizationService.prompt(host, prompt, Profile.SSO_REGION_KEY, LocaleFactory.localizedString(
-                "SSO Region", "Credentials"), host.getProperty(Profile.SSO_REGION_KEY));
+                String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"), host.getProperty(Profile.SSO_REGION_KEY));
         this.accountId = OAuth2AuthorizationService.prompt(host, prompt, Profile.SSO_ACCOUNT_ID_KEY, LocaleFactory.localizedString(
-                "AWS Account ID", "Credentials"), host.getProperty(Profile.SSO_ACCOUNT_ID_KEY));
+                String.format("AWS Account ID (%s)", Profile.SSO_ACCOUNT_ID_KEY), "Credentials"), host.getProperty(Profile.SSO_ACCOUNT_ID_KEY));
         this.roleName = OAuth2AuthorizationService.prompt(host, prompt, Profile.SSO_ROLE_NAME_KEY, LocaleFactory.localizedString(
-                "Permission set name", "Credentials"), host.getProperty(Profile.SSO_ROLE_NAME_KEY));
+                String.format("Permission set name (%s)", Profile.SSO_ROLE_NAME_KEY), "Credentials"), host.getProperty(Profile.SSO_ROLE_NAME_KEY));
     }
 
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
