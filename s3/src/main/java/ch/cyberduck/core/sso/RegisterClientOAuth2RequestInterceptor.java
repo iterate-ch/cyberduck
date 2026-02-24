@@ -79,7 +79,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         this.region = prompt(host, prompt, Profile.SSO_REGION_KEY, LocaleFactory.localizedString(
                 String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"), host.getProperty(Profile.SSO_REGION_KEY));
         this.startUrl = prompt(host, prompt, Profile.SSO_START_URL_KEY, LocaleFactory.localizedString(
-                String.format("SSO Start Url (%s)", Profile.SSO_START_URL_KEY), "Credentials"), host.getProperty(Profile.SSO_START_URL_KEY));
+                String.format("Issuer URL (%s)", Profile.SSO_START_URL_KEY), "Credentials"), host.getProperty(Profile.SSO_START_URL_KEY));
         this.issuerUrl = startUrl;
     }
 
