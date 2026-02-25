@@ -18,13 +18,16 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.foundation.NSMutableAttributedString;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,13 +39,16 @@ public class RegionController extends AlertController {
     @Outlet
     private final NSPopUpButton regionPopup = NSPopUpButton.buttonPullsDown(false);
 
+    private final Host bookmark;
     private final String title;
     private final String message;
     private final Set<Location.Name> regions;
     private final Location.Name defaultRegion;
     private final RegionController.Callback callback;
 
-    public RegionController(final String title, final String message, final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
+    public RegionController(final Host bookmark, final String title, final String message,
+                            final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
+        this.bookmark = bookmark;
         this.title = title;
         this.message = message;
         this.regions = regions;
@@ -54,6 +60,7 @@ public class RegionController extends AlertController {
     public NSAlert loadAlert() {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(bookmark.getProtocol().disk(), 64));
         alert.setMessageText(title);
         alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Choose"));
