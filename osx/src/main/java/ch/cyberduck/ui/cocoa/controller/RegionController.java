@@ -57,7 +57,7 @@ public class RegionController extends AlertController {
         alert.setMessageText(title);
         alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Choose"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
         return alert;
     }
 
