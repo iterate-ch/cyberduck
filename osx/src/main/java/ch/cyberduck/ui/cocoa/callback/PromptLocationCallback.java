@@ -38,7 +38,7 @@ public class PromptLocationCallback implements LocationCallback {
     @Override
     public Location.Name select(final Host bookmark, final String title, final String message, final Set<Location.Name> regions, final Location.Name defaultRegion) throws ConnectionCanceledException {
         final AtomicReference<Location.Name> selected = new AtomicReference<>();
-        final AlertController alert = new RegionController(title, message, regions, defaultRegion, selected::set);
+        final AlertController alert = new RegionController(bookmark, title, message, regions, defaultRegion, selected::set);
         if(controller.alert(alert) == SheetCallback.CANCEL_OPTION) {
             throw new ConnectionCanceledException();
         }
