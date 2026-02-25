@@ -36,6 +36,7 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpClient;
 import org.apache.logging.log4j.LogManager;
@@ -84,7 +85,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
                                                   final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws ConnectionCanceledException {
         super(client, host, null, null, null, null, host.getProtocol().getOAuthScopes(), true, prompt);
         this.host = host;
-        if(null == host.getProperty(Profile.SSO_START_URL_KEY)) {
+        if(StringUtils.isBlank(host.getCredentials().getUsername())) {
             final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator();
             configurator.reload();
             final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
