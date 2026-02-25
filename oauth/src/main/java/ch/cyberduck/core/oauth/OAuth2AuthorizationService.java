@@ -163,21 +163,23 @@ public class OAuth2AuthorizationService {
                 // Skip modifying username used for password grant
                 break;
             default:
-                if(null != tokens.getIdToken()) {
-                    try {
-                        final DecodedJWT jwt = JWT.decode(tokens.getIdToken());
-                        // Standard claims
-                        for(String claim : new String[]{"preferred_username", "email", "name", "nickname", "sub"}) {
-                            final String value = jwt.getClaim(claim).asString();
-                            if(StringUtils.isNotBlank(value)) {
-                                log.debug("Set username to {} from claim {}", value, claim);
-                                credentials.setUsername(value);
-                                break;
+                if(StringUtils.isBlank(credentials.getUsername())) {
+                    if(null != tokens.getIdToken()) {
+                        try {
+                            final DecodedJWT jwt = JWT.decode(tokens.getIdToken());
+                            // Standard claims
+                            for(String claim : new String[]{"preferred_username", "email", "name", "nickname", "sub"}) {
+                                final String value = jwt.getClaim(claim).asString();
+                                if(StringUtils.isNotBlank(value)) {
+                                    log.debug("Set username to {} from claim {}", value, claim);
+                                    credentials.setUsername(value);
+                                    break;
+                                }
                             }
                         }
-                    }
-                    catch(JWTDecodeException e) {
-                        log.warn("Failure {} decoding JWT {}", e, tokens.getIdToken());
+                        catch(JWTDecodeException e) {
+                            log.warn("Failure {} decoding JWT {}", e, tokens.getIdToken());
+                        }
                     }
                 }
                 break;
