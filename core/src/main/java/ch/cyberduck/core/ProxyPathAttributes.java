@@ -186,26 +186,6 @@ public class ProxyPathAttributes implements PathAttributes {
     }
 
     @Override
-    public Path getEncrypted() {
-        return proxy.getEncrypted();
-    }
-
-    @Override
-    public PathAttributes setEncrypted(final Path encrypted) {
-        return proxy.setEncrypted(encrypted);
-    }
-
-    @Override
-    public PathAttributes setVault(final Path vault) {
-        return proxy.setVault(vault);
-    }
-
-    @Override
-    public Path getVault() {
-        return proxy.getVault();
-    }
-
-    @Override
     public boolean isDuplicate() {
         return proxy.isDuplicate();
     }

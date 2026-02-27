@@ -118,13 +118,13 @@ public class CryptoVault implements Vault {
     }
 
     public CryptoVault(final Path home, final String masterkey, final String config, final byte[] pepper) {
-        this.home = home;
-        this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
-        this.config = new Path(home, config, EnumSet.of(Path.Type.file, Path.Type.vault));
+        this.home = new Path(home).withAttributes(PathAttributes.EMPTY);
+        this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vaultmetadata));
+        this.config = new Path(home, config, EnumSet.of(Path.Type.file, Path.Type.vaultmetadata));
         this.pepper = pepper;
         // New vault home with vault flag set for internal use
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
-        type.add(Path.Type.vault);
+        type.add(Path.Type.vaultmetadata);
         if(home.isRoot()) {
             this.vault = new Path(home.getAbsolute(), type, new DefaultPathAttributes(home.attributes()));
         }
@@ -216,7 +216,8 @@ public class CryptoVault implements Vault {
             passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkey, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
         }
-        return this.unlock(session, prompt, bookmark, passphrase);
+        this.unlock(session, prompt, bookmark, passphrase);
+        return this;
     }
 
     private VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
@@ -260,12 +261,11 @@ public class CryptoVault implements Vault {
         }
     }
 
-    public CryptoVault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+    public void unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
         final VaultConfig vaultConfig = this.readVaultConfig(session);
         this.unlock(vaultConfig, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
         );
-        return this;
     }
 
     public void unlock(final VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,
@@ -406,9 +406,13 @@ public class CryptoVault implements Vault {
     }
 
     public Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
+        if(file.getType().contains(Path.Type.encrypted)) {
+            log.warn("Skip file {} because it is already marked as an encrypted path", file);
+            return file;
+        }
         final Path encrypted;
         if(file.isFile() || metadata) {
-            if(file.getType().contains(Path.Type.vault)) {
+            if(file.getType().contains(Path.Type.vaultmetadata)) {
                 log.warn("Skip file {} because it is marked as an internal vault path", file);
                 return file;
             }
@@ -416,17 +420,8 @@ public class CryptoVault implements Vault {
                 log.warn("Skip vault home {} because the root has no metadata file", file);
                 return file;
             }
-            final Path parent;
-            final String filename;
-            if(file.getType().contains(Path.Type.encrypted)) {
-                final Path decrypted = file.attributes().getDecrypted();
-                parent = directoryProvider.toEncrypted(session, decrypted.getParent().attributes().getDirectoryId(), decrypted.getParent());
-                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), decrypted.getName(), decrypted.getType());
-            }
-            else {
-                parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
-                filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            }
+            final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
+            final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
             final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
             attributes.setDirectoryId(null);
             if(!file.isFile() && !metadata) {
@@ -446,11 +441,7 @@ public class CryptoVault implements Vault {
             encrypted = new Path(parent, filename, type, attributes);
         }
         else {
-            if(file.getType().contains(Path.Type.encrypted)) {
-                log.warn("Skip file {} because it is already marked as an encrypted path", file);
-                return file;
-            }
-            if(file.getType().contains(Path.Type.vault)) {
+            if(file.getType().contains(Path.Type.vaultmetadata)) {
                 return directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
             }
             encrypted = directoryProvider.toEncrypted(session, directoryId, file);
@@ -458,11 +449,6 @@ public class CryptoVault implements Vault {
         // Add reference to decrypted file
         if(!file.getType().contains(Path.Type.encrypted)) {
             encrypted.attributes().setDecrypted(file);
-        }
-        // Add reference for vault
-        if(!new SimplePathPredicate(file).test(home)) {
-            file.attributes().setVault(home);
-            encrypted.attributes().setVault(home);
         }
         return encrypted;
     }
@@ -473,7 +459,7 @@ public class CryptoVault implements Vault {
             log.warn("Skip file {} because it is already marked as an decrypted path", file);
             return file;
         }
-        if(file.getType().contains(Path.Type.vault)) {
+        if(file.getType().contains(Path.Type.vaultmetadata)) {
             log.warn("Skip file {} because it is marked as an internal vault path", file);
             return file;
         }
@@ -504,8 +490,6 @@ public class CryptoVault implements Vault {
                     // Translate file size
                     attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
                 }
-                // Add reference to encrypted file
-                attributes.setEncrypted(file);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
                 type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
                 type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
@@ -514,10 +498,6 @@ public class CryptoVault implements Vault {
                 final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
                 if(type.contains(Path.Type.symboliclink)) {
                     decrypted.setSymlinkTarget(file.getSymlinkTarget());
-                }
-                if(!new SimplePathPredicate(decrypted).test(home)) {
-                    // Add reference for vault
-                    attributes.setVault(home);
                 }
                 return decrypted;
             }

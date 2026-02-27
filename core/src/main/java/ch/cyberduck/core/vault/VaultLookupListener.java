@@ -20,5 +20,16 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
 
 public interface VaultLookupListener {
-    Vault load(final Session session, Path directory, String masterkey, final String config, byte[] pepper) throws VaultUnlockCancelException;
+    /**
+     * Loads an existing vault using the specified configuration and parameters.
+     *
+     * @param session   The session object providing access to the connection.
+     * @param directory The directory where the vault is located.
+     * @param masterkey The master key used to unlock the vault.
+     * @param config    The configuration settings for the vault.
+     * @param pepper    An optional byte array used as an additional input for vault security.
+     * @return The loaded vault instance.
+     * @throws VaultUnlockCancelException If the vault unlock operation is canceled.
+     */
+    Vault load(final Session<?> session, Path directory, String masterkey, final String config, byte[] pepper) throws VaultUnlockCancelException;
 }

@@ -110,9 +110,18 @@ public abstract class AbstractPath {
             }
         },
         /**
-         * Cryptomator Vault. File is internal part of a secure vault
+         * Root folder of Cryptomator Vault
          */
         vault {
+            @Override
+            public int legacy() {
+                return 0;
+            }
+        },
+        /**
+         * File is internal part of a Cryptomator vault
+         */
+        vaultmetadata {
             @Override
             public int legacy() {
                 return 0;

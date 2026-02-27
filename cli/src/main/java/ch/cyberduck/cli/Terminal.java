@@ -239,10 +239,10 @@ public class Terminal {
                 final Path vault;
                 if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
                     final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
-                    vault = new Path(new TildePathExpander(home).expand(input.getOptionValue(action.name())), EnumSet.of(Path.Type.directory, Path.Type.vault));
+                    vault = new Path(new TildePathExpander(home).expand(input.getOptionValue(action.name())), EnumSet.of(Path.Type.directory));
                 }
                 else {
-                    vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory, Path.Type.vault));
+                    vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory));
                 }
                 log.debug("Attempting to load vault from {}", vault);
                 try {

@@ -358,10 +358,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_LockUnlockVault()
         {
             Path directory = new UploadTargetFinder(Workdir).find(SelectedPath);
-            if (directory.attributes().getVault() != null)
+            if (Pool.getVaultRegistry().contains(directory))
             {
                 // Lock and remove all open vaults
-                LockVaultAction lockVault = new LockVaultAction(this, Pool.getVaultRegistry(), directory.attributes().getVault());
+                LockVaultAction lockVault = new LockVaultAction(this, Pool.getVaultRegistry(), directory);
                 Background(lockVault);
             }
             else
@@ -2069,7 +2069,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewVault()
         {
             return IsMounted() && Pool.getVaultRegistry() != VaultRegistry.DISABLED &&
-                   null == Workdir.attributes().getVault() &&
+                   !Pool.getVaultRegistry().contains(Workdir) &&
                    ((Directory)Pool.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
@@ -3796,7 +3796,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (vault != null)
                     {
-                        _controller.Reload((Path)vault, new HashSet<Path>() { (Path)vault }, new List<Path>(), true);
+                        _controller.Reload(_directory, new HashSet<Path>() { _directory }, new List<Path>(), true);
                     }
                 }
             }
@@ -3825,7 +3825,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (vault != null)
                     {
-                        _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>() { ((Vault)vault).getHome() }, new List<Path>(), true);
+                        _controller.Reload(_directory, new HashSet<Path>() { _directory }, new List<Path>(), true);
                     }
                 }
             }

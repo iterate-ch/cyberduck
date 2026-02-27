@@ -114,10 +114,6 @@ public class PathAttributesDictionary<T> {
         attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));
         attributes.setStorageClass(dict.stringForKey("Storage Class"));
-        final T vaultObj = dict.objectForKey("Vault");
-        if(vaultObj != null) {
-            attributes.setVault(new PathDictionary<>(factory).deserialize(vaultObj));
-        }
         final Map<String, String> customObj = dict.mapForKey("Custom");
         if(customObj != null) {
             attributes.setCustom(customObj);
