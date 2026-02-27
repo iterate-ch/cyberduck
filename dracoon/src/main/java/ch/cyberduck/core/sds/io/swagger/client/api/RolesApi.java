@@ -19,8 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class RolesApi {
   private ApiClient apiClient;
+  private Map<String, String> headers;
 
   public RolesApi() {
     this(Configuration.getDefaultApiClient());
@@ -38,16 +40,19 @@ public class RolesApi {
     this.apiClient = apiClient;
   }
 
+  public void setHeadersOverrides(Map<String, String> headers) {
+    this.headers = headers;
+  }
+
   /**
    * Assign group(s) to the role
    * ### Description: Assign group(s) to a role.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; grant permission on desired role&lt;/span&gt; required.  ### Postcondition: One or more groups will be added to a role.  ### Further Information: None.
    * @param body  (required)
    * @param roleId Role ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return RoleGroupList
    * @throws ApiException if fails to make API call
    */
-  public RoleGroupList addRoleGroups(GroupIds body, Integer roleId, String xSdsAuthToken) throws ApiException {
+  public RoleGroupList addRoleGroups(GroupIds body, Integer roleId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -67,8 +72,6 @@ public class RolesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -83,6 +86,11 @@ public class RolesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<RoleGroupList> localVarReturnType = new GenericType<RoleGroupList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -90,11 +98,10 @@ public class RolesApi {
    * ### Description: Assign user(s) to a role.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; grant permission on desired role&lt;/span&gt; required.  ### Postcondition: One or more users will be added to a role.  ### Further Information: None.
    * @param body  (required)
    * @param roleId Role ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return RoleUserList
    * @throws ApiException if fails to make API call
    */
-  public RoleUserList addRoleUsers(UserIds body, Integer roleId, String xSdsAuthToken) throws ApiException {
+  public RoleUserList addRoleUsers(UserIds body, Integer roleId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -114,8 +121,6 @@ public class RolesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -130,6 +135,11 @@ public class RolesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<RoleUserList> localVarReturnType = new GenericType<RoleUserList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -139,11 +149,10 @@ public class RolesApi {
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
    * @param filter Filter string (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return RoleGroupList
    * @throws ApiException if fails to make API call
    */
-  public RoleGroupList requestRoleGroups(Integer roleId, Integer offset, Integer limit, String filter, String xSdsAuthToken) throws ApiException {
+  public RoleGroupList requestRoleGroups(Integer roleId, Integer offset, Integer limit, String filter) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'roleId' is set
     if (roleId == null) {
@@ -162,8 +171,6 @@ public class RolesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -178,6 +185,11 @@ public class RolesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<RoleGroupList> localVarReturnType = new GenericType<RoleGroupList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -187,11 +199,10 @@ public class RolesApi {
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
    * @param filter Filter string (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return RoleUserList
    * @throws ApiException if fails to make API call
    */
-  public RoleUserList requestRoleUsers(Integer roleId, Integer offset, Integer limit, String filter, String xSdsAuthToken) throws ApiException {
+  public RoleUserList requestRoleUsers(Integer roleId, Integer offset, Integer limit, String filter) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'roleId' is set
     if (roleId == null) {
@@ -210,8 +221,6 @@ public class RolesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -226,16 +235,20 @@ public class RolesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<RoleUserList> localVarReturnType = new GenericType<RoleUserList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Request all roles with assigned rights
    * ### Description:   Retrieve a list of all roles with assigned rights.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read users&lt;/span&gt; required.  ### Postcondition: List of roles with assigned rights is returned.  ### Further Information: None.
-   * @param xSdsAuthToken Authentication token (optional)
    * @return RoleList
    * @throws ApiException if fails to make API call
    */
-  public RoleList requestRoles(String xSdsAuthToken) throws ApiException {
+  public RoleList requestRoles() throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/v4/roles";
@@ -246,8 +259,6 @@ public class RolesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -262,6 +273,11 @@ public class RolesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<RoleList> localVarReturnType = new GenericType<RoleList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -269,11 +285,10 @@ public class RolesApi {
    * ### Description:   Revoke granted group(s) from a role.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; grant permission on desired role&lt;/span&gt; required.   For each role, at least one non-expiring user **MUST** remain who may grant the role.  ### Postcondition: One or more groups will be removed from a role.  ### Further Information: None.
    * @param body  (required)
    * @param roleId Role ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return RoleGroupList
    * @throws ApiException if fails to make API call
    */
-  public RoleGroupList revokeRoleGroups(GroupIds body, Integer roleId, String xSdsAuthToken) throws ApiException {
+  public RoleGroupList revokeRoleGroups(GroupIds body, Integer roleId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -293,8 +308,6 @@ public class RolesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -309,6 +322,11 @@ public class RolesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<RoleGroupList> localVarReturnType = new GenericType<RoleGroupList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -316,11 +334,10 @@ public class RolesApi {
    * ### Description:   Revoke granted user(s) from a role.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; grant permission on desired role&lt;/span&gt; required.   For each role, at least one non-expiring user **MUST** remain who may grant the role.  ### Postcondition: One or more users will be removed from a role.  ### Further Information: None.
    * @param body  (required)
    * @param roleId Role ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return RoleUserList
    * @throws ApiException if fails to make API call
    */
-  public RoleUserList revokeRoleUsers(UserIds body, Integer roleId, String xSdsAuthToken) throws ApiException {
+  public RoleUserList revokeRoleUsers(UserIds body, Integer roleId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -340,8 +357,6 @@ public class RolesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -356,6 +371,11 @@ public class RolesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<RoleUserList> localVarReturnType = new GenericType<RoleUserList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
 }

@@ -104,7 +104,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                     .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
                     .name(file.getName()));
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
-                    .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
+                    .createFileUploadChannel(createFileUploadRequest);
             log.debug("Upload started for {} with response {}", file, createFileUploadResponse);
             final MultipartOutputStream proxy = new MultipartOutputStream(createFileUploadResponse, file, status);
             return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, partsize),
@@ -159,7 +159,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                         try {
                             final PresignedUrlList presignedUrlList = new NodesApi(session.getClient()).generatePresignedUrlsFiles(
                                     new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size((long) len),
-                                    createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+                                    createFileUploadResponse.getUploadId());
                             for(PresignedUrl url : presignedUrlList.getUrls()) {
                                 final HttpPut request = new HttpPut(url.getUrl());
                                 request.setEntity(new ByteArrayEntity(b, off, len));
@@ -245,7 +245,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                 completed.forEach((key, value) -> completeS3FileUploadRequest.addPartsItem(
                         new S3FileUploadPart().partEtag(value.hash).partNumber(key)));
                 log.debug("Complete file upload with {} for {}", completeS3FileUploadRequest, file);
-                new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+                new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId());
                 // Polling
                 result.set(new SDSUploadService(session, nodeid).await(file, overall, createFileUploadResponse.getUploadId()).getNode());
             }

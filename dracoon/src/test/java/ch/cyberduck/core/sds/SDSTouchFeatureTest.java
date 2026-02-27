@@ -131,7 +131,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         final UpdateRoomRequest updateRoomRequest = new UpdateRoomRequest();
         final long quota = 1L + PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize");
         updateRoomRequest.setQuota(quota);
-        assertEquals(quota, new NodesApi(session.getClient()).updateRoom(updateRoomRequest, Long.valueOf(room.attributes().getVersionId()), StringUtils.EMPTY, null).getQuota(), 0L);
+        assertEquals(quota, new NodesApi(session.getClient()).updateRoom(updateRoomRequest, Long.valueOf(room.attributes().getVersionId()), null).getQuota(), 0L);
         assertTrue(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room)), StringUtils.EMPTY));
         assertEquals(quota, room.attributes().getQuota().available, 0L);
         final byte[] content = RandomUtils.nextBytes(2);

@@ -114,7 +114,7 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
             final Host bookmark = session.getHost();
             if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(file)) {
                 // get existing file key associated with the sharing user
-                final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(fileid, null, null);
+                final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(fileid, null);
                 final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
                 final UserKeyPairContainer keyPairContainer = session.getKeyPairForFileKey(encFileKey.getVersion());
                 final UserKeyPair userKeyPair = TripleCryptConverter.toCryptoUserKeyPair(keyPairContainer);
@@ -138,7 +138,7 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
                 options.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptedFileKey));
             }
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(
-                    options.nodeId(fileid), StringUtils.EMPTY, null);
+                    options.nodeId(fileid), null);
             final String help;
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
@@ -183,7 +183,7 @@ public class SDSShareFeature implements Share<CreateDownloadShareRequest, Create
             }
             final Host bookmark = session.getHost();
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(
-                    options.targetId(Long.parseLong(nodeid.getVersionId(file))), StringUtils.EMPTY, null);
+                    options.targetId(Long.parseLong(nodeid.getVersionId(file))), null);
             final String help;
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
