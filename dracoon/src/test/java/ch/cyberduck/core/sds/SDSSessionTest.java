@@ -140,7 +140,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     public void testKeyPairMigration() throws Exception {
         final UserApi userApi = new UserApi(session.getClient());
         try {
-            userApi.removeUserKeyPair(UserKeyPair.Version.RSA2048.getValue(), null);
+            userApi.removeUserKeyPair(UserKeyPair.Version.RSA2048.getValue());
         }
         catch(ApiException e) {
             if(e.getCode() == HttpStatus.SC_NOT_FOUND) {
@@ -151,7 +151,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             }
         }
         try {
-            userApi.removeUserKeyPair(UserKeyPair.Version.RSA4096.getValue(), null);
+            userApi.removeUserKeyPair(UserKeyPair.Version.RSA4096.getValue());
         }
         catch(ApiException e) {
             if(e.getCode() == HttpStatus.SC_NOT_FOUND) {
@@ -163,17 +163,17 @@ public class SDSSessionTest extends AbstractSDSTest {
         }
         // create legacy key pair
         final UserKeyPair userKeyPair = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, PROPERTIES.get("vault.passphrase").toCharArray());
-        userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(userKeyPair), null);
-        List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
+        userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(userKeyPair));
+        List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null);
         assertEquals(1, keyPairs.size());
         // Start migration
         session.unlockTripleCryptKeyPair(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials(PROPERTIES.get("vault.passphrase"));
             }
         }, session.userAccount(), UserKeyPair.Version.RSA4096);
-        keyPairs = userApi.requestUserKeyPairs(null, null);
+        keyPairs = userApi.requestUserKeyPairs(null);
         assertEquals(2, keyPairs.size());
         assertEquals(UserKeyPair.Version.RSA4096.getValue(), session.keyPair().getPublicKeyContainer().getVersion());
         assertEquals(UserKeyPair.Version.RSA2048.getValue(), session.keyPairDeprecated().getPublicKeyContainer().getVersion());

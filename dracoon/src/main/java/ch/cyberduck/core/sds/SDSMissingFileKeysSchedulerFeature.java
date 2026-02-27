@@ -35,7 +35,6 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.shared.ThreadPoolSchedulerFeature;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -95,7 +94,7 @@ public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeatu
                 log.debug("Request a list of missing file keys limited to {}", fileId);
                 request = new UserFileKeySetBatchRequest();
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
-                        null, null, null, fileId, null, null, null);
+                        null, null, null, fileId, null, null);
                 final Map<Long, List<UserUserPublicKey>> userPublicKeys = missingKeys.getUsers().stream().collect(groupingBy(UserUserPublicKey::getId));
                 final Map<Long, List<FileFileKeys>> files = missingKeys.getFiles().stream().collect(groupingBy(FileFileKeys::getId));
                 for(UserIdFileIdItem item : missingKeys.getItems()) {
@@ -118,7 +117,7 @@ public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeatu
                 }
                 if(!request.getItems().isEmpty()) {
                     log.debug("Set file keys with {}", request);
-                    new NodesApi(session.getClient()).setUserFileKeys(request, StringUtils.EMPTY);
+                    new NodesApi(session.getClient()).setUserFileKeys(request);
                     processed.addAll(request.getItems());
                 }
             }
@@ -138,10 +137,10 @@ public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeatu
         if(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.encryption.missingkeys.delete.deprecated")) {
             if(session.keyPairDeprecated() != null && !session.keyPairDeprecated().equals(session.keyPair())) {
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
-                        null, 1, null, null, session.userAccount().getId(), "previous_user_key", null);
+                        null, 1, null, null, session.userAccount().getId(), "previous_user_key");
                 if(missingKeys.getItems().isEmpty()) {
                     log.debug("No more deprecated fileKeys to migrate - deleting deprecated key pair");
-                    new UserApi(session.getClient()).removeUserKeyPair(session.keyPairDeprecated().getPublicKeyContainer().getVersion(), null);
+                    new UserApi(session.getClient()).removeUserKeyPair(session.keyPairDeprecated().getPublicKeyContainer().getVersion());
                     session.resetUserKeyPairs();
                 }
             }

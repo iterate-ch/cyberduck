@@ -51,12 +51,12 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
         // Replace directory on server with same name
-        new NodesApi(session.getClient()).removeNode(Long.parseLong(test.attributes().getVersionId()), StringUtils.EMPTY);
+        new NodesApi(session.getClient()).removeNode(Long.parseLong(test.attributes().getVersionId()));
         final CreateFolderRequest folderRequest = new CreateFolderRequest();
         folderRequest.setParentId(Long.parseLong(room.attributes().getVersionId()));
         folderRequest.setName(test.getName());
         // New node for directory with same nmae
-        final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
+        final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, null);
         assertNotEquals(test.attributes().getVersionId(), node.getId().toString());
         // Attempt to create subdirectory referencing previous node id
         final Path subdir = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(test,

@@ -144,7 +144,7 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         new NodesApi(session.getClient()).setRoomPolicies(new RoomPoliciesRequest().virusProtectionEnabled(true),
-                Long.valueOf(nodeid.getVersionId(room)), StringUtils.EMPTY);
+                Long.valueOf(nodeid.getVersionId(room)));
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] eicar = "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*".getBytes();

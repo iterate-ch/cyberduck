@@ -222,7 +222,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         final UserAccount account;
         try {
-            account = new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null);
+            account = new UserApi(client).requestUserInfo(null, false);
             log.debug("Authenticated as user {}", account);
         }
         catch(ApiException e) {
@@ -258,7 +258,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     private UserKeyPair.Version getRequiredKeyPairVersion() {
         final AlgorithmVersionInfoList algorithms;
         try {
-            algorithms = new ConfigApi(client).requestAlgorithms(null);
+            algorithms = new ConfigApi(client).requestAlgorithms();
             final List<AlgorithmVersionInfo> keyPairAlgorithms = algorithms.getKeyPairAlgorithms();
             for(AlgorithmVersionInfo kpa : keyPairAlgorithms) {
                 if(kpa.getStatus() == AlgorithmVersionInfo.StatusEnum.REQUIRED) {
@@ -315,7 +315,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         try {
             Credentials deprecatedCredentials = null;
             if(this.isNewCryptoAvailable()) {
-                final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(StringUtils.EMPTY, null);
+                final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(null);
                 if(pairs.size() == 0) {
                     log.debug("No keypair found for user {}", user);
                     return;
@@ -328,14 +328,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     }
                 }
                 if(migrated && pairs.size() == 2) {
-                    final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
+                    final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(null, UserKeyPair.Version.RSA2048.getValue());
                     final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
                     log.debug("Attempt to unlock deprecated private key {}", keypair.getUserPrivateKey());
                     deprecatedCredentials = this.unlockTripleCryptKeyPair(prompt, keypair);
                     keyPairDeprecated.set(deprecated);
                 }
                 if(!migrated) {
-                    final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null);
+                    final UserKeyPairContainer deprecated = new UserApi(client).requestUserKeyPair(null, UserKeyPair.Version.RSA2048.getValue());
                     final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(deprecated);
                     log.debug("Attempt to unlock and migrate deprecated private key {}", keypair.getUserPrivateKey());
                     deprecatedCredentials = this.unlockTripleCryptKeyPair(prompt, keypair);
@@ -346,11 +346,11 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     request.setPrivateKeyContainer(userKeyPairContainer.getPrivateKeyContainer());
                     request.setPublicKeyContainer(userKeyPairContainer.getPublicKeyContainer());
                     log.debug("Create new key pair");
-                    new UserApi(client).createAndPreserveUserKeyPair(request, null);
+                    new UserApi(client).createAndPreserveUserKeyPair(request);
                     keyPairDeprecated.set(deprecated);
                 }
             }
-            final UserKeyPairContainer container = new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, requiredKeyPairVersion.getValue(), null);
+            final UserKeyPairContainer container = new UserApi(client).requestUserKeyPair(null, requiredKeyPairVersion.getValue());
             keyPair.set(container);
             final UserKeyPair keypair = TripleCryptConverter.toCryptoUserKeyPair(keyPair.get());
             if(deprecatedCredentials != null) {
@@ -389,7 +389,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
-                userAccount.set(new UserAccountWrapper(new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null)));
+                userAccount.set(new UserAccountWrapper(new UserApi(client).requestUserInfo(null, false)));
             }
             catch(ApiException e) {
                 log.warn("Failure updating user info. {}", e.getMessage());
@@ -417,7 +417,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserKeyPairContainer keyPairDeprecated() throws BackgroundException {
         if(keyPairDeprecated.get() == null) {
             try {
-                keyPairDeprecated.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, UserKeyPair.Version.RSA2048.getValue(), null));
+                keyPairDeprecated.set(new UserApi(client).requestUserKeyPair(null, UserKeyPair.Version.RSA2048.getValue()));
             }
             catch(ApiException e) {
                 if(e.getCode() == HttpStatus.SC_NOT_FOUND) {
@@ -435,7 +435,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserKeyPairContainer keyPair() throws BackgroundException {
         if(keyPair.get() == null) {
             try {
-                keyPair.set(new UserApi(client).requestUserKeyPair(StringUtils.EMPTY, requiredKeyPairVersion.getValue(), null));
+                keyPair.set(new UserApi(client).requestUserKeyPair(null, requiredKeyPairVersion.getValue()));
             }
             catch(ApiException e) {
                 log.warn("Failure updating user key pair for required algorithm. {}", e.getMessage());
@@ -467,7 +467,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public SystemDefaults systemDefaults() throws BackgroundException {
         if(systemDefaults.get() == null) {
             try {
-                systemDefaults.set(new ConfigApi(client).requestSystemDefaultsInfo(StringUtils.EMPTY));
+                systemDefaults.set(new ConfigApi(client).requestSystemDefaultsInfo());
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
@@ -481,7 +481,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public GeneralSettingsInfo generalSettingsInfo() throws BackgroundException {
         if(generalSettingsInfo.get() == null) {
             try {
-                generalSettingsInfo.set(new ConfigApi(client).requestGeneralSettingsInfo(StringUtils.EMPTY));
+                generalSettingsInfo.set(new ConfigApi(client).requestGeneralSettingsInfo());
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
@@ -498,7 +498,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             if(matcher.matches()) {
                 if(new Version(matcher.group(1)).compareTo(new Version("4.30")) >= 0) {
                     try {
-                        classificationPolicies.set(new ConfigApi(client).requestClassificationPoliciesConfigInfo(StringUtils.EMPTY));
+                        classificationPolicies.set(new ConfigApi(client).requestClassificationPoliciesConfigInfo());
                     }
                     catch(ApiException e) {
                         // Precondition: Right "Config Read" required.

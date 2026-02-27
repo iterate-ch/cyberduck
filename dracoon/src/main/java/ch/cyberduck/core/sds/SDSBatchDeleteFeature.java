@@ -65,7 +65,7 @@ public class SDSBatchDeleteFeature implements Delete {
         }
         for(List<Long> nodes : regular.values()) {
             try {
-                new NodesApi(session.getClient()).removeNodes(new DeleteNodesRequest().nodeIds(nodes), StringUtils.EMPTY);
+                new NodesApi(session.getClient()).removeNodes(new DeleteNodesRequest().nodeIds(nodes));
             }
             catch(ApiException e) {
                 switch(e.getCode()) {
@@ -80,7 +80,7 @@ public class SDSBatchDeleteFeature implements Delete {
         }
         for(List<Long> nodes : trashed.values()) {
             try {
-                new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(nodes), StringUtils.EMPTY);
+                new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(nodes));
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService(nodeid).map("Cannot delete {0}", e, files.keySet().iterator().next());

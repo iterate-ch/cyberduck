@@ -30,7 +30,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import java.util.regex.Matcher;
@@ -64,19 +63,19 @@ public class SDSTimestampFeature implements Timestamp {
                 latest = new NodesApi(session.getClient()).updateRoom(new UpdateRoomRequest()
                                 .timestampCreation(null != status.getCreated() ? new DateTime(status.getCreated()) : null)
                                 .timestampModification(null != status.getModified() ? new DateTime(status.getModified()) : null),
-                        Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
+                        Long.parseLong(nodeid.getVersionId(file)), null);
             }
             else if(file.isDirectory()) {
                 latest = new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest()
                                 .timestampCreation(null != status.getCreated() ? new DateTime(status.getCreated()) : null)
                                 .timestampModification(null != status.getModified() ? new DateTime(status.getModified()) : null),
-                        Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
+                        Long.parseLong(nodeid.getVersionId(file)), null);
             }
             else {
                 latest = new NodesApi(session.getClient()).updateFile(new UpdateFileRequest()
                                 .timestampCreation(null != status.getCreated() ? new DateTime(status.getCreated()) : null)
                                 .timestampModification(null != status.getModified() ? new DateTime(status.getModified()) : null),
-                        Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
+                        Long.parseLong(nodeid.getVersionId(file)), null);
             }
             status.setResponse(new SDSAttributesAdapter(session).toAttributes(latest));
         }
