@@ -48,7 +48,7 @@ public class VaultRegistrySearchFeature implements Search {
     @Override
     public EnumSet<Flags> features(final Path workdir) {
         try {
-            return registry.find(session, workdir).getFeature(session, Search.class, proxy).features(workdir);
+            return registry.find(session, workdir, false).getFeature(session, Search.class, proxy).features(workdir);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.features(workdir);

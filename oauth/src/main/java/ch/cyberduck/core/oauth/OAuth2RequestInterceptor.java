@@ -15,9 +15,9 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Profile;
@@ -46,7 +46,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     private static final Logger log = LogManager.getLogger(OAuth2RequestInterceptor.class);
 
     private final ReentrantLock lock = new ReentrantLock();
-    private final Credentials credentials;
+    private final Host host;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final LoginCallback prompt) throws LoginCanceledException {
         this(client, host,
@@ -54,8 +54,12 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthTokenUrl()),
                 Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthAuthorizationUrl()),
-                null == host.getProperty(Profile.OAUTH_CLIENT_ID_KEY) ? host.getProtocol().getOAuthClientId() : host.getProperty(Profile.OAUTH_CLIENT_ID_KEY),
-                null == host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY) ? host.getProtocol().getOAuthClientSecret() : host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY),
+                prompt(host, prompt, Profile.OAUTH_CLIENT_ID_KEY, LocaleFactory.localizedString(
+                                Profile.OAUTH_CLIENT_ID_KEY, "Credentials"),
+                        null == host.getProperty(Profile.OAUTH_CLIENT_ID_KEY) ? host.getProtocol().getOAuthClientId() : host.getProperty(Profile.OAUTH_CLIENT_ID_KEY)),
+                prompt(host, prompt, Profile.OAUTH_CLIENT_SECRET_KEY, LocaleFactory.localizedString(
+                                Profile.OAUTH_CLIENT_SECRET_KEY, "Credentials"),
+                        null == host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY) ? host.getProtocol().getOAuthClientSecret() : host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY)),
                 host.getProtocol().getOAuthScopes(),
                 host.getProtocol().isOAuthPKCE(), prompt);
     }
@@ -63,14 +67,14 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce, final LoginCallback prompt) throws LoginCanceledException {
         super(client, host, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
-        this.credentials = host.getCredentials();
+        this.host = host;
     }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         lock.lock();
         try {
-            OAuthTokens tokens = credentials.getOauth();
+            OAuthTokens tokens = host.getCredentials().getOauth();
             if(tokens.isExpired()) {
                 try {
                     tokens = this.save(this.authorizeWithRefreshToken(tokens));
@@ -81,9 +85,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                 }
             }
             if(StringUtils.isNotBlank(tokens.getAccessToken())) {
-                log.info("Authorizing service request with OAuth2 tokens {}", tokens);
-                request.removeHeaders(HttpHeaders.AUTHORIZATION);
-                request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
+                this.addAuthorizationHeader(request, tokens);
             }
         }
         finally {
@@ -91,27 +93,34 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
         }
     }
 
+    protected void addAuthorizationHeader(final HttpRequest request, final OAuthTokens tokens) {
+        log.info("Authorizing service request with OAuth2 tokens {}", tokens);
+        request.removeHeaders(HttpHeaders.AUTHORIZATION);
+        request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
+    }
+
+
     @Override
-    public OAuth2RequestInterceptor withMethod(final Credential.AccessMethod method) {
-        super.withMethod(method);
+    public OAuth2RequestInterceptor setMethod(final Credential.AccessMethod method) {
+        super.setMethod(method);
         return this;
     }
 
     @Override
-    public OAuth2RequestInterceptor withRedirectUri(final String redirectUri) {
-        super.withRedirectUri(redirectUri);
+    public OAuth2RequestInterceptor setRedirectUri(final String redirectUri) {
+        super.setRedirectUri(redirectUri);
         return this;
     }
 
     @Override
-    public OAuth2RequestInterceptor withFlowType(final FlowType flowType) {
-        super.withFlowType(flowType);
+    public OAuth2RequestInterceptor setFlowType(final FlowType flowType) {
+        super.setFlowType(flowType);
         return this;
     }
 
     @Override
-    public OAuth2RequestInterceptor withParameter(final String key, final String value) {
-        super.withParameter(key, value);
+    public OAuth2RequestInterceptor setParameter(final String key, final String value) {
+        super.setParameter(key, value);
         return this;
     }
 }

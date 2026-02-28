@@ -15,7 +15,20 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -30,6 +43,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -65,16 +79,14 @@ public class OAuth2AuthorizationService {
             = new GsonFactory();
 
     private final Host host;
-    /**
-     * Static long-lived credentials
-     */
-    private final Credentials credentials;
-    private final String tokenServerUrl;
-    private final String authorizationServerUrl;
     private final LoginCallback prompt;
 
-    private final String clientid;
-    private final String clientsecret;
+    private String clientid;
+    private String clientsecret;
+    private String tokenServerUrl;
+    private String authorizationServerUrl;
+    private String redirectUri = OOB_REDIRECT_URI;
+    private FlowType flowType = FlowType.AuthorizationCode;
 
     private final List<String> scopes;
     private final boolean pkce;
@@ -85,9 +97,6 @@ public class OAuth2AuthorizationService {
     private Credential.AccessMethod method
             = BearerToken.authorizationHeaderAccessMethod();
 
-    private String redirectUri = OOB_REDIRECT_URI;
-    private FlowType flowType = FlowType.AuthorizationCode;
-
     private final HttpTransport transport;
 
     private final HostPasswordStore store = PasswordStoreFactory.get();
@@ -95,7 +104,7 @@ public class OAuth2AuthorizationService {
     public OAuth2AuthorizationService(final HttpClient client, final Host host,
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
-                                      final LoginCallback prompt) throws LoginCanceledException {
+                                      final LoginCallback prompt) {
         this(new ApacheHttpTransport(client), host,
                 tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
     }
@@ -103,17 +112,14 @@ public class OAuth2AuthorizationService {
     public OAuth2AuthorizationService(final HttpTransport transport, final Host host,
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
-                                      final LoginCallback prompt) throws LoginCanceledException {
+                                      final LoginCallback prompt) {
         this.transport = transport;
         this.host = host;
-        this.credentials = host.getCredentials();
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.prompt = prompt;
-        this.clientid = prompt(host, prompt, Profile.OAUTH_CLIENT_ID_KEY, LocaleFactory.localizedString(
-                Profile.OAUTH_CLIENT_ID_KEY, "Credentials"), StringUtils.isBlank(clientid) ? null : clientid);
-        this.clientsecret = prompt(host, prompt, Profile.OAUTH_CLIENT_SECRET_KEY, LocaleFactory.localizedString(
-                Profile.OAUTH_CLIENT_SECRET_KEY, "Credentials"), clientsecret);
+        this.clientid = clientid;
+        this.clientsecret = clientsecret;
         this.scopes = scopes;
         this.pkce = pkce;
     }
@@ -157,6 +163,7 @@ public class OAuth2AuthorizationService {
      */
     public OAuthTokens save(final OAuthTokens tokens) throws AccessDeniedException {
         log.debug("Save new tokens {} for {}", tokens, host);
+        final Credentials credentials = host.getCredentials();
         credentials.setOauth(tokens).setSaved(new LoginOptions().save);
         switch(flowType) {
             case PasswordGrant:
@@ -199,7 +206,7 @@ public class OAuth2AuthorizationService {
                 response = this.authorizeWithCode(prompt);
                 break;
             case PasswordGrant:
-                response = this.authorizeWithPassword(credentials);
+                response = this.authorizeWithPassword(host.getCredentials());
                 break;
             default:
                 throw new LoginCanceledException();
@@ -251,6 +258,13 @@ public class OAuth2AuthorizationService {
         if(StringUtils.isBlank(authorizationCode)) {
             throw new LoginCanceledException();
         }
+        return this.exchangeToken(flow, authorizationCode);
+    }
+
+    /**
+     * Exchanges authorization code for access and refresh tokens
+     */
+    protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode) throws BackgroundException {
         try {
             log.debug("Request tokens for authentication code {}", authorizationCode);
             // Swap the given authorization token for access/refresh tokens
@@ -327,29 +341,83 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    public OAuth2AuthorizationService withMethod(final Credential.AccessMethod method) {
+    public OAuth2AuthorizationService setClientid(final String clientid) {
+        this.clientid = clientid;
+        return this;
+    }
+
+    public String getClientid() {
+        return clientid;
+    }
+
+    public List<String> getScopes() {
+        return scopes;
+    }
+
+    public OAuth2AuthorizationService setClientsecret(final String clientsecret) {
+        this.clientsecret = clientsecret;
+        return this;
+    }
+
+    public String getClientsecret() {
+        return clientsecret;
+    }
+
+    public OAuth2AuthorizationService setTokenServerUrl(final String tokenServerUrl) {
+        this.tokenServerUrl = tokenServerUrl;
+        return this;
+    }
+
+    public OAuth2AuthorizationService setAuthorizationServerUrl(final String authorizationServerUrl) {
+        this.authorizationServerUrl = authorizationServerUrl;
+        return this;
+    }
+
+    public OAuth2AuthorizationService setMethod(final Credential.AccessMethod method) {
         this.method = method;
         return this;
     }
 
-    public OAuth2AuthorizationService withRedirectUri(final String redirectUri) {
+    public OAuth2AuthorizationService setRedirectUri(final String redirectUri) {
         this.redirectUri = redirectUri;
         return this;
     }
 
-    public OAuth2AuthorizationService withFlowType(final FlowType flowType) {
+    public String getRedirectUri() {
+        return redirectUri;
+    }
+
+    public OAuth2AuthorizationService setFlowType(final FlowType flowType) {
         this.flowType = flowType;
         return this;
     }
 
-    public OAuth2AuthorizationService withParameter(final String key, final String value) {
+    public FlowType getFlowType() {
+        return flowType;
+    }
+
+    public OAuth2AuthorizationService setParameter(final String key, final String value) {
         additionalParameters.put(key, value);
         return this;
     }
 
+    public Map<String, String> getAdditionalParameters() {
+        return additionalParameters;
+    }
+
     public enum FlowType {
-        AuthorizationCode,
-        PasswordGrant
+        AuthorizationCode {
+            @Override
+            public String toString() {
+                return "authorization_code";
+            }
+        },
+        PasswordGrant {
+            @Override
+            public String toString() {
+                return "password";
+            }
+        }
     }
 
     public static final class PermissiveTokenResponse extends GenericJson {
@@ -415,16 +483,26 @@ public class OAuth2AuthorizationService {
 
     /**
      * Prompt for value if missing
+     *
+     * @param bookmark Host bookmark
+     * @param prompt   Password callback for user input
+     * @param property Property key for storing value
+     * @param message  Prompt message for user
+     * @param value    Current value, if null prompt for input
+     * @return Prompted value
+     * @throws LoginCanceledException If user cancels the prompt
      */
-    private static String prompt(final Host bookmark, final PasswordCallback prompt,
-                                 final String property, final String message, final String value) throws LoginCanceledException {
+    public static String prompt(final Host bookmark, final PasswordCallback prompt,
+                                @Nullable final String property, final String message, final String value) throws LoginCanceledException {
         if(null == value) {
             final Credentials input = prompt.prompt(bookmark, message,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     new LoginOptions().icon(bookmark.getProtocol().disk())
                             .passwordPlaceholder(message).password(false));
             if(input.isSaved()) {
-                HostPreferencesFactory.get(bookmark).setProperty(property, input.getPassword());
+                if(null != property) {
+                    HostPreferencesFactory.get(bookmark).setProperty(property, input.getPassword());
+                }
             }
             return input.getPassword();
         }

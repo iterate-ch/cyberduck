@@ -79,6 +79,6 @@ public class VaultRegistryListService implements ListService {
 
     @Override
     public void preflight(final Path directory) throws BackgroundException {
-        registry.find(session, directory).getFeature(session, ListService.class, proxy).preflight(directory);
+        registry.find(session, directory, false).getFeature(session, ListService.class, proxy).preflight(directory);
     }
 }

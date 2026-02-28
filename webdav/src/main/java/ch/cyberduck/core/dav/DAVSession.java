@@ -112,9 +112,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         if(host.getProtocol().isOAuthConfigurable()) {
             authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
-                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                    .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             if(host.getProtocol().getAuthorization() != null) {
-                authorizationService.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+                authorizationService.setFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             }
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,

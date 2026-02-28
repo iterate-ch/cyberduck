@@ -54,6 +54,6 @@ public class STSAssumeRoleWithWebIdentityCredentialsStrategy extends STSCredenti
     public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
         final String arn = new ProxyPreferencesReader(host, credentials).getProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, "s3.assumerole.rolearn");
         log.debug("Retrieve temporary credentials with {} for role ARN {}", credentials, arn);
-        return this.assumeRoleWithWebIdentity(oauth.validate(credentials.getOauth()), arn);
+        return this.assumeRoleWithWebIdentity(oauth.save(oauth.validate(credentials.getOauth())), arn);
     }
 }

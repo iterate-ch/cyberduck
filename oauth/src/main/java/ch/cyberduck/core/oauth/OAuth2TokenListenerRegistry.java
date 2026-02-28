@@ -18,8 +18,8 @@ package ch.cyberduck.core.oauth;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class OAuth2TokenListenerRegistry {
     private static final Logger log = LogManager.getLogger(OAuth2TokenListenerRegistry.class);
@@ -30,22 +30,26 @@ public class OAuth2TokenListenerRegistry {
         return global;
     }
 
-    private final Map<String, OAuth2TokenListener> listeners = new HashMap<>();
+    private final Map<String, OAuth2TokenListener> listeners = new ConcurrentHashMap<>();
 
     public void register(final String state, final OAuth2TokenListener listener) {
         log.debug("Register listener for state {}", state);
         listeners.put(state, listener);
     }
 
-    public void notify(final String state, final String token) {
+    /**
+     * @return False on unknown state
+     */
+    public boolean notify(final String state, final String token) {
         final OAuth2TokenListener listener = listeners.get(state);
         if(null == listener) {
             log.error("Missing listener for state {}", state);
-            return;
+            return false;
         }
         listeners.remove(state);
         log.debug("Notify listener for state {} with token {}", state, token);
         listener.callback(token);
+        return true;
     }
 
     public void shutdown() {
