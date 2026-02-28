@@ -39,17 +39,17 @@ jobs:
           echo "NuGetPackageSourceCredentials_gh-iterate-ch=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
       - name: Install Bonjour SDK
         if: ${{ runner.os == 'Windows' }}
-        uses: crazy-max/ghaction-chocolatey@v3
+        uses: crazy-max/ghaction-chocolatey@v4
         with:
           args: install bonjour -y
       - name: Install WiX Toolset
         if: ${{ runner.os == 'Windows' }}
-        uses: crazy-max/ghaction-chocolatey@v3
+        uses: crazy-max/ghaction-chocolatey@v4
         with:
           args: install wixtoolset -y
       - name: Install OpenSSL
         if: ${{ runner.os == 'Windows' }}
-        uses: crazy-max/ghaction-chocolatey@v3
+        uses: crazy-max/ghaction-chocolatey@v4
         with:
           args: install openssl -y
       - name: Build with Maven
