@@ -127,9 +127,13 @@
         </tstamp>
     </target>
 
-    <target name="msbuild" depends="version">
+    <!-- 
+        Windows 
+    -->
+
+    <target name="msbuild">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar" />
         </taskdef>
 
         <condition property="msbuild.sign" value="false">
@@ -137,20 +141,35 @@
         </condition>
         <property name="msbuild.sign" value="" />
         <condition property="msbuild.configuration" value="Debug">
-            <equals arg1="${configuration}" arg2="debug"/>
+            <equals arg1="${configuration}" arg2="debug" />
         </condition>
-        <property name="msbuild.configuration" value="Release"/>
+        <property name="msbuild.configuration" value="Release" />
+    </target>
+
+    <target name="msbuild-props" depends="version">
+        <condition property="msbuild.sign" value="false">
+            <isset property="skipSign"/>
+        </condition>
+        <property name="msbuild.sign" value=""/>
 
         <property name="signtool" value="cng" />
         <property name="revision" value="0" />
         <copy todir="${build}/generated/msbuild" overwrite="True">
             <resources>
-                <fileset dir="${home}/src/template/msbuild" erroronmissingdir="false"/>
-                <fileset dir="${module}/src/template/msbuild" erroronmissingdir="false"/>
+                <fileset dir="${home}/src/template/msbuild" erroronmissingdir="false" />
+                <fileset dir="${module}/src/template/msbuild" erroronmissingdir="false" />
             </resources>
             <filterchain>
-                <expandproperties/>
+                <expandproperties />
             </filterchain>
         </copy>
+    </target>
+
+    <target name="nuget-unpack">
+        <exec dir="." executable="powershell.exe">
+            <arg line="-ExecutionPolicy bypass" />
+            <arg value="-Command" />
+            <arg value="&amp; { &amp; '${home}/src/main/msbuild/NuGet-Unpack.ps1' '${build}/.nuget/packages.list' }" />
+        </exec>
     </target>
 </project>

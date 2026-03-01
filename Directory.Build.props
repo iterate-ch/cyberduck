@@ -16,46 +16,11 @@
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup Label="AssemblyInfo">
-    <Company>iterate GmbH</Company>
-    <Description>Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows.</Description>
-  </PropertyGroup>
-
   <PropertyGroup>
     <CyberduckDir>$(MSBuildThisFileDirectory)</CyberduckDir>
     <BuildSupportDir>$(CyberduckDir)src\main\msbuild\</BuildSupportDir>
-    <TargetBuildDir>$(ModulePath)target\</TargetBuildDir>
-    <LibDir>$(TargetBuildDir)lib\</LibDir>
-    <GeneratedMSBuildDir>$(TargetBuildDir)generated\msbuild\</GeneratedMSBuildDir>
-
-    <ArtifactsPath>$(TargetBuildDir)</ArtifactsPath>
-    <UseArtifactsOutput>false</UseArtifactsOutput>
-
-    <BaseIntermediateOutputPath>$(ArtifactsPath)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(ArtifactsPath)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)</OutputPath>
-
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <LangVersion>12</LangVersion>
-
-    <BuildProjectReferences Condition=" '$(BuildProjectReferences)'=='' And '$(BuildingInsideVisualStudio)'!='True' ">false</BuildProjectReferences>
-  </PropertyGroup>
-  
-  <ItemDefinitionGroup>
-    <CyberduckReference>
-      <ProjectPath />
-    </CyberduckReference>
-  </ItemDefinitionGroup>
-
-  <Import Project="$(GeneratedMSBuildDir)Version.props" Condition="Exists('$(GeneratedMSBuildDir)Version.props')" />
-
-  <PropertyGroup>
-    <SignToolExecutablePath>$(PATH)</SignToolExecutablePath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="$(MSBuildThisFileDirectory)src\main\msbuild\BannedSymbols.*.txt" Link="%(Filename)%(Extension)" />
-  </ItemGroup>
+  <Import Project="$(BuildSupportDir)Cyberduck.Default.props" />
 
 </Project>

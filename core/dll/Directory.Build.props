@@ -15,10 +15,10 @@
 
 <Project>
 
-    <PropertyGroup>
-        <ModulePath Condition=" '$(ModulePath)' == '' ">$(MSBuildThisFileDirectory)</ModulePath>
-    </PropertyGroup>
+  <PropertyGroup>
+    <ModulePath Condition=" '$(ModulePath)' == '' ">$(MSBuildThisFileDirectory)</ModulePath>
+  </PropertyGroup>
 
-    <Import Project="../Directory.Build.props" />
+  <Import Project="../Directory.Build.props" />
 
 </Project>

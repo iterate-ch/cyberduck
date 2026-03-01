@@ -70,9 +70,8 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <classifier>net472</classifier>
-                                            <type>dll</type>
-                                            <file>${project.build.directory}/net472/Cyberduck.Cli.dll</file>
+                                            <type>nupkg</type>
+                                            <file>${project.build.directory}/Cyberduck.Cli.${project.version}.nupkg</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -91,29 +90,19 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
-                    <classifier>net472</classifier>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Core.Native</artifactId>
-                    <classifier>net472</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Protocols</artifactId>
-                    <classifier>net472</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cryptomator</artifactId>
-                    <classifier>net472</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
@@ -140,6 +129,22 @@
                     <artifactId>protocols</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>${jansi.version}</version>
+            <classifier>x86_64</classifier>
+            <type>dll</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>${jansi.version}</version>
+            <classifier>arm64</classifier>
+            <type>dll</type>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

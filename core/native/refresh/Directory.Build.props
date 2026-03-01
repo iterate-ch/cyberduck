@@ -15,10 +15,11 @@
 
 <Project>
 
-    <PropertyGroup>
-        <ModulePath Condition=" '$(ModulePath)' == '' ">$(MSBuildThisFileDirectory)</ModulePath>
-    </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>Cyberduck.Core.Refresh</AssemblyName>
+    <ModulePath Condition=" '$(ModulePath)' == '' ">$(MSBuildThisFileDirectory)</ModulePath>
+  </PropertyGroup>
 
-    <Import Project="../Directory.Build.props" />
+  <Import Project="../Directory.Build.props" />
 
 </Project>

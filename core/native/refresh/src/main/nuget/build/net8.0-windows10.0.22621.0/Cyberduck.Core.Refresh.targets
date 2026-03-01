@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup>
+    <Reference Include="Cyberduck.Core.Refresh">
+      <HintPath>$(MSBuildThisFileDirectory)../../lib/net8.0-windows10.0.22621.0/win-$(Platform)/Cyberduck.Core.Refresh.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

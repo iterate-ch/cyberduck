@@ -27,18 +27,12 @@
         <!-- Unsupported with IKVM -->
         <AppxSymbolPackageEnabled>false</AppxSymbolPackageEnabled>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-        <SignOutput Condition="'$(SignOutput)'!='true'">False</SignOutput>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
-        <SignOutput Condition="'$(SignOutput)'==''">True</SignOutput>
-    </PropertyGroup>
     <PropertyGroup>
         <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     </PropertyGroup>
     <ItemGroup>
         <None Include="Package.appxmanifest.template" />
-        <AppxManifest Include="$(TargetDir)generated/Package.appxmanifest">
+        <AppxManifest Include="$(TargetBuildDir)generated/Package.appxmanifest">
             <Link>Package.appxmanifest</Link>
             <SubType>Designer</SubType>
             <DependentUpon>Package.appxmanifest.template</DependentUpon>
@@ -57,16 +51,21 @@
         <Content Include="$(ModulePath)\src\resources\CyberduckAppx.150x150.png">
             <Link>Images\CyberduckAppx.150x150.png</Link>
         </Content>
-        <Content Include="$(CyberduckDir)profiles\default\*.cyberduckprofile">
-            <Link>Profiles\%(Filename)%(Extension)</Link>
-        </Content>
         <Content Include="$(CyberduckDir)Acknowledgments.rtf;$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
             <Link>%(Filename)%(Extension)</Link>
         </Content>
     </ItemGroup>
+
+    <Target Name="FlattenPackage" BeforeTargets="_ConvertItems">
+        <ItemGroup>
+            <_FilteredNonWapProjProjectOutput Update="@(_FilteredNonWapProjProjectOutput)" SourceProject="" Condition="'%(SourceProject)'!=''" />
+        </ItemGroup>
+    </Target>
+
     <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
     <ItemGroup>
         <ProjectReference Include="..\csharp\Cyberduck.csproj" />
+        <PackageReference Include="IKVM" ExcludeAssets="build;buildTransitive;buildMultiTargeting" />
     </ItemGroup>
 
     <Target Name="ResolveLocalPackagePayload" BeforeTargets="_GenerateAppxPackageRecipeFile" Returns="@(AppxPackagePayload)">
@@ -81,13 +80,13 @@
             <AppxPackagePayloadExecutable Include="@(AppxPackagePayload)" Condition="'%(Extension)'=='.dll' Or '%(Extension)'=='.exe'" />
         </ItemGroup>
     </Target>
-    <Target Name="SignToolExecutablePath" DependsOnTargets="_GetSdkToolPaths" Returns="$(SignToolExecutablePath)">
+    <Target Name="SignToolExecutableName" DependsOnTargets="_GetSdkToolPaths" Returns="$(SignToolExecutableName)">
         <PropertyGroup>
-            <SignToolExecutable>$(SignAppxPackageExeFullPath)</SignToolExecutable>
+            <SignToolExecutableName>$(SignAppxPackageExeFullPath)</SignToolExecutableName>
         </PropertyGroup>
     </Target>
-    <Target Name="_CollectSignAppxPackagePayload" DependsOnTargets="AppxPackagePayloadExecutable;SignToolExecutablePath" Outputs="%(AppxPackagePayloadExecutable.Identity)">
-        <Exec Command="%22$(SignToolExecutable)%22 verify /q /pa %22%(AppxPackagePayloadExecutable.Identity)%22"
+    <Target Name="_CollectSignAppxPackagePayload" DependsOnTargets="AppxPackagePayloadExecutable;SignToolExecutableName" Outputs="%(AppxPackagePayloadExecutable.Identity)">
+        <Exec Command="%22$(SignToolExecutableName)%22 verify /q /pa %22%(AppxPackagePayloadExecutable.Identity)%22"
             IgnoreStandardErrorWarningFormat="true"
             IgnoreExitCode="true">
             <Output TaskParameter="ExitCode" PropertyName="PayloadSigned" />
@@ -101,7 +100,7 @@
         BeforeTargets="_GenerateAppxPackageFile"
         DependsOnTargets="_CollectSignAppxPackagePayload;SignToolArgs"
         Condition="'$(SignOutput)'=='true'">
-        <Exec Command="$(SignToolArgs) @(SignAppxPackagePayload->'%22%(TargetPath)%22', ' ')" 
+        <Exec Command="$(SignToolArgs) @(SignAppxPackagePayload->'%22%(TargetPath)%22', ' ')"
             WorkingDirectory="$(TargetDir)"
             Condition="'@(SignAppxPackagePayload)'!=''" />
     </Target>

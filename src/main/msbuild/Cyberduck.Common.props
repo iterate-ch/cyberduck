@@ -1,0 +1,56 @@
+<Project>
+
+  <PropertyGroup Label="AssemblyInfo">
+    <Company>iterate GmbH</Company>
+    <Description>Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows.</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetBuildDir>$(ModulePath)target\</TargetBuildDir>
+    <LibDir>$(TargetBuildDir)lib\</LibDir>
+    <GeneratedMSBuildDir>$(TargetBuildDir)generated\msbuild\</GeneratedMSBuildDir>
+
+    <UseArtifactsOutput>false</UseArtifactsOutput>
+    <ArtifactsPath>$(TargetBuildDir)</ArtifactsPath>
+
+    <BaseIntermediateOutputPath>$(ArtifactsPath)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(ArtifactsPath)</BaseOutputPath>
+
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <LangVersion>12</LangVersion>
+
+    <!-- 
+      NuGet hates same-version packages (i.e. -SNAPSHOT).
+      With some Maven-trickery (and PowerShell) extract the .nupkg from Maven
+      Into a common folder (ModulePath\target\.nuget\packages), and specify as fallback folder.
+      Now, NuGet will first check in this folder, before checking in nuget.config
+      for suitable remotes - which is set to a non-existing source, for fast build failure:
+        <packageSource key="MavenFailNuget">
+          <package pattern="Cyberduck*" />
+        </packageSource>
+      As Maven is enforcing dependency versions here this is safe.
+    -->
+    <RestoreAdditionalProjectFallbackFolders Condition="Exists('$(TargetBuildDir).nuget\packages\')">$(TargetBuildDir).nuget\packages\;$(RestoreAdditionalProjectFallbackFolders)</RestoreAdditionalProjectFallbackFolders>
+  </PropertyGroup>
+
+  <Import Project="$(GeneratedMSBuildDir)Version.props" Condition="Exists('$(GeneratedMSBuildDir)Version.props')" />
+
+  <ItemDefinitionGroup>
+    <CyberduckReference>
+      <ProjectPath />
+    </CyberduckReference>
+  </ItemDefinitionGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <Import Project="Cyberduck.MSVC.Toolset.props" />
+
+</Project>

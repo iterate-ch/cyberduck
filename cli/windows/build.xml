@@ -23,7 +23,7 @@
     <property name="chocolatey.target" value="${build.deploy}"/>
 
     <target name="restore" depends="msbuild">
-        <msbuild buildfile="build.proj">
+        <msbuild buildfile="dirs.proj">
             <target name="Restore"/>
 
             <property name="Exe" value="true"/>
@@ -32,7 +32,7 @@
     </target>
 
     <target name="build" depends="restore,msbuild">
-        <msbuild buildfile="build.proj">
+        <msbuild buildfile="dirs.proj">
             <target name="Build"/>
 
             <property name="Configuration" value="${msbuild.configuration}"/>
@@ -40,11 +40,10 @@
         </msbuild>
     </target>
 
-    <target name="package" depends="restore,msbuild">
-        <msbuild buildfile="build.proj">
+    <target name="package" depends="msbuild">
+        <msbuild buildfile="dirs.proj">
             <target name="Build"/>
 
-            <property name="BuildProjectReferences" value="false"/>
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Installer" value="true" />
         </msbuild>

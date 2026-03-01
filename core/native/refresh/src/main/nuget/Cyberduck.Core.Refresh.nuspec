@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <description>$description$</description>
+    <authors>$authors$</authors>
+
+    <dependencies>
+      <group>
+        <dependency id="Cyberduck.Core" version="$version$" />
+        <dependency id="Cyberduck.Core.Native" version="$version$" />
+        <dependency id="DotNetProjects.Extended.Wpf.Toolkit" version="$PkgDotNetProjects_Extended_Wpf_ToolkitVersion$" />
+        <dependency id="ReactiveUI.WPF" version="$PkgReactiveUI_WPFVersion$" />
+        <dependency id="System.Runtime.Caching" version="$PkgSystem_Runtime_CachingVersion$" />
+      </group>
+
+      <group targetFramework="net472">
+        <dependency id="System.Memory" version="$PkgSystem_MemoryVersion$" />
+      </group>
+
+      <group targetFramework="net8.0-windows10.0.22621.0">
+      </group>
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="$buildDir$x64/net472/Cyberduck.Core.Refresh.dll" target="lib/net472" />
+    <file src="$buildDir$x64/net8.0-windows10.0.22621.0/Cyberduck.Core.Refresh.dll" target="lib/net8.0-windows10.0.22621.0/win-x64" />
+    <file src="$buildDir$arm64/net8.0-windows10.0.22621.0/Cyberduck.Core.Refresh.dll" target="lib/net8.0-windows10.0.22621.0/win-arm64" />
+
+    <file src="build/**" target="" />
+  </files>
+</package>
