@@ -89,7 +89,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         final CloseableHttpClient client = configuration.build();
         return new CustomDbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
                 .withAutoRetryDisabled()
-                .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(),
+                .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(host, client)).build(),
                 DbxHost.DEFAULT, null, null);
     }
 
