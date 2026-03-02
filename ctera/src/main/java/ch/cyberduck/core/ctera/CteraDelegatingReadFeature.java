@@ -39,10 +39,10 @@ public class CteraDelegatingReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(StringUtils.isNotBlank(status.getUrl())) {
+        if(StringUtils.isNotBlank(status.getParameters().get(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY))) {
             return new CteraDirectIOReadFeature(session).read(file, status, callback);
         }
-        log.warn("No URL found in status {} for {}", status, file);
+        log.warn("No key material found in status {} for {}", status, file);
         return new CteraReadFeature(session).read(file, status, callback);
     }
 
