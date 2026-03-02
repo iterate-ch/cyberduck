@@ -64,7 +64,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
     private final StoregateIdProvider fileid;
 
     public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider fileid) {
-        super(new StoregateAttributesFinderFeature(session, fileid));
+        super(session.getHost(), new StoregateAttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
     }

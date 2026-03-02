@@ -88,7 +88,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
     }
 
     public SDSDirectS3MultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Integer partsize) {
-        super(new SDSAttributesAdapter(session));
+        super(session.getHost(), new SDSAttributesAdapter(session));
         this.session = session;
         this.nodeid = nodeid;
         this.partsize = partsize;

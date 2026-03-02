@@ -64,7 +64,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
     private final GoogleStorageSession session;
 
     public GoogleStorageWriteFeature(final GoogleStorageSession session) {
-        super(new GoogleStorageAttributesFinderFeature(session));
+        super(session.getHost(), new GoogleStorageAttributesFinderFeature(session));
         this.session = session;
         this.containerService = new GoogleStoragePathContainerService();
     }
