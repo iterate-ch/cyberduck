@@ -62,7 +62,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
     private final BoxApiClient client;
 
     public BoxWriteFeature(final BoxSession session, final BoxFileidProvider fileid) {
-        super(new BoxAttributesFinderFeature(session, fileid));
+        super(session.getHost(), new BoxAttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
         this.client = new BoxApiClient(session.getClient());

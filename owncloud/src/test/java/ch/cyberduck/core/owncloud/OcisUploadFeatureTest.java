@@ -74,7 +74,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             status.setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
             assertFalse(feature.append(file, status).append);
-            final Void response = feature.upload(new TusWriteFeature(capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+            final Void response = feature.upload(new TusWriteFeature(session.getHost(), capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertTrue(status.isComplete());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
@@ -96,7 +96,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             status.setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
             assertFalse(feature.append(file, status).append);
-            final Void response = feature.upload(new TusWriteFeature(capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+            final Void response = feature.upload(new TusWriteFeature(session.getHost(), capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
             assertTrue(status.isComplete());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());

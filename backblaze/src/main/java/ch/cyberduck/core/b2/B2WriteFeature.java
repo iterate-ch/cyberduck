@@ -61,7 +61,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
         = new ThreadLocal<>();
 
     public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        super(new B2AttributesFinderFeature(session, fileid));
+        super(session.getHost(), new B2AttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
     }

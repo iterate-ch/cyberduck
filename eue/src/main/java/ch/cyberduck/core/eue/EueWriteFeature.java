@@ -59,7 +59,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
     private final EueResourceIdProvider fileid;
 
     public EueWriteFeature(final EueSession session, final EueResourceIdProvider fileid) {
-        super(new EueAttributesAdapter());
+        super(session.getHost(), new EueAttributesAdapter());
         this.session = session;
         this.fileid = fileid;
     }

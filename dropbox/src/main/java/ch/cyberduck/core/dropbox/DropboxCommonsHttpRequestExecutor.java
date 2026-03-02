@@ -15,12 +15,13 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.DelayedHttpEntity;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -48,12 +49,16 @@ import com.dropbox.core.http.HttpRequestor;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
+import static ch.cyberduck.core.http.AbstractHttpWriteFeature.toBuffered;
+
 public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements Closeable {
     private static final Logger log = LogManager.getLogger(DropboxCommonsHttpRequestExecutor.class);
 
+    private final Host host;
     private final CloseableHttpClient client;
 
-    public DropboxCommonsHttpRequestExecutor(final CloseableHttpClient client) {
+    public DropboxCommonsHttpRequestExecutor(final Host host, final CloseableHttpClient client) {
+        this.host = host;
         this.client = client;
     }
 
@@ -79,18 +84,18 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
     }
 
     @Override
-    public Uploader startPost(final String url, final Iterable<Header> headers) {
+    public Uploader startPost(final String url, final Iterable<Header> headers) throws IOException {
         final HttpEntityEnclosingRequestBase request = new HttpPost(url);
         return this.execute(url, headers, request);
     }
 
     @Override
-    public Uploader startPut(final String url, final Iterable<Header> headers) {
+    public Uploader startPut(final String url, final Iterable<Header> headers) throws IOException {
         final HttpEntityEnclosingRequestBase request = new HttpPut(url);
         return this.execute(url, headers, request);
     }
 
-    private Uploader execute(final String url, final Iterable<Header> headers, final HttpEntityEnclosingRequestBase request) {
+    private Uploader execute(final String url, final Iterable<Header> headers, final HttpEntityEnclosingRequestBase request) throws IOException {
         for(Header header : headers) {
             if(header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
                 continue;
@@ -113,12 +118,12 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
                 return -1L;
             }
         };
-        request.setEntity(entity);
         final DefaultThreadPool executor = new DefaultThreadPool(String.format("httpexecutor-%s", url), 1);
         final Future<CloseableHttpResponse> future = executor.execute(new Callable<CloseableHttpResponse>() {
             @Override
             public CloseableHttpResponse call() throws Exception {
                 try {
+                    request.setEntity(toBuffered(entity, HostPreferencesFactory.get(host).getLong("http.request.entity.buffer.limit")));
                     return client.execute(request);
                 }
                 finally {
@@ -173,10 +178,6 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
                 return new Response(response.getStatusLine().getStatusCode(), new HttpMethodReleaseInputStream(response), responseHeaders);
             }
         };
-    }
-
-    public HttpClient getClient() {
-        return client;
     }
 
     @Override

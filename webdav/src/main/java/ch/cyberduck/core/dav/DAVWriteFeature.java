@@ -64,7 +64,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
     }
 
     public DAVWriteFeature(final DAVSession session, final DAVSession.HttpCapabilities capabilities) {
-        super(new VoidAttributesAdapter());
+        super(session.getHost(), new VoidAttributesAdapter());
         this.session = session;
         this.capabilities = capabilities;
     }
