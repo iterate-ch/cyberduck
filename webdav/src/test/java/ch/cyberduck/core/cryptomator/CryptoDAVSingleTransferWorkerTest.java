@@ -88,7 +88,7 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
     @Test
     public void testUpload() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.vault));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         new DefaultLocalDirectoryFeature().mkdir(localDirectory1);
@@ -148,9 +148,10 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
         PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());
 
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
+        final CryptoVault cryptomator = new CryptoVault(
+                new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.vault))
+        );
+        final Path vault = cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
