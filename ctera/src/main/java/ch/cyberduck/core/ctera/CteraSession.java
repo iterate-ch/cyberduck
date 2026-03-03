@@ -278,10 +278,7 @@ public class CteraSession extends DAVSession {
             return (T) new CteraListService(this);
         }
         if(type == Read.class) {
-            if(preferences.getBoolean("ctera.download.directio.enable")) {
-                return (T) new CteraDelegatingReadFeature(this, versionid);
-            }
-            return (T) new CteraReadFeature(this);
+            return (T) new CteraDelegatingReadFeature(this, versionid);
         }
         if(type == Write.class) {
             return (T) new CteraWriteFeature(this);
