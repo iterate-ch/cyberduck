@@ -19,9 +19,9 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,17 +32,21 @@ public class CteraDelegatingReadFeature implements Read {
     private static final Logger log = LogManager.getLogger(CteraDelegatingReadFeature.class);
 
     private final CteraSession session;
+    private final VersionIdProvider versionid;
 
-    public CteraDelegatingReadFeature(final CteraSession session) {
+    public CteraDelegatingReadFeature(final CteraSession session, final VersionIdProvider versionid) {
         this.session = session;
+        this.versionid = versionid;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(StringUtils.isNotBlank(status.getParameters().get(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY))) {
-            return new CteraDirectIOReadFeature(session).read(file, status, callback);
+        try {
+            return new CteraDirectIOReadFeature(session, versionid).read(file, status, callback);
         }
-        log.warn("No key material found in status {} for {}", status, file);
+        catch(BackgroundException e) {
+            log.warn("Ignore DirectIO retrieval failure {} for {}", e, file);
+        }
         return new CteraReadFeature(session).read(file, status, callback);
     }
 
