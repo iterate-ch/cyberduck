@@ -43,6 +43,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.READPERMISSION;
+import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
+
 public class CteraDirectIOReadFeature implements Read {
     private static final Logger log = LogManager.getLogger(CteraDirectIOReadFeature.class);
 
@@ -85,6 +88,11 @@ public class CteraDirectIOReadFeature implements Read {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
         }
+    }
+
+    @Override
+    public void preflight(final Path file) throws BackgroundException {
+        assumeRole(file, READPERMISSION);
     }
 
     @Override

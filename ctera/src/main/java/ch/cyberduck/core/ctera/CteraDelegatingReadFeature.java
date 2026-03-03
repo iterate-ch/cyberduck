@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.VersionIdProvider;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,35 +34,49 @@ public class CteraDelegatingReadFeature implements Read {
 
     private final CteraSession session;
     private final VersionIdProvider versionid;
+    private final boolean directio;
 
     public CteraDelegatingReadFeature(final CteraSession session, final VersionIdProvider versionid) {
         this.session = session;
         this.versionid = versionid;
+        this.directio = HostPreferencesFactory.get(session.getHost()).getBoolean("ctera.download.directio.enable");
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            return new CteraDirectIOReadFeature(session, versionid).read(file, status, callback);
-        }
-        catch(BackgroundException e) {
-            log.warn("Ignore DirectIO retrieval failure {} for {}", e, file);
+        if(directio) {
+            try {
+                return new CteraDirectIOReadFeature(session, versionid).read(file, status, callback);
+            }
+            catch(BackgroundException e) {
+                log.warn("Ignore DirectIO retrieval failure {} for {}", e, file);
+            }
         }
         return new CteraReadFeature(session).read(file, status, callback);
     }
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
+        if(directio) {
+            return new CteraDirectIOReadFeature(session, versionid).offset(file);
+        }
         return new CteraReadFeature(session).offset(file);
     }
 
     @Override
     public void preflight(final Path file) throws BackgroundException {
+        if(directio) {
+            new CteraDirectIOReadFeature(session, versionid).preflight(file);
+            return;
+        }
         new CteraReadFeature(session).preflight(file);
     }
 
     @Override
     public EnumSet<Flags> features(final Path file) {
+        if(directio) {
+            return new CteraDirectIOReadFeature(session, versionid).features(file);
+        }
         return new CteraReadFeature(session).features(file);
     }
 }
