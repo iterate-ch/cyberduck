@@ -41,7 +41,6 @@ public final class DirectIO {
     }
 
     public static class EncryptInfo {
-
         public String wrapped_key;
         public boolean data_encrypted;
 
@@ -56,7 +55,6 @@ public final class DirectIO {
     }
 
     public static class ActualBlocksRange {
-
         public long file_size;
         public String range;
 
