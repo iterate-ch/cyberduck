@@ -105,9 +105,11 @@ public class CteraProtocol extends AbstractProtocol {
     @Override
     public Map<String, String> getProperties() {
         final Map<String, String> properties = new HashMap<>();
-        properties.put("queue.download.segments.size.dynamic", String.valueOf(false));
-        properties.put("queue.download.segments.size", String.valueOf(DIRECTIO_CHUNKSIZE));
-        properties.put("queue.download.segments.threshold", String.valueOf(DIRECTIO_CHUNKSIZE));
+        if(PreferencesFactory.get().getBoolean("ctera.download.directio.enable")) {
+            properties.put("queue.download.segments.size.dynamic", String.valueOf(false));
+            properties.put("queue.download.segments.size", String.valueOf(DIRECTIO_CHUNKSIZE));
+            properties.put("queue.download.segments.threshold", String.valueOf(0));
+        }
         return properties;
     }
 

@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -51,6 +52,7 @@ public class AbstractCteraDirectIOTest extends VaultTest {
             }
         };
         host.setDefaultPath("/ServicesPortal/webdav/My Files");
+        PreferencesFactory.get().setDefault("ctera.download.directio.enable", String.valueOf(true));
         session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), new TestPasswordStore());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new TestPasswordStore(), new DisabledProgressListener(), new DisabledProxyFinder());

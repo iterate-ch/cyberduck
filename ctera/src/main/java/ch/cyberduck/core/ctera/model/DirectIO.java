@@ -24,6 +24,7 @@ public final class DirectIO {
 
     public EncryptInfo encrypt_info;
     public List<Chunk> chunks;
+    public ActualBlocksRange actual_blocks_range;
 
     public static final class Chunk {
         public String url;
@@ -54,10 +55,26 @@ public final class DirectIO {
         }
     }
 
+    public static class ActualBlocksRange {
+
+        public long file_size;
+        public String range;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("ActualBlocksRange{");
+            sb.append("file_size=").append(file_size);
+            sb.append(", range='").append(range).append('\'');
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DirectIO{");
         sb.append("encrypt_info=").append(encrypt_info);
+        sb.append(", actual_blocks_range=").append(actual_blocks_range);
         sb.append(", chunks=").append(chunks);
         sb.append('}');
         return sb.toString();

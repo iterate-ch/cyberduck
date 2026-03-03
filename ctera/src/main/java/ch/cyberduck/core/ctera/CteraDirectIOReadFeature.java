@@ -34,8 +34,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -54,17 +54,23 @@ public class CteraDirectIOReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final EncryptInfo key = new EncryptInfo(status.getParameters().get(CTERA_WRAPPEDKEY), session.getOrCreateAPIKeys().secretKey);
-            final List<DirectIO.Chunk> chunks = new ArrayList<>();
+            if(status.getLength() == 0) {
+                return new ChunkSequenceInputStream(Collections.emptyList(), key);
+            }
             final DirectIO.Chunk chunk = new DirectIO.Chunk();
             chunk.url = status.getUrl();
             chunk.len = status.getLength();
-            chunks.add(chunk);
             log.debug("Return chunk {} for file {}", chunk, file);
-            return new ChunkSequenceInputStream(chunks, key);
+            return new ChunkSequenceInputStream(Collections.singletonList(chunk), key);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
         }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path file) {
+        return EnumSet.noneOf(Flags.class);
     }
 
     private final class ChunkSequenceInputStream extends InputStream {

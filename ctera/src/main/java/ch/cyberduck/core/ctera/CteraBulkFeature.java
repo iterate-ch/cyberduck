@@ -89,8 +89,7 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                         }
                     }
                     else {
-                        if(0L == status.getOffset()) {
-                            status.setUrl(metadata.chunks.get(0).url);
+                        if(metadata.actual_blocks_range.file_size == 0) {
                             final Map<String, String> parameters = new HashMap<>(status.getParameters());
                             parameters.put(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY, metadata.encrypt_info.wrapped_key);
                             status.setParameters(parameters);
@@ -108,12 +107,14 @@ public class CteraBulkFeature extends DisabledBulkFeature {
     private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
         final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withUsername(false).withPath(false)
                 .get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
-        return session.getClient().getClient().execute(request, new AbstractResponseHandler<DirectIO>() {
+        final DirectIO metadata = session.getClient().getClient().execute(request, new AbstractResponseHandler<DirectIO>() {
             @Override
             public DirectIO handleEntity(final HttpEntity entity) throws IOException {
                 final ObjectMapper mapper = new ObjectMapper();
                 return mapper.readValue(entity.getContent(), DirectIO.class);
             }
         });
+        log.debug("DirectIO metadata {} retrieved for {}", metadata, file);
+        return metadata;
     }
 }
