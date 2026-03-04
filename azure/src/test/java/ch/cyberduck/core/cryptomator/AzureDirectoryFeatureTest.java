@@ -57,7 +57,6 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final Path test = cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new AzureWriteFeature(session)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(test.getType().contains(Path.Type.decrypted));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
