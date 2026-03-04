@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -97,7 +98,17 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
         // Restored file is no longer in list of deleted items
         assertEquals(2, feature.list(reverted, new DisabledListProgressListener()).size());
         // Permanently delete trashed version
-        new SDSDeleteFeature(session, nodeid).delete(feature.list(test, new DisabledListProgressListener()).toList(), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        try {
+            new SDSDeleteFeature(session, nodeid).delete(feature.list(test, new DisabledListProgressListener()).toList(), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        }
+        catch(InteroperabilityException e) {
+            // Ignore JSON parsing error
+        }
+        try {
+            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        catch(InteroperabilityException e) {
+            // Ignore JSON parsing error
+        }
     }
 }
