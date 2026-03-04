@@ -71,4 +71,9 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     public void testListGroups() throws Exception {
         new SharepointListService(session, fileid).list(SharepointListService.GROUPS_NAME, new DisabledListProgressListener());
     }
+
+    @Test
+    public void testListSites() throws Exception {
+        new SharepointListService(session, fileid).list(SharepointListService.SITES_NAME, new DisabledListProgressListener());
+    }
 }
