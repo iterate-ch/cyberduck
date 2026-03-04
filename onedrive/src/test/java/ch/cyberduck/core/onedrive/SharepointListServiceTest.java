@@ -1,5 +1,7 @@
 package ch.cyberduck.core.onedrive;
 
+import ch.cyberduck.core.AbstractPath;
+
 /*
  * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
@@ -20,6 +22,8 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
@@ -27,7 +31,6 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.PathAttributesHomeFeature;
 import ch.cyberduck.core.shared.RootPathContainerService;
 import ch.cyberduck.test.IntegrationTest;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -79,6 +82,11 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
 
     @Test
     public void testListDrives() throws Exception {
-        new SharepointListService(session, fileid).list(SharepointListService.DRIVES_NAME, new DisabledListProgressListener());
+        final ListService list = new SharepointListService(session, fileid);
+        final Path defaultSite = list.list(Home.root(), new DisabledListProgressListener()).find(new SimplePathPredicate(SharepointListService.DEFAULT_NAME));
+        final Path defaultDriveSites = new Path(
+            defaultSite.getSymlinkTarget().withAttributes(PathAttributes.EMPTY), 
+            SharepointListService.DRIVES_CONTAINER, EnumSet.of(AbstractPath.Type.volume));
+        list.list(defaultDriveSites, new DisabledListProgressListener());
     }
 }
