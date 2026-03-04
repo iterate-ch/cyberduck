@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -33,8 +34,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -94,6 +98,48 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             return false;
         }).map(Map.Entry::getValue).findFirst().orElse(StringUtils.isBlank(host.getCredentials().getUsername()) ? profiles.get("default") : null);
         if(null != profile) {
+            if(profile.isProcessBasedProfile()) {
+                // Uses external process to retrieve temporary credentials
+                final String command = profile.getCredentialProcess();
+                final ObjectMapper mapper = JsonMapper.builder()
+                        .serializationInclusion(Include.NON_NULL)
+                        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+                        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                        .visibility(PropertyAccessor.FIELD, Visibility.ANY).build();
+                List<String> cmd = new ArrayList<>();
+                switch(Factory.Platform.getDefault()) {
+                    case windows:
+                        cmd.add("cmd");
+                        cmd.add("/c");
+                        break;
+                    default:
+                        cmd.add("sh");
+                        cmd.add("-c");
+                        break;
+                }
+                cmd.add(command);
+                final ProcessBuilder builder = new ProcessBuilder(cmd);
+                try {
+                    final Process process = builder.start();
+                    try(InputStream reader = process.getInputStream()) {
+                        final CachedCredential cached = mapper.readValue(reader, CachedCredential.class);
+                        credentials.setTokens(new TemporaryAccessTokens(
+                                cached.accessKey, cached.secretKey, cached.sessionToken, cached.getExpiration()));
+                        process.waitFor();
+                        if(process.exitValue() != 0) {
+                            throw new IOException(String.format("Unexpected exit code %d for process %s", process.exitValue(), command));
+                        }
+                        return credentials;
+                    }
+                    finally {
+                        process.destroy();
+                    }
+                }
+                catch(IOException | InterruptedException e) {
+                    log.warn("Failure \"{}\" parsing credentials from output of command {}", e.getMessage(), command);
+                    return credentials;
+                }
+            }
             if(profile.isRoleBasedProfile()) {
                 log.debug("Configure credentials from role based profile {}", profile.getProfileName());
                 if(StringUtils.isBlank(profile.getRoleSourceProfile())) {
@@ -115,7 +161,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         }
                         // No further token exchange required
                         return credentials.setTokens(new TemporaryAccessTokens(
-                                cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
+                                cached.accessKey, cached.secretKey, cached.sessionToken, cached.getExpiration()));
                     }
                     else {
                         // If a profile defines the role_arn property then the profile is treated as an assume role profile
@@ -137,7 +183,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                         return credentials;
                     }
                     return credentials.setTokens(new TemporaryAccessTokens(
-                            cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
+                            cached.accessKey, cached.secretKey, cached.sessionToken, cached.getExpiration()));
                 }
                 log.debug("Set credentials from profile {}", profile.getProfileName());
                 return credentials
@@ -241,7 +287,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                     log.warn("Failure parsing SSO credentials.");
                     return null;
                 }
-                final Instant expiration = Instant.parse(cached.credentials.expiration);
+                final Instant expiration = Instant.ofEpochMilli(cached.credentials.getExpiration());
                 if(expiration.isBefore(Instant.now())) {
                     log.warn("Expired AWS SSO credentials.");
                     return null;
@@ -276,6 +322,15 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         private String sessionToken;
         @JsonProperty("Expiration")
         private String expiration;
+
+        public Long getExpiration() {
+            try {
+                return Instant.parse(expiration).toEpochMilli();
+            }
+            catch(DateTimeParseException e) {
+                return -1L;
+            }
+        }
     }
 
     /**

@@ -16,6 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.TestProtocol;
@@ -26,6 +27,7 @@ import org.junit.Test;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 public class S3CredentialsConfiguratorTest {
 
@@ -38,16 +40,14 @@ public class S3CredentialsConfiguratorTest {
     @Test
     public void readFailureForInvalidAWSCredentialsProfileEntry() throws Exception {
         final Credentials credentials = new Credentials("test_s3_profile");
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath())
-        )
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials));
         assertEquals(credentials, verify);
     }
 
     @Test
     public void readSuccessForValidAWSCredentialsProfileEntry() throws Exception {
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
-        )
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("test_s3_profile")));
         assertEquals("test_s3_profile", verify.getUsername());
         assertEquals("", verify.getPassword());
@@ -58,12 +58,38 @@ public class S3CredentialsConfiguratorTest {
 
     @Test
     public void readSSOCachedTemporaryTokens() throws Exception {
-        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
-        )
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
                 .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("ReadOnlyAccess-189584543480")));
         assertEquals("TESTACCESSKEY", verify.getTokens().getAccessKeyId());
         assertEquals("TESTSECRETKEY", verify.getTokens().getSecretAccessKey());
         assertEquals("TESTSESSIONTOKEN", verify.getTokens().getSessionToken());
         assertEquals(3497005724000L, verify.getTokens().getExpiryInMilliseconds(), 0L);
+    }
+
+    @Test
+    public void readCredentialProcessTokens() throws Exception {
+        assumeFalse(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
+        final Credentials verify = new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
+                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("credential_process_profile")));
+        assertEquals("PROCESSACCESSKEY", verify.getTokens().getAccessKeyId());
+        assertEquals("PROCESSSECRETKEY", verify.getTokens().getSecretAccessKey());
+        assertEquals("PROCESSSESSIONTOKEN", verify.getTokens().getSessionToken());
+        assertEquals(3497005724000L, verify.getTokens().getExpiryInMilliseconds(), 0L);
+    }
+
+    @Test
+    public void readCredentialProcessTokensExitCode() throws Exception {
+        assumeFalse(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
+        final Credentials credentials = new Credentials("credential_process_profile_error_exit");
+        assertEquals(credentials, new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
+                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials)));
+    }
+
+    @Test
+    public void readCredentialProcessTokensParseError() throws Exception {
+        assumeFalse(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
+        final Credentials credentials = new Credentials("credential_process_profile_parser_error");
+        assertEquals(credentials, new S3CredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath()))
+                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials)));
     }
 }
