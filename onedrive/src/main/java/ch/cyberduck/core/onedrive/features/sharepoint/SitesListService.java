@@ -152,8 +152,8 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
 
     private static String getSiteId(final String fileId) {
         // caller ensures that fileId is valid ("tenant,siteId,webId")
-        final Integer siteIdStart = fileId.indexOf(',');
-        final Integer siteIdEnd = fileId.indexOf(',', siteIdStart + 1);
+        final int siteIdStart = fileId.indexOf(',');
+        final int siteIdEnd = fileId.indexOf(',', siteIdStart + 1);
         return fileId.substring(siteIdStart + 1, siteIdEnd);
     }
 
