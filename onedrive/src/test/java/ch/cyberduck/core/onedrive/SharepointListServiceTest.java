@@ -1,28 +1,10 @@
 package ch.cyberduck.core.onedrive;
 
-import ch.cyberduck.core.AbstractPath;
-
-/*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
@@ -31,6 +13,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.PathAttributesHomeFeature;
 import ch.cyberduck.core.shared.RootPathContainerService;
 import ch.cyberduck.test.IntegrationTest;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -84,9 +67,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     public void testListDrives() throws Exception {
         final ListService list = new SharepointListService(session, fileid);
         final Path defaultSite = list.list(Home.root(), new DisabledListProgressListener()).find(new SimplePathPredicate(SharepointListService.DEFAULT_NAME));
-        final Path defaultDriveSites = new Path(
-            defaultSite.getSymlinkTarget().withAttributes(PathAttributes.EMPTY), 
-            SharepointListService.DRIVES_CONTAINER, EnumSet.of(AbstractPath.Type.volume));
-        list.list(defaultDriveSites, new DisabledListProgressListener());
+        final Path drives = list.list(defaultSite).find(new SimplePathPredicate(new Path(defaultSite, SharepointListService.DRIVES_NAME.getName(), EnumSet.of(Path.Type.directory))));
+        list.list(drives);
     }
 }
