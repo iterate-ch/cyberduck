@@ -19,7 +19,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
