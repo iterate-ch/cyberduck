@@ -42,9 +42,4 @@ public interface LoginCallback extends ConnectionCallback {
      * @return Selected file or null
      */
     Local select(final Local identity) throws LoginCanceledException;
-
-    @SuppressWarnings("unchecked")
-    default <T> T getFeature(final Class<T> type) {
-        return null;
-    }
 }
