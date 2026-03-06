@@ -21,7 +21,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -29,7 +28,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -83,7 +82,7 @@ public class S3MoveFeature implements Move {
         }
         else {
             try {
-                target = proxy.copy(source, renamed, status, connectionCallback, new DisabledStreamListener());
+                target = proxy.copy(source, renamed, status, connectionCallback, StreamListener.noop);
                 // Copy source path and nullify version id to add a delete marker
                 delete.delete(Collections.singletonMap(new Path(source).withAttributes(new DefaultPathAttributes(source.attributes()).setVersionId(null)), status),
                         connectionCallback, callback);

@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -77,7 +77,7 @@ public class GoogleStorageTimestampFeature implements Timestamp {
                 // You cannot remove Custom-Time once it's been set on an object. Additionally, the value for Custom-Time cannot
                 // decrease. That is, you cannot set Custom-Time to be an earlier date/time than the existing Custom-Time.
                 // You can, however, effectively remove or reset the Custom-Time by rewriting the object.
-                final Path copy = new GoogleStorageCopyFeature(session).copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+                final Path copy = new GoogleStorageCopyFeature(session).copy(file, file, status, new DisabledConnectionCallback(), StreamListener.noop);
                 status.setResponse(copy.attributes());
                 return;
             }

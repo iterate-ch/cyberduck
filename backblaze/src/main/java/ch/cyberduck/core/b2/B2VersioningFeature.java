@@ -24,7 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -61,7 +61,7 @@ public class B2VersioningFeature implements Versioning {
 
     @Override
     public void revert(final Path file) throws BackgroundException {
-        new B2CopyFeature(session, fileid).copy(file, file, new TransferStatus(), new DisabledLoginCallback(), new DisabledStreamListener());
+        new B2CopyFeature(session, fileid).copy(file, file, new TransferStatus(), new DisabledLoginCallback(), StreamListener.noop);
     }
 
     @Override

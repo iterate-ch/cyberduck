@@ -20,8 +20,8 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -54,7 +54,7 @@ public class B2ThresholdCopyFeatureTest extends AbstractB2Test{
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final B2ThresholdCopyFeature feature = new B2ThresholdCopyFeature(session, fileid, 5 * 1000L * 1000L);
         final Path copy = feature.copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), StreamListener.noop);
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
@@ -79,7 +79,7 @@ public class B2ThresholdCopyFeatureTest extends AbstractB2Test{
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final B2ThresholdCopyFeature feature = new B2ThresholdCopyFeature(session, fileid, 5 * 1000L * 1000L);
         final Path copy = feature.copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), StreamListener.noop);
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
