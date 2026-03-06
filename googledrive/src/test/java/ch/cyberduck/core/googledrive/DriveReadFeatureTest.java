@@ -16,7 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -62,7 +62,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new DriveReadFeature(session, new DriveFileIdProvider(session)).read(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new DriveReadFeature(session, new DriveFileIdProvider(session)).read(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
     }
 
     @Test
@@ -79,12 +79,12 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         new DriveUploadFeature(session).upload(
                 new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DriveReadFeature(session, fileid).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new DriveReadFeature(session, fileid).read(test, status.setLength(content.length - 100), ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -100,7 +100,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path file = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("t %s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0, new DriveAttributesFinderFeature(session, fileid).find(file).getSize());
-        final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -112,7 +112,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(directory, String.format("t %s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0, new DriveAttributesFinderFeature(session, fileid).find(file).getSize());
-        final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -124,7 +124,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(directory, String.format("t %s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0, new DriveAttributesFinderFeature(session, fileid).find(file).getSize());
-        final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -141,10 +141,10 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
                 new DriveWriteFeature(session, fileid), new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
-        final HttpResponseOutputStream<File> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = writer.write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
-        final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(test, status, new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(test, status, ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -160,20 +160,20 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
             final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
-            final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
         final Path versioned = new DriveVersioningFeature(session, fileid).list(test, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         assertNotNull(versioned.attributes().getVersionId());
         assertTrue(versioned.attributes().isDuplicate());
         assertEquals(content.length, versioned.attributes().getSize());
-        assertArrayEquals(content, IOUtils.readFully(new DriveReadFeature(session, fileid).read(versioned, new TransferStatus(), new DisabledConnectionCallback()), content.length));
+        assertArrayEquals(content, IOUtils.readFully(new DriveReadFeature(session, fileid).read(versioned, new TransferStatus(), ConnectionCallback.noop), content.length));
         // New version
         {
             final byte[] newcontent = RandomUtils.nextBytes(1045);
             final TransferStatus status = new TransferStatus().setLength(newcontent.length);
             final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
-            final HttpResponseOutputStream<File> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = writer.write(test, status.setExists(true), ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(newcontent), out);
         }
         assertEquals(2, new DriveVersioningFeature(session, fileid).list(test, new DisabledListProgressListener()).size());

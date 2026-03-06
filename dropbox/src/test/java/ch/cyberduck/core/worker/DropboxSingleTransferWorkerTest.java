@@ -17,7 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -70,7 +70,7 @@ public class DropboxSingleTransferWorkerTest extends AbstractDropboxTest {
         final byte[] content = RandomUtils.nextBytes(3986);
         final Checksum checksum = new DropboxChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus());
         final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final HttpResponseOutputStream<Metadata> out = new DropboxWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Metadata> out = new DropboxWriteFeature(session).write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();

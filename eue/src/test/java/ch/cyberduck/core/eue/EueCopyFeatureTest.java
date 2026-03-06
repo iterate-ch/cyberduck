@@ -17,7 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -57,7 +57,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final Path targetFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(AbstractPath.Type.file));
-        final Path copy = new EueCopyFeature(session, fileid).copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+        final Path copy = new EueCopyFeature(session, fileid).copy(sourceFile, targetFile, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
@@ -125,7 +125,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFile = new EueCopyFeature(session, fileid).copy(sourceFile,
-                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
@@ -149,7 +149,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final Path targetFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file));
-        final Path copy = new EueCopyFeature(session, fileid).copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+        final Path copy = new EueCopyFeature(session, fileid).copy(sourceFile, targetFile, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
@@ -181,7 +181,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         assertTrue(new EueFindFeature(session, fileid).find(test));
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), copy, new TransferStatus().setLength(0L));
-        new EueCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), StreamListener.noop);
+        new EueCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true), ConnectionCallback.noop, StreamListener.noop);
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));

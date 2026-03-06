@@ -16,7 +16,7 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -66,11 +66,11 @@ public class DefaultCopyFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setExists(true);
         status.setLength(content.length);
-        final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(source, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new DefaultCopyFeature(session).copy(source, target, new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), StreamListener.noop);
+        new DefaultCopyFeature(session).copy(source, target, new TransferStatus().setLength(content.length), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());

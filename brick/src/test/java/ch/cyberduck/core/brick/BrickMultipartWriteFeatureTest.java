@@ -17,7 +17,7 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -51,7 +51,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, ConnectionCallback.noop);
         final byte[] content = RandomUtils.nextBytes(4 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
@@ -65,7 +65,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         assertEquals(new BrickAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -79,7 +79,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, ConnectionCallback.noop);
         final byte[] content = RandomUtils.nextBytes(56);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
@@ -93,7 +93,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         assertEquals(new BrickAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -107,7 +107,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, ConnectionCallback.noop);
         final byte[] content = RandomUtils.nextBytes(11 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
@@ -121,7 +121,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         assertEquals(new BrickAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -136,7 +136,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -145,7 +145,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

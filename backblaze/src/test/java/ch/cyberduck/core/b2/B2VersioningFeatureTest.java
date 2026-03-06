@@ -17,8 +17,8 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -57,7 +57,7 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
             final byte[] content = RandomUtils.nextBytes(245);
             final TransferStatus status = new TransferStatus().setLength(content.length);
             final B2WriteFeature writer = new B2WriteFeature(session, fileid);
-            final HttpResponseOutputStream<BaseB2Response> out = writer.write(ignored, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<BaseB2Response> out = writer.write(ignored, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
         assertTrue(new B2FindFeature(session, fileid).find(ignored));
@@ -68,7 +68,7 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
         status.setLength(content.length);
         status.setExists(true);
         final B2WriteFeature writer = new B2WriteFeature(session, fileid);
-        final StatusOutputStream<BaseB2Response> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(test.attributes().getVersionId());

@@ -18,7 +18,6 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -82,7 +81,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final B2LargeUploadService upload = new B2LargeUploadService(session, fileid, 5 * 1000L * 1000L, 5);
 
         upload.upload(new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
-                status, new DisabledConnectionCallback());
+                status, ConnectionCallback.noop);
         final PathAttributes attr = new B2AttributesFinderFeature(session, fileid).find(test);
         assertNotEquals(Checksum.NONE, attr.getChecksum());
         assertEquals(checksum, attr.getChecksum());
@@ -91,7 +90,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertEquals(content.length, status.getResponse().getSize());
 
         assertTrue(new DefaultFindFeature(session).find(test));
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), ConnectionCallback.noop);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
         in.close();
@@ -147,7 +146,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertEquals(content.length, new B2AttributesFinderFeature(session, fileid).find(test).getSize());
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -207,7 +206,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertTrue(new B2FindFeature(session, fileid).find(test));
         assertEquals(6 * 1000L * 1000L, new B2AttributesFinderFeature(session, fileid).find(test).getSize(), 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

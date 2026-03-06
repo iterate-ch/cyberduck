@@ -17,7 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -62,9 +62,9 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final String fileid = file.attributes().getFileId();
         delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final Path target = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertThrows(NotfoundException.class, () -> new GraphMoveFeature(session, this.fileid).move(file, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertThrows(NotfoundException.class, () -> new GraphMoveFeature(session, this.fileid).move(file, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
         file.attributes().setFileId(fileid);
-        assertThrows(NotfoundException.class, () -> new GraphMoveFeature(session, this.fileid).move(file, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertThrows(NotfoundException.class, () -> new GraphMoveFeature(session, this.fileid).move(file, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertTrue(move.isSupported(file, Optional.of(rename)));
         final TransferStatus status = new TransferStatus();
         status.setModified(file.attributes().getModificationDate());
-        final Path target = move.move(file, rename, status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path target = move.move(file, rename, status, new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(attributes, target.attributes());
         assertEquals(attributes.getFileId(), target.attributes().getFileId());
         assertEquals(attributes.getModificationDate(), target.attributes().getModificationDate());
@@ -112,7 +112,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
         final TransferStatus status = new TransferStatus();
         status.setModified(touchedFile.attributes().getModificationDate());
-        final Path target = move.move(touchedFile, rename, status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path target = move.move(touchedFile, rename, status, new Delete.DisabledCallback(), ConnectionCallback.noop);
         final PathAttributes renamedAttributes = attributesFinder.find(rename);
         assertNotNull(renamedAttributes);
         assertEquals(attributes, renamedAttributes);
@@ -142,7 +142,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
 
         Path rename = new Path(drive, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
-        move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertNotNull(attributesFinder.find(rename));
 
         delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -167,7 +167,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
 
         Path rename = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
-        move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertNotNull(attributesFinder.find(rename));
 
         delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -178,7 +178,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path temp = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new GraphMoveFeature(session, fileid).move(temp, test, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new GraphMoveFeature(session, fileid).move(temp, test, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         final Find find = new GraphFindFeature(session, fileid);
         final AttributedList<Path> files = new GraphItemListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());
@@ -193,7 +193,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(home, StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
-        new GraphMoveFeature(session, fileid).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new GraphMoveFeature(session, fileid).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

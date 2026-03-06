@@ -18,8 +18,8 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -69,18 +69,18 @@ public class LocalWriteFeatureTest {
             final byte[] content = RandomUtils.nextBytes(length);
             status.setLength(content.length);
             status.setExists(true);
-            final OutputStream out = new LocalWriteFeature(session).write(symlink, status, new DisabledConnectionCallback());
+            final OutputStream out = new LocalWriteFeature(session).write(symlink, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             out.close();
             {
                 final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-                final InputStream in = new LocalReadFeature(session).read(symlink, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+                final InputStream in = new LocalReadFeature(session).read(symlink, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
                 new StreamCopier(status, status).transfer(in, buffer);
                 assertArrayEquals(content, buffer.toByteArray());
             }
             {
                 final byte[] buffer = new byte[0];
-                final InputStream in = new LocalReadFeature(session).read(target, new TransferStatus(), new DisabledConnectionCallback());
+                final InputStream in = new LocalReadFeature(session).read(target, new TransferStatus(), ConnectionCallback.noop);
                 IOUtils.readFully(in, buffer);
                 in.close();
                 assertArrayEquals(new byte[0], buffer);
@@ -99,7 +99,7 @@ public class LocalWriteFeatureTest {
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir.getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new LocalWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
+        new LocalWriteFeature(session).write(test, new TransferStatus(), ConnectionCallback.noop);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class LocalWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(1024L);
             status.setOffset(0L);
-            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
             // Write first 1024
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
@@ -129,13 +129,13 @@ public class LocalWriteFeatureTest {
             status.setLength(content.length - 1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new LocalReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), out);
+        IOUtils.copy(new LocalReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out);
         assertArrayEquals(content, out.toByteArray());
         new LocalDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -155,7 +155,7 @@ public class LocalWriteFeatureTest {
             status.setLength(1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
             out.close();
@@ -167,14 +167,14 @@ public class LocalWriteFeatureTest {
             status.setOffset(0L);
             status.setLength(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
             out.close();
         }
         assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new LocalReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), out);
+        IOUtils.copy(new LocalReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out);
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
@@ -191,12 +191,12 @@ public class LocalWriteFeatureTest {
         final Path test = new Path(workdir, String.format("~$%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2048);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
         new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
         out.flush();
         out.close();
         final ByteArrayOutputStream b = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new LocalReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), b);
+        IOUtils.copy(new LocalReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop), b);
         assertArrayEquals(content, b.toByteArray());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());

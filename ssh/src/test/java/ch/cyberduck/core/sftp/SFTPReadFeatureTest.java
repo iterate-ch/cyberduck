@@ -18,7 +18,7 @@ package ch.cyberduck.core.sftp;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -47,7 +47,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new SFTPReadFeature(session).read(new Path(new SFTPHomeDirectoryService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new SFTPReadFeature(session).read(new Path(new SFTPHomeDirectoryService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         final byte[] content = RandomUtils.nextBytes(length);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -67,7 +67,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, status, ConnectionCallback.noop);
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(in, buffer);
@@ -86,7 +86,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         final byte[] content = RandomUtils.nextBytes(length);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -96,7 +96,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
             status.setLength(content.length);
             status.setAppend(true);
             status.setOffset(100L);
-            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, status, ConnectionCallback.noop);
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
             new StreamCopier(status, status).withLimit(new Long(content.length - 100)).transfer(in, buffer);

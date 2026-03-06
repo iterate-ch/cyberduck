@@ -16,7 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -51,7 +51,7 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
         final byte[] content = RandomUtils.nextBytes(1033);
         status.setLength(content.length);
         status.setModified(1530305150673L);
-        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final PathAttributes response = status.getResponse();
@@ -78,7 +78,7 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
         final String eTagAfterPatch = attrAfterPatch.getETag();
         assertNotEquals(attrAfterRewrite.getETag(), eTagAfterPatch);
         final Path moved = new GoogleStorageMoveFeature(session).move(test, new Path(bucket,
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(1630305150672L, moved.attributes().getModificationDate());
         assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(moved).getModificationDate());
         assertNotEquals(eTagAfterPatch, new GoogleStorageAttributesFinderFeature(session).find(moved).getETag());

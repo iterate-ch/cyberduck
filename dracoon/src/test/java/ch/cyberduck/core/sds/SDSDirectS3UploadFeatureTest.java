@@ -228,7 +228,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
         status.setLength(random.length);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
         final Node node = feature.upload(new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, StreamListener.noop, status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
@@ -267,7 +267,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
         status.setLength(random.length);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
         final Node node = feature.upload(new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, StreamListener.noop, status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
@@ -306,7 +306,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
         status.setLength(random.length);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
         final Node node = feature.upload(new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, StreamListener.noop, status, new DisabledLoginCallback());
         assertTrue(status.isComplete());

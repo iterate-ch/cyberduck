@@ -1,7 +1,7 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -33,7 +33,7 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new AzureReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new AzureReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
-        final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus().setLength(0L), new DisabledConnectionCallback());
+        final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus().setLength(0L), ConnectionCallback.noop);
         assertNotNull(in);
         in.close();
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -53,14 +53,14 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
-        final OutputStream out = new AzureWriteFeature(session).write(test, new TransferStatus().setExists(true).setLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new AzureWriteFeature(session).write(test, new TransferStatus().setExists(true).setLength(content.length), ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content), out);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new AzureReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new AzureReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

@@ -16,8 +16,8 @@ package ch.cyberduck.core.profiles;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListService;
@@ -99,7 +99,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                                 // Read latest version
                                 try(InputStream in = read.read(file.withAttributes(new DefaultPathAttributes(file.attributes())
                                         // Read latest version
-                                        .setVersionId(null)), new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH), new DisabledConnectionCallback()); OutputStream out = local.getOutputStream(false)) {
+                                        .setVersionId(null)), new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH), ConnectionCallback.noop); OutputStream out = local.getOutputStream(false)) {
                                     IOUtils.copy(in, out);
                                 }
                             }

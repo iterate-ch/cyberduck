@@ -15,7 +15,7 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -53,7 +53,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         files.put(new TransferItem(file), status.setLength(1L));
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, files, ConnectionCallback.noop);
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         bulk.query(Transfer.Type.upload, file, status);
@@ -71,7 +71,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         final TransferStatus fileStatus = new TransferStatus().setLength(1L);
         files.put(new TransferItem(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))), fileStatus);
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        final Set<UUID> set = bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
+        final Set<UUID> set = bulk.pre(Transfer.Type.upload, files, ConnectionCallback.noop);
         assertEquals(1, set.size());
         assertEquals(1, bulk.query(Transfer.Type.upload, directory, directoryStatus).size());
         assertEquals(1, bulk.query(Transfer.Type.upload, directory, fileStatus).size());
@@ -82,14 +82,14 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
     public void testPreDownloadNotFound() throws Exception {
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
                 new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))), new TransferStatus().setLength(1L)
-        ), new DisabledConnectionCallback());
+        ), ConnectionCallback.noop);
     }
 
     @Test
     public void testPreDownloadFolderOnly() throws Exception {
         final Set<UUID> keys = new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
             new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory))), new TransferStatus()
-        ), new DisabledConnectionCallback());
+        ), ConnectionCallback.noop);
         assertTrue(keys.isEmpty());
     }
 
@@ -104,7 +104,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
                 // 11GB
                 status.setLength(112640000000L));
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, files, ConnectionCallback.noop);
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         final List<TransferStatus> list = bulk.query(Transfer.Type.upload, file, status);
@@ -116,7 +116,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
             offset += s.getLength();
         }
         try {
-            bulk.pre(Transfer.Type.download, files, new DisabledConnectionCallback());
+            bulk.pre(Transfer.Type.download, files, ConnectionCallback.noop);
             fail();
         }
         catch(BackgroundException e) {
@@ -140,7 +140,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
                 status.setLength(118111600640L)
         );
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, files, ConnectionCallback.noop);
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         for(TransferItem file : files.keySet()) {
@@ -167,7 +167,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         // Clear cache
         bulk.clear();
-        final Set<UUID> uuid = bulk.pre(Transfer.Type.download, files, new DisabledConnectionCallback());
+        final Set<UUID> uuid = bulk.pre(Transfer.Type.download, files, ConnectionCallback.noop);
         assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
         assertEquals(1, uuid.size());

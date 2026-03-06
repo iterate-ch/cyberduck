@@ -3,7 +3,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -43,7 +43,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final OutputStream out = new ThrottledOutputStream(new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback()),
+        final OutputStream out = new ThrottledOutputStream(new SFTPWriteFeature(session).write(test, status, ConnectionCallback.noop),
                 new BandwidthThrottle(102400f));
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -52,13 +52,13 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         assertEquals(content.length, new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 1);
-            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().setAppend(true).setOffset(1L), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().setAppend(true).setOffset(1L), ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(in, buffer);
             final byte[] reference = new byte[content.length - 1];
             System.arraycopy(content, 1, reference, 0, content.length - 1);
@@ -80,7 +80,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         status.setExists(false);
-        final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = new SFTPWriteFeature(session).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         out.write(content);
         out.close();
@@ -89,13 +89,13 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         assertEquals(content.length, new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 1);
-            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().setAppend(true).setOffset(1L), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().setAppend(true).setOffset(1L), ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(in, buffer);
             final byte[] reference = new byte[content.length - 1];
             System.arraycopy(content, 1, reference, 0, content.length - 1);
@@ -119,18 +119,18 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         status.setExists(true);
-        final OutputStream out = new SFTPWriteFeature(session).write(symlink, status, new DisabledConnectionCallback());
+        final OutputStream out = new SFTPWriteFeature(session).write(symlink, status, ConnectionCallback.noop);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new SFTPReadFeature(session).read(symlink, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(symlink, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
         {
             final byte[] buffer = new byte[0];
-            final InputStream in = new SFTPReadFeature(session).read(target, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new SFTPReadFeature(session).read(target, new TransferStatus(), ConnectionCallback.noop);
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(new byte[0], buffer);
@@ -144,7 +144,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
     @Test(expected = NotfoundException.class)
     public void testWriteNotFound() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID(), EnumSet.of(Path.Type.file));
-        new SFTPWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
+        new SFTPWriteFeature(session).write(test, new TransferStatus(), ConnectionCallback.noop);
     }
 
     @Test
@@ -156,7 +156,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(1024L);
             status.setOffset(0L);
-            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
             // Write first 1024
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
@@ -170,13 +170,13 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
             status.setLength(content.length - 1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), out);
+        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out);
         assertArrayEquals(content, out.toByteArray());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -192,7 +192,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
             status.setLength(1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
             out.close();
@@ -205,14 +205,14 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
             status.setOffset(0L);
             status.setLength(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
             out.close();
         }
         assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), out);
+        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out);
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());

@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -80,7 +81,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         }
         final SDSDelegatingCopyFeature feature = new SDSDelegatingCopyFeature(session, nodeid, proxy);
         assertTrue(feature.isSupported(test, Optional.of(copy)));
-        final Path target = feature.copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+        final Path target = feature.copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
         assertEquals(target.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
@@ -99,7 +100,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSDelegatingCopyFeature feature = new SDSDelegatingCopyFeature(session, nodeid, proxy);
         assertFalse(proxy.isSupported(test, Optional.of(copy)));
         assertTrue(feature.isSupported(test, Optional.of(copy)));
-        final Path target = feature.copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+        final Path target = feature.copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
         assertEquals(target.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
@@ -122,7 +123,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), copy, new TransferStatus());
         final SDSDelegatingCopyFeature feature = new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid));
         assertTrue(feature.isSupported(test, Optional.of(copy)));
-        final Path target = feature.copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), StreamListener.noop);
+        final Path target = feature.copy(test, copy, new TransferStatus().setExists(true), ConnectionCallback.noop, StreamListener.noop);
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
         assertEquals(target.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
         final Find find = new DefaultFindFeature(session);
@@ -144,7 +145,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSDelegatingCopyFeature feature = new SDSDelegatingCopyFeature(session, nodeid, proxy);
         assertFalse(proxy.isSupported(test, Optional.of(copy)));
         assertTrue(feature.isSupported(test, Optional.of(copy)));
-        assertNotNull(feature.copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), StreamListener.noop).attributes().getVersionId());
+        assertNotNull(feature.copy(test, copy, new TransferStatus().setExists(true), ConnectionCallback.noop, StreamListener.noop).attributes().getVersionId());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(copy));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -162,7 +163,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path target = new Path(target_parent, directory.getName(), EnumSet.of(Path.Type.directory));
         final SDSDelegatingCopyFeature feature = new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid));
         assertTrue(feature.isSupported(directory, Optional.of(target)));
-        final Path copy = feature.copy(directory, target, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+        final Path copy = feature.copy(directory, target, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertNotNull(copy.attributes().getVersionId());
         assertTrue(new SDSFindFeature(session, nodeid).find(file));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
@@ -181,7 +182,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path target = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room2, source.getName(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final SDSDelegatingCopyFeature feature = new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid));
         assertTrue(feature.isSupported(source, Optional.of(target)));
-        assertNotNull(feature.copy(source, target, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop).attributes().getVersionId());
+        assertNotNull(feature.copy(source, target, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop).attributes().getVersionId());
         assertTrue(new SDSFindFeature(session, nodeid).find(source));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -199,9 +200,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -254,13 +255,13 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         status.setLength(content.length);
         final Path test = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSCopyFeature proxy = new SDSCopyFeature(session, nodeid);
         final SDSDelegatingCopyFeature feature = new SDSDelegatingCopyFeature(session, nodeid, proxy);
-        assertNotNull(feature.copy(test, target, new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), StreamListener.noop).attributes().getVersionId());
+        assertNotNull(feature.copy(test, target, new TransferStatus().setLength(content.length), ConnectionCallback.noop, StreamListener.noop).attributes().getVersionId());
         assertFalse(proxy.isSupported(test, Optional.of(target)));
         assertTrue(feature.isSupported(test, Optional.of(target)));
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
@@ -299,9 +300,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -356,9 +357,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         status.setLength(content.length);
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         test.withAttributes(status.getResponse());

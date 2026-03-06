@@ -18,7 +18,7 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -58,7 +58,7 @@ public class BoxLargeUploadServiceTest extends AbstractBoxTest {
         status.setChecksum(new SHA1ChecksumCompute().compute(local.getInputStream(), new TransferStatus()));
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final File response = s.upload(new BoxWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, new DisabledConnectionCallback());
+        final File response = s.upload(new BoxWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
         assertTrue(status.isComplete());
         assertNotNull(response.getSha1());
         assertEquals(content.length, count.getSent());
@@ -67,7 +67,7 @@ public class BoxLargeUploadServiceTest extends AbstractBoxTest {
         assertTrue(new BoxFindFeature(session, fileid).find(file));
         assertEquals(content.length, new BoxAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];
-        IOUtils.readFully(new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();

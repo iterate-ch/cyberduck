@@ -16,7 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -133,11 +133,11 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         final PathAttributes attributes = new B2AttributesFinderFeature(session, fileid).find(file);
         assertNotSame(PathAttributes.EMPTY, attributes);
         assertEquals(0L, attributes.getSize());
-        new B2ReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback()).close();
+        new B2ReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop).close();
         final Path found = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).find(
                 new SimplePathPredicate(file));
         assertTrue(found.getType().contains(Path.Type.upload));
-        new B2ReadFeature(session, fileid).read(found, new TransferStatus(), new DisabledConnectionCallback()).close();
+        new B2ReadFeature(session, fileid).read(found, new TransferStatus(), ConnectionCallback.noop).close();
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
     }
 

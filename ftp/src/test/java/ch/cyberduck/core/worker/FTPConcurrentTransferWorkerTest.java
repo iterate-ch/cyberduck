@@ -146,7 +146,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledConnectionCallback(), ProgressListener.noop, counter, new DisabledNotificationService()
+                ConnectionCallback.noop, ProgressListener.noop, counter, new DisabledNotificationService()
         );
         assertTrue(worker.run(session));
         local.delete();

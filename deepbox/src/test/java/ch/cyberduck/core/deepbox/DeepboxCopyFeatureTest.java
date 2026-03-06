@@ -16,8 +16,8 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -47,7 +47,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), test, new TransferStatus());
         final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+        new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         try {
             assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new DefaultPathAttributes())));
             assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(new DefaultPathAttributes())));
@@ -94,7 +94,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final PathAttributes originalTestAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(test);
         final PathAttributes originalTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(target);
 
-        new DeepboxCopyFeature(session, fileid).copy(test, target, new TransferStatus().setExists(true), new DisabledConnectionCallback(), StreamListener.noop);
+        new DeepboxCopyFeature(session, fileid).copy(test, target, new TransferStatus().setExists(true), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(targetInTrash));

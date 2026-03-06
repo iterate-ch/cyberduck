@@ -16,7 +16,7 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -48,7 +48,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         // rename file
         final Path fileRenamed = new SMBMoveFeature(session).move(file, new Path(folder,
                         new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(),
-                new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Delete.DisabledCallback(), ConnectionCallback.noop);
 
         assertFalse(new SMBFindFeature(session).find(file));
         assertTrue(new SMBFindFeature(session).find(fileRenamed));
@@ -56,7 +56,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
 
         // rename folder
         final Path folderRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SMBMoveFeature(session).move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SMBMoveFeature(session).move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
 
         assertFalse(new SMBFindFeature(session).find(folder));
         assertTrue(new SMBFindFeature(session).find(folderRenamed));
@@ -74,7 +74,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
                 new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         // rename file
         final Path fileRenamed = new SMBMoveFeature(session).move(file, target, new TransferStatus().setExists(true),
-                new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new SMBFindFeature(session).find(file));
         assertTrue(new SMBFindFeature(session).find(fileRenamed));
         new SMBDeleteFeature(session).delete(Collections.singletonList(fileRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -85,7 +85,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         final Path workdir = new DefaultHomeFinderService(session).find();
         final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SMBMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SMBMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new SMBTouchFeature(session).touch(new SMBWriteFeature(session), new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
-        new SMBMoveFeature(session).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SMBMoveFeature(session).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         new SMBDeleteFeature(session).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

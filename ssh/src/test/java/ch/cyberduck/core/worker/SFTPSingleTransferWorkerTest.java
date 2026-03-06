@@ -20,7 +20,6 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -209,7 +208,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         final byte[] content = RandomUtils.nextBytes(8576);
         status.setLength(content.length);
         status.setExists(false);
-        final OutputStream out = new SFTPWriteFeature(session).write(remotefile, status, new DisabledConnectionCallback());
+        final OutputStream out = new SFTPWriteFeature(session).write(remotefile, status, ConnectionCallback.noop);
         assertNotNull(out);
         out.write(content);
         out.close();

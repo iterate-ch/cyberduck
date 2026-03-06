@@ -16,7 +16,7 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -59,11 +59,11 @@ public class DefaultCopyFeatureTest extends AbstractSFTPTest {
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        final OutputStream out = new SFTPWriteFeature(session).write(source, status, new DisabledConnectionCallback());
+        final OutputStream out = new SFTPWriteFeature(session).write(source, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new DefaultCopyFeature(session).copy(source, target, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+        new DefaultCopyFeature(session).copy(source, target, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());

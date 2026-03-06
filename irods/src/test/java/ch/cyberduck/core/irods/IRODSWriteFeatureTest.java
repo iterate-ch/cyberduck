@@ -17,9 +17,9 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -79,21 +79,21 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
 
         final byte[] content = RandomUtils.nextBytes(68400);
 
-        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
-        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().setAppend(false).setLength(content.length), ConnectionCallback.noop);
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().setAppend(false).setLength(content.length), ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
         // Error code received from iRODS:-23000
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
 
         {
-            final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus(), ConnectionCallback.noop);
             final byte[] buffer1 = new byte[content.length];
             IOUtils.readFully(in1, buffer1);
             in1.close();
             assertArrayEquals(content, buffer1);
         }
         {
-            final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus(), ConnectionCallback.noop);
             final byte[] buffer2 = new byte[content.length];
             IOUtils.readFully(in2, buffer2);
             in2.close();
@@ -134,8 +134,8 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
 
         final byte[] content = RandomUtils.nextBytes(68400);
 
-        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
-        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().setAppend(false).setLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().setAppend(false).setLength(content.length), ConnectionCallback.noop);
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().setAppend(false).setLength(content.length), ConnectionCallback.noop);
         new Thread(() -> {
             try {
                 new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
@@ -172,7 +172,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
             @Override
             public void run() {
                 try {
-                    final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus(), new DisabledConnectionCallback());
+                    final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus(), ConnectionCallback.noop);
                     final byte[] buffer1 = new byte[content.length];
                     IOUtils.readFully(in1, buffer1);
                     in1.close();
@@ -190,7 +190,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
             @Override
             public void run() {
                 try {
-                    final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus(), new DisabledConnectionCallback());
+                    final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus(), ConnectionCallback.noop);
                     final byte[] buffer2 = new byte[content.length];
                     IOUtils.readFully(in2, buffer2);
                     in2.close();
@@ -242,7 +242,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
 
             assertEquals(0L, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
-            final StatusOutputStream<Void> out = feature.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = feature.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -251,7 +251,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
             final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(content.length, attributes.getSize());
 
-            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), ConnectionCallback.noop);
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(in, buffer);
             in.close();
@@ -269,7 +269,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
             assertTrue(new IRODSUploadFeature(session).append(test, status).append);
             assertEquals(content.length, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
-            final StatusOutputStream<Void> out = feature.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = feature.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
@@ -278,7 +278,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
             final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(newcontent.length, attributes.getSize());
 
-            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), ConnectionCallback.noop);
             final byte[] buffer = new byte[newcontent.length];
             IOUtils.readFully(in, buffer);
             in.close();
@@ -315,7 +315,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         final IRODSWriteFeature feature = new IRODSWriteFeature(session);
         assertEquals(0L, new IRODSUploadFeature(session).append(test, status).offset, 0L);
 
-        final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -324,7 +324,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
 
-        final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), ConnectionCallback.noop);
         final byte[] buffer = new byte[content.length];
         IOUtils.readFully(in, buffer);
         in.close();
@@ -343,7 +343,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         assertTrue(new IRODSUploadFeature(session).append(test, status_append).append);
         assertEquals(status.getLength(), new IRODSUploadFeature(session).append(test, status_append).offset, 0L);
 
-        final OutputStream out_append = feature.write(test, status_append, new DisabledConnectionCallback());
+        final OutputStream out_append = feature.write(test, status_append, ConnectionCallback.noop);
         assertNotNull(out_append);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content_append), out_append);
@@ -352,7 +352,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         final PathAttributes attributes_complete = new IRODSAttributesFinderFeature(session).find(test);
         assertEquals(content.length + content_append.length, attributes_complete.getSize());
 
-        final InputStream in_append = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in_append = session.getFeature(Read.class).read(test, new TransferStatus(), ConnectionCallback.noop);
         final byte[] buffer_complete = new byte[content.length + content_append.length];
         IOUtils.readFully(in_append, buffer_complete);
         in_append.close();

@@ -18,7 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CacheReference;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -66,7 +66,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             status.setCreated(1695160857860L);
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
-            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, ConnectionCallback.noop);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             fileid = out.getStatus().getId();
             assertNotNull(fileid);
@@ -79,7 +79,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertEquals(1695160857860L, attributes.getCreationDate());
             assertEquals(content.length, attributes.getSize());
             final byte[] buffer = new byte[content.length];
-            final InputStream in = new DriveReadFeature(session, idProvider).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new DriveReadFeature(session, idProvider).read(test, new TransferStatus(), ConnectionCallback.noop);
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);
@@ -94,7 +94,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             status.setExists(true);
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
-            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, ConnectionCallback.noop);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             assertEquals(fileid, out.getStatus().getId());
             final PathAttributes attributes = new DriveListService(session, idProvider).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
@@ -115,7 +115,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         {
             final byte[] content = RandomUtils.nextBytes(2048);
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, ConnectionCallback.noop);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             final String fileid = out.getStatus().getId();
             assertNotNull(fileid);
@@ -128,7 +128,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             // Add file with same name
             final byte[] content = RandomUtils.nextBytes(1024);
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, ConnectionCallback.noop);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             final String fileid = out.getStatus().getId();
             final PathAttributes attributes = new DriveAttributesFinderFeature(session, idProvider).find(test);

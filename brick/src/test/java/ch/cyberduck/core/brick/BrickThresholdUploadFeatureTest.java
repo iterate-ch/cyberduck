@@ -17,7 +17,7 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -61,7 +61,7 @@ public class BrickThresholdUploadFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
@@ -88,7 +88,7 @@ public class BrickThresholdUploadFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();

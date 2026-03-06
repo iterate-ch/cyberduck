@@ -16,7 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -58,19 +58,19 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final DriveUploadFeature upload = new DriveUploadFeature(session);
         upload.upload(new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
-            status, new DisabledConnectionCallback());
+                status, ConnectionCallback.noop);
         test.attributes().setFileId(fileid.getFileId(test));
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
         assertEquals(content.length, upload.append(test, status.setRemote(new DriveAttributesFinderFeature(session, fileid).find(test))).offset, 0L);
         {
             final byte[] buffer = new byte[content.length];
-            IOUtils.readFully(new DriveReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
+            IOUtils.readFully(new DriveReadFeature(session, fileid).read(test, new TransferStatus(), ConnectionCallback.noop), buffer);
             assertArrayEquals(content, buffer);
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DriveReadFeature(session, fileid).read(test, new TransferStatus().setLength(content.length).setAppend(true).setOffset(1L), new DisabledConnectionCallback());
+            final InputStream in = new DriveReadFeature(session, fileid).read(test, new TransferStatus().setLength(content.length).setAppend(true).setOffset(1L), ConnectionCallback.noop);
             IOUtils.readFully(in, buffer);
             IOUtils.closeQuietly(in);
             final byte[] reference = new byte[content.length - 1];

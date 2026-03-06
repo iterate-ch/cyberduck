@@ -17,7 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -84,7 +84,7 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus().setLength(content.length).setModified(ts);
         final Checksum checksum = new EueWriteFeature(session, fileid).checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         status.setChecksum(checksum);
-        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = new EueWriteFeature(session, fileid).write(file, status.setExists(true), new DisabledConnectionCallback());
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = new EueWriteFeature(session, fileid).write(file, status.setExists(true), ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();

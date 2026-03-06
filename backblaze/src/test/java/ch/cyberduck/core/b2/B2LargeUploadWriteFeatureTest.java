@@ -16,7 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -54,7 +54,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         status.setLength(-1L);
         status.setModified(1503654614004L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<BaseB2Response> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> out = feature.write(file, status, ConnectionCallback.noop);
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copy(in, out));
@@ -63,7 +63,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertEquals(content.length, ((B2FinishLargeFileResponse) out.getStatus()).getContentLength(), 0L);
         assertTrue(new B2FindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -80,7 +80,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         status.setLength(-1L);
         status.setModified(1503654614004L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<BaseB2Response> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> out = feature.write(file, status, ConnectionCallback.noop);
         final byte[] content = RandomUtils.nextBytes(2 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copy(in, out));
@@ -89,7 +89,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertEquals(content.length, ((B2FileResponse) out.getStatus()).getContentLength(), 0L);
         assertTrue(new B2FindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -107,7 +107,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         status.setLength(-1L);
         status.setModified(1503654614004L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<BaseB2Response> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -116,7 +116,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertEquals(content.length, ((B2FileResponse) out.getStatus()).getContentLength(), 0L);
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);

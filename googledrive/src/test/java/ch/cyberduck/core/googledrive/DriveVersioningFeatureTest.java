@@ -17,8 +17,8 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -64,7 +64,7 @@ public class DriveVersioningFeatureTest extends AbstractDriveTest {
             status.setLength(content.length);
             status.setExists(true);
             final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
-            final StatusOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNull(attr.toAttributes(out.getStatus()).getVersionId());
             final AttributedList<Path> versions = feature.list(test.withAttributes(attr.toAttributes(out.getStatus())), new DisabledListProgressListener());
@@ -79,7 +79,7 @@ public class DriveVersioningFeatureTest extends AbstractDriveTest {
             status.setLength(content.length);
             status.setExists(true);
             final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
-            final StatusOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNull(attr.toAttributes(out.getStatus()).getVersionId());
             final List<Path> versions = feature.list(test.withAttributes(attr.toAttributes(out.getStatus())), new DisabledListProgressListener()).toList();

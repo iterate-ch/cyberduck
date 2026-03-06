@@ -18,7 +18,7 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -56,7 +56,7 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final EueWriteFeature.Chunk uploadResponse = s.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, new DisabledConnectionCallback());
+        final EueWriteFeature.Chunk uploadResponse = s.upload(new EueWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
         assertEquals(PathAttributes.EMPTY, status.getResponse());
@@ -64,7 +64,7 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];
-        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();

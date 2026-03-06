@@ -16,7 +16,7 @@ package ch.cyberduck.core.dav.microsoft;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -69,7 +69,7 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractMicrosoftIISDAVTest 
         new DAVUploadFeature(session).upload(
                 new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final ExecutorService service = Executors.newCachedThreadPool();
         final BlockingQueue<Future<Void>> queue = new LinkedBlockingQueue<>();
         final CompletionService<Void> completion = new ExecutorCompletionService<>(service, queue);
@@ -82,7 +82,7 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractMicrosoftIISDAVTest 
                     assertEquals(content.length, new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
                     final TransferStatus status = new TransferStatus();
                     status.setLength(-1L);
-                    final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, status, new DisabledConnectionCallback());
+                    final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, status, ConnectionCallback.noop);
                     assertNotNull(in);
                     final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
                     new StreamCopier(status, status).transfer(in, buffer);

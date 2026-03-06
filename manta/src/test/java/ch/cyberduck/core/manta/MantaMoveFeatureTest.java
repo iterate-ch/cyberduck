@@ -16,7 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -52,7 +52,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         assertNotNull(attributesFinder.find(file));
         Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(file, Optional.of(rename)));
-        assertEquals(rename, move.move(file, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertEquals(rename, move.move(file, rename, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
         assertFalse(new MantaFindFeature(session).find(file));
         assertTrue(new MantaFindFeature(session).find(rename));
         assertNotNull(attributesFinder.find(rename));
@@ -75,7 +75,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         assertNotNull(attributesFinder.find(touchedFile));
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
-        assertEquals(rename, move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertEquals(rename, move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
         assertNotNull(attributesFinder.find(rename));
         assertFalse(new MantaFindFeature(session).find(touchedFile));
         assertTrue(new MantaFindFeature(session).find(rename));
@@ -98,7 +98,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         assertNotNull(attributesFinder.find(touchedFile));
         Path rename = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, Optional.of(rename)));
-        assertEquals(rename, move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertEquals(rename, move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
         assertNotNull(attributesFinder.find(rename));
         assertFalse(new MantaFindFeature(session).find(touchedFile));
         assertTrue(new MantaFindFeature(session).find(rename));

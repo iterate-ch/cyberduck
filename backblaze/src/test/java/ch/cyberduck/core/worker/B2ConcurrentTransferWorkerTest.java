@@ -16,8 +16,8 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -171,7 +171,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
             public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) {
                 return true;
             }
-        }, new DisabledConnectionCallback(), ProgressListener.noop, counter, new DisabledNotificationService());
+        }, ConnectionCallback.noop, ProgressListener.noop, counter, new DisabledNotificationService());
 
         assertTrue(worker.run(session));
         local.delete();

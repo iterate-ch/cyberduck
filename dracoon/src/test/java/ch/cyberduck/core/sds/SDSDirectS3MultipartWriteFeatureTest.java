@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -63,7 +64,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new NullInputStream(0L), out);
         assertEquals(0L, out.getStatus().getSize(), 0L);
@@ -86,7 +87,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             status.setCreated(1L);
             status.setModified(1632127025217L);
-            final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertEquals(content.length, out.getStatus().getSize(), 0L);
@@ -100,7 +101,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         assertEquals(1632127025217L, attr.getModificationDate());
         assertEquals(1632127025217L, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -111,7 +112,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-            final StatusOutputStream<Node> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status.setExists(true), ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertNotEquals(previousVersion, new SDSAttributesAdapter(session).toAttributes(out.getStatus()).getVersionId());
@@ -119,7 +120,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         // Read with previous version must fail
         try {
             test.attributes().setVersionId(previousVersion);
-            new SDSReadFeature(session, nodeid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            new SDSReadFeature(session, nodeid).read(test, new TransferStatus(), ConnectionCallback.noop);
             fail();
         }
         catch(NotfoundException e) {
@@ -141,7 +142,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             status.setLength(content.length);
             status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             status.setModified(1632127025217L);
-            final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertEquals(content.length, out.getStatus().getSize(), 0L);
@@ -170,7 +171,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
-            final StatusOutputStream<Node> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status.setExists(true), ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertNotEquals(previousVersion, new SDSAttributesAdapter(session).toAttributes(out.getStatus()).getVersionId());
