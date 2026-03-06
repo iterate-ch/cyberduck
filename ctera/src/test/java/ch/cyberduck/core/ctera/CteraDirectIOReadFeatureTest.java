@@ -19,10 +19,10 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultVersionIdProvider;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.features.Delete;
@@ -61,7 +61,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
@@ -90,7 +90,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus().setLength(content.length);

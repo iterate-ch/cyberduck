@@ -23,11 +23,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
@@ -81,7 +81,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             final BytecountStreamListener count = new BytecountStreamListener();
             new IRODSUploadFeature(session).upload(
-                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
+                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count,
                     status,
                     new DisabledConnectionCallback());
             assertEquals(content.length / 2, count.getSent());
@@ -89,7 +89,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             new IRODSUploadFeature(session).upload(
-                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
                     new DisabledConnectionCallback());
             assertEquals(content.length / 2, status.getOffset());
@@ -126,7 +126,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         new IRODSUploadFeature(session).upload(
-                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, new DisabledConnectionCallback());
         assertTrue(status.isComplete());
         assertEquals(content.length, count.getSent());
         final byte[] buffer = new byte[content.length];
@@ -161,7 +161,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         new IRODSUploadFeature(session).upload(
                 new IRODSWriteFeature(session), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new DisabledStreamListener() {
                     @Override
                     public void sent(final long bytes) {
@@ -206,7 +206,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         new IRODSUploadFeature(session).upload(
                 new IRODSWriteFeature(session), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new DisabledStreamListener() {
                     @Override
                     public void sent(final long bytes) {

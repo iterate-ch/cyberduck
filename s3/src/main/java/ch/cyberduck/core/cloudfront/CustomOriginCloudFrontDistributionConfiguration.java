@@ -21,17 +21,16 @@ package ch.cyberduck.core.cloudfront;
 import ch.cyberduck.core.DefaultWebUrlProvider;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -64,7 +63,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     }
 
     private <T> T connected(final Connected<T> run, final LoginCallback prompt) throws BackgroundException {
-        new LoginConnectionService(prompt, new DisabledHostKeyCallback(), PasswordStoreFactory.get(), new DisabledProgressListener())
+        new LoginConnectionService(prompt, new DisabledHostKeyCallback(), PasswordStoreFactory.get(), ProgressListener.noop)
             .check(session, new DisabledCancelCallback());
         return run.call();
     }

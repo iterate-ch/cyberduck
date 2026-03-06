@@ -24,11 +24,11 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
@@ -138,7 +138,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         new LoginConnectionService(new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                ProgressListener.noop).connect(session, new DisabledCancelCallback());
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(host, test, local);
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -147,7 +147,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -182,7 +182,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -220,7 +220,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();

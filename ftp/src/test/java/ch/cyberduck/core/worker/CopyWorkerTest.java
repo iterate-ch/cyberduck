@@ -21,10 +21,10 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPDirectoryFeature;
 import ch.cyberduck.core.ftp.FTPSession;
@@ -59,11 +59,11 @@ public class CopyWorkerTest extends AbstractFTPTest {
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).setCredentials(new Credentials("test", "test")));
         copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), ProgressListener.noop, new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -80,11 +80,11 @@ public class CopyWorkerTest extends AbstractFTPTest {
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).setCredentials(new Credentials("test", "test")));
         copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), ProgressListener.noop, new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
         assertTrue(new DefaultFindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -102,12 +102,12 @@ public class CopyWorkerTest extends AbstractFTPTest {
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).setCredentials(new Credentials("test", "test")));
         copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), ProgressListener.noop, new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DefaultFindFeature(session).find(targetFolder));
         assertTrue(new DefaultFindFeature(session).find(targetFile));
         assertTrue(new DefaultFindFeature(session).find(folder));
         assertTrue(new DefaultFindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), ProgressListener.noop).run(session);
     }
 }

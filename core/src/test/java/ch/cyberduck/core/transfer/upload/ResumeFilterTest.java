@@ -2,7 +2,6 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
@@ -10,7 +9,7 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullUploadFeature;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -47,7 +46,7 @@ public class ResumeFilterTest {
                     }
                 };
             }
-        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), ProgressListener.noop));
     }
 
     @Test
@@ -90,7 +89,7 @@ public class ResumeFilterTest {
                 };
             }
 
-        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), ProgressListener.noop));
     }
 
     @Test
@@ -100,7 +99,7 @@ public class ResumeFilterTest {
                 new UploadFilterOptions(host).withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(7L);
-        final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().setExists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().setExists(true), ProgressListener.noop);
         assertFalse(status.isAppend());
         assertFalse(status.isExists());
         assertNotNull(status.getRename().remote);
@@ -136,7 +135,7 @@ public class ResumeFilterTest {
             public boolean isFile() {
                 return true;
             }
-        }, new TransferStatus().setExists(true), new DisabledProgressListener());
+        }, new TransferStatus().setExists(true), ProgressListener.noop);
         assertTrue(status.isAppend());
         assertTrue(status.isExists());
         // Temporary target
@@ -180,7 +179,7 @@ public class ResumeFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), ProgressListener.noop));
     }
 
     @Test
@@ -221,11 +220,11 @@ public class ResumeFilterTest {
                 return true;
             }
         };
-        assertTrue(f.accept(t, l, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        assertTrue(f.accept(t, l, new TransferStatus().setExists(true), ProgressListener.noop));
         // Remaining length to transfer is 1
-        assertEquals(1L, f.prepare(t, l, new TransferStatus().setExists(true), new DisabledProgressListener()).getLength());
+        assertEquals(1L, f.prepare(t, l, new TransferStatus().setExists(true), ProgressListener.noop).getLength());
         // Skip first 2 bytes
-        assertEquals(2L, f.prepare(t, l, new TransferStatus().setExists(true), new DisabledProgressListener()).getOffset());
+        assertEquals(2L, f.prepare(t, l, new TransferStatus().setExists(true), ProgressListener.noop).getOffset());
     }
 
     @Test
@@ -265,7 +264,7 @@ public class ResumeFilterTest {
                 return true;
             }
         };
-        assertTrue(f.accept(t, l, new TransferStatus().setExists(true), new DisabledProgressListener()));
-        assertFalse(f.prepare(t, l, new TransferStatus().setExists(true), new DisabledProgressListener()).isAppend());
+        assertTrue(f.accept(t, l, new TransferStatus().setExists(true), ProgressListener.noop));
+        assertFalse(f.prepare(t, l, new TransferStatus().setExists(true), ProgressListener.noop).isAppend());
     }
 }

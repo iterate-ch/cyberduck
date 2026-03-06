@@ -23,12 +23,12 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
@@ -94,7 +94,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         assertEquals(unknown, new S3LocationFeature(session, cache).getLocation(new Path("/", EnumSet.of(Path.Type.directory))));

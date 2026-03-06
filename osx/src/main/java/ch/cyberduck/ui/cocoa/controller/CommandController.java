@@ -33,7 +33,7 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -134,7 +134,7 @@ public class CommandController extends SheetController implements TranscriptList
                 @Override
                 public Void run(final Session<?> session) throws BackgroundException {
                     final Command feature = session.getFeature(Command.class);
-                    feature.send(command, new DisabledProgressListener(), CommandController.this);
+                    feature.send(command, ProgressListener.noop, CommandController.this);
                     return null;
                 }
 

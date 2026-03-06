@@ -121,7 +121,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         };
         final S3Session session = new S3Session(host);
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session, acl).mkdir(
@@ -242,7 +242,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
         new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(
                 new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());

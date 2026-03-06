@@ -20,9 +20,9 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
@@ -93,7 +93,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         writeStatus.setLength(content.length);
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BytecountStreamListener counter = new BytecountStreamListener();
-        service.upload(new CryptoWriteFeature<>(session, new B2WriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
+        service.upload(new CryptoWriteFeature<>(session, new B2WriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, counter, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(test));
@@ -129,7 +129,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         IOUtils.write(content, local.getOutputStream(false));
         final BytecountStreamListener counter = new BytecountStreamListener();
-        service.upload(new CryptoWriteFeature<>(session, new B2WriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), counter, writeStatus, new DisabledConnectionCallback());
+        service.upload(new CryptoWriteFeature<>(session, new B2WriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, counter, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, counter.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(test));

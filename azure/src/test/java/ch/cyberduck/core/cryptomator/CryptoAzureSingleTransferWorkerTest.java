@@ -19,11 +19,11 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureAttributesFinderFeature;
@@ -100,7 +100,7 @@ public class CryptoAzureSingleTransferWorkerTest extends AbstractAzureTest {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()).run(session));
+        }, new DisabledTransferErrorCallback(), ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()).run(session));
         assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(dir1));
         assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new AzureAttributesFinderFeature(session)).find(file1).getSize());
         {

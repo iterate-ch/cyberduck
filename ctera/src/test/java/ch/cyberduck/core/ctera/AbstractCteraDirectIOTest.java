@@ -19,9 +19,9 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -55,7 +55,7 @@ public class AbstractCteraDirectIOTest extends VaultTest {
         PreferencesFactory.get().setDefault("ctera.download.directio.enable", String.valueOf(true));
         session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), new TestPasswordStore());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new TestPasswordStore(), new DisabledProgressListener(), new DisabledProxyFinder());
+                new TestPasswordStore(), ProgressListener.noop, new DisabledProxyFinder());
         connect.check(session, new DisabledCancelCallback());
     }
 }

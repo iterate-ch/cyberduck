@@ -5,13 +5,13 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -117,7 +117,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         try {
             login.connect(session, new DisabledCancelCallback());
         }
@@ -189,7 +189,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-            new DisabledProgressListener());
+                ProgressListener.noop);
         login.connect(session, new DisabledCancelCallback());
     }
 
@@ -209,7 +209,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         try {
             login.check(session, new DisabledCancelCallback());
         }
@@ -246,7 +246,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 }
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         login.connect(session, new DisabledCancelCallback());
         assertTrue(change.get());
     }

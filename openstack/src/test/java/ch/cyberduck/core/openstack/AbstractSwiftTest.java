@@ -19,10 +19,10 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -63,7 +63,7 @@ public abstract class AbstractSwiftTest extends VaultTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new TestPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
     }
 }

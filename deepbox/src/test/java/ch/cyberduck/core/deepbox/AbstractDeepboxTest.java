@@ -19,11 +19,11 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -90,7 +90,7 @@ public class AbstractDeepboxTest extends VaultTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new TestPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
         return session;
     }

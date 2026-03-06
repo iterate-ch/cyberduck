@@ -1,11 +1,11 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
@@ -30,7 +30,7 @@ public class RenameFilterTest {
             }
         };
         final Path t = new Path(name, EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(t, local, new TransferStatus().setExists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(t, local, new TransferStatus().setExists(true), ProgressListener.noop);
         assertNotNull(status.getRename().local);
         assertEquals(String.format("%s-1", name), status.getRename().local.getName());
     }
@@ -57,8 +57,9 @@ public class RenameFilterTest {
         };
         final Path directory = new Path("t", EnumSet.of(Path.Type.directory));
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
-        final TransferStatus directoryStatus = f.prepare(directory, local, new TransferStatus().setExists(true), new DisabledProgressListener());
-        final TransferStatus fileStatus = f.prepare(file, new NullLocal(local, "f"), directoryStatus, new DisabledProgressListener());
+        final TransferStatus directoryStatus = f.prepare(directory, local, new TransferStatus().setExists(true),
+                ProgressListener.noop);
+        final TransferStatus fileStatus = f.prepare(file, new NullLocal(local, "f"), directoryStatus, ProgressListener.noop);
         assertNotNull(fileStatus.getRename().local);
         final String s = System.getProperty("file.separator");
         assertEquals(String.format("%stmp%st-1%s%s", s, s, s, name), fileStatus.getRename().local.getAbsolute());

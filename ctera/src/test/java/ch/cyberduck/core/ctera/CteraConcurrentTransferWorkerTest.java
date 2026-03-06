@@ -19,11 +19,11 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
@@ -69,7 +69,7 @@ public class CteraConcurrentTransferWorkerTest extends AbstractCteraDirectIOTest
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         final Transfer download = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
@@ -80,7 +80,7 @@ public class CteraConcurrentTransferWorkerTest extends AbstractCteraDirectIOTest
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledConnectionCallback(), new DisabledProgressListener(), bytecount, new DisabledNotificationService()).run(session));
+        }, new DisabledTransferErrorCallback(), new DisabledConnectionCallback(), ProgressListener.noop, bytecount, new DisabledNotificationService()).run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         assertEquals(content.length, bytecount.getRecv());
         new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -97,7 +97,7 @@ public class CteraConcurrentTransferWorkerTest extends AbstractCteraDirectIOTest
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
         assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         final Transfer download = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
@@ -108,7 +108,7 @@ public class CteraConcurrentTransferWorkerTest extends AbstractCteraDirectIOTest
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledConnectionCallback(), new DisabledProgressListener(), bytecount, new DisabledNotificationService()).run(session));
+        }, new DisabledTransferErrorCallback(), new DisabledConnectionCallback(), ProgressListener.noop, bytecount, new DisabledNotificationService()).run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         assertEquals(content.length, bytecount.getRecv());
         new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

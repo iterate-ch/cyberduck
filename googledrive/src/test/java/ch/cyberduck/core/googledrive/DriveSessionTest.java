@@ -20,11 +20,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -74,7 +74,7 @@ public class DriveSessionTest extends AbstractDriveTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()
+                new DisabledPasswordStore(), ProgressListener.noop
         ).connect(session, new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();

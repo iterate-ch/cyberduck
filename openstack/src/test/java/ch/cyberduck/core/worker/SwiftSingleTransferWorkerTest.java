@@ -21,11 +21,11 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.notification.DisabledNotificationService;
@@ -124,7 +124,7 @@ public class SwiftSingleTransferWorkerTest extends VaultTest {
         new LoginConnectionService(new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new TestPasswordStore(),
-                new DisabledProgressListener()).check(session, new DisabledCancelCallback());
+                ProgressListener.noop).check(session, new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -136,7 +136,7 @@ public class SwiftSingleTransferWorkerTest extends VaultTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();

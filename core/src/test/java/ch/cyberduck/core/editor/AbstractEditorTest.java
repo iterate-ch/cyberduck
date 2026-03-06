@@ -18,12 +18,12 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.Application;
@@ -75,7 +75,7 @@ public class AbstractEditorTest {
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         file.attributes().setSize("content".getBytes().length);
-        final AbstractEditor editor = new AbstractEditor(host, file, new DisabledProgressListener()) {
+        final AbstractEditor editor = new AbstractEditor(host, file, ProgressListener.noop) {
             @Override
             public void close() {
                 //

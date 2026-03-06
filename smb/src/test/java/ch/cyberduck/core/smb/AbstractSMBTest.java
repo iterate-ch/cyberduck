@@ -20,10 +20,10 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -66,7 +66,7 @@ public abstract class AbstractSMBTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
     }
 

@@ -1,13 +1,13 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -44,10 +44,10 @@ public class RenameExistingFilterTest {
             }
         };
         final Path p = new Path(name, EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(p, local, new TransferStatus(), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus(), ProgressListener.noop);
         assertNull(status.getRename().local);
         assertFalse(status.isExists());
-        f.apply(p, local, new TransferStatus(), new DisabledProgressListener());
+        f.apply(p, local, new TransferStatus(), ProgressListener.noop);
     }
 
     @Test
@@ -59,10 +59,10 @@ public class RenameExistingFilterTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(RandomUtils.nextBytes(1)),
             local.getOutputStream(false));
         final Path p = new Path(name, EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(p, local, new TransferStatus().setExists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus().setExists(true), ProgressListener.noop);
         assertTrue(status.isExists());
         assertNull(status.getRename().local);
-        f.apply(p, local, status, new DisabledProgressListener());
+        f.apply(p, local, status, ProgressListener.noop);
         assertEquals(name, local.getName());
         assertFalse(status.isExists());
     }
@@ -80,10 +80,10 @@ public class RenameExistingFilterTest {
         };
         new DefaultLocalTouchFeature().touch(local);
         final Path p = new Path(name, EnumSet.of(Path.Type.file));
-        final TransferStatus status = f.prepare(p, local, new TransferStatus().setExists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(p, local, new TransferStatus().setExists(true), ProgressListener.noop);
         assertTrue(status.isExists());
         assertNull(status.getRename().local);
-        f.apply(p, local, status, new DisabledProgressListener());
+        f.apply(p, local, status, ProgressListener.noop);
         assertEquals(name, local.getName());
         assertTrue(status.isExists());
         local.delete();

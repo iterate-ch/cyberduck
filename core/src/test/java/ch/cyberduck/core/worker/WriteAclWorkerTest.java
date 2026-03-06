@@ -1,10 +1,10 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -23,7 +23,7 @@ public class WriteAclWorkerTest {
     @Test
     public void testRunNoFiles() throws Exception {
         final Acl acl = new Acl();
-        final WriteAclWorker worker = new WriteAclWorker(Collections.emptyList(), acl, true, new DisabledProgressListener()) {
+        final WriteAclWorker worker = new WriteAclWorker(Collections.emptyList(), acl, true, ProgressListener.noop) {
             @Override
             public void cleanup(final Boolean result) {
                 //
@@ -66,7 +66,7 @@ public class WriteAclWorkerTest {
     public void testRunEmpty() throws Exception {
         final Acl acl = new Acl();
         final Path t = new Path("/t", EnumSet.of(Path.Type.file));
-        final WriteAclWorker worker = new WriteAclWorker(Collections.singletonList(t), acl, true, new DisabledProgressListener()) {
+        final WriteAclWorker worker = new WriteAclWorker(Collections.singletonList(t), acl, true, ProgressListener.noop) {
             @Override
             public void cleanup(final Boolean result) {
                 //
@@ -110,7 +110,7 @@ public class WriteAclWorkerTest {
         final Acl acl = new Acl(new Acl.EmailUser(), new Acl.Role("r"));
         final Path t = new Path("/t", EnumSet.of(Path.Type.file));
         final AtomicBoolean set = new AtomicBoolean();
-        final WriteAclWorker worker = new WriteAclWorker(Collections.singletonList(t), acl, true, new DisabledProgressListener()) {
+        final WriteAclWorker worker = new WriteAclWorker(Collections.singletonList(t), acl, true, ProgressListener.noop) {
             @Override
             public void cleanup(final Boolean result) {
                 //

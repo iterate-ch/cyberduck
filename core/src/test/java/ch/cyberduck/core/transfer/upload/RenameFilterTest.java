@@ -1,13 +1,13 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -27,7 +27,7 @@ public class RenameFilterTest {
     public void testPrepare() throws Exception {
         RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
-        f.prepare(t, new NullLocal("t"), new TransferStatus(), new DisabledProgressListener());
+        f.prepare(t, new NullLocal("t"), new TransferStatus(), ProgressListener.noop);
         assertNotSame("t", t.getName());
     }
 
@@ -55,10 +55,10 @@ public class RenameFilterTest {
         final RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), session,
                 find, attributes,
                 new UploadFilterOptions(session.getHost()).withTemporary(true));
-        final TransferStatus status = f.prepare(file, new NullLocal("t/f"), new TransferStatus().setExists(true), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(file, new NullLocal("t/f"), new TransferStatus().setExists(true), ProgressListener.noop);
         assertTrue(found.get());
         assertFalse(status.isExists());
-        f.apply(file, new NullLocal("t/f"), status, new DisabledProgressListener());
+        f.apply(file, new NullLocal("t/f"), status, ProgressListener.noop);
         assertNotNull(status.getDisplayname().remote);
         assertNotEquals(file, status.getRename().remote);
         assertFalse(status.isExists());
@@ -94,18 +94,18 @@ public class RenameFilterTest {
         };
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         final RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), session, find, attributes);
-        final TransferStatus directoryStatus = f.prepare(directory, new NullLocal("t"), new TransferStatus().setExists(true), new DisabledProgressListener());
+        final TransferStatus directoryStatus = f.prepare(directory, new NullLocal("t"), new TransferStatus().setExists(true), ProgressListener.noop);
         assertTrue(found.get());
         assertFalse(directoryStatus.isExists());
-        f.apply(directory, new NullLocal("t"), directoryStatus, new DisabledProgressListener());
+        f.apply(directory, new NullLocal("t"), directoryStatus, ProgressListener.noop);
         assertNotNull(directoryStatus.getRename());
         assertNotEquals(directory, directoryStatus.getRename().remote);
         assertEquals(new Path("/t-1", EnumSet.of(Path.Type.directory)), directoryStatus.getRename().remote);
         assertNull(directoryStatus.getDisplayname().remote);
         assertNull(directoryStatus.getRename().local);
         assertNotNull(directoryStatus.getRename().remote);
-        final TransferStatus fileStatus = f.prepare(file, new NullLocal("t/f"), directoryStatus, new DisabledProgressListener());
-        f.apply(file, new NullLocal("t/f"), fileStatus, new DisabledProgressListener());
+        final TransferStatus fileStatus = f.prepare(file, new NullLocal("t/f"), directoryStatus, ProgressListener.noop);
+        f.apply(file, new NullLocal("t/f"), fileStatus, ProgressListener.noop);
         assertFalse(fileStatus.isExists());
         assertNotNull(fileStatus.getRename());
         assertEquals(new Path(new Path("/t-1", EnumSet.of(Path.Type.directory)), "f", EnumSet.of(Path.Type.file)), fileStatus.getRename().remote);

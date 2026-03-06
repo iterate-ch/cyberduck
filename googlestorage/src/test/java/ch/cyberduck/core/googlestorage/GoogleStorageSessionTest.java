@@ -19,11 +19,11 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AclPermission;
@@ -50,7 +50,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
             new Credentials(System.getProperties().getProperty("google.projectid") + "1", null)
         );
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new TestPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
     }
 

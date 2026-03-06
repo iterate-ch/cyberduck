@@ -5,11 +5,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AclPermission;
@@ -63,7 +63,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), ProgressListener.noop);
         login.connect(session, new DisabledCancelCallback());
         session.close();
     }
@@ -91,7 +91,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                 }
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), ProgressListener.noop);
         connect.connect(session, new DisabledCancelCallback());
         assertTrue(session.isConnected());
         connect.close(session);
@@ -111,7 +111,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                new DisabledPasswordStore(), ProgressListener.noop).connect(session, new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -127,6 +127,6 @@ public class AzureSessionTest extends AbstractAzureTest {
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                new DisabledPasswordStore(), ProgressListener.noop).connect(session, new DisabledCancelCallback());
     }
 }
