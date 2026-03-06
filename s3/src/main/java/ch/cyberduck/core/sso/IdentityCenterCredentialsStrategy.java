@@ -18,7 +18,6 @@ package ch.cyberduck.core.sso;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LocationCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.TemporaryAccessTokens;
@@ -55,7 +54,7 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
         super(host, trust, key, prompt);
         this.oauth = oauth;
         this.host = host;
-        this.region = prompt(host, prompt.getFeature(LocationCallback.class), host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
+        this.region = prompt(host, prompt, host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
                 LocaleFactory.localizedString(String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"),
                 host.getProperty(Profile.SSO_REGION_KEY)).getIdentifier();
         this.accountId = host.getProperty(Profile.SSO_ACCOUNT_ID_KEY);

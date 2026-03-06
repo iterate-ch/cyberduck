@@ -98,7 +98,7 @@ public class IdentityCenterAuthorizationService {
                     accountId = list.get(0).getAccountId();
                 }
                 else {
-                    accountId = prompt(host, prompt.getFeature(LocationCallback.class), list.stream().map(info -> new Location.Name(info.getAccountId()) {
+                    accountId = prompt(host, prompt, list.stream().map(info -> new Location.Name(info.getAccountId()) {
                         @Override
                         public String toString() {
                             return info.getAccountName();
@@ -123,7 +123,7 @@ public class IdentityCenterAuthorizationService {
                     roleName = list.get(0).getRoleName();
                 }
                 else {
-                    roleName = prompt(host, prompt.getFeature(LocationCallback.class), list.stream().map(info -> new Location.Name(info.getRoleName())).collect(Collectors.toSet()),
+                    roleName = prompt(host, prompt, list.stream().map(info -> new Location.Name(info.getRoleName())).collect(Collectors.toSet()),
                             Profile.SSO_ROLE_NAME_KEY, LocaleFactory.localizedString(
                                     String.format("Permission set name (%s)", Profile.SSO_ROLE_NAME_KEY), "Credentials"), host.getProperty(Profile.SSO_ROLE_NAME_KEY)).getIdentifier();
                 }
