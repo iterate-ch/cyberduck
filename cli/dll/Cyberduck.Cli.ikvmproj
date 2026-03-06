@@ -1,0 +1,15 @@
+<Project Sdk="IKVM.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CyberduckReference Include="Core;Protocols;Cryptomator" />
+    <PackageReference Include="iterate-ch.IKVM.MSBuild.SkipDuplicates">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <Convert Include="$(TargetBuildDir)*.jar" />
+  </ItemGroup>
+</Project>

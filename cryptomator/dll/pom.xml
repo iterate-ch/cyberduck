@@ -62,7 +62,7 @@
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>install-dll</id>
+                                <id>install-nupkg</id>
                                 <phase>verify</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
@@ -70,14 +70,8 @@
                                 <configuration>
                                     <artifacts>
                                         <artifact>
-                                            <classifier>net472</classifier>
-                                            <type>dll</type>
-                                            <file>${project.build.directory}/net472/Cyberduck.Cryptomator.dll</file>
-                                        </artifact>
-                                        <artifact>
-                                            <classifier>net8.0</classifier>
-                                            <type>dll</type>
-                                            <file>${project.build.directory}/net8.0/Cyberduck.Cryptomator.dll</file>
+                                            <type>nupkg</type>
+                                            <file>${project.build.directory}/Cyberduck.Cryptomator.${project.version}.nupkg</file>
                                         </artifact>
                                     </artifacts>
                                 </configuration>
@@ -96,15 +90,7 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Core</artifactId>
-                    <classifier>net472</classifier>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Core</artifactId>
-                    <classifier>net8.0</classifier>
-                    <type>dll</type>
+                    <type>nupkg</type>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
