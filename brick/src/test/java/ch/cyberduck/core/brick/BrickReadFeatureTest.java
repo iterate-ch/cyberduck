@@ -16,7 +16,7 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -55,7 +55,7 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         final Path room = new BrickDirectoryFeature(session).mkdir(
                 new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
-            new BrickReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+            new BrickReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
         }
         finally {
             new BrickDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -71,19 +71,19 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
                 new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BrickMultipartWriteFeature writer = new BrickMultipartWriteFeature(session);
-        final HttpResponseOutputStream<FileEntity> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = writer.write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         // Unknown length in status
         final TransferStatus readStatus = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new BrickReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
+            final InputStream in = new BrickReadFeature(session).read(test, readStatus, ConnectionCallback.noop);
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new BrickReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
+            final InputStream in = new BrickReadFeature(session).read(test, readStatus, ConnectionCallback.noop);
             assertNotNull(in);
             in.close();
         }
@@ -106,12 +106,12 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         upload.setExists(true);
         new BrickUploadFeature(session).upload(
                 new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, upload,
-            new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new BrickReadFeature(session).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new BrickReadFeature(session).read(test, status.setLength(content.length - 100), ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -138,12 +138,12 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         upload.setExists(true);
         new BrickUploadFeature(session).upload(
                 new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, upload,
-            new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new BrickReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new BrickReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -164,10 +164,10 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
                 new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final BrickMultipartWriteFeature writer = new BrickMultipartWriteFeature(session);
-        final HttpResponseOutputStream<FileEntity> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = writer.write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
-        final CountingInputStream in = new CountingInputStream(new BrickReadFeature(session).read(test, status, new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new BrickReadFeature(session).read(test, status, ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         new BrickDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());

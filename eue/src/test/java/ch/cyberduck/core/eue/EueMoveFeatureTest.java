@@ -16,8 +16,8 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -53,7 +53,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final Path targetFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path targetFile = new EueMoveFeature(session, fileid).move(sourceFile,
-                new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new EueFindFeature(session, fileid).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         assertFalse(new DefaultFindFeature(session).find(sourceFile));
@@ -74,7 +74,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         createFile(fileid, sourceFile, RandomUtils.nextBytes(48));
         final Path targetFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         createFile(fileid, targetFile, RandomUtils.nextBytes(541));
-        new EueMoveFeature(session, fileid).move(sourceFile, targetFile, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new EueMoveFeature(session, fileid).move(sourceFile, targetFile, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new EueFindFeature(session, fileid).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -90,7 +90,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final Path targetFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final EueMoveFeature feature = new EueMoveFeature(session, fileid);
         assertTrue(feature.isRecursive(sourceFolder, targetFolder));
-        feature.move(sourceFolder, targetFolder, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        feature.move(sourceFolder, targetFolder, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertTrue(new EueFindFeature(session, fileid).find(targetFolder));
         assertTrue(new EueFindFeature(session, fileid).find(new Path(targetFolder, sourceFile.getName(), sourceFile.getType())));
         assertTrue(new DefaultFindFeature(session).find(new Path(targetFolder, sourceFile.getName(), sourceFile.getType())));
@@ -110,7 +110,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFile = new EueMoveFeature(session, fileid).move(sourceFile,
-                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new EueFindFeature(session, fileid).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         assertFalse(new DefaultFindFeature(session).find(sourceFile));
@@ -129,7 +129,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         test.attributes().setFileId(new AlphanumericRandomStringService().random());
-        new EueMoveFeature(session, fileid).move(test, new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new EueMoveFeature(session, fileid).move(test, new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
     }
 
     @Test(expected = NotfoundException.class)
@@ -142,7 +142,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         try {
             new EueMoveFeature(session, fileid).move(file.withAttributes(new DefaultPathAttributes().setFileId(resourceId)),
-                    new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                    new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
             fail();
         }
         finally {
@@ -157,7 +157,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final String resourceId = file.attributes().getFileId();
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new EueMoveFeature(session, fileid).move(file.withAttributes(new DefaultPathAttributes().setFileId(resourceId)),
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
     }
 
     @Test
@@ -166,7 +166,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), new Path(StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
-        new EueMoveFeature(session, fileid).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new EueMoveFeature(session, fileid).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

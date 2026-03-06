@@ -19,8 +19,8 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -98,7 +98,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
             final byte[] content = RandomUtils.nextBytes(245);
             final TransferStatus status = new TransferStatus().setLength(content.length);
             final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session, acl);
-            final HttpResponseOutputStream<StorageObject> out = writer.write(ignored, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<StorageObject> out = writer.write(ignored, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
         final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
@@ -107,7 +107,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session, acl);
-        final HttpResponseOutputStream<StorageObject> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final PathAttributes updated = new S3AttributesFinderFeature(session, acl).find(new Path(test).withAttributes(PathAttributes.EMPTY));

@@ -2,7 +2,7 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -59,18 +59,18 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
         upload.upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                ProgressListener.noop, StreamListener.noop, status, new DisabledConnectionCallback());
+                ProgressListener.noop, StreamListener.noop, status, ConnectionCallback.noop);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new CteraListService(session).list(test.getParent(), new DisabledListProgressListener())
                 .find(new SimplePathPredicate(test)).attributes().getSize(), 0L);
         {
             final byte[] buffer = new byte[content.length];
-            IOUtils.readFully(new CteraReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
+            IOUtils.readFully(new CteraReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop), buffer);
             assertArrayEquals(content, buffer);
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new CteraReadFeature(session).read(test, new TransferStatus().setLength(content.length - 1L).setAppend(true).setOffset(1L), new DisabledConnectionCallback());
+            final InputStream in = new CteraReadFeature(session).read(test, new TransferStatus().setLength(content.length - 1L).setAppend(true).setOffset(1L), ConnectionCallback.noop);
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];
@@ -99,7 +99,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    ProgressListener.noop, StreamListener.noop, status, new DisabledConnectionCallback());
+                    ProgressListener.noop, StreamListener.noop, status, ConnectionCallback.noop);
         }
         final PathAttributes attr1 = new CteraAttributesFinderFeature(session).find(test);
         Thread.sleep(1000L);
@@ -111,7 +111,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    ProgressListener.noop, StreamListener.noop, status, new DisabledConnectionCallback());
+                    ProgressListener.noop, StreamListener.noop, status, ConnectionCallback.noop);
         }
         final PathAttributes attr2 = new CteraAttributesFinderFeature(session).find(test);
         assertEquals(101L, attr2.getSize());

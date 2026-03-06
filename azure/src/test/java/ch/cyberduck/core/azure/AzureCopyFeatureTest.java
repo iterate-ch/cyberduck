@@ -1,7 +1,7 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -46,7 +46,7 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
             assertEquals("Cannot copy cyberduck.", e.getDetail(false));
         }
         final Path copy = feature.copy(test,
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertEquals(PathAttributes.EMPTY, copy.attributes());
         final PathAttributes sourceAttr = new AzureAttributesFinderFeature(session).find(test);
         final PathAttributes copyAttr = new AzureAttributesFinderFeature(session).find(copy);
@@ -62,11 +62,11 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         final Path test = new AzureTouchFeature(session).touch(
                 new AzureWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1023);
-        final OutputStream out = new AzureWriteFeature(session).write(test, new TransferStatus().setExists(true).setLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new AzureWriteFeature(session).write(test, new TransferStatus().setExists(true).setLength(content.length), ConnectionCallback.noop);
         new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content), out);
         final Path copy = new AzureTouchFeature(session).touch(
                 new AzureWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new AzureCopyFeature(session).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), StreamListener.noop);
+        new AzureCopyFeature(session).copy(test, copy, new TransferStatus().setExists(true), ConnectionCallback.noop, StreamListener.noop);
         assertEquals(1023L, new AzureAttributesFinderFeature(session).find(copy).getSize());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));

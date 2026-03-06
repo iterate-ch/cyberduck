@@ -15,8 +15,8 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -41,7 +41,7 @@ public class ContentReader {
 
     public String read(final Path file) throws BackgroundException {
         final Read read = session._getFeature(Read.class);
-        try(final InputStream in = read.read(file, new TransferStatus().setLength(file.attributes().getSize()), new DisabledConnectionCallback())) {
+        try(final InputStream in = read.read(file, new TransferStatus().setLength(file.attributes().getSize()), ConnectionCallback.noop)) {
             return IOUtils.toString(in, StandardCharsets.UTF_8);
         }
         catch(IOException e) {
@@ -51,6 +51,6 @@ public class ContentReader {
 
     public Reader getReader(final Path file) throws BackgroundException {
         final Read read = session._getFeature(Read.class);
-        return new InputStreamReader(read.read(file, new TransferStatus().setLength(file.attributes().getSize()), new DisabledConnectionCallback()), StandardCharsets.UTF_8);
+        return new InputStreamReader(read.read(file, new TransferStatus().setLength(file.attributes().getSize()), ConnectionCallback.noop), StandardCharsets.UTF_8);
     }
 }

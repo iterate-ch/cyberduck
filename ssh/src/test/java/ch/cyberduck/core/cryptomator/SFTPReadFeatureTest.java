@@ -16,7 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -78,7 +78,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -90,7 +90,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         read.setOffset(40000);
         read.setAppend(true);
         read.setLength(30000); // ensure to read at least two chunks
-        final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, read, ConnectionCallback.noop);
         new StreamCopier(read, read).withLimit(30000L).transfer(in, buffer);
         final byte[] reference = new byte[30000];
         System.arraycopy(content, 40000, reference, 0, reference.length);

@@ -17,7 +17,7 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -55,7 +55,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         final TransferStatus status = new TransferStatus();
         status.setStorageClass("invalid");
         try {
-            new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback()).close();
+            new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop).close();
             fail();
         }
         catch(BackgroundException e) {
@@ -72,10 +72,10 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         final HashMap<String, String> metadata = new HashMap<>();
         metadata.put("k1", "v1");
         status.setMetadata(metadata);
-        new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback()).close();
+        new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop).close();
         assertEquals(metadata, new GoogleStorageMetadataFeature(session).getMetadata(test));
         metadata.put("k2", "v2");
-        new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback()).close();
+        new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop).close();
         assertEquals(metadata, new GoogleStorageMetadataFeature(session).getMetadata(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -87,7 +87,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         final TransferStatus status = new TransferStatus();
         status.setAcl(Acl.CANNED_PRIVATE);
         try {
-            new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback()).close();
+            new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop).close();
             fail();
         }
         catch(IOException e) {
@@ -107,7 +107,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         final byte[] content = RandomUtils.nextBytes(1033);
         status.setLength(content.length);
         status.setAcl(Acl.CANNED_PUBLIC_READ);
-        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertNotNull(out.getStatus().getGeneration());
@@ -125,7 +125,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         final byte[] content = RandomUtils.nextBytes(1033);
         status.setLength(content.length);
         status.setAcl(Acl.CANNED_PRIVATE);
-        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertNotNull(out.getStatus().getGeneration());
@@ -147,13 +147,13 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             status.setMime("application/octet-stream");
             status.setStorageClass("multi_regional");
             status.setMetadata(Collections.singletonMap("c", "d"));
-            final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
             assertNotNull(out.getStatus().getGeneration());
             assertTrue(new GoogleStorageFindFeature(session).find(test));
             final byte[] buffer = new byte[content.length];
-            final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);
@@ -165,7 +165,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             status.setModified(1530305150672L);
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
-            final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
             assertNotNull(out.getStatus().getGeneration());
@@ -184,14 +184,14 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         status.setLength(content.length);
         status.setMime("application/octet-stream");
         status.setStorageClass("ARCHIVE");
-        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertNotNull(out.getStatus().getGeneration());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertEquals("ARCHIVE", new GoogleStorageStorageClassFeature(session).getClass(test));
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new GoogleStorageReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

@@ -16,8 +16,8 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultVersionIdProvider;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -63,15 +63,15 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         new DAVUploadFeature(session).upload(
                 new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final CteraBulkFeature bulk = new CteraBulkFeature(session, new DefaultVersionIdProvider(session));
-        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
         assertNotNull(segment.getUrl());
         assertNotNull(segment.getParameters());
-        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, new DisabledConnectionCallback());
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(segment, segment).transfer(in, buffer);
@@ -92,17 +92,17 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         new DAVUploadFeature(session).upload(
                 new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setSegments(Collections.emptyList());
         final CteraBulkFeature bulk = new CteraBulkFeature(session, new DefaultVersionIdProvider(session));
-        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
         assertNull(status.getUrl());
         assertNotNull(status.getParameters().get(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY));
         assertTrue(new DAVFindFeature(session).find(test));
         final PathAttributes attributes = new CteraAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
-        final InputStream in = new CteraDirectIOReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);

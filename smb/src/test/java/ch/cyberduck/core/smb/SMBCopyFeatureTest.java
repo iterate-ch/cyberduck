@@ -16,7 +16,7 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
@@ -49,7 +49,7 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         final Path destinationFolder = new SMBDirectoryFeature(session).mkdir(
                 new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path fileCopied = new SMBCopyFeature(session).copy(file, copy, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+        final Path fileCopied = new SMBCopyFeature(session).copy(file, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertNotEquals(attr, new SMBAttributesFinderFeature(session).find(fileCopied));
         ListService list = new SMBListService(session);
         assertTrue(list.list(home, new DisabledListProgressListener()).contains(file));
@@ -68,7 +68,7 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SMBTouchFeature(session).touch(new SMBWriteFeature(session), copy, new TransferStatus());
-        new SMBCopyFeature(session).copy(file, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), StreamListener.noop);
+        new SMBCopyFeature(session).copy(file, copy, new TransferStatus().setExists(true), ConnectionCallback.noop, StreamListener.noop);
         ListService list = new SMBListService(session);
         assertTrue(list.list(sourceFolder, new DisabledListProgressListener()).contains(file));
         assertTrue(list.list(destinationFolder, new DisabledListProgressListener()).contains(copy));

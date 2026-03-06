@@ -16,7 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -58,7 +58,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2ReadFeature(session, new B2VersionIdProvider(session)).read(new Path(bucket, "nosuchname", EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback());
+        new B2ReadFeature(session, new B2VersionIdProvider(session)).read(new Path(bucket, "nosuchname", EnumSet.of(Path.Type.file)), new TransferStatus(), ConnectionCallback.noop);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, ConnectionCallback.noop);
         IOUtils.write(content, out);
         out.close();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -97,18 +97,18 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, ConnectionCallback.noop);
         IOUtils.write(content, out);
         out.close();
         {
             // Unknown length in status
             // Read a single byte
-            final InputStream in = new B2ReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new B2ReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop);
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new B2ReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new B2ReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop);
             assertNotNull(in);
             in.close();
         }
@@ -131,12 +131,12 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final BaseB2Response reply = new B2SingleUploadService(session).upload(
                 new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, status.setLength(content.length - 100), ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -163,12 +163,12 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         new B2SingleUploadService(session).upload(
                 new B2WriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -188,9 +188,9 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final byte[] content = RandomUtils.nextBytes(length);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
+        final OutputStream out = new B2WriteFeature(session, fileid).write(file, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        final CountingInputStream in = new CountingInputStream(new B2ReadFeature(session, fileid).read(file, status, new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new B2ReadFeature(session, fileid).read(file, status, ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

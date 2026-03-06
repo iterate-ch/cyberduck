@@ -17,8 +17,8 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.ListService;
@@ -70,7 +70,7 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
             status.setLength(content.length);
             status.setExists(true);
             final GraphWriteFeature writer = new GraphWriteFeature(session, fileid);
-            final StatusOutputStream<DriveItem.Metadata> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<DriveItem.Metadata> out = writer.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
         assertEquals(test.attributes().getFileId(), new GraphAttributesFinderFeature(session, fileid).find(test).getFileId());
@@ -82,7 +82,7 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
         status.setLength(content.length);
         status.setExists(true);
         final GraphWriteFeature writer = new GraphWriteFeature(session, fileid);
-        final StatusOutputStream<DriveItem.Metadata> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = writer.write(test, status, ConnectionCallback.noop);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final String ctag = new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()).getVersionId();
         assertNotNull(ctag);

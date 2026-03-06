@@ -19,7 +19,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -49,20 +49,20 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new FTPReadFeature(session).read(new Path(new FTPWorkdirService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new FTPReadFeature(session).read(new Path(new FTPWorkdirService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
     }
 
     @Test
     public void testRead() throws Exception {
         final Path home = new FTPWorkdirService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertThrows(NotfoundException.class, () -> new FTPReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()));
+        assertThrows(NotfoundException.class, () -> new FTPReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         final int length = 39865;
         final byte[] content = RandomUtils.nextBytes(length);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final OutputStream out = new FTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new FTPWriteFeature(session).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -70,7 +70,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new FTPReadFeature(session).read(test, status, ConnectionCallback.noop);
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(in, buffer);
@@ -85,7 +85,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(2048);
-        final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -96,7 +96,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         status.setAppend(true);
         final long offset = 2L;
         status.setOffset(offset);
-        final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new FTPReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream download = new ByteArrayOutputStream();
         new StreamCopier(status, status).withLimit(limit).transfer(in, download);
@@ -113,7 +113,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         final Path workdir = new FTPWorkdirService(session).find();
         final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<Void>(session).touch(new FTPWriteFeature(session), file, new TransferStatus());
-        final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback());
+        final InputStream in = new FTPReadFeature(session).read(file, status, ConnectionCallback.noop);
         assertNotNull(in);
         // Send ABOR because stream was not read completly
         in.close();
@@ -126,7 +126,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
     public void testAbortPartialRead() throws Exception {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
-        final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().setLength(20L), new DisabledConnectionCallback());
+        final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().setLength(20L), ConnectionCallback.noop);
         assertNotNull(out);
         final byte[] content = RandomUtils.nextBytes(2048);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -134,7 +134,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(20L);
         final Path workdir = new FTPWorkdirService(session).find();
-        final InputStream in = new FTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new FTPReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         assertTrue(in.read() > 0);
         // Send ABOR because stream was not read completly
@@ -151,7 +151,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(5L);
         final Path workdir = new FTPWorkdirService(session).find();
-        final InputStream in = new FTPReadFeature(session).read(file, status, new DisabledConnectionCallback());
+        final InputStream in = new FTPReadFeature(session).read(file, status, ConnectionCallback.noop);
         assertNotNull(in);
         // Read 226 reply
         in.close();

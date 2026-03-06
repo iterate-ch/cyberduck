@@ -17,9 +17,9 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -61,7 +61,7 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
             status.setLength(content.length);
             status.setExists(true);
             final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-            final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNotNull(test.attributes().getVersionId());
@@ -79,7 +79,7 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
             status.setLength(content.length);
             status.setExists(true);
             final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-            final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNotNull(test.attributes().getVersionId());

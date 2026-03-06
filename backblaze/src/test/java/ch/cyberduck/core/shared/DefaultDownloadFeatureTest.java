@@ -16,7 +16,7 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -65,7 +65,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -76,7 +76,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         new DefaultDownloadFeature(session).download(
                 new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-            new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
         IOUtils.readFully(in, buffer);
@@ -95,7 +95,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final OutputStream out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new B2WriteFeature(session, fileid).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -106,7 +106,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
             new DefaultDownloadFeature(session).download(
                     new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                     status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();

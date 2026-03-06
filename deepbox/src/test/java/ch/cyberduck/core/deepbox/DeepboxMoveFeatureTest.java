@@ -17,8 +17,8 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -60,7 +60,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertNotEquals(-1L, test.attributes().getModificationDate());
         assertEquals(test.attributes(), new DeepboxAttributesFinderFeature(session, fileid).find(test));
         final Path moved = new DeepboxMoveFeature(session, fileid).move(test,
-                new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(sourceId, moved.attributes().getFileId());
         assertFalse(new DeepboxFindFeature(session, fileid).find(new Path(test).withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(moved));
@@ -79,7 +79,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertNotNull(sourceId);
         new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path moved = new DeepboxMoveFeature(session, fileid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path moved = new DeepboxMoveFeature(session, fileid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(sourceId, moved.attributes().getFileId());
         assertFalse(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target));
@@ -98,7 +98,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         {
             final byte[] content = RandomUtils.nextBytes(124);
             new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content),
-                    new DeepboxWriteFeature(session, fileid).write(test, new TransferStatus().setExists(true), new DisabledConnectionCallback()));
+                    new DeepboxWriteFeature(session, fileid).write(test, new TransferStatus().setExists(true), ConnectionCallback.noop));
             test.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(test));
         }
         final Path target = new DeepboxTouchFeature(session, fileid).touch(
@@ -106,7 +106,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         {
             final byte[] content = RandomUtils.nextBytes(165);
             new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content),
-                    new DeepboxWriteFeature(session, fileid).write(target, new TransferStatus().setExists(true), new DisabledConnectionCallback()));
+                    new DeepboxWriteFeature(session, fileid).write(target, new TransferStatus().setExists(true), ConnectionCallback.noop));
             target.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(target));
         }
         final Path targetInTrash = new Path(trash, target.getName(), target.getType());
@@ -119,7 +119,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         final String sourceFileId = originalTestAttributes.getFileId();
         assertNotNull(sourceFileId);
         final Path renamed = new DeepboxMoveFeature(session, fileid).move(test, target,
-                new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(sourceFileId, renamed.attributes().getFileId());
         assertFalse(new DeepboxFindFeature(session, fileid).find(test));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target));
@@ -159,7 +159,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         final PathAttributes originalTestAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(test);
         final PathAttributes originalTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(target);
 
-        new DeepboxMoveFeature(session, fileid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new DeepboxMoveFeature(session, fileid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new DeepboxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target.withAttributes(PathAttributes.EMPTY)));
         assertTrue(new DeepboxFindFeature(session, fileid).find(targetInTrash));
@@ -186,7 +186,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path renamed = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertThrows(NotfoundException.class, () -> new DeepboxMoveFeature(session, fileid).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertThrows(NotfoundException.class, () -> new DeepboxMoveFeature(session, fileid).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
     }
 
     @Test

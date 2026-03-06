@@ -16,7 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
@@ -102,7 +102,7 @@ public class GoogleStorageVersioningFeature implements Versioning {
 
     @Override
     public void revert(final Path file) throws BackgroundException {
-        new GoogleStorageCopyFeature(session).copy(file, file, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
+        new GoogleStorageCopyFeature(session).copy(file, file, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
     }
 
     @Override

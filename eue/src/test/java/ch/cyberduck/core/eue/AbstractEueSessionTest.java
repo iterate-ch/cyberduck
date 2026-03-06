@@ -100,7 +100,7 @@ public class AbstractEueSessionTest extends VaultTest {
         final TransferStatus status = new TransferStatus()
                 .setChecksum(feature.checksum(file, new TransferStatus().setLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)))
                 .setLength(content.length);
-        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();

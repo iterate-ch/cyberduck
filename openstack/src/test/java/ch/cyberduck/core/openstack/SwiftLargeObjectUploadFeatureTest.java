@@ -3,7 +3,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -97,7 +96,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -160,7 +159,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertEquals(2, new SwiftSegmentService(session, regionService).list(test).size());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -196,7 +195,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
             final BytecountStreamListener count = new BytecountStreamListener();
             final StorageObject object = upload.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count,
-                    status, new DisabledConnectionCallback());
+                    status, ConnectionCallback.noop);
             assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
             assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
             assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
@@ -210,7 +209,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             assertEquals(content.length, count.getSent());
 
             assertTrue(new SwiftFindFeature(session).find(test));
-            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), ConnectionCallback.noop);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
             in.close();
@@ -249,7 +248,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
             final BytecountStreamListener count = new BytecountStreamListener();
             upload.upload(new SwiftWriteFeature(session, regionService), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count,
-                    status, new DisabledConnectionCallback());
+                    status, ConnectionCallback.noop);
 
             assertTrue(status.isComplete());
             assertEquals(content.length, status.getResponse().getSize());
@@ -265,7 +264,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             assertEquals(1L, segments.get(1).attributes().getSize());
 
             assertTrue(new SwiftFindFeature(session).find(test));
-            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), ConnectionCallback.noop);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
             in.close();

@@ -18,9 +18,9 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -68,7 +68,7 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), new Path(source, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(new Path(source, filename, EnumSet.of(Path.Type.file))));
         new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), destination, new TransferStatus());
-        new IRODSMoveFeature(session).move(source, destination, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new IRODSMoveFeature(session).move(source, destination, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(session.getFeature(Find.class).find(source));
         assertFalse(session.getFeature(Find.class).find(new Path(source, filename, EnumSet.of(Path.Type.file))));
         assertTrue(session.getFeature(Find.class).find(destination));
@@ -95,7 +95,7 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), source, new TransferStatus());
         new IRODSTouchFeature(session).touch(new IRODSWriteFeature(session), destination, new TransferStatus());
-        new IRODSMoveFeature(session).move(source, destination, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new IRODSMoveFeature(session).move(source, destination, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(destination));
         session.getFeature(Delete.class).delete(Collections.singletonList(destination), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -121,6 +121,6 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         assertFalse(session.getFeature(Find.class).find(source));
         assertFalse(session.getFeature(Find.class).find(destination));
 
-        new IRODSMoveFeature(session).move(source, destination, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new IRODSMoveFeature(session).move(source, destination, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
     }
 }

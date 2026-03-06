@@ -100,7 +100,7 @@ public class BrickSession extends HttpSession<BrickApiClient> {
         }
         else {
             // No prompt on explicit connect
-            this.pair(host, new DisabledConnectionCallback(), prompt, cancel,
+            this.pair(host, ConnectionCallback.noop, prompt, cancel,
                     LocaleFactory.localizedString("Connect an account", "Brick"),
                     LocaleFactory.localizedString("Please complete the login process in your browser.", "Brick"));
             retryHandler.setApiKey(credentials.getPassword());

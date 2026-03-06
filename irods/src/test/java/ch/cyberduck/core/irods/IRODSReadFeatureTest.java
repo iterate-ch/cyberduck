@@ -17,9 +17,9 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -79,14 +79,14 @@ public class IRODSReadFeatureTest extends IRODSDockerComposeManager {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(false);
-        final OutputStream out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = new IRODSWriteFeature(session).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
 
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(session.getFeature(Find.class).find(test));
 
-        final InputStream in = new IRODSReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         in.close();
 
@@ -111,7 +111,7 @@ public class IRODSReadFeatureTest extends IRODSDockerComposeManager {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        new IRODSReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        new IRODSReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop);
     }
 
 
@@ -138,12 +138,12 @@ public class IRODSReadFeatureTest extends IRODSDockerComposeManager {
         new DefaultUploadFeature<Void>(session).upload(
                 new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new IRODSReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

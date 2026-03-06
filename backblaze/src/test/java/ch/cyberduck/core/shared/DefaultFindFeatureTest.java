@@ -16,7 +16,7 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.AbstractB2Test;
@@ -62,7 +62,7 @@ public class DefaultFindFeatureTest extends AbstractB2Test {
     public void testFindLargeUpload() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<BaseB2Response> out = new B2LargeUploadWriteFeature(session, new B2VersionIdProvider(session)).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> out = new B2LargeUploadWriteFeature(session, new B2VersionIdProvider(session)).write(file, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.copyLarge(new ByteArrayInputStream(RandomUtils.nextBytes(100)), out);
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));

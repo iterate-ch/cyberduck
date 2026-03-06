@@ -18,9 +18,9 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -83,7 +83,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
             new IRODSUploadFeature(session).upload(
                     new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count,
                     status,
-                    new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
             assertEquals(content.length / 2, count.getSent());
         }
         {
@@ -91,11 +91,11 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
             new IRODSUploadFeature(session).upload(
                     new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
-                    new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
             assertEquals(content.length / 2, status.getOffset());
         }
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -126,11 +126,11 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         new IRODSUploadFeature(session).upload(
-                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, new DisabledConnectionCallback());
+                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
         assertTrue(status.isComplete());
         assertEquals(content.length, count.getSent());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -170,7 +170,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
                     }
                 },
                 status,
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         try {
             status.validate();
             fail();
@@ -215,7 +215,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
                     }
                 },
                 status,
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         try {
             status.validate();
             fail();

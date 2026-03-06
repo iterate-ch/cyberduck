@@ -17,7 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -96,7 +96,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final StatusOutputStream<DriveItem.Metadata> out = new GraphWriteFeature(session, fileid).write(
-                new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+                new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();

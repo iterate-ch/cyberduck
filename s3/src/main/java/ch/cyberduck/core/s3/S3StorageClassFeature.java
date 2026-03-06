@@ -17,7 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -80,7 +80,7 @@ public class S3StorageClassFeature implements Redundancy {
             final TransferStatus status = new TransferStatus();
             status.setLength(file.attributes().getSize());
             status.setStorageClass(redundancy);
-            copy.copy(file, file, status, new DisabledConnectionCallback(), StreamListener.noop);
+            copy.copy(file, file, status, ConnectionCallback.noop, StreamListener.noop);
         }
         catch(NotfoundException e) {
             if(file.isDirectory()) {

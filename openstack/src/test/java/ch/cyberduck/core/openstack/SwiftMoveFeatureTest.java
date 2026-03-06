@@ -17,7 +17,7 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -56,7 +56,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("IAD");
-        new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -72,7 +72,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new SwiftWriteFeature(session, new SwiftRegionService(session)), target, new TransferStatus());
-        new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -84,7 +84,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setRegion("IAD");
-        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         final Path targetFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path movedFile = new SwiftMoveFeature(session, regionService).move(sourceFile, targetFile,
-            new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         // source file does not exist anymore
         assertFalse(findFeature.find(sourceFile));
         // moved file exists
@@ -161,12 +161,12 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertThrows(BackgroundException.class, () -> new SwiftMoveFeature(session, regionService).move(sourceFile, targetFile,
-                new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+                new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
     }
 
     private void prepareFile(final Path path, final SwiftRegionService regionService, final SwiftSegmentService segmentService) throws BackgroundException {
         final SwiftLargeUploadWriteFeature upload = new SwiftLargeUploadWriteFeature(session, regionService, segmentService);
-        final OutputStream out = upload.write(path, new TransferStatus(), new DisabledConnectionCallback());
+        final OutputStream out = upload.write(path, new TransferStatus(), ConnectionCallback.noop);
         final byte[] content = RandomUtils.nextBytes(1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();

@@ -18,9 +18,9 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -150,7 +150,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             file.withAttributes(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()));
             assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(file).getSize());
@@ -166,7 +166,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             file.withAttributes(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()));
             assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(file).getSize());

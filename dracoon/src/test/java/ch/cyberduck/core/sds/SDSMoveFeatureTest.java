@@ -16,7 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -46,8 +46,8 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
         final String foldername = new AlphanumericRandomStringService().random();
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, foldername, EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertThrows(NotfoundException.class, () -> new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
+        assertThrows(NotfoundException.class, () -> new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertFalse(new SDSFindFeature(session, nodeid).find(new Path(room, foldername, EnumSet.of(Path.Type.directory))));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
@@ -63,7 +63,7 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
         final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
         assertFalse(move.isSupported(test, Optional.of(target)));
-        move.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        move.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertFalse(new SDSFindFeature(session, nodeid).find(test));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
@@ -92,7 +92,7 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
         assertTrue(move.isSupported(subroom, Optional.of(target)));
-        move.move(subroom, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        move.move(subroom, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(0, session.getMetrics().get(Copy.class));
         subroom.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(session, nodeid).find(subroom));
@@ -106,7 +106,7 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
         final String directoryname = new AlphanumericRandomStringService().random();
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(directoryname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertFalse(new SDSFindFeature(session, nodeid).find(new Path(directoryname, EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
@@ -122,7 +122,7 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
         final String filename = new AlphanumericRandomStringService().random();
         final Path test = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new SDSFindFeature(session, nodeid).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -136,7 +136,7 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
         final String filename = new AlphanumericRandomStringService().random();
         final Path test = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new SDSFindFeature(session, nodeid).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -148,6 +148,6 @@ public class SDSMoveFeatureTest extends AbstractSDSTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        new SDSMoveFeature(session, nodeid).move(test, new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SDSMoveFeature(session, nodeid).move(test, new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
     }
 }

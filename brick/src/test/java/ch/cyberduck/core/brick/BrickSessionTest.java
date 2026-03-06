@@ -15,8 +15,8 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Profile;
@@ -55,7 +55,7 @@ public class BrickSessionTest extends AbstractBrickTest {
             }
         };
         final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        session.pair(host, new DisabledConnectionCallback(), new DisabledLoginCallback(), new DisabledCancelCallback(),
+        session.pair(host, ConnectionCallback.noop, new DisabledLoginCallback(), new DisabledCancelCallback(),
                 "t", "m", new BrowserLauncher() {
                     @Override
                     public boolean open(final String url) {

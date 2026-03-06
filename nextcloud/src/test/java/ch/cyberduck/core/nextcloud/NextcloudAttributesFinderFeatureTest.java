@@ -1,7 +1,7 @@
 package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
@@ -115,7 +115,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
         {
             final TransferStatus status = new TransferStatus().setLength(source.length);
             final HttpResponseOutputStream<Void> out = new NextcloudWriteFeature(session).write(
-                    file, status, new DisabledConnectionCallback());
+                    file, status, ConnectionCallback.noop);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }

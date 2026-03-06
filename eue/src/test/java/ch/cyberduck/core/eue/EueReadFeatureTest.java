@@ -17,7 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -53,7 +53,7 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
         final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -71,7 +71,7 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new EueReadFeature(session, fileid).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new EueReadFeature(session, fileid).read(test, status.setLength(content.length - 100), ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -93,12 +93,12 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
         final TransferStatus readStatus = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new EueReadFeature(session, fileid).read(test, readStatus, new DisabledConnectionCallback());
+            final InputStream in = new EueReadFeature(session, fileid).read(test, readStatus, ConnectionCallback.noop);
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new EueReadFeature(session, fileid).read(test, readStatus, new DisabledConnectionCallback());
+            final InputStream in = new EueReadFeature(session, fileid).read(test, readStatus, ConnectionCallback.noop);
             assertNotNull(in);
             in.close();
         }
@@ -109,6 +109,6 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
     public void testNotFound() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         new EueReadFeature(session, fileid).read(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), ConnectionCallback.noop);
     }
 }

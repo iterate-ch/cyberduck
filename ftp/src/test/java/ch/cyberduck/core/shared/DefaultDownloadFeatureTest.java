@@ -17,7 +17,7 @@ package ch.cyberduck.core.shared;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -58,7 +58,7 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final OutputStream out = new FTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new FTPWriteFeature(session).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -69,14 +69,14 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
             new DefaultDownloadFeature(session).download(
                     new FTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             new DefaultDownloadFeature(session).download(
                     new FTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         final byte[] buffer = new byte[39864];
         final InputStream in = local.getInputStream();

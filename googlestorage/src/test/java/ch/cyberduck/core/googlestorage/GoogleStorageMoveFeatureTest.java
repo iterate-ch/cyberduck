@@ -16,7 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -50,7 +50,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertFalse(new GoogleStorageMetadataFeature(session).getMetadata(test).isEmpty());
         final Path renamed = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path moved = new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path moved = new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageFindFeature(session).find(renamed));
         final PathAttributes targetAttr = new GoogleStorageAttributesFinderFeature(session).find(renamed);
@@ -71,7 +71,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         final Path test = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), test, new TransferStatus());
         final Path renamed = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageFindFeature(session).find(renamed));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -95,7 +95,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         touch.touch(new GoogleStorageWriteFeature(session), test, status);
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageFindFeature(session).find(renamed));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());

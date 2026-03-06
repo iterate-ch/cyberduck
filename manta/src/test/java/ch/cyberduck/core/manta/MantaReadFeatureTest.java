@@ -16,7 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -51,7 +51,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         final TransferStatus status = new TransferStatus();
         try {
             final Path drive = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), randomDirectory(), new TransferStatus());
-            new MantaReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+            new MantaReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
         }
         catch(NotfoundException e) {
             assertEquals("Not Found. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -68,12 +68,12 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         final TransferStatus status = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new MantaReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new MantaReadFeature(session).read(test, status, ConnectionCallback.noop);
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new MantaReadFeature(session).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new MantaReadFeature(session).read(test, status, ConnectionCallback.noop);
             assertNotNull(in);
             in.close();
         }
@@ -103,14 +103,14 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(BYTES_OFFSET);
         final MantaReadFeature read = new MantaReadFeature(session);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.setLength(content.length - BYTES_OFFSET), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, status.setLength(content.length - BYTES_OFFSET), ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - BYTES_OFFSET);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -136,12 +136,12 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         new DefaultUploadFeature<Void>(session).upload(
                 new MantaWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new MantaReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new MantaReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

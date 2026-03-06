@@ -16,11 +16,10 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -79,7 +78,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDriveTest {
         final byte[] content = RandomUtils.nextBytes(12);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
-        final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, fileid).write(file, status, ConnectionCallback.noop);
         IOUtils.copy(new ByteArrayInputStream(content), out);
         out.close();
         assertEquals(initialFileid, f.find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setFileId(initialFileid))).getFileId());

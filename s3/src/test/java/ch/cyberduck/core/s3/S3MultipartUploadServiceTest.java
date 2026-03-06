@@ -4,7 +4,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -256,7 +255,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(2L * 1024L * 1024L).setOffset(10L * 1024L * 1024L);
         new S3MultipartUploadService(session, acl, 10L * 1024L * 1024L, 1).upload(new S3WriteFeature(session, acl), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, append,
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         assertEquals(12L * 1024L * 1024L, count.getSent());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
@@ -264,7 +263,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(12L * 1024L * 1024L, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -300,7 +299,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                             };
                         }
                     }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status,
-                    new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         catch(BackgroundException e) {
             // Expected
@@ -315,14 +314,14 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         new S3MultipartUploadService(session, acl, 10485760L, 1).upload(
                 new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 ProgressListener.noop, count, append,
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         assertEquals(32769L, count.getSent());
         assertTrue(append.isComplete());
         assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

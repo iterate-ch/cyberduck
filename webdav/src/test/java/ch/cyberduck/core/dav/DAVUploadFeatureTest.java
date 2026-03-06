@@ -18,8 +18,8 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -61,7 +61,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
             new DAVUploadFeature(session).upload(
                     new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
-                    new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         catch(AccessDeniedException e) {
             assertEquals("Unexpected response (403 Forbidden). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -85,7 +85,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         final TransferStatus status = new TransferStatus().setLength(content.length / 2);
         {
             feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
-                    status, new DisabledConnectionCallback());
+                    status, ConnectionCallback.noop);
         }
         {
             final Write.Append append = feature.append(test, status.setLength(content.length).setExists(true).setRemote(new DefaultPathAttributes().setSize(content.length / 2)));
@@ -93,10 +93,10 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
             assertEquals(content.length / 2, append.offset, 0L);
             feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status.setLength(content.length / 2).setOffset(append.offset).setAppend(append.append),
-                    new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
