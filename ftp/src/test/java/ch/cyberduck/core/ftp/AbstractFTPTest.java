@@ -60,7 +60,7 @@ import static org.junit.Assert.fail;
 
 public class AbstractFTPTest {
 
-    private static final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
+    private final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
 
     protected FTPSession session;
 

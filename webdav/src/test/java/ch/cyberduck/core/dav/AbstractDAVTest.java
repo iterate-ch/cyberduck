@@ -89,7 +89,7 @@ public class AbstractDAVTest extends VaultTest {
     protected DAVSession session;
 
     private SimpletonServer server;
-    private static final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
+    private final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
