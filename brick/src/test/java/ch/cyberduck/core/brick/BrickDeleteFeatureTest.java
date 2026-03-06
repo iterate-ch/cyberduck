@@ -17,9 +17,9 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -51,7 +51,7 @@ public class BrickDeleteFeatureTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session).upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), StreamListener.noop, status, new DisabledLoginCallback());
+                ProgressListener.noop, StreamListener.noop, status, new DisabledLoginCallback());
         local.delete();
         final String lock = new BrickLockFeature(session).lock(test);
         assertNotNull(lock);

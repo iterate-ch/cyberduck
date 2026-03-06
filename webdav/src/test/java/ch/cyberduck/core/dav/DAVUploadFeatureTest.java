@@ -21,9 +21,9 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
@@ -59,7 +59,7 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new Path("/dav/accessdenied", EnumSet.of(Path.Type.directory)), "nosuchname", EnumSet.of(Path.Type.file));
         try {
             new DAVUploadFeature(session).upload(
-                    new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                    new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
                     new DisabledConnectionCallback());
         }
@@ -84,14 +84,14 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         final DAVUploadFeature feature = new DAVUploadFeature(session);
         final TransferStatus status = new TransferStatus().setLength(content.length / 2);
         {
-            feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+            feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status, new DisabledConnectionCallback());
         }
         {
             final Write.Append append = feature.append(test, status.setLength(content.length).setExists(true).setRemote(new DefaultPathAttributes().setSize(content.length / 2)));
             assertTrue(append.append);
             assertEquals(content.length / 2, append.offset, 0L);
-            feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+            feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status.setLength(content.length / 2).setOffset(append.offset).setAppend(append.append),
                     new DisabledConnectionCallback());
         }

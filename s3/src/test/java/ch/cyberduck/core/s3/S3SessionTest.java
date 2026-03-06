@@ -7,10 +7,10 @@ import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -224,7 +224,7 @@ public class S3SessionTest extends AbstractS3Test {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener()
+                ProgressListener.noop
         );
         c.connect(session, new DisabledCancelCallback());
         assertTrue(verified.get());

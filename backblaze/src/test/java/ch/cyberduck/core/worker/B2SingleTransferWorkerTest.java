@@ -20,12 +20,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
@@ -139,7 +139,7 @@ public class B2SingleTransferWorkerTest extends VaultTest {
         new LoginConnectionService(new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new TestPasswordStore(),
-                new DisabledProgressListener()).check(session, new DisabledCancelCallback());
+                ProgressListener.noop).check(session, new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(host, test, local);
@@ -150,7 +150,7 @@ public class B2SingleTransferWorkerTest extends VaultTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();

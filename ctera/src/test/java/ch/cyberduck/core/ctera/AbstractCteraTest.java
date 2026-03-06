@@ -19,10 +19,10 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.VaultTest;
@@ -52,7 +52,7 @@ public class AbstractCteraTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
+        }, new DisabledHostKeyCallback(), new TestPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
     }
 }

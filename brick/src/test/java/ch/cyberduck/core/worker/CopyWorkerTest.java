@@ -18,10 +18,10 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.brick.AbstractBrickTest;
 import ch.cyberduck.core.brick.BrickDirectoryFeature;
 import ch.cyberduck.core.brick.BrickFindFeature;
@@ -59,13 +59,13 @@ public class CopyWorkerTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session).upload(new BrickWriteFeature(session), source, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), StreamListener.noop, status, new DisabledLoginCallback());
+                ProgressListener.noop, StreamListener.noop, status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(source));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new BrickFindFeature(session).find(source));
         assertTrue(new BrickFindFeature(session).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), ProgressListener.noop).run(session);
         local.delete();
     }
 
@@ -79,18 +79,18 @@ public class CopyWorkerTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session).upload(new BrickWriteFeature(session), sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), StreamListener.noop, status, new DisabledLoginCallback());
+                ProgressListener.noop, StreamListener.noop, status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), targetFolder, new TransferStatus());
         assertTrue(new BrickFindFeature(session).find(targetFolder));
         // copy file into vault
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new BrickFindFeature(session).find(sourceFile));
         assertTrue(new BrickFindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), ProgressListener.noop).run(session);
         local.delete();
     }
 
@@ -105,18 +105,18 @@ public class CopyWorkerTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session).upload(new BrickWriteFeature(session), sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), StreamListener.noop, status, new DisabledLoginCallback());
+                ProgressListener.noop, StreamListener.noop, status, new DisabledLoginCallback());
         assertTrue(new BrickFindFeature(session).find(folder));
         assertTrue(new BrickFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new BrickFindFeature(session).find(targetFolder));
         assertTrue(new BrickFindFeature(session).find(targetFile));
         assertTrue(new BrickFindFeature(session).find(folder));
         assertTrue(new BrickFindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), ProgressListener.noop).run(session);
         local.delete();
     }
 }

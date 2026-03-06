@@ -21,9 +21,9 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.box.AbstractBoxTest;
 import ch.cyberduck.core.box.BoxAttributesFinderFeature;
 import ch.cyberduck.core.box.BoxDeleteFeature;
@@ -97,7 +97,7 @@ public class BoxThresholdUploadServiceTest extends AbstractBoxTest {
                 new BoxThresholdUploadService(session, fileid, registry),
                 cryptomator);
         feature.upload(
-                new CryptoWriteFeature<>(session, new BoxWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, new DisabledConnectionCallback());
+                new CryptoWriteFeature<>(session, new BoxWriteFeature(session, fileid), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertEquals(content.length, writeStatus.getResponse().getSize());
         assertTrue(writeStatus.isComplete());

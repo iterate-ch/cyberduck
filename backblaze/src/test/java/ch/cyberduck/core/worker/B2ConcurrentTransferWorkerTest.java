@@ -21,12 +21,12 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.b2.AbstractB2Test;
@@ -113,7 +113,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new TestPasswordStore(),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
@@ -171,7 +171,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
             public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) {
                 return true;
             }
-        }, new DisabledConnectionCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService());
+        }, new DisabledConnectionCallback(), ProgressListener.noop, counter, new DisabledNotificationService());
 
         assertTrue(worker.run(session));
         local.delete();

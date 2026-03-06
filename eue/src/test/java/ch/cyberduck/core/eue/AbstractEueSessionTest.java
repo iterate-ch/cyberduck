@@ -77,7 +77,7 @@ public class AbstractEueSessionTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
+        }, new DisabledHostKeyCallback(), new TestPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
     }
 

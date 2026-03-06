@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
@@ -53,7 +52,7 @@ public class CompareFilterTest {
         );
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), "f");
-        assertFalse(filter.accept(file, local, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        assertFalse(filter.accept(file, local, new TransferStatus().setExists(true), ProgressListener.noop));
     }
 
 
@@ -71,6 +70,6 @@ public class CompareFilterTest {
         );
         assertTrue(
                 filter.accept(new Path("/n", EnumSet.of(Path.Type.directory)), new NullLocal("/n"),
-                        new TransferStatus().setExists(true), new DisabledProgressListener()));
+                        new TransferStatus().setExists(true), ProgressListener.noop));
     }
 }

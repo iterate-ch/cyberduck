@@ -19,9 +19,9 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -77,7 +77,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         out.close();
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveUploadFeature(session).upload(
-                new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();

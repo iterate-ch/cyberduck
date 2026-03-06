@@ -19,10 +19,10 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AntiVirusAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -154,7 +154,7 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
         status.setLength(eicar.length);
         final SDSDirectS3UploadFeature feature = new SDSDirectS3UploadFeature(session, nodeid);
         final Node node = feature.upload(new SDSDelegatingWriteFeature(session, nodeid, new SDSDirectS3WriteFeature(session, nodeid)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), StreamListener.noop, status, new DisabledLoginCallback());
+                ProgressListener.noop, StreamListener.noop, status, new DisabledLoginCallback());
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(eicar.length, attributes.getSize());

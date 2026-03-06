@@ -20,12 +20,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -119,7 +119,7 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(dir1));
@@ -179,7 +179,7 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(file1, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -19,9 +19,9 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -57,7 +57,7 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final DriveUploadFeature upload = new DriveUploadFeature(session);
-        upload.upload(new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+        upload.upload(new DriveWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
             status, new DisabledConnectionCallback());
         test.attributes().setFileId(fileid.getFileId(test));
         assertTrue(session.getFeature(Find.class).find(test));

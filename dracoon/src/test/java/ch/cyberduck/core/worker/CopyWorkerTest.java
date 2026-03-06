@@ -18,9 +18,9 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDirectS3MultipartWriteFeature;
@@ -51,11 +51,11 @@ public class CopyWorkerTest extends AbstractSDSTest {
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), source, new TransferStatus());
         assertTrue(new SDSFindFeature(session, nodeid).find(source));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new SDSFindFeature(session, nodeid).find(source));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -71,11 +71,11 @@ public class CopyWorkerTest extends AbstractSDSTest {
         new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), targetFolder, new TransferStatus());
         assertTrue(new SDSFindFeature(session, nodeid).find(targetFolder));
         // copy file into vault
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new SDSFindFeature(session, nodeid).find(sourceFile));
         assertTrue(new SDSFindFeature(session, nodeid).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -88,13 +88,13 @@ public class CopyWorkerTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(session, nodeid).find(folder));
         assertTrue(new SDSFindFeature(session, nodeid).find(sourceFile));
         final Path targetFolder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new SDSFindFeature(session, nodeid).find(targetFolder));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new SDSFindFeature(session, nodeid).find(targetFile));
         assertTrue(new SDSFindFeature(session, nodeid).find(folder));
         assertTrue(new SDSFindFeature(session, nodeid).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), ProgressListener.noop).run(session);
     }
 }

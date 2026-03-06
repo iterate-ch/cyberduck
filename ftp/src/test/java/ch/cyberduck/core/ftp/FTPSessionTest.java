@@ -59,7 +59,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -149,7 +149,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         c.connect(session, new DisabledCancelCallback());
         assertTrue(callback.get());
     }

@@ -19,11 +19,11 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -102,7 +102,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         byte[] compare = new byte[content.length];
@@ -128,7 +128,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         assertTrue(t.isComplete());

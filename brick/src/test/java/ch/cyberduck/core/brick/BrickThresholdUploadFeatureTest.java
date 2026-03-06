@@ -19,10 +19,10 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,7 +55,7 @@ public class BrickThresholdUploadFeatureTest extends AbstractBrickTest {
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(new BrickFindFeature(session).find(test));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
@@ -81,7 +81,7 @@ public class BrickThresholdUploadFeatureTest extends AbstractBrickTest {
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new BrickFindFeature(session).find(test));

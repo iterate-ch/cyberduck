@@ -19,11 +19,11 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
@@ -66,7 +66,7 @@ public abstract class AbstractGraphTest extends VaultTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(), new TestPasswordStore(),
-            new DisabledProgressListener());
+                ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
     }
 

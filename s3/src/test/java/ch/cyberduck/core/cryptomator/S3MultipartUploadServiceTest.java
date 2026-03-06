@@ -20,9 +20,9 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
@@ -94,7 +94,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, writeStatus, null);
+        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
@@ -128,7 +128,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setLength(content.length);
-        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop, writeStatus, null);
+        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, writeStatus, null);
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
         assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test).getSize());
@@ -161,7 +161,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                 cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         IOUtils.write(content, local.getOutputStream(false));
-        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop, writeStatus, null);
+        m.upload(new CryptoWriteFeature<>(session, new S3WriteFeature(session, acl), cryptomator), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, writeStatus, null);
         assertTrue(writeStatus.isComplete());
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
         assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test).getSize());

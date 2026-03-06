@@ -142,7 +142,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 },
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         c.connect(session, new DisabledCancelCallback());
     }
 
@@ -163,7 +163,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 ), new DefaultX509KeyManager()
         );
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         s.check(session, new DisabledCancelCallback());
     }
 
@@ -186,7 +186,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 },
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener()
+                ProgressListener.noop
         );
         c.connect(session, new DisabledCancelCallback());
         assertTrue(warning.get());
@@ -203,7 +203,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -231,7 +231,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 },
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -267,7 +267,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 },
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -317,7 +317,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 },
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {

@@ -92,7 +92,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -124,7 +124,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                 },
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {

@@ -20,9 +20,9 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -90,7 +90,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         new CryptoBulkFeature<>(session, new DisabledBulkFeature(), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new SFTPWriteFeature(session), cryptomator).write(source, status.setLength(content.length), new DisabledConnectionCallback()));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback());
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
@@ -116,7 +116,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new SFTPWriteFeature(session)), targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback());
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
@@ -140,7 +140,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new SFTPWriteFeature(session)), targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback());
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
@@ -164,12 +164,12 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
-        new MoveWorker(Collections.singletonMap(file, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
+        new MoveWorker(Collections.singletonMap(file, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback()).run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(file));
         assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
+        new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback()).run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(folder));
         try {
             assertTrue(new CryptoListService(session, new SFTPListService(session), cryptomator).list(folder, new DisabledListProgressListener()).isEmpty());
@@ -201,7 +201,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
                 cryptomator.getFeature(session, Write.class, new SFTPWriteFeature(session)), encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         // move file into vault
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback());
         worker.run(session);
         assertFalse(new SFTPFindFeature(session).find(clearFile));
         assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(encryptedFile));
@@ -226,7 +226,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         // move directory into vault
         final Path encryptedFolder = new Path(vault, clearFolder.getName(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, clearFile.getName(), EnumSet.of(Path.Type.file));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFolder, encryptedFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFolder, encryptedFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback());
         worker.run(session);
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
@@ -256,7 +256,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move file outside vault
         final Path fileRenamed = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFile, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFile, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback());
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(encryptedFile));
         assertTrue(new SFTPFindFeature(session).find(fileRenamed));
@@ -283,7 +283,7 @@ public class MoveWorkerTest extends AbstractSFTPTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move directory outside vault
         final Path directoryRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback());
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(encryptedFolder));
         assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(encryptedFile));

@@ -18,11 +18,11 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googlestorage.AbstractGoogleStorageTest;
@@ -90,7 +90,7 @@ public class GoogleStorageSingleTransferWorkerTest extends AbstractGoogleStorage
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));

@@ -19,13 +19,12 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -94,7 +93,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                     protected Local initialize() throws ConcurrentException {
                         try {
                             final Local local = LocalFactory.get(temporary, file.getName());
-                            if(comparison.accept(file, local, new TransferStatus().setExists(true), new DisabledProgressListener())) {
+                            if(comparison.accept(file, local, new TransferStatus().setExists(true), ProgressListener.noop)) {
                                 final Read read = session.getFeature(Read.class);
                                 log.info("Download profile {}", file);
                                 // Read latest version

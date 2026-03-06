@@ -191,7 +191,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         };
         final S3Session session = new S3Session(host);
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, new DisabledCancelCallback());
         final String name = String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);

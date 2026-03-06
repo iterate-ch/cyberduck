@@ -19,9 +19,9 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -76,7 +76,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         // Unknown length in status
@@ -124,7 +124,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
@@ -152,7 +152,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();

@@ -19,9 +19,9 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
@@ -59,14 +59,14 @@ public class DefaultUploadFeatureTest extends AbstractFTPTest {
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             final Void reply = new DefaultUploadFeature<Void>(session).upload(
-                    new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                    new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             final Void reply = new DefaultUploadFeature<Void>(session).upload(
-                    new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop,
+                    new FTPWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
                     new DisabledConnectionCallback());
         }

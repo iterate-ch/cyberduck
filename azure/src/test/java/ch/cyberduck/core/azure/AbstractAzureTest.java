@@ -17,9 +17,9 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.test.VaultTest;
 
@@ -51,6 +51,6 @@ public class AbstractAzureTest extends VaultTest {
         ));
         session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new TestPasswordStore(), new DisabledProgressListener()).check(session, new DisabledCancelCallback());
+                new TestPasswordStore(), ProgressListener.noop).check(session, new DisabledCancelCallback());
     }
 }

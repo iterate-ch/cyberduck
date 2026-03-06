@@ -22,10 +22,10 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.s3.AbstractS3Test;
@@ -66,7 +66,7 @@ public class MoveWorkerTest extends AbstractS3Test {
                 )
         ));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(source));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback());
         worker.run(session);
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(source));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(target));
@@ -78,7 +78,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
                 new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
         ));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(target), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(target), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -99,12 +99,12 @@ public class MoveWorkerTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(test));
         final S3VersionedObjectListService list = new S3VersionedObjectListService(session, acl);
         final AttributedList<Path> versioned = list.list(sourceDirectory, new DisabledListProgressListener());
-        final Map<Path, Path> result = new MoveWorker(Collections.singletonMap(sourceDirectory, targetDirectory), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
+        final Map<Path, Path> result = new MoveWorker(Collections.singletonMap(sourceDirectory, targetDirectory), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback()).run(session);
         assertEquals(4, result.size());
         for(Map.Entry<Path, Path> entry : result.entrySet()) {
             assertFalse(new S3FindFeature(session, acl).find(entry.getKey().withAttributes(PathAttributes.EMPTY)));
             assertTrue(new S3FindFeature(session, acl).find(entry.getValue()));
         }
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), ProgressListener.noop).run(session);
     }
 }
