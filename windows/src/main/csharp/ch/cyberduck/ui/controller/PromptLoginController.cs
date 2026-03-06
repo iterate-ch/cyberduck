@@ -21,12 +21,14 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
+using ch.cyberduck.core.features;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
 using ch.cyberduck.ui.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Native;
 using Ch.Cyberduck.Core.TaskDialog;
+using java.util;
 using java.util.concurrent;
 using org.apache.logging.log4j;
 using StructureMap;
@@ -51,12 +53,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public new ILoginView View { get; set; }
 
+
+        public Location.Name select(Host bookmark, string title, string message, Set regions, Location.Name defaultRegion) => ConnectionCallback.__DefaultMethods.select(this, bookmark, title, message, regions, defaultRegion);
+
         object ConnectionCallback.getFeature(java.lang.Class type) => ConnectionCallback.__DefaultMethods.getFeature(this, type);
 
         public void await(CountDownLatch signal, Host bookmark, string title, string message) => Dialogs.AwaitBackgroundAction(signal, bookmark, title, message, Images.CyberduckApplication);
 
-        public void warn(Host bookmark, String title, String message, String continueButton, String disconnectButton,
-            String preference)
+        public void warn(Host bookmark, string title, string message, string continueButton, string disconnectButton,
+            string preference)
         {
             AsyncDelegate d = delegate
             {
@@ -85,7 +90,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //Proceed nevertheless.
         }
 
-        public Credentials prompt(Host bookmark, String username, String title, String reason, LoginOptions options)
+        public Credentials prompt(Host bookmark, string username, string title, string reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
             var credentials = new Credentials().setSaved(options.save()).setUsername(username);
@@ -163,7 +168,7 @@ namespace Ch.Cyberduck.Ui.Controller
             credentials.setUsername(View.Username);
             if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
             {
-                String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                string password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
                     bookmark.getHostname(), credentials.getUsername());
                 if (!string.IsNullOrWhiteSpace(password))
                 {

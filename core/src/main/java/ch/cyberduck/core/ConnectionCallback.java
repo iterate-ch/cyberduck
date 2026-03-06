@@ -24,9 +24,8 @@ import ch.cyberduck.core.features.Location;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-public interface ConnectionCallback extends PasswordCallback {
+public interface ConnectionCallback extends PasswordCallback, LocationCallback {
     ConnectionCallback noop = new DisabledConnectionCallback();
-
     /**
      * Display warning sheet. Block connection until decision is made.
      *
@@ -52,18 +51,15 @@ public interface ConnectionCallback extends PasswordCallback {
      */
     void await(CountDownLatch signal, Host bookmark, String title, String message) throws ConnectionCanceledException;
 
+    @Override
+    default Location.Name select(final Host bookmark, final String title, final String message,
+                                 final Set<Location.Name> regions, final Location.Name defaultRegion) throws ConnectionCanceledException {
+        return new Location.Name(this.prompt(bookmark, title, message, new LoginOptions().icon(bookmark.getProtocol().disk())
+                .passwordPlaceholder(message).password(false)).getPassword());
+    }
+
     @SuppressWarnings("unchecked")
     default <T> T getFeature(final Class<T> type) {
-        if(type == LocationCallback.class) {
-            return (T) new LocationCallback() {
-                @Override
-                public Location.Name select(final Host bookmark, final String title, final String message,
-                                            final Set<Location.Name> regions, final Location.Name defaultRegion) throws ConnectionCanceledException {
-                    return new Location.Name(prompt(bookmark, title, message, new LoginOptions().icon(bookmark.getProtocol().disk())
-                            .passwordPlaceholder(message).password(false)).getPassword());
-                }
-            };
-        }
         return null;
     }
 }

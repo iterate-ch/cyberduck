@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LocationCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -91,7 +90,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
             final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
             if(!profiles.isEmpty()) {
                 try {
-                    final String profile = IdentityCenterAuthorizationService.prompt(host, prompt.getFeature(LocationCallback.class),
+                    final String profile = IdentityCenterAuthorizationService.prompt(host, prompt,
                             profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
                             LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
                     log.debug("Configuring credentials from profile {}", profile);
@@ -104,7 +103,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
         }
         this.trust = trust;
         this.key = key;
-        this.region = IdentityCenterAuthorizationService.prompt(host, prompt.getFeature(LocationCallback.class), host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
+        this.region = IdentityCenterAuthorizationService.prompt(host, prompt, host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
                 LocaleFactory.localizedString(String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"),
                 host.getProperty(Profile.SSO_REGION_KEY)).getIdentifier();
         this.startUrl = prompt(host, prompt, Profile.SSO_START_URL_KEY, LocaleFactory.localizedString(
