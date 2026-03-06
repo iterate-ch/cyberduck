@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
@@ -56,9 +56,9 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         final String fileid = file.attributes().getFileId();
         delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final Path target = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertThrows(NotfoundException.class, () -> new GraphCopyFeature(session, this.fileid).copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
+        assertThrows(NotfoundException.class, () -> new GraphCopyFeature(session, this.fileid).copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop));
         file.attributes().setFileId(fileid);
-        assertThrows(NotfoundException.class, () -> new GraphCopyFeature(session, this.fileid).copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()));
+        assertThrows(NotfoundException.class, () -> new GraphCopyFeature(session, this.fileid).copy(file, target, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         Path rename = new Path(directory, file.getName(), EnumSet.of(Path.Type.file));
         final GraphCopyFeature copy = new GraphCopyFeature(session, fileid);
         assertTrue(copy.isSupported(file, Optional.of(rename)));
-        final Path target = copy.copy(file, rename, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        final Path target = copy.copy(file, rename, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
         assertNotEquals(file.attributes().getFileId(), target.attributes().getFileId());
         assertEquals(target.attributes().getFileId(), new GraphAttributesFinderFeature(session, fileid).find(rename).getFileId());
         new GraphDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -85,7 +85,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
                 new GraphWriteFeature(session, fileid), new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new GraphCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new GraphCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), StreamListener.noop);
         final Find find = new GraphFindFeature(session, fileid);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));

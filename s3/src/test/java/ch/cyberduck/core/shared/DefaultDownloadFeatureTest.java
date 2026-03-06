@@ -22,10 +22,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -79,7 +79,7 @@ public class DefaultDownloadFeatureTest extends AbstractS3Test {
             final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
             final TransferStatus readStatus = new TransferStatus().setLength(content.length);
             new DefaultDownloadFeature(session).download(
-                    new S3ReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new S3ReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 readStatus,
                 new DisabledConnectionCallback());
             final byte[] buffer = new byte[content.length];

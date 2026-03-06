@@ -17,7 +17,6 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.DefaultSessionPool;
@@ -68,7 +67,7 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 pool, SessionPool.DISCONNECTED, t, new TransferOptions(),
                 new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledConnectionCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+                new DisabledConnectionCallback(), new DisabledProgressListener(), StreamListener.noop, new DisabledNotificationService()
         );
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
         worker.release(session, ConcurrentTransferWorker.Connection.source, null);
@@ -88,7 +87,7 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 pool, SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t),
                 new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+                new DisabledLoginCallback(), new DisabledProgressListener(), StreamListener.noop, new DisabledNotificationService()
         );
         assertNotSame(worker.borrow(ConcurrentTransferWorker.Connection.source), worker.borrow(ConcurrentTransferWorker.Connection.source));
         worker.cleanup(true);
@@ -106,7 +105,7 @@ public class ConcurrentTransferWorkerTest {
                 new DisabledTranscriptListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 pool.withMaxTotal(1), SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+                new DisabledLoginCallback(), new DisabledProgressListener(), StreamListener.noop, new DisabledNotificationService()
         );
         // Override default transfer queue size
         pool.withMaxTotal(1);
@@ -197,7 +196,7 @@ public class ConcurrentTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+                new DisabledLoginCallback(), new DisabledProgressListener(), StreamListener.noop, new DisabledNotificationService()
         );
         pool.withMaxTotal(connections);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
@@ -220,7 +219,7 @@ public class ConcurrentTransferWorkerTest {
                 new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         new DefaultVaultRegistry(new DisabledPasswordCallback()),
                         new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+                new DisabledLoginCallback(), new DisabledProgressListener(), StreamListener.noop, new DisabledNotificationService()
         );
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
         assertNotNull(session);
@@ -251,7 +250,7 @@ public class ConcurrentTransferWorkerTest {
                 new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         new DefaultVaultRegistry(new DisabledPasswordCallback()),
                         new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+                new DisabledLoginCallback(), new DisabledProgressListener(), StreamListener.noop, new DisabledNotificationService()
         );
         int workers = 1000;
         final CountDownLatch entry = new CountDownLatch(workers);

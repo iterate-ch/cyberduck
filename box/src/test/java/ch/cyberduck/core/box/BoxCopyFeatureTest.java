@@ -23,7 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -47,7 +47,7 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new BoxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new BoxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
         assertTrue(new BoxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
         assertTrue(new BoxFindFeature(session, fileid).find(copy.withAttributes(PathAttributes.EMPTY)));
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -63,7 +63,7 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
         new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path existing = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), copy, new TransferStatus());
-        new BoxCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true).setRemote(existing.attributes()), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new BoxCopyFeature(session, fileid).copy(test, copy, new TransferStatus().setExists(true).setRemote(existing.attributes()), new DisabledConnectionCallback(), StreamListener.noop);
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
@@ -78,7 +78,7 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new BoxCopyFeature(session, fileid).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new BoxCopyFeature(session, fileid).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
         assertTrue(new BoxFindFeature(session, fileid).find(file));
         assertTrue(new BoxFindFeature(session, fileid).find(copy));
         assertTrue(new BoxFindFeature(session, fileid).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
@@ -90,6 +90,6 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BoxCopyFeature(session, fileid).copy(test, new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(),
-                new DisabledLoginCallback(), new DisabledStreamListener());
+                new DisabledLoginCallback(), StreamListener.noop);
     }
 }

@@ -25,8 +25,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -110,7 +110,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
         new DefaultUploadFeature<Node>(session).upload(
-                new SDSDirectS3MultipartWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop, upload,
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -143,7 +143,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
         new DefaultUploadFeature<Node>(session).upload(
-                new SDSDirectS3MultipartWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
+                new SDSDirectS3MultipartWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), StreamListener.noop, upload,
                 new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

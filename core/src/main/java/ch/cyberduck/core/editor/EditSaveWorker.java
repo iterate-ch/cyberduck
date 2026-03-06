@@ -27,7 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -84,7 +84,7 @@ public class EditSaveWorker extends Worker<Transfer> {
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, session, upload, new TransferOptions(),
                 new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,
-                listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
+                listener, StreamListener.noop, new DisabledLoginCallback(), notification);
         worker.run(session);
         if(!upload.isComplete()) {
             log.warn("File size changed for {}", file);

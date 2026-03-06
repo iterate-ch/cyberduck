@@ -32,7 +32,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -104,7 +104,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                                 .setStorageClass(s.attributes().getStorageClass())
                                 .setExists(new CachingFindFeature(session, cache).find(t))
                                 .setLength(s.attributes().getSize());
-                        final Path copied = copy.copy(s, t, status, callback, new DisabledStreamListener());
+                        final Path copied = copy.copy(s, t, status, callback, StreamListener.noop);
                         if(PathAttributes.EMPTY.equals(copied.attributes())) {
                             copied.withAttributes(session.getFeature(AttributesFinder.class).find(copied));
                         }

@@ -8,9 +8,9 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -46,7 +46,7 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
             assertEquals("Cannot copy cyberduck.", e.getDetail(false));
         }
         final Path copy = feature.copy(test,
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
         assertEquals(PathAttributes.EMPTY, copy.attributes());
         final PathAttributes sourceAttr = new AzureAttributesFinderFeature(session).find(test);
         final PathAttributes copyAttr = new AzureAttributesFinderFeature(session).find(copy);
@@ -66,7 +66,7 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content), out);
         final Path copy = new AzureTouchFeature(session).touch(
                 new AzureWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new AzureCopyFeature(session).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new AzureCopyFeature(session).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), StreamListener.noop);
         assertEquals(1023L, new AzureAttributesFinderFeature(session).find(copy).getSize());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));

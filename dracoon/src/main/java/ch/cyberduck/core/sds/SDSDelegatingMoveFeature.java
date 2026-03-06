@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -62,7 +62,7 @@ public class SDSDelegatingMoveFeature implements Move {
             // Moving into or from an encrypted room
             final Copy copy = new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid));
             log.debug("Move {} to {} using copy feature {}", source, target, copy);
-            final Path c = copy.copy(source, target, status, connectionCallback, new DisabledStreamListener());
+            final Path c = copy.copy(source, target, status, connectionCallback, StreamListener.noop);
             // Delete source file after copy is complete
             final Delete delete = new SDSDeleteFeature(session, nodeid);
             if(delete.isSupported(source)) {

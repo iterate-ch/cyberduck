@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -47,7 +47,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), test, new TransferStatus());
         final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new DeepboxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), StreamListener.noop);
         try {
             assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new DefaultPathAttributes())));
             assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(new DefaultPathAttributes())));
@@ -76,7 +76,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertThrows(NotfoundException.class, () ->
                 new DeepboxCopyFeature(session, fileid).copy(test, new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(),
-                        new DisabledLoginCallback(), new DisabledStreamListener()));
+                        new DisabledLoginCallback(), StreamListener.noop));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final PathAttributes originalTestAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(test);
         final PathAttributes originalTargetAttributes = new DeepboxAttributesFinderFeature(session, fileid).find(target);
 
-        new DeepboxCopyFeature(session, fileid).copy(test, target, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new DeepboxCopyFeature(session, fileid).copy(test, target, new TransferStatus().setExists(true), new DisabledConnectionCallback(), StreamListener.noop);
         assertTrue(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(targetInTrash));

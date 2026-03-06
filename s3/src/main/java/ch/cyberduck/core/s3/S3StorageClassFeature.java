@@ -23,7 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -80,7 +80,7 @@ public class S3StorageClassFeature implements Redundancy {
             final TransferStatus status = new TransferStatus();
             status.setLength(file.attributes().getSize());
             status.setStorageClass(redundancy);
-            copy.copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+            copy.copy(file, file, status, new DisabledConnectionCallback(), StreamListener.noop);
         }
         catch(NotfoundException e) {
             if(file.isDirectory()) {

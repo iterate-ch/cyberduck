@@ -29,8 +29,8 @@ import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -74,7 +74,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus().setLength(content.length);
         new DefaultDownloadFeature(session).download(
-                new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
             new DisabledConnectionCallback());
         final byte[] buffer = new byte[content.length];
@@ -104,7 +104,7 @@ public class DefaultDownloadFeatureTest extends AbstractB2Test {
         {
             final TransferStatus status = new TransferStatus().setLength(-1L);
             new DefaultDownloadFeature(session).download(
-                    new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new B2ReadFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                     status,
                 new DisabledConnectionCallback());
         }

@@ -21,8 +21,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -55,7 +55,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         out.close();
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final Path copy = new B2LargeCopyFeature(session, fileid, 5 * 1000L * 1000L, 1).copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), StreamListener.noop);
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
@@ -81,7 +81,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         out.close();
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final Path copy = new B2LargeCopyFeature(session, fileid, 5 * 1000L * 1000L, 1).copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), StreamListener.noop);
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         final byte[] compare = new byte[content.length];
@@ -107,7 +107,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         assertTrue(new B2FindFeature(session, fileid).find(new Path(folder, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         new B2LargeCopyFeature(session, fileid, 5 * 1000L * 1000L, 1).copy(test, copy,
-                new TransferStatus().setExists(true).setLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new TransferStatus().setExists(true).setLength(content.length), new DisabledConnectionCallback(), StreamListener.noop);
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
