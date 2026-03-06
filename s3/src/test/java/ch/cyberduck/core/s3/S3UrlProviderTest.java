@@ -3,7 +3,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -11,6 +10,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
-                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
                 }
                 catch(BackgroundException e) {
                     fail();
@@ -108,7 +108,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
-                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
                 }
                 catch(BackgroundException e) {
                     fail();
@@ -128,7 +128,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
-                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
                 }
                 catch(BackgroundException e) {
                     fail();

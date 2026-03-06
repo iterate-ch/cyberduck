@@ -15,7 +15,6 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.FallbackAttributesFinderFeature;
@@ -27,9 +26,9 @@ import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -45,8 +44,8 @@ public class FallbackAttributesFinderFeatureTest {
     @Test
     public void testFindNoWebDAV() throws Exception {
         final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "ftp.gnu.org"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+        session.login(new DisabledLoginCallback(), CancelCallback.noop);
         // Handle 405 Method Not Allowed
         final AttributesFinder f = new FallbackAttributesFinderFeature(new DefaultAttributesFinderFeature(session), new DAVAttributesFinderFeature(session));
         final PathAttributes attr = f.find(new Path("/gnu/wget/wget-1.19.4.tar.gz", EnumSet.of(Path.Type.file)));

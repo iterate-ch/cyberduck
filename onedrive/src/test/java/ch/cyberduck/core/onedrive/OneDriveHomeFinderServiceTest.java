@@ -16,7 +16,6 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -31,6 +30,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -70,7 +70,7 @@ public class OneDriveHomeFinderServiceTest extends AbstractOneDriveTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(),
-                new TestPasswordStore(), ProgressListener.noop).check(session, new DisabledCancelCallback());
+                new TestPasswordStore(), ProgressListener.noop).check(session, CancelCallback.noop);
         assertEquals("/My Files", (new OneDriveHomeFinderService().find().getAbsolute()));
     }
 }

@@ -16,7 +16,6 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -32,6 +31,7 @@ import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         );
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new TestPasswordStore(), ProgressListener.noop);
-        login.check(session, new DisabledCancelCallback());
+        login.check(session, CancelCallback.noop);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -84,7 +84,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         session.getHost().setCredentials(
             new Credentials("duck-1432", "")
         );
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledLoginCallback(), CancelCallback.noop);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -98,6 +98,6 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                 // OAuth2
                 return new Credentials("", "");
             }
-        }, new DisabledCancelCallback());
+        }, CancelCallback.noop);
     }
 }

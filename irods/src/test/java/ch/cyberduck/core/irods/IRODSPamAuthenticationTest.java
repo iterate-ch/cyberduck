@@ -16,7 +16,6 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -26,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.irods.irods4j.authentication.NativeAuthPlugin;
@@ -137,10 +137,10 @@ public class IRODSPamAuthenticationTest {
             try {
                 final IRODSSession session = new IRODSSession(host, cyberduckTrustManager, null);
 
-                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
                 assertTrue(session.isConnected());
                 assertNotNull(session.getClient());
-                session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+                session.login(new DisabledLoginCallback(), CancelCallback.noop);
 
                 session.close();
                 assertFalse(session.isConnected());
@@ -176,10 +176,10 @@ public class IRODSPamAuthenticationTest {
             try {
                 final IRODSSession session = new IRODSSession(host, cyberduckTrustManager, null);
 
-                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
                 assertTrue(session.isConnected());
                 assertNotNull(session.getClient());
-                assertThrows(BackgroundException.class, () -> session.login(new DisabledLoginCallback(), new DisabledCancelCallback()));
+                assertThrows(BackgroundException.class, () -> session.login(new DisabledLoginCallback(), CancelCallback.noop));
 
                 session.close();
                 assertFalse(session.isConnected());

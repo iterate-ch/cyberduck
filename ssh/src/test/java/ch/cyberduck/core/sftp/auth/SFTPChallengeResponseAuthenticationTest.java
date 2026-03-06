@@ -15,10 +15,10 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -33,6 +33,6 @@ public class SFTPChallengeResponseAuthenticationTest extends AbstractSFTPTest {
     @Test(expected = LoginFailureException.class)
     @Ignore
     public void testAuthenticate() throws Exception {
-        assertFalse(new SFTPChallengeResponseAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertFalse(new SFTPChallengeResponseAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback(), CancelCallback.noop));
     }
 }

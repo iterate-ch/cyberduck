@@ -1,7 +1,6 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -29,6 +28,7 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -119,7 +119,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 ProgressListener.noop);
         try {
-            login.connect(session, new DisabledCancelCallback());
+            login.connect(session, CancelCallback.noop);
         }
         catch(LoginCanceledException e) {
             assertTrue(fail.get());
@@ -133,7 +133,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
         new SFTPHomeDirectoryService(session).find();
     }
 
@@ -163,7 +163,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
-            }, new DisabledLoginCallback(), new DisabledCancelCallback());
+            }, new DisabledLoginCallback(), CancelCallback.noop);
         }
         catch(Exception e) {
             assertTrue(verify.get());
@@ -190,7 +190,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 ProgressListener.noop);
-        login.connect(session, new DisabledCancelCallback());
+        login.connect(session, CancelCallback.noop);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -211,7 +211,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 ProgressListener.noop);
         try {
-            login.check(session, new DisabledCancelCallback());
+            login.check(session, CancelCallback.noop);
         }
         catch(LoginCanceledException e) {
             assertTrue(change.get());
@@ -247,7 +247,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 ProgressListener.noop);
-        login.connect(session, new DisabledCancelCallback());
+        login.connect(session, CancelCallback.noop);
         assertTrue(change.get());
     }
 
@@ -276,7 +276,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                     fail();
                     return false;
                 }
-            }, new DisabledLoginCallback(), new DisabledCancelCallback()));
+            }, new DisabledLoginCallback(), CancelCallback.noop));
             session.close();
             assertNotNull(session.open(new DisabledProxyFinder(), new OpenSSHHostKeyVerifier(f) {
                 @Override
@@ -294,7 +294,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) {
                     return false;
                 }
-            }, new DisabledLoginCallback(), new DisabledCancelCallback()));
+            }, new DisabledLoginCallback(), CancelCallback.noop));
             session.close();
         }
         finally {

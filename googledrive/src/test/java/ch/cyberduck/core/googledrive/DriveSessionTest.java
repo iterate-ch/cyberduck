@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -35,6 +34,7 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -75,7 +75,7 @@ public class DriveSessionTest extends AbstractDriveTest {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), ProgressListener.noop
-        ).connect(session, new DisabledCancelCallback());
+        ).connect(session, CancelCallback.noop);
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());

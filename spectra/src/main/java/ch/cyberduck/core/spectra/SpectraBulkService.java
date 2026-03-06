@@ -16,7 +16,6 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3PathContainerService;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -283,7 +283,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         break;
                     }
                     if(StringUtils.equals(node.getEndPoint(), new Resolver().resolve(
-                            host.getHostname(), new DisabledCancelCallback())[0].getHostAddress())) {
+                            host.getHostname(), CancelCallback.noop)[0].getHostAddress())) {
                         break;
                     }
                     log.warn("Redirect to {} for file {}", node.getEndPoint(), file);

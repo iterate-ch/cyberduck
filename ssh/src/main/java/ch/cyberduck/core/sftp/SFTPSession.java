@@ -148,7 +148,7 @@ public class SFTPSession extends Session<SSHClient> {
                 final SSHClient hop = this.toClient(key, configuration);
                 hop.connect(proxy.getHostname(), proxy.getPort());
                 // Authenticate with jump host
-                this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
+                this.authenticate(hop, proxy, prompt, CancelCallback.noop);
                 log.debug("Authenticated with jump host {}", proxy);
                 final DirectConnection tunnel = hop.newDirectConnection(
                         new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());

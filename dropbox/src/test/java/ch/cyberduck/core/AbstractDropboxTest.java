@@ -21,6 +21,7 @@ import ch.cyberduck.core.dropbox.DropboxSession;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -64,6 +65,6 @@ public class AbstractDropboxTest extends VaultTest {
             }
         }, new DisabledHostKeyCallback(),
                 new TestPasswordStore(), ProgressListener.noop);
-        login.check(session, new DisabledCancelCallback());
+        login.check(session, CancelCallback.noop);
     }
 }

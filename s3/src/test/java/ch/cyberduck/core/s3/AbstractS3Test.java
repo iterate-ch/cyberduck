@@ -16,7 +16,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -87,7 +87,7 @@ public abstract class AbstractS3Test extends VaultTest {
             }
         }, new DisabledHostKeyCallback(),
                 new TestPasswordStore(), ProgressListener.noop);
-        login.check(session, new DisabledCancelCallback());
+        login.check(session, CancelCallback.noop);
     }
 
     @Before
@@ -107,7 +107,7 @@ public abstract class AbstractS3Test extends VaultTest {
             }
         }, new DisabledHostKeyCallback(),
                 new TestPasswordStore(), ProgressListener.noop);
-        login.check(virtualhost, new DisabledCancelCallback());
+        login.check(virtualhost, CancelCallback.noop);
     }
 
     @Before
@@ -125,6 +125,6 @@ public abstract class AbstractS3Test extends VaultTest {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), ProgressListener.noop);
-        login.check(cloudfront, new DisabledCancelCallback());
+        login.check(cloudfront, CancelCallback.noop);
     }
 }
