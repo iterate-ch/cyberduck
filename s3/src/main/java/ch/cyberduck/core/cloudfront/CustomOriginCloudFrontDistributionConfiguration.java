@@ -19,7 +19,6 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.DefaultWebUrlProvider;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
@@ -35,6 +34,7 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +64,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T connected(final Connected<T> run, final LoginCallback prompt) throws BackgroundException {
         new LoginConnectionService(prompt, new DisabledHostKeyCallback(), PasswordStoreFactory.get(), ProgressListener.noop)
-            .check(session, new DisabledCancelCallback());
+                .check(session, CancelCallback.noop);
         return run.call();
     }
 

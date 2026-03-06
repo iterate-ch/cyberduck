@@ -16,13 +16,13 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -41,8 +41,8 @@ public class LocalDeleteFeatureTest {
     @Test
     public void testDelete() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+        session.login(new DisabledLoginCallback(), CancelCallback.noop);
         final Path file = new Path(new LocalHomeFinderFeature().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
         final Path folder = new Path(new LocalHomeFinderFeature().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -55,8 +55,8 @@ public class LocalDeleteFeatureTest {
     @Test
     public void testDeleteSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+        session.login(new DisabledLoginCallback(), CancelCallback.noop);
         final Path folder = new Path(new LocalHomeFinderFeature().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

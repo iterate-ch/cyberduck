@@ -17,7 +17,6 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -34,6 +33,7 @@ import ch.cyberduck.core.local.FlatTemporaryFileService;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -123,7 +123,7 @@ public class AbstractDAVTest extends VaultTest {
                 //
             }
         }, new DisabledHostKeyCallback(), new TestPasswordStore(), ProgressListener.noop);
-        login.check(session, new DisabledCancelCallback());
+        login.check(session, CancelCallback.noop);
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {

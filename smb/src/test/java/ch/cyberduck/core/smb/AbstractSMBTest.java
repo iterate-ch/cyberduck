@@ -16,7 +16,6 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -25,6 +24,7 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
@@ -67,7 +67,7 @@ public abstract class AbstractSMBTest {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), ProgressListener.noop);
-        login.check(session, new DisabledCancelCallback());
+        login.check(session, CancelCallback.noop);
     }
 
     @After

@@ -35,7 +35,7 @@ public class LoginConnectionServiceTest {
                     return new Proxy(Proxy.Type.HTTP, "proxy.local", 6666);
                 }
             });
-        s.check(session, new DisabledCancelCallback());
+        s.check(session, CancelCallback.noop);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class LoginConnectionServiceTest {
                 ProgressListener.noop
         );
         try {
-            s.check(session, new DisabledCancelCallback());
+            s.check(session, CancelCallback.noop);
             fail();
         }
         catch(ResolveFailedException e) {
@@ -71,7 +71,7 @@ public class LoginConnectionServiceTest {
                 public boolean isConnected() {
                     return false;
                 }
-            }, new DisabledCancelCallback());
+            }, CancelCallback.noop);
             fail();
         }
         catch(LoginCanceledException e) {
@@ -83,7 +83,7 @@ public class LoginConnectionServiceTest {
     public void testNoHostname() throws Exception {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 ProgressListener.noop);
-        s.check(new NullSession(new Host(new TestProtocol(), "")), new DisabledCancelCallback());
+        s.check(new NullSession(new Host(new TestProtocol(), "")), CancelCallback.noop);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -137,7 +137,7 @@ public class LoginConnectionServiceTest {
             }
         };
         try {
-            s.check(session, new DisabledCancelCallback());
+            s.check(session, CancelCallback.noop);
         }
         finally {
             assertTrue(keychain.get());
@@ -162,7 +162,7 @@ public class LoginConnectionServiceTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 ProgressListener.noop);
         try {
-            l.connect(session, new DisabledCancelCallback());
+            l.connect(session, CancelCallback.noop);
             fail();
         }
         catch(LoginCanceledException e) {

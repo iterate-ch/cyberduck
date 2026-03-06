@@ -18,13 +18,13 @@ package ch.cyberduck.core.pool;
  */
 
 import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -66,7 +66,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     public void activateObject(final PooledObject<Session> p) throws BackgroundException {
         final Session session = p.getObject();
         log.debug("Activate session {}", session);
-        connect.check(session, new DisabledCancelCallback());
+        connect.check(session, CancelCallback.noop);
     }
 
     @Override

@@ -16,7 +16,6 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -27,6 +26,7 @@ import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.test.VaultTest;
@@ -65,7 +65,7 @@ public class MantaPublicKeyAuthenticationTest extends VaultTest {
             final String hostname = new URL(PROPERTIES.get("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
             session.login(
                     new DisabledLoginCallback() {
                         @Override
@@ -73,7 +73,7 @@ public class MantaPublicKeyAuthenticationTest extends VaultTest {
                             throw new LoginCanceledException();
                         }
                     },
-                    new DisabledCancelCallback()
+                    CancelCallback.noop
             );
             assertEquals(session.getClient().getContext().getMantaKeyId(), PROPERTIES.get("manta.key_id"));
             session.close();
@@ -107,7 +107,7 @@ public class MantaPublicKeyAuthenticationTest extends VaultTest {
             final String hostname = new URL(PROPERTIES.get("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
             session.login(
                     new DisabledLoginCallback() {
                         @Override
@@ -115,7 +115,7 @@ public class MantaPublicKeyAuthenticationTest extends VaultTest {
                             return new VaultCredentials(passphraseKeyPassword);
                         }
                     },
-                    new DisabledCancelCallback()
+                    CancelCallback.noop
             );
             assertEquals(PROPERTIES.get("manta.passphrase.key_id"), session.getClient().getContext().getMantaKeyId());
             session.close();

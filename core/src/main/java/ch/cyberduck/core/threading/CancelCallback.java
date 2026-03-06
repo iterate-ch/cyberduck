@@ -20,10 +20,5 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 public interface CancelCallback {
     void verify() throws ConnectionCanceledException;
 
-    CancelCallback noop = new CancelCallback() {
-        @Override
-        public void verify() throws ConnectionCanceledException {
-            //
-        }
-    };
+    CancelCallback noop = new DisabledCancelCallback();
 }

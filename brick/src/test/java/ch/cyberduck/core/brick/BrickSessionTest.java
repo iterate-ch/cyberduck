@@ -16,7 +16,6 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Profile;
@@ -26,6 +25,7 @@ import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class BrickSessionTest extends AbstractBrickTest {
             }
         };
         final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        session.pair(host, ConnectionCallback.noop, new DisabledLoginCallback(), new DisabledCancelCallback(),
+        session.pair(host, ConnectionCallback.noop, new DisabledLoginCallback(), CancelCallback.noop,
                 "t", "m", new BrowserLauncher() {
                     @Override
                     public boolean open(final String url) {

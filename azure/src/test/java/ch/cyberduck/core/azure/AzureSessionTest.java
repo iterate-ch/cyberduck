@@ -1,7 +1,6 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -19,6 +18,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +64,7 @@ public class AzureSessionTest extends AbstractAzureTest {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), ProgressListener.noop);
-        login.connect(session, new DisabledCancelCallback());
+        login.connect(session, CancelCallback.noop);
         session.close();
     }
 
@@ -92,7 +92,7 @@ public class AzureSessionTest extends AbstractAzureTest {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), ProgressListener.noop);
-        connect.connect(session, new DisabledCancelCallback());
+        connect.connect(session, CancelCallback.noop);
         assertTrue(session.isConnected());
         connect.close(session);
         assertFalse(session.isConnected());
@@ -111,7 +111,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), ProgressListener.noop).connect(session, new DisabledCancelCallback());
+                new DisabledPasswordStore(), ProgressListener.noop).connect(session, CancelCallback.noop);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -127,6 +127,6 @@ public class AzureSessionTest extends AbstractAzureTest {
                 return super.prompt(bookmark, username, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), ProgressListener.noop).connect(session, new DisabledCancelCallback());
+                new DisabledPasswordStore(), ProgressListener.noop).connect(session, CancelCallback.noop);
     }
 }
