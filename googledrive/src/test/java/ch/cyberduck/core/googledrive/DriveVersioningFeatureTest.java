@@ -20,8 +20,8 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -95,8 +95,8 @@ public class DriveVersioningFeatureTest extends AbstractDriveTest {
         }
         new DriveDeleteFeature(session, fileid).delete(versions.toList(), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         for(Path version : new DriveListService(session, fileid).list(room, new DisabledListProgressListener())) {
-            new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(version), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(version), LoginCallback.noop, new Delete.DisabledCallback());
         }
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

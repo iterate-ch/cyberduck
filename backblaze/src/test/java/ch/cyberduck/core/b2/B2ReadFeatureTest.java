@@ -18,8 +18,8 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -83,9 +83,9 @@ public class B2ReadFeatureTest extends AbstractB2Test {
                         // Ignore update. As with unknown length for chunked transfer
                         return this;
                     }
-                }, new DisabledLoginCallback());
+                }, LoginCallback.noop);
         assertEquals(923L, local.attributes().getSize());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -112,7 +112,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
             assertNotNull(in);
             in.close();
         }
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -144,7 +144,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final CountingInputStream in = new CountingInputStream(new B2ReadFeature(session, fileid).read(file, status, ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -209,14 +209,14 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         test.attributes().setVersionId(invalidId);
         fileid.cache(test, invalidId);
         try {
-            final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().setRemote(test.attributes()), new DisabledLoginCallback());
+            final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().setRemote(test.attributes()), LoginCallback.noop);
             fail();
         }
         catch(NotfoundException e) {
             //
         }
         assertNull(test.attributes().getVersionId());
-        new B2DeleteFeature(session, fileid).delete(new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).toList(), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).toList(), LoginCallback.noop, new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

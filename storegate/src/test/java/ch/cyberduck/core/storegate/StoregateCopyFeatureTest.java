@@ -19,7 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -55,7 +55,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, nodeid).copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop).attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(copy));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop).attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(copy));
-        new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new StoregateListService(session, fileid).list(targetFolder, new DisabledListProgressListener());
         assertTrue(find.find(copy));
-        new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(top), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(top), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(test2));
-        new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(top), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(top), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertTrue(new DefaultFindFeature(session).find(copy));
-        new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(top), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(top), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
 }

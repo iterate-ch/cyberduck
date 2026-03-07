@@ -91,7 +91,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         };
         final Transfer t = new UploadTransfer(host, test, local);
         final BytecountStreamListener counter = new BytecountStreamListener();
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), ProgressListener.noop);
+        final LoginConnectionService connect = new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(), new DisabledPasswordStore(), ProgressListener.noop);
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
@@ -159,7 +159,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -182,7 +182,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         };
         final Transfer transfer = new UploadTransfer(host, list);
         final DefaultSessionPool pool = new DefaultSessionPool(
-                new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+                new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                         ProgressListener.noop),
                 new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host);
@@ -194,7 +194,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledLoginCallback(), ProgressListener.noop, StreamListener.noop, new DisabledNotificationService()
+                LoginCallback.noop, ProgressListener.noop, StreamListener.noop, new DisabledNotificationService()
         );
         pool.withMaxTotal(connections);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);

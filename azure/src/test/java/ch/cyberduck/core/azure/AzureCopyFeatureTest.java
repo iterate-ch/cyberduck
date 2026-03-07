@@ -2,7 +2,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -51,7 +51,7 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         final PathAttributes sourceAttr = new AzureAttributesFinderFeature(session).find(test);
         final PathAttributes copyAttr = new AzureAttributesFinderFeature(session).find(copy);
         assertNotEquals(sourceAttr.getETag(), copyAttr.getETag());
-        new AzureDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -71,6 +71,6 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new AzureDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

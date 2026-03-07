@@ -20,7 +20,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -73,7 +73,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final PathAttributes targetAttr = new DriveAttributesFinderFeature(session, fileid).find(target);
         assertEquals(target.attributes(), targetAttr);
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(target, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(target, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         assertTrue(files.get(new Path(test).withAttributes(new DefaultPathAttributes().setFileId(firstVersion))).attributes().isTrashed());
         assertFalse(files.get(target).attributes().isHidden());
         assertTrue(find.find(target));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -108,6 +108,6 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         assertFalse(find.find(sourceDirectory));
         assertTrue(find.find(targetDirectory));
         assertTrue(find.find(targetFile));
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(targetFile, targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(targetFile, targetDirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -17,7 +17,7 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -56,7 +56,7 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
         assertNotEquals(test.attributes().getETag(), target.attributes().getETag());
         assertEquals(target.attributes(), new BoxAttributesFinderFeature(session, fileid).find(target));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), target.attributes()));
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
         new BoxMoveFeature(session, fileid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new BoxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
         assertTrue(new BoxFindFeature(session, fileid).find(target));
-        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
         assertTrue(new BoxFindFeature(session, fileid).find(override));
         assertEquals(test.attributes().getModificationDate(), override.attributes().getModificationDate());
         assertEquals(test.attributes().getChecksum(), override.attributes().getChecksum());
-        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -101,6 +101,6 @@ public class BoxMoveFeatureTest extends AbstractBoxTest {
         final Path file = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), new Path(new DefaultHomeFinderService(session).find(), StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(new DefaultHomeFinderService(session).find(), StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
         new BoxMoveFeature(session, fileid).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(rename), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -15,7 +15,7 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -33,6 +33,6 @@ public class SFTPNoneAuthenticationTest extends AbstractSFTPTest {
     @Test(expected = LoginFailureException.class)
     @Ignore
     public void testAuthenticate() throws Exception {
-        assertFalse(new SFTPNoneAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback(), CancelCallback.noop));
+        assertFalse(new SFTPNoneAuthentication(session.getClient()).authenticate(session.getHost(), LoginCallback.noop, CancelCallback.noop));
     }
 }

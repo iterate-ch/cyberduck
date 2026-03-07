@@ -19,7 +19,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
@@ -49,7 +49,7 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session, region).find(container));
         // Can create again regardless if exists
         feature.mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new TransferStatus());
-        new SwiftDeleteFeature(session, region).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session, region).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session, region).find(container));
     }
 
@@ -81,7 +81,7 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
         assertEquals(placeholder.attributes().getChecksum(), new SwiftAttributesFinderFeature(session, region).find(placeholder).getChecksum());
         assertTrue(new SwiftObjectListService(session, region).list(placeholder, new DisabledListProgressListener()).isEmpty());
         assertEquals(1, new SwiftObjectListService(session, region).list(parent, new DisabledListProgressListener()).size());
-        new SwiftDeleteFeature(session, region).delete(Arrays.asList(placeholder, parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session, region).delete(Arrays.asList(placeholder, parent), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session, region).find(placeholder));
     }
 }

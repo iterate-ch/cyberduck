@@ -3,10 +3,10 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
@@ -130,7 +130,7 @@ public class DownloadTransferTest {
         final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
             new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService());
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService());
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), "c"), new TransferStatus().setExists(true),
                 TransferAction.overwrite
         );
@@ -161,7 +161,7 @@ public class DownloadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService());
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService());
         worker.prepare(test, testLocal, new TransferStatus().setExists(true),
                 TransferAction.overwrite
         );
@@ -207,7 +207,7 @@ public class DownloadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService());
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService());
         worker.prepare(test, local, new TransferStatus().setExists(true),
                 TransferAction.resume);
         final TransferStatus status = new TransferStatus();

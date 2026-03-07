@@ -19,8 +19,8 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.IndexedListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -94,7 +94,7 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
         assertSame(folder, list.get(file).getParent());
         assertTrue(list.get(file).attributes().isHidden());
         assertSame(folder, list.get(file).getParent());
-        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
         });
         assertNotSame(AttributedList.emptyList(), list);
         assertTrue(list.isEmpty());
-        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -138,6 +138,6 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
             }
         }).isEmpty());
         assertTrue(callback.get());
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -17,7 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -53,7 +53,7 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         worker.run(session);
         assertTrue(new GoogleStorageFindFeature(session).find(source));
         assertTrue(new GoogleStorageFindFeature(session).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(source, target), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         worker.run(session);
         assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
         assertTrue(new GoogleStorageFindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(sourceFile, targetFolder), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -92,6 +92,6 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         assertTrue(new GoogleStorageFindFeature(session).find(targetFile));
         assertTrue(new GoogleStorageFindFeature(session).find(folder));
         assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(folder, targetFolder), ProgressListener.noop).run(session);
     }
 }

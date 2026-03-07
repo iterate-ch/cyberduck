@@ -16,7 +16,7 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
@@ -50,7 +50,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
         new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), file, new TransferStatus());
         // Find without version id set in attributes
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

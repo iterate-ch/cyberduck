@@ -18,11 +18,11 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -100,7 +100,7 @@ public class EditOpenWorker extends Worker<Transfer> {
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, session, download, options, new TransferSpeedometer(download),
                 new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                listener, StreamListener.noop, new DisabledLoginCallback(), notification);
+                listener, StreamListener.noop, LoginCallback.noop, notification);
         worker.run(session);
         if(!download.isComplete()) {
             log.warn("File size changed for {}", file);

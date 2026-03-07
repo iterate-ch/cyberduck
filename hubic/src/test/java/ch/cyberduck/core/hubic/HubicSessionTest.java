@@ -17,8 +17,8 @@ package ch.cyberduck.core.hubic;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -48,9 +48,9 @@ public class HubicSessionTest {
                 this.getClass().getResourceAsStream("/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
                 new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
         try {
-            session.login(new DisabledLoginCallback(), CancelCallback.noop);
+            session.login(LoginCallback.noop, CancelCallback.noop);
         }
         catch(LoginFailureException e) {
             assertEquals("Invalid refresh token. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -66,8 +66,8 @@ public class HubicSessionTest {
                 this.getClass().getResourceAsStream("/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
                 new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         session.close();
     }
 }

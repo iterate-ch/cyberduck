@@ -17,8 +17,8 @@ package ch.cyberduck.core.freenet;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProgressListener;
@@ -53,7 +53,7 @@ public class AbstractFreenetTest extends VaultTest {
                 PROPERTIES.get("freenet.user")
         ));
         session = new FreenetSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+        final LoginConnectionService login = new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(),
                 new TestPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
     }

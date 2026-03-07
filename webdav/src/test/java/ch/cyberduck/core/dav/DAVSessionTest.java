@@ -63,8 +63,8 @@ public class DAVSessionTest extends AbstractDAVTest {
                 new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
                 new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DefaultCertificateStore()));
         try {
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-            session.login(new DisabledLoginCallback(), CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+            session.login(LoginCallback.noop, CancelCallback.noop);
         }
         catch(ConnectionRefusedException e) {
             assertEquals("Connection failed", e.getMessage());
@@ -77,8 +77,8 @@ public class DAVSessionTest extends AbstractDAVTest {
         final Host host = new Host(new DAVProtocol(), "cyberduck.ch");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         try {
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-            session.login(new DisabledLoginCallback(), CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+            session.login(LoginCallback.noop, CancelCallback.noop);
             new DAVListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         }
         catch(InteroperabilityException | ConflictException e) {
@@ -96,7 +96,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         ;
         assertTrue(session.getFeature(Find.class).find(test));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
     }
 
@@ -132,15 +132,14 @@ public class DAVSessionTest extends AbstractDAVTest {
                         throw new ConnectionCanceledException();
                     }
                 }));
-        final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback() {
-                    @Override
-                    public Credentials prompt(final Host bookmark, String username,
-                                              String title, String reason, LoginOptions options) {
-                        //
-                        return new Credentials();
-                    }
-                },
+        final LoginConnectionService c = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, String username,
+                                      String title, String reason, LoginOptions options) {
+                //
+                return new Credentials();
+            }
+        },
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 ProgressListener.noop);
@@ -163,7 +162,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 }
                 ), new DefaultX509KeyManager()
         );
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+        final LoginConnectionService s = new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 ProgressListener.noop);
         s.check(session, CancelCallback.noop);
     }
@@ -201,7 +200,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
+                LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 ProgressListener.noop,

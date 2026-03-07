@@ -16,8 +16,8 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
@@ -55,7 +55,7 @@ public class DeleteWorkerTest extends AbstractGoogleStorageTest {
                 new GoogleStorageWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
         assertTrue(new GoogleStorageFindFeature(session).find(file));
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), ProgressListener.noop);
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop, Collections.singletonList(folder), ProgressListener.noop);
         int hashCode = worker.hashCode();
         worker.run(session);
         assertEquals(hashCode, worker.hashCode());

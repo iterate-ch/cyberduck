@@ -19,7 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -60,7 +60,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path file = touch.touch(new GraphWriteFeature(session, fileid), new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("x-application/cyberduck"));
         final String fileid = file.attributes().getFileId();
-        delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
         final Path target = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertThrows(NotfoundException.class, () -> new GraphMoveFeature(session, this.fileid).move(file, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
         file.attributes().setFileId(fileid);
@@ -89,7 +89,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertEquals(attributes.getVersionId(), target.attributes().getVersionId());
         assertNotEquals(attributes.getETag(), attributesFinder.find(rename).getETag());
         assertEquals(target.attributes().getETag(), attributesFinder.find(rename).getETag());
-        delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(rename), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertEquals(attributes.getVersionId(), renamedAttributes.getVersionId());
         assertEquals(target.attributes().getETag(), renamedAttributes.getETag());
 
-        delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(targetDirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -145,8 +145,8 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertNotNull(attributesFinder.find(rename));
 
-        delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(targetDirectory), LoginCallback.noop, new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(rename), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -170,7 +170,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertNotNull(attributesFinder.find(rename));
 
-        delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(targetDirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -184,7 +184,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertEquals(1, files.size());
         assertFalse(find.find(temp));
         assertTrue(find.find(test));
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -194,6 +194,6 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Path file = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(home, StringUtils.capitalize(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
         new GraphMoveFeature(session, fileid).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(rename), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

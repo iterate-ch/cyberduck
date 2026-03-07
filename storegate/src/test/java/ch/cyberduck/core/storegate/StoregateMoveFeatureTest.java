@@ -17,7 +17,7 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
@@ -56,7 +56,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), new StoregateAttributesFinderFeature(session, nodeid).find(target)));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
-        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(folder1, folder2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(folder1, folder2), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertFalse(new DefaultFindFeature(session).find(new Path(room, foldername, EnumSet.of(Path.Type.directory))));
         assertTrue(new DefaultFindFeature(session).find(target));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new DefaultFindFeature(session).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new DefaultFindFeature(session).find(target));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new DefaultFindFeature(session).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new DefaultFindFeature(session).find(target));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

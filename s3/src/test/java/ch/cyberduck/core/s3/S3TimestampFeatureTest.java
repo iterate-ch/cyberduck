@@ -19,7 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -79,7 +79,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status, new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(1630305150000L, moved.attributes().getModificationDate());
         assertEquals(1630305150000L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(moved), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

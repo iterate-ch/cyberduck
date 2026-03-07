@@ -16,11 +16,10 @@ package ch.cyberduck.core.auth;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.date.ISO8601DateFormatter;
@@ -73,7 +72,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(address,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, address.getHostname()), key, ProxyFactory.get());
         final HttpClientBuilder configuration = builder.build(ProxyFactory.get(),
-                new DisabledTranscriptListener(), new DisabledLoginCallback());
+                new DisabledTranscriptListener(), LoginCallback.noop);
         try (CloseableHttpClient client = configuration.build()) {
             final HttpRequestBase resource = new HttpGet(url);
             return client.execute(resource, response -> {

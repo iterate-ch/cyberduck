@@ -19,8 +19,8 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -67,7 +67,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertEquals(test.attributes().getModificationDate(), moved.attributes().getModificationDate());
         assertEquals(test.attributes().getChecksum(), moved.attributes().getChecksum());
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), moved.attributes()));
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(moved), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertFalse(new DeepboxFindFeature(session, fileid).find(test.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxFindFeature(session, fileid).find(target));
 
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -140,8 +140,8 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertEquals(originalTargetAttributes.getModificationDate(), trashedTargetAttributes.getModificationDate());
         assertEquals(originalTargetAttributes.getChecksum(), trashedTargetAttributes.getChecksum());
 
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(targetInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(targetInTrash), LoginCallback.noop, new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -176,8 +176,8 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertEquals(originalTargetAttributes.getModificationDate(), trashedTargetAttributes.getModificationDate());
         assertEquals(originalTargetAttributes.getChecksum(), trashedTargetAttributes.getChecksum());
 
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(targetInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(targetInTrash), LoginCallback.noop, new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -269,7 +269,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
         assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(fileInTrash, Optional.of(file)));
         assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(fileInTrash, Optional.of(new Path(trash, file.getName(), EnumSet.of(Path.Type.file)))));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInTrash), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -285,7 +285,7 @@ public class DeepboxMoveFeatureTest extends AbstractDeepboxTest {
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANMOVEOUTOFBOX));
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANRENAME));
         assertThrows(AccessDeniedException.class, () -> new DeepboxMoveFeature(session, nodeid).preflight(file, Optional.of(fileInTrash)));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

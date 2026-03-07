@@ -21,8 +21,8 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -77,7 +77,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), new SDSAttributesFinderFeature(session, nodeid).find(target)));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
                 new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertEquals(versionId, result.attributes().getVersionId());
         assertEquals(0, session.getMetrics().get(Copy.class));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         assertFalse(new SDSFindFeature(session, nodeid).find(test));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(session, nodeid).find(test2));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -182,7 +182,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -220,7 +220,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -273,7 +273,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -294,6 +294,6 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         assertFalse(new SDSFindFeature(session, nodeid).find(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(new SDSFindFeature(session, nodeid).find(renamed));
         assertTrue(new SDSFindFeature(session, nodeid).find(new Path(renamed, folder.getName(), EnumSet.of(Path.Type.directory))));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

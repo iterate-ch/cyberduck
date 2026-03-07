@@ -18,7 +18,7 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -60,7 +60,7 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
         assertNotEquals(attr.getETag(), updated.getETag());
         assertEquals(attr.getChecksum(), updated.getChecksum());
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -91,6 +91,6 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
         new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
         assertEquals(containerModification, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
         assertNotEquals(folderModification, new EueAttributesFinderFeature(session, fileid).find(folder).getModificationDate());
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -19,7 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -64,10 +64,10 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         assertNotEquals(test.attributes().getETag(), copied.attributes().getETag());
         assertNotEquals(test.attributes().getChecksum(), copied.attributes().getETag());
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session, acl).find(copy));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(copy).getSize());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -87,10 +87,10 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         feature.copy(test, copy, status, ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(virtualhost, acl).find(test).getSize());
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(virtualhost, acl).find(copy));
         assertEquals(content.length, new S3AttributesFinderFeature(virtualhost, acl).find(copy).getSize());
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -112,9 +112,9 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         feature.copy(test, copy, status, ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session, acl).find(copy));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(copy).getSize());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

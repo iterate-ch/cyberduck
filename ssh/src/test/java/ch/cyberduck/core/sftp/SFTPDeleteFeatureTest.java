@@ -17,7 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -41,7 +41,7 @@ public class SFTPDeleteFeatureTest extends AbstractSFTPTest {
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), "t", EnumSet.of(Path.Type.file));
         try {
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         }
         catch(NotfoundException e) {
             assertEquals("Cannot delete t.", e.getMessage());
@@ -58,6 +58,6 @@ public class SFTPDeleteFeatureTest extends AbstractSFTPTest {
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), file, new TransferStatus());
         final Path subdir = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), subdir, new TransferStatus());
-        new SFTPDeleteFeature(session).delete(Arrays.asList(subdir, file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Arrays.asList(subdir, file, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

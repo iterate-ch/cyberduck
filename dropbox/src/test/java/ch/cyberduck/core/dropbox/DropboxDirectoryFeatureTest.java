@@ -17,7 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
@@ -50,6 +50,6 @@ public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         assertTrue(new DefaultFindFeature(session).find(level2));
         assertTrue(new DropboxFindFeature(session).find(level2));
-        new DropboxDeleteFeature(session).delete(Arrays.asList(level1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Arrays.asList(level1), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

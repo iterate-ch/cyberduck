@@ -17,7 +17,7 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -82,6 +82,6 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
         assertEquals(1630305150672L, moved.attributes().getModificationDate());
         assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(moved).getModificationDate());
         assertNotEquals(eTagAfterPatch, new GoogleStorageAttributesFinderFeature(session).find(moved).getETag());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(moved), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

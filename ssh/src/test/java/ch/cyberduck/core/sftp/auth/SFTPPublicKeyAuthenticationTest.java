@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -147,7 +148,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
                 "-----END RSA PRIVATE KEY-----\n"), key.getOutputStream(false), StandardCharsets.UTF_8);
             // Reconnect
             session.disconnect();
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
             final AtomicBoolean p = new AtomicBoolean();
             session.getHost().getCredentials().setIdentity(key);
             assertFalse(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
@@ -203,7 +204,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             final AtomicBoolean b = new AtomicBoolean();
             // Reconnect
             session.disconnect();
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
             session.getHost().getCredentials().setIdentity(key);
             assertTrue(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override
@@ -228,7 +229,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
             IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false), StandardCharsets.UTF_8);
             // Reconnect
             session.disconnect();
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
             session.getHost().getCredentials().setIdentity(key);
             assertFalse(new SFTPPublicKeyAuthentication(session.getClient()).authenticate(session.getHost(), new DisabledLoginCallback() {
                 @Override

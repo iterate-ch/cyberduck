@@ -2,7 +2,7 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -43,7 +43,7 @@ public class BoxReadFeatureTest extends AbstractBoxTest {
         final InputStream in = new BoxReadFeature(session, fileid).read(test, new TransferStatus().setLength(0L), ConnectionCallback.noop);
         assertNotNull(in);
         in.close();
-        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         session.close();
     }
 
@@ -67,7 +67,7 @@ public class BoxReadFeatureTest extends AbstractBoxTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         session.close();
     }
 
@@ -91,6 +91,6 @@ public class BoxReadFeatureTest extends AbstractBoxTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

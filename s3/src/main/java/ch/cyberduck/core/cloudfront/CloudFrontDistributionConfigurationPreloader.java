@@ -17,7 +17,7 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
@@ -57,7 +57,7 @@ public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedul
                 if(Distribution.WEBSITE.equals(method)) {
                     continue;
                 }
-                final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
+                final Distribution distribution = feature.read(container, method, LoginCallback.noop);
                 log.info("Cache distribution {}", distribution);
                 distributions.add(distribution);
             }

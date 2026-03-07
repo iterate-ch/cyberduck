@@ -18,7 +18,7 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -111,7 +111,7 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
             System.arraycopy(content, 65537, reference, 0, reference.length);
             assertArrayEquals(reference, buffer.toByteArray());
         }
-        new SMBDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Arrays.asList(test, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

@@ -18,7 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
@@ -54,6 +54,6 @@ public class S3BucketCreateServiceTest extends AbstractS3Test {
         assertTrue(header.get());
         bucket.attributes().setRegion("eu-central-1");
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(bucket));
-        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -1,8 +1,8 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -31,7 +31,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractSwiftTest {
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
-        ), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        ), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractSwiftTest {
                 @Override
                 public void chunk(final Path folder, final AttributedList<Path> list) {
                     try {
-                        new SwiftMultipleDeleteFeature(session).delete(list.toList(), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                        new SwiftMultipleDeleteFeature(session).delete(list.toList(), LoginCallback.noop, new Delete.DisabledCallback());
                     }
                     catch(BackgroundException e) {
                         fail(e.getDetail());

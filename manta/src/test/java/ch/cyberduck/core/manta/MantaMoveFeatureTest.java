@@ -17,7 +17,7 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -56,7 +56,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         assertFalse(new MantaFindFeature(session).find(file));
         assertTrue(new MantaFindFeature(session).find(rename));
         assertNotNull(attributesFinder.find(rename));
-        delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(rename), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         assertNotNull(attributesFinder.find(rename));
         assertFalse(new MantaFindFeature(session).find(touchedFile));
         assertTrue(new MantaFindFeature(session).find(rename));
-        delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(targetDirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -102,6 +102,6 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         assertNotNull(attributesFinder.find(rename));
         assertFalse(new MantaFindFeature(session).find(touchedFile));
         assertTrue(new MantaFindFeature(session).find(rename));
-        delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(targetDirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

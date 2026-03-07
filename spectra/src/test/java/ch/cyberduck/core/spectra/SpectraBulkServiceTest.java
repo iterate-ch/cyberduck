@@ -16,7 +16,7 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -57,7 +57,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         bulk.query(Transfer.Type.upload, file, status);
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         assertEquals(1, set.size());
         assertEquals(1, bulk.query(Transfer.Type.upload, directory, directoryStatus).size());
         assertEquals(1, bulk.query(Transfer.Type.upload, directory, fileStatus).size());
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -122,7 +122,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
         catch(BackgroundException e) {
             //
         }
-        new SpectraDeleteFeature(session).delete(Arrays.asList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Arrays.asList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class SpectraBulkServiceTest extends AbstractSpectraTest {
                 assertTrue(s.getLength() > 0);
             }
         }
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Ignore

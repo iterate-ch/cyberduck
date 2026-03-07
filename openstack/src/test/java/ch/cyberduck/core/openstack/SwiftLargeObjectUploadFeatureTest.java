@@ -3,8 +3,8 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
@@ -74,7 +74,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                         }
                     };
                 }
-            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, listener, status, new DisabledLoginCallback());
+            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, listener, status, LoginCallback.noop);
         }
         catch(BackgroundException e) {
             // Expected
@@ -89,7 +89,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session),
                 1 * 1024L * 1024L, 1).upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, append,
-                new DisabledLoginCallback());
+                LoginCallback.noop);
         assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
@@ -100,7 +100,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -133,7 +133,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final BytecountStreamListener listener = new BytecountStreamListener();
         try {
             feature.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new Local(System.getProperty("java.io.tmpdir"), name),
-                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, listener, status, new DisabledLoginCallback());
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, listener, status, LoginCallback.noop);
         }
         catch(BackgroundException e) {
             // Expected
@@ -150,7 +150,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(1024L * 1024L).setOffset(1024L * 1024L);
         feature.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, listener, append,
-            new DisabledLoginCallback());
+                LoginCallback.noop);
         assertEquals(2 * 1024L * 1024L, listener.getSent());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
@@ -163,7 +163,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -272,7 +272,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             assertArrayEquals(content, buffer.toByteArray());
         }
 
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertEquals(0, new SwiftSegmentService(session).list(test).size());
         local.delete();
     }

@@ -17,7 +17,7 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -74,7 +74,7 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
         PathAttributes newAttributes = new SMBAttributesFinderFeature(session).find(test);
         assertEquals(status.getModified().longValue(), newAttributes.getModificationDate());
         assertEquals(content.length, newAttributes.getSize());
-        new SMBDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -89,6 +89,6 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
         new SMBTimestampFeature(session).setTimestamp(f, status);
         PathAttributes newAttributes = new SMBAttributesFinderFeature(session).find(f);
         assertEquals(status.getModified().longValue(), newAttributes.getModificationDate());
-        new SMBDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(f), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

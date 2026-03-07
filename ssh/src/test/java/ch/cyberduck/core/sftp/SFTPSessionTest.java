@@ -7,6 +7,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullLocal;
@@ -68,7 +69,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         for(net.schmizz.sshj.common.Factory.Named<MAC> mac : defaultConfig.getMACFactories()) {
             final DefaultConfig configuration = new DefaultConfig();
             configuration.setMACFactories(Collections.singletonList(mac));
-            final SSHClient client = session.connect(new DisabledHostKeyCallback(), new DisabledLoginCallback(), configuration);
+            final SSHClient client = session.connect(new DisabledHostKeyCallback(), LoginCallback.noop, configuration);
             assertTrue(client.isConnected());
             client.close();
         }
@@ -78,7 +79,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testAES256CTRCipher() throws Exception {
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setCipherFactories(Collections.singletonList(new AES256CTR.Factory()));
-        final SSHClient client = session.connect(new DisabledHostKeyCallback(), new DisabledLoginCallback(), configuration);
+        final SSHClient client = session.connect(new DisabledHostKeyCallback(), LoginCallback.noop, configuration);
         assertTrue(client.isConnected());
         client.close();
     }
@@ -87,7 +88,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testECDHNistPKeyExchange() throws Exception {
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setKeyExchangeFactories(Collections.singletonList(new ECDHNistP.Factory256()));
-        final SSHClient client = session.connect(new DisabledHostKeyCallback(), new DisabledLoginCallback(), configuration);
+        final SSHClient client = session.connect(new DisabledHostKeyCallback(), LoginCallback.noop, configuration);
         assertTrue(client.isConnected());
         client.close();
     }
@@ -133,7 +134,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
         new SFTPHomeDirectoryService(session).find();
     }
 
@@ -163,7 +164,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
-            }, new DisabledLoginCallback(), CancelCallback.noop);
+            }, LoginCallback.noop, CancelCallback.noop);
         }
         catch(Exception e) {
             assertTrue(verify.get());
@@ -276,7 +277,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                     fail();
                     return false;
                 }
-            }, new DisabledLoginCallback(), CancelCallback.noop));
+            }, LoginCallback.noop, CancelCallback.noop));
             session.close();
             assertNotNull(session.open(new DisabledProxyFinder(), new OpenSSHHostKeyVerifier(f) {
                 @Override
@@ -294,7 +295,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) {
                     return false;
                 }
-            }, new DisabledLoginCallback(), CancelCallback.noop));
+            }, LoginCallback.noop, CancelCallback.noop));
             session.close();
         }
         finally {

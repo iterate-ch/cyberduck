@@ -18,7 +18,7 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -56,7 +56,7 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         assertNotEquals(PathAttributes.EMPTY, copy.attributes());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(target));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new DropboxDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(copy));
         assertTrue(new DropboxFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
-        new DropboxDeleteFeature(session).delete(Arrays.asList(directory, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Arrays.asList(directory, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         final Path target = new Path(home, "~$f", EnumSet.of(Path.Type.file));
         assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, Optional.of(target)));
         assertThrows(AccessDeniedException.class, () -> feature.copy(file, target, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

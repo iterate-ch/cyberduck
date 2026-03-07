@@ -16,7 +16,7 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -51,7 +51,7 @@ public class BrickFindFeatureTest extends AbstractBrickTest {
                 new BrickWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new BrickFindFeature(session).find(folder));
         assertFalse(new BrickFindFeature(session).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
-        new BrickDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -60,6 +60,6 @@ public class BrickFindFeatureTest extends AbstractBrickTest {
         new BrickTouchFeature(session).touch(new BrickWriteFeature(session), file, new TransferStatus());
         assertTrue(new BrickFindFeature(session).find(file));
         assertFalse(new BrickFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

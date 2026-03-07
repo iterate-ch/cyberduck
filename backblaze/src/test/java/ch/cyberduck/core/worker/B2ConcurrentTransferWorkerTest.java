@@ -19,11 +19,11 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -110,7 +110,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
                 return super.getProperty(key);
             }
         };
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(),
+        final LoginConnectionService connect = new LoginConnectionService(LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new TestPasswordStore(),
                 ProgressListener.noop);
@@ -181,6 +181,6 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

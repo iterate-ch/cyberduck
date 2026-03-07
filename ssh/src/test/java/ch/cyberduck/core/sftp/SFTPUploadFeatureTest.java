@@ -16,7 +16,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,7 +36,7 @@ public class SFTPUploadFeatureTest extends AbstractSFTPTest {
         final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         assertTrue(new SFTPUploadFeature(session).append(test, new TransferStatus().setExists(true).setLength(1L).setRemote(new SFTPAttributesFinderFeature(session).find(test))).append);
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
 }

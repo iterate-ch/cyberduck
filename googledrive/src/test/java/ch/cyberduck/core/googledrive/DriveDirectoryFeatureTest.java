@@ -17,7 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.ConflictException;
@@ -48,7 +48,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         assertNotNull(test.attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertThrows(ConflictException.class, () -> new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), test, new TransferStatus()));
-        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertNull(test.attributes().getFileId());
         // Trashed
         assertFalse(new DriveFindFeature(session, fileid).find(test));
@@ -59,6 +59,6 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         assertEquals(id, trashed.attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(trashed));
         assertTrue(new DriveFindFeature(session, fileid).find(trashed));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

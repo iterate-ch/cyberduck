@@ -18,8 +18,8 @@ package ch.cyberduck.core.ctera;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.dav.DAVUploadFeature;
@@ -89,9 +89,9 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
             }
         };
         new DefaultDownloadFeature(session).download(new CteraReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                StreamListener.noop, status, new DisabledLoginCallback());
+                StreamListener.noop, status, LoginCallback.noop);
         assertEquals(923L, local.attributes().getSize());
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -111,7 +111,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
             assertNotNull(in);
             in.close();
         }
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -167,7 +167,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -178,7 +178,7 @@ public class CteraReadFeatureTest extends AbstractCteraTest {
         final CountingInputStream in = new CountingInputStream(new CteraReadFeature(session).read(test, status, ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

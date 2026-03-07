@@ -80,7 +80,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
             }
         }).isEmpty());
         assertTrue(callback.get());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(feature.list(bucket, new DisabledListProgressListener()).contains(directory));
         assertThrows(NotfoundException.class, () -> feature.list(directory, new DisabledListProgressListener()));
     }
@@ -93,7 +93,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertThrows(NotfoundException.class, () -> new S3ObjectListService(session, acl).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         final Path file = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("%s-", name), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertThrows(NotfoundException.class, () -> new S3ObjectListService(session, acl).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -104,7 +104,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path file = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(file));
         assertThrows(NotfoundException.class, () -> new S3ObjectListService(session, acl).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -121,7 +121,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host);
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+        final LoginConnectionService login = new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -131,7 +131,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
             new S3ObjectListService(session, acl).list(new Path(directory, new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         }
         finally {
-            new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -148,7 +148,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path placeholder = new S3TouchFeature(session, acl).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("^<%%%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path placeholder = new S3TouchFeature(session, acl).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("test-\u001F-%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session, acl).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -184,7 +184,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(placeholderTildeStart));
         assertTrue(new S3ObjectListService(session, acl).list(placeholderTildeEnd, new DisabledListProgressListener()).isEmpty());
         assertTrue(new S3ObjectListService(session, acl).list(placeholderTildeStart, new DisabledListProgressListener()).isEmpty());
-        new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(placeholderTildeEnd, placeholderTildeStart), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(placeholderTildeEnd, placeholderTildeStart), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -194,7 +194,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path file = new S3TouchFeature(session, acl).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("@%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(file));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -205,7 +205,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("%s@", UUID.randomUUID()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new S3ObjectListService(session, acl).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = BackgroundException.class)
@@ -215,8 +215,8 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         ));
         host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener());
     }
@@ -256,7 +256,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path file = new S3TouchFeature(session, acl).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(file));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -266,7 +266,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path file = new S3TouchFeature(session, acl).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, ".", EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(file));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -276,7 +276,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Path placeholder = new S3DirectoryFeature(session, acl).mkdir(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -287,7 +287,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new S3ObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(placeholder));
         assertTrue(new S3ObjectListService(session, acl).list(placeholder, new DisabledListProgressListener()).isEmpty());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -303,7 +303,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertNotSame(AttributedList.emptyList(), new S3ObjectListService(session, acl).list(bucket, new DisabledListProgressListener()));
         assertEquals("eu-central-1", cache.getRegionForBucketName(bucket.getName()));
         assertFalse(session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

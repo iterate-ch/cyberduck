@@ -19,7 +19,7 @@ package ch.cyberduck.core.dav.microsoft;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVCopyFeature;
@@ -58,8 +58,8 @@ public class MicrosoftIISDAVCopyFeatureTest extends AbstractMicrosoftIISDAVTest 
         assertEquals(new DAVAttributesFinderFeature(session).find(test), new DAVAttributesFinderFeature(session).find(copy));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(copy));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -72,8 +72,8 @@ public class MicrosoftIISDAVCopyFeatureTest extends AbstractMicrosoftIISDAVTest 
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(target, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), LoginCallback.noop, new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(target, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class MicrosoftIISDAVCopyFeatureTest extends AbstractMicrosoftIISDAVTest 
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new DAVDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -106,8 +106,8 @@ public class MicrosoftIISDAVCopyFeatureTest extends AbstractMicrosoftIISDAVTest 
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(copy, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), LoginCallback.noop, new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(copy, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -124,6 +124,6 @@ public class MicrosoftIISDAVCopyFeatureTest extends AbstractMicrosoftIISDAVTest 
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(file));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(copy));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
-        new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -18,7 +18,7 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConflictException;
@@ -49,7 +49,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
         new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), test, new TransferStatus().setRegion("us"));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertThrows(ConflictException.class, () -> new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), test, new TransferStatus()));
-        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         // This will only cause a delete marker being added
-        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(new Path(test).withAttributes(PathAttributes.EMPTY), parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(new Path(test).withAttributes(PathAttributes.EMPTY), parent), LoginCallback.noop, new Delete.DisabledCallback());
         // Specific version is still found
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
@@ -82,7 +82,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
                 String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         assertFalse(new DefaultFindFeature(session).find(test));
         assertFalse(new GoogleStorageFindFeature(session).find(test));
@@ -106,7 +106,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         // Add delete marker
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
         assertFalse(new GoogleStorageFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
         assertTrue(new DefaultFindFeature(session).find(test));

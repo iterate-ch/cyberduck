@@ -16,7 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -30,10 +30,11 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.EnumSet;
+
+import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
 public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
@@ -48,6 +49,6 @@ public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
         assertEquals(1671187993000L, status.getResponse().getModificationDate());
         final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(test);
         assertEquals(1671187993000L, attr.getModificationDate());
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
