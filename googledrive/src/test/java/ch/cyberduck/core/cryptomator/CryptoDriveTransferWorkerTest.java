@@ -16,14 +16,14 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -34,8 +34,8 @@ import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveFileIdProvider;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.googledrive.DriveReadFeature;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -101,7 +101,7 @@ public class CryptoDriveTransferWorkerTest extends AbstractDriveTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         Assert.assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(dir1));
@@ -109,18 +109,18 @@ public class CryptoDriveTransferWorkerTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(file1, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(file1, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             Assert.assertArrayEquals(content, buffer.toByteArray());
         }
         Assert.assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(file1, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(file1, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             Assert.assertArrayEquals(content, buffer.toByteArray());
         }
-        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(file1, file2, dir1, vault), LoginCallback.noop, new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

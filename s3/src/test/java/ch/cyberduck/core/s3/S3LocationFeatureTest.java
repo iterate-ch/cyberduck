@@ -19,16 +19,16 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
@@ -93,9 +94,9 @@ public class S3LocationFeatureTest extends AbstractS3Test {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new DisabledPasswordStore(), ProgressListener.noop);
+        login.check(session, CancelCallback.noop);
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         assertEquals(unknown, new S3LocationFeature(session, cache).getLocation(new Path("/", EnumSet.of(Path.Type.directory))));
         assertNull(cache.getRegionForBucketName(""));
@@ -126,8 +127,8 @@ public class S3LocationFeatureTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session, cache).getLocation(
                 new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))

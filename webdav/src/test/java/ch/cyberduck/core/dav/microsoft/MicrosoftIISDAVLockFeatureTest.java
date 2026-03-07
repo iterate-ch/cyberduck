@@ -16,13 +16,13 @@ package ch.cyberduck.core.dav.microsoft;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
@@ -30,7 +30,7 @@ import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -62,7 +62,7 @@ public class MicrosoftIISDAVLockFeatureTest extends AbstractMicrosoftIISDAVTest 
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
         upload.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                ProgressListener.noop, StreamListener.noop, status, ConnectionCallback.noop);
         final String lock = new DAVLockFeature(session).lock(test);
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
         final PathAttributes attributes = new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
@@ -70,12 +70,12 @@ public class MicrosoftIISDAVLockFeatureTest extends AbstractMicrosoftIISDAVTest 
         assertEquals(content.length, new DAVUploadFeature(session).append(test, status.setRemote(attributes)).offset, 0L);
         {
             final byte[] buffer = new byte[content.length];
-            IOUtils.readFully(new MicrosoftIISDAVReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
+            IOUtils.readFully(new MicrosoftIISDAVReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop), buffer);
             assertArrayEquals(content, buffer);
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, new TransferStatus().setLength(content.length - 1L).setAppend(true).setOffset(1L), new DisabledConnectionCallback());
+            final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, new TransferStatus().setLength(content.length - 1L).setAppend(true).setOffset(1L), ConnectionCallback.noop);
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];
@@ -83,7 +83,7 @@ public class MicrosoftIISDAVLockFeatureTest extends AbstractMicrosoftIISDAVTest 
             assertArrayEquals(reference, buffer);
         }
         new DAVLockFeature(session).unlock(test, lock);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 }

@@ -17,15 +17,14 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -44,6 +43,7 @@ import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -80,11 +80,11 @@ public class MoveWorkerTest extends AbstractFTPTest {
                 session), cryptomator).touch(
                 cryptomator.getFeature(session, Write.class, new FTPWriteFeature(session)), source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(target, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(target, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -105,11 +105,11 @@ public class MoveWorkerTest extends AbstractFTPTest {
                 cryptomator.getFeature(session, Write.class, new FTPWriteFeature(session)), targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session),
-                PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+                PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(target, targetFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(target, targetFolder, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -131,11 +131,11 @@ public class MoveWorkerTest extends AbstractFTPTest {
         cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new FTPWriteFeature(session)), targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(sourceFolder, target, targetFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(sourceFolder, target, targetFolder, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -155,12 +155,12 @@ public class MoveWorkerTest extends AbstractFTPTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
-        new MoveWorker(Collections.singletonMap(file, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
+        new MoveWorker(Collections.singletonMap(file, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, LoginCallback.noop).run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
+        new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, LoginCallback.noop).run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folderRenamed));
         try {
@@ -171,7 +171,7 @@ public class MoveWorkerTest extends AbstractFTPTest {
         }
         assertEquals(1, new CryptoListService(session, new FTPListService(session), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(
-                new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file)), folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file)), folderRenamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -193,13 +193,13 @@ public class MoveWorkerTest extends AbstractFTPTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         // move file into vault
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).setCredentials(new Credentials("test", "test")));
-        copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        copySession.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        copySession.login(LoginCallback.noop, CancelCallback.noop);
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
         worker.run(session);
         assertFalse(new DefaultFindFeature(session).find(clearFile));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), LoginCallback.noop, new Delete.DisabledCallback());
         registry.clear();
     }
 
@@ -221,15 +221,15 @@ public class MoveWorkerTest extends AbstractFTPTest {
         final Path encryptedFolder = new Path(vault, clearFolder.getName(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, clearFile.getName(), EnumSet.of(Path.Type.file));
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).setCredentials(new Credentials("test", "test")));
-        copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFolder, encryptedFolder), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        copySession.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        copySession.login(LoginCallback.noop, CancelCallback.noop);
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFolder, encryptedFolder), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
         worker.run(session);
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         assertFalse(new DefaultFindFeature(session).find(clearFolder));
         assertThrows(NotfoundException.class, () -> new DefaultFindFeature(session).find(clearFile));
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), LoginCallback.noop, new Delete.DisabledCallback());
         registry.clear();
     }
 
@@ -254,14 +254,14 @@ public class MoveWorkerTest extends AbstractFTPTest {
         // move file outside vault
         final Path fileRenamed = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).setCredentials(new Credentials("test", "test")));
-        copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFile, fileRenamed), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        copySession.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        copySession.login(LoginCallback.noop, CancelCallback.noop);
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFile, fileRenamed), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         assertTrue(new DefaultFindFeature(session).find(fileRenamed));
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new FTPDeleteFeature(session).delete(Arrays.asList(fileRenamed, clearFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(encryptedFolder, vault), LoginCallback.noop, new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Arrays.asList(fileRenamed, clearFolder), LoginCallback.noop, new Delete.DisabledCallback());
         registry.clear();
     }
 
@@ -284,17 +284,17 @@ public class MoveWorkerTest extends AbstractFTPTest {
         // move directory outside vault
         final Path directoryRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final FTPSession copySession = new FTPSession(new Host(session.getHost()).setCredentials(new Credentials("test", "test")));
-        copySession.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        copySession.login(new DisabledLoginCallback(), new DisabledCancelCallback());
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
+        copySession.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        copySession.login(LoginCallback.noop, CancelCallback.noop);
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
         worker.run(session);
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         assertThrows(NotfoundException.class, () -> new DefaultFindFeature(session).find(encryptedFile));
         assertTrue(new DefaultFindFeature(session).find(directoryRenamed));
         final Path fileRenamed = new Path(directoryRenamed, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new DefaultFindFeature(session).find(fileRenamed));
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Collections.singletonList(vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new FTPDeleteFeature(session).delete(Arrays.asList(fileRenamed, directoryRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Collections.singletonList(vault), LoginCallback.noop, new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Arrays.asList(fileRenamed, directoryRenamed), LoginCallback.noop, new Delete.DisabledCallback());
         registry.clear();
     }
 }

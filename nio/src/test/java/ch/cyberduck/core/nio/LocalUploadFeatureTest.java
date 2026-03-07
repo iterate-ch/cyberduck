@@ -15,13 +15,13 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -37,12 +37,12 @@ public class LocalUploadFeatureTest {
     @Test
     public void testAppend() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(new LocalWriteFeature(session), test, new TransferStatus());
         assertTrue(new LocalUploadFeature(session).append(test, new TransferStatus().setExists(true).setLength(0L).setRemote(new LocalAttributesFinderFeature(session).find(test))).append);
-        new LocalDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new LocalDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

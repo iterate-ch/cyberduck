@@ -17,19 +17,18 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -62,8 +61,8 @@ public class TouchWorkerTest extends AbstractS3Test {
                 return super._getFeature(type);
             }
         };
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertEquals(test, new TouchWorker(test).run(session));

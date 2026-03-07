@@ -2,7 +2,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -53,6 +53,6 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSFTPTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

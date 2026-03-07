@@ -18,7 +18,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,6 +61,6 @@ public class SwiftMetadataFeatureTest extends AbstractSwiftTest {
         assertEquals("text/plain", metadata.get("Content-Type"));
         feature.setMetadata(test, Collections.emptyMap());
         assertFalse(feature.getMetadata(test).containsKey("Test"));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

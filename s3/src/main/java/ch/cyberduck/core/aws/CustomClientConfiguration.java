@@ -16,7 +16,6 @@ package ch.cyberduck.core.aws;
  */
 
 import ch.cyberduck.core.ConnectionTimeoutFactory;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Resolver;
@@ -32,6 +31,7 @@ import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -39,20 +39,18 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.DnsResolver;
 
 public class CustomClientConfiguration extends ClientConfiguration {
 
     public CustomClientConfiguration(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
         this.setDnsResolver(hostname -> {
             try {
-                return new Resolver().resolve(hostname, new DisabledCancelCallback());
+                return new Resolver().resolve(hostname, CancelCallback.noop);
             }
             catch(ResolveFailedException | ResolveCanceledException e) {
                 throw new UnknownHostException(e.getDetail(false));

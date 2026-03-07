@@ -16,8 +16,8 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
@@ -60,7 +60,7 @@ public class DAVDirectoryFeatureTest extends AbstractDAVTest {
         cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new DAVWriteFeature(session)), test, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -75,6 +75,6 @@ public class DAVDirectoryFeatureTest extends AbstractDAVTest {
         cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new DAVWriteFeature(session)), test, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -18,7 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.Delete;
@@ -66,14 +66,14 @@ public class SFTPUnixPermissionFeatureTest extends AbstractSFTPTest {
             new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), file, new TransferStatus());
             new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
             assertEquals("666", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
-            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
         }
         {
             final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
             new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), directory, new TransferStatus());
             new SFTPUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
             assertEquals("666", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
-            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -101,6 +101,6 @@ public class SFTPUnixPermissionFeatureTest extends AbstractSFTPTest {
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
             false, false, true), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
             test).attributes().getPermission());
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

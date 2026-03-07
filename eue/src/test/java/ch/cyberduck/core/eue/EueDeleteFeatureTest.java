@@ -19,9 +19,8 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -48,7 +47,7 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         final Path directory = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         assertTrue(new EueFindFeature(session, fileid).find(directory, new DisabledListProgressListener()));
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(directory, new DisabledListProgressListener())));
     }
 
@@ -63,11 +62,11 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         createFile(fileid, file2, RandomUtils.nextBytes(214));
         assertTrue(new EueFindFeature(session, fileid).find(file1));
         assertTrue(new EueFindFeature(session, fileid).find(file2));
-        new EueDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
         assertFalse((new EueFindFeature(session, fileid).find(file2, new DisabledListProgressListener())));
         assertTrue(new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener()));
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
     }
 
@@ -81,17 +80,17 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
             final Path file1 = new Path(folder, filename, EnumSet.of(Path.Type.file));
             createFile(fileid, file1, RandomUtils.nextBytes(511));
             assertTrue(new EueFindFeature(session, fileid).find(file1));
-            new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file1), LoginCallback.noop, new Delete.DisabledCallback());
             assertFalse((new EueFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
         }
         {
             final Path file1 = new Path(folder, filename, EnumSet.of(Path.Type.file));
             createFile(fileid, file1, RandomUtils.nextBytes(511));
             assertTrue(new EueFindFeature(session, fileid).find(file1));
-            new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file1), LoginCallback.noop, new Delete.DisabledCallback());
             assertFalse((new EueFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
         }
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
     }
 
@@ -100,7 +99,7 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))
-        ), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        ), LoginCallback.noop, new Delete.DisabledCallback());
         fail();
     }
 
@@ -109,7 +108,7 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         new EueDeleteFeature(session, fileid).delete(Arrays.asList(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))
-        ), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        ), LoginCallback.noop, new Delete.DisabledCallback());
         fail();
     }
 
@@ -118,10 +117,10 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path file = new EueTouchFeature(session, fileid).touch(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String resourceId = file.attributes().getFileId();
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
         try {
             new EueDeleteFeature(session, fileid).delete(Collections.singletonList(
-                    file.withAttributes(new DefaultPathAttributes().setFileId(resourceId))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                    file.withAttributes(new DefaultPathAttributes().setFileId(resourceId))), LoginCallback.noop, new Delete.DisabledCallback());
             fail();
         }
         catch(NotfoundException e) {

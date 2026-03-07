@@ -18,7 +18,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
@@ -44,7 +44,7 @@ public class DAVDirectoryFeatureTest extends AbstractDAVTest {
         new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         assertThrows(ConflictException.class, () -> new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), test, new TransferStatus()));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
     }
 }

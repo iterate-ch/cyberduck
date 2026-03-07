@@ -17,7 +17,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
@@ -58,7 +58,7 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
         final Map<Path, Set<Distribution>> distributions = new HashMap<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {
-                final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
+                final Distribution distribution = feature.read(container, method, LoginCallback.noop);
                 log.info("Cache distribution {}", distribution);
                 distributions.getOrDefault(container, new HashSet<>()).add(distribution);
             }

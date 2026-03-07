@@ -17,9 +17,9 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.AbstractBoxTest;
 import ch.cyberduck.core.box.BoxDeleteFeature;
@@ -76,7 +76,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         writeStatus.setLength(-1L);
-        final StatusOutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
+        final StatusOutputStream out = feature.write(test, writeStatus, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -86,11 +86,11 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         assertNotNull(out.getStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new BoxFindFeature(session, fileid)).find(test));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new CryptoReadFeature(session, new BoxReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new CryptoReadFeature(session, new BoxReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        cryptomator.getFeature(session, Delete.class, new BoxDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new BoxDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         writeStatus.setLength(-1L);
         writeStatus.setModified(Instant.now().getEpochSecond());
-        final StatusOutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
+        final StatusOutputStream out = feature.write(test, writeStatus, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -120,10 +120,10 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         assertNotNull(out.getStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new BoxFindFeature(session, fileid)).find(test));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new CryptoReadFeature(session, new BoxReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new CryptoReadFeature(session, new BoxReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        cryptomator.getFeature(session, Delete.class, new BoxDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new BoxDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
@@ -80,7 +79,7 @@ public class CryptoBulkFeatureTest {
         files.put(new TransferItem(directory, new Local("/tmp/vault/directory")), new TransferStatus().setExists(false));
         files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file1")), new TransferStatus().setExists(false));
         files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file2")), new TransferStatus().setExists(false));
-        final Map<TransferItem, TransferStatus> pre = bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
+        final Map<TransferItem, TransferStatus> pre = bulk.pre(Transfer.Type.upload, files, ConnectionCallback.noop);
         assertEquals(3, pre.size());
         final Path encryptedDirectory = pre.keySet().stream().filter(new Predicate<TransferItem>() {
             @Override
@@ -137,6 +136,6 @@ public class CryptoBulkFeatureTest {
         files.put(new TransferItem(directory, new Local("/tmp/vault/directory")), new TransferStatus().setExists(false));
         files.put(new TransferItem(new Path(directory, "file1", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file1")), new TransferStatus().setExists(false));
         files.put(new TransferItem(new Path(directory, "file2", EnumSet.of(Path.Type.file)), new Local("/tmp/vault/directory/file2")), new TransferStatus().setExists(false));
-        bulk.post(Transfer.Type.upload, files, new DisabledConnectionCallback());
+        bulk.post(Transfer.Type.upload, files, ConnectionCallback.noop);
     }
 }

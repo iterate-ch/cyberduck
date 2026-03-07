@@ -16,8 +16,8 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
@@ -72,7 +72,7 @@ public class B2TouchFeatureTest extends AbstractB2Test {
         assertNotNull(test.attributes().getVersionId());
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(test));
         assertEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new B2AttributesFinderFeature(session, fileid)).find(test));
-        cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class B2TouchFeatureTest extends AbstractB2Test {
         assertEquals(0L, test.attributes().getSize());
         assertEquals(0L, status.getResponse().getSize());
         assertTrue(cryptomator.getFeature(session, Find.class, new B2FindFeature(session, fileid)).find(test));
-        cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -108,6 +108,6 @@ public class B2TouchFeatureTest extends AbstractB2Test {
         assertEquals(0L, status.getResponse().getSize());
         assertNotNull(test.attributes().getVersionId());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

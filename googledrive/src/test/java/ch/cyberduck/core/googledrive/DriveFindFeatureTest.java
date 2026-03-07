@@ -17,7 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
@@ -51,7 +51,7 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
                 new DriveWriteFeature(session, fileid), new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(folder));
         assertFalse(new DriveFindFeature(session, fileid).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
         new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), file, new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file));
         assertFalse(new DriveFindFeature(session, fileid).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
                 new DriveWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String id = file.attributes().getFileId();
         assertTrue(new DriveFindFeature(session, fileid).find(file));
-        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(file));
         assertFalse(new DriveFindFeature(session, fileid).find(file));
         // When searching with version "2", find trashed file
@@ -87,6 +87,6 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
         assertTrue(new DefaultFindFeature(session).find(version2));
         assertTrue(new DriveFindFeature(session, fileid).find(version2));
         assertEquals(version2.attributes(), new DriveAttributesFinderFeature(session, fileid).find(version2));
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(version2, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(version2, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

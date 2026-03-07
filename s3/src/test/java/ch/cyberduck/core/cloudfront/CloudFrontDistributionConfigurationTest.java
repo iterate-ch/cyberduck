@@ -1,7 +1,7 @@
 package ch.cyberduck.core.cloudfront;
 
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -67,7 +67,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         final DistributionConfiguration configuration
             = new CloudFrontDistributionConfiguration(session, new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
+        final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, LoginCallback.noop);
         assertEquals("ETW0HTI5PZK7X", distribution.getId());
         assertEquals(Distribution.DOWNLOAD, distribution.getMethod());
         assertEquals("Deployed", distribution.getStatus());
@@ -83,7 +83,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         final DistributionConfiguration configuration
             = new CloudFrontDistributionConfiguration(session, new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Distribution distribution = configuration.read(container, Distribution.STREAMING, new DisabledLoginCallback());
+        final Distribution distribution = configuration.read(container, Distribution.STREAMING, LoginCallback.noop);
         assertEquals("E25267XDMTRRIW", distribution.getId());
         assertEquals("test-us-east-1-cyberduck.s3.amazonaws.com", distribution.getOrigin().getHost());
         assertEquals(URI.create("rtmp://s9xwj9xzlfydi.cloudfront.net/cfx/st"), distribution.getUrl());
@@ -111,7 +111,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         };
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = new Distribution(Distribution.STREAMING, true);
-        configuration.write(container, distribution, new DisabledLoginCallback());
+        configuration.write(container, distribution, LoginCallback.noop);
         assertTrue(set.get());
     }
 
@@ -134,7 +134,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         };
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = new Distribution(Distribution.DOWNLOAD, true);
-        configuration.write(container, distribution, new DisabledLoginCallback());
+        configuration.write(container, distribution, LoginCallback.noop);
         assertTrue(set.get());
     }
 
@@ -162,9 +162,9 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
             = new CloudFrontDistributionConfiguration(session, new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new Path("/test-us-east-1-cyberduck/directory", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
+        final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, LoginCallback.noop);
         assertEquals("ETW0HTI5PZK7X", distribution.getId());
-        configuration.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(container), new DisabledLoginCallback());
-        configuration.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(directory), new DisabledLoginCallback());
+        configuration.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(container), LoginCallback.noop);
+        configuration.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(directory), LoginCallback.noop);
     }
 }

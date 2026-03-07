@@ -17,7 +17,7 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -42,7 +42,7 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
         final Path target = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), randomDirectory(), null);
         final PathAttributes found = new MantaAttributesFinderFeature(session).find(target);
         assertNotEquals(Permission.EMPTY, found.getPermission());
-        new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new MantaDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -58,6 +58,6 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
         final Attributes found = new MantaAttributesFinderFeature(session).find(target);
         assertNull(found.getOwner());
         assertNotEquals(Permission.EMPTY, found.getPermission());
-        new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new MantaDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

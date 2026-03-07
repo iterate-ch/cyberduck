@@ -16,20 +16,20 @@ package ch.cyberduck.core.dav.microsoft;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -68,7 +68,7 @@ public class AbstractMicrosoftIISDAVTest extends VaultTest {
             public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
-        }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop, new TestPasswordStore(), ProgressListener.noop);
+        login.check(session, CancelCallback.noop);
     }
 }

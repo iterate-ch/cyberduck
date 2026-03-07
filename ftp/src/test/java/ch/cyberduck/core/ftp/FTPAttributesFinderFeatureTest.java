@@ -19,7 +19,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -61,6 +61,6 @@ public class FTPAttributesFinderFeatureTest extends AbstractFTPTest {
         catch(NotfoundException | InteroperabilityException e) {
             // Expected
         }
-        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

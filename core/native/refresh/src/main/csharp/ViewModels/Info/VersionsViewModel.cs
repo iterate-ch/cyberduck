@@ -66,7 +66,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                         new AsyncWorkerBackgroundAction(controller, session, result,
                             new DeleteWorker(
                                 LoginCallbackFactory.get(controller), norm,
-                                new DisabledProgressListener(), false)));
+                                ProgressListener.noop, false)));
                     await result.Task;
                 }
                 finally

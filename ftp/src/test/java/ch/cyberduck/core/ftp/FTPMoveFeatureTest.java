@@ -17,8 +17,8 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -46,10 +46,10 @@ public class FTPMoveFeatureTest extends AbstractFTPTest {
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new FTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new FTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new FTPDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -60,22 +60,22 @@ public class FTPMoveFeatureTest extends AbstractFTPTest {
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), target, new TransferStatus());
         try {
-            new FTPMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+            new FTPMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), ConnectionCallback.noop);
             fail();
         }
         catch(AccessDeniedException e) {
             // Expected
         }
-        new FTPMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new FTPMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new FTPDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
     public void testMoveNotFound() throws Exception {
         final Home workdir = new FTPWorkdirService(session);
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertThrows(NotfoundException.class, () -> new FTPMoveFeature(session).move(test, new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertThrows(NotfoundException.class, () -> new FTPMoveFeature(session).move(test, new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
     }
 }

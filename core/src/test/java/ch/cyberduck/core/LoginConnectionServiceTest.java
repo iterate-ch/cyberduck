@@ -28,14 +28,14 @@ public class LoginConnectionServiceTest {
                 return false;
             }
         };
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(),
+        final LoginConnectionService s = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop,
             new DisabledProxyFinder() {
                 @Override
                 public Proxy find(final String target) {
                     return new Proxy(Proxy.Type.HTTP, "proxy.local", 6666);
                 }
             });
-        s.check(session, new DisabledCancelCallback());
+        s.check(session, CancelCallback.noop);
     }
 
     @Test
@@ -46,17 +46,17 @@ public class LoginConnectionServiceTest {
                 return false;
             }
         };
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new HostKeyCallback() {
+        final LoginConnectionService s = new LoginConnectionService(LoginCallback.noop, new HostKeyCallback() {
             @Override
             public boolean verify(final Host hostname, final PublicKey key) {
                 assertEquals(Session.State.opening, session.getState());
                 return true;
             }
         }, new DisabledPasswordStore(),
-            new DisabledProgressListener()
+                ProgressListener.noop
         );
         try {
-            s.check(session, new DisabledCancelCallback());
+            s.check(session, CancelCallback.noop);
             fail();
         }
         catch(ResolveFailedException e) {
@@ -71,7 +71,7 @@ public class LoginConnectionServiceTest {
                 public boolean isConnected() {
                     return false;
                 }
-            }, new DisabledCancelCallback());
+            }, CancelCallback.noop);
             fail();
         }
         catch(LoginCanceledException e) {
@@ -81,9 +81,9 @@ public class LoginConnectionServiceTest {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-            new DisabledProgressListener());
-        s.check(new NullSession(new Host(new TestProtocol(), "")), new DisabledCancelCallback());
+        final LoginConnectionService s = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop, new DisabledPasswordStore(),
+                ProgressListener.noop);
+        s.check(new NullSession(new Host(new TestProtocol(), "")), CancelCallback.noop);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -103,14 +103,14 @@ public class LoginConnectionServiceTest {
                 // New password entered
                 return new Credentials(username, "b");
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore() {
+        }, HostKeyCallback.noop, new DisabledPasswordStore() {
             @Override
             public String findLoginPassword(final Host bookmark) {
                 keychain.set(true);
                 // Old password stored
                 return "a";
             }
-        }, new DisabledProgressListener());
+        }, ProgressListener.noop);
         final Session session = new NullSession(new Host(new TestProtocol(), "localhost", new Credentials("user", ""))) {
             @Override
             public Void connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
@@ -137,7 +137,7 @@ public class LoginConnectionServiceTest {
             }
         };
         try {
-            s.check(session, new DisabledCancelCallback());
+            s.check(session, CancelCallback.noop);
         }
         finally {
             assertTrue(keychain.get());
@@ -159,10 +159,10 @@ public class LoginConnectionServiceTest {
                 warned.set(true);
                 throw new LoginCanceledException();
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-            new DisabledProgressListener());
+        }, HostKeyCallback.noop, new DisabledPasswordStore(),
+                ProgressListener.noop);
         try {
-            l.connect(session, new DisabledCancelCallback());
+            l.connect(session, CancelCallback.noop);
             fail();
         }
         catch(LoginCanceledException e) {

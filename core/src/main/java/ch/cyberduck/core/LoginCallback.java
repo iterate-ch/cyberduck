@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 public interface LoginCallback extends ConnectionCallback {
+    LoginCallback noop = new DisabledLoginCallback();
 
     /**
      * Call this to allow the user to reenter the new login credentials.

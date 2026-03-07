@@ -16,14 +16,14 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -40,10 +40,10 @@ public class LocalTouchFeatureTest {
     @Test
     public void testTouch() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(new LocalWriteFeature(session), test, new TransferStatus());
@@ -52,7 +52,7 @@ public class LocalTouchFeatureTest {
         assertTrue(new LocalFindFeature(session).find(test));
         final AttributedList<Path> list = new LocalListService(session).list(workdir, new DisabledListProgressListener());
         assertTrue(list.contains(test));
-        new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         session.close();
     }
 

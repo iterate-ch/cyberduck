@@ -16,8 +16,8 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
@@ -72,12 +72,12 @@ public class S3TransferAccelerationServiceTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(502);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
-        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, status, ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(b.get());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
-        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         service.configure(false, container);
     }
 }

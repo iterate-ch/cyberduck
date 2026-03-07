@@ -18,7 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -42,7 +42,7 @@ public class DriveBatchDeleteFeatureTest extends AbstractDriveTest {
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveBatchDeleteFeature(session, new DriveFileIdProvider(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveBatchDeleteFeature(session, new DriveFileIdProvider(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class DriveBatchDeleteFeatureTest extends AbstractDriveTest {
         assertTrue(new DriveFindFeature(session, fileid).find(directory, new DisabledListProgressListener()));
         final Path file = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file, new DisabledListProgressListener()));
-        new DriveBatchDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveBatchDeleteFeature(session, fileid).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new DriveFindFeature(session, fileid).find(directory, new DisabledListProgressListener())));
         assertFalse((new DriveFindFeature(session, fileid).find(file, new DisabledListProgressListener())));
     }
@@ -66,11 +66,11 @@ public class DriveBatchDeleteFeatureTest extends AbstractDriveTest {
         final Path file2 = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file1));
         assertTrue(new DriveFindFeature(session, fileid).find(file2));
-        new DriveBatchDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveBatchDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new DriveFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
         assertFalse((new DriveFindFeature(session, fileid).find(file2, new DisabledListProgressListener())));
         assertTrue(new DriveFindFeature(session, fileid).find(folder, new DisabledListProgressListener()));
-        new DriveBatchDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveBatchDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new DriveFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
     }
 }

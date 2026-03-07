@@ -16,9 +16,9 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
@@ -70,17 +70,17 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
         final Move move = cryptomator.getFeature(session, Move.class, new AzureMoveFeature(session));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
-        move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(file));
         assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(folder));
         assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(fileRenamedInRenamedFolder));
         cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(
-                fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                fileRenamedInRenamedFolder, folderRenamed, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

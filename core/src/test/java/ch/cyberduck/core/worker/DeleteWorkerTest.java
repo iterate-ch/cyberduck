@@ -2,13 +2,13 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
@@ -64,9 +64,9 @@ public class DeleteWorkerTest {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop,
                 Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         int hashCode = worker.hashCode();
         assertEquals(4, worker.run(session).size());
         assertEquals(hashCode, worker.hashCode());
@@ -112,9 +112,9 @@ public class DeleteWorkerTest {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop,
             Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         assertEquals(1, worker.run(session).size());
     }
 
@@ -158,7 +158,7 @@ public class DeleteWorkerTest {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop,
             Arrays.asList(
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new Path("/t/a", EnumSet.of(Path.Type.file)),
@@ -166,7 +166,7 @@ public class DeleteWorkerTest {
                 new Path("/t/d", EnumSet.of(Path.Type.directory)),
                 new Path("/t/d/b", EnumSet.of(Path.Type.file))
             ),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         assertEquals(1, worker.run(session).size());
     }
 
@@ -193,9 +193,9 @@ public class DeleteWorkerTest {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop,
             Collections.singletonList(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         worker.run(session);
     }
 }

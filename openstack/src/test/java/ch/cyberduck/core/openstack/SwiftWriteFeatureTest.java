@@ -1,9 +1,9 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -42,7 +42,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         status.setMetadata(Collections.singletonMap("C", "duck"));
-        final StatusOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -51,7 +51,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         final PathAttributes attributes = new SwiftListService(session, regionService).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -59,8 +59,8 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("duck", metadata.get("X-Object-Meta-C"));
-        final OutputStream overwrite = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().setLength(0L), new DisabledConnectionCallback());
+        final OutputStream overwrite = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().setLength(0L), ConnectionCallback.noop);
         overwrite.close();
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

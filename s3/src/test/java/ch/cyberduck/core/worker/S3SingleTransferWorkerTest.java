@@ -18,10 +18,10 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.s3.AbstractS3Test;
@@ -37,6 +37,7 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -82,14 +83,14 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, new DisabledConnectionCallback());
+        final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, acl).write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -102,12 +103,12 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         localFile.delete();
     }
 
@@ -168,10 +169,10 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return super._getFeature(type);
             }
         };
-        new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+        new LoginConnectionService(LoginCallback.noop,
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                ProgressListener.noop).connect(session, CancelCallback.noop);
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(session.getHost(), test, local);
@@ -182,7 +183,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -192,7 +193,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -243,10 +244,10 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return super._getFeature(type);
             }
         };
-        new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+        new LoginConnectionService(LoginCallback.noop,
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                ProgressListener.noop).connect(session, CancelCallback.noop);
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(session.getHost(), test, local);
@@ -257,7 +258,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -267,6 +268,6 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

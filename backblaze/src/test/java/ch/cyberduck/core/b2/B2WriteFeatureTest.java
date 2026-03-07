@@ -15,9 +15,9 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -58,7 +58,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         final byte[] content = RandomUtils.nextBytes(1);
         status.setLength(content.length);
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, new B2VersionIdProvider(session)).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, new B2VersionIdProvider(session)).write(file, status, ConnectionCallback.noop);
         IOUtils.write(content, out);
         try {
             out.close();
@@ -80,7 +80,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setModified(1503654614004L);
-        final StatusOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final BaseB2Response response = out.getStatus();
@@ -94,16 +94,16 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         assertEquals(new B2AttributesFinderFeature(session, fileid).toAttributes(response), attributes);
         assertEquals(bucketAttr, new B2AttributesFinderFeature(session, fileid).find(bucket));
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
         assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());
         final byte[] overwriteContent = RandomUtils.nextBytes(5);
-        final StatusOutputStream<BaseB2Response> overwrite = new B2WriteFeature(session, fileid).write(test, new TransferStatus().setExists(true).setLength(overwriteContent.length), new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> overwrite = new B2WriteFeature(session, fileid).write(test, new TransferStatus().setExists(true).setLength(overwriteContent.length), ConnectionCallback.noop);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(overwriteContent), overwrite);
         assertNotEquals(new B2AttributesFinderFeature(session, fileid).toAttributes(response), new B2AttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()));
         assertNotEquals(((B2FileResponse) response).getFileId(), ((B2FileResponse) overwrite.getStatus()).getFileId());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

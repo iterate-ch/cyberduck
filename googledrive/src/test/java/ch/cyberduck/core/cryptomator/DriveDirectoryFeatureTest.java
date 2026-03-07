@@ -17,8 +17,8 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
@@ -78,10 +78,10 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new DriveAttributesFinderFeature(session, fileid)).find(test);
         assertEquals(versionId, attributes.getFileId());
         assertEquals(attributes, cryptomator.getFeature(session, AttributesFinder.class, new DefaultAttributesFinderFeature(session)).find(test));
-        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener())
                 .toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty());
-        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Collections.singletonList(vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Collections.singletonList(vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -100,6 +100,6 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new DriveAttributesFinderFeature(session, fileid)).find(test);
         assertEquals(versionId, attributes.getFileId());
-        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

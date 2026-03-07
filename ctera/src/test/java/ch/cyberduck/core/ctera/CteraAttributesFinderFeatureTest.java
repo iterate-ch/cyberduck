@@ -19,7 +19,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -85,7 +85,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertEquals(attributes, new CteraListService(session).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes());
         // Test wrong type
         assertThrows(NotfoundException.class, () -> f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

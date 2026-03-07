@@ -17,8 +17,8 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -66,18 +66,18 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         status.setMime("text/plain");
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(test.attributes().getVersionId());
         assertEquals(content.length, out.getStatus().getSize(), 0L);
         assertTrue(new DefaultFindFeature(session).find(test));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
             status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             status.setMime("text/plain");
             status.setModified(1632127025217L);
-            final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertEquals(content.length, out.getStatus().getSize(), 0L);
@@ -107,7 +107,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         assertEquals(1632127025217L, attr.getModificationDate());
         assertEquals(1632127025217L, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -118,7 +118,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-            final StatusOutputStream<Node> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status.setExists(true), ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertNotEquals(test.attributes().getVersionId(), out.getStatus());
@@ -129,7 +129,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-            final StatusOutputStream<Node> out = writer.write(test, status.setExists(false), new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status.setExists(false), ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertNotEquals(test.attributes().getVersionId(), out.getStatus());
@@ -138,13 +138,13 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         // Read with previous version must fail
         try {
             test.attributes().setVersionId(previousVersion);
-            new SDSReadFeature(session, nodeid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            new SDSReadFeature(session, nodeid).read(test, new TransferStatus(), ConnectionCallback.noop);
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = TransferStatusCanceledException.class)
@@ -166,7 +166,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         };
         status.setLength(content.length);
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).withListener(count).transfer(new ByteArrayInputStream(content), out);
         assertFalse(new DefaultFindFeature(session).find(test));
@@ -182,17 +182,17 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final String fileid = nodeid.getNodeId(room, 1);
         assertEquals(fileid, room.attributes().getVersionId());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
         final Path roomNew = new SDSDirectoryFeature(session, nodeid).mkdir(
                 new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(rommname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertNotEquals(fileid, roomNew.attributes().getVersionId());
         final TransferStatus status = new TransferStatus();
         status.setLength(0L);
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         out.close();
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(roomNew), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(roomNew), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -201,7 +201,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
     }
 
     @Test
@@ -213,12 +213,12 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -229,11 +229,11 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus();
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new NullInputStream(0L), out);
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

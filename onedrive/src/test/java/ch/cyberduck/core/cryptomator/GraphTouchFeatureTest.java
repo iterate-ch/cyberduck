@@ -16,8 +16,8 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
@@ -71,7 +71,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new GraphAttributesFinderFeature(session, fileid)).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);
-        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -91,6 +91,6 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new GraphAttributesFinderFeature(session, fileid)).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);
-        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

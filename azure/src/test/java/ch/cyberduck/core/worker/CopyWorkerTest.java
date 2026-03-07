@@ -16,11 +16,11 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureDirectoryFeature;
 import ch.cyberduck.core.azure.AzureFindFeature;
@@ -49,11 +49,11 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), source, new TransferStatus());
         assertTrue(new AzureFindFeature(session).find(source));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, ConnectionCallback.noop);
         worker.run(session);
         assertTrue(new AzureFindFeature(session).find(source));
         assertTrue(new AzureFindFeature(session).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(source, target), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -67,11 +67,11 @@ public class CopyWorkerTest extends AbstractAzureTest {
         new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), targetFolder, new TransferStatus());
         assertTrue(new AzureFindFeature(session).find(targetFolder));
         // copy file into vault
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, ConnectionCallback.noop);
         worker.run(session);
         assertTrue(new AzureFindFeature(session).find(sourceFile));
         assertTrue(new AzureFindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(sourceFile, targetFolder), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -86,12 +86,12 @@ public class CopyWorkerTest extends AbstractAzureTest {
         // move directory into vault
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, ConnectionCallback.noop);
         worker.run(session);
         assertTrue(new AzureFindFeature(session).find(targetFolder));
         assertTrue(new AzureFindFeature(session).find(targetFile));
         assertTrue(new AzureFindFeature(session).find(folder));
         assertTrue(new AzureFindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), new DisabledProgressListener()).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(folder, targetFolder), ProgressListener.noop).run(session);
     }
 }

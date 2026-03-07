@@ -1,8 +1,8 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Archive;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
@@ -39,7 +39,7 @@ public class SFTPCompressFeatureTest extends AbstractSFTPTest {
                 }
             }, new DisabledTranscriptListener());
             assertTrue(new SFTPFindFeature(session).find(archive.getArchive(Collections.singletonList(test))));
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop,
                 new Delete.DisabledCallback());
             assertFalse(new SFTPFindFeature(session).find(test));
             feature.unarchive(archive, archive.getArchive(Collections.singletonList(test)), new ProgressListener() {
@@ -51,8 +51,8 @@ public class SFTPCompressFeatureTest extends AbstractSFTPTest {
             assertTrue(new SFTPFindFeature(session).find(test));
             new SFTPDeleteFeature(session).delete(Collections.singletonList(archive.getArchive(
                 Collections.singletonList(test)
-            )), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(),
+            )), LoginCallback.noop, new Delete.DisabledCallback());
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop,
                 new Delete.DisabledCallback());
         }
     }

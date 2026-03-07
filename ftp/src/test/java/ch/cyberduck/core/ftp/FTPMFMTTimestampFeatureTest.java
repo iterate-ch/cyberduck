@@ -18,7 +18,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.list.FTPListService;
@@ -45,6 +45,6 @@ public class FTPMFMTTimestampFeatureTest extends AbstractFTPTest {
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         new FTPMFMTTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified / 1000 * 1000, new FTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -17,8 +17,8 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Share;
@@ -43,6 +43,6 @@ public class DropboxTemporaryUrlProviderTest extends AbstractDropboxTest {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), file, new TransferStatus());
         assertNotNull(provider.toDownloadUrl(file, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

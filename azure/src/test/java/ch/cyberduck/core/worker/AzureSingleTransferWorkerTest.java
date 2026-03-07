@@ -16,22 +16,22 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
 import ch.cyberduck.core.azure.AzureWriteFeature;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -67,13 +67,13 @@ public class AzureSingleTransferWorkerTest extends AbstractAzureTest {
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream out = new AzureWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream out = new AzureWriteFeature(session).write(test, writeStatus, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         final TransferStatus writeStatus = new TransferStatus().setExists(true).setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final StatusOutputStream<Void> out = new AzureWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = new AzureWriteFeature(session).write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -84,9 +84,9 @@ public class AzureSingleTransferWorkerTest extends AbstractAzureTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()).run(session));
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()).run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         localFile.delete();
     }
 }

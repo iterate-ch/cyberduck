@@ -15,15 +15,15 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -40,24 +40,24 @@ public class LocalDirectoryFeatureTest {
     @Test
     public void testCreateFolder() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());
         assertTrue(Files.exists(session.toPath(folder)));
         assertThrows(ConflictException.class, () -> new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus()));
-        new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new LocalDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(Files.exists(session.toPath(folder)));
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testFolderExists() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());
         new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());
-        new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new LocalDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
