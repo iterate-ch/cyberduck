@@ -16,10 +16,10 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProgressListener;
@@ -65,7 +65,7 @@ public abstract class AbstractSMBTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
     }

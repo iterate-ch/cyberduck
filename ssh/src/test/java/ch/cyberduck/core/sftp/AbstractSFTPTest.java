@@ -16,10 +16,10 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginConnectionService;
@@ -149,7 +149,7 @@ public class AbstractSFTPTest {
                 return null;
             }
         },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop).connect(session, CancelCallback.noop);
     }

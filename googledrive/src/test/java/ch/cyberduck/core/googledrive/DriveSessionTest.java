@@ -16,10 +16,10 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
@@ -73,7 +73,7 @@ public class DriveSessionTest extends AbstractDriveTest {
                 }
                 throw new LoginCanceledException();
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop
         ).connect(session, CancelCallback.noop);
         assertTrue(session.isConnected());

@@ -17,8 +17,8 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
@@ -137,7 +137,7 @@ public class B2SingleTransferWorkerTest extends VaultTest {
             }
         };
         new LoginConnectionService(LoginCallback.noop,
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new TestPasswordStore(),
                 ProgressListener.noop).check(session, CancelCallback.noop);
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));

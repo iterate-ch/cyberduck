@@ -15,9 +15,9 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -40,7 +40,7 @@ public class LocalUnixPermissionFeatureTest {
     public void testSetUnixPermission() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(session.isPosixFilesystem()) {
-            assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+            assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
             assertTrue(session.isConnected());
             assertNotNull(session.getClient());
             session.login(LoginCallback.noop, CancelCallback.noop);

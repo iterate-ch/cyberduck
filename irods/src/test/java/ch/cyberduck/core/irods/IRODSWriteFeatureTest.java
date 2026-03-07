@@ -19,8 +19,8 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -67,11 +67,11 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
-        session1.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session1.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session1.login(LoginCallback.noop, CancelCallback.noop);
 
         final IRODSSession session2 = new IRODSSession(host);
-        session2.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session2.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session2.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path test1 = new Path(new IRODSHomeFinderService(session1).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -119,11 +119,11 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
-        session1.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session1.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session1.login(LoginCallback.noop, CancelCallback.noop);
 
         final IRODSSession session2 = new IRODSSession(host);
-        session2.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session2.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session2.login(LoginCallback.noop, CancelCallback.noop);
 
         final CountDownLatch cw1 = new CountDownLatch(1);
@@ -227,7 +227,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -300,7 +300,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

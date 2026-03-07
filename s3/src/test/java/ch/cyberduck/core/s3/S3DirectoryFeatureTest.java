@@ -86,7 +86,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         session.login(LoginCallback.noop, CancelCallback.noop);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, acl);
@@ -119,7 +119,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         session.login(LoginCallback.noop, CancelCallback.noop);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, acl);
@@ -191,7 +191,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host);
-        final LoginConnectionService login = new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(),
+        final LoginConnectionService login = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
         final String name = String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());

@@ -1,10 +1,10 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
@@ -62,7 +62,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop);
         login.connect(session, CancelCallback.noop);
         session.close();
@@ -90,7 +90,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                     prompt.set(true);
                 }
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop);
         connect.connect(session, CancelCallback.noop);
         assertTrue(session.isConnected());
@@ -110,7 +110,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
                 return super.prompt(bookmark, username, title, reason, options);
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop).connect(session, CancelCallback.noop);
     }
 
@@ -126,7 +126,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
                 return super.prompt(bookmark, username, title, reason, options);
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop).connect(session, CancelCallback.noop);
     }
 }

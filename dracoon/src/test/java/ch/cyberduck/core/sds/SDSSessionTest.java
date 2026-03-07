@@ -73,7 +73,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                 System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(LoginCallback.noop, CancelCallback.noop);
@@ -91,7 +91,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService c = new LoginConnectionService(
                 LoginCallback.noop,
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop,
                 new ProxyFinder() {
@@ -123,7 +123,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                         return new Credentials("test", "n");
                     }
                 },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop,
                 new ProxyFinder() {

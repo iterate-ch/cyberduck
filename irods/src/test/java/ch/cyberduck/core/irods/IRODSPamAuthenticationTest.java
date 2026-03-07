@@ -16,8 +16,8 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -137,7 +137,7 @@ public class IRODSPamAuthenticationTest {
             try {
                 final IRODSSession session = new IRODSSession(host, cyberduckTrustManager, null);
 
-                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+                assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
                 assertTrue(session.isConnected());
                 assertNotNull(session.getClient());
                 session.login(LoginCallback.noop, CancelCallback.noop);
@@ -176,7 +176,7 @@ public class IRODSPamAuthenticationTest {
             try {
                 final IRODSSession session = new IRODSSession(host, cyberduckTrustManager, null);
 
-                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+                assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
                 assertTrue(session.isConnected());
                 assertNotNull(session.getClient());
                 assertThrows(BackgroundException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop));

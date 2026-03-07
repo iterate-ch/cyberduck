@@ -16,8 +16,8 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
@@ -61,7 +61,7 @@ public class B2SessionTest {
                 System.getProperties().getProperty("b2.user"), "s"
         ));
         final B2Session session = new B2Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
     }
 }

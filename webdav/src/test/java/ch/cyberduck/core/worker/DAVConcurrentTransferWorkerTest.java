@@ -138,7 +138,7 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
                 return new Credentials("test", "test");
             }
         },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop);
         final DefaultSessionPool pool = new DefaultSessionPool(connect,

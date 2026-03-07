@@ -121,7 +121,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host);
-        final LoginConnectionService login = new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(),
+        final LoginConnectionService login = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
@@ -215,7 +215,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         ));
         host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener());
@@ -242,7 +242,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
         new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(

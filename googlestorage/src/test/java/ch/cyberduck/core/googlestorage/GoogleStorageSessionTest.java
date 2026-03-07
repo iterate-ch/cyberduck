@@ -16,9 +16,9 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -50,7 +50,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         session.getHost().setCredentials(
             new Credentials(System.getProperties().getProperty("google.projectid") + "1", null)
         );
-        final LoginConnectionService login = new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(),
+        final LoginConnectionService login = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
                 new TestPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
     }

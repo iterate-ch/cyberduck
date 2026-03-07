@@ -19,9 +19,9 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -54,7 +54,7 @@ public class LocalWriteFeatureTest {
     public void testWriteSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(session.isPosixFilesystem()) {
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
             session.login(LoginCallback.noop, CancelCallback.noop);
             final Path workdir = new LocalHomeFinderFeature().find();
             final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -95,7 +95,7 @@ public class LocalWriteFeatureTest {
     @Test(expected = NotfoundException.class)
     public void testWriteNotFound() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path workdir = new LocalHomeFinderFeature().find();
         final Path test = new Path(workdir.getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -105,7 +105,7 @@ public class LocalWriteFeatureTest {
     @Test
     public void testWriteContentRange() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final LocalWriteFeature feature = new LocalWriteFeature(session);
         final Path workdir = new LocalHomeFinderFeature().find();
@@ -143,7 +143,7 @@ public class LocalWriteFeatureTest {
     @Test
     public void testWriteRangeEndFirst() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final LocalWriteFeature feature = new LocalWriteFeature(session);
         final Path workdir = new LocalHomeFinderFeature().find();
@@ -184,7 +184,7 @@ public class LocalWriteFeatureTest {
     @Test
     public void testWriteTildeFilename() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final LocalWriteFeature feature = new LocalWriteFeature(session);
         final Path workdir = new LocalHomeFinderFeature().find();

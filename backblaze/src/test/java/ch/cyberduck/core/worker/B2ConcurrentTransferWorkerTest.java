@@ -18,10 +18,10 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
@@ -111,7 +111,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
             }
         };
         final LoginConnectionService connect = new LoginConnectionService(LoginCallback.noop,
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new TestPasswordStore(),
                 ProgressListener.noop);
         final DefaultSessionPool pool = new DefaultSessionPool(connect,

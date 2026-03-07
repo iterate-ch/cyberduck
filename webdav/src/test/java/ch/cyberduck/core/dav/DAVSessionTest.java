@@ -63,7 +63,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
                 new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DefaultCertificateStore()));
         try {
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
             session.login(LoginCallback.noop, CancelCallback.noop);
         }
         catch(ConnectionRefusedException e) {
@@ -77,7 +77,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final Host host = new Host(new DAVProtocol(), "cyberduck.ch");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         try {
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
             session.login(LoginCallback.noop, CancelCallback.noop);
             new DAVListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         }
@@ -140,7 +140,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 return new Credentials();
             }
         },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop);
         c.connect(session, CancelCallback.noop);
@@ -162,7 +162,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 }
                 ), new DefaultX509KeyManager()
         );
-        final LoginConnectionService s = new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+        final LoginConnectionService s = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop, new DisabledPasswordStore(),
                 ProgressListener.noop);
         s.check(session, CancelCallback.noop);
     }
@@ -184,7 +184,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                         warning.set(true);
                     }
                 },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop
         );
@@ -201,7 +201,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         };
         final LoginConnectionService c = new LoginConnectionService(
                 LoginCallback.noop,
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop,
                 new ProxyFinder() {
@@ -229,7 +229,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                         return new Credentials("test", "n");
                     }
                 },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop,
                 new ProxyFinder() {
@@ -265,7 +265,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                         return new Credentials("test", "test");
                     }
                 },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop,
                 new ProxyFinder() {
@@ -315,7 +315,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                         return new Credentials("test", "test");
                     }
                 },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop,
                 new ProxyFinder() {

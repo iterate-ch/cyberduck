@@ -2,9 +2,9 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -204,7 +204,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
     public void testFindNoPropfind() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));

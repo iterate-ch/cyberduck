@@ -15,9 +15,9 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.FallbackAttributesFinderFeature;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -44,7 +44,7 @@ public class FallbackAttributesFinderFeatureTest {
     @Test
     public void testFindNoWebDAV() throws Exception {
         final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "ftp.gnu.org"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         // Handle 405 Method Not Allowed
         final AttributesFinder f = new FallbackAttributesFinderFeature(new DefaultAttributesFinderFeature(session), new DAVAttributesFinderFeature(session));

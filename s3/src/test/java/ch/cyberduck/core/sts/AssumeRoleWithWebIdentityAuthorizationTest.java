@@ -18,8 +18,8 @@ package ch.cyberduck.core.sts;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -59,7 +59,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
@@ -72,7 +72,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -86,7 +86,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -104,7 +104,7 @@ public class AssumeRoleWithWebIdentityAuthorizationTest extends AbstractAssumeRo
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
