@@ -18,7 +18,7 @@ package ch.cyberduck.core.storegate;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LockedException;
@@ -72,7 +72,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new StoregateLockFeature(session, nodeid).unlock(test, lockId);
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = TransferStatusCanceledException.class)
@@ -148,7 +148,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(version);
         assertTrue(new StoregateFindFeature(session, nodeid).find(test));
         assertEquals(content.length, new StoregateAttributesFinderFeature(session, nodeid).find(test).getSize());
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(version);
         assertTrue(new StoregateFindFeature(session, nodeid).find(test));
         assertEquals(content.length, new StoregateAttributesFinderFeature(session, nodeid).find(test).getSize());
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -189,6 +189,6 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(version);
         assertTrue(new StoregateFindFeature(session, nodeid).find(test));
         assertEquals(0L, new StoregateAttributesFinderFeature(session, nodeid).find(test).getSize());
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

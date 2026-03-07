@@ -21,8 +21,8 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVFindFeature;
@@ -73,7 +73,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         assertEquals(attr, new CteraAttributesFinderFeature(session).find(target));
         assertEquals(Comparison.equal, new ETagComparisonService().compare(Path.Type.file, attr, new CteraAttributesFinderFeature(session).find(target)));
         assertEquals(Comparison.equal, new ETagComparisonService().compare(Path.Type.file, attr, status.getResponse()));
-        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         assertEquals(attr.getModificationDate(), new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getModificationDate());
         assertEquals(attr.getFileId(), new CteraAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getFileId());
         // N.B. ETag should remain constant when moving a resource but Ctera may not be WebDAV compliant.
-        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class CteraMoveFeatureTest extends AbstractCteraTest {
         assertTrue(new DAVFindFeature(session).find(target));
         assertEquals(testAttributes, new CteraAttributesFinderFeature(session).find(target));
         assertEquals(Comparison.equal, new ETagComparisonService().compare(Path.Type.file, testAttributes, new CteraAttributesFinderFeature(session).find(target)));
-        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

@@ -17,7 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -53,7 +53,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         worker.run(session);
         assertTrue(new AzureFindFeature(session).find(source));
         assertTrue(new AzureFindFeature(session).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(source, target), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         worker.run(session);
         assertTrue(new AzureFindFeature(session).find(sourceFile));
         assertTrue(new AzureFindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(sourceFile, targetFolder), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -92,6 +92,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session).find(targetFile));
         assertTrue(new AzureFindFeature(session).find(folder));
         assertTrue(new AzureFindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(folder, targetFolder), ProgressListener.noop).run(session);
     }
 }

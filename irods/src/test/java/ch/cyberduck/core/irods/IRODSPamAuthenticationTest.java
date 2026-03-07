@@ -17,8 +17,8 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -137,10 +137,10 @@ public class IRODSPamAuthenticationTest {
             try {
                 final IRODSSession session = new IRODSSession(host, cyberduckTrustManager, null);
 
-                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
+                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
                 assertTrue(session.isConnected());
                 assertNotNull(session.getClient());
-                session.login(new DisabledLoginCallback(), CancelCallback.noop);
+                session.login(LoginCallback.noop, CancelCallback.noop);
 
                 session.close();
                 assertFalse(session.isConnected());
@@ -176,10 +176,10 @@ public class IRODSPamAuthenticationTest {
             try {
                 final IRODSSession session = new IRODSSession(host, cyberduckTrustManager, null);
 
-                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
+                assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
                 assertTrue(session.isConnected());
                 assertNotNull(session.getClient());
-                assertThrows(BackgroundException.class, () -> session.login(new DisabledLoginCallback(), CancelCallback.noop));
+                assertThrows(BackgroundException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop));
 
                 session.close();
                 assertFalse(session.isConnected());

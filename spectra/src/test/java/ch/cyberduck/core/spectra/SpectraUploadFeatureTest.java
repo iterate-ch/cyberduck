@@ -17,8 +17,8 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
@@ -70,7 +70,7 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -110,9 +110,9 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
                 status1, ConnectionCallback.noop);
         upload.upload(new SpectraWriteFeature(session), test2, local2, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 status2, ConnectionCallback.noop);
-        new SpectraDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Arrays.asList(test1, test2), LoginCallback.noop, new Delete.DisabledCallback());
         local1.delete();
         local2.delete();
-        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

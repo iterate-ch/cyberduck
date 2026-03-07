@@ -20,10 +20,10 @@ import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateTrustCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -84,7 +84,7 @@ public class HttpReachability implements Reachability {
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(bookmark,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, Reachability.timeout, proxy);
         final HttpClientBuilder configuration = builder.build(proxy,
-                new DisabledTranscriptListener(), new DisabledLoginCallback());
+                new DisabledTranscriptListener(), LoginCallback.noop);
         configuration.disableRedirectHandling();
         configuration.disableAutomaticRetries();
         try (CloseableHttpClient client = configuration.build()) {

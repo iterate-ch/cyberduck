@@ -20,7 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -47,7 +47,7 @@ public class SwiftDeleteFeatureTest extends AbstractSwiftTest {
     public void testDeleteNotFoundBucket() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -55,7 +55,7 @@ public class SwiftDeleteFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class SwiftDeleteFeatureTest extends AbstractSwiftTest {
         assertFalse(children.contains(test));
         assertTrue(list.list(placeholder, new DisabledListProgressListener()).contains(test));
         assertTrue(find.find(test));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(find.find(test));
         assertFalse(find.find(placeholder));
     }
@@ -107,7 +107,7 @@ public class SwiftDeleteFeatureTest extends AbstractSwiftTest {
         new SwiftDirectoryFeature(session).mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), placeholder, new TransferStatus());
         final SwiftFindFeature find = new SwiftFindFeature(session);
         assertTrue(find.find(placeholder));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(delete.get());
         Thread.sleep(1000L);
         assertFalse(find.find(placeholder));

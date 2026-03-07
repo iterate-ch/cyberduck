@@ -19,7 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
@@ -81,20 +81,20 @@ public class NextcloudVersioningFeatureTest extends AbstractNextcloudTest {
             assertNotEquals(initialAttributes, new NextcloudAttributesFinderFeature(session).find(test));
             assertEquals(initialVersion.attributes(), new NextcloudAttributesFinderFeature(session).find(initialVersion));
             {
-                final InputStream reader = new NextcloudReadFeature(session).read(initialVersion, new TransferStatus(), new DisabledLoginCallback());
+                final InputStream reader = new NextcloudReadFeature(session).read(initialVersion, new TransferStatus(), LoginCallback.noop);
                 assertArrayEquals(initialContent, IOUtils.readFully(reader, initialContent.length));
                 reader.close();
             }
             final Path updatedVersion = versions.get(0);
             assertEquals(contentUpdate.length, new NextcloudAttributesFinderFeature(session).find(updatedVersion).getSize());
             {
-                final InputStream reader = new NextcloudReadFeature(session).read(updatedVersion, new TransferStatus(), new DisabledLoginCallback());
+                final InputStream reader = new NextcloudReadFeature(session).read(updatedVersion, new TransferStatus(), LoginCallback.noop);
                 assertArrayEquals(contentUpdate, IOUtils.readFully(reader, contentUpdate.length));
                 reader.close();
             }
         }
         feature.revert(initialVersion);
         assertEquals(initialVersion.attributes().getModificationDate(), new NextcloudAttributesFinderFeature(session).find(test).getModificationDate());
-        new DAVDeleteFeature(session).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(test, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

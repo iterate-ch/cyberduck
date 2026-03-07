@@ -16,7 +16,7 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -57,6 +57,6 @@ public class StoregateIdProviderTest extends AbstractStoregateTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

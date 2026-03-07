@@ -3,8 +3,8 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
@@ -72,7 +72,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -144,7 +144,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         final PathAttributes attr2 = new DAVAttributesFinderFeature(session).find(test);
         assertEquals(101L, attr2.getSize());
         assertNotEquals(attr1.getETag(), attr2.getETag());
-        new DAVDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(test, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out);
         assertArrayEquals(content, out.toByteArray());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -217,7 +217,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -245,7 +245,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
         IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().setLength(source.length), ConnectionCallback.noop), out);
         assertArrayEquals(source, out.toByteArray());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -273,7 +273,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
         IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().setLength(source.length), ConnectionCallback.noop), out);
         assertArrayEquals(source, out.toByteArray());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = AccessDeniedException.class)

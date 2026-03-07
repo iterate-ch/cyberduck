@@ -19,7 +19,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -52,15 +52,15 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         assertEquals(new DAVAttributesFinderFeature(session).find(test), new DAVAttributesFinderFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(copy));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
     public void testCopyWithLock() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertThrows(InteroperabilityException.class, () -> new DAVLockFeature(session).lock(test));
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new DAVDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -93,6 +93,6 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         assertTrue(new DAVFindFeature(session).find(file));
         assertTrue(new DAVFindFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
-        new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

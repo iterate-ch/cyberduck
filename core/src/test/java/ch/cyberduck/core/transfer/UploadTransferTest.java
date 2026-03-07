@@ -174,7 +174,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()).run(session);
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()).run(session);
         assertEquals(1, c1.get());
         assertEquals(1, c2.get());
         assertTrue(cache.isCached(root.getParent()));
@@ -257,7 +257,7 @@ public class UploadTransferTest {
                 return TransferAction.rename;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()).run(session);
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()).run(session);
         assertEquals(1, c1.get());
         assertEquals(0, c2.get());
         assertTrue(cache.isCached(root.getParent()));
@@ -293,7 +293,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService());
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService());
         worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), directoryname), new TransferStatus().setExists(true),
                 TransferAction.overwrite);
         assertEquals(new TransferStatus().setExists(true).setLength(0L), worker.getStatus().get(new TransferItem(test, local)));
@@ -337,7 +337,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService());
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService());
         worker.prepare(testDirectory, localDirectory, new TransferStatus().setExists(true),
                 TransferAction.resume);
         assertEquals(new TransferStatus().setExists(true).setLength(0L), worker.getStatus().get(new TransferItem(testDirectory, localDirectory)));
@@ -428,7 +428,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 return super.transfer(item, action);

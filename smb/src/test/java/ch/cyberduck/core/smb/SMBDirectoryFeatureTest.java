@@ -16,7 +16,7 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
@@ -42,6 +42,6 @@ public class SMBDirectoryFeatureTest extends AbstractSMBTest {
                 new SMBWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SMBFindFeature(session).find(test));
         assertThrows(ConflictException.class, () -> new SMBDirectoryFeature(session).mkdir(new SMBWriteFeature(session), test, new TransferStatus()));
-        new SMBDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

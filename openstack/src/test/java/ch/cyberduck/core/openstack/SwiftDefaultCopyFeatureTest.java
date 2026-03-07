@@ -19,7 +19,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -50,7 +50,7 @@ public class SwiftDefaultCopyFeatureTest extends AbstractSwiftTest {
         new SwiftDefaultCopyFeature(session).copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(copy));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -67,6 +67,6 @@ public class SwiftDefaultCopyFeatureTest extends AbstractSwiftTest {
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

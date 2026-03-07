@@ -20,8 +20,8 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -94,7 +94,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         assertEquals(firstLevelModificationDate, feature.find(firstlevel).getModificationDate(), 0L);
         assertNotEquals(rootEtag, feature.find(new Path("/", EnumSet.of(Path.Type.directory))).getETag());
         assertNotEquals(rootModificationDate, feature.find(new Path("/", EnumSet.of(Path.Type.directory))).getModificationDate());
-        new EueDeleteFeature(session, fileid).delete(Arrays.asList(firstlevel, secondlevel), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Arrays.asList(firstlevel, secondlevel), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

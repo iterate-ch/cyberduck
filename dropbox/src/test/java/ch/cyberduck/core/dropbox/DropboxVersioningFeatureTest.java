@@ -21,8 +21,8 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -95,8 +95,8 @@ public class DropboxVersioningFeatureTest extends AbstractDropboxTest {
             // Expected
         }
         for(Path version : new DropboxListService(session).list(directory, new DisabledListProgressListener())) {
-            new DropboxDeleteFeature(session).delete(Collections.singletonList(version), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DropboxDeleteFeature(session).delete(Collections.singletonList(version), LoginCallback.noop, new Delete.DisabledCallback());
         }
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

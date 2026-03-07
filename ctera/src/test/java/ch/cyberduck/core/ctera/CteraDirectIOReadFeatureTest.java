@@ -18,8 +18,8 @@ package ch.cyberduck.core.ctera;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultVersionIdProvider;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
@@ -77,7 +77,7 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         new StreamCopier(segment, segment).transfer(in, buffer);
         in.close();
         assertArrayEquals(content, buffer.toByteArray());
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -108,6 +108,6 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         new StreamCopier(status, status).transfer(in, buffer);
         in.close();
         assertArrayEquals(content, buffer.toByteArray());
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

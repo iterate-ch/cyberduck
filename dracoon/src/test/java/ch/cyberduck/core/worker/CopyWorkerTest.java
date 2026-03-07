@@ -17,7 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -55,7 +55,7 @@ public class CopyWorkerTest extends AbstractSDSTest {
         worker.run(session);
         assertTrue(new SDSFindFeature(session, nodeid).find(source));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(room), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class CopyWorkerTest extends AbstractSDSTest {
         worker.run(session);
         assertTrue(new SDSFindFeature(session, nodeid).find(sourceFile));
         assertTrue(new SDSFindFeature(session, nodeid).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(room), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -95,6 +95,6 @@ public class CopyWorkerTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(session, nodeid).find(targetFile));
         assertTrue(new SDSFindFeature(session, nodeid).find(folder));
         assertTrue(new SDSFindFeature(session, nodeid).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(room), ProgressListener.noop).run(session);
     }
 }

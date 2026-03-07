@@ -16,8 +16,8 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
@@ -56,7 +56,7 @@ public class DeleteWorkerTest extends AbstractS3Test {
         final Path file = new S3TouchFeature(session, acl).touch(
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(file.attributes().getVersionId());
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(folder), ProgressListener.noop).run(session);
         assertFalse(new S3FindFeature(session, acl).find(file));
     }
 
@@ -71,7 +71,7 @@ public class DeleteWorkerTest extends AbstractS3Test {
                 new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(file));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(folder), ProgressListener.noop).run(session);
         // Find delete marker
         assertTrue(new S3FindFeature(session, acl).find(file));
         assertTrue(new S3AttributesFinderFeature(session, acl).find(file).isDuplicate());

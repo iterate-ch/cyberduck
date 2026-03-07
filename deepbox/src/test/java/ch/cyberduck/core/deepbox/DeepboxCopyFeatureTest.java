@@ -18,7 +18,7 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -53,8 +53,8 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
             assertTrue(new DeepboxFindFeature(session, fileid).find(copy.withAttributes(new DefaultPathAttributes())));
         }
         finally {
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test.withAttributes(new DefaultPathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(copy.withAttributes(new DefaultPathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test.withAttributes(new DefaultPathAttributes())), LoginCallback.noop, new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(copy.withAttributes(new DefaultPathAttributes())), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -66,7 +66,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertThrows(UnsupportedException.class, () -> new DeepboxCopyFeature(session, fileid).preflight(directory, Optional.of(copy)));
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(directory.withAttributes(new DefaultPathAttributes())), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(directory.withAttributes(new DefaultPathAttributes())), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         final Path test = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertThrows(NotfoundException.class, () ->
                 new DeepboxCopyFeature(session, fileid).copy(test, new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(),
-                        new DisabledLoginCallback(), StreamListener.noop));
+                        LoginCallback.noop, StreamListener.noop));
     }
 
     @Test
@@ -111,8 +111,8 @@ public class DeepboxCopyFeatureTest extends AbstractDeepboxTest {
         assertEquals(originalTargetAttributes.getModificationDate(), trashedTargetAttributes.getModificationDate());
         assertEquals(originalTargetAttributes.getChecksum(), trashedTargetAttributes.getChecksum());
 
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(targetInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(targetInTrash), LoginCallback.noop, new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

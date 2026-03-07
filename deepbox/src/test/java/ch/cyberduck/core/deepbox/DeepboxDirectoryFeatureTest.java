@@ -18,9 +18,8 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -129,7 +128,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new DefaultPathAttributes()), new DisabledListProgressListener()));
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertThrows(NotfoundException.class, () -> nodeid.getFileId(folder.withAttributes(new DefaultPathAttributes())));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new DefaultPathAttributes())));
     }
@@ -142,7 +141,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
     }
 
@@ -153,7 +152,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         final Path test = new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         new DeepboxDirectoryFeature(session, nodeid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, nodeid).find(documents)), test.getName());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(test));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -165,7 +164,7 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus());
         assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
         assertThrows(ConflictException.class, () -> directory.mkdir(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
     }
 }

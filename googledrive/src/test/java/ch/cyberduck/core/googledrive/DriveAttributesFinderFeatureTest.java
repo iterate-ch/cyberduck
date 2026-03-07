@@ -19,7 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -80,7 +80,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, new DriveFileIdProvider(session));
         assertNotEquals(PathAttributes.EMPTY, f.find(test));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getFileId());
         assertNull(attributes.getVersionId());
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final AttributedList<Path> listBeforeDelete = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listBeforeDelete.contains(version1));
         assertFalse(listBeforeDelete.find(new DefaultPathPredicate(version1)).attributes().isHidden());
-        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(new Path(version1)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(new Path(version1)), LoginCallback.noop, new Delete.DisabledCallback());
         final AttributedList<Path> listAfterDelete = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listAfterDelete.contains(version1));
         assertTrue(listAfterDelete.find(new DefaultPathPredicate(version1)).attributes().isTrashed());
@@ -119,7 +119,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final AttributedList<Path> listAfterReupload = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listAfterReupload.contains(version2));
         assertFalse(listAfterReupload.find(new DefaultPathPredicate(version2)).attributes().isHidden());
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(version1, version2, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(version1, version2, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertNotEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getFileId());
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -179,6 +179,6 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         fileid.cache(test, String.valueOf(RandomUtils.nextLong()));
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
         assertEquals(latestnodeid, f.find(new Path(test).withAttributes(PathAttributes.EMPTY)).getFileId());
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

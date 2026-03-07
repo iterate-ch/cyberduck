@@ -20,8 +20,8 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -103,7 +103,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             assertEquals(status.getModified().longValue(), new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()).getModificationDate());
             assertEquals(new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()), attributes);
         }
-        new DriveDeleteFeature(session, idProvider).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, idProvider).delete(Arrays.asList(test, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -175,7 +175,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
                 }
             }).attributes().isDuplicate());
         }
-        new DriveDeleteFeature(session, idProvider).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, idProvider).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

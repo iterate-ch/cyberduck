@@ -17,9 +17,9 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -84,9 +84,9 @@ public class AzureSingleTransferWorkerTest extends AbstractAzureTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()).run(session));
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()).run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         localFile.delete();
     }
 }

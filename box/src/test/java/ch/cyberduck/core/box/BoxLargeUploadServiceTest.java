@@ -19,8 +19,8 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
@@ -69,7 +69,7 @@ public class BoxLargeUploadServiceTest extends AbstractBoxTest {
         final byte[] compare = new byte[content.length];
         IOUtils.readFully(new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 }

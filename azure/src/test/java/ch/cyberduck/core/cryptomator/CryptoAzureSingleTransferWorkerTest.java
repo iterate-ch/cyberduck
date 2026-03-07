@@ -17,10 +17,10 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -100,7 +100,7 @@ public class CryptoAzureSingleTransferWorkerTest extends AbstractAzureTest {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()).run(session));
+        }, new DisabledTransferErrorCallback(), ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()).run(session));
         assertTrue(cryptomator.getFeature(session, Find.class, new AzureFindFeature(session)).find(dir1));
         assertEquals(content.length, cryptomator.getFeature(session, AttributesFinder.class, new AzureAttributesFinderFeature(session)).find(file1).getSize());
         {
@@ -116,7 +116,7 @@ public class CryptoAzureSingleTransferWorkerTest extends AbstractAzureTest {
             new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), LoginCallback.noop, new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

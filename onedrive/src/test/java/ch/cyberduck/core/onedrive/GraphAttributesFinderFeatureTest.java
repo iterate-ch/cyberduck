@@ -16,7 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -67,7 +67,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNotNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         assertNotNull(attributes.getFileId());
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         assertNull(attributes.getVersionId());
         assertNotNull(attributes.getLink());
         assertNotNull(attributes.getFileId());
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -92,13 +92,13 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String previousnodeid = test.attributes().getFileId();
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         final String latestnodeid = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(drive, test.getName(), EnumSet.of(Path.Type.file)), new TransferStatus()).attributes().getFileId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server
         fileid.cache(test, previousnodeid);
         final GraphAttributesFinderFeature f = new GraphAttributesFinderFeature(session, fileid);
         assertEquals(latestnodeid, f.find(test).getFileId());
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

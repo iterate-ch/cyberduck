@@ -18,10 +18,10 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
@@ -119,7 +119,7 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(dir1));
@@ -137,7 +137,7 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), LoginCallback.noop, new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();
@@ -179,10 +179,10 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
-        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(file1, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(file1, dir1, vault), LoginCallback.noop, new Delete.DisabledCallback());
         localFile1.delete();
         localDirectory1.delete();
     }

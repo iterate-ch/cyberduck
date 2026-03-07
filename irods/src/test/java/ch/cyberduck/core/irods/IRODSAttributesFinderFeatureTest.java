@@ -17,8 +17,8 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
@@ -54,8 +54,8 @@ public class IRODSAttributesFinderFeatureTest extends IRODSDockerComposeManager 
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         new IRODSAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -68,8 +68,8 @@ public class IRODSAttributesFinderFeatureTest extends IRODSDockerComposeManager 
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path folder = new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), new Path(
                 new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -80,7 +80,7 @@ public class IRODSAttributesFinderFeatureTest extends IRODSDockerComposeManager 
         assertEquals(folderTimestamp, f.find(folder).getModificationDate());
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new IRODSFindFeature(session).find(test));
         session.close();
     }

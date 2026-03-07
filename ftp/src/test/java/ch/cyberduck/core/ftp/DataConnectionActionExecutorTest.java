@@ -19,8 +19,8 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -55,10 +55,10 @@ public class DataConnectionActionExecutorTest extends AbstractFTPTest {
         final AtomicInteger count = new AtomicInteger();
 
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
         session.getClient().setDefaultTimeout(2000);
         session.getClient().setConnectTimeout(2000);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path file = new Path("/pub/debian/README.html", EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<InputStream> action = new DataConnectionAction<InputStream>() {

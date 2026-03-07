@@ -18,7 +18,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -56,7 +56,7 @@ public class S3SearchFeatureTest extends AbstractS3Test {
         assertThrows(AccessDeniedException.class, () -> feature.search(root, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         final Path subdir = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class S3SearchFeatureTest extends AbstractS3Test {
             assertNotNull(result.find(new SimplePathPredicate(filesubdir)));
             assertEquals(subdir, result.find(new SimplePathPredicate(filesubdir)).getParent());
         }
-        new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(file, filesubdir, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(file, filesubdir, subdir), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
 }

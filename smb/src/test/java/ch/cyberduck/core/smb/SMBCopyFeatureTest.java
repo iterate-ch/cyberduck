@@ -18,8 +18,8 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -54,7 +54,7 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         ListService list = new SMBListService(session);
         assertTrue(list.list(home, new DisabledListProgressListener()).contains(file));
         assertTrue(list.list(destinationFolder, new DisabledListProgressListener()).contains(copy));
-        new SMBDeleteFeature(session).delete(Arrays.asList(file, copy, destinationFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Arrays.asList(file, copy, destinationFolder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -72,6 +72,6 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         ListService list = new SMBListService(session);
         assertTrue(list.list(sourceFolder, new DisabledListProgressListener()).contains(file));
         assertTrue(list.list(destinationFolder, new DisabledListProgressListener()).contains(copy));
-        new SMBDeleteFeature(session).delete(Arrays.asList(file, sourceFolder, copy, destinationFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Arrays.asList(file, sourceFolder, copy, destinationFolder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

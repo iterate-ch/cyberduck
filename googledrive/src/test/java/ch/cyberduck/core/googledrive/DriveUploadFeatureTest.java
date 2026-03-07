@@ -18,8 +18,8 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
@@ -77,7 +77,7 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop,
             new Delete.DisabledCallback());
     }
 }

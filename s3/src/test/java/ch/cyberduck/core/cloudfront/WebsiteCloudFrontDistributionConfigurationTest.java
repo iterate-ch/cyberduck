@@ -1,7 +1,7 @@
 package ch.cyberduck.core.cloudfront;
 
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -93,7 +93,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
             = new WebsiteCloudFrontDistributionConfiguration(session, new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager()
         );
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Distribution distribution = configuration.read(container, Distribution.WEBSITE, new DisabledLoginCallback());
+        final Distribution distribution = configuration.read(container, Distribution.WEBSITE, LoginCallback.noop);
         assertEquals("The specified bucket does not have a website configuration", distribution.getStatus());
     }
 

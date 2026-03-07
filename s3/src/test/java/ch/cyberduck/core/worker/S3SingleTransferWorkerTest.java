@@ -103,12 +103,12 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         localFile.delete();
     }
 
@@ -169,7 +169,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return super._getFeature(type);
             }
         };
-        new LoginConnectionService(new DisabledLoginCallback(),
+        new LoginConnectionService(LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 ProgressListener.noop).connect(session, CancelCallback.noop);
@@ -183,7 +183,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -193,7 +193,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -244,7 +244,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return super._getFeature(type);
             }
         };
-        new LoginConnectionService(new DisabledLoginCallback(),
+        new LoginConnectionService(LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 ProgressListener.noop).connect(session, CancelCallback.noop);
@@ -258,7 +258,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -268,6 +268,6 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

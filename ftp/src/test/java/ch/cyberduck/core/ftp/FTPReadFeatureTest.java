@@ -20,7 +20,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -77,7 +77,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
             in.close();
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -103,7 +103,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         final byte[] reference = new byte[(int) limit];
         System.arraycopy(content, (int) offset, reference, 0, (int) limit);
         assertArrayEquals(reference, download.toByteArray());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         in.close();
         // Make sure subsequent PWD command works
         assertEquals(workdir, new FTPWorkdirService(session).find());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -141,7 +141,7 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         in.close();
         // Make sure subsequent PWD command works
         assertEquals(workdir, new FTPWorkdirService(session).find());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -157,6 +157,6 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         in.close();
         // Read timeout
         in.close();
-        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -20,9 +20,9 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -147,7 +147,7 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
                 return super._getFeature(type);
             }
         };
-        new LoginConnectionService(new DisabledLoginCallback(),
+        new LoginConnectionService(LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new TestPasswordStore(),
                 ProgressListener.noop).check(session, CancelCallback.noop);
@@ -161,7 +161,7 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -169,6 +169,6 @@ public class SpectraSingleTransferWorkerTest extends VaultTest {
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         assertEquals(content.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

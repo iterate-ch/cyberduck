@@ -19,7 +19,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConflictException;
@@ -58,14 +58,14 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
         assertTrue(new DAVFindFeature(session).find(target));
         assertEquals(status.getResponse(), target.attributes());
         assertEquals(attr, new DAVAttributesFinderFeature(session).find(target));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
     public void testMoveWithLock() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertThrows(InteroperabilityException.class, () -> new DAVLockFeature(session).lock(test));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
         assertEquals(attr, new DAVAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))));
         assertEquals(attr.getModificationDate(), new DAVAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getModificationDate());
         assertNotEquals(attr.getETag(), new DAVAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getETag());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
         new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(target));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

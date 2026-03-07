@@ -18,9 +18,9 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -147,7 +147,7 @@ public class MoveWorkerTest {
         };
         final MoveWorker worker = new MoveWorker(
                 Collections.singletonMap(new Path("/t", EnumSet.of(Path.Type.directory)), new Path("/t2", EnumSet.of(Path.Type.directory))),
-                new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, new DisabledLoginCallback());
+                new SessionPool.SingleSessionPool(session), PathCache.empty(), ProgressListener.noop, LoginCallback.noop);
         final Collection<Path> targets = worker.run(session).values();
         assertEquals(4, targets.size());
         assertTrue(targets.contains(new Path("/t2", EnumSet.of(Path.Type.directory))));

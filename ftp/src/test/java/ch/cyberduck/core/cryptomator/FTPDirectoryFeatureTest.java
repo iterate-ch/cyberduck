@@ -16,8 +16,8 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -67,7 +67,7 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
                 cryptomator.getFeature(session, Write.class, new FTPWriteFeature(session)), testdirectory2, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(testdirectory2));
         assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(testfile2));
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(testdirectory2, testdirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(testdirectory2, testdirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -82,6 +82,6 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
         cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new FTPWriteFeature(session)), test, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

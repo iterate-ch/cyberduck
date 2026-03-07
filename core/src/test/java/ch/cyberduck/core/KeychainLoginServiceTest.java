@@ -27,7 +27,7 @@ public class KeychainLoginServiceTest {
                 throw new LoginCanceledException();
             }
         };
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
         LoginService l = new KeychainLoginService(new DisabledPasswordStore());
         l.authenticate(session, new ProgressListener() {
             int i = 0;
@@ -45,7 +45,7 @@ public class KeychainLoginServiceTest {
                 }
                 i++;
             }
-        }, new DisabledLoginCallback(), CancelCallback.noop);
+        }, LoginCallback.noop, CancelCallback.noop);
     }
 
 
@@ -53,7 +53,7 @@ public class KeychainLoginServiceTest {
     public void testCancel() throws Exception {
         LoginService l = new KeychainLoginService(new DisabledPasswordStore());
         l.validate(new Host(new TestProtocol(), "h"),
-                new DefaultX509KeyManager(), new DisabledLoginCallback(), new LoginOptions());
+                new DefaultX509KeyManager(), LoginCallback.noop, new LoginOptions());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class KeychainLoginServiceTest {
         final Credentials credentials = new Credentials();
         credentials.setUsername("u");
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", credentials);
-        l.validate(host, new DefaultX509KeyManager(), new DisabledLoginCallback(), new LoginOptions(host.getProtocol()));
+        l.validate(host, new DefaultX509KeyManager(), LoginCallback.noop, new LoginOptions(host.getProtocol()));
         assertTrue(keychain.get());
         assertFalse(host.getCredentials().isSaved());
         assertEquals("P", host.getCredentials().getPassword());

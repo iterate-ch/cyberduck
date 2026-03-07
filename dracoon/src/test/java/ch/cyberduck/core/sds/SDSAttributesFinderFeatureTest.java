@@ -19,7 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -55,7 +55,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
             f.find(test);
         }
         finally {
-            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -92,7 +92,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
         assertTrue(attributes.getPermission().isExecutable());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -166,7 +166,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder, new DisabledListProgressListener()).getModificationDate());
         // Branch version is changing with background task only
         // assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder, new DisabledListProgressListener()).getRevision());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -184,6 +184,6 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         assertEquals(latestnodeid, f.find(test).getVersionId());
         assertEquals(latestnodeid, test.attributes().getVersionId());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

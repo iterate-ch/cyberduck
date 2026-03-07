@@ -17,8 +17,8 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
@@ -58,7 +58,7 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
             new BrickReadFeature(session).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
         }
         finally {
-            new BrickDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new BrickDeleteFeature(session).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -87,7 +87,7 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
             assertNotNull(in);
             in.close();
         }
-        new BrickDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new BrickDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new BrickDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -170,6 +170,6 @@ public class BrickReadFeatureTest extends AbstractBrickTest {
         final CountingInputStream in = new CountingInputStream(new BrickReadFeature(session).read(test, status, ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new BrickDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

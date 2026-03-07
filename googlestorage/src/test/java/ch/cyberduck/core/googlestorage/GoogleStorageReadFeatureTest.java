@@ -19,7 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -82,7 +82,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         assertEquals(content.length, count.getRecv());
         assertEquals(content.length, status.getLength());
         in.close();
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, status, ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, new TransferStatus(), ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, new TransferStatus(), ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(file, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -165,7 +165,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final CountingInputStream in = new CountingInputStream(new GoogleStorageReadFeature(session).read(file, new TransferStatus(), ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(file, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -191,6 +191,6 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         in.close();
         file.attributes().setVersionId(String.valueOf(out.getStatus().getGeneration()));
         assertEquals(length, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

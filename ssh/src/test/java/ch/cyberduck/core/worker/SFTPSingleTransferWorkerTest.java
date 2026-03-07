@@ -20,10 +20,10 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -134,7 +134,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return super._getFeature(type);
             }
         };
-        new LoginConnectionService(new DisabledLoginCallback(),
+        new LoginConnectionService(LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 ProgressListener.noop).connect(session, CancelCallback.noop);
@@ -146,7 +146,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -157,7 +157,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -181,7 +181,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -191,7 +191,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         assertEquals(t.getTransferred(), counter.getSent(), 0L);
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
-        new SFTPDeleteFeature(session).delete(Arrays.asList(remotefile, remotedirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Arrays.asList(remotefile, remotedirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -219,7 +219,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -229,6 +229,6 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         assertEquals(t.getTransferred(), counter.getSent(), 0L);
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
-        new SFTPDeleteFeature(session).delete(Arrays.asList(remotefile, remotedirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Arrays.asList(remotefile, remotedirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

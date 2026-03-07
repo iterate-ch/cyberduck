@@ -16,7 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -46,6 +46,6 @@ public class B2LifecycleFeatureTest extends AbstractB2Test {
         assertEquals(1, configuration.getTransition(), 0L);
         new B2LifecycleFeature(session, fileid).setConfiguration(bucket, LifecycleConfiguration.empty());
         assertEquals(LifecycleConfiguration.empty(), new B2LifecycleFeature(session, fileid).getConfiguration(bucket));
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

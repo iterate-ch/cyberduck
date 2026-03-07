@@ -1,6 +1,6 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -45,9 +45,9 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), container, new TransferStatus().setRegion("ORD"));
-        configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
-        assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback()).isEnabled());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), LoginCallback.noop);
+        assertTrue(configuration.read(container, Distribution.DOWNLOAD, LoginCallback.noop).isEnabled());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -57,13 +57,13 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
         new SwiftDirectoryFeature(session).mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), container, new TransferStatus().setRegion("ORD"));
         final Distribution config = new Distribution(Distribution.WEBSITE, true);
         config.setIndexDocument("index.html");
-        configuration.write(container, config, new DisabledLoginCallback());
-        final Distribution distribution = configuration.read(container, Distribution.WEBSITE, new DisabledLoginCallback());
+        configuration.write(container, config, LoginCallback.noop);
+        final Distribution distribution = configuration.read(container, Distribution.WEBSITE, LoginCallback.noop);
         assertTrue(distribution.isEnabled());
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(container);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("X-Container-Meta-Web-Index"));
         assertEquals("index.html", metadata.get("X-Container-Meta-Web-Index"));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

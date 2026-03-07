@@ -16,10 +16,10 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
@@ -166,7 +166,7 @@ public class TransferDictionaryTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, StreamListener.noop, new DisabledLoginCallback(), new DisabledNotificationService()).run(session);
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()).run(session);
         assertTrue(t.isComplete());
         final Transfer serialized = new TransferDictionary<>().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);

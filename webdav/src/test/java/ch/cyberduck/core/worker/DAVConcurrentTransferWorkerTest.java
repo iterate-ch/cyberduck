@@ -99,7 +99,7 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
         }, new DisabledTransferErrorCallback(), ConnectionCallback.noop, ProgressListener.noop, bytecount, new DisabledNotificationService()).run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         assertEquals(content.length, bytecount.getRecv());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
         localFile.delete();
     }
@@ -201,6 +201,6 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(t.isComplete());
         assertTrue(failed.get());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

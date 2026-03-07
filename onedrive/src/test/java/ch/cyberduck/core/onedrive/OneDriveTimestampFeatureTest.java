@@ -17,7 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -61,7 +61,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         assertNotEquals(attr.getETag(), updated.getETag());
         assertEquals(Timestamp.toSeconds(modified), new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(Timestamp.toSeconds(modified), Timestamp.toSeconds(new GraphItemListService(session, fileid).list(drive, new DisabledListProgressListener()).find(new SimplePathPredicate(file)).attributes().getModificationDate()));
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -79,6 +79,6 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         assertEquals(Timestamp.toSeconds(modified), Timestamp.toSeconds(updated.getModificationDate()));
         assertNotEquals(attr.getETag(), updated.getETag());
         assertEquals(Timestamp.toSeconds(modified), Timestamp.toSeconds(new GraphItemListService(session, fileid).list(drive, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate()));
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

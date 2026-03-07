@@ -17,7 +17,7 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -50,8 +50,8 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
         new BoxCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new BoxFindFeature(session, fileid).find(test.withAttributes(PathAttributes.EMPTY)));
         assertTrue(new BoxFindFeature(session, fileid).find(copy.withAttributes(PathAttributes.EMPTY)));
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new BoxDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
         assertTrue(new BoxFindFeature(session, fileid).find(file));
         assertTrue(new BoxFindFeature(session, fileid).find(copy));
         assertTrue(new BoxFindFeature(session, fileid).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
-        new BoxDeleteFeature(session, fileid).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Arrays.asList(copy, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -90,6 +90,6 @@ public class BoxCopyFeatureTest extends AbstractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new BoxCopyFeature(session, fileid).copy(test, new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(),
-                new DisabledLoginCallback(), StreamListener.noop);
+                LoginCallback.noop, StreamListener.noop);
     }
 }

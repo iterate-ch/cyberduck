@@ -17,8 +17,8 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -91,7 +91,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(target, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out));
         assertArrayEquals(content, out.toByteArray());
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         worker.run(session);
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -140,7 +140,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         worker.run(session);
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -171,7 +171,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(fileRenamedInRenamedFolder));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
         registry.clear();
     }
 
@@ -200,7 +200,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(encryptedFile, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out));
         assertArrayEquals(content, out.toByteArray());
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
         registry.clear();
     }
 
@@ -228,7 +228,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         assertTrue(new DAVFindFeature(session).find(cleartextFolder));
         assertTrue(new DAVFindFeature(session).find(cleartextFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
         registry.clear();
     }
 
@@ -261,7 +261,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new DAVReadFeature(session).read(cleartextFile, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out));
         assertArrayEquals(content, out.toByteArray());
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(vault, clearFolder), ProgressListener.noop).run(session);
         registry.clear();
     }
 
@@ -290,7 +290,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertTrue(new DAVFindFeature(session).find(cleartextFolder));
         final Path fileRenamed = new Path(cleartextFolder, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new DAVFindFeature(session).find(fileRenamed));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(cleartextFolder, vault), ProgressListener.noop).run(session);
         registry.clear();
     }
 }

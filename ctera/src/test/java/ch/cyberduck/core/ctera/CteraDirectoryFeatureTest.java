@@ -17,7 +17,7 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConflictException;
@@ -46,7 +46,7 @@ public class CteraDirectoryFeatureTest extends AbstractCteraTest {
         final Path result = new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         assertThrows(ConflictException.class, () -> new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), test, new TransferStatus()));
-        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
     }
 

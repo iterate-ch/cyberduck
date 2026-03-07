@@ -21,8 +21,8 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -58,8 +58,8 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -73,7 +73,7 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         assertFalse(session.getFeature(Find.class).find(new Path(source, filename, EnumSet.of(Path.Type.file))));
         assertTrue(session.getFeature(Find.class).find(destination));
         assertTrue(session.getFeature(Find.class).find(new Path(destination, filename, EnumSet.of(Path.Type.file))));
-        session.getFeature(Delete.class).delete(Collections.singletonList(destination), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.getFeature(Delete.class).delete(Collections.singletonList(destination), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(destination));
         session.close();
     }
@@ -88,8 +88,8 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -98,7 +98,7 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         new IRODSMoveFeature(session).move(source, destination, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(destination));
-        session.getFeature(Delete.class).delete(Collections.singletonList(destination), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.getFeature(Delete.class).delete(Collections.singletonList(destination), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(destination));
         session.close();
     }
@@ -113,8 +113,8 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

@@ -15,7 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -38,7 +38,7 @@ public class GraphDeleteFeatureTest extends AbstractOneDriveTest {
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(new OneDriveHomeFinderService().find(), "t", EnumSet.of(Path.Type.file));
         try {
-            new GraphDeleteFeature(session, new GraphFileIdProvider(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new GraphDeleteFeature(session, new GraphFileIdProvider(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         }
         catch(NotfoundException e) {
             assertEquals("File not found", e.getMessage());

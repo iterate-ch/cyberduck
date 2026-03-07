@@ -20,7 +20,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -67,7 +67,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertEquals(target.attributes(), new DropboxAttributesFinderFeature(session).find(target));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, file.attributes(), targetAttributes));
         assertEquals(target.attributes(), targetAttributes);
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         new DropboxMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new DropboxFindFeature(session).find(test));
         assertTrue(new DropboxFindFeature(session).find(target));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -95,7 +95,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertTrue(new DropboxFindFeature(session).find(target));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(target.attributes(), new DropboxAttributesFinderFeature(session).find(target));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertEquals(1, files.size());
         assertFalse(new DropboxFindFeature(session).find(temp));
         assertTrue(new DropboxFindFeature(session).find(test));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertNotNull(list.find(new SimplePathPredicate(new Path(folder, StringUtils.upperCase(test.getName()), EnumSet.of(Path.Type.file)))));
         assertNull(list.find(new SimplePathPredicate(test)));
         assertTrue(new DropboxFindFeature(session).find(test));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final Path target = new Path(home, "~$f", EnumSet.of(Path.Type.file));
         assertThrows(InvalidFilenameException.class, () -> feature.preflight(file, Optional.of(target)));
         assertThrows(AccessDeniedException.class, () -> feature.move(file, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -165,6 +165,6 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
         assertThrows(InvalidFilenameException.class, () -> new DropboxMoveFeature(session).preflight(file, Optional.of(rename)));
         assertThrows(ConflictException.class, () -> new DropboxMoveFeature(session).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

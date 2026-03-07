@@ -4,8 +4,8 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
@@ -80,7 +80,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         // Folder ETag does not change if content changes
         // assertNotEquals(folderEtag, new CteraAttributesFinderFeature(session).find(folder).getETag());
         assertNotEquals(rootEtag, new CteraAttributesFinderFeature(session).find(root).getETag());
-        new CteraDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Arrays.asList(test, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         assertEquals(101L, attr2.getSize());
         assertNotEquals(attr1.getETag(), attr2.getETag());
         assertNotEquals(attr1.getModificationDate(), attr2.getModificationDate());
-        new CteraDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Arrays.asList(test, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

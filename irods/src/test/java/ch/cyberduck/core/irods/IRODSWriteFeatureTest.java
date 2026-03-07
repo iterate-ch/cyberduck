@@ -20,8 +20,8 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
@@ -67,12 +67,12 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
-        session1.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session1.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session1.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session1.login(LoginCallback.noop, CancelCallback.noop);
 
         final IRODSSession session2 = new IRODSSession(host);
-        session2.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session2.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session2.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session2.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path test1 = new Path(new IRODSHomeFinderService(session1).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path test2 = new Path(new IRODSHomeFinderService(session2).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -100,11 +100,11 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
             assertArrayEquals(content, buffer2);
         }
 
-        session1.getFeature(Delete.class).delete(Collections.singletonList(test1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session1.getFeature(Delete.class).delete(Collections.singletonList(test1), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session1.getFeature(Find.class).find(test1));
         session1.close();
 
-        session2.getFeature(Delete.class).delete(Collections.singletonList(test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session2.getFeature(Delete.class).delete(Collections.singletonList(test2), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session2.getFeature(Find.class).find(test2));
         session2.close();
     }
@@ -119,12 +119,12 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
-        session1.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session1.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session1.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session1.login(LoginCallback.noop, CancelCallback.noop);
 
         final IRODSSession session2 = new IRODSSession(host);
-        session2.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session2.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session2.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session2.login(LoginCallback.noop, CancelCallback.noop);
 
         final CountDownLatch cw1 = new CountDownLatch(1);
         final CountDownLatch cw2 = new CountDownLatch(1);
@@ -208,11 +208,11 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         cr1.await();
         cr2.await();
 
-        session1.getFeature(Delete.class).delete(Collections.singletonList(test1), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session1.getFeature(Delete.class).delete(Collections.singletonList(test1), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session1.getFeature(Find.class).find(test1));
         session1.close();
 
-        session2.getFeature(Delete.class).delete(Collections.singletonList(test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session2.getFeature(Delete.class).delete(Collections.singletonList(test2), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session2.getFeature(Find.class).find(test2));
         session2.close();
     }
@@ -227,8 +227,8 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
@@ -285,7 +285,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
             assertArrayEquals(newcontent, buffer);
         }
 
-        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.getFeature(Delete.class).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
@@ -300,8 +300,8 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
@@ -362,7 +362,7 @@ public class IRODSWriteFeatureTest extends IRODSDockerComposeManager {
         System.arraycopy(content_append, 0, complete, content.length, content_append.length);
         assertArrayEquals(complete, buffer_complete);
 
-        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.getFeature(Delete.class).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }

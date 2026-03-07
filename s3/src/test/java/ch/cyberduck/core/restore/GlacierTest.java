@@ -17,8 +17,8 @@ package ch.cyberduck.core.restore;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -64,7 +64,7 @@ public class GlacierTest extends AbstractS3Test {
         out.close();
         assertEquals("GLACIER", new S3AttributesFinderFeature(session, acl).find(test).getStorageClass());
         final Glacier feature = new Glacier(session, new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        feature.restore(test, new DisabledLoginCallback());
+        feature.restore(test, LoginCallback.noop);
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

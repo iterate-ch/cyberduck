@@ -6,9 +6,9 @@ import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -70,7 +70,7 @@ public class FTPSessionTest extends AbstractFTPTest {
         ));
         final FTPSession session = new FTPSession(host);
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
+                LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 ProgressListener.noop,
@@ -103,7 +103,7 @@ public class FTPSessionTest extends AbstractFTPTest {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
     }
 
@@ -131,7 +131,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 throw failure;
             }
         };
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
         assertEquals(Session.State.open, session.getState());
         try {
             session.close();
@@ -160,7 +160,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                     }
                 }));
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
+                LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 ProgressListener.noop);

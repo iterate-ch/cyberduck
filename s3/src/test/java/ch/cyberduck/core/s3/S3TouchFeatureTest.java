@@ -2,7 +2,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -48,7 +48,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
         assertEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
     }
 
@@ -63,7 +63,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         assertEquals(test.attributes(), new S3AttributesFinderFeature(virtualhost, acl).find(test));
         assertEquals(test.attributes(), new DefaultAttributesFinderFeature(virtualhost).find(test));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(virtualhost, acl).find(test));
     }
 
@@ -77,7 +77,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(test.attributes(), new DefaultAttributesFinderFeature(session).find(test));
         assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
     }
 
@@ -90,7 +90,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(test.attributes(), new S3AttributesFinderFeature(session, acl).find(test));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
     }
 
@@ -115,7 +115,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
                 new DefaultPathAttributes(file.attributes()).setVersionId(version1))));
         assertTrue(new S3FindFeature(session, acl).find(new Path(file.getParent(), file.getName(), file.getType(),
                 new DefaultPathAttributes(file.attributes()).setVersionId(version2))));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(file).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(file).withAttributes(PathAttributes.EMPTY)), LoginCallback.noop, new Delete.DisabledCallback());
         // Versioned files are not deleted but with delete marker added
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
                 new DefaultPathAttributes(file.attributes()).setVersionId(version1))));

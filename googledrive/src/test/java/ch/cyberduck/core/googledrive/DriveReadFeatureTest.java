@@ -18,8 +18,8 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -92,7 +92,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -103,7 +103,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(file, new TransferStatus(), ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -147,7 +147,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(test, status, ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -178,8 +178,8 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         }
         assertEquals(2, new DriveVersioningFeature(session, fileid).list(test, new DisabledListProgressListener()).size());
         // Permanently delete revision
-        //new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(versioned), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        //new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(versioned), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new DriveFindFeature(session, fileid).find(test));
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

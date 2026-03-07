@@ -20,9 +20,9 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -45,10 +45,10 @@ public class LocalListServiceTest {
     @Test
     public void testList() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new LocalHomeFinderFeature().find();
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -57,7 +57,7 @@ public class LocalListServiceTest {
         final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(file));
         assertTrue(list.contains(directory));
-        new LocalDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new LocalDeleteFeature(session).delete(Arrays.asList(file, directory), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new LocalListService(session).list(home, new DisabledListProgressListener()).contains(file));
         assertFalse(new LocalListService(session).list(home, new DisabledListProgressListener()).contains(directory));
         session.close();
@@ -67,10 +67,10 @@ public class LocalListServiceTest {
     public void testDifferentDrive() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(!session.isPosixFilesystem()) {
-            assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
+            assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
             assertTrue(session.isConnected());
             assertNotNull(session.getClient());
-            session.login(new DisabledLoginCallback(), CancelCallback.noop);
+            session.login(LoginCallback.noop, CancelCallback.noop);
             final Path test = new Path("/D:/", EnumSet.of(Path.Type.directory, Path.Type.volume));
             final AttributedList<Path> list = new LocalListService(session).list(test, new DisabledListProgressListener());
             assertNotSame(AttributedList.emptyList(), list);
@@ -82,10 +82,10 @@ public class LocalListServiceTest {
     public void testListSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         assumeTrue(session.isPosixFilesystem());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new LocalHomeFinderFeature().find();
         final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
@@ -100,7 +100,7 @@ public class LocalListServiceTest {
         assertTrue(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getName()));
         assertTrue(list.contains(symlinkAbsolute));
         assertTrue(list.get(symlinkAbsolute).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
-        new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), LoginCallback.noop, new Delete.DisabledCallback());
         session.close();
     }
 
@@ -108,10 +108,10 @@ public class LocalListServiceTest {
     public void testListJunction() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new LocalHomeFinderFeature().find();
         final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(new Path(home, "Recent", EnumSet.of(Path.Type.directory))));
@@ -131,8 +131,8 @@ public class LocalListServiceTest {
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final LocalListService service = new LocalListService(session);
         service.list(f, new DisabledListProgressListener());
@@ -141,8 +141,8 @@ public class LocalListServiceTest {
     @Test(expected = NotfoundException.class)
     public void testListFile() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new LocalHomeFinderFeature().find();
         final LocalListService service = new LocalListService(session);
         service.list(new Path(home, "test", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());

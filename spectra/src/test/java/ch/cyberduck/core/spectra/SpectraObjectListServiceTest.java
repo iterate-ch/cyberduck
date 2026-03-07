@@ -18,8 +18,8 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersioningConfiguration;
@@ -60,7 +60,7 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -77,7 +77,7 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
                 new SpectraWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new SpectraObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
         for(Path f : list) {
             assertTrue(f.attributes().getMetadata().isEmpty());
         }
-        new SpectraDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Arrays.asList(test, folder), LoginCallback.noop, new Delete.DisabledCallback());
         for(Path f : new SpectraObjectListService(session).list(folder, new DisabledListProgressListener())) {
             assertTrue(f.attributes().isDuplicate());
             if(f.attributes().getSize() == 0L) {
@@ -125,7 +125,7 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
                 assertTrue(f.attributes().getMetadata().isEmpty());
             }
         }
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
         final Path file = new SpectraTouchFeature(session).touch(
                 new SpectraWriteFeature(session), new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -145,7 +145,7 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
         final Path file = new SpectraTouchFeature(session).touch(
                 new SpectraWriteFeature(session), new Path(container, ".", EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -155,7 +155,7 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
         final Path placeholder = new SpectraDirectoryFeature(session).mkdir(
                 new SpectraWriteFeature(session), new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -166,6 +166,6 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
                 new SpectraWriteFeature(session), new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
         assertTrue(new SpectraObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

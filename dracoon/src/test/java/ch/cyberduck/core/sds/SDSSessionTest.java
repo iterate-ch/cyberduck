@@ -15,20 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCertificateIdentityCallback;
-import ch.cyberduck.core.DisabledCertificateStore;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
@@ -86,10 +73,10 @@ public class SDSSessionTest extends AbstractSDSTest {
                 System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
@@ -103,7 +90,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
+                LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 ProgressListener.noop,

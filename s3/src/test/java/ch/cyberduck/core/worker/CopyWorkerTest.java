@@ -18,7 +18,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -69,7 +69,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
                 new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
         ));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(source, target), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         worker.run(session);
         assertTrue(new S3FindFeature(session, acl).find(sourceFile));
         assertTrue(new S3FindFeature(session, acl).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(sourceFile, targetFolder), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -110,6 +110,6 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(targetFile));
         assertTrue(new S3FindFeature(session, acl).find(folder));
         assertTrue(new S3FindFeature(session, acl).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), ProgressListener.noop).run(session);
+        new DeleteWorker(LoginCallback.noop, Arrays.asList(folder, targetFolder), ProgressListener.noop).run(session);
     }
 }

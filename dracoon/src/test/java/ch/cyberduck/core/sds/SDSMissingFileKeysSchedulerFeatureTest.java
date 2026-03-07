@@ -21,6 +21,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -100,7 +101,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
             }
         });
         assertTrue(processed.stream().filter(userFileKeySetRequest -> userFileKeySetRequest.getFileId().equals(Long.parseLong(test.attributes().getVersionId()))).findAny().isPresent());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     private void removeKeyPairs(UserApi userApi) throws ApiException {
@@ -184,6 +185,6 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         });
         assertTrue(empty.isEmpty());
         assertEquals(2, userApi.requestUserKeyPairs(null).size());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

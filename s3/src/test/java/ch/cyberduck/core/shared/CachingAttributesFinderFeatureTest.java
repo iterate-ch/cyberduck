@@ -19,8 +19,8 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -123,7 +123,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals(newVersion, f.find(file.withAttributes(PathAttributes.EMPTY)).getVersionId());
         assertNotEquals(initialVersion, f.find(file.withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(newVersion))).getVersionId());
         assertEquals(new S3AttributesAdapter(session.getHost()).toAttributes(out.getStatus()).getVersionId(), f.find(file).getVersionId());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
 }

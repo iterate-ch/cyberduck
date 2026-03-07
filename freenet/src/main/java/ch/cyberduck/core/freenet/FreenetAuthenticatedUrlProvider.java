@@ -19,10 +19,10 @@ import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateTrustCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
@@ -84,7 +84,7 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                         CertificateStoreFactory.get());
                 final CloseableHttpClient client = new HttpConnectionPoolBuilder(
                         target, new ThreadLocalHostnameDelegatingTrustManager(trust, target.getHostname()), key, ProxyFactory.get()
-                ).build(ProxyFactory.get(), new DisabledTranscriptListener(), new DisabledLoginCallback())
+                ).build(ProxyFactory.get(), new DisabledTranscriptListener(), LoginCallback.noop)
                         .setUserAgent(new FreenetUserAgentProvider().get())
                         .build();
                 final String username = bookmark.getCredentials().getUsername();

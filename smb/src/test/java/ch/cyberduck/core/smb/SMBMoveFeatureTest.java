@@ -17,7 +17,7 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -62,7 +62,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         assertTrue(new SMBFindFeature(session).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, fileRenamed.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new SMBFindFeature(session).find(fileRenamedInRenamedFolder));
-        new SMBDeleteFeature(session).delete(Collections.singletonList(folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(folderRenamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
                 new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new SMBFindFeature(session).find(file));
         assertTrue(new SMBFindFeature(session).find(fileRenamed));
-        new SMBDeleteFeature(session).delete(Collections.singletonList(fileRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(fileRenamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -95,6 +95,6 @@ public class SMBMoveFeatureTest extends AbstractSMBTest {
         final Path file = new SMBTouchFeature(session).touch(new SMBWriteFeature(session), new Path(home, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path rename = new Path(home, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file));
         new SMBMoveFeature(session).move(file, rename, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
-        new SMBDeleteFeature(session).delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(rename), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

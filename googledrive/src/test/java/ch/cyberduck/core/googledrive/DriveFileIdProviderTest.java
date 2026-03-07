@@ -16,9 +16,9 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -54,7 +54,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertNotNull(fileid.getFileId(test));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertNotNull(fileid.getFileId(test));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final DriveFileIdProvider driveFileIdProvider = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, driveFileIdProvider).touch(new DriveWriteFeature(session, driveFileIdProvider), test, new TransferStatus());
         assertNotNull(driveFileIdProvider.getFileId(test));
-        new DriveDeleteFeature(session, driveFileIdProvider).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, driveFileIdProvider).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertNotNull(fileid.getFileId(test));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         assertNotNull(fileid.getFileId(test));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

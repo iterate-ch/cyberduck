@@ -17,7 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
@@ -40,7 +40,7 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
     @Test
     public void testGetAlgorithms() throws Exception {
         assertEquals(2, new S3EncryptionFeature(session, new S3AccessControlListFeature(session)).getKeys(
-                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback()).size());
+                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), LoginCallback.noop).size());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("AES256", value.algorithm);
         assertNull(value.key);
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -68,6 +68,6 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("AES256", value.algorithm);
         assertNull(value.key);
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

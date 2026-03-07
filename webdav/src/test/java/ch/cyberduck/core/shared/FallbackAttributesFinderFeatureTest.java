@@ -16,9 +16,9 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.FallbackAttributesFinderFeature;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
@@ -44,8 +44,8 @@ public class FallbackAttributesFinderFeatureTest {
     @Test
     public void testFindNoWebDAV() throws Exception {
         final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "ftp.gnu.org"), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), CancelCallback.noop);
-        session.login(new DisabledLoginCallback(), CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         // Handle 405 Method Not Allowed
         final AttributesFinder f = new FallbackAttributesFinderFeature(new DefaultAttributesFinderFeature(session), new DAVAttributesFinderFeature(session));
         final PathAttributes attr = f.find(new Path("/gnu/wget/wget-1.19.4.tar.gz", EnumSet.of(Path.Type.file)));

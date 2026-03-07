@@ -20,7 +20,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -89,8 +89,8 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
         assertEquals(status.getResponse().getVersionId(), versions.get(0).attributes().getVersionId());
         assertEquals(initialVersion, versions.get(1).attributes().getVersionId());
         for(Path version : new B2ListService(session, fileid).list(room, new DisabledListProgressListener())) {
-            new B2DeleteFeature(session, fileid).delete(Collections.singletonList(version), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new B2DeleteFeature(session, fileid).delete(Collections.singletonList(version), LoginCallback.noop, new Delete.DisabledCallback());
         }
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

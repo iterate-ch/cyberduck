@@ -18,9 +18,9 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -136,7 +136,7 @@ public class B2SingleTransferWorkerTest extends VaultTest {
                 return super._getFeature(type);
             }
         };
-        new LoginConnectionService(new DisabledLoginCallback(),
+        new LoginConnectionService(LoginCallback.noop,
                 new DisabledHostKeyCallback(),
                 new TestPasswordStore(),
                 ProgressListener.noop).check(session, CancelCallback.noop);
@@ -150,7 +150,7 @@ public class B2SingleTransferWorkerTest extends VaultTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                ProgressListener.noop, counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -162,6 +162,6 @@ public class B2SingleTransferWorkerTest extends VaultTest {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

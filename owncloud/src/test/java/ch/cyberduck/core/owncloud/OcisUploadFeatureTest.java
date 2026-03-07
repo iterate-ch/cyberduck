@@ -19,8 +19,8 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
@@ -107,7 +107,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop), compare);
             assertArrayEquals(content, compare);
         }
-        new DAVDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 }

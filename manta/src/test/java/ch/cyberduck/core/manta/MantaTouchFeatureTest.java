@@ -16,7 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.features.Delete;
@@ -42,7 +42,7 @@ public class MantaTouchFeatureTest extends AbstractMantaTest {
             EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(new MantaWriteFeature(session), file, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(new MantaAttributesFinderFeature(session).find(file));
-        new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new MantaDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -54,6 +54,6 @@ public class MantaTouchFeatureTest extends AbstractMantaTest {
             EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(new MantaWriteFeature(session), file, new TransferStatus().setMime("x-application/cyberduck"));
         assertNotNull(new MantaAttributesFinderFeature(session).find(file));
-        new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new MantaDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

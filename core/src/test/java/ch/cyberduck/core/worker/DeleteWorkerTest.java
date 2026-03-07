@@ -2,9 +2,9 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -64,7 +64,7 @@ public class DeleteWorkerTest {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop,
                 Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
                 ProgressListener.noop);
         int hashCode = worker.hashCode();
@@ -112,7 +112,7 @@ public class DeleteWorkerTest {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop,
             Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
                 ProgressListener.noop);
         assertEquals(1, worker.run(session).size());
@@ -158,7 +158,7 @@ public class DeleteWorkerTest {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop,
             Arrays.asList(
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new Path("/t/a", EnumSet.of(Path.Type.file)),
@@ -193,7 +193,7 @@ public class DeleteWorkerTest {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop,
             Collections.singletonList(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))),
                 ProgressListener.noop);
         worker.run(session);

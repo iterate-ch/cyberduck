@@ -18,7 +18,7 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -61,7 +61,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         final Map<String, String> metadata = new GoogleStorageMetadataFeature(session).getMetadata(renamed);
         assertFalse(metadata.isEmpty());
         assertEquals("set", metadata.get("cyberduck"));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageFindFeature(session).find(renamed));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -98,6 +98,6 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageFindFeature(session).find(renamed));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

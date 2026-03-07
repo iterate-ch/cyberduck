@@ -17,8 +17,8 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
@@ -60,7 +60,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         assertEquals(test.attributes().getModificationDate(), targetAttr.getModificationDate());
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), targetAttr));
-        new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         assertFalse(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
-        new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         assertTrue(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
-        new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().setLength(random.length);
         new BrickUploadFeature(session).upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                ProgressListener.noop, StreamListener.noop, status, new DisabledLoginCallback());
+                ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);
         local.delete();
         final String lock = new BrickLockFeature(session).lock(test);
         final Path target = new BrickMoveFeature(session).move(test,
@@ -104,7 +104,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         assertFalse(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
-        new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         assertFalse(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
         assertTrue(new BrickFindFeature(session).find(targetFile));
-        new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         new BrickMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
-        new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

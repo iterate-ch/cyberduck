@@ -16,7 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
@@ -27,7 +27,6 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -63,7 +62,7 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertEquals(node.getId().toString(), nodeid.getVersionId(test));
         assertEquals(test.attributes().getVersionId(), node.getId().toString());
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(subdir, test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(subdir, test, room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -73,7 +72,7 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
                 new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertNotNull(room.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(room));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(room));
     }
 }

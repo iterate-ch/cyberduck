@@ -17,8 +17,8 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -71,14 +71,14 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                ProgressListener.noop, count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test);
         assertEquals(random.length, attributes.getSize(), 0L);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, new S3AccessControlListFeature(session)).getClass(test));
-        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -96,7 +96,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                ProgressListener.noop, count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
@@ -104,7 +104,7 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         assertEquals(random.length, attributes.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, new S3AccessControlListFeature(session)).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
-        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -122,13 +122,13 @@ public class S3ThresholdUploadServiceTest extends AbstractS3Test {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                ProgressListener.noop, count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test);
         assertEquals(random.length, attributes.getSize());
-        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 }

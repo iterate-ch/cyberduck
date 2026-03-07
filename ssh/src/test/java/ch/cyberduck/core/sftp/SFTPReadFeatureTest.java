@@ -19,7 +19,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -74,7 +74,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
             in.close();
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
             System.arraycopy(content, 100, reference, 0, content.length - 100);
             assertArrayEquals(reference, buffer.toByteArray());
         }
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
 
     }
 

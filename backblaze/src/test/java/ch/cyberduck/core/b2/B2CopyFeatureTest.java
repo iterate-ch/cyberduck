@@ -17,7 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
@@ -59,7 +59,7 @@ public class B2CopyFeatureTest extends AbstractB2Test {
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class B2CopyFeatureTest extends AbstractB2Test {
         final Path copy = new B2CopyFeature(session, fileid).copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy, target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy, target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -91,6 +91,6 @@ public class B2CopyFeatureTest extends AbstractB2Test {
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
