@@ -38,13 +38,13 @@ public class CryptoUnixPermission implements UnixPermission {
     }
 
     @Override
-    public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-        delegate.setUnixOwner(cryptomator.encrypt(session, file), owner);
+    public Permission getDefault(final Path workdir, final EnumSet<Path.Type> type) {
+        return delegate.getDefault(workdir, type);
     }
 
     @Override
-    public Permission getDefault(final Path workdir, final EnumSet<Path.Type> type) {
-        return delegate.getDefault(workdir, type);
+    public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+        delegate.setUnixOwner(cryptomator.encrypt(session, file), owner);
     }
 
     @Override
