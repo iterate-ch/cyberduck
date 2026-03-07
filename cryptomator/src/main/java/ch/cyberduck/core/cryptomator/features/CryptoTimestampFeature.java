@@ -37,7 +37,7 @@ public class CryptoTimestampFeature implements Timestamp {
 
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
-        proxy.setTimestamp(vault.encrypt(session, file), new CryptoTransferStatus(vault, status));
+        proxy.setTimestamp(vault.encrypt(session, file, true), new CryptoTransferStatus(vault, status));
     }
 
     @Override
