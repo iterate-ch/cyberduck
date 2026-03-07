@@ -68,6 +68,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new B2DirectoryFeature(session, fileid)).mkdir(
                 cryptomator.getFeature(session, Write.class, new B2WriteFeature(session, fileid)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(test.getType().contains(Path.Type.placeholder));
         final String versionId = test.attributes().getVersionId();
         assertNotNull(versionId);
         // Assert both filename and file id matches
