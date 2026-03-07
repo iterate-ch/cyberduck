@@ -14,8 +14,8 @@ package ch.cyberduck.core.azure;/*
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.ProgressListener;
@@ -50,7 +50,7 @@ public class AbstractAzureTest extends VaultTest {
                 PROPERTIES.get("azure.user")
         ));
         session = new AzureSession(host);
-        new LoginConnectionService(LoginCallback.noop, new DisabledHostKeyCallback(),
+        new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
                 new TestPasswordStore(), ProgressListener.noop).check(session, CancelCallback.noop);
     }
 }

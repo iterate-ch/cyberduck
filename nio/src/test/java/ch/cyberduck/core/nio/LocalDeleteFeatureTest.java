@@ -16,8 +16,8 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -41,7 +41,7 @@ public class LocalDeleteFeatureTest {
     @Test
     public void testDelete() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path file = new Path(new LocalHomeFinderFeature().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
@@ -55,7 +55,7 @@ public class LocalDeleteFeatureTest {
     @Test
     public void testDeleteSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path folder = new Path(new LocalHomeFinderFeature().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), folder, new TransferStatus());

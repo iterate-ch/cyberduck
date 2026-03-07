@@ -17,8 +17,8 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Encryption;
@@ -61,7 +61,7 @@ public class TouchWorkerTest extends AbstractS3Test {
                 return super._getFeature(type);
             }
         };
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

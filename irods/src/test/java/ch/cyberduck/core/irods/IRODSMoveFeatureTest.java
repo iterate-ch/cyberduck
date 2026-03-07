@@ -20,8 +20,8 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
@@ -58,7 +58,7 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -88,7 +88,7 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -113,7 +113,7 @@ public class IRODSMoveFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

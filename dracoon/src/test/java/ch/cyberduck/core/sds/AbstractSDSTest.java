@@ -16,9 +16,9 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
@@ -59,7 +59,7 @@ public class AbstractSDSTest extends VaultTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 throw new LoginCanceledException();
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new TestPasswordStore(), ProgressListener.noop);
         connect.check(session, CancelCallback.noop);
     }

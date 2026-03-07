@@ -15,8 +15,8 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullSession;
@@ -92,7 +92,7 @@ public class RemoteProfilesFinderTest {
         };
         final Host host = new HostParser(protocols, protocol).get("https://svn.cyberduck.io/trunk/profiles");
         final NullSession session = new NullSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final Set<ProfileDescription> stream = finder.find();
         assertTrue(stream.isEmpty());

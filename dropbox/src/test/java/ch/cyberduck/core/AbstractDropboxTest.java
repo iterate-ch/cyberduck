@@ -63,7 +63,7 @@ public class AbstractDropboxTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new TestPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
     }

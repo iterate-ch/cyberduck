@@ -170,7 +170,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
             }
         };
         new LoginConnectionService(LoginCallback.noop,
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop).connect(session, CancelCallback.noop);
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -245,7 +245,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
             }
         };
         new LoginConnectionService(LoginCallback.noop,
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop).connect(session, CancelCallback.noop);
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));

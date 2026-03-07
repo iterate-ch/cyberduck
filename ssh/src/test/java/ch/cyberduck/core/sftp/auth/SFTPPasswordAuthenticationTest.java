@@ -15,7 +15,7 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
@@ -35,7 +35,7 @@ public class SFTPPasswordAuthenticationTest extends AbstractSFTPTest {
     public void testAuthenticateFailure() throws Exception {
         // Reconnect
         session.disconnect();
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.getHost().getCredentials().setPassword("p");
         assertFalse(new SFTPPasswordAuthentication(session.getClient()).authenticate(session.getHost(), LoginCallback.noop, CancelCallback.noop));
     }

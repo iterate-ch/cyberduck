@@ -16,9 +16,9 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
@@ -69,7 +69,7 @@ public class OneDriveHomeFinderServiceTest extends AbstractOneDriveTest {
                 assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new TestPasswordStore(), ProgressListener.noop).check(session, CancelCallback.noop);
         assertEquals("/My Files", (new OneDriveHomeFinderService().find().getAbsolute()));
     }

@@ -18,9 +18,9 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -91,7 +91,7 @@ public class CryptoLocalSingleTransferWorkerTest {
     @Test
     public void testUpload() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new LocalHomeFinderFeature().find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

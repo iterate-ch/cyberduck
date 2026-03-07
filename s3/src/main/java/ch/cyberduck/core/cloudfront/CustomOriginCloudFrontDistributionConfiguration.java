@@ -19,8 +19,8 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.DefaultWebUrlProvider;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
@@ -63,7 +63,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     }
 
     private <T> T connected(final Connected<T> run, final LoginCallback prompt) throws BackgroundException {
-        new LoginConnectionService(prompt, new DisabledHostKeyCallback(), PasswordStoreFactory.get(), ProgressListener.noop)
+        new LoginConnectionService(prompt, HostKeyCallback.noop, PasswordStoreFactory.get(), ProgressListener.noop)
                 .check(session, CancelCallback.noop);
         return run.call();
     }

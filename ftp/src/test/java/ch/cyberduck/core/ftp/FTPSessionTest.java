@@ -4,10 +4,10 @@ import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateStore;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
@@ -71,7 +71,7 @@ public class FTPSessionTest extends AbstractFTPTest {
         final FTPSession session = new FTPSession(host);
         final LoginConnectionService c = new LoginConnectionService(
                 LoginCallback.noop,
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop,
                 new ProxyFinder() {
@@ -131,7 +131,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 throw failure;
             }
         };
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         assertEquals(Session.State.open, session.getState());
         try {
             session.close();
@@ -161,7 +161,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 }));
         final LoginConnectionService c = new LoginConnectionService(
                 LoginCallback.noop,
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
                 ProgressListener.noop);
         c.connect(session, CancelCallback.noop);

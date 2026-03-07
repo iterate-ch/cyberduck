@@ -15,8 +15,8 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PathContainerService;
@@ -48,7 +48,7 @@ public class SMBSessionTest extends AbstractSMBTest {
         final Host host = new Host(new SMBProtocol(), session.getHost().getHostname(), 135)
                 .setCredentials(session.getHost().getCredentials());
         final SMBSession session = new SMBSession(host);
-        assertThrows(ConnectionRefusedException.class, () -> session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertThrows(ConnectionRefusedException.class, () -> session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
     }
 
     @Test

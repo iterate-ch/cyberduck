@@ -16,8 +16,8 @@ package ch.cyberduck.core.profiles;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -53,7 +53,7 @@ public class ProfilesSynchronizeWorkerTest {
         final Host host = new HostParser(protocols, new S3Protocol()).get("s3://djynunjb246r8.cloudfront.net").setCredentials(
                 new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")));
         final Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         // Local directory with oudated profile
         final Local conflictprofile = LocalFactory.get(this.getClass().getResource("/test-conflict.cyberduckprofile").getPath());
         final Local localonlyprofile = LocalFactory.get(this.getClass().getResource("/test-localonly.cyberduckprofile").getPath());
@@ -101,7 +101,7 @@ public class ProfilesSynchronizeWorkerTest {
         final Host host = new HostParser(protocols, new S3Protocol()).get("s3:/profiles.cyberduck.io").setCredentials(
                 new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name")));
         final Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         // Local directory with oudated profile
         final Local conflictprofile = LocalFactory.get(this.getClass().getResource("/test-conflict.cyberduckprofile").getPath());
         final Local localonlyprofile = LocalFactory.get(this.getClass().getResource("/test-localonly.cyberduckprofile").getPath());

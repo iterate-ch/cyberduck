@@ -19,9 +19,9 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
@@ -54,7 +54,7 @@ public class IRODSSessionTest extends IRODSDockerComposeManager {
 
         final IRODSSession session = new IRODSSession(host);
 
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
 
@@ -73,7 +73,7 @@ public class IRODSSessionTest extends IRODSDockerComposeManager {
 
         final IRODSSession session = new IRODSSession(host);
 
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
 
@@ -99,7 +99,7 @@ public class IRODSSessionTest extends IRODSDockerComposeManager {
 
         final IRODSSession session = new IRODSSession(host);
 
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
 
@@ -118,7 +118,7 @@ public class IRODSSessionTest extends IRODSDockerComposeManager {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("a", "a"));
 
         final IRODSSession session = new IRODSSession(host);
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(LoginCallback.noop, CancelCallback.noop);

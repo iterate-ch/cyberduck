@@ -18,10 +18,10 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -45,7 +45,7 @@ public class LocalListServiceTest {
     @Test
     public void testList() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(LoginCallback.noop, CancelCallback.noop);
@@ -67,7 +67,7 @@ public class LocalListServiceTest {
     public void testDifferentDrive() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(!session.isPosixFilesystem()) {
-            assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+            assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
             assertTrue(session.isConnected());
             assertNotNull(session.getClient());
             session.login(LoginCallback.noop, CancelCallback.noop);
@@ -82,7 +82,7 @@ public class LocalListServiceTest {
     public void testListSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         assumeTrue(session.isPosixFilesystem());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(LoginCallback.noop, CancelCallback.noop);
@@ -108,7 +108,7 @@ public class LocalListServiceTest {
     public void testListJunction() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(LoginCallback.noop, CancelCallback.noop);
@@ -131,7 +131,7 @@ public class LocalListServiceTest {
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final LocalListService service = new LocalListService(session);
@@ -141,7 +141,7 @@ public class LocalListServiceTest {
     @Test(expected = NotfoundException.class)
     public void testListFile() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new LocalHomeFinderFeature().find();
         final LocalListService service = new LocalListService(session);

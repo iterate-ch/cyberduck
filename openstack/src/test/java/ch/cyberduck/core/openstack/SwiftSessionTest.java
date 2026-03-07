@@ -2,8 +2,8 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
@@ -73,7 +73,7 @@ public class SwiftSessionTest extends AbstractSwiftTest {
                 PROPERTIES.get("rackspace.user"), PROPERTIES.get("rackspace.password")
         ));
         final SwiftSession session = new SwiftSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -86,7 +86,7 @@ public class SwiftSessionTest extends AbstractSwiftTest {
                 "a", "s"
         ));
         final SwiftSession session = new SwiftSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(LoginCallback.noop, CancelCallback.noop);

@@ -16,8 +16,8 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
@@ -39,7 +39,7 @@ public class LocalFindFeatureTest {
     @Test
     public void testFindNotFound() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         assertFalse(new LocalFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         session.close();
@@ -49,7 +49,7 @@ public class LocalFindFeatureTest {
     public void testFindSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         assumeTrue(session.isPosixFilesystem());
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new LocalHomeFinderFeature().find();
         final Path file = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
@@ -62,7 +62,7 @@ public class LocalFindFeatureTest {
     @Test
     public void testFindCaseSensitive() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new LocalHomeFinderFeature().find();
         final Path file = new LocalTouchFeature(session).touch(new LocalWriteFeature(session), new Path(home, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -74,7 +74,7 @@ public class LocalFindFeatureTest {
     @Test
     public void testFindDirectory() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new LocalHomeFinderFeature().find();
         assertTrue(new LocalFindFeature(session).find(home));
@@ -84,7 +84,7 @@ public class LocalFindFeatureTest {
     @Test
     public void testFindRoot() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         assertTrue(new LocalFindFeature(session).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }

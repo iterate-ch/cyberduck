@@ -19,10 +19,10 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -94,7 +94,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
+        }, HostKeyCallback.noop,
                 new DisabledPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
@@ -127,7 +127,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         session.login(LoginCallback.noop, CancelCallback.noop);
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session, cache).getLocation(

@@ -16,8 +16,8 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -54,7 +54,7 @@ public class IRODSAttributesFinderFeatureTest extends IRODSDockerComposeManager 
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         new IRODSAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
@@ -68,7 +68,7 @@ public class IRODSAttributesFinderFeatureTest extends IRODSDockerComposeManager 
                 PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
 
         final Path folder = new IRODSDirectoryFeature(session).mkdir(new IRODSWriteFeature(session), new Path(

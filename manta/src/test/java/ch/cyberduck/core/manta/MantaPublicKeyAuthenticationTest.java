@@ -16,9 +16,9 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -66,7 +66,7 @@ public class MantaPublicKeyAuthenticationTest extends VaultTest {
             final String hostname = new URL(PROPERTIES.get("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
             session.login(
                     new DisabledLoginCallback() {
                         @Override
@@ -108,7 +108,7 @@ public class MantaPublicKeyAuthenticationTest extends VaultTest {
             final String hostname = new URL(PROPERTIES.get("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+            session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
             session.login(
                     new DisabledLoginCallback() {
                         @Override

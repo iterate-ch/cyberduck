@@ -20,8 +20,8 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -68,7 +68,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 32770;
@@ -114,7 +114,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 32770;
@@ -148,7 +148,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 32770;
@@ -193,7 +193,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 33 * 1024 * 1024; // Triggers parallel transfer

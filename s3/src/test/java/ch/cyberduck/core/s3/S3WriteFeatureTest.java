@@ -5,9 +5,9 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -118,7 +118,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         session.login(LoginCallback.noop, CancelCallback.noop);
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -155,7 +155,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         session.login(LoginCallback.noop, CancelCallback.noop);
         final S3WriteFeature feature = new S3WriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));

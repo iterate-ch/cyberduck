@@ -1,7 +1,6 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -69,7 +68,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         for(net.schmizz.sshj.common.Factory.Named<MAC> mac : defaultConfig.getMACFactories()) {
             final DefaultConfig configuration = new DefaultConfig();
             configuration.setMACFactories(Collections.singletonList(mac));
-            final SSHClient client = session.connect(new DisabledHostKeyCallback(), LoginCallback.noop, configuration);
+            final SSHClient client = session.connect(HostKeyCallback.noop, LoginCallback.noop, configuration);
             assertTrue(client.isConnected());
             client.close();
         }
@@ -79,7 +78,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testAES256CTRCipher() throws Exception {
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setCipherFactories(Collections.singletonList(new AES256CTR.Factory()));
-        final SSHClient client = session.connect(new DisabledHostKeyCallback(), LoginCallback.noop, configuration);
+        final SSHClient client = session.connect(HostKeyCallback.noop, LoginCallback.noop, configuration);
         assertTrue(client.isConnected());
         client.close();
     }
@@ -88,7 +87,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     public void testECDHNistPKeyExchange() throws Exception {
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setKeyExchangeFactories(Collections.singletonList(new ECDHNistP.Factory256()));
-        final SSHClient client = session.connect(new DisabledHostKeyCallback(), LoginCallback.noop, configuration);
+        final SSHClient client = session.connect(HostKeyCallback.noop, LoginCallback.noop, configuration);
         assertTrue(client.isConnected());
         client.close();
     }
@@ -117,7 +116,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 fail.set(true);
                 throw new LoginCanceledException();
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+        }, HostKeyCallback.noop, new DisabledPasswordStore(),
                 ProgressListener.noop);
         try {
             login.connect(session, CancelCallback.noop);
@@ -134,7 +133,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         new SFTPHomeDirectoryService(session).find();
     }
 
@@ -189,7 +188,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 throw new LoginCanceledException();
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+        }, HostKeyCallback.noop, new DisabledPasswordStore(),
                 ProgressListener.noop);
         login.connect(session, CancelCallback.noop);
     }
@@ -209,7 +208,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 change.set(true);
                 throw new LoginCanceledException();
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+        }, HostKeyCallback.noop, new DisabledPasswordStore(),
                 ProgressListener.noop);
         try {
             login.check(session, CancelCallback.noop);
@@ -246,7 +245,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                     return new Credentials(System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password"));
                 }
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+        }, HostKeyCallback.noop, new DisabledPasswordStore(),
                 ProgressListener.noop);
         login.connect(session, CancelCallback.noop);
         assertTrue(change.get());

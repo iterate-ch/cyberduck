@@ -16,9 +16,9 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
@@ -72,7 +72,7 @@ public class AbstractBrickTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(), new TestPasswordStore(), ProgressListener.noop);
+        }, HostKeyCallback.noop, new TestPasswordStore(), ProgressListener.noop);
         login.check(session, CancelCallback.noop);
     }
 }

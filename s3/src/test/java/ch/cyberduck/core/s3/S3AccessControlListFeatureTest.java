@@ -21,8 +21,8 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -127,7 +127,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path container = new Path(String.format("cd-%s", new AlphanumericRandomStringService().random().toLowerCase(Locale.getDefault())), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3BucketCreateService(session).create(container, null);

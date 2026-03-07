@@ -3,8 +3,8 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -36,7 +36,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
-                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+                    return this.connect(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
                 }
                 catch(BackgroundException e) {
                     fail();
@@ -108,7 +108,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
-                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+                    return this.connect(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
                 }
                 catch(BackgroundException e) {
                     fail();
@@ -128,7 +128,7 @@ public class S3UrlProviderTest extends AbstractS3Test {
             @Override
             public RequestEntityRestStorageService getClient() {
                 try {
-                    return this.connect(new DisabledProxyFinder(), new DisabledHostKeyCallback(), LoginCallback.noop, CancelCallback.noop);
+                    return this.connect(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
                 }
                 catch(BackgroundException e) {
                     fail();
