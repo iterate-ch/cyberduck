@@ -74,7 +74,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class SFTPCryptomatorInteroperabilityTest {
 
-    private static int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
+    private final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
 
     private static SshServer server;
     private CryptoFileSystem cryptoFileSystem;
