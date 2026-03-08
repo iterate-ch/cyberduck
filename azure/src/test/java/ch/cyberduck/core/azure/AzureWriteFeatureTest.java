@@ -65,6 +65,8 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         // Test double close
         overwrite.close();
         assertEquals("overwrite".getBytes(StandardCharsets.UTF_8).length, new AzureAttributesFinderFeature(session).find(test).getSize());
+        final Map<String, String> appendMetadata = new AzureMetadataFeature(session).getMetadata(test);
+        assertEquals("text/plain", appendMetadata.get("Content-Type"));
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -100,6 +102,8 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         // Test double close
         overwrite.close();
         assertEquals("overwrite".getBytes(StandardCharsets.UTF_8).length, new AzureAttributesFinderFeature(session).find(test).getSize());
+        final Map<String, String> overwriteMetadata = new AzureMetadataFeature(session).getMetadata(test);
+        assertEquals("text/plain", overwriteMetadata.get("Content-Type"));
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
