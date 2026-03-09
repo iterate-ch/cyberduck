@@ -49,8 +49,8 @@ public class SharepointListService extends AbstractSharepointListService {
     @Override
     protected AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
-        list.add(new Path(directory, GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory)));
-        list.add(new Path(directory, SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory)));
+        list.add(new Path(directory, GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume)));
+        list.add(new Path(directory, SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume)));
         listener.chunk(directory, list);
         return list;
     }
@@ -76,7 +76,7 @@ public class SharepointListService extends AbstractSharepointListService {
         try {
             final Site.Metadata metadata = Site.byId(session.getClient(), "root").getMetadata(null);
             return this.list(new Path(SharepointListService.SITES_CONTAINER,
-                    EnumSet.of(Path.Type.placeholder, Path.Type.directory))).find(path -> metadata.getId().equals(path.attributes().getFileId()));
+                    EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume))).find(path -> metadata.getId().equals(path.attributes().getFileId()));
         }
         catch(OneDriveRuntimeException e) {
             throw new GraphExceptionMappingService(fileid).map(e.getCause());

@@ -74,8 +74,8 @@ public abstract class AbstractSharepointListService implements ListService {
 
     protected AttributedList<Path> addSiteItems(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
-        list.add(new Path(directory, DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory)));
-        list.add(new Path(directory, SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory)));
+        list.add(new Path(directory, DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume)));
+        list.add(new Path(directory, SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume)));
         listener.chunk(directory, list);
         return list;
     }
