@@ -17,17 +17,17 @@ package ch.cyberduck.core.editor;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -84,7 +84,7 @@ public class EditSaveWorker extends Worker<Transfer> {
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, session, upload, new TransferOptions(),
                 new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,
-                listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
+                listener, StreamListener.noop, LoginCallback.noop, notification);
         worker.run(session);
         if(!upload.isComplete()) {
             log.warn("File size changed for {}", file);

@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer.synchronisation;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -77,7 +76,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
 
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
-        switch(comparison.compare(file, local, new DisabledProgressListener())) {
+        switch(comparison.compare(file, local, ProgressListener.noop)) {
             case equal:
                 return file.isDirectory();
             case remote:

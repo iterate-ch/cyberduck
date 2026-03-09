@@ -24,4 +24,6 @@ public interface ProgressListener {
      * @param message Progress message to display in status
      */
     void message(String message);
+
+    ProgressListener noop = new DisabledProgressListener();
 }

@@ -18,8 +18,8 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.CachingAttributesFinderFeature;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -86,6 +86,6 @@ public class CachingAttributesFinderFeatureTest extends AbstractDAVTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new DAVDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

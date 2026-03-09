@@ -33,6 +33,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -72,10 +73,10 @@ public class SDSSessionTest extends AbstractSDSTest {
                 System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(LoginCallback.noop, CancelCallback.noop);
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
@@ -89,10 +90,10 @@ public class SDSSessionTest extends AbstractSDSTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+                LoginCallback.noop,
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -100,7 +101,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                     }
                 }
         );
-        c.connect(session, new DisabledCancelCallback());
+        c.connect(session, CancelCallback.noop);
     }
 
     @Ignore
@@ -122,9 +123,9 @@ public class SDSSessionTest extends AbstractSDSTest {
                         return new Credentials("test", "n");
                     }
                 },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -132,7 +133,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                     }
                 }
         );
-        c.connect(session, new DisabledCancelCallback());
+        c.connect(session, CancelCallback.noop);
     }
 
     @Test

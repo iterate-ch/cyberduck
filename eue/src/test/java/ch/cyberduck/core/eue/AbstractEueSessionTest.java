@@ -28,6 +28,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.VaultTest;
 
@@ -77,8 +78,8 @@ public class AbstractEueSessionTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop, new TestPasswordStore(), ProgressListener.noop);
+        login.check(session, CancelCallback.noop);
     }
 
     private Factory.Platform.Name getSupportedPlatform() {
@@ -100,7 +101,7 @@ public class AbstractEueSessionTest extends VaultTest {
         final TransferStatus status = new TransferStatus()
                 .setChecksum(feature.checksum(file, new TransferStatus().setLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)))
                 .setLength(content.length);
-        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();

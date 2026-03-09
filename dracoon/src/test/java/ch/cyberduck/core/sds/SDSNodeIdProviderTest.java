@@ -16,8 +16,8 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -69,7 +69,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(file, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(file, room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -86,14 +86,14 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         status.setLength(content.length);
         status.setExists(true);
         final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Node> out = writer.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(file, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(file.attributes().getVersionId());
         assertNotEquals(versionIdTouch, file.attributes().getVersionId());
         nodeid.clear();
         assertEquals(file.attributes().getVersionId(), nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
             //
         }
         assertEquals(file.attributes().getVersionId(), nodeid.getNodeId(new Path(folder, file.getName(), EnumSet.of(Path.Type.file)), 1));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -137,6 +137,6 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         catch(NotfoundException e) {
             //
         }
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

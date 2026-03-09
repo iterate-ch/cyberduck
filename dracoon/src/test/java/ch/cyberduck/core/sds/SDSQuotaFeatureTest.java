@@ -16,7 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Quota;
@@ -50,6 +50,6 @@ public class SDSQuotaFeatureTest extends AbstractSDSTest {
         final Quota.Space quota = new SDSQuotaFeature(session, nodeid).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

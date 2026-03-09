@@ -20,7 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
@@ -38,7 +38,7 @@ public class GoogleStorageMoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = proxy.copy(source, renamed, status, connectionCallback, new DisabledStreamListener());
+        final Path copy = proxy.copy(source, renamed, status, connectionCallback, StreamListener.noop);
         delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
         return copy;
     }

@@ -17,15 +17,15 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -61,12 +61,12 @@ public class DefaultUploadFeatureTest extends AbstractGoogleStorageTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         final StorageObject versionId = m.upload(new GoogleStorageWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), new DisabledStreamListener(), status, new DisabledLoginCallback());
+                ProgressListener.noop, StreamListener.noop, status, LoginCallback.noop);
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         final PathAttributes attributes = new GoogleStorageListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes();
         assertEquals(random.length, attributes.getSize());
         assertEquals(String.valueOf(versionId.getGeneration()), attributes.getVersionId());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 }

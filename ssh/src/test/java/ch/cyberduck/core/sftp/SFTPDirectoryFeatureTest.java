@@ -17,7 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
@@ -43,6 +43,6 @@ public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
         new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), test, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(test));
         assertThrows(ConflictException.class, () -> new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), test, new TransferStatus()));
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

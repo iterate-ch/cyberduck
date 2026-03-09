@@ -16,15 +16,15 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectS3MultipartWriteFeature;
@@ -63,7 +63,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length).setExists(true);
-            final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -72,23 +72,23 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             new DefaultDownloadFeature(session).download(
-                    new SDSReadFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new SDSReadFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true).setExists(true);
             new DefaultDownloadFeature(session).download(
-                    new SDSReadFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new SDSReadFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
             status.setExists(true);
-            final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -112,15 +112,15 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
             final TransferStatus status = new TransferStatus().setLength(-1L);
             status.setExists(true);
             new DefaultDownloadFeature(session).download(
-                    new SDSReadFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new SDSReadFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

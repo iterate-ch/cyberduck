@@ -18,10 +18,10 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -61,7 +61,7 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         new DropboxTouchFeature(session).touch(new DropboxWriteFeature(session), file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final StatusOutputStream out = new DropboxWriteFeature(session).write(
-                new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+                new Path(container, StringUtils.upperCase(filename), EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();

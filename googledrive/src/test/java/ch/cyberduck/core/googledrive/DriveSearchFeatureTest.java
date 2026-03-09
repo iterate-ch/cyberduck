@@ -18,7 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -52,7 +52,7 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
         assertTrue(feature.search(workdir, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
         final Path subdir = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
         assertEquals(workdir, result.get(result.indexOf(file)).getParent());
         final Path subdir = new DriveDirectoryFeature(session, fileid).mkdir(new DriveWriteFeature(session, fileid), new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, subdir, workdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, subdir, workdir), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -80,6 +80,6 @@ public class DriveSearchFeatureTest extends AbstractDriveTest {
         final Path file = new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), new Path(workdir, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveSearchFeature feature = new DriveSearchFeature(session, fileid);
         assertTrue(feature.search(DriveHomeFinderService.MYDRIVE_FOLDER, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, workdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, workdir), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

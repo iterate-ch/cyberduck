@@ -17,8 +17,8 @@ package ch.cyberduck.core.brick.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.AbstractBrickTest;
 import ch.cyberduck.core.brick.BrickDeleteFeature;
@@ -65,6 +65,6 @@ public class BrickListServiceTest extends AbstractBrickTest {
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<FileEntity>(session), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new BrickWriteFeature(session), cryptomator), test, new TransferStatus());
         Assert.assertEquals(test, new CryptoListService(session, new BrickListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
-        cryptomator.getFeature(session, Delete.class, new BrickDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new BrickDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

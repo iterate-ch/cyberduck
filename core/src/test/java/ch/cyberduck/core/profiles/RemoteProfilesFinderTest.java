@@ -15,17 +15,16 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.junit.Test;
 
@@ -93,7 +92,7 @@ public class RemoteProfilesFinderTest {
         };
         final Host host = new HostParser(protocols, protocol).get("https://svn.cyberduck.io/trunk/profiles");
         final NullSession session = new NullSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         final RemoteProfilesFinder finder = new RemoteProfilesFinder(session);
         final Set<ProfileDescription> stream = finder.find();
         assertTrue(stream.isEmpty());

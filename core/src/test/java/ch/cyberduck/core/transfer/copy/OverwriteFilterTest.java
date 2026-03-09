@@ -1,12 +1,12 @@
 package ch.cyberduck.core.transfer.copy;
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -32,7 +32,7 @@ public class OverwriteFilterTest {
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         AbstractCopyFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())),
                 new NullSession(new Host(new TestProtocol())), files);
-        assertTrue(f.accept(source, null, new TransferStatus(), new DisabledProgressListener()));
+        assertTrue(f.accept(source, null, new TransferStatus(), ProgressListener.noop));
     }
 
     @Test
@@ -56,8 +56,8 @@ public class OverwriteFilterTest {
                 return super._getFeature(type);
             }
         }, files);
-        assertTrue(f.accept(source, null, new TransferStatus().setExists(true), new DisabledProgressListener()));
-        final TransferStatus status = f.prepare(source, null, new TransferStatus().setExists(true), new DisabledProgressListener());
+        assertTrue(f.accept(source, null, new TransferStatus().setExists(true), ProgressListener.noop));
+        final TransferStatus status = f.prepare(source, null, new TransferStatus().setExists(true), ProgressListener.noop);
         assertTrue(status.isExists());
     }
 
@@ -68,7 +68,7 @@ public class OverwriteFilterTest {
         source.attributes().setSize(1L);
         files.put(source, new Path("a", EnumSet.of(Path.Type.file)));
         OverwriteFilter f = new OverwriteFilter(new NullTransferSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())), files);
-        final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(source, null, new TransferStatus(), ProgressListener.noop);
         assertEquals(1L, status.getLength());
     }
 
@@ -80,7 +80,7 @@ public class OverwriteFilterTest {
         final Path target = new Path("a", EnumSet.of(Path.Type.directory));
         files.put(source, target);
         OverwriteFilter f = new OverwriteFilter(new NullTransferSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())), files);
-        final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(source, null, new TransferStatus(), ProgressListener.noop);
         assertEquals(0L, status.getLength());
     }
 
@@ -138,12 +138,12 @@ public class OverwriteFilterTest {
                 return super._getFeature(type);
             }
         }, files, new UploadFilterOptions(host).withPermission(true).withTimestamp(true));
-        final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
-        f.complete(source, null, status, new DisabledProgressListener());
+        final TransferStatus status = f.prepare(source, null, new TransferStatus(), ProgressListener.noop);
+        f.complete(source, null, status, ProgressListener.noop);
         assertFalse(permissionWrite[0]);
         assertFalse(timestampWrite[0]);
         status.setComplete();
-        f.complete(source, null, status, new DisabledProgressListener());
+        f.complete(source, null, status, ProgressListener.noop);
         assertTrue(permissionWrite[0]);
         assertTrue(timestampWrite[0]);
     }

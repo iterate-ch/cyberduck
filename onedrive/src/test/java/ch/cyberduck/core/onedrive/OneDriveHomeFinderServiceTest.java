@@ -16,21 +16,21 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,8 +69,8 @@ public class OneDriveHomeFinderServiceTest extends AbstractOneDriveTest {
                 assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
             }
-        }, new DisabledHostKeyCallback(),
-                new TestPasswordStore(), new DisabledProgressListener()).check(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new TestPasswordStore(), ProgressListener.noop).check(session, CancelCallback.noop);
         assertEquals("/My Files", (new OneDriveHomeFinderService().find().getAbsolute()));
     }
 }

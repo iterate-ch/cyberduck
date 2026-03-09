@@ -17,11 +17,11 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -68,7 +68,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         final Checksum checksum = writer.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         status.setChecksum(checksum);
-        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = writer.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = writer.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         new StreamCopier(new TransferStatus(), progress).transfer(in, out);
@@ -94,7 +94,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         assertEquals(firstLevelModificationDate, feature.find(firstlevel).getModificationDate(), 0L);
         assertNotEquals(rootEtag, feature.find(new Path("/", EnumSet.of(Path.Type.directory))).getETag());
         assertNotEquals(rootModificationDate, feature.find(new Path("/", EnumSet.of(Path.Type.directory))).getModificationDate());
-        new EueDeleteFeature(session, fileid).delete(Arrays.asList(firstlevel, secondlevel), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Arrays.asList(firstlevel, secondlevel), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

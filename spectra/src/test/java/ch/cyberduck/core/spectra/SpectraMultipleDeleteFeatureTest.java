@@ -15,8 +15,8 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -46,13 +46,13 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractSpectraTest {
                 new SpectraWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1024);
-        final HttpResponseOutputStream<StorageObject> out = new SpectraWriteFeature(session).write(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new SpectraWriteFeature(session).write(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.write(content, out);
         out.close();
         assertTrue(new SpectraFindFeature(session).find(test));
-        new SpectraDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Arrays.asList(test, test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SpectraFindFeature(session).find(test));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -62,14 +62,14 @@ public class SpectraMultipleDeleteFeatureTest extends AbstractSpectraTest {
         final Path test = new SpectraDirectoryFeature(session).mkdir(
                 new SpectraWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(test));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SpectraFindFeature(session).find(test));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {
         final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

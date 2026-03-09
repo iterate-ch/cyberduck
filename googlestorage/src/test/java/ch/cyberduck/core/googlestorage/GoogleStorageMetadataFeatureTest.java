@@ -16,7 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -59,7 +59,7 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
         assertEquals("v", get.get("k"));
         feature.setMetadata(test, status.setMetadata(Collections.emptyMap()));
         assertTrue(feature.getMetadata(test).isEmpty());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -77,6 +77,6 @@ public class GoogleStorageMetadataFeatureTest extends AbstractGoogleStorageTest 
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
         assertEquals("NEARLINE", storage.getClass(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -4,6 +4,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -119,7 +120,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
         final Path file = new Path("/public_html", EnumSet.of(Path.Type.directory));
         final Distribution writeDistributionConfiguration = new Distribution(Distribution.CUSTOM, false);
         // Create
-        final DisabledLoginCallback login = new DisabledLoginCallback() {
+        final LoginCallback login = new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret"));
@@ -150,6 +151,6 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
         final CustomOriginCloudFrontDistributionConfiguration configuration
             = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
+        configuration.read(container, Distribution.CUSTOM, LoginCallback.noop);
     }
 }

@@ -18,8 +18,8 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -46,7 +46,7 @@ public class GoogleStorageDeleteFeatureTest extends AbstractGoogleStorageTest {
     public void testDeleteNotFoundKey() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class GoogleStorageDeleteFeatureTest extends AbstractGoogleStorageTest {
         final Path container = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.volume, Path.Type.directory));
         new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), container, new TransferStatus().setRegion("us"));
         assertTrue(new GoogleStorageFindFeature(session).find(container));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new GoogleStorageFindFeature(session).find(container));
     }
 

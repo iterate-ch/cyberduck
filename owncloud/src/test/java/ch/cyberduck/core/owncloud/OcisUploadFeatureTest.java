@@ -18,12 +18,12 @@ package ch.cyberduck.core.owncloud;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
@@ -74,7 +74,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             status.setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
             assertFalse(feature.append(file, status).append);
-            final Void response = feature.upload(new TusWriteFeature(session.getHost(), capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+            final Void response = feature.upload(new TusWriteFeature(session.getHost(), capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
             assertTrue(status.isComplete());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
@@ -82,7 +82,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             assertTrue(new DAVFindFeature(session).find(file));
             assertEquals(content.length, new DAVAttributesFinderFeature(session).find(file).getSize());
             final byte[] compare = new byte[content.length];
-            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
+            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop), compare);
             assertArrayEquals(content, compare);
         }
         {
@@ -96,7 +96,7 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             status.setLength(content.length);
             final BytecountStreamListener count = new BytecountStreamListener();
             assertFalse(feature.append(file, status).append);
-            final Void response = feature.upload(new TusWriteFeature(session.getHost(), capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+            final Void response = feature.upload(new TusWriteFeature(session.getHost(), capabilities, session.getClient()), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
             assertTrue(status.isComplete());
             assertEquals(content.length, count.getSent());
             assertTrue(status.isComplete());
@@ -104,10 +104,10 @@ public class OcisUploadFeatureTest extends AbstractOcisTest {
             assertTrue(new DAVFindFeature(session).find(file));
             assertEquals(content.length, new DAVAttributesFinderFeature(session).find(file).getSize());
             final byte[] compare = new byte[content.length];
-            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
+            IOUtils.readFully(new DAVReadFeature(session).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop), compare);
             assertArrayEquals(content, compare);
         }
-        new DAVDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 }

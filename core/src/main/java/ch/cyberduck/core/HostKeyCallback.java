@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import java.security.PublicKey;
 
 public interface HostKeyCallback {
+    HostKeyCallback noop = new DisabledHostKeyCallback();
 
     /**
      * Verifies the given public key for the specified host.

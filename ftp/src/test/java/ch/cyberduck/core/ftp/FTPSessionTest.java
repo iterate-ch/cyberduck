@@ -1,6 +1,19 @@
 package ch.cyberduck.core.ftp;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.CertificateIdentityCallback;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCertificateIdentityCallback;
+import ch.cyberduck.core.DisabledCertificateStore;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -18,6 +31,7 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -56,10 +70,10 @@ public class FTPSessionTest extends AbstractFTPTest {
         ));
         final FTPSession session = new FTPSession(host);
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+                LoginCallback.noop,
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -67,7 +81,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                     }
                 });
         try {
-            c.connect(session, new DisabledCancelCallback());
+            c.connect(session, CancelCallback.noop);
         }
         catch(ConnectionRefusedException e) {
             assertEquals("Invalid response HTTP/1.1 403 Forbidden from HTTP proxy localhost. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", e.getDetail());
@@ -89,7 +103,7 @@ public class FTPSessionTest extends AbstractFTPTest {
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
     }
 
@@ -117,7 +131,7 @@ public class FTPSessionTest extends AbstractFTPTest {
                 throw failure;
             }
         };
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         assertEquals(Session.State.open, session.getState());
         try {
             session.close();
@@ -146,11 +160,11 @@ public class FTPSessionTest extends AbstractFTPTest {
                     }
                 }));
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+                LoginCallback.noop,
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener());
-        c.connect(session, new DisabledCancelCallback());
+                ProgressListener.noop);
+        c.connect(session, CancelCallback.noop);
         assertTrue(callback.get());
     }
 }

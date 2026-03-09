@@ -17,8 +17,8 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -58,7 +58,7 @@ public class B2VersionIdProviderTest extends AbstractB2Test {
         duplicate.setDuplicate(true);
         fileid.cache(new Path(file).withAttributes(duplicate), "d");
         assertEquals(versionId, fileid.getVersionId(file));
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class B2VersionIdProviderTest extends AbstractB2Test {
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertNotNull(fileid.getVersionId(folder));
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(folder, bucket), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

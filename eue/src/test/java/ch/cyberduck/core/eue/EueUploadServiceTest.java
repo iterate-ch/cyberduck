@@ -18,11 +18,11 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,16 +55,16 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        final EueWriteFeature.Chunk uploadResponse = s.upload(new EueMultipartWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+        final EueWriteFeature.Chunk uploadResponse = s.upload(new EueMultipartWriteFeature(session, fileid), file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];
-        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 }

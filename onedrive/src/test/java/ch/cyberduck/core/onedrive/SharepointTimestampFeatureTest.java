@@ -18,8 +18,8 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -64,7 +64,7 @@ public class SharepointTimestampFeatureTest extends AbstractSharepointTest {
         assertNotEquals(attr.getETag(), updated.getETag());
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(modified, new GraphItemListService(session, fileid).list(drive, new DisabledListProgressListener()).find(new SimplePathPredicate(file)).attributes().getModificationDate());
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -82,6 +82,6 @@ public class SharepointTimestampFeatureTest extends AbstractSharepointTest {
         assertEquals(modified, updated.getModificationDate());
         assertNotEquals(attr.getETag(), updated.getETag());
         assertEquals(modified, new GraphItemListService(session, fileid).list(drive, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

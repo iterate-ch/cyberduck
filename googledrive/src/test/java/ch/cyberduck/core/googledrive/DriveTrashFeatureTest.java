@@ -19,8 +19,8 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -44,7 +44,7 @@ public class DriveTrashFeatureTest extends AbstractDriveTest {
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveTrashFeature(session, new DriveFileIdProvider(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveTrashFeature(session, new DriveFileIdProvider(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class DriveTrashFeatureTest extends AbstractDriveTest {
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), file, new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file, new DisabledListProgressListener()));
-        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new DriveFindFeature(session, fileid).find(directory, new DisabledListProgressListener())));
     }
 

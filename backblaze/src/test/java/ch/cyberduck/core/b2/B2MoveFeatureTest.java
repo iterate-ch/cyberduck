@@ -16,8 +16,8 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.synchronization.Comparison;
@@ -44,12 +44,12 @@ public class B2MoveFeatureTest extends AbstractB2Test {
         final Path test = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), new Path(container, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final Path target = new B2MoveFeature(session, fileid).move(test,
-                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
         assertFalse(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(target));
         assertEquals(target.attributes(), new B2AttributesFinderFeature(session, fileid).find(target));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), target.attributes()));
-        new B2DeleteFeature(session, fileid).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.<Path>singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

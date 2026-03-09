@@ -20,7 +20,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -93,7 +93,7 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
         assertNotNull(multipart);
         service.delete(first);
         service.delete(second);
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

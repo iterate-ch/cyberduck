@@ -16,8 +16,8 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -49,7 +49,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[32 * 1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
@@ -58,11 +58,11 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new MantaReadFeature(session).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new MantaReadFeature(session).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new MantaDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new MantaDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final int alloc = 1024;
         final byte[] buffer = new byte[alloc];
@@ -83,6 +83,6 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
         out.close();
         final PathAttributes found = new MantaAttributesFinderFeature(session).find(file);
         assertEquals(found.getSize(), content.length);
-        new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new MantaDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

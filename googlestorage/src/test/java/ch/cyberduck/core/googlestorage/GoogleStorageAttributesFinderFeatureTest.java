@@ -18,11 +18,11 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -77,7 +77,7 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, ConnectionCallback.noop);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final Path update = new Path(container, test.getName(), test.getType(),
@@ -139,7 +139,7 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
                         new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new GoogleStorageAttributesFinderFeature(session).find(test));
         assertNotNull(new GoogleStorageAttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         try {
             new GoogleStorageAttributesFinderFeature(session).find(test);
             fail();

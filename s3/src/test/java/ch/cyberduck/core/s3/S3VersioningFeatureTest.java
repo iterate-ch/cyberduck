@@ -19,10 +19,10 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersioningConfiguration;
@@ -73,9 +73,9 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), container, new TransferStatus());
         final Versioning feature = new S3VersioningFeature(session, acl);
-        feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
+        feature.setConfiguration(container, LoginCallback.noop, new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
             final byte[] content = RandomUtils.nextBytes(245);
             final TransferStatus status = new TransferStatus().setLength(content.length);
             final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session, acl);
-            final HttpResponseOutputStream<StorageObject> out = writer.write(ignored, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<StorageObject> out = writer.write(ignored, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
         final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
@@ -107,7 +107,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session, acl);
-        final HttpResponseOutputStream<StorageObject> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final PathAttributes updated = new S3AttributesFinderFeature(session, acl).find(new Path(test).withAttributes(PathAttributes.EMPTY));
@@ -133,6 +133,6 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
             assertEquals(updated.getVersionId(), versions.get(0).attributes().getVersionId());
             assertEquals(initialVersion, versions.get(1).attributes().getVersionId());
         }
-        new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(directory, test, ignored), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Arrays.asList(directory, test, ignored), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

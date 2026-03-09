@@ -17,8 +17,8 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.azure.AbstractAzureTest;
 import ch.cyberduck.core.azure.AzureDeleteFeature;
@@ -61,6 +61,6 @@ public class AzureListServiceTest extends AbstractAzureTest {
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(
                 new CryptoWriteFeature<>(session, new AzureWriteFeature(session), cryptomator), test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new AzureObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
-        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

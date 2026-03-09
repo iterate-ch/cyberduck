@@ -18,23 +18,24 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
 
@@ -67,8 +68,8 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 32770;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -80,25 +81,25 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             final BytecountStreamListener count = new BytecountStreamListener();
             new IRODSUploadFeature(session).upload(
-                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
+                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count,
                     status,
-                    new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
             assertEquals(content.length / 2, count.getSent());
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             new IRODSUploadFeature(session).upload(
-                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                    new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
-                    new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
             assertEquals(content.length / 2, status.getOffset());
         }
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
         session.close();
     }
@@ -113,8 +114,8 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 32770;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -125,15 +126,15 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         new IRODSUploadFeature(session).upload(
-                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+                new IRODSWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
         assertTrue(status.isComplete());
         assertEquals(content.length, count.getSent());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         session.close();
     }
 
@@ -147,8 +148,8 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 32770;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -160,7 +161,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         new IRODSUploadFeature(session).upload(
                 new IRODSWriteFeature(session), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new DisabledStreamListener() {
                     @Override
                     public void sent(final long bytes) {
@@ -169,7 +170,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
                     }
                 },
                 status,
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         try {
             status.validate();
             fail();
@@ -178,7 +179,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
             //
         }
         assertFalse(status.isComplete());
-        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         session.close();
     }
 
@@ -192,8 +193,8 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 33 * 1024 * 1024; // Triggers parallel transfer
         final byte[] content = RandomUtils.nextBytes(length);
@@ -205,7 +206,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
         new IRODSUploadFeature(session).upload(
                 new IRODSWriteFeature(session), test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new DisabledStreamListener() {
                     @Override
                     public void sent(final long bytes) {
@@ -214,7 +215,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
                     }
                 },
                 status,
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         try {
             status.validate();
             fail();
@@ -223,7 +224,7 @@ public class IRODSUploadFeatureTest extends IRODSDockerComposeManager {
             //
         }
         assertFalse(status.isComplete());
-        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         session.close();
     }
 }

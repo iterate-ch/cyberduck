@@ -16,17 +16,17 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.b2.AbstractB2Test;
@@ -110,10 +110,10 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
                 return super.getProperty(key);
             }
         };
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+        final LoginConnectionService connect = new LoginConnectionService(LoginCallback.noop,
+                HostKeyCallback.noop,
                 new TestPasswordStore(),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
@@ -171,7 +171,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
             public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) {
                 return true;
             }
-        }, new DisabledConnectionCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService());
+        }, ConnectionCallback.noop, ProgressListener.noop, counter, new DisabledNotificationService());
 
         assertTrue(worker.run(session));
         local.delete();
@@ -181,6 +181,6 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

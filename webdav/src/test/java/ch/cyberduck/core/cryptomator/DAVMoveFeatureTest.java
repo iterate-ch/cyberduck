@@ -16,9 +16,9 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -74,18 +74,18 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new DAVMoveFeature(session));
         // rename file
-        final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(fileRenamed));
         assertEquals(fileRenamed.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(folder));
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(fileRenamedInRenamedFolder));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(
-                fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                fileRenamedInRenamedFolder, folderRenamed, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }
