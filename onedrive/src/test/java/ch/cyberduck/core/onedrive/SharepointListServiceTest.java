@@ -29,6 +29,14 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     }
 
     @Test
+    public void testListDefault() throws Exception {
+        final SharepointListService list = new SharepointListService(session, fileid);
+        final Path defaultSite = new Path(list.getDefaultSite()).withAttributes(PathAttributes.EMPTY);
+        final AttributedList<Path> containers = list.list(defaultSite);
+        assertEquals(2, containers.size());
+    }
+
+    @Test
     public void testListRoot() throws Exception {
         final AttributedList<Path> list = new SharepointListService(session, fileid).list(Home.root(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
@@ -49,7 +57,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     public void testListDrives() throws Exception {
         final SharepointListService list = new SharepointListService(session, fileid);
         final Path siteWithoutId = new Path(list.getDefaultSite()).withAttributes(PathAttributes.EMPTY);
-        final AttributedList<Path> paths = list.list(new Path(siteWithoutId, SharepointListService.DRIVES_CONTAINER, EnumSet.of(AbstractPath.Type.directory)));
-        assertFalse(paths.isEmpty());
+        final AttributedList<Path> drives = list.list(new Path(siteWithoutId, SharepointListService.DRIVES_CONTAINER, EnumSet.of(AbstractPath.Type.directory)));
+        assertFalse(drives.isEmpty());
     }
 }
