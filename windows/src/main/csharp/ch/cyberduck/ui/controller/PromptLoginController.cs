@@ -1,5 +1,4 @@
-﻿// 
-// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
+﻿// Copyright (c) 2010-2026 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -14,20 +13,20 @@
 // 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
+using Ch.Cyberduck.Core.Native;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
-using ch.cyberduck.ui.core;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Native;
 using Ch.Cyberduck.Core.TaskDialog;
+using ch.cyberduck.ui.core;
+using java.lang;
 using java.util;
 using java.util.concurrent;
 using org.apache.logging.log4j;
@@ -45,20 +44,59 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly List<string> _keys = new List<string> { LocaleFactory.localizedString("None") };
 
         private readonly HostPasswordStore keychain = PasswordStoreFactory.get();
+        private ILocationPromptView _locationView;
+
+        private ILoginView _loginView;
 
         public PromptLoginController(IWindowController c) : base(c)
         {
             _browser = c;
         }
 
-        public new ILoginView View { get; set; }
+        public Location.Name select(Host bookmark, string title, string message, Set regions,
+            Location.Name defaultRegion)
+        {
+            View = ObjectFactory.GetInstance<ILocationPromptView>();
+            _locationView = (ILocationPromptView)View;
 
+            _locationView.Title = LocaleFactory.localizedString(title, "Credentials");
+            _locationView.Message = LocaleFactory.localizedString(message, "Credentials");
 
-        public Location.Name select(Host bookmark, string title, string message, Set regions, Location.Name defaultRegion) => ConnectionCallback.__DefaultMethods.select(this, bookmark, title, message, regions, defaultRegion);
+            var locations = Utils.ConvertFromJavaList<Location.Name>(regions);
 
-        object ConnectionCallback.getFeature(java.lang.Class type) => ConnectionCallback.__DefaultMethods.getFeature(this, type);
+            IList<KeyValuePair<string, string>> r = locations.OrderBy(name => name.ToString())
+                .Select(l =>
+                {
+                    var key = l.getIdentifier();
+                    var display = l.toString();
+                    if (!string.Equals(key, display))
+                    {
+                        return new(key, string.Format("{0} - {1}", display, key));
+                    }
+                    return new KeyValuePair<string, string>(key, display);
+                }).ToList();
+            _locationView.PopulateLocations(r);
+            if (regions.contains(defaultRegion))
+            {
+                _locationView.Location = defaultRegion.getIdentifier();
+            }
 
-        public void await(CountDownLatch signal, Host bookmark, string title, string message) => Dialogs.AwaitBackgroundAction(signal, bookmark, title, message, Images.CyberduckApplication);
+            AsyncDelegate d = delegate
+            {
+                if (DialogResult.Cancel == _locationView.ShowDialog(_browser.Window))
+                {
+                    throw new LoginCanceledException();
+                }
+            };
+            _browser.Invoke(d, true);
+
+            return new Location.Name(_locationView.Location);
+        }
+
+        object ConnectionCallback.getFeature(Class type) => ConnectionCallback.__DefaultMethods.getFeature(this, type);
+
+        public void await(CountDownLatch signal, Host bookmark, string title, string message) =>
+            Dialogs.AwaitBackgroundAction(signal, bookmark, title, message, Images.CyberduckApplication);
 
         public void warn(Host bookmark, string title, string message, string continueButton, string disconnectButton,
             string preference)
@@ -72,7 +110,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     content: message,
                     commandLinks: [continueButton, disconnectButton],
                     mainIcon: TaskDialogIcon.Question,
-                    verificationText: Utils.IsNotBlank(preference) ? LocaleFactory.localizedString("Don't show again", "Credentials") : null,
+                    verificationText: Utils.IsNotBlank(preference)
+                        ? LocaleFactory.localizedString("Don't show again", "Credentials")
+                        : null,
                     footerText: UiUtils.FormatHelp(ProviderHelpServiceFactory.get().help(bookmark.getProtocol())));
 
                 if (result.VerificationChecked == true)
@@ -93,14 +133,15 @@ namespace Ch.Cyberduck.Ui.Controller
         public Credentials prompt(Host bookmark, string username, string title, string reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
+            _loginView = (ILoginView)View;
             var credentials = new Credentials().setSaved(options.save()).setUsername(username);
             InitEventHandlers(bookmark, credentials, options);
 
 
-            View.Title = LocaleFactory.localizedString(title, "Credentials");
-            View.Message = LocaleFactory.localizedString(reason, "Credentials");
-            View.Username = username;
-            View.DiskIcon = Images.Get(options.icon()).Size(64);
+            _loginView.Title = LocaleFactory.localizedString(title, "Credentials");
+            _loginView.Message = LocaleFactory.localizedString(reason, "Credentials");
+            _loginView.Username = username;
+            _loginView.DiskIcon = Images.Get(options.icon()).Size(64);
 
             InitPrivateKeys();
 
@@ -108,7 +149,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             AsyncDelegate d = delegate
             {
-                if (DialogResult.Cancel == View.ShowDialog(_browser.Window))
+                if (DialogResult.Cancel == _loginView.ShowDialog(_browser.Window))
                 {
                     throw new LoginCanceledException();
                 }
@@ -133,12 +174,13 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _keys.Add(key.getAbsolute());
             }
-            View.PopulatePrivateKeys(_keys);
+
+            _loginView.PopulatePrivateKeys(_keys);
         }
 
         private void View_ChangedAnonymousCheckboxEvent(Credentials credentials, LoginOptions options)
         {
-            if (View.AnonymousState)
+            if (_loginView.AnonymousState)
             {
                 credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));
                 credentials.setPassword(PreferencesFactory.get().getProperty("connection.login.anon.pass"));
@@ -148,58 +190,61 @@ namespace Ch.Cyberduck.Ui.Controller
                 credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.name"));
                 credentials.setPassword(null);
             }
-            View.Username = credentials.getUsername();
-            View.Password = credentials.getPassword();
+
+            _loginView.Username = credentials.getUsername();
+            _loginView.Password = credentials.getPassword();
             Update(credentials, options);
         }
 
         private void View_ChangedSavePasswordCheckboxEvent(Credentials credentials)
         {
-            credentials.setSaved(View.SavePasswordState);
+            credentials.setSaved(_loginView.SavePasswordState);
         }
 
         private void View_ChangedPasswordEvent(Credentials credentials)
         {
-            credentials.setPassword(View.Password);
+            credentials.setPassword(_loginView.Password);
         }
 
         private void View_ChangedUsernameEvent(Host bookmark, Credentials credentials, LoginOptions options)
         {
-            credentials.setUsername(View.Username);
+            credentials.setUsername(_loginView.Username);
             if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
             {
                 string password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
                     bookmark.getHostname(), credentials.getUsername());
                 if (!string.IsNullOrWhiteSpace(password))
                 {
-                    View.Password = password;
+                    _loginView.Password = password;
                     // Make sure password fetched from keychain and set in field is set in model
                     credentials.setPassword(password);
                 }
             }
+
             Update(credentials, options);
         }
 
         private void InitEventHandlers(Host bookmark, Credentials credentials, LoginOptions options)
         {
-            View.ChangedUsernameEvent += () => View_ChangedUsernameEvent(bookmark, credentials, options);
-            View.ChangedPasswordEvent += () => View_ChangedPasswordEvent(credentials);
-            View.ChangedSavePasswordCheckboxEvent += () => View_ChangedSavePasswordCheckboxEvent(credentials);
-            View.ChangedAnonymousCheckboxEvent += () => View_ChangedAnonymousCheckboxEvent(credentials, options);
-            View.ChangedPrivateKey += (o, args) => View_ChangedPrivateKey(o, args, credentials, options);
-            View.ValidateInput += () => View_ValidateInput(bookmark, credentials, options);
-            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
+            _loginView.ChangedUsernameEvent += () => View_ChangedUsernameEvent(bookmark, credentials, options);
+            _loginView.ChangedPasswordEvent += () => View_ChangedPasswordEvent(credentials);
+            _loginView.ChangedSavePasswordCheckboxEvent += () => View_ChangedSavePasswordCheckboxEvent(credentials);
+            _loginView.ChangedAnonymousCheckboxEvent += () => View_ChangedAnonymousCheckboxEvent(credentials, options);
+            _loginView.ChangedPrivateKey += (o, args) => View_ChangedPrivateKey(o, args, credentials, options);
+            _loginView.ValidateInput += () => View_ValidateInput(bookmark, credentials, options);
+            _loginView.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
         }
 
         private void View_OpenPrivateKeyBrowserEvent()
         {
             string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
-            if (!LocaleFactory.localizedString("None").Equals(View.SelectedPrivateKey))
+            if (!LocaleFactory.localizedString("None").Equals(_loginView.SelectedPrivateKey))
             {
-                selectedKeyFile = Path.GetDirectoryName(View.SelectedPrivateKey);
+                selectedKeyFile = Path.GetDirectoryName(_loginView.SelectedPrivateKey);
             }
-            View.PasswordEnabled = true;
-            View.ShowPrivateKeyBrowser(selectedKeyFile);
+
+            _loginView.PasswordEnabled = true;
+            _loginView.ShowPrivateKeyBrowser(selectedKeyFile);
         }
 
         private bool View_ValidateInput(Host bookmark, Credentials credentials, LoginOptions options)
@@ -214,32 +259,34 @@ namespace Ch.Cyberduck.Ui.Controller
             if (!_keys.Contains(e.KeyFile))
             {
                 _keys.Add(e.KeyFile);
-                View.PopulatePrivateKeys(_keys);
+                _loginView.PopulatePrivateKeys(_keys);
             }
+
             Update(credentials, options);
         }
 
         private void Update(Credentials credentials, LoginOptions options)
         {
-            View.UsernameEnabled = options.user() && !credentials.isAnonymousLogin();
-            View.PasswordEnabled = options.password() && !credentials.isAnonymousLogin();
-            View.UsernameLabel = options.getUsernamePlaceholder() + ":";
-            View.PasswordLabel = options.getPasswordPlaceholder() + ":";
-            View.SavePasswordEnabled = options.keychain() && !credentials.isAnonymousLogin();
-            View.SavePasswordState = credentials.isSaved();
-            View.AnonymousEnabled = options.anonymous();
+            _loginView.UsernameEnabled = options.user() && !credentials.isAnonymousLogin();
+            _loginView.PasswordEnabled = options.password() && !credentials.isAnonymousLogin();
+            _loginView.UsernameLabel = options.getUsernamePlaceholder() + ":";
+            _loginView.PasswordLabel = options.getPasswordPlaceholder() + ":";
+            _loginView.SavePasswordEnabled = options.keychain() && !credentials.isAnonymousLogin();
+            _loginView.SavePasswordState = credentials.isSaved();
+            _loginView.AnonymousEnabled = options.anonymous();
             if (options.anonymous() && credentials.isAnonymousLogin())
             {
-                View.AnonymousState = true;
+                _loginView.AnonymousState = true;
             }
             else
             {
-                View.AnonymousState = false;
+                _loginView.AnonymousState = false;
             }
-            View.PrivateKeyFieldEnabled = options.publickey();
+
+            _loginView.PrivateKeyFieldEnabled = options.publickey();
             if (options.publickey() && credentials.isPublicKeyAuthentication())
             {
-                View.SelectedPrivateKey = credentials.getIdentity().getAbsolute();
+                _loginView.SelectedPrivateKey = credentials.getIdentity().getAbsolute();
             }
         }
     }

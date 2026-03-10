@@ -1,5 +1,4 @@
-﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+﻿// Copyright (c) 2010-2026 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -14,22 +13,20 @@
 // 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
 
 using System.Windows.Forms;
 using ch.cyberduck.core;
-using ch.cyberduck.core.vault;
 using ch.cyberduck.core.exception;
-using Ch.Cyberduck.Core;
+using ch.cyberduck.ui.core;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
-using ch.cyberduck.ui.core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class PromptPasswordController : WindowController<IPasswordPromptView>, PasswordCallback
+    public class PromptPasswordController : WindowController<IView>, PasswordCallback
     {
         private readonly IWindowController _browser;
+        private IPasswordPromptView _view;
 
         public PromptPasswordController(IWindowController c)
         {
@@ -38,8 +35,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void close(string input)
         {
-            View.InputText = input;
-            View.Close();
+            _view.InputText = input;
+            _view.Close();
         }
 
         public Credentials prompt(Host bookmark, string title, string reason, LoginOptions options)
@@ -48,16 +45,17 @@ namespace Ch.Cyberduck.Ui.Controller
             AsyncDelegate d = delegate
             {
                 View = ObjectFactory.GetInstance<IPasswordPromptView>();
-                View.Title = title;
-                View.Reason = new StringAppender().append(reason).toString();
-                View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
-                View.SkipButtonText = LocaleFactory.localizedString("Skip", "Transfer");
-                View.IconView = Images.Get(options.icon()).Size(64);
-                View.SavePasswordEnabled = options.keychain();
-                View.SavePasswordState = credentials.isSaved();
-                View.CanSkip = options.anonymous();
+                _view = (IPasswordPromptView)View;
+                _view.Title = title;
+                _view.Reason = new StringAppender().append(reason).toString();
+                _view.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
+                _view.SkipButtonText = LocaleFactory.localizedString("Skip", "Transfer");
+                _view.IconView = Images.Get(options.icon()).Size(64);
+                _view.SavePasswordEnabled = options.keychain();
+                _view.SavePasswordState = credentials.isSaved();
+                _view.CanSkip = options.anonymous();
 
-                View.ValidateInput += ValidateInputEventHandler;
+                _view.ValidateInput += ValidateInputEventHandler;
                 switch (View.ShowDialog(_browser.Window))
                 {
                     case DialogResult.Cancel:
@@ -68,8 +66,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         break;
 
                     default:
-                        credentials.setPassword(View.InputText.Trim());
-                        credentials.setSaved(View.SavePasswordState);
+                        credentials.setPassword(_view.InputText.Trim());
+                        credentials.setSaved(_view.SavePasswordState);
                         break;
                 }
             };
@@ -79,7 +77,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool ValidateInputEventHandler()
         {
-            return !string.IsNullOrWhiteSpace(View.InputText);
+            return !string.IsNullOrWhiteSpace(_view.InputText);
         }
     }
 }
