@@ -498,8 +498,7 @@ public class OAuth2AuthorizationService {
     public static String prompt(final Host bookmark, final PasswordCallback prompt,
                                 @Nullable final String property, final String message, final String value) throws LoginCanceledException {
         if(null == value) {
-            final Credentials input = prompt.prompt(bookmark, message,
-                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+            final Credentials input = prompt.prompt(bookmark, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), message,
                     new LoginOptions().icon(bookmark.getProtocol().disk())
                             .passwordPlaceholder(message).password(false));
             if(input.isSaved()) {
