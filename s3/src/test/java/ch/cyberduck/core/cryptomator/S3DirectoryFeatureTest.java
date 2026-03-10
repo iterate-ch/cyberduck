@@ -67,6 +67,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, acl)).mkdir(
                 cryptomator.getFeature(session, Write.class, new S3WriteFeature(session, acl)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(cryptomator.getFeature(session, Find.class, new S3FindFeature(session, acl)).find(test));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
