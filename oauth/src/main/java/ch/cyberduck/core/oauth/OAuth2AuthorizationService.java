@@ -231,7 +231,7 @@ public class OAuth2AuthorizationService {
                 method,
                 transport, json,
                 new GenericUrl(tokenServerUrl),
-                new ClientParametersAuthentication(clientid, clientsecret),
+                new ClientParametersAuthentication(clientid, StringUtils.isNotBlank(clientsecret) ? clientsecret : null),
                 clientid,
                 authorizationServerUrl)
                 .setScopes(scopes)
@@ -279,7 +279,7 @@ public class OAuth2AuthorizationService {
             log.debug("Request tokens with password {}", credentials);
             final PasswordTokenRequest request = new PasswordTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                     credentials.getUsername(), credentials.getPassword())
-                    .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
+                    .setClientAuthentication(new ClientParametersAuthentication(clientid, StringUtils.isNotBlank(clientsecret) ? clientsecret : null))
                     .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                     .setScopes(scopes.isEmpty() ? null : scopes);
             for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
@@ -310,7 +310,7 @@ public class OAuth2AuthorizationService {
                     tokens.getRefreshToken())
                     .setScopes(scopes.isEmpty() ? null : scopes)
                     .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-                    .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
+                    .setClientAuthentication(new ClientParametersAuthentication(clientid, StringUtils.isNotBlank(clientsecret) ? clientsecret : null))
                     .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
             if(StringUtils.isBlank(response.getRefreshToken())) {
