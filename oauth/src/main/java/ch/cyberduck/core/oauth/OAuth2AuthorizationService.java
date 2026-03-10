@@ -231,7 +231,7 @@ public class OAuth2AuthorizationService {
                 method,
                 transport, json,
                 new GenericUrl(tokenServerUrl),
-                new ClientParametersAuthentication(clientid, StringUtils.isNotBlank(clientsecret) ? clientsecret : null),
+                new ClientParametersAuthentication(clientid, clientsecret),
                 clientid,
                 authorizationServerUrl)
                 .setScopes(scopes)
@@ -278,8 +278,7 @@ public class OAuth2AuthorizationService {
         try {
             log.debug("Request tokens with password {}", credentials);
             final PasswordTokenRequest request = new PasswordTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
-                    credentials.getUsername(), credentials.getPassword()
-            )
+                    credentials.getUsername(), credentials.getPassword())
                     .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                     .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                     .setScopes(scopes.isEmpty() ? null : scopes);
