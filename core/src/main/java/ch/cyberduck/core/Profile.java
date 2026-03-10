@@ -62,6 +62,7 @@ public class Profile implements Protocol {
     public static final String OAUTH_TOKEN_URL_KEY = "OAuth Token Url";
     public static final String OAUTH_REDIRECT_URL_KEY = "OAuth Redirect Url";
     public static final String OAUTH_AUTHORIZATION_URL_KEY = "OAuth Authorization Url";
+    public static final String OAUTH_USERINFO_URL_KEY = "OAuth User Info Url";
     public static final String OAUTH_PKCE_KEY = "OAuth PKCE";
     public static final String SCOPES_KEY = "Scopes";
     public static final String STS_ENDPOINT_KEY = "STS Endpoint";
@@ -623,6 +624,15 @@ public class Profile implements Protocol {
         final String v = this.value(OAUTH_AUTHORIZATION_URL_KEY);
         if(StringUtils.isBlank(v)) {
             return parent.getOAuthAuthorizationUrl();
+        }
+        return v;
+    }
+
+    @Override
+    public String getOAuthUserInfoUrl() {
+        final String v = this.value(OAUTH_USERINFO_URL_KEY);
+        if(StringUtils.isBlank(v)) {
+            return parent.getOAuthUserInfoUrl();
         }
         return v;
     }
