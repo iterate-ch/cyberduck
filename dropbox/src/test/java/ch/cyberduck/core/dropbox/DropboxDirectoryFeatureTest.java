@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -32,8 +33,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
@@ -43,6 +43,9 @@ public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path level1 = new DropboxDirectoryFeature(session).mkdir(new DropboxWriteFeature(session), new Path(home,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
+        assertEquals(PathAttributes.EMPTY, level1.attributes());
+        assertNotSame(PathAttributes.EMPTY, level1.attributes());
+        assertEquals(level1.attributes(), new DropboxAttributesFinderFeature(session).find(level1));
         assertTrue(new DefaultFindFeature(session).find(level1));
         assertTrue(new DropboxFindFeature(session).find(level1));
         assertThrows(ConflictException.class, () -> new DropboxDirectoryFeature(session).mkdir(new DropboxWriteFeature(session), level1, new TransferStatus()));
