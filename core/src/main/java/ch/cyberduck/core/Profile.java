@@ -79,6 +79,20 @@ public class Profile implements Protocol {
      */
     public static final String STS_MFA_ARN_PROPERTY_KEY = "mfa_serial";
 
+    /**
+     * SSO token provider configuration
+     */
+    public static final String SSO_START_URL_KEY = "sso_start_url";
+    public static final String SSO_REGION_KEY = "sso_region";
+    /**
+     * SSO token provider configuration
+     */
+    public static final String SSO_ACCOUNT_ID_KEY = "sso_account_id";
+    /**
+     * SSO token provider configuration
+     */
+    public static final String SSO_ROLE_NAME_KEY = "sso_role_name";
+
     public static final String DISK_KEY = "Disk";
     public static final String ICON_KEY = "Icon";
     public static final String PROTOCOL_KEY = "Protocol";

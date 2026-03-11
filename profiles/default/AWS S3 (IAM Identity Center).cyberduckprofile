@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>s3-iam</string>
+        <key>Vendor</key>
+        <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
+        <key>Description</key>
+        <string>AWS S3 (IAM Identity Center)</string>
+        <key>Default Nickname</key>
+        <string>AWS S3 (IAM Identity Center)</string>
+        <key>Hostname Configurable</key>
+        <false/>
+        <key>Scopes</key>
+        <array>
+            <string>sso:account:access</string>
+        </array>
+        <key>OAuth Configurable</key>
+        <true/>
+        <key>Password Configurable</key>
+        <false/>
+        <key>Username Configurable</key>
+        <false/>
+        <key>Regions</key>
+        <array>
+            <string>af-south-1</string>
+            <string>ap-east-1</string>
+            <string>ap-east-2</string>
+            <string>ap-south-1</string>
+            <string>ap-south-2</string>
+            <string>ap-northeast-1</string>
+            <string>ap-northeast-2</string>
+            <string>ap-northeast-3</string>
+            <string>ap-southeast-1</string>
+            <string>ap-southeast-2</string>
+            <string>ap-southeast-3</string>
+            <string>ap-southeast-4</string>
+            <string>ap-southeast-5</string>
+            <string>ap-southeast-7</string>
+            <string>ca-central-1</string>
+            <string>ca-west-1</string>
+            <string>eu-west-1</string>
+            <string>eu-west-2</string>
+            <string>eu-west-3</string>
+            <string>eu-north-1</string>
+            <string>eu-south-1</string>
+            <string>eu-south-2</string>
+            <string>eu-central-1</string>
+            <string>eu-central-2</string>
+            <string>il-central-1</string>
+            <string>me-central-1</string>
+            <string>me-south-1</string>
+            <string>mx-central-1</string>
+            <string>sa-east-1</string>
+            <string>us-east-1</string>
+            <string>us-east-2</string>
+            <string>us-west-1</string>
+            <string>us-west-2</string>
+        </array>
+        <key>Properties</key>
+        <array>
+            <string>s3.storage.class.options=STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY
+                GLACIER GLACIER_IR DEEP_ARCHIVE
+            </string>
+        </array>
+    </dict>
+</plist>

@@ -93,7 +93,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     protected CloseableHttpClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
-                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
+                .setRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new OAuth2ErrorResponseInterceptor(host, authorizationService)));
