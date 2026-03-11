@@ -17,7 +17,7 @@ package ch.cyberduck.core.nio;
 
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -55,7 +55,7 @@ public class LocalMoveFeature implements Move {
                     // Break through
                 case sensitive:
                     log.warn("Delete file {} to be replaced with {}", renamed, file);
-                    new LocalDeleteFeature(session).delete(Collections.singletonMap(renamed, status), new DisabledPasswordCallback(), callback);
+                    new LocalDeleteFeature(session).delete(Collections.singletonMap(renamed, status), PasswordCallback.noop, callback);
             }
         }
         if(!session.toPath(file).toFile().renameTo(session.toPath(renamed).toFile())) {

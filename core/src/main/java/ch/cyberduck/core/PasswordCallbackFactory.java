@@ -45,7 +45,7 @@ public class PasswordCallbackFactory extends Factory<PasswordCallback> {
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
-            return new DisabledPasswordCallback();
+            return PasswordCallback.noop;
         }
     }
 
