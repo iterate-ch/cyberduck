@@ -16,7 +16,6 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,7 +36,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     }
 
     @Override
-    public Vault load(final Session session, final Path directory, final String masterkey, final String config, final byte[] pepper) throws VaultUnlockCancelException {
+    public Vault load(final Session<?> session, final Path directory, final String masterkey, final String config, final byte[] pepper) throws VaultUnlockCancelException {
         synchronized(registry) {
             if(registry.contains(directory)) {
                 return registry.find(session, directory);

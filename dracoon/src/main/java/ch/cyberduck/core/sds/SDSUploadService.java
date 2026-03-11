@@ -115,7 +115,7 @@ public class SDSUploadService {
                 }
             }
             log.debug("Start file upload for {} with {}", file, body);
-            return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY);
+            return new NodesApi(session.getClient()).createFileUploadChannel(body);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
@@ -146,7 +146,7 @@ public class SDSUploadService {
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
             log.debug("Complete file upload for {} with token {}", file, uploadToken);
-            final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(uploadToken, body, StringUtils.EMPTY);
+            final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(uploadToken, body, null);
             if(!upload.isIsEncrypted()) {
                 final Checksum checksum = status.getChecksum();
                 if(Checksum.NONE != checksum) {
@@ -219,7 +219,7 @@ public class SDSUploadService {
                     try {
                         log.debug("Query upload status for {} ({})", uploadId, polls.incrementAndGet());
                         final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
-                                .requestUploadStatusFiles(uploadId, StringUtils.EMPTY, null);
+                                .requestUploadStatusFiles(uploadId, null);
                         response.set(uploadStatus);
                         switch(uploadStatus.getStatus()) {
                             case "finishing":

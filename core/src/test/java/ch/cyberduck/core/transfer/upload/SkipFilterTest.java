@@ -1,7 +1,6 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
@@ -9,6 +8,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -47,7 +47,7 @@ public class SkipFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), ProgressListener.noop));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class SkipFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), ProgressListener.noop));
     }
 
     @Test(expected = NotfoundException.class)
@@ -99,6 +99,6 @@ public class SkipFilterTest {
             public boolean exists() {
                 return false;
             }
-        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), ProgressListener.noop));
     }
 }

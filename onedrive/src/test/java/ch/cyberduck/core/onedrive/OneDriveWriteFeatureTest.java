@@ -16,9 +16,9 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Protocol;
@@ -69,7 +69,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String id = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), file, new TransferStatus()).attributes().getFileId();
         final GraphWriteFeature feature = new GraphWriteFeature(session, fileid);
-        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, ConnectionCallback.noop);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(out.getStatus());
         assertTrue(status.isComplete());
@@ -79,7 +79,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertEquals(folderTimestamp, new GraphAttributesFinderFeature(session, fileid).find(folder).getModificationDate());
         assertTrue(new GraphFindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -87,12 +87,12 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         copy.attributes().setCustom(Collections.emptyMap());
         assertEquals(id, fileid.getFileId(copy));
         // Overwrite
-        final StatusOutputStream<DriveItem.Metadata> overwrite = feature.write(file, status.setExists(true), new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> overwrite = feature.write(file, status.setExists(true), ConnectionCallback.noop);
         assertNotNull(overwrite);
         assertEquals(content.length, IOUtils.copyLarge(new ByteArrayInputStream(content), overwrite));
         overwrite.close();
         assertEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()), new GraphAttributesFinderFeature(session, fileid).find(file));
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -103,7 +103,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, String.format("%sä", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -111,11 +111,11 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out.getStatus());
         assertTrue(new GraphFindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, String.format("%sä", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -134,11 +134,11 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -149,7 +149,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -157,11 +157,11 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out.getStatus());
         assertTrue(new GraphFindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -180,11 +180,11 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -195,7 +195,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[1 * 1024];
         try {

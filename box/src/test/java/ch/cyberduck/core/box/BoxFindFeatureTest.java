@@ -16,7 +16,7 @@ package ch.cyberduck.core.box;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -54,7 +54,7 @@ public class BoxFindFeatureTest extends AbstractBoxTest {
                 new BoxWriteFeature(session, fileid), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new BoxFindFeature(session, fileid).find(folder));
         assertFalse(new BoxFindFeature(session, fileid).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -64,6 +64,6 @@ public class BoxFindFeatureTest extends AbstractBoxTest {
         new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), file, new TransferStatus());
         assertTrue(new BoxFindFeature(session, fileid).find(file));
         assertFalse(new BoxFindFeature(session, fileid).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

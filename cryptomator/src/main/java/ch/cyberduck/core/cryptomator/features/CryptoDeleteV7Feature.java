@@ -20,6 +20,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
@@ -59,7 +60,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path f : files.keySet()) {
             final List<Path> metadataFiles = new ArrayList<>();
-            if(!f.equals(vault.getHome())) {
+            if(!new SimplePathPredicate(f).test(vault.getHome())) {
                 final Path encrypt = vault.encrypt(session, f);
                 if(f.isDirectory()) {
                     final Path backup = new Path(encrypt, CryptoDirectoryV7Provider.BACKUP_DIRECTORY_METADATAFILE,
@@ -111,7 +112,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
             }
         }
         for(Path f : files.keySet()) {
-            if(f.equals(vault.getHome())) {
+            if(new SimplePathPredicate(f).test(vault.getHome())) {
                 log.warn("Recursively delete vault {}", f);
                 final List<Path> metadata = new ArrayList<>();
                 if(!proxy.features(f).contains(Delete.Flags.recursive)) {

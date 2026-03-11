@@ -18,11 +18,11 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,7 +61,7 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         final Metadata metadata = feature.upload(new DropboxWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new DropboxFindFeature(session).find(test));
@@ -69,7 +69,7 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
         assertEquals(1700638960000L, attributes.getModificationDate());
         assertEquals(content.length, attributes.getSize());
         assertEquals(((FileMetadata) metadata).getContentHash(), attributes.getChecksum().hash);
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 

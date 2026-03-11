@@ -131,16 +131,6 @@ public interface PathAttributes extends Attributes, Serializable {
         }
 
         @Override
-        public PathAttributes setEncrypted(final Path encrypted) {
-            return this;
-        }
-
-        @Override
-        public PathAttributes setVault(final Path vault) {
-            return this;
-        }
-
-        @Override
         public PathAttributes setDuplicate(final boolean duplicate) {
             return this;
         }
@@ -288,17 +278,6 @@ public interface PathAttributes extends Attributes, Serializable {
     Path getDecrypted();
 
     PathAttributes setDecrypted(Path decrypted);
-
-    /**
-     * @return Null if path is missing flag decrypted
-     */
-    Path getEncrypted();
-
-    PathAttributes setEncrypted(Path encrypted);
-
-    PathAttributes setVault(Path vault);
-
-    Path getVault();
 
     /**
      * If the path should not be displayed in a browser by default unless the user explicitly chooses to show hidden

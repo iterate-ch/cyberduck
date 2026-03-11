@@ -133,7 +133,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                     .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
                     .name(file.getName()));
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
-                    .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
+                    .createFileUploadChannel(createFileUploadRequest);
             log.debug("Upload started for {} with response {}", file, createFileUploadResponse);
             final Map<Integer, TransferStatus> etags = new HashMap<>();
             final List<PresignedUrl> presignedUrls = this.retrievePresignedUrls(createFileUploadResponse, status);
@@ -187,7 +187,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             etags.forEach((key, value) -> completeS3FileUploadRequest.addPartsItem(
                     new S3FileUploadPart().partEtag(value.getChecksum().hash).partNumber(key)));
             log.debug("Complete file upload with {} for {}", completeS3FileUploadRequest, file);
-            new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+            new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId());
             // Polling
             return new SDSUploadService(session, nodeid).await(file, status, createFileUploadResponse.getUploadId()).getNode();
         }
@@ -222,7 +222,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                     // Separate last part with non default part size
                     presignedUrls.addAll(new NodesApi(session.getClient()).generatePresignedUrlsFiles(
                             new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),
-                            createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
+                            createFileUploadResponse.getUploadId()).getUrls());
                 }
                 else {
                     presignedUrlsRequest.lastPartNumber(partNumber).size(length);
@@ -234,7 +234,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             }
         }
         presignedUrls.addAll(0, new NodesApi(session.getClient()).generatePresignedUrlsFiles(presignedUrlsRequest,
-                createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
+                createFileUploadResponse.getUploadId()).getUrls());
         return presignedUrls;
     }
 

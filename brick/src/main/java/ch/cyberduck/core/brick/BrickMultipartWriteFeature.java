@@ -17,7 +17,6 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
@@ -128,7 +127,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                             status.setChecksum(writer.checksum(file, status).compute(new ByteArrayInputStream(b, off, len), status));
                             status.setUrl(uploadPartEntity.getUploadUri());
                             status.setSegment(true);
-                            final HttpResponseOutputStream<FileEntity> proxy = writer.write(file, status, new DisabledConnectionCallback());
+                            final HttpResponseOutputStream<FileEntity> proxy = writer.write(file, status, ConnectionCallback.noop);
                             final byte[] content = Arrays.copyOfRange(b, off, len);
                             try {
                                 IOUtils.write(content, proxy);

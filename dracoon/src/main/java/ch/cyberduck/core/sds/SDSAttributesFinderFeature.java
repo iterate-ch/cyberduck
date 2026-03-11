@@ -78,13 +78,11 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     private PathAttributes findNode(final Path file, final String nodeId) throws BackgroundException {
         try {
             if(file.attributes().isDuplicate()) {
-                final DeletedNode node = new NodesApi(session.getClient()).requestDeletedNode(Long.parseLong(nodeId),
-                        StringUtils.EMPTY, null);
+                final DeletedNode node = new NodesApi(session.getClient()).requestDeletedNode(Long.parseLong(nodeId), null);
                 return adapter.toAttributes(node);
             }
             else {
-                final Node node = new NodesApi(session.getClient()).requestNode(
-                        Long.parseLong(nodeId), StringUtils.EMPTY, null);
+                final Node node = new NodesApi(session.getClient()).requestNode(Long.parseLong(nodeId), null);
                 return adapter.toAttributes(node);
             }
         }

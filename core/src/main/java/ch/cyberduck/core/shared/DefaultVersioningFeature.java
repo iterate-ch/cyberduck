@@ -17,7 +17,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -115,7 +114,7 @@ public class DefaultVersioningFeature implements Versioning {
         }
         log.debug("Rename existing file {} to {}", file, version);
         feature.move(file, version,
-                new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new TransferStatus().setExists(false), new Delete.DisabledCallback(), ConnectionCallback.noop);
         return true;
     }
 
@@ -133,7 +132,7 @@ public class DefaultVersioningFeature implements Versioning {
                 throw new UnsupportedException();
             }
         }
-        session.getFeature(Move.class).move(file, target, status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        session.getFeature(Move.class).move(file, target, status, new Delete.DisabledCallback(), ConnectionCallback.noop);
     }
 
     @Override

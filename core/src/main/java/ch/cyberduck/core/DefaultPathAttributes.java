@@ -25,8 +25,6 @@ import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,7 +35,6 @@ import java.util.Objects;
  * Attributes of a remote directory or file.
  */
 public class DefaultPathAttributes implements PathAttributes, Attributes, Serializable {
-    private static final Logger log = LogManager.getLogger(DefaultPathAttributes.class);
 
     /**
      * The file length
@@ -142,17 +139,9 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     private Map<String, String> metadata = Collections.emptyMap();
 
     /**
-     * Cryptomator vault
-     */
-    private Path vault;
-    /**
      * Cryptomator decrypted path
      */
     private Path decrypted;
-    /**
-     * Cryptomator encrypted path.
-     */
-    private Path encrypted;
     /**
      * Unique identifier for cryptomator
      */
@@ -192,9 +181,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         metadata = new HashMap<>(copy.getMetadata());
         custom = new HashMap<>(copy.getCustom());
         verdict = copy.getVerdict();
-        vault = copy.getVault();
         decrypted = copy.getDecrypted();
-        encrypted = copy.getEncrypted();
         directoryId = copy.getDirectoryId();
     }
 
@@ -272,14 +259,6 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         }
         if(StringUtils.isNotBlank(storageClass)) {
             dict.setStringForKey(storageClass, "Storage Class");
-        }
-        if(vault != null) {
-            if(vault.attributes() == this) {
-                log.debug("Skip serializing vault attribute {} to avoid recursion", vault);
-            }
-            else {
-                dict.setObjectForKey(vault, "Vault");
-            }
         }
         if(!custom.isEmpty()) {
             dict.setMapForKey(custom, "Custom");
@@ -533,28 +512,6 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
-    public Path getEncrypted() {
-        return encrypted;
-    }
-
-    @Override
-    public PathAttributes setEncrypted(final Path encrypted) {
-        this.encrypted = encrypted;
-        return this;
-    }
-
-    @Override
-    public PathAttributes setVault(final Path vault) {
-        this.vault = vault;
-        return this;
-    }
-
-    @Override
-    public Path getVault() {
-        return vault;
-    }
-
-    @Override
     public boolean isDuplicate() {
         return duplicate != null && duplicate;
     }
@@ -704,9 +661,6 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         if(!Objects.equals(lockId, that.lockId)) {
             return false;
         }
-        if(!Objects.equals(vault, that.vault)) {
-            return false;
-        }
         return true;
     }
 
@@ -722,7 +676,6 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
         result = 31 * result + (verdict != null ? verdict.hashCode() : 0);
         result = 31 * result + (lockId != null ? lockId.hashCode() : 0);
-        result = 31 * result + (vault != null ? vault.hashCode() : 0);
         return result;
     }
 

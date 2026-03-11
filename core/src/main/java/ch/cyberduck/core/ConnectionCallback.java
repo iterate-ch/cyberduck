@@ -23,6 +23,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import java.util.concurrent.CountDownLatch;
 
 public interface ConnectionCallback extends PasswordCallback {
+    ConnectionCallback noop = new DisabledConnectionCallback();
+
     /**
      * Display warning sheet. Block connection until decision is made.
      *

@@ -16,14 +16,14 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -59,18 +59,18 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus writeStatus = new TransferStatus().setLength(content.length);
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), ConnectionCallback.noop);
         final SpectraUploadFeature upload = new SpectraUploadFeature(new SpectraBulkService(session));
-        upload.upload(new SpectraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                writeStatus, new DisabledConnectionCallback());
+        upload.upload(new SpectraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
+                writeStatus, ConnectionCallback.noop);
         final byte[] buffer = new byte[content.length];
         final TransferStatus readStatus = new TransferStatus().setLength(content.length);
-        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), readStatus), new DisabledConnectionCallback());
-        final InputStream in = new SpectraReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), readStatus), ConnectionCallback.noop);
+        final InputStream in = new SpectraReadFeature(session).read(test, readStatus, ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -104,15 +104,15 @@ public class SpectraUploadFeatureTest extends AbstractSpectraTest {
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         files.put(new TransferItem(test1), status1);
         files.put(new TransferItem(test2), status2);
-        bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, files, ConnectionCallback.noop);
         final SpectraUploadFeature upload = new SpectraUploadFeature(new SpectraBulkService(session));
-        upload.upload(new SpectraWriteFeature(session), test1, local1, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                status1, new DisabledConnectionCallback());
-        upload.upload(new SpectraWriteFeature(session), test2, local2, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                status2, new DisabledConnectionCallback());
-        new SpectraDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        upload.upload(new SpectraWriteFeature(session), test1, local1, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
+                status1, ConnectionCallback.noop);
+        upload.upload(new SpectraWriteFeature(session), test2, local2, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
+                status2, ConnectionCallback.noop);
+        new SpectraDeleteFeature(session).delete(Arrays.asList(test1, test2), LoginCallback.noop, new Delete.DisabledCallback());
         local1.delete();
         local2.delete();
-        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

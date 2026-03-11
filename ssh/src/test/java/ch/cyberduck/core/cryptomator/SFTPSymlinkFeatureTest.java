@@ -17,8 +17,8 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoSymlinkFeature;
@@ -72,9 +72,9 @@ public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(link));
         assertEquals(EnumSet.of(Path.Type.file, Path.Type.symboliclink, Path.Type.decrypted),
                 new CryptoListService(session, new SFTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(link).getType());
-        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Collections.singletonList(link), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(link));
         assertTrue(cryptomator.getFeature(session, Find.class, new SFTPFindFeature(session)).find(target));
-        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

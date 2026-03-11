@@ -15,7 +15,6 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,7 +29,7 @@ public class DefaultRetryCallable<T> extends AbstractRetryCallable<T> {
     private final BackgroundActionState cancel;
 
     public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final StreamCancelation status) {
-        this(host, delegate, new DisabledProgressListener(), new TransferBackgroundActionState(status));
+        this(host, delegate, ProgressListener.noop, new TransferBackgroundActionState(status));
     }
 
     public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final ProgressListener listener, final BackgroundActionState cancel) {

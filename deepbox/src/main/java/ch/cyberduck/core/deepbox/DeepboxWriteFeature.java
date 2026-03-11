@@ -52,7 +52,7 @@ public class DeepboxWriteFeature extends AbstractHttpWriteFeature<Node> {
     private final DeepboxIdProvider fileid;
 
     public DeepboxWriteFeature(final DeepboxSession session, final DeepboxIdProvider fileid) {
-        super(new DeepboxAttributesFinderFeature(session, fileid));
+        super(session.getHost(), new DeepboxAttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
     }

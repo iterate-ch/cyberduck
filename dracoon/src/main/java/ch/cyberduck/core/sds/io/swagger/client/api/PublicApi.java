@@ -34,8 +34,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class PublicApi {
   private ApiClient apiClient;
+  private Map<String, String> headers;
 
   public PublicApi() {
     this(Configuration.getDefaultApiClient());
@@ -51,6 +53,10 @@ public class PublicApi {
 
   public void setApiClient(ApiClient apiClient) {
     this.apiClient = apiClient;
+  }
+
+  public void setHeadersOverrides(Map<String, String> headers) {
+    this.headers = headers;
   }
 
   /**
@@ -94,11 +100,16 @@ public class PublicApi {
 
     String[] localVarAuthNames = new String[] {  };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Check public Download Share password
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.36.0&lt;/h3&gt;  ### Description: Check password for a public Download Share  ### Precondition: None.  ### Postcondition: None.  ### Further Information: None.
+   * ### Description: Check password for a public Download Share  ### Precondition: None.  ### Postcondition: None.  ### Further Information: None.
    * @param accessKey Access key (required)
    * @param password Download share password (optional)
    * @throws ApiException if fails to make API call
@@ -132,6 +143,11 @@ public class PublicApi {
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] {  };
+
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
 
     apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
@@ -184,11 +200,16 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<PublicUploadedFileData> localVarReturnType = new GenericType<PublicUploadedFileData>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Complete S3 file upload
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.15.0&lt;/h3&gt;  ### Description: Finishes a S3 file upload and closes the corresponding upload channel.  ### Precondition: Valid upload ID.   Only returns users that owns one of the following permissions: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt;  ### Postcondition: Upload channel is closed. S3 multipart upload request is completed.  ### Further Information: None. 
+   * ### Description: Finishes a S3 file upload and closes the corresponding upload channel.  ### Precondition: Valid upload ID.   Only returns users that owns one of the following permissions: &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt;, &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt;  ### Postcondition: Upload channel is closed. S3 multipart upload request is completed.  ### Further Information: None. 
    * @param body  (required)
    * @param accessKey Access key (required)
    * @param uploadId Upload channel ID (required)
@@ -231,6 +252,11 @@ public class PublicApi {
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] {  };
+
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
 
     apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
@@ -276,6 +302,11 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<CreateShareUploadChannelResponse> localVarReturnType = new GenericType<CreateShareUploadChannelResponse>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -327,6 +358,11 @@ public class PublicApi {
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] {  };
+
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
 
     apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
@@ -380,6 +416,11 @@ public class PublicApi {
 
     String[] localVarAuthNames = new String[] {  };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
@@ -420,11 +461,16 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<PublicDownloadTokenGenerateResponse> localVarReturnType = new GenericType<PublicDownloadTokenGenerateResponse>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Generate presigned URLs for S3 file upload
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.15.0&lt;/h3&gt;  ### Description: Generate presigned URLs for S3 file upload.  ### Precondition: Valid upload ID  ### Postcondition: List of presigned URLs is returned.  ### Further Information: The size for each part must be &gt;&#x3D; 5 MB, except for the last part.   The part number of the first part in S3 is 1 (not 0).   Use HTTP method &#x60;PUT&#x60; for uploading bytes via presigned URL.
+   * ### Description: Generate presigned URLs for S3 file upload.  ### Precondition: Valid upload ID  ### Postcondition: List of presigned URLs is returned.  ### Further Information: The size for each part must be &gt;&#x3D; 5 MB, except for the last part.   The part number of the first part in S3 is 1 (not 0).   Use HTTP method &#x60;PUT&#x60; for uploading bytes via presigned URL.
    * @param body  (required)
    * @param accessKey Access key (required)
    * @param uploadId Upload channel ID (required)
@@ -473,6 +519,11 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<PresignedUrlList> localVarReturnType = new GenericType<PresignedUrlList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -508,6 +559,11 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<ActiveDirectoryAuthInfo> localVarReturnType = new GenericType<ActiveDirectoryAuthInfo>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -543,6 +599,11 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<OpenIdAuthInfo> localVarReturnType = new GenericType<OpenIdAuthInfo>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -585,6 +646,11 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<PublicDownloadShare> localVarReturnType = new GenericType<PublicDownloadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -630,11 +696,16 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<PublicUploadShare> localVarReturnType = new GenericType<PublicUploadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Request software version information
-   * ### Description:   Public software version information.  ### Precondition: None.  ### Postcondition: Sofware version information is returned.  ### Further Information: The version of DRACOON Server consists of two components: * **API** * **Core** (referred to as _\&quot;Server\&quot;_)  which are versioned individually.
+   * ### Description:   Public software version information.  ### Precondition: None.  ### Postcondition: Sofware version information is returned.  ### Further Information:  None.
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @return SoftwareVersionData
    * @throws ApiException if fails to make API call
@@ -666,11 +737,16 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<SoftwareVersionData> localVarReturnType = new GenericType<SoftwareVersionData>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Request system information
-   * ### Description:   Provides information about system.  ### Precondition: None.  ### Postcondition: System information is returned.  ### Further Information: Authentication methods are sorted by **priority** attribute.   Smaller values have higher priority.   Authentication method with highest priority is considered as default.  ### System information: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Setting | Description | Value | | :--- | :--- | :--- | | &#x60;languageDefault&#x60; | Defines which language should be default. | &#x60;ISO 639-1 code&#x60; | | &#x60;hideLoginInputFields&#x60; | Defines if login fields should be hidden. | &#x60;true or false&#x60; | | &#x60;s3Hosts&#x60; | List of available S3 hosts. | &#x60;String array&#x60; | | &#x60;s3EnforceDirectUpload&#x60; | Determines whether S3 direct upload is enforced or not. | &#x60;true or false&#x60; | | &#x60;useS3Storage&#x60; | Determines whether S3 Storage enabled and used. | &#x60;true or false&#x60; |  &lt;/details&gt;  ### Authentication methods: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Authentication Method | Description | | :--- | :--- | | &#x60;basic&#x60; | **Basic** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their credentials stored in the database.&lt;br&gt;Formerly known as &#x60;sql&#x60;. | | &#x60;active_directory&#x60; | **Active Directory** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their Active Directory credentials. | | &#x60;radius&#x60; | **RADIUS** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their RADIUS username, their PIN and a token password. | | &#x60;openid&#x60; | **OpenID Connect** authentication globally allowed.This option **MUST** be activated to allow users to log in with their OpenID Connect identity. | | &#x60;hideLoginInputFields&#x60; | Determines whether input fields for login should be enabled | &#x60;true or false&#x60; |  &lt;/details&gt;
+   * ### Description:   Provides information about system.  ### Precondition: None.  ### Postcondition: System information is returned.  ### Further Information: Authentication methods are sorted by **priority** attribute.   Smaller values have higher priority.   Authentication method with the highest priority is considered as default.  ### System information: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Setting                 | Description                                             | Value            | |:------------------------|:--------------------------------------------------------|:-----------------| | &#x60;languageDefault&#x60;       | Defines which language should be default.               | &#x60;ISO 639-1 code&#x60; | | &#x60;hideLoginInputFields&#x60;  | Defines if login fields should be hidden.               | &#x60;true or false&#x60;  | | &#x60;s3Hosts&#x60;               | List of available S3 hosts.                             | &#x60;String array&#x60;   | | &#x60;s3EnforceDirectUpload&#x60; | Determines whether S3 direct upload is enforced or not. | &#x60;true or false&#x60;  | | &#x60;useS3Storage&#x60;          | Determines whether S3 Storage enabled and used.         | &#x60;true or false&#x60;  |  &lt;/details&gt;  ### Authentication methods: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Authentication Method  | Description                                                                                                                                                                         | |:-----------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| | &#x60;basic&#x60;                | **Basic** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their credentials stored in the database.&lt;br&gt;Formerly known as &#x60;sql&#x60;. | | &#x60;active_directory&#x60;     | **Active Directory** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their Active Directory credentials.                        | | &#x60;openid&#x60;               | **OpenID Connect** authentication globally allowed.This option **MUST** be activated to allow users to log in with their OpenID Connect identity.                                   | | &#x60;hideLoginInputFields&#x60; | Determines whether input fields for login should be enabled                                                                                                                         |  &lt;/details&gt;
    * @param isEnabled Show only enabled authentication methods (optional)
    * @return SystemInfo
    * @throws ApiException if fails to make API call
@@ -703,6 +779,11 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<SystemInfo> localVarReturnType = new GenericType<SystemInfo>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -739,14 +820,21 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<SdsServerTime> localVarReturnType = new GenericType<SdsServerTime>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Request third-party software dependencies
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.9.0&lt;/h3&gt;  ### Description:   Provides information about used third-party software dependencies.  ### Precondition: None.  ### Postcondition: List of the third-party software dependencies used by **DRACOON Core** (referred to as _\&quot;Server\&quot;_) is returned.  ### Further Information: None.  
+   * ### Description:   Provides information about used third-party software dependencies.  ### Precondition: None.  ### Postcondition: List of the third-party software dependencies used by **DRACOON Core** (referred to as _\&quot;Server\&quot;_) is returned.  ### Further Information: None.  
    * @return List&lt;ThirdPartyDependenciesData&gt;
    * @throws ApiException if fails to make API call
+   * @deprecated
    */
+  @Deprecated
   public List<ThirdPartyDependenciesData> requestThirdPartyDependencies() throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
@@ -772,11 +860,16 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<List<ThirdPartyDependenciesData>> localVarReturnType = new GenericType<List<ThirdPartyDependenciesData>>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Request status of S3 file upload
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.15.0&lt;/h3&gt;  ### Description: Request status of a S3 file upload.  ### Precondition: An upload channel has been created and the user has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; create&lt;/span&gt; permissions in the parent container (room or folder).  ### Postcondition: Status of S3 multipart upload request is returned.  ### Further Information: None.  ### Possible errors: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Http Status | Error Code | Description | | :--- | :--- | :--- | | &#x60;400 Bad Request&#x60; | &#x60;-80000&#x60; | Mandatory fields cannot be empty | | &#x60;400 Bad Request&#x60; | &#x60;-80001&#x60; | Invalid positive number | | &#x60;400 Bad Request&#x60; | &#x60;-80002&#x60; | Invalid number | | &#x60;400 Bad Request&#x60; | &#x60;-40001&#x60; | (Target) room is not encrypted | | &#x60;400 Bad Request&#x60; | &#x60;-40755&#x60; | Bad file name | | &#x60;400 Bad Request&#x60; | &#x60;-40763&#x60; | File key must be set for an upload into encrypted room | | &#x60;400 Bad Request&#x60; | &#x60;-50506&#x60; | Exceeds the number of files for this Upload Share | | &#x60;403 Forbidden&#x60; |  | Access denied | | &#x60;404 Not Found&#x60; | &#x60;-20501&#x60; | Upload not found | | &#x60;404 Not Found&#x60; | &#x60;-40000&#x60; | Container not found | | &#x60;404 Not Found&#x60; | &#x60;-41000&#x60; | Node not found | | &#x60;404 Not Found&#x60; | &#x60;-70501&#x60; | User not found | | &#x60;409 Conflict&#x60; | &#x60;-40010&#x60; | Container cannot be overwritten | | &#x60;409 Conflict&#x60; |  | File cannot be overwritten | | &#x60;500 Internal Server Error&#x60; |  | System Error | | &#x60;502 Bad Gateway&#x60; |  | S3 Error | | &#x60;502 Insufficient Storage&#x60; | &#x60;-50504&#x60; | Exceeds the quota for this Upload Share | | &#x60;502 Insufficient Storage&#x60; | &#x60;-40200&#x60; | Exceeds the free node quota in room | | &#x60;502 Insufficient Storage&#x60; | &#x60;-90200&#x60; | Exceeds the free customer quota | | &#x60;502 Insufficient Storage&#x60; | &#x60;-90201&#x60; | Exceeds the free customer physical disk space |  &lt;/details&gt;
+   * ### Description: Request status of a S3 file upload.  ### Precondition: An upload channel has been created and the user has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; create&lt;/span&gt; permissions in the parent container (room or folder).  ### Postcondition: Status of S3 multipart upload request is returned.  ### Further Information: None.  ### Possible errors: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Http Status | Error Code | Description | | :--- | :--- | :--- | | &#x60;400 Bad Request&#x60; | &#x60;-80000&#x60; | Mandatory fields cannot be empty | | &#x60;400 Bad Request&#x60; | &#x60;-80001&#x60; | Invalid positive number | | &#x60;400 Bad Request&#x60; | &#x60;-80002&#x60; | Invalid number | | &#x60;400 Bad Request&#x60; | &#x60;-40001&#x60; | (Target) room is not encrypted | | &#x60;400 Bad Request&#x60; | &#x60;-40755&#x60; | Bad file name | | &#x60;400 Bad Request&#x60; | &#x60;-40763&#x60; | File key must be set for an upload into encrypted room | | &#x60;400 Bad Request&#x60; | &#x60;-50506&#x60; | Exceeds the number of files for this Upload Share | | &#x60;403 Forbidden&#x60; |  | Access denied | | &#x60;404 Not Found&#x60; | &#x60;-20501&#x60; | Upload not found | | &#x60;404 Not Found&#x60; | &#x60;-40000&#x60; | Container not found | | &#x60;404 Not Found&#x60; | &#x60;-41000&#x60; | Node not found | | &#x60;404 Not Found&#x60; | &#x60;-70501&#x60; | User not found | | &#x60;409 Conflict&#x60; | &#x60;-40010&#x60; | Container cannot be overwritten | | &#x60;409 Conflict&#x60; |  | File cannot be overwritten | | &#x60;500 Internal Server Error&#x60; |  | System Error | | &#x60;502 Bad Gateway&#x60; |  | S3 Error | | &#x60;502 Insufficient Storage&#x60; | &#x60;-50504&#x60; | Exceeds the quota for this Upload Share | | &#x60;502 Insufficient Storage&#x60; | &#x60;-40200&#x60; | Exceeds the free node quota in room | | &#x60;502 Insufficient Storage&#x60; | &#x60;-90200&#x60; | Exceeds the free customer quota |  &lt;/details&gt;
    * @param accessKey Access key (required)
    * @param uploadId Upload channel ID (required)
    * @return S3ShareUploadStatus
@@ -817,6 +910,11 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<S3ShareUploadStatus> localVarReturnType = new GenericType<S3ShareUploadStatus>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -832,15 +930,15 @@ public class PublicApi {
    * Range Requests
    * @see <a href="https://tools.ietf.org/html/rfc7233">Upload file Documentation</a>
    */
-  public ChunkUploadResponse uploadFileAsMultipartPublic1(String accessKey, String uploadId, File file, String contentRange, String xSdsDateFormat) throws ApiException {
+  public ChunkUploadResponse uploadFileAsMultipartPublic(String accessKey, String uploadId, File file, String contentRange, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'accessKey' is set
     if (accessKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessKey' when calling uploadFileAsMultipartPublic1");
+      throw new ApiException(400, "Missing the required parameter 'accessKey' when calling uploadFileAsMultipartPublic");
     }
     // verify the required parameter 'uploadId' is set
     if (uploadId == null) {
-      throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadFileAsMultipartPublic1");
+      throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadFileAsMultipartPublic");
     }
     // create path and map variables
     String localVarPath = "/v4/public/shares/uploads/{access_key}/{upload_id}"
@@ -873,6 +971,11 @@ public class PublicApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<ChunkUploadResponse> localVarReturnType = new GenericType<ChunkUploadResponse>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
 }

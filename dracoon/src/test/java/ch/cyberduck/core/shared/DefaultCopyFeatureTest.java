@@ -16,13 +16,13 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectS3MultipartWriteFeature;
@@ -66,14 +66,14 @@ public class DefaultCopyFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setExists(true);
         status.setLength(content.length);
-        final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(source, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new DefaultCopyFeature(session).copy(source, target, new TransferStatus().setLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new DefaultCopyFeature(session).copy(source, target, new TransferStatus().setLength(content.length), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

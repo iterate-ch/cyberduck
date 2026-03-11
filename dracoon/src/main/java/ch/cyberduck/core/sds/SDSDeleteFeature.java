@@ -25,7 +25,6 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeleteDeletedNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,17 +52,15 @@ public class SDSDeleteFeature implements Delete {
                     // Already trashed
                     log.warn("Delete file {} already in trash", file);
                     new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(Collections.singletonList(
-                            Long.parseLong(nodeid.getVersionId(file)))), StringUtils.EMPTY);
+                            Long.parseLong(nodeid.getVersionId(file)))));
                 }
                 else if(file.attributes().getVerdict() == PathAttributes.Verdict.malicious) {
                     // Delete malicious file
                     log.warn("Delete file {} marked as malicious", file);
-                    new NodesApi(session.getClient()).removeMaliciousFile(
-                            Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY);
+                    new NodesApi(session.getClient()).removeMaliciousFile(Long.parseLong(nodeid.getVersionId(file)));
                 }
                 else {
-                    new NodesApi(session.getClient()).removeNode(
-                            Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY);
+                    new NodesApi(session.getClient()).removeNode(Long.parseLong(nodeid.getVersionId(file)));
                 }
                 nodeid.cache(file, null);
             }

@@ -65,8 +65,7 @@ public class SDSCopyFeature implements Copy {
                             .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getVersionId(source))))
                             .keepShareLinks(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
                     // Target Parent Node ID
-                    Long.parseLong(nodeid.getVersionId(target.getParent())),
-                    StringUtils.EMPTY, null));
+                    Long.parseLong(nodeid.getVersionId(target.getParent())), null));
             listener.sent(status.getLength());
             nodeid.cache(target, null);
             final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(target);

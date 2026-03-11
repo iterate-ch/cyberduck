@@ -16,9 +16,9 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
@@ -73,16 +73,16 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         final Move move = cryptomator.getFeature(session, Move.class, new SwiftMoveFeature(session, regionService));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
-        move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(cryptomator.getFeature(session, Find.class, new SwiftFindFeature(session)).find(file));
         assertTrue(cryptomator.getFeature(session, Find.class, new SwiftFindFeature(session)).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(cryptomator.getFeature(session, Find.class, new SwiftFindFeature(session)).find(folder));
         assertTrue(cryptomator.getFeature(session, Find.class, new SwiftFindFeature(session)).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new SwiftFindFeature(session)).find(fileRenamedInRenamedFolder));
-        cryptomator.getFeature(session, Delete.class, new SwiftDeleteFeature(session)).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new SwiftDeleteFeature(session)).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -16,8 +16,8 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryV7Feature;
@@ -74,6 +74,6 @@ public class GoogleStorageListServiceTest extends AbstractGoogleStorageTest {
         assertNotNull(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(directory1)
                 .find(new SimplePathPredicate(directory2)));
         cryptomator.getFeature(session, Delete.class, new GoogleStorageDeleteFeature(session))
-                .delete(Arrays.asList(test, directory1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                .delete(Arrays.asList(test, directory1, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

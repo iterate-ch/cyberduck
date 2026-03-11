@@ -68,7 +68,7 @@ public class SDSMoveFeature implements Move {
             final long nodeId = Long.parseLong(nodeid.getVersionId(file));
             if(containerService.isContainer(file)) {
                 final Node node = new NodesApi(session.getClient()).updateRoom(
-                        new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
+                        new UpdateRoomRequest().name(renamed.getName()), nodeId, null);
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);
                 return new Path(renamed).withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
@@ -84,10 +84,10 @@ public class SDSMoveFeature implements Move {
                     }
                     // Rename only
                     if(file.isDirectory()) {
-                        new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
+                        new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().name(renamed.getName()), nodeId, null);
                     }
                     else {
-                        new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
+                        new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().name(renamed.getName()), nodeId, null);
                     }
                 }
                 else {
@@ -98,7 +98,7 @@ public class SDSMoveFeature implements Move {
                                     .addItemsItem(new MoveNode().id(nodeId).name(renamed.getName()))
                                     .keepShareLinks(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
                             Long.parseLong(nodeid.getVersionId(renamed.getParent())),
-                            StringUtils.EMPTY, null));
+                            null));
                 }
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);

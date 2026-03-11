@@ -19,16 +19,14 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
@@ -45,6 +43,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -135,10 +134,10 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return super._getFeature(type);
             }
         };
-        new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+        new LoginConnectionService(LoginCallback.noop,
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                ProgressListener.noop).connect(session, CancelCallback.noop);
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(host, test, local);
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -147,7 +146,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -158,7 +157,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -182,7 +181,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -192,7 +191,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         assertEquals(t.getTransferred(), counter.getSent(), 0L);
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
-        new SFTPDeleteFeature(session).delete(Arrays.asList(remotefile, remotedirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Arrays.asList(remotefile, remotedirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -209,7 +208,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         final byte[] content = RandomUtils.nextBytes(8576);
         status.setLength(content.length);
         status.setExists(false);
-        final OutputStream out = new SFTPWriteFeature(session).write(remotefile, status, new DisabledConnectionCallback());
+        final OutputStream out = new SFTPWriteFeature(session).write(remotefile, status, ConnectionCallback.noop);
         assertNotNull(out);
         out.write(content);
         out.close();
@@ -220,7 +219,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();
@@ -230,6 +229,6 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         assertEquals(t.getTransferred(), counter.getSent(), 0L);
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
-        new SFTPDeleteFeature(session).delete(Arrays.asList(remotefile, remotedirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Arrays.asList(remotefile, remotedirectory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

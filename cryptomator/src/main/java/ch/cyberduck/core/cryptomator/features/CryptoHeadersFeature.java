@@ -43,13 +43,13 @@ public class CryptoHeadersFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return delegate.getMetadata(vault.encrypt(session, file));
+        return delegate.getMetadata(vault.encrypt(session, file, true));
 
     }
 
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
-        delegate.setMetadata(vault.encrypt(session, file), status);
+        delegate.setMetadata(vault.encrypt(session, file, true), status);
     }
 
     @Override

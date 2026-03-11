@@ -16,7 +16,7 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -44,7 +44,7 @@ public class EueDirectoryFeatureTest extends AbstractEueSessionTest {
         final Path directory = new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
         assertThrows(ConflictException.class, () -> new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), directory, new TransferStatus()));
         assertEquals(new EueAttributesFinderFeature(session, fileid).find(directory).getFileId(), directory.attributes().getFileId());
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -65,6 +65,6 @@ public class EueDirectoryFeatureTest extends AbstractEueSessionTest {
         final String filename = new AlphanumericRandomStringService().random();
         new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(StringUtils.capitalize(filename), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertThrows(ConflictException.class, () -> new EueDirectoryFeature(session, fileid).mkdir(new EueWriteFeature(session, fileid), new Path(StringUtils.lowerCase(filename), EnumSet.of(Path.Type.directory)), new TransferStatus()));
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(new Path(StringUtils.capitalize(filename), EnumSet.of(Path.Type.directory))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(new Path(StringUtils.capitalize(filename), EnumSet.of(Path.Type.directory))), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

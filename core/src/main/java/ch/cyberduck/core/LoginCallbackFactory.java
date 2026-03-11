@@ -50,7 +50,7 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
-            return new DisabledLoginCallback();
+            return LoginCallback.noop;
         }
     }
 

@@ -16,8 +16,8 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Share;
@@ -48,7 +48,7 @@ public class DeepboxShareFeatureTest extends AbstractDeepboxTest {
             assertNotNull(feature.toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         }
         finally {
-            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 }

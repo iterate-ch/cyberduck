@@ -33,6 +33,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -72,10 +73,10 @@ public class SDSSessionTest extends AbstractSDSTest {
                 System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(LoginCallback.noop, CancelCallback.noop);
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
@@ -89,10 +90,10 @@ public class SDSSessionTest extends AbstractSDSTest {
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+                LoginCallback.noop,
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -100,7 +101,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                     }
                 }
         );
-        c.connect(session, new DisabledCancelCallback());
+        c.connect(session, CancelCallback.noop);
     }
 
     @Ignore
@@ -122,9 +123,9 @@ public class SDSSessionTest extends AbstractSDSTest {
                         return new Credentials("test", "n");
                     }
                 },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
+                ProgressListener.noop,
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final String target) {
@@ -132,7 +133,7 @@ public class SDSSessionTest extends AbstractSDSTest {
                     }
                 }
         );
-        c.connect(session, new DisabledCancelCallback());
+        c.connect(session, CancelCallback.noop);
     }
 
     @Test
@@ -140,7 +141,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     public void testKeyPairMigration() throws Exception {
         final UserApi userApi = new UserApi(session.getClient());
         try {
-            userApi.removeUserKeyPair(UserKeyPair.Version.RSA2048.getValue(), null);
+            userApi.removeUserKeyPair(UserKeyPair.Version.RSA2048.getValue());
         }
         catch(ApiException e) {
             if(e.getCode() == HttpStatus.SC_NOT_FOUND) {
@@ -151,7 +152,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             }
         }
         try {
-            userApi.removeUserKeyPair(UserKeyPair.Version.RSA4096.getValue(), null);
+            userApi.removeUserKeyPair(UserKeyPair.Version.RSA4096.getValue());
         }
         catch(ApiException e) {
             if(e.getCode() == HttpStatus.SC_NOT_FOUND) {
@@ -163,17 +164,17 @@ public class SDSSessionTest extends AbstractSDSTest {
         }
         // create legacy key pair
         final UserKeyPair userKeyPair = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, PROPERTIES.get("vault.passphrase").toCharArray());
-        userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(userKeyPair), null);
-        List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
+        userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(userKeyPair));
+        List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null);
         assertEquals(1, keyPairs.size());
         // Start migration
         session.unlockTripleCryptKeyPair(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials(PROPERTIES.get("vault.passphrase"));
             }
         }, session.userAccount(), UserKeyPair.Version.RSA4096);
-        keyPairs = userApi.requestUserKeyPairs(null, null);
+        keyPairs = userApi.requestUserKeyPairs(null);
         assertEquals(2, keyPairs.size());
         assertEquals(UserKeyPair.Version.RSA4096.getValue(), session.keyPair().getPublicKeyContainer().getVersion());
         assertEquals(UserKeyPair.Version.RSA2048.getValue(), session.keyPairDeprecated().getPublicKeyContainer().getVersion());

@@ -15,15 +15,15 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -40,24 +40,24 @@ public class LocalUnixPermissionFeatureTest {
     public void testSetUnixPermission() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(session.isPosixFilesystem()) {
-            assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+            assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
             assertTrue(session.isConnected());
             assertNotNull(session.getClient());
-            session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.login(LoginCallback.noop, CancelCallback.noop);
             final Path workdir = new LocalHomeFinderFeature().find();
             {
                 final Path file = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
                 new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
                 new LocalUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
                 assertEquals("666", new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
-                new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
             }
             {
                 final Path directory = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
                 new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), directory, new TransferStatus());
                 new LocalUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
                 assertEquals("666", new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
-                new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
             }
             session.close();
         }

@@ -63,7 +63,7 @@ public class SpectraAttributesFinderFeature implements AttributesFinder, Attribu
 
     protected HeadObjectResponse details(final Path file) throws BackgroundException {
         try {
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             final HeadObjectResponse response = client.headObject(new HeadObjectRequest(containerService.getContainer(file).getName(), containerService.getKey(file)));
             switch(response.getStatus()) {
                 case DOESNTEXIST:

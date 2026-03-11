@@ -38,11 +38,11 @@ public class DefaultTemporaryFileServiceTest {
     public void testCreateFile() {
         final String temp = StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), File.separator);
         final String s = FileSystems.getDefault().getSeparator();
-        assertEquals(String.format("%s%su%sp%s-1807454463%sf", temp, s, s, s, s),
+        assertEquals(String.format("%s%su%sp%s1742810335%sf", temp, s, s, s, s),
                 new DefaultTemporaryFileService().create("u", new Path("/p/f", EnumSet.of(Path.Type.file))).getAbsolute());
         final Path file = new Path("/p/f", EnumSet.of(Path.Type.file));
         file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%sp%s-1807454463%sf", temp, s, s, s, s),
+        assertEquals(String.format("%s%su%sp%s1742810335%sf", temp, s, s, s, s),
                 new DefaultTemporaryFileService().create("u", file).getAbsolute());
     }
 
@@ -54,14 +54,14 @@ public class DefaultTemporaryFileServiceTest {
             final Path file = new Path("/p/f", EnumSet.of(Path.Type.file));
             file.attributes().setRegion("region");
             file.attributes().setVersionId("2");
-            assertEquals(String.format("%s%su%sp%s-375996913%sf", temp, s, s, s, s),
+            assertEquals(String.format("%s%su%sp%s1788986385%sf", temp, s, s, s, s),
                     new DefaultTemporaryFileService().create("u", file).getAbsolute());
         }
         {
             final Path file = new Path("/p", EnumSet.of(Path.Type.directory));
             file.attributes().setRegion("region");
             file.attributes().setVersionId("2");
-            assertEquals(String.format("%s%su%s-375996913%sp", temp, s, s, s),
+            assertEquals(String.format("%s%su%s1788986385%sp", temp, s, s, s),
                     new DefaultTemporaryFileService().create("u", file).getAbsolute());
         }
     }
@@ -72,7 +72,7 @@ public class DefaultTemporaryFileServiceTest {
         final String s = FileSystems.getDefault().getSeparator();
         final Path file = new Path("/container", EnumSet.of(Path.Type.directory));
         file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%s-1807454463%scontainer", temp, s, s, s),
+        assertEquals(String.format("%s%su%s1742810335%scontainer", temp, s, s, s),
                 new DefaultTemporaryFileService().create("u", file).getAbsolute());
     }
 
@@ -89,7 +89,7 @@ public class DefaultTemporaryFileServiceTest {
         final Local local = new DefaultTemporaryFileService().create("UID", file);
         final String localFile = local.getAbsolute();
         assertNotEquals(String.format("%s/%s%s/1234944045/%s", temp, "UID", testPathDirectory, testPathFile).replace('/', File.separatorChar), localFile);
-        assertEquals(String.format("%s/%s/%s/-375996913/%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
+        assertEquals(String.format("%s/%s/%s/1788986385/%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
     }
 
     @Test
@@ -104,8 +104,8 @@ public class DefaultTemporaryFileServiceTest {
         file.attributes().setVersionId("2");
         final Local local = new DefaultTemporaryFileService().create("UID", file);
         final String localFile = local.getAbsolute();
-        assertEquals(String.format("%s/%s%s/-375996913/%s", temp, "UID", testPathDirectory, testPathFile).replace('/', File.separatorChar), localFile);
-        assertNotEquals(String.format("%s/%s%s/-375996913/%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
+        assertEquals(String.format("%s/%s%s/1788986385/%s", temp, "UID", testPathDirectory, testPathFile).replace('/', File.separatorChar), localFile);
+        assertNotEquals(String.format("%s/%s%s/1788986385/%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
     }
 
     @Test
@@ -116,7 +116,7 @@ public class DefaultTemporaryFileServiceTest {
         final Local local = new DefaultTemporaryFileService().create(file);
         assertEquals("t.txt", file.getName());
         assertEquals("t.txt", local.getName());
-        assertEquals("-404626064", local.getParent().getName());
+        assertEquals("1788062864", local.getParent().getName());
         assertEquals("f2", local.getParent().getParent().getName());
         assertEquals("f1", local.getParent().getParent().getParent().getName());
     }

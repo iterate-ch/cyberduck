@@ -16,11 +16,12 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -48,7 +49,6 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -78,18 +78,18 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
-        final Node node = new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), StringUtils.EMPTY, null);
+        final Node node = new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), null);
         new NodesApi(session.getClient()).updateRoomUsers(new RoomUsersAddBatchRequest().
-                addItemsItem(new RoomUsersAddBatchRequestItem().id(757L).permissions(new NodePermissions().read(true))), node.getId(), StringUtils.EMPTY);
+                addItemsItem(new RoomUsersAddBatchRequestItem().id(757L).permissions(new NodePermissions().read(true))), node.getId());
         room.attributes().setCustom(KEY_ENCRYPTED, String.valueOf(true));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
@@ -101,13 +101,13 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
             }
         });
         assertTrue(processed.stream().filter(userFileKeySetRequest -> userFileKeySetRequest.getFileId().equals(Long.parseLong(test.attributes().getVersionId()))).findAny().isPresent());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     private void removeKeyPairs(UserApi userApi) throws ApiException {
         for(UserKeyPair.Version version : UserKeyPair.Version.values()) {
             try {
-                userApi.removeUserKeyPair(version.getValue(), null);
+                userApi.removeUserKeyPair(version.getValue());
             }
             catch(ApiException e) {
                 final JsonObject json = JsonParser.parseReader(new StringReader(e.getResponseBody())).getAsJsonObject();
@@ -134,8 +134,8 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         session.resetUserKeyPairs();
         // create legacy and new crypto key pair
         final UserKeyPair deprecated = Crypto.generateUserKeyPair(UserKeyPair.Version.RSA2048, PROPERTIES.get("vault.passphrase").toCharArray());
-        userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(deprecated), null);
-        List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null, null);
+        userApi.setUserKeyPair(TripleCryptConverter.toSwaggerUserKeyPairContainer(deprecated));
+        List<UserKeyPairContainer> keyPairs = userApi.requestUserKeyPairs(null);
         assertEquals(1, keyPairs.size());
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).createRoom(
@@ -145,9 +145,9 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         status.setLength(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
         final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         // Start migration
         session.unlockTripleCryptKeyPair(new DisabledLoginCallback() {
@@ -156,9 +156,9 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
                 return new VaultCredentials(PROPERTIES.get("vault.passphrase"));
             }
         }, session.userAccount(), UserKeyPair.Version.RSA4096);
-        keyPairs = userApi.requestUserKeyPairs(null, null);
+        keyPairs = userApi.requestUserKeyPairs(null);
         assertEquals(2, keyPairs.size());
-        final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(Long.parseLong(test.attributes().getVersionId()), null, null);
+        final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(Long.parseLong(test.attributes().getVersionId()), null);
         final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
         assertEquals(EncryptedFileKey.Version.RSA2048_AES256GCM, encFileKey.getVersion());
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
@@ -184,7 +184,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
             }
         });
         assertTrue(empty.isEmpty());
-        assertEquals(2, userApi.requestUserKeyPairs(null, null).size());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(2, userApi.requestUserKeyPairs(null).size());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

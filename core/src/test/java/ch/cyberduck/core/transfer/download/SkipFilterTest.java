@@ -1,10 +1,10 @@
 package ch.cyberduck.core.transfer.download;
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
@@ -28,7 +28,7 @@ public class SkipFilterTest {
                                     return false;
                                 }
                             }, new TransferStatus().setExists(true),
-                        new DisabledProgressListener())
+                ProgressListener.noop)
         );
         assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)) {
                              }, new NullLocal("a", "b") {
@@ -37,7 +37,7 @@ public class SkipFilterTest {
                                      return true;
                                  }
                              }, new TransferStatus().setExists(true),
-                        new DisabledProgressListener())
+                ProgressListener.noop)
         );
     }
 
@@ -61,7 +61,7 @@ public class SkipFilterTest {
                                     return true;
                                 }
                             }, new TransferStatus().setExists(true),
-                        new DisabledProgressListener())
+                ProgressListener.noop)
         );
     }
 }

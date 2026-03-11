@@ -18,8 +18,8 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
@@ -85,7 +85,7 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
             assertNotNull(attributes.getFileId());
             assertNotNull(attributes.getLink());
         }
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -93,6 +93,6 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path target = new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), new Path(new OneDriveHomeFinderService().find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null);
         final AttributedList<Path> list = new GraphItemListService(session, fileid).list(target, new DisabledListProgressListener());
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

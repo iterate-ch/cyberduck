@@ -16,7 +16,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -35,6 +35,6 @@ public class FTPUploadFeatureTest extends AbstractFTPTest {
         final Path f = new Path(new FTPWorkdirService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), f, new TransferStatus());
         assertTrue(new FTPUploadFeature(session).append(f, new TransferStatus().setExists(true).setLength(0L).setRemote(new FTPAttributesFinderFeature(session).find(f))).append);
-        new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(f), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

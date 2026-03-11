@@ -16,17 +16,17 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,10 +58,10 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
                 new StoregateWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
-            new StoregateReadFeature(session, nodeid).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+            new StoregateReadFeature(session, nodeid).read(new Path(room, "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
         }
         finally {
-            new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -76,23 +76,23 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<File> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = writer.write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         // Unknown length in status
         final TransferStatus readStatus = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new StoregateReadFeature(session, nodeid).read(test, readStatus, new DisabledConnectionCallback());
+            final InputStream in = new StoregateReadFeature(session, nodeid).read(test, readStatus, ConnectionCallback.noop);
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new StoregateReadFeature(session, nodeid).read(test, readStatus, new DisabledConnectionCallback());
+            final InputStream in = new StoregateReadFeature(session, nodeid).read(test, readStatus, ConnectionCallback.noop);
             assertNotNull(in);
             in.close();
         }
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -112,13 +112,13 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
         new DefaultUploadFeature<File>(session).upload(
-                new StoregateWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
-            new DisabledConnectionCallback());
+                new StoregateWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, upload,
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new StoregateReadFeature(session, nodeid).read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = new StoregateReadFeature(session, nodeid).read(test, status.setLength(content.length - 100), ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -126,7 +126,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -146,13 +146,13 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         final TransferStatus upload = new TransferStatus().setLength(content.length);
         upload.setExists(true);
         new DefaultUploadFeature<File>(session).upload(
-                new StoregateWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), upload,
-            new DisabledConnectionCallback());
+                new StoregateWriteFeature(session, nodeid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, upload,
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new StoregateReadFeature(session, nodeid).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new StoregateReadFeature(session, nodeid).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -160,7 +160,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -175,12 +175,12 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<File> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = writer.write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
-        final CountingInputStream in = new CountingInputStream(new StoregateReadFeature(session, nodeid).read(test, status, new DisabledConnectionCallback()));
+        final CountingInputStream in = new CountingInputStream(new StoregateReadFeature(session, nodeid).read(test, status, ConnectionCallback.noop));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

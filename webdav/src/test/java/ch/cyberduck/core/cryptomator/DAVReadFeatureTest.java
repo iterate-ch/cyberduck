@@ -16,10 +16,10 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -81,7 +81,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -94,7 +94,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
             read.setOffset(23); // offset within chunk
             read.setAppend(true);
             read.setLength(40000); // ensure to read at least two chunks
-            final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, ConnectionCallback.noop);
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
             System.arraycopy(content, 23, reference, 0, reference.length);
@@ -106,7 +106,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
             read.setOffset(65536); // offset at the beginning of a new chunk
             read.setAppend(true);
             read.setLength(40000); // ensure to read at least two chunks
-            final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, ConnectionCallback.noop);
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
             System.arraycopy(content, 65536, reference, 0, reference.length);
@@ -118,12 +118,12 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
             read.setOffset(65537); // offset at the beginning+1 of a new chunk
             read.setAppend(true);
             read.setLength(40000); // ensure to read at least two chunks
-            final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, read, ConnectionCallback.noop);
             new StreamCopier(read, read).withLimit(40000L).transfer(in, buffer);
             final byte[] reference = new byte[40000];
             System.arraycopy(content, 65537, reference, 0, reference.length);
             assertArrayEquals(reference, buffer.toByteArray());
         }
-        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

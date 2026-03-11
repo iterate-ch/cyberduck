@@ -69,7 +69,7 @@ public class SpectraObjectListService extends S3AbstractListService {
         try {
             final String prefix = this.createPrefix(directory);
             final AttributedList<Path> objects = new AttributedList<>();
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             final Path bucket = containerService.getContainer(directory);
             long revision = 0L;
             String marker = null;

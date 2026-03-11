@@ -1,16 +1,15 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateStore;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -32,6 +31,7 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.utils.SignatureUtils;
@@ -87,7 +87,7 @@ public class S3SessionTest extends AbstractS3Test {
                 return null;
             }
         }, new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -102,9 +102,9 @@ public class S3SessionTest extends AbstractS3Test {
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(LoginCallback.noop, CancelCallback.noop);
         session.close();
         assertFalse(session.isConnected());
     }
@@ -120,10 +120,10 @@ public class S3SessionTest extends AbstractS3Test {
                         -1L
                 )));
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        assertThrows(ExpiredTokenException.class, () -> session.login(new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertThrows(ExpiredTokenException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop));
     }
 
     @Test
@@ -136,8 +136,8 @@ public class S3SessionTest extends AbstractS3Test {
         ));
         host.setDefaultPath("/test-eu-west-1-cyberduck");
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         session.close();
     }
 
@@ -151,8 +151,8 @@ public class S3SessionTest extends AbstractS3Test {
         ));
         final S3Session session = new S3Session(host);
         try {
-            session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+            session.login(LoginCallback.noop, CancelCallback.noop);
         }
         catch(BackgroundException e) {
             assertTrue(e.getCause() instanceof UnknownHostException);
@@ -191,7 +191,7 @@ public class S3SessionTest extends AbstractS3Test {
     public void testBucketVirtualHostStyleCustomHost() throws Exception {
         final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck");
         final S3Session session = new S3Session(host);
-        assertFalse(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
+        assertFalse(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop)
                 .getDisableDnsBuckets());
     }
 
@@ -201,9 +201,9 @@ public class S3SessionTest extends AbstractS3Test {
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        assertFalse(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
+        assertFalse(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop)
                 .getDisableDnsBuckets());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(LoginCallback.noop, CancelCallback.noop);
     }
 
     @Test
@@ -221,12 +221,12 @@ public class S3SessionTest extends AbstractS3Test {
         },
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore()));
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+                LoginCallback.noop,
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener()
+                ProgressListener.noop
         );
-        c.connect(session, new DisabledCancelCallback());
+        c.connect(session, CancelCallback.noop);
         assertTrue(verified.get());
         session.close();
     }
@@ -245,8 +245,8 @@ public class S3SessionTest extends AbstractS3Test {
             }
         };
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
         session.close();
     }
 

@@ -23,7 +23,7 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -239,10 +239,10 @@ public class Terminal {
                 final Path vault;
                 if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
                     final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
-                    vault = new Path(new TildePathExpander(home).expand(input.getOptionValue(action.name())), EnumSet.of(Path.Type.directory, Path.Type.vault));
+                    vault = new Path(new TildePathExpander(home).expand(input.getOptionValue(action.name())), EnumSet.of(Path.Type.directory));
                 }
                 else {
-                    vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory, Path.Type.vault));
+                    vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory));
                 }
                 log.debug("Attempting to load vault from {}", vault);
                 try {
@@ -413,7 +413,7 @@ public class Terminal {
                 source, destination,
                 transfer.withCache(cache), new TransferOptions().reload(true), prompt, login, error, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                        ? new DisabledStreamListener() : new TerminalStreamListener(meter)
+                        ? StreamListener.noop : new TerminalStreamListener(meter)
         );
         try {
             this.execute(action);

@@ -18,8 +18,8 @@ package ch.cyberduck.core.dav.microsoft;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
@@ -61,12 +61,12 @@ public class MicrosoftIISDAVMoveFeatureTest extends AbstractMicrosoftIISDAVTest 
         new DAVTimestampFeature(session).setTimestamp(test, status.setModified(5000L));
         final PathAttributes attr = new DAVAttributesFinderFeature(session).find(test);
         final Path target = new DAVMoveFeature(session).move(test.withAttributes(status.getResponse()),
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new MicrosoftIISDAVFindFeature(session).find(test));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(target));
         assertEquals(status.getResponse(), target.attributes());
         assertEquals(attr, new DAVAttributesFinderFeature(session).find(target));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -75,12 +75,12 @@ public class MicrosoftIISDAVMoveFeatureTest extends AbstractMicrosoftIISDAVTest 
         final String lock = new DAVLockFeature(session).lock(test);
         assertEquals(TransferStatus.UNKNOWN_LENGTH, test.attributes().getSize());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertThrows(LockedException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
-        new DAVMoveFeature(session).move(test, target, new TransferStatus().setLockId(lock), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertThrows(LockedException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), ConnectionCallback.noop));
+        new DAVMoveFeature(session).move(test, target, new TransferStatus().setLockId(lock), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new MicrosoftIISDAVFindFeature(session).find(test));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(target, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(target, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -93,14 +93,14 @@ public class MicrosoftIISDAVMoveFeatureTest extends AbstractMicrosoftIISDAVTest 
             final TransferStatus status = new TransferStatus();
             status.setOffset(0L);
             status.setLength(1024L);
-            final HttpResponseOutputStream<Void> out = new DAVWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<Void> out = new DAVWriteFeature(session).write(test, status, ConnectionCallback.noop);
             // Write first 1024
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final PathAttributes attr = new DAVAttributesFinderFeature(session).find(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DAVMoveFeature(session).move(folder, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new DAVMoveFeature(session).move(folder, target, new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new MicrosoftIISDAVFindFeature(session).find(folder));
         assertFalse(new MicrosoftIISDAVFindFeature(session).find(test));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(target));
@@ -108,7 +108,7 @@ public class MicrosoftIISDAVMoveFeatureTest extends AbstractMicrosoftIISDAVTest 
         assertEquals(attr, new DAVAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))));
         assertEquals(attr.getModificationDate(), new DAVAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getModificationDate());
         assertEquals(attr.getETag(), new DAVAttributesFinderFeature(session).find(new Path(target, test.getName(), EnumSet.of(Path.Type.file))).getETag());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -117,11 +117,11 @@ public class MicrosoftIISDAVMoveFeatureTest extends AbstractMicrosoftIISDAVTest 
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), target, new TransferStatus());
-        assertThrows(ConflictException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
-        new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertThrows(ConflictException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), ConnectionCallback.noop));
+        new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(true), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new MicrosoftIISDAVFindFeature(session).find(test));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(target));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -130,18 +130,18 @@ public class MicrosoftIISDAVMoveFeatureTest extends AbstractMicrosoftIISDAVTest 
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), target, new TransferStatus());
-        assertThrows(ConflictException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        assertThrows(ConflictException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), ConnectionCallback.noop));
         final String lock = new DAVLockFeature(session).lock(test);
-        assertThrows(LockedException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
-        new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(true).setLockId(lock), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertThrows(LockedException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(false), new Delete.DisabledCallback(), ConnectionCallback.noop));
+        new DAVMoveFeature(session).move(test, target, new TransferStatus().setExists(true).setLockId(lock), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new MicrosoftIISDAVFindFeature(session).find(test));
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(target));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new DAVMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
     }
 }

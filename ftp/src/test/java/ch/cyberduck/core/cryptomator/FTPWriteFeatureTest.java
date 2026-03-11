@@ -16,10 +16,10 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
@@ -81,7 +81,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
-        final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -90,9 +90,9 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         final PathAttributes attr = cryptomator.getFeature(session, AttributesFinder.class, new FTPAttributesFinderFeature(session)).find(test);
         assertEquals(content.length, new CryptoListService(session, new FTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new FTPReadFeature(session), cryptomator).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new FTPReadFeature(session), cryptomator).read(test, new TransferStatus(), ConnectionCallback.noop);
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

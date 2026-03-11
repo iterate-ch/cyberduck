@@ -59,7 +59,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
     private final BrickSession session;
 
     public BrickWriteFeature(final BrickSession session) {
-        super(new BrickAttributesFinderFeature(session));
+        super(session.getHost(), new BrickAttributesFinderFeature(session));
         this.session = session;
     }
 

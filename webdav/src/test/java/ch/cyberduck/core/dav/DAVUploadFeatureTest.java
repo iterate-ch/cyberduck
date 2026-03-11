@@ -18,17 +18,17 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -59,9 +59,9 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new Path("/dav/accessdenied", EnumSet.of(Path.Type.directory)), "nosuchname", EnumSet.of(Path.Type.file));
         try {
             new DAVUploadFeature(session).upload(
-                    new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                    new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status,
-                    new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         catch(AccessDeniedException e) {
             assertEquals("Unexpected response (403 Forbidden). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -84,23 +84,23 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         final DAVUploadFeature feature = new DAVUploadFeature(session);
         final TransferStatus status = new TransferStatus().setLength(content.length / 2);
         {
-            feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
-                    status, new DisabledConnectionCallback());
+            feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
+                    status, ConnectionCallback.noop);
         }
         {
             final Write.Append append = feature.append(test, status.setLength(content.length).setExists(true).setRemote(new DefaultPathAttributes().setSize(content.length / 2)));
             assertTrue(append.append);
             assertEquals(content.length / 2, append.offset, 0L);
-            feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+            feature.upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                     status.setLength(content.length / 2).setOffset(append.offset).setAppend(append.append),
-                    new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -109,6 +109,6 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         final DAVUploadFeature feature = new DAVUploadFeature(session);
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(feature.append(test, new TransferStatus().setExists(true).setLength(0L).setRemote(new DAVAttributesFinderFeature(session).find(test))).append);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

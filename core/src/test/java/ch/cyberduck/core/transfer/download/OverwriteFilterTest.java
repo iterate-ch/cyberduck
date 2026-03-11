@@ -1,6 +1,5 @@
 package ch.cyberduck.core.transfer.download;
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
@@ -8,6 +7,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -28,7 +28,7 @@ public class OverwriteFilterTest {
         OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
-        assertTrue(f.accept(p, new NullLocal("a"), new TransferStatus(), new DisabledProgressListener()));
+        assertTrue(f.accept(p, new NullLocal("a"), new TransferStatus(), ProgressListener.noop));
     }
 
     @Test
@@ -39,13 +39,13 @@ public class OverwriteFilterTest {
             public boolean exists() {
                 return false;
             }
-        }, new TransferStatus(), new DisabledProgressListener()));
+        }, new TransferStatus(), ProgressListener.noop));
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus(), new DisabledProgressListener()));
+        }, new TransferStatus(), ProgressListener.noop));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class OverwriteFilterTest {
         OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())));
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
-        final TransferStatus status = f.prepare(p, new NullLocal("a"), new TransferStatus(), new DisabledProgressListener());
+        final TransferStatus status = f.prepare(p, new NullLocal("a"), new TransferStatus(), ProgressListener.noop);
         assertEquals(8L, status.getLength(), 0L);
     }
 
@@ -79,7 +79,7 @@ public class OverwriteFilterTest {
                     }
                 };
             }
-        }, new TransferStatus(), new DisabledProgressListener());
+        }, new TransferStatus(), ProgressListener.noop);
         assertEquals(8L, status.getLength(), 0L);
         assertEquals(1L, status.getModified(), 0L);
         assertEquals(new Permission(777), status.getPermission());
@@ -88,7 +88,7 @@ public class OverwriteFilterTest {
     @Test(expected = AccessDeniedException.class)
     public void testOverrideDirectoryWithFile() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
-        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().setExists(true), new DisabledProgressListener());
+        f.prepare(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().setExists(true), ProgressListener.noop);
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -96,6 +96,6 @@ public class OverwriteFilterTest {
         final OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
         final NullLocal l = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalTouchFeature().touch(l);
-        f.prepare(new Path("a", EnumSet.of(Path.Type.directory)), l, new TransferStatus().setExists(true), new DisabledProgressListener());
+        f.prepare(new Path("a", EnumSet.of(Path.Type.directory)), l, new TransferStatus().setExists(true), ProgressListener.noop);
     }
 }

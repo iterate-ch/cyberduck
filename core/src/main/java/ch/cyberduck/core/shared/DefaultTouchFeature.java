@@ -18,8 +18,8 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
@@ -44,7 +44,7 @@ public class DefaultTouchFeature<T> implements Touch<T> {
     public Path touch(final Write<T> writer, final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final StatusOutputStream<T> out = writer.write(file, status.setLength(
-                    TransferStatus.UNKNOWN_LENGTH == status.getLength() ? 0L : status.getLength()), new DisabledConnectionCallback());
+                    TransferStatus.UNKNOWN_LENGTH == status.getLength() ? 0L : status.getLength()), ConnectionCallback.noop);
             out.close();
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
                 log.debug("Received reply {} for creating file {}", status.getResponse(), file);

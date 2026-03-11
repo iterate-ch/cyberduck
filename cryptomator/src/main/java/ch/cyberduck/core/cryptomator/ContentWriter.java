@@ -15,8 +15,8 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
@@ -52,7 +52,7 @@ public class ContentWriter {
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(file));
         }
-        final StatusOutputStream<?> out = write.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<?> out = write.write(file, status, ConnectionCallback.noop);
         try {
             IOUtils.write(content, out);
         }

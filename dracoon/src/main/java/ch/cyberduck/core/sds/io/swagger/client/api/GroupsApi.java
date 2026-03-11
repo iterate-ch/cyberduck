@@ -23,8 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class GroupsApi {
   private ApiClient apiClient;
+  private Map<String, String> headers;
 
   public GroupsApi() {
     this(Configuration.getDefaultApiClient());
@@ -42,17 +44,20 @@ public class GroupsApi {
     this.apiClient = apiClient;
   }
 
+  public void setHeadersOverrides(Map<String, String> headers) {
+    this.headers = headers;
+  }
+
   /**
    * Add group members
    * ### Description: Add members to a group.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  New members are added to the group.  ### Further Information: Batch function.   The newly provided members will be added to the existing ones.
    * @param body  (required)
    * @param groupId Group ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return Group
    * @throws ApiException if fails to make API call
    */
-  public Group addGroupMembers(ChangeGroupMembersRequest body, Long groupId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public Group addGroupMembers(ChangeGroupMembersRequest body, Long groupId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -74,8 +79,6 @@ public class GroupsApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -90,6 +93,11 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<Group> localVarReturnType = new GenericType<Group>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -97,11 +105,10 @@ public class GroupsApi {
    * ### Description: Create a new user group.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  A new user group is created.  ### Further Information: * If a group should **NOT** expire, leave &#x60;expireAt&#x60; empty. * Group names are limited to **150** characters * Forbidden characters in group name: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;] 
    * @param body  (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return Group
    * @throws ApiException if fails to make API call
    */
-  public Group createGroup(CreateGroupRequest body, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public Group createGroup(CreateGroupRequest body, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -118,8 +125,6 @@ public class GroupsApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -134,16 +139,20 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<Group> localVarReturnType = new GenericType<Group>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Remove user group
    * ### Description: Delete a user group.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; delete groups&lt;/span&gt; required.  ### Postcondition:  User group is deleted.  ### Further Information: None.
    * @param groupId Group ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void removeGroup(Long groupId, String xSdsAuthToken) throws ApiException {
+  public void removeGroup(Long groupId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'groupId' is set
     if (groupId == null) {
@@ -159,8 +168,6 @@ public class GroupsApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -174,6 +181,11 @@ public class GroupsApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
@@ -182,11 +194,10 @@ public class GroupsApi {
    * @param body  (required)
    * @param groupId Group ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return Group
    * @throws ApiException if fails to make API call
    */
-  public Group removeGroupMembers(ChangeGroupMembersRequest body, Long groupId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public Group removeGroupMembers(ChangeGroupMembersRequest body, Long groupId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -208,8 +219,6 @@ public class GroupsApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -224,6 +233,11 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<Group> localVarReturnType = new GenericType<Group>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -231,11 +245,10 @@ public class GroupsApi {
    * ### Description:   Retrieve detailed information about a user group.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read groups&lt;/span&gt; required.  ### Postcondition:  User group is returned.  ### Further Information: None.
    * @param groupId Group ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return Group
    * @throws ApiException if fails to make API call
    */
-  public Group requestGroup(Long groupId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public Group requestGroup(Long groupId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'groupId' is set
     if (groupId == null) {
@@ -253,8 +266,6 @@ public class GroupsApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -269,6 +280,11 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<Group> localVarReturnType = new GenericType<Group>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -278,11 +294,10 @@ public class GroupsApi {
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
    * @param filter Filter string (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return GroupUserList
    * @throws ApiException if fails to make API call
    */
-  public GroupUserList requestGroupMembers(Long groupId, Integer offset, Integer limit, String filter, String xSdsAuthToken) throws ApiException {
+  public GroupUserList requestGroupMembers(Long groupId, Integer offset, Integer limit, String filter) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'groupId' is set
     if (groupId == null) {
@@ -301,8 +316,6 @@ public class GroupsApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -317,17 +330,21 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<GroupUserList> localVarReturnType = new GenericType<GroupUserList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Request list of roles assigned to the group
    * ### Description:   Retrieve a list of all roles granted to a group.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read groups&lt;/span&gt; required.  ### Postcondition:  List of granted roles is returned.  ### Further Information: None.
    * @param groupId Group ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return RoleList
    * @throws ApiException if fails to make API call
    */
-  public RoleList requestGroupRoles(Long groupId, String xSdsAuthToken) throws ApiException {
+  public RoleList requestGroupRoles(Long groupId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'groupId' is set
     if (groupId == null) {
@@ -343,8 +360,6 @@ public class GroupsApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -359,23 +374,27 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<RoleList> localVarReturnType = new GenericType<RoleList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Request rooms granted to the group or / and rooms that can be granted
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.10.0&lt;/h3&gt;  ### Description:   Retrieves a list of rooms granted to the group and / or that can be granted.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read groups&lt;/span&gt; required.  ### Postcondition:  List of rooms is returned.  ### Further Information:  ### Filtering: All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE&#x60;    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;isGranted:eq:false|name:cn:searchString&#x60;   Get all rooms where the group is **NOT** granted **AND** whose name is like &#x60;searchString&#x60;.  &lt;/details&gt;  ### Filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | &#x60;name&#x60; | Room name filter | &#x60;cn&#x60; | Room name contains value. | &#x60;search String&#x60; | | &#x60;isGranted&#x60; | Filter rooms which the group is (not) granted | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;true&#x60; | | &#x60;effectivePerm&#x60; | Filter rooms with DIRECT or DIRECT **AND** EFFECTIVE permissions&lt;ul&gt;&lt;li&gt;&#x60;false&#x60;: DIRECT permissions&lt;/li&gt;&lt;li&gt;&#x60;true&#x60;:  DIRECT **AND** EFFECTIVE permissions&lt;/li&gt;&lt;/ul&gt;DIRECT means: e.g. room administrator grants &#x60;read&#x60; permissions to group of users **directly** on desired room.&lt;br&gt;EFFECTIVE means: e.g. group of users gets &#x60;read&#x60; permissions on desired room through **inheritance**. | &#x60;eq&#x60; |  | &#x60;true or false&#x60;&lt;br&gt;default: &#x60;true&#x60; |  &lt;/details&gt;
+   * ### Description:   Retrieves a list of rooms granted to the group and / or that can be granted.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read groups&lt;/span&gt; required.  ### Postcondition:  List of rooms is returned.  ### Further Information:  ### Filtering: All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE&#x60;    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;isGranted:eq:false|name:cn:searchString&#x60;   Get all rooms where the group is **NOT** granted **AND** whose name is like &#x60;searchString&#x60;.  &lt;/details&gt;  ### Filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | &#x60;name&#x60; | Room name filter | &#x60;cn&#x60; | Room name contains value. | &#x60;search String&#x60; | | &#x60;isGranted&#x60; | Filter rooms which the group is (not) granted | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;true&#x60; | | &#x60;effectivePerm&#x60; | Filter rooms with DIRECT or DIRECT **AND** EFFECTIVE permissions&lt;ul&gt;&lt;li&gt;&#x60;false&#x60;: DIRECT permissions&lt;/li&gt;&lt;li&gt;&#x60;true&#x60;:  DIRECT **AND** EFFECTIVE permissions&lt;/li&gt;&lt;/ul&gt;DIRECT means: e.g. room administrator grants &#x60;read&#x60; permissions to group of users **directly** on desired room.&lt;br&gt;EFFECTIVE means: e.g. group of users gets &#x60;read&#x60; permissions on desired room through **inheritance**. | &#x60;eq&#x60; |  | &#x60;true or false&#x60;&lt;br&gt;default: &#x60;true&#x60; |  &lt;/details&gt;
    * @param groupId Group ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
    * @param filter Filter string (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return RoomTreeDataList
    * @throws ApiException if fails to make API call
    * @deprecated
    */
   @Deprecated
-  public RoomTreeDataList requestGroupRooms(Long groupId, String xSdsDateFormat, Integer offset, Integer limit, String filter, String xSdsAuthToken) throws ApiException {
+  public RoomTreeDataList requestGroupRooms(Long groupId, String xSdsDateFormat, Integer offset, Integer limit, String filter) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'groupId' is set
     if (groupId == null) {
@@ -396,8 +415,6 @@ public class GroupsApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -412,6 +429,11 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<RoomTreeDataList> localVarReturnType = new GenericType<RoomTreeDataList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -422,11 +444,10 @@ public class GroupsApi {
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
    * @param filter Filter string (optional)
    * @param sort Sort string (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return GroupList
    * @throws ApiException if fails to make API call
    */
-  public GroupList requestGroups(String xSdsDateFormat, Integer offset, Integer limit, String filter, String sort, String xSdsAuthToken) throws ApiException {
+  public GroupList requestGroups(String xSdsDateFormat, Integer offset, Integer limit, String filter, String sort) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/v4/groups";
@@ -443,8 +464,6 @@ public class GroupsApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -459,17 +478,21 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<GroupList> localVarReturnType = new GenericType<GroupList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Request rooms where the group is defined as last admin group
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.10.0&lt;/h3&gt;  ### Description:   Retrieve a list of all rooms where the group is defined as last admin group.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  List of rooms is returned.   ### Further Information: An empty list is returned if no rooms were found where the group is defined as last admin group.
+   * ### Description:   Retrieve a list of all rooms where the group is defined as last admin group.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  List of rooms is returned.   ### Further Information: An empty list is returned if no rooms were found where the group is defined as last admin group.
    * @param groupId Group ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return LastAdminGroupRoomList
    * @throws ApiException if fails to make API call
    */
-  public LastAdminGroupRoomList requestLastAdminRoomsGroups(Long groupId, String xSdsAuthToken) throws ApiException {
+  public LastAdminGroupRoomList requestLastAdminRoomsGroups(Long groupId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'groupId' is set
     if (groupId == null) {
@@ -485,8 +508,6 @@ public class GroupsApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -501,19 +522,23 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<LastAdminGroupRoomList> localVarReturnType = new GenericType<LastAdminGroupRoomList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Update user group&#x27;s metadata
-   * ### Description:   Update user group&#x27;s metadata .  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  User group&#x27;s metadata is changed.  ### Further Information: * If a group should **NOT** expire, leave &#x60;expireAt&#x60; empty. * Group names are limited to **150** characters * **All** characters are allowed.
+   * ### Description:   Update user group&#x27;s metadata .  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change groups&lt;/span&gt; required.  ### Postcondition:  User group&#x27;s metadata is changed.  ### Further Information: * If a group should **NOT** expire, leave &#x60;expireAt&#x60; empty. * Group names are limited to **150** characters * Forbidden characters in group name: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;]
    * @param body  (required)
    * @param groupId Group ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return Group
    * @throws ApiException if fails to make API call
    */
-  public Group updateGroup(UpdateGroupRequest body, Long groupId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public Group updateGroup(UpdateGroupRequest body, Long groupId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -535,8 +560,6 @@ public class GroupsApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -551,6 +574,11 @@ public class GroupsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<Group> localVarReturnType = new GenericType<Group>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
 }

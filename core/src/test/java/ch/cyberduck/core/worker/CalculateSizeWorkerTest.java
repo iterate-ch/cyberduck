@@ -1,9 +1,9 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class CalculateSizeWorkerTest {
         b.attributes().setSize(3L);
         files.add(b);
         assertEquals(4L, new CalculateSizeWorker(files,
-                new DisabledProgressListener()) {
+                ProgressListener.noop) {
             int i = 0;
 
             @Override

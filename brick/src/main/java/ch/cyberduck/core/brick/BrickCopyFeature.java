@@ -62,7 +62,7 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
             if(entity.getFileMigrationId() != null) {
                 this.poll(client, entity);
             }
-            return new Path(target).withAttributes(new DefaultPathAttributes(file.attributes()).setVault(null));
+            return new Path(target).withAttributes(new DefaultPathAttributes(file.attributes()));
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Cannot copy {0}", e, file);

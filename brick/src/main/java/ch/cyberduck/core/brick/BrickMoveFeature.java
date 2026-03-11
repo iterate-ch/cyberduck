@@ -60,7 +60,7 @@ public class BrickMoveFeature extends BrickFileMigrationFeature implements Move 
             if(entity.getFileMigrationId() != null) {
                 this.poll(client, entity);
             }
-            return new Path(target).withAttributes(new DefaultPathAttributes(file.attributes()).setVault(null));
+            return new Path(target).withAttributes(new DefaultPathAttributes(file.attributes()));
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Cannot rename {0}", e, file);

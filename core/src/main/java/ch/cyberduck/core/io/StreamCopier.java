@@ -34,7 +34,7 @@ public final class StreamCopier {
     private final StreamCancelation cancel;
     private final StreamProgress progress;
 
-    private StreamListener listener = new DisabledStreamListener();
+    private StreamListener listener = StreamListener.noop;
 
     /**
      * Buffer size

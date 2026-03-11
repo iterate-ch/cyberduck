@@ -18,14 +18,14 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -48,19 +48,19 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertEquals(new DAVAttributesFinderFeature(session).find(test), new DAVAttributesFinderFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(copy));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
     public void testCopyWithLock() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertThrows(InteroperabilityException.class, () -> new DAVLockFeature(session).lock(test));
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -71,12 +71,12 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), copy, new TransferStatus());
-        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(test, copy, new TransferStatus().setExists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
-        new DAVCopyFeature(session).copy(test, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(test, copy, new TransferStatus().setExists(false), ConnectionCallback.noop, StreamListener.noop));
+        new DAVCopyFeature(session).copy(test, copy, new TransferStatus().setExists(true), ConnectionCallback.noop, StreamListener.noop);
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new DAVDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(test, copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -88,11 +88,11 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), copy, new TransferStatus());
-        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().setExists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
-        new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().setExists(false), ConnectionCallback.noop, StreamListener.noop));
+        new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().setExists(true), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new DAVFindFeature(session).find(file));
         assertTrue(new DAVFindFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
-        new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

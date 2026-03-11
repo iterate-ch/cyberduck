@@ -17,9 +17,9 @@ package ch.cyberduck.core.shared;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
@@ -27,8 +27,8 @@ import ch.cyberduck.core.ftp.FTPReadFeature;
 import ch.cyberduck.core.ftp.FTPTouchFeature;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -58,7 +58,7 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final OutputStream out = new FTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new FTPWriteFeature(session).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -67,16 +67,16 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             new DefaultDownloadFeature(session).download(
-                    new FTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new FTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             new DefaultDownloadFeature(session).download(
-                    new FTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new FTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         final byte[] buffer = new byte[39864];
         final InputStream in = local.getInputStream();
@@ -84,6 +84,6 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
         in.close();
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
-        delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

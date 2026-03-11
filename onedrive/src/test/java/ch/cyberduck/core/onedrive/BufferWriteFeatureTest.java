@@ -17,8 +17,8 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -54,7 +54,7 @@ public class BufferWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withListener(count).transfer(in, out);
@@ -63,11 +63,11 @@ public class BufferWriteFeatureTest extends AbstractOneDriveTest {
         assertNull(out.getStatus());
         assertTrue(new GraphFindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -79,13 +79,13 @@ public class BufferWriteFeatureTest extends AbstractOneDriveTest {
             final byte[] content = RandomUtils.nextBytes(42512);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = feature.write(file, status, ConnectionCallback.noop);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             new StreamCopier(status, status).transfer(in, out);
             assertNull(out.getStatus());
             assertTrue(new GraphFindFeature(session, fileid).find(file));
             final byte[] compare = new byte[content.length];
-            final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             IOUtils.readFully(stream, compare);
             stream.close();
             assertArrayEquals(content, compare);
@@ -94,18 +94,18 @@ public class BufferWriteFeatureTest extends AbstractOneDriveTest {
             final byte[] content = RandomUtils.nextBytes(33221);
             final TransferStatus status = new TransferStatus().setExists(true);
             status.setLength(content.length);
-            final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = feature.write(file, status, ConnectionCallback.noop);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             new StreamCopier(status, status).transfer(in, out);
             assertNull(out.getStatus());
             assertTrue(new GraphFindFeature(session, fileid).find(file));
             final byte[] compare = new byte[content.length];
-            final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             IOUtils.readFully(stream, compare);
             stream.close();
             assertArrayEquals(content, compare);
         }
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -116,17 +116,17 @@ public class BufferWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         new StreamCopier(status, status).transfer(in, out);
         assertNull(out.getStatus());
         assertTrue(new GraphFindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -137,16 +137,16 @@ public class BufferWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         new StreamCopier(status, status).transfer(in, out);
         assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -44,7 +44,7 @@ public class SpectraBucketListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> buckets = new AttributedList<Path>();
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             final GetServiceResponse response = client.getService(new GetServiceRequest());
             for(final BucketDetails b : response.getListAllMyBucketsResult().getBuckets()) {
                 final Path bucket = new Path(PathNormalizer.normalize(b.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory));

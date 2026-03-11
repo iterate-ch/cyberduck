@@ -14,8 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class DownloadsApi {
   private ApiClient apiClient;
+  private Map<String, String> headers;
 
   public DownloadsApi() {
     this(Configuration.getDefaultApiClient());
@@ -33,15 +35,19 @@ public class DownloadsApi {
     this.apiClient = apiClient;
   }
 
+  public void setHeadersOverrides(Map<String, String> headers) {
+    this.headers = headers;
+  }
+
   /**
    * Download avatar
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.11.0&lt;/h3&gt;  ### Description: Download avatar for given user ID and UUID.  ### Precondition: Valid UUID.  ### Postcondition: Stream is returned.  ### Further Information: None.
+   * ### Description: Download avatar for given user ID and UUID.  ### Precondition: Valid UUID.  ### Postcondition: Stream is returned.  ### Further Information: None.
    * @param userId User ID (required)
    * @param uuid UUID of the avatar (required)
-   * @return String
+   * @return List&lt;byte[]&gt;
    * @throws ApiException if fails to make API call
    */
-  public String downloadAvatar(Long userId, String uuid) throws ApiException {
+  public List<byte[]> downloadAvatar(Long userId, String uuid) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'userId' is set
     if (userId == null) {
@@ -75,7 +81,12 @@ public class DownloadsApi {
 
     String[] localVarAuthNames = new String[] {  };
 
-    GenericType<String> localVarReturnType = new GenericType<String>() {};
+    GenericType<List<byte[]>> localVarReturnType = new GenericType<List<byte[]>>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -121,6 +132,11 @@ public class DownloadsApi {
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] {  };
+
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
 
     apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
@@ -168,6 +184,11 @@ public class DownloadsApi {
 
     String[] localVarAuthNames = new String[] {  };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "HEAD", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
@@ -204,6 +225,11 @@ public class DownloadsApi {
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] {  };
+
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
 
     apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }

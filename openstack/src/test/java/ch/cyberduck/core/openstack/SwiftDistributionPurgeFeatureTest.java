@@ -1,6 +1,6 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -23,7 +23,7 @@ public class SwiftDistributionPurgeFeatureTest extends AbstractSwiftTest {
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
-        feature.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(container), new DisabledLoginCallback());
+        feature.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(container), LoginCallback.noop);
     }
 
     @Test
@@ -31,6 +31,6 @@ public class SwiftDistributionPurgeFeatureTest extends AbstractSwiftTest {
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
-        feature.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback());
+        feature.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), LoginCallback.noop);
     }
 }

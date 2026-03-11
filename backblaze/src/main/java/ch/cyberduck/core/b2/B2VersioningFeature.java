@@ -16,15 +16,15 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -61,7 +61,7 @@ public class B2VersioningFeature implements Versioning {
 
     @Override
     public void revert(final Path file) throws BackgroundException {
-        new B2CopyFeature(session, fileid).copy(file, file, new TransferStatus(), new DisabledLoginCallback(), new DisabledStreamListener());
+        new B2CopyFeature(session, fileid).copy(file, file, new TransferStatus(), LoginCallback.noop, StreamListener.noop);
     }
 
     @Override

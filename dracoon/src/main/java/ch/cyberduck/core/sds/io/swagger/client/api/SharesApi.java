@@ -29,8 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class SharesApi {
   private ApiClient apiClient;
+  private Map<String, String> headers;
 
   public SharesApi() {
     this(Configuration.getDefaultApiClient());
@@ -48,16 +50,19 @@ public class SharesApi {
     this.apiClient = apiClient;
   }
 
+  public void setHeadersOverrides(Map<String, String> headers) {
+    this.headers = headers;
+  }
+
   /**
    * Create new Download Share
-   * ### Description: Create a new Download Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Share is created.  ### Further Information:  If the target node is a room: subordinary rooms are excluded from a Download Share.  * &#x60;name&#x60; is limited to **150** characters. * &#x60;notes&#x60; are limited to **255** characters. * &#x60;password&#x60; is limited to **1024** characters.  Use &#x60;POST /shares/downloads/{share_id}/email&#x60; API for sending emails.    Forbidden characters in passwords: [&#x60;&amp;&#x60;, &#x60;&#x27;&#x60;, &#x60;&lt;&#x60;, &#x60;&gt;&#x60;]  Please keep in mind that due to various restrictions of different telecommunication providers, non-ASCII characters may not be displayed correctly in short messages (SMS).
+   * ### Description: Create a new Download Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Share is created.  ### Further Information:  If the target node is a room: subordinary rooms are excluded from a Download Share.  * &#x60;name&#x60; is limited to **150** characters. * &#x60;notes&#x60; are limited to **255** characters. * &#x60;password&#x60; is limited to **1024** characters.  Use &#x60;POST /shares/downloads/{share_id}/email&#x60; API for sending emails.    Forbidden characters in passwords: [&#x60;&amp;&#x60;, &#x60;&#x27;&#x60;, &#x60;&lt;&#x60;, &#x60;&gt;&#x60;].  Forbidden characters in share names: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;].  Please keep in mind that due to various restrictions of different telecommunication providers, non-ASCII characters may not be displayed correctly in short messages (SMS).
    * @param body  (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return DownloadShare
    * @throws ApiException if fails to make API call
    */
-  public DownloadShare createDownloadShare(CreateDownloadShareRequest body, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public DownloadShare createDownloadShare(CreateDownloadShareRequest body, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -74,8 +79,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -90,18 +93,22 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<DownloadShare> localVarReturnType = new GenericType<DownloadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Create new Upload Share
-   * ### Description: Create a new Upload Share (aka File Request).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Share is created.  ### Further Information:  * &#x60;name&#x60; is limited to **150** characters. * &#x60;notes&#x60; are limited to **255** characters. * &#x60;password&#x60; is limited to **1024** characters.  Forbidden characters in passwords: [&#x60;&amp;&#x60;, &#x60;&#x27;&#x60;, &#x60;&lt;&#x60;, &#x60;&gt;&#x60;]    Use &#x60;POST /shares/uploads/{share_id}/email&#x60; API for sending emails.  Please keep in mind that due to various restrictions of different telecommunication providers, non-ASCII characters may not be displayed correctly in short messages (SMS).
+   * ### Description: Create a new Upload Share (aka File Request).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Share is created.  ### Further Information:  * &#x60;name&#x60; is limited to **150** characters. * &#x60;notes&#x60; are limited to **255** characters. * &#x60;password&#x60; is limited to **1024** characters.  Forbidden characters in passwords: [&#x60;&amp;&#x60;, &#x60;&#x27;&#x60;, &#x60;&lt;&#x60;, &#x60;&gt;&#x60;].  Forbidden characters in share names: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;].  Use &#x60;POST /shares/uploads/{share_id}/email&#x60; API for sending emails.  Please keep in mind that due to various restrictions of different telecommunication providers, non-ASCII characters may not be displayed correctly in short messages (SMS).
    * @param body  (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return UploadShare
    * @throws ApiException if fails to make API call
    */
-  public UploadShare createUploadShare(CreateUploadShareRequest body, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public UploadShare createUploadShare(CreateUploadShareRequest body, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -118,8 +125,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -134,16 +139,20 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<UploadShare> localVarReturnType = new GenericType<UploadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Remove Download Shares
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.21.0&lt;/h3&gt;  ### Functional Description: Delete multiple Download Shares.  ### Precondition: User with _\&quot;manage download share\&quot;_ permissions on target nodes.  ### Postcondition: Download Shares are deleted.  ### Further Information: Only the Download Shares are removed; the referenced files or containers persists.
+   * ### Functional Description: Delete multiple Download Shares.  ### Precondition: User with _\&quot;manage download share\&quot;_ permissions on target nodes.  ### Postcondition: Download Shares are deleted.  ### Further Information: Only the Download Shares are removed; the referenced files or containers persists.
    * @param body  (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteDownloadShares(DeleteDownloadSharesRequest body, String xSdsAuthToken) throws ApiException {
+  public void deleteDownloadShares(DeleteDownloadSharesRequest body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -158,8 +167,6 @@ public class SharesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -173,16 +180,20 @@ public class SharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Remove Upload Shares
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.21.0&lt;/h3&gt;  ### Functional Description: Delete multiple Upload Shares (aka Upload Accounts).  ### Precondition: User has _\&quot;manage upload share\&quot;_ permissions on target containers.  ### Postcondition: Upload Shares are deleted.  ### Further Information: Only the Upload Shares are removed; already uploaded files and the target container persist.
+   * ### Functional Description: Delete multiple Upload Shares (aka Upload Accounts).  ### Precondition: User has _\&quot;manage upload share\&quot;_ permissions on target containers.  ### Postcondition: Upload Shares are deleted.  ### Further Information: Only the Upload Shares are removed; already uploaded files and the target container persist.
    * @param body  (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteUploadShares(DeleteUploadSharesRequest body, String xSdsAuthToken) throws ApiException {
+  public void deleteUploadShares(DeleteUploadSharesRequest body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -197,8 +208,6 @@ public class SharesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -212,16 +221,20 @@ public class SharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Remove Download Share
    * ### Description: Delete a Download Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Share is deleted.  ### Further Information: Only the Download Share is removed; the referenced file or container persists.
    * @param shareId Share ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void removeDownloadShare(Long shareId, String xSdsAuthToken) throws ApiException {
+  public void removeDownloadShare(Long shareId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -237,8 +250,6 @@ public class SharesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -252,16 +263,20 @@ public class SharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Remove Upload Share
    * ### Description: Delete an Upload Share (aka File Request).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Share is deleted.  ### Further Information: Only the Upload Share is removed; already uploaded files and the target container persist.
    * @param shareId Share ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void removeUploadShare(Long shareId, String xSdsAuthToken) throws ApiException {
+  public void removeUploadShare(Long shareId) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -277,8 +292,6 @@ public class SharesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -292,6 +305,11 @@ public class SharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
@@ -299,11 +317,10 @@ public class SharesApi {
    * ### Description:   Retrieve detailed information about one Download Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Share is returned  ### Further Information: None.
    * @param shareId Share ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return DownloadShare
    * @throws ApiException if fails to make API call
    */
-  public DownloadShare requestDownloadShare(Long shareId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public DownloadShare requestDownloadShare(Long shareId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -321,8 +338,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -337,6 +352,11 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<DownloadShare> localVarReturnType = new GenericType<DownloadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -344,11 +364,10 @@ public class SharesApi {
    * ### Description:   Retrieve detailed information about one Download Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Share is returned  ### Further Information: None.
    * @param shareId Share ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return DownloadShare
    * @throws ApiException if fails to make API call
    */
-  public DownloadShare requestDownloadShareQr(Long shareId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public DownloadShare requestDownloadShareQr(Long shareId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -366,8 +385,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -382,6 +399,11 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<DownloadShare> localVarReturnType = new GenericType<DownloadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -392,11 +414,10 @@ public class SharesApi {
    * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return DownloadShareList
    * @throws ApiException if fails to make API call
    */
-  public DownloadShareList requestDownloadShares(String xSdsDateFormat, String filter, String sort, Integer offset, Integer limit, String xSdsAuthToken) throws ApiException {
+  public DownloadShareList requestDownloadShares(String xSdsDateFormat, String filter, String sort, Integer offset, Integer limit) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/v4/shares/downloads";
@@ -413,8 +434,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -429,6 +448,11 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<DownloadShareList> localVarReturnType = new GenericType<DownloadShareList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -436,11 +460,10 @@ public class SharesApi {
    * ### Description:   Retrieve detailed information about one Upload Share (aka File Request).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Share is returned.  ### Further Information: None.
    * @param shareId Share ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return UploadShare
    * @throws ApiException if fails to make API call
    */
-  public UploadShare requestUploadShare(Long shareId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public UploadShare requestUploadShare(Long shareId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -458,8 +481,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -474,6 +495,11 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<UploadShare> localVarReturnType = new GenericType<UploadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -481,11 +507,10 @@ public class SharesApi {
    * ### Description:   Retrieve detailed information about one Upload Share (aka File Request).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Share is returned.  ### Further Information: None.
    * @param shareId Share ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return UploadShare
    * @throws ApiException if fails to make API call
    */
-  public UploadShare requestUploadShareQr(Long shareId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public UploadShare requestUploadShareQr(Long shareId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'shareId' is set
     if (shareId == null) {
@@ -503,8 +528,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -519,6 +542,11 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<UploadShare> localVarReturnType = new GenericType<UploadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -529,11 +557,10 @@ public class SharesApi {
    * @param sort Sort string (optional)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return UploadShareList
    * @throws ApiException if fails to make API call
    */
-  public UploadShareList requestUploadShares(String xSdsDateFormat, String filter, String sort, Integer offset, Integer limit, String xSdsAuthToken) throws ApiException {
+  public UploadShareList requestUploadShares(String xSdsDateFormat, String filter, String sort, Integer offset, Integer limit) throws ApiException {
     Object localVarPostBody = null;
     // create path and map variables
     String localVarPath = "/v4/shares/uploads";
@@ -550,8 +577,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -566,17 +591,21 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<UploadShareList> localVarReturnType = new GenericType<UploadShareList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Send an existing Download Share link via email
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.11.0&lt;/h3&gt;  ### Description: Send an email to specific recipients for existing Download Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Share link successfully sent.  ### Further Information:  * Forbidden characters in the email body: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;] 
+   * ### Description: Send an email to specific recipients for existing Download Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Share link successfully sent.  ### Further Information:  * Forbidden characters in the email body: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;] 
    * @param body  (required)
    * @param shareId Share ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void sendDownloadShareLinkViaEmail(DownloadShareLinkEmail body, Long shareId, String xSdsAuthToken) throws ApiException {
+  public void sendDownloadShareLinkViaEmail(DownloadShareLinkEmail body, Long shareId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -596,8 +625,6 @@ public class SharesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -611,17 +638,21 @@ public class SharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Send an existing Upload Share link via email
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.11.0&lt;/h3&gt;  ### Description: Send an email to specific recipients for existing Upload Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Share link successfully sent.  ### Further Information:  * Forbidden characters in the email body: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;] 
+   * ### Description: Send an email to specific recipients for existing Upload Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Share link successfully sent.  ### Further Information:  * Forbidden characters in the email body: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;] 
    * @param body  (required)
    * @param shareId Share ID (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void sendUploadShareLinkViaEmail(UploadShareLinkEmail body, Long shareId, String xSdsAuthToken) throws ApiException {
+  public void sendUploadShareLinkViaEmail(UploadShareLinkEmail body, Long shareId) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -641,8 +672,6 @@ public class SharesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -656,19 +685,23 @@ public class SharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Update Download Share
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.11.0&lt;/h3&gt;  ### Description: Update an existing Download Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Share is successfully updated.  ### Further Information: * &#x60;name&#x60; is limited to **150** characters. * &#x60;notes&#x60; are limited to **255** characters. * &#x60;password&#x60; is limited to **1024** characters.  Forbidden characters in passwords: [&#x60;&amp;&#x60;, &#x60;&#x27;&#x60;, &#x60;&lt;&#x60;, &#x60;&gt;&#x60;]  Please keep in mind that due to various restrictions of different telecommunication providers, non-ASCII characters may not be displayed correctly in short messages (SMS).
+   * ### Description: Update an existing Download Share.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Share is successfully updated.  ### Further Information: * &#x60;name&#x60; is limited to **150** characters. * &#x60;notes&#x60; are limited to **255** characters. * &#x60;password&#x60; is limited to **1024** characters.  Forbidden characters in passwords: [&#x60;&amp;&#x60;, &#x60;&#x27;&#x60;, &#x60;&lt;&#x60;, &#x60;&gt;&#x60;].  Forbidden characters in share names: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;].  Please keep in mind that due to various restrictions of different telecommunication providers, non-ASCII characters may not be displayed correctly in short messages (SMS).
    * @param body  (required)
    * @param shareId Share ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return DownloadShare
    * @throws ApiException if fails to make API call
    */
-  public DownloadShare updateDownloadShare(UpdateDownloadShareRequest body, Long shareId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public DownloadShare updateDownloadShare(UpdateDownloadShareRequest body, Long shareId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -690,8 +723,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -706,16 +737,20 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<DownloadShare> localVarReturnType = new GenericType<DownloadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Update a list of Download Shares
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.25.0&lt;/h3&gt;  ### Description: Update a list of existing Download Shares.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Shares are successfully updated.  ### Further Information: Maximum number of shares is 200
+   * ### Description: Update a list of existing Download Shares.  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage download share&lt;/span&gt; permissions on target node.  ### Postcondition: Download Shares are successfully updated.  ### Further Information: Maximum number of shares is 200
    * @param body  (required)
-   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void updateDownloadShares(UpdateDownloadSharesBulkRequest body, String xSdsAuthToken) throws ApiException {
+  public void updateDownloadShares(UpdateDownloadSharesBulkRequest body) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -730,8 +765,6 @@ public class SharesApi {
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "*/*"
@@ -745,19 +778,23 @@ public class SharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Update Upload Share
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.11.0&lt;/h3&gt;  ### Description: Update existing Upload Share (aka File Request).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Share successfully updated.  ### Further Information:  * &#x60;name&#x60; is limited to **150** characters. * &#x60;notes&#x60; are limited to **255** characters. * &#x60;password&#x60; is limited to **1024** characters.  Forbidden characters in passwords: [&#x60;&amp;&#x60;, &#x60;&#x27;&#x60;, &#x60;&lt;&#x60;, &#x60;&gt;&#x60;]  Please keep in mind that due to various restrictions of different telecommunication providers, non-ASCII characters may not be displayed correctly in short messages (SMS).
+   * ### Description: Update existing Upload Share (aka File Request).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Share successfully updated.  ### Further Information:  * &#x60;name&#x60; is limited to **150** characters. * &#x60;notes&#x60; are limited to **255** characters. * &#x60;password&#x60; is limited to **1024** characters.  Forbidden characters in passwords: [&#x60;&amp;&#x60;, &#x60;&#x27;&#x60;, &#x60;&lt;&#x60;, &#x60;&gt;&#x60;].  Forbidden characters in share names: [&#x60;&lt;&#x60;, &#x60;&gt;&#x60;].  Please keep in mind that due to various restrictions of different telecommunication providers, non-ASCII characters may not be displayed correctly in short messages (SMS).
    * @param body  (required)
    * @param shareId Share ID (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @return UploadShare
    * @throws ApiException if fails to make API call
    */
-  public UploadShare updateUploadShare(UpdateUploadShareRequest body, Long shareId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public UploadShare updateUploadShare(UpdateUploadShareRequest body, Long shareId, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -779,8 +816,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "application/json"
@@ -795,17 +830,21 @@ public class SharesApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<UploadShare> localVarReturnType = new GenericType<UploadShare>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
    * Update List of Upload Shares
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.25.0&lt;/h3&gt;  ### Description: Update a list of existing Upload Shares (aka File Request).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Shares successfully updated.  ### Further Information: Maximum number of shares is 200
+   * ### Description: Update a list of existing Upload Shares (aka File Request).  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; manage upload share&lt;/span&gt; permissions on target container.  ### Postcondition: Upload Shares successfully updated.  ### Further Information: Maximum number of shares is 200
    * @param body  (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
-   * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void updateUploadShares(UpdateUploadSharesBulkRequest body, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public void updateUploadShares(UpdateUploadSharesBulkRequest body, String xSdsDateFormat) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
     if (body == null) {
@@ -822,8 +861,6 @@ public class SharesApi {
 
     if (xSdsDateFormat != null)
       localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
     final String[] localVarAccepts = {
       "*/*"
@@ -836,6 +873,11 @@ public class SharesApi {
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] { "oauth2" };
+
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
 
     apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }

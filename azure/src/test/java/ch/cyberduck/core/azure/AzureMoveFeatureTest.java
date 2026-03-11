@@ -1,8 +1,8 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -29,12 +29,12 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
         final Path test = new AzureTouchFeature(session).touch(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes sourceAttr = new AzureAttributesFinderFeature(session).find(test);
         assertTrue(new AzureFindFeature(session).find(test));
-        final Path target = new AzureMoveFeature(session).move(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path target = new AzureMoveFeature(session).move(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), ConnectionCallback.noop);
         assertFalse(new AzureFindFeature(session).find(test));
         assertTrue(new AzureFindFeature(session).find(target));
         final PathAttributes targetAttr = new AzureAttributesFinderFeature(session).find(target);
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, sourceAttr, targetAttr));
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

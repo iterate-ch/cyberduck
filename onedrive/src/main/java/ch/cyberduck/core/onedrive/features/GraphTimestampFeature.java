@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
@@ -35,6 +36,7 @@ import org.nuxeo.onedrive.client.types.FileSystemInfo;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Optional;
 
 public class GraphTimestampFeature implements Timestamp {
     private static final Logger log = LogManager.getLogger(GraphTimestampFeature.class);
@@ -60,8 +62,11 @@ public class GraphTimestampFeature implements Timestamp {
         patchOperation.facet("fileSystemInfo", info);
         final DriveItem item = session.getItem(file);
         try {
-            final DriveItem.Metadata metadata = Files.patch(item, patchOperation);
-            status.setResponse(new GraphAttributesFinderFeature(session, fileid).toAttributes(metadata));
+            final Optional<DriveItem.Metadata> metadata = Files.patch(item, patchOperation);
+            metadata.ifPresent(value -> status.setResponse(new GraphAttributesFinderFeature(session, fileid).toAttributes(value)));
+            if(!metadata.isPresent()) {
+                throw new UnsupportedException();
+            }
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);

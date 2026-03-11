@@ -19,10 +19,10 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
@@ -44,7 +44,7 @@ public class SessionBackgroundActionTest {
     public void testGetExceptionConnectionCanceledException() {
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
             new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")),
-            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new DisabledAlertCallback(), new DisabledProgressListener()) {
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new DisabledAlertCallback(), ProgressListener.noop) {
 
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
@@ -72,7 +72,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new DisabledProgressListener()) {
+        }, ProgressListener.noop) {
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
                 throw failure;
@@ -99,7 +99,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new DisabledProgressListener()) {
+        }, ProgressListener.noop) {
 
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
@@ -128,7 +128,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new DisabledProgressListener()) {
+        }, ProgressListener.noop) {
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
                 throw failure;

@@ -16,17 +16,19 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultVersionIdProvider;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -44,8 +46,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
@@ -60,22 +61,53 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         IOUtils.write(content, out);
         out.close();
         new DAVUploadFeature(session).upload(
-                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
-        final TransferStatus segment = new TransferStatus().setSegment(true);
+        final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final CteraBulkFeature bulk = new CteraBulkFeature(session, new DefaultVersionIdProvider(session));
-        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
         assertNotNull(segment.getUrl());
         assertNotNull(segment.getParameters());
-        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, new DisabledConnectionCallback());
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(segment, segment).transfer(in, buffer);
         in.close();
         assertArrayEquals(content, buffer.toByteArray());
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testReadZeroByteFile() throws Exception {
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        final byte[] content = RandomUtils.nextBytes(0);
+        final OutputStream out = local.getOutputStream(false);
+        assertNotNull(out);
+        IOUtils.write(content, out);
+        out.close();
+        new DAVUploadFeature(session).upload(
+                new CteraWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
+                new TransferStatus().setLength(content.length),
+                ConnectionCallback.noop);
+        final TransferStatus status = new TransferStatus().setLength(content.length);
+        status.setSegments(Collections.emptyList());
+        final CteraBulkFeature bulk = new CteraBulkFeature(session, new DefaultVersionIdProvider(session));
+        bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), ConnectionCallback.noop);
+        assertNull(status.getUrl());
+        assertNotNull(status.getParameters().get(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY));
+        assertTrue(new DAVFindFeature(session).find(test));
+        final PathAttributes attributes = new CteraAttributesFinderFeature(session).find(test);
+        assertEquals(content.length, attributes.getSize());
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, status, ConnectionCallback.noop);
+        assertNotNull(in);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+        new StreamCopier(status, status).transfer(in, buffer);
+        in.close();
+        assertArrayEquals(content, buffer.toByteArray());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

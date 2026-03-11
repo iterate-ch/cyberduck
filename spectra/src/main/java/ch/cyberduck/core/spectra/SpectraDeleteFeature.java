@@ -54,7 +54,7 @@ public class SpectraDeleteFeature implements Delete {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             final Map<Path, TransferStatus> filtered = new LinkedHashMap<>(files);
             for(Iterator<Map.Entry<Path, TransferStatus>> iter = filtered.entrySet().iterator(); iter.hasNext(); ) {
                 final Map.Entry<Path, TransferStatus> file = iter.next();

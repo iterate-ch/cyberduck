@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>9.4.0-SNAPSHOT</version>
+    <version>9.4.2-SNAPSHOT</version>
 
     <modules>
         <module>defaults</module>
@@ -118,7 +118,7 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.18.3</version>
+                <version>1.18.5</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
@@ -397,7 +397,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.12.778</version>
+                <version>1.12.797</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

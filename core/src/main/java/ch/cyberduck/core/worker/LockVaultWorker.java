@@ -22,28 +22,33 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Objects;
 
 public class LockVaultWorker extends Worker<Path> {
 
     private final VaultRegistry registry;
-    private final Path vault;
+    private final Path directory;
 
-    public LockVaultWorker(final VaultRegistry registry, final Path vault) {
+    public LockVaultWorker(final VaultRegistry registry, final Path directory) {
         this.registry = registry;
-        this.vault = vault;
+        this.directory = directory;
     }
 
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
-        registry.close(vault);
-        return vault;
+        if(registry.close(directory)) {
+            final EnumSet<Path.Type> type = directory.getType();
+            type.remove(Path.Type.vault);
+            directory.setType(type);
+        }
+        return directory;
     }
 
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
-            vault.getName());
+                directory.getName());
     }
 
     @Override
@@ -55,18 +60,18 @@ public class LockVaultWorker extends Worker<Path> {
             return false;
         }
         final LockVaultWorker that = (LockVaultWorker) o;
-        return Objects.equals(vault, that.vault);
+        return Objects.equals(directory, that.directory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vault);
+        return Objects.hash(directory);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("LockVaultWorker{");
-        sb.append("directory=").append(vault);
+        sb.append("directory=").append(directory);
         sb.append('}');
         return sb.toString();
     }

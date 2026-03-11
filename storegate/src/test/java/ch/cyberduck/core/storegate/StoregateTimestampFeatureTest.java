@@ -16,7 +16,7 @@
 package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -57,7 +57,7 @@ public class StoregateTimestampFeatureTest extends AbstractStoregateTest {
         assertEquals(created, new DefaultAttributesFinderFeature(session).find(file).getCreationDate());
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(attr, status.getResponse());
-        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -71,6 +71,6 @@ public class StoregateTimestampFeatureTest extends AbstractStoregateTest {
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new StoregateTimestampFeature(session, nodeid).setTimestamp(test, modified);
         assertEquals(modified, new StoregateAttributesFinderFeature(session, nodeid).find(test).getModificationDate());
-        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

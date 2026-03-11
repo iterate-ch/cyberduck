@@ -15,10 +15,10 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Metadata;
@@ -202,7 +202,7 @@ public class ReadWriteMetadataWorkerTest {
         // - equal values
 
         // setup write worker
-        WriteMetadataWorker writeWorker = new WriteMetadataWorker(files, updatedMetadata, false, new DisabledProgressListener());
+        WriteMetadataWorker writeWorker = new WriteMetadataWorker(files, updatedMetadata, false, ProgressListener.noop);
 
         // execute write test
         writeWorker.run(testSession);

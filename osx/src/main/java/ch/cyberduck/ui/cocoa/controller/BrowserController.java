@@ -2450,13 +2450,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void lockUnlockEncryptedVaultButtonClicked(final ID sender) {
         final Path directory = new UploadTargetFinder(workdir).find(this.getSelectedPath());
-        if(directory.attributes().getVault() != null) {
+        if(pool.getVaultRegistry().contains(directory)) {
             // Lock and remove all open vaults
-            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory.attributes().getVault()) {
+            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory) {
                 @Override
                 public void cleanup(final Path vault) {
                     if(vault != null) {
-                        reload(vault, Collections.singleton(vault), Collections.emptyList(), true);
+                        reload(directory, Collections.singleton(directory), Collections.emptyList(), true);
                     }
                 }
             }));
@@ -2468,7 +2468,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 @Override
                 public void cleanup(final Vault vault) {
                     if(vault != null) {
-                        reload(vault.getHome(), Collections.singleton(vault.getHome()), Collections.emptyList(), true);
+                        reload(directory, Collections.singleton(directory), Collections.emptyList(), true);
                     }
                 }
             }));

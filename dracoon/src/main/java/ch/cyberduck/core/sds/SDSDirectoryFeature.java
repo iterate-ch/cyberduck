@@ -71,7 +71,7 @@ public class SDSDirectoryFeature implements Directory<Node> {
     private Path createFolder(final Path folder) throws BackgroundException, ApiException {
         final Node node = nodeid.retry(folder.getParent(), () -> new NodesApi(session.getClient()).createFolder(new CreateFolderRequest()
                 .parentId(Long.parseLong(nodeid.getVersionId(folder.getParent())))
-                .name(folder.getName()), StringUtils.EMPTY, null));
+                .name(folder.getName()), null));
         nodeid.cache(folder, String.valueOf(node.getId()));
         return new Path(folder).withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
     }
@@ -86,15 +86,14 @@ public class SDSDirectoryFeature implements Directory<Node> {
             roomRequest.setParentId(Long.parseLong(nodeid.getVersionId(room.getParent())));
         }
         roomRequest.setName(room.getName());
-        final Node node = new NodesApi(session.getClient()).createRoom(roomRequest, StringUtils.EMPTY, null);
+        final Node node = new NodesApi(session.getClient()).createRoom(roomRequest, null);
         nodeid.cache(room, String.valueOf(node.getId()));
         if(encrypt) {
             final EncryptRoomRequest options = new EncryptRoomRequest();
             options.setIsEncrypted(true);
             return new Path(room).withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new SDSAttributesAdapter(session).toAttributes(
-                            new NodesApi(session.getClient()).encryptRoom(options, Long.valueOf(nodeid.getVersionId(room
-                            )), StringUtils.EMPTY, null)));
+                            new NodesApi(session.getClient()).encryptRoom(options, Long.valueOf(nodeid.getVersionId(room)), null)));
         }
         else {
             return new Path(room).withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(

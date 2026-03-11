@@ -1,7 +1,10 @@
 # Changelog
 
-[9.4.0](https://github.com/iterate-ch/cyberduck/compare/release-9-3-1...release-9-4-0)
+[9.4.1](https://github.com/iterate-ch/cyberduck/compare/release-9-4-0...release-9-4-1)
+* Cleartext uploads to unlocked vault with auto detect disabled in Preferences (Cryptomator) ([#17893](https://trac.cyberduck.io/ticket/17893))
+* Unable to lock vault (Cryptomator) ([#17892](https://trac.cyberduck.io/ticket/17892))
 
+[9.4.0](https://github.com/iterate-ch/cyberduck/compare/release-9-3-1...release-9-4-0)
 * [Feature] Rewrite protocol implementation (iRODS)
 * [Bugfix] Do not preemptively save OAuth tokens with no username (Box, Dropbox, Google Drive, Google Storage, OneDrive)
 * [Bugfix] Fail when reading private key for selected certificate fails (WebDAV)
@@ -81,8 +84,8 @@
 [9.1.3](https://github.com/iterate-ch/cyberduck/compare/release-9-1-2...release-9-1-3)
 * [Bugfix] Invalid progress in Finder transferring multiple files (macOS) ([#16738](https://trac.cyberduck.io/ticket/16738))
 * [Bugfix] Diasble lookup of vaults by default. Must explicitly specify --vault (Cyptomator, CLI)
-* [Bugfix] Duplicate file menu item always disabled (FTP) ([#16798](https://github.com/iterate-ch/cyberduck/issues/16798))
-* [Bugfix] Allow OAuth configuration in connection profiles (WebDAV) ([#16792](https://github.com/iterate-ch/cyberduck/issues/16792))
+* [Bugfix] Duplicate file menu item always disabled (FTP) ([#16798](https://trac.cyberduck.io/ticket/16798))
+* [Bugfix] Allow OAuth configuration in connection profiles (WebDAV) ([#16792](https://trac.cyberduck.io/ticket/16792))
 
 [9.1.2](https://github.com/iterate-ch/cyberduck/compare/release-9-1-1...release-9-1-2)
 * [Bugfix] No fallback to IPv4 address when IPv6 connect attempt fails with unreachable network ([#16723](https://trac.cyberduck.io/ticket/16723))

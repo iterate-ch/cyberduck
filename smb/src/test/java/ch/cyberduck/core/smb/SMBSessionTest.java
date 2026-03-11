@@ -15,11 +15,10 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -33,6 +32,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class SMBSessionTest extends AbstractSMBTest {
         final Host host = new Host(new SMBProtocol(), session.getHost().getHostname(), 135)
                 .setCredentials(session.getHost().getCredentials());
         final SMBSession session = new SMBSession(host);
-        assertThrows(ConnectionRefusedException.class, () -> session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertThrows(ConnectionRefusedException.class, () -> session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
     }
 
     @Test

@@ -14,7 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -42,7 +42,7 @@ public class SpectraTouchFeature extends DefaultTouchFeature<StorageObject> {
     @Override
     public Path touch(final Write<StorageObject> writer, final Path file, final TransferStatus status) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), status), ConnectionCallback.noop);
         return super.touch(writer, file, status);
     }
 
