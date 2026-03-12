@@ -55,7 +55,7 @@
         <key>OAuth Authorization Url</key>
         <string>https://oauth2.gmx.net/authorize</string>
         <key>OAuth User Info Url</key>
-        <string>https://oauth2.gmx.net/userinfo</string>
+        <string>https://um-data-facade.gmx.net/userinfo</string>
         <key>OAuth Token Url</key>
         <string>https://oauth2.gmx.net/token</string>
         <key>OAuth Redirect Url</key>
