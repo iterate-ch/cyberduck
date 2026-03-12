@@ -54,8 +54,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthTokenUrl()),
                 Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthAuthorizationUrl()),
-                Scheme.isURL(host.getProtocol().getOAuthUserInfoUrl()) ? host.getProtocol().getOAuthUserInfoUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                        host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthUserInfoUrl()),
+                host.getProtocol().getOAuthUserInfoUrl(),
                 prompt(host, prompt, Profile.OAUTH_CLIENT_ID_KEY, LocaleFactory.localizedString(
                                 Profile.OAUTH_CLIENT_ID_KEY, "Credentials"),
                         null == host.getProperty(Profile.OAUTH_CLIENT_ID_KEY) ? host.getProtocol().getOAuthClientId() : host.getProperty(Profile.OAUTH_CLIENT_ID_KEY)),
