@@ -72,9 +72,9 @@ public interface Permission extends Serializable {
                 return false;
             }
             if(obj instanceof Permission) {
-                return ((Permission) obj).getUser().implies(Action.none)
-                        && ((Permission) obj).getGroup().implies(Action.none)
-                        && ((Permission) obj).getOther().implies(Action.none);
+                return ((Permission) obj).getUser().equals(Action.none)
+                        && ((Permission) obj).getGroup().equals(Action.none)
+                        && ((Permission) obj).getOther().equals(Action.none);
             }
             return false;
         }
