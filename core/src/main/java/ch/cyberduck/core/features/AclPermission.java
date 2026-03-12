@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -73,10 +74,10 @@ public interface AclPermission {
     default Acl getDefault(final Path file) throws BackgroundException {
         if(preferences.getBoolean("queue.upload.permissions.default")) {
             if(file.getType().contains(Path.Type.file)) {
-                return toAcl(new Permission(preferences.getInteger("queue.upload.permissions.file.default")));
+                return toAcl(new StaticPermission(preferences.getInteger("queue.upload.permissions.file.default")));
             }
             else {
-                return toAcl(new Permission(preferences.getInteger("queue.upload.permissions.folder.default")));
+                return toAcl(new StaticPermission(preferences.getInteger("queue.upload.permissions.folder.default")));
             }
         }
         return Acl.EMPTY;

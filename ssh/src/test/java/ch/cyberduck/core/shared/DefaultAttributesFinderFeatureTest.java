@@ -4,7 +4,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -40,11 +40,11 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSFTPTest {
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), file, new TransferStatus());
-        new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission("-rw-rw-rw-"));
+        new SFTPUnixPermissionFeature(session).setUnixPermission(file, new StaticPermission("-rw-rw-rw-"));
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getOwner());
-        assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
+        assertEquals(new StaticPermission("-rw-rw-rw-"), attributes.getPermission());
         // Test wrong type
         try {
             f.find(new Path(workdir, file.getName(), EnumSet.of(Path.Type.directory)));

@@ -20,7 +20,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -48,14 +48,14 @@ public class LocalUnixPermissionFeatureTest {
             {
                 final Path file = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
                 new LocalTouchFeature(session).touch(new LocalWriteFeature(session), file, new TransferStatus());
-                new LocalUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
+                new LocalUnixPermissionFeature(session).setUnixPermission(file, new StaticPermission(666));
                 assertEquals("666", new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
                 new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
             }
             {
                 final Path directory = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
                 new LocalDirectoryFeature(session).mkdir(new LocalWriteFeature(session), directory, new TransferStatus());
-                new LocalUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
+                new LocalUnixPermissionFeature(session).setUnixPermission(directory, new StaticPermission(666));
                 assertEquals("666", new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
                 new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
             }

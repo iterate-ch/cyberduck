@@ -17,6 +17,7 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -50,10 +51,10 @@ public interface UnixPermission {
     default Permission getDefault(final Path workdir, final EnumSet<Path.Type> type) {
         if(preferences.getBoolean("queue.upload.permissions.default")) {
             if(type.contains(Path.Type.file)) {
-                return new Permission(preferences.getInteger("queue.upload.permissions.file.default"));
+                return new StaticPermission(preferences.getInteger("queue.upload.permissions.file.default"));
             }
             else {
-                return new Permission(preferences.getInteger("queue.upload.permissions.folder.default"));
+                return new StaticPermission(preferences.getInteger("queue.upload.permissions.folder.default"));
             }
         }
         return Permission.EMPTY;

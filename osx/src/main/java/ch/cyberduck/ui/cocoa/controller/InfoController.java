@@ -2292,7 +2292,7 @@ public class InfoController extends ToolbarWindowController {
         if(StringUtils.isNotBlank(octalField.stringValue())) {
             if(StringUtils.length(octalField.stringValue()) >= 3) {
                 if(StringUtils.isNumeric(octalField.stringValue())) {
-                    return new Permission(Integer.parseInt(octalField.stringValue()));
+                    return new StaticPermission(Integer.parseInt(octalField.stringValue()));
                 }
             }
         }

@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -114,7 +115,7 @@ public class FinderLocalTest {
     public void testWriteUnixPermission() throws Exception {
         Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         new DefaultLocalTouchFeature().touch(l);
-        final Permission permission = new Permission(644);
+        final Permission permission = new StaticPermission(644);
         l.attributes().setPermission(permission);
         assertEquals(permission, l.attributes().getPermission());
         l.delete();

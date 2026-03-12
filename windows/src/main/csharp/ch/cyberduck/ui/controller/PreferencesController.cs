@@ -492,11 +492,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Permission p = null;
             if (ForFiles.Equals(View.ChmodUploadType))
             {
-                p = new Permission(PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
+                p = new StaticPermission(PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
             }
             if (ForFolders.Equals(View.ChmodUploadType))
             {
-                p = new Permission(PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
+                p = new StaticPermission(PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
             }
             if (null == p)
             {
@@ -538,11 +538,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Permission p = null;
             if (ForFiles.Equals(View.ChmodDownloadType))
             {
-                p = new Permission(PreferencesFactory.get().getInteger("queue.download.permissions.file.default"));
+                p = new StaticPermission(PreferencesFactory.get().getInteger("queue.download.permissions.file.default"));
             }
             if (ForFolders.Equals(View.ChmodDownloadType))
             {
-                p = new Permission(PreferencesFactory.get().getInteger("queue.download.permissions.folder.default"));
+                p = new StaticPermission(PreferencesFactory.get().getInteger("queue.download.permissions.folder.default"));
             }
             if (null == p)
             {
@@ -619,7 +619,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 o = o.or(Permission.Action.execute);
             }
-            Permission permission = new Permission(u, g, o);
+            Permission permission = new StaticPermission(u, g, o);
             if (ForFiles.Equals(View.ChmodUploadType))
             {
                 PreferencesFactory.get().setProperty("queue.upload.permissions.file.default", permission.getMode());
@@ -671,7 +671,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 o = o.or(Permission.Action.execute);
             }
-            Permission permission = new Permission(u, g, o);
+            Permission permission = new StaticPermission(u, g, o);
             if (ForFiles.Equals(View.ChmodDownloadType))
             {
                 PreferencesFactory.get().setProperty("queue.download.permissions.file.default", permission.getMode());

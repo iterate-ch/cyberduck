@@ -43,7 +43,7 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
             log.warn("Failure saving credentials to {}. {}", file.getAbsolute(), e.getMessage());
             throw new LocalAccessDeniedException(e.getMessage(), e);
         }
-        file.attributes().setPermission(new Permission(600));
+        file.attributes().setPermission(new StaticPermission(600));
     }
 
     @Override

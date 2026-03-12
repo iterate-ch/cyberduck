@@ -29,7 +29,20 @@ import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultPathAttributes;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -256,7 +269,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             else {
                 final Permission permission = item.attributes().getPermission();
                 value = NSAttributedString.attributedStringWithAttributes(
-                        permission.toString(),
+                        permission.getDescription(),
                         TableCellAttributes.browserFontLeftAlignment());
             }
         }

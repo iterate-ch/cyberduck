@@ -3,7 +3,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.list.FTPListService;
@@ -28,7 +28,7 @@ public class FTPUnixPermissionFeatureTest extends AbstractFTPTest {
         final Path home = workdir.find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(new FTPWriteFeature(session), test, new TransferStatus());
-        new FTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
+        new FTPUnixPermissionFeature(session).setUnixPermission(test, new StaticPermission(666));
         assertEquals("666", new FTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getPermission().getMode());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }

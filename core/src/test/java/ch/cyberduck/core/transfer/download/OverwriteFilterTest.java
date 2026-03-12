@@ -8,6 +8,7 @@ import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -63,7 +64,7 @@ public class OverwriteFilterTest {
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
         p.attributes().setModificationDate(1L);
-        p.attributes().setPermission(new Permission(777));
+        p.attributes().setPermission(new StaticPermission(777));
         final TransferStatus status = f.prepare(p, new NullLocal("a") {
             @Override
             public LocalAttributes attributes() {
@@ -82,7 +83,7 @@ public class OverwriteFilterTest {
         }, new TransferStatus(), ProgressListener.noop);
         assertEquals(8L, status.getLength(), 0L);
         assertEquals(1L, status.getModified(), 0L);
-        assertEquals(new Permission(777), status.getPermission());
+        assertEquals(new StaticPermission(777), status.getPermission());
     }
 
     @Test(expected = AccessDeniedException.class)

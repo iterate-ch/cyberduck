@@ -27,13 +27,14 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Objects;
+import java.util.Set;
 
 public class LocalAttributes implements Attributes {
     private static final Logger log = LogManager.getLogger(LocalAttributes.class);
@@ -122,14 +123,6 @@ public class LocalAttributes implements Attributes {
 
     @Override
     public Permission getPermission() {
-        if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
-            try {
-                return new LocalPermission(PosixFilePermissions.toString(readAttributes(path, PosixFileAttributes.class).permissions()));
-            }
-            catch(IOException e) {
-                return Permission.EMPTY;
-            }
-        }
         return new LocalPermission();
     }
 
@@ -177,45 +170,7 @@ public class LocalAttributes implements Attributes {
         return null;
     }
 
-    /**
-     * Converts the file permissions of a given path into a {@link Permission.Action} object.
-     * The resulting {@link Permission.Action} includes read, write, and execute permissions
-     * based on the file attributes of the specified path.
-     *
-     * @param path The file system path for which the permissions need to be determined.
-     *             This is a string representing the absolute or relative path of the file
-     *             or directory.
-     * @return A {@link Permission.Action} object representing the available actions
-     * (read, write, execute) for the specified path.
-     */
-    private static Permission.Action toAction(final String path) {
-        Permission.Action actions = Permission.Action.none;
-        final Path p = Paths.get(path);
-        if(Files.isReadable(p)) {
-            actions = actions.or(Permission.Action.read);
-        }
-        if(Files.isWritable(p)) {
-            actions = actions.or(Permission.Action.write);
-        }
-        if(Files.isExecutable(p)) {
-            actions = actions.or(Permission.Action.execute);
-        }
-        return actions;
-    }
-
-    protected class LocalPermission extends Permission {
-        public LocalPermission() {
-            super(toAction(path), Action.none, Action.none);
-        }
-
-        public LocalPermission(final String mode) {
-            super(mode);
-        }
-
-        public LocalPermission(final int mode) {
-            super(mode);
-        }
-
+    protected class LocalPermission implements Permission {
         @Override
         public boolean isReadable() {
             return Files.isReadable(Paths.get(path));
@@ -229,6 +184,78 @@ public class LocalAttributes implements Attributes {
         @Override
         public boolean isExecutable() {
             return Files.isExecutable(Paths.get(path));
+        }
+
+        @Override
+        public Action getUser() {
+            if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+                try {
+                    final Set<PosixFilePermission> set = readAttributes(path, PosixFileAttributes.class).permissions();
+                    Action action = Action.none;
+                    if(set.contains(PosixFilePermission.OWNER_READ)) {
+                        action = action.or(Action.read);
+                    }
+                    if(set.contains(PosixFilePermission.OWNER_WRITE)) {
+                        action = action.or(Action.write);
+                    }
+                    if(set.contains(PosixFilePermission.OWNER_EXECUTE)) {
+                        action = action.or(Action.execute);
+                    }
+                    return action;
+                }
+                catch(IOException e) {
+                    return Action.none;
+                }
+            }
+            return Action.none;
+        }
+
+        @Override
+        public Action getGroup() {
+            if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+                try {
+                    final Set<PosixFilePermission> set = readAttributes(path, PosixFileAttributes.class).permissions();
+                    Action action = Action.none;
+                    if(set.contains(PosixFilePermission.GROUP_READ)) {
+                        action = action.or(Action.read);
+                    }
+                    if(set.contains(PosixFilePermission.GROUP_WRITE)) {
+                        action = action.or(Action.write);
+                    }
+                    if(set.contains(PosixFilePermission.GROUP_EXECUTE)) {
+                        action = action.or(Action.execute);
+                    }
+                    return action;
+                }
+                catch(IOException e) {
+                    return Action.none;
+                }
+            }
+            return Action.none;
+        }
+
+        @Override
+        public Action getOther() {
+            if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+                try {
+                    final Set<PosixFilePermission> set = readAttributes(path, PosixFileAttributes.class).permissions();
+                    Action action = Action.none;
+                    if(set.contains(PosixFilePermission.OTHERS_READ)) {
+                        action = action.or(Action.read);
+                    }
+                    if(set.contains(PosixFilePermission.OTHERS_WRITE)) {
+                        action = action.or(Action.write);
+                    }
+                    if(set.contains(PosixFilePermission.OTHERS_EXECUTE)) {
+                        action = action.or(Action.execute);
+                    }
+                    return action;
+                }
+                catch(IOException e) {
+                    return Action.none;
+                }
+            }
+            return Action.none;
         }
     }
 
