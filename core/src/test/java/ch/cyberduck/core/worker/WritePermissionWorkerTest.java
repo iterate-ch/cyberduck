@@ -19,6 +19,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
@@ -26,7 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.PermissionOverwrite;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.TestPermissionAttributes;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
@@ -51,14 +52,16 @@ public class WritePermissionWorkerTest {
                 new PermissionOverwrite.Action(true, false, false)
         );
         // Tests all actions set to read
-        final Path path = new Path("a", EnumSet.of(Path.Type.directory), new TestPermissionAttributes(Permission.Action.read));
+        final Path path = new Path("a", EnumSet.of(Path.Type.directory), new DefaultPathAttributes().setPermission(
+                new StaticPermission(Permission.Action.read, Permission.Action.read, Permission.Action.read)));
         final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, new BooleanRecursiveCallback<>(true), ProgressListener.noop);
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<>();
                 // test just group set to read
-                children.add(new Path("b", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.none, Permission.Action.read, Permission.Action.none)));
+                children.add(new Path("b", EnumSet.of(Path.Type.file), new DefaultPathAttributes().setPermission(
+                        new StaticPermission(Permission.Action.none, Permission.Action.read, Permission.Action.none))));
                 return children;
             }
 
@@ -84,7 +87,7 @@ public class WritePermissionWorkerTest {
 
                         @Override
                         public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
-                            assertEquals(new Permission(744), status.getPermission());
+                            assertEquals(new StaticPermission(744), status.getPermission());
                         }
                     };
                 }
@@ -101,7 +104,8 @@ public class WritePermissionWorkerTest {
                 new PermissionOverwrite.Action(false, true, false),
                 new PermissionOverwrite.Action(false, true, false)
         );
-        final Path a = new Path("a", EnumSet.of(Path.Type.directory), new TestPermissionAttributes(Permission.Action.all));
+        final Path a = new Path("a", EnumSet.of(Path.Type.directory), new DefaultPathAttributes().setPermission(
+                new StaticPermission(Permission.Action.all, Permission.Action.all, Permission.Action.all)));
         final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), permission, new BooleanRecursiveCallback<>(true), ProgressListener.noop);
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
@@ -109,7 +113,7 @@ public class WritePermissionWorkerTest {
                 if(file.equals(a)) {
                     final AttributedList<Path> children = new AttributedList<>();
                     final Path d = new Path("d", EnumSet.of(Path.Type.directory));
-                    d.attributes().setPermission(new Permission(744));
+                    d.attributes().setPermission(new StaticPermission(744));
                     children.add(d);
                     children.add(new Path("f", EnumSet.of(Path.Type.file)));
                     return children;
@@ -141,13 +145,13 @@ public class WritePermissionWorkerTest {
                         public void setUnixPermission(final Path file, final TransferStatus status) {
                             switch(file.getName()) {
                                 case "a":
-                                    assertEquals(new Permission(644), status.getPermission());
+                                    assertEquals(new StaticPermission(644), status.getPermission());
                                     break;
                                 case "d":
-                                    assertEquals(new Permission(544), status.getPermission());
+                                    assertEquals(new StaticPermission(544), status.getPermission());
                                     break;
                                 case "f":
-                                    assertEquals(new Permission(644), status.getPermission());
+                                    assertEquals(new StaticPermission(644), status.getPermission());
                                     break;
                                 default:
                                     fail();
@@ -165,7 +169,7 @@ public class WritePermissionWorkerTest {
     @Ignore
     public void testRunRecursiveSetDirectoryExecute() throws Exception {
         final Path a = new Path("a", EnumSet.of(Path.Type.directory));
-        a.attributes().setPermission(new Permission(774));
+        a.attributes().setPermission(new StaticPermission(774));
         final Path f = new Path("f", EnumSet.of(Path.Type.file));
         final Path d = new Path("d", EnumSet.of(Path.Type.directory));
         final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), new PermissionOverwrite(
@@ -178,9 +182,9 @@ public class WritePermissionWorkerTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 if(file.equals(a)) {
                     final AttributedList<Path> children = new AttributedList<>();
-                    d.attributes().setPermission(new Permission(774));
+                    d.attributes().setPermission(new StaticPermission(774));
                     children.add(d);
-                    d.attributes().setPermission(new Permission(666));
+                    d.attributes().setPermission(new StaticPermission(666));
                     children.add(f);
                     return children;
                 }
@@ -210,13 +214,13 @@ public class WritePermissionWorkerTest {
                         @Override
                         public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
                             if(file.equals(a)) {
-                                assertEquals(file.toString(), new Permission(775), status.getPermission());
+                                assertEquals(file.toString(), new StaticPermission(775), status.getPermission());
                             }
                             if(file.equals(d)) {
-                                assertEquals(file.toString(), new Permission(775), status.getPermission());
+                                assertEquals(file.toString(), new StaticPermission(775), status.getPermission());
                             }
                             if(file.equals(f)) {
-                                assertEquals(file.toString(), new Permission(664), status.getPermission());
+                                assertEquals(file.toString(), new StaticPermission(664), status.getPermission());
                             }
                         }
                     };
@@ -234,7 +238,7 @@ public class WritePermissionWorkerTest {
                 new PermissionOverwrite.Action(true, false, false)
         );
         final Path path = new Path("a", EnumSet.of(Path.Type.directory));
-        path.attributes().setPermission(new Permission(Permission.Action.none, Permission.Action.read, Permission.Action.none,
+        path.attributes().setPermission(new StaticPermission(Permission.Action.none, Permission.Action.read, Permission.Action.none,
                 true, false, false));
         final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, new BooleanRecursiveCallback<>(true), ProgressListener.noop);
         worker.run(new NullSession(new Host(new TestProtocol())) {
@@ -242,7 +246,8 @@ public class WritePermissionWorkerTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<>();
                 // File has all set
-                children.add(new Path("b", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.all)));
+                children.add(new Path("b", EnumSet.of(Path.Type.file), new DefaultPathAttributes().setPermission(
+                        new StaticPermission(Permission.Action.all, Permission.Action.all, Permission.Action.all))));
                 return children;
             }
 
@@ -268,7 +273,7 @@ public class WritePermissionWorkerTest {
 
                         @Override
                         public void setUnixPermission(final Path file, final TransferStatus status) {
-                            assertEquals(new Permission(1744), status.getPermission());
+                            assertEquals(new StaticPermission(1744), status.getPermission());
                         }
                     };
                 }

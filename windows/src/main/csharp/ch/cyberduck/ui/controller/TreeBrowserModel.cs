@@ -131,7 +131,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return s.ToString();
             }
             Permission permission = path.attributes().getPermission();
-            return permission.toString();
+            return permission.getDescription();
         }
 
         public object GetKind(Path path)

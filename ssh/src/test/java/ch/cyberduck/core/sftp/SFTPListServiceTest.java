@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -56,7 +57,7 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
         new SFTPSymlinkFeature(session).symlink(symlinkRelative, file.getName());
         new SFTPSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
         new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), directory, new TransferStatus());
-        final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
+        final Permission permission = new StaticPermission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
         new SFTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(file));

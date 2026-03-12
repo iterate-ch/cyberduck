@@ -1,8 +1,16 @@
 # Changelog
 
+[9.5.0](https://github.com/iterate-ch/cyberduck/compare/release-9-4-1...release-9-5-0)
+
+* [Feature] AWS IAM Identity Center Support (S3) ([#13377](https://trac.cyberduck.io/ticket/13377))
+* [Feature] Connect with credentials from `credential_process` configuration directive in ~/.aws (
+  S3) ([#11664](https://trac.cyberduck.io/ticket/11664))
+
 [9.4.1](https://github.com/iterate-ch/cyberduck/compare/release-9-4-0...release-9-4-1)
-* Cleartext uploads to unlocked vault with auto detect disabled in Preferences (Cryptomator) ([#17893](https://trac.cyberduck.io/ticket/17893))
-* Unable to lock vault (Cryptomator) ([#17892](https://trac.cyberduck.io/ticket/17892))
+
+* [Bugfix] Cleartext uploads to unlocked vault with auto detect disabled in Preferences (
+  Cryptomator) ([#17893](https://trac.cyberduck.io/ticket/17893))
+* [Bugfix] Unable to lock vault (Cryptomator) ([#17892](https://trac.cyberduck.io/ticket/17892))
 
 [9.4.0](https://github.com/iterate-ch/cyberduck/compare/release-9-3-1...release-9-4-0)
 * [Feature] Rewrite protocol implementation (iRODS)

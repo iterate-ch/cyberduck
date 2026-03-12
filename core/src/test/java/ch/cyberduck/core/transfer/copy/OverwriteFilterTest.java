@@ -7,6 +7,7 @@ import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -89,7 +90,7 @@ public class OverwriteFilterTest {
         final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.file));
         source.attributes().setSize(1L);
-        source.attributes().setPermission(new Permission(777));
+        source.attributes().setPermission(new StaticPermission(777));
         final Long time = System.currentTimeMillis();
         source.attributes().setModificationDate(time);
         final boolean[] timestampWrite = new boolean[1];
@@ -130,7 +131,7 @@ public class OverwriteFilterTest {
 
                         @Override
                         public void setUnixPermission(final Path file, final TransferStatus status) {
-                            assertEquals(new Permission(777), status.getPermission());
+                            assertEquals(new StaticPermission(777), status.getPermission());
                             permissionWrite[0] = true;
                         }
                     };
