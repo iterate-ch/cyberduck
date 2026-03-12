@@ -177,6 +177,17 @@ public class LocalAttributes implements Attributes {
         return null;
     }
 
+    /**
+     * Converts the file permissions of a given path into a {@link Permission.Action} object.
+     * The resulting {@link Permission.Action} includes read, write, and execute permissions
+     * based on the file attributes of the specified path.
+     *
+     * @param path The file system path for which the permissions need to be determined.
+     *             This is a string representing the absolute or relative path of the file
+     *             or directory.
+     * @return A {@link Permission.Action} object representing the available actions
+     * (read, write, execute) for the specified path.
+     */
     private static Permission.Action toAction(final String path) {
         Permission.Action actions = Permission.Action.none;
         final Path p = Paths.get(path);
