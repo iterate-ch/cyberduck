@@ -1740,7 +1740,7 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             final Permission permission = permissions.resolve(Permission.EMPTY);
-            permissionsField.setStringValue(permission.toString());
+            permissionsField.setStringValue(permission.getDescription());
             octalField.setStringValue(permission.getMode());
         }
     }

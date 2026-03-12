@@ -1316,7 +1316,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         view.OctalPermissions = permission.resolve(Permission.EMPTY).getMode();
-                        view.Permissions = permission.resolve(Permission.EMPTY).toString();
+                        view.Permissions = permission.resolve(Permission.EMPTY).getDescription();
                     }
                     _infoController.TogglePermissionSettings(true);
                 }
