@@ -205,14 +205,14 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 }
                 else {
                     // Add bucket name to path
-                    resource += URIEncoder.encode(bucketName) + Path.DELIMITER;
+                    resource += URIEncoder.encode(bucketName) + (StringUtils.isEmpty(objectKey) ? StringUtils.EMPTY : Path.DELIMITER);
                 }
             }
         }
         else {
             if(StringUtils.isNotBlank(bucketName)) {
                 // Add bucket name to path
-                resource += URIEncoder.encode(bucketName) + Path.DELIMITER;
+                resource += URIEncoder.encode(bucketName) + (StringUtils.isEmpty(objectKey) ? StringUtils.EMPTY : Path.DELIMITER);
             }
         }
         final HttpUriRequest request;
