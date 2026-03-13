@@ -68,15 +68,18 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
             final Path file = entry.getKey().remote;
             final Local local = entry.getKey().local;
             final TransferStatus status = entry.getValue();
-            if(null == status.getHeader()) {
-                // Write header to be reused in writer
-                final FileHeader header = cryptomator.getFileHeaderCryptor().create();
-                status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
-            }
-            if(null == status.getNonces()) {
-                status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
-                        new RandomNonceGenerator(cryptomator.getNonceSize()) :
-                        new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength())));
+            if(file.isFile()) {
+                if(null == status.getHeader()) {
+                    // Write header to be reused in writer
+                    final FileHeader header = cryptomator.getFileHeaderCryptor().create();
+                    status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
+                }
+                if(null == status.getNonces()) {
+                    status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
+                            new RandomNonceGenerator(cryptomator.getNonceSize()) :
+                            new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength())));
+                }
+                encrypted.put(new TransferItem(cryptomator.encrypt(session, file), local), status);
             }
             if(file.isDirectory()) {
                 if(!status.isExists()) {
@@ -94,9 +97,6 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 else {
                     encrypted.put(new TransferItem(cryptomator.encrypt(session, file), local), status);
                 }
-            }
-            else {
-                encrypted.put(new TransferItem(cryptomator.encrypt(session, file), local), status);
             }
         }
         return delegate.pre(type, encrypted, callback);
