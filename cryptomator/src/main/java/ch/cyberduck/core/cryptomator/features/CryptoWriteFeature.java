@@ -54,6 +54,10 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     @Override
     public StatusOutputStream<Reply> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            if(file.isDirectory()) {
+                // When creating directory placeholder files, no content must be added
+                return proxy.write(vault.encrypt(session, file), status, callback);
+            }
             if(null == status.getHeader()) {
                 final FileHeader header = vault.getFileHeaderCryptor().create();
                 status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
@@ -91,6 +95,9 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        if(file.isDirectory()) {
+            return proxy.checksum(file, status);
+        }
         return new CryptoChecksumCompute(proxy.checksum(file, status), vault);
     }
 
