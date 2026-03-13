@@ -24,6 +24,8 @@ import ch.cyberduck.core.features.Vault;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.EnumSet;
+
 public class LoadingVaultLookupListener implements VaultLookupListener {
     private static final Logger log = LogManager.getLogger(LoadingVaultLookupListener.class);
 
@@ -44,7 +46,11 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
             final Vault vault = VaultFactory.get(directory, masterkey, config, pepper);
             log.info("Loading vault {} for session {}", vault, session);
             try {
-                registry.add(vault.load(session, prompt));
+                if(registry.add(vault.load(session, prompt))) {
+                    final EnumSet<Path.Type> type = directory.getType();
+                    type.add(Path.Type.vault);
+                    directory.setType(type);
+                }
             }
             catch(BackgroundException e) {
                 log.warn("Failure {} loading vault {}", e, vault);
