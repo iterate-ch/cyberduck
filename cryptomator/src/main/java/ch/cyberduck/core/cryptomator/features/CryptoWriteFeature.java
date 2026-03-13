@@ -65,17 +65,17 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 log.debug("Using {}", nonces);
                 status.setNonces(nonces);
             }
-            final StatusOutputStream<Reply> cleartext = proxy.write(vault.encrypt(session, file),
+            final StatusOutputStream<Reply> stream = proxy.write(vault.encrypt(session, file),
                     new CryptoTransferStatus(vault, status), callback);
             if(status.getOffset() == 0L) {
-                cleartext.write(status.getHeader().array());
+                stream.write(status.getHeader().array());
             }
-            return new StatusOutputStream<Reply>(new CryptoOutputStream(cleartext,
+            return new StatusOutputStream<Reply>(new CryptoOutputStream(stream,
                     vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
                     status.getNonces(), vault.numberOfChunks(status.getOffset()))) {
                 @Override
                 public Reply getStatus() throws BackgroundException {
-                    return cleartext.getStatus();
+                    return stream.getStatus();
                 }
             };
         }
