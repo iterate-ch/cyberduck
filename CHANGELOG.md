@@ -1,13 +1,13 @@
 # Changelog
 
 [9.5.0](https://github.com/iterate-ch/cyberduck/compare/release-9-4-1...release-9-5-0)
-
 * [Feature] AWS IAM Identity Center Support (S3) ([#13377](https://trac.cyberduck.io/ticket/13377))
 * [Feature] Connect with credentials from `credential_process` configuration directive in ~/.aws (
   S3) ([#11664](https://trac.cyberduck.io/ticket/11664))
+* [Bugfix] Error downloading file from unlocked vault (Cryptomator) ([#17935](https://trac.cyberduck.io/ticket/17935))
+* [Bugfix] No trailing delimiter for path style requests with bucket name only ([#17901](https://trac.cyberduck.io/ticket/17901))
 
 [9.4.1](https://github.com/iterate-ch/cyberduck/compare/release-9-4-0...release-9-4-1)
-
 * [Bugfix] Cleartext uploads to unlocked vault with auto detect disabled in Preferences (
   Cryptomator) ([#17893](https://trac.cyberduck.io/ticket/17893))
 * [Bugfix] Unable to lock vault (Cryptomator) ([#17892](https://trac.cyberduck.io/ticket/17892))
