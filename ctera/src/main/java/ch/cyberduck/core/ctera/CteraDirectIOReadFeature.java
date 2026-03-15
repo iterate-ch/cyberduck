@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -81,9 +80,9 @@ public class CteraDirectIOReadFeature implements Read {
             log.debug("DirectIO metadata {} retrieved for {}", metadata, file);
             final String secretKey = session.getOrCreateAPIKeys().secretKey;
             if(status.getLength() == 0) {
-                return new ChunkSequenceInputStream(Collections.emptyList(), metadata.encrypt_info, secretKey);
+                return new ChunkSequenceInputStream(Collections.emptyList(), metadata.encrypt_info, secretKey, status.getOffset());
             }
-            return new ChunkSequenceInputStream(metadata.chunks, metadata.encrypt_info, secretKey);
+            return new ChunkSequenceInputStream(metadata.chunks, metadata.encrypt_info, secretKey, status.getOffset());
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
@@ -95,46 +94,59 @@ public class CteraDirectIOReadFeature implements Read {
         assumeRole(file, READPERMISSION);
     }
 
-    @Override
-    public EnumSet<Flags> features(final Path file) {
-        // Reading with an initial offset is not supported
-        return EnumSet.noneOf(Flags.class);
-    }
-
     private final class ChunkSequenceInputStream extends InputStream {
         private final Enumeration<DirectIO.Chunk> chunks;
         private final DirectIO.EncryptInfo key;
         private final String secretKey;
+        private final long offset;
 
         private InputStream in;
+        private long currentPosition = 0L;
 
-        public ChunkSequenceInputStream(final List<DirectIO.Chunk> chunks, final DirectIO.EncryptInfo key, final String secretKey) throws IOException {
+        public ChunkSequenceInputStream(final List<DirectIO.Chunk> chunks, final DirectIO.EncryptInfo key, final String secretKey, final long offset) throws IOException {
             this.chunks = Collections.enumeration(chunks);
             this.key = key;
             this.secretKey = secretKey;
-            this.peekNextStream();
+            this.offset = offset;
+            this.peek();
         }
 
         private void nextStream() throws IOException {
             if(in != null) {
                 in.close();
             }
-            this.peekNextStream();
+            this.peek();
         }
 
-        private void peekNextStream() throws IOException {
-            if(chunks.hasMoreElements()) {
-                in = this.getStream(chunks.nextElement());
+        /**
+         * Peek at the next chunk in the sequence
+         */
+        private void peek() throws IOException {
+            while(chunks.hasMoreElements()) {
+                final DirectIO.Chunk chunk = chunks.nextElement();
+                final long chunkStart = currentPosition;
+                final long chunkEnd = currentPosition + chunk.len;
+                // Skip chunks that are entirely before the offset
+                if(chunkEnd <= offset) {
+                    log.debug("Skipping chunk {} entirely before offset {}", chunk, offset);
+                    currentPosition = chunkEnd;
+                    continue;
+                }
+                log.debug("Request chunk {}", chunk);
+                // Open the stream for this chunk
+                in = new DirectIOInputStream(new HttpMethodReleaseInputStream(
+                        session.getClient().getClient().execute(new HttpGet(chunk.url)),
+                        new TransferStatus().setOffset(0L).setLength(chunk.len)), key, secretKey);
+                // If this chunk contains the offset, skip bytes before the offset
+                if(chunkStart < offset) {
+                    final long bytesToSkip = offset - chunkStart;
+                    log.debug("Skipping {} bytes in chunk {} to reach offset {}", bytesToSkip, chunk, offset);
+                    IOUtils.skip(in, bytesToSkip);
+                }
+                currentPosition = chunkEnd;
+                return;
             }
-            else {
-                in = null;
-            }
-        }
-
-        private InputStream getStream(final DirectIO.Chunk chunk) throws IOException {
-            log.debug("Request chunk {}", chunk);
-            return new DirectIOInputStream(new HttpMethodReleaseInputStream(
-                    session.getClient().getClient().execute(new HttpGet(chunk.url)), new TransferStatus()), key, secretKey);
+            in = null;
         }
 
         @Override
