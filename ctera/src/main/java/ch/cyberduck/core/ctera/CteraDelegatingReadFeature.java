@@ -46,7 +46,7 @@ public class CteraDelegatingReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(directio) {
             try {
-                return new CteraDirectIOReadFeature(session, versionid).read(file, status, callback);
+                return new CteraDirectIOReadFeature(session).read(file, status, callback);
             }
             catch(BackgroundException e) {
                 log.warn("Ignore DirectIO retrieval failure {} for {}", e, file);
@@ -58,7 +58,7 @@ public class CteraDelegatingReadFeature implements Read {
     @Override
     public boolean offset(final Path file) throws BackgroundException {
         if(directio) {
-            return new CteraDirectIOReadFeature(session, versionid).offset(file);
+            return new CteraDirectIOReadFeature(session).offset(file);
         }
         return new CteraReadFeature(session).offset(file);
     }
@@ -66,7 +66,7 @@ public class CteraDelegatingReadFeature implements Read {
     @Override
     public void preflight(final Path file) throws BackgroundException {
         if(directio) {
-            new CteraDirectIOReadFeature(session, versionid).preflight(file);
+            new CteraDirectIOReadFeature(session).preflight(file);
             return;
         }
         new CteraReadFeature(session).preflight(file);
@@ -75,7 +75,7 @@ public class CteraDelegatingReadFeature implements Read {
     @Override
     public EnumSet<Flags> features(final Path file) {
         if(directio) {
-            return new CteraDirectIOReadFeature(session, versionid).features(file);
+            return new CteraDirectIOReadFeature(session).features(file);
         }
         return new CteraReadFeature(session).features(file);
     }

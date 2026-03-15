@@ -16,21 +16,17 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ctera.directio.DirectIOInputStream;
 import ch.cyberduck.core.ctera.model.DirectIO;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,8 +36,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.READPERMISSION;
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.assumeRole;
 
@@ -49,34 +43,15 @@ public class CteraDirectIOReadFeature implements Read {
     private static final Logger log = LogManager.getLogger(CteraDirectIOReadFeature.class);
 
     private final CteraSession session;
-    private final VersionIdProvider versionid;
 
-    public CteraDirectIOReadFeature(final CteraSession session, final VersionIdProvider versionid) {
+    public CteraDirectIOReadFeature(final CteraSession session) {
         this.session = session;
-        this.versionid = versionid;
-    }
-
-    public DirectIO getMetadata(final Path file) throws BackgroundException {
-        final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withUsername(false).withPath(false)
-                .get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
-        try {
-            return session.getClient().getClient().execute(request, new AbstractResponseHandler<DirectIO>() {
-                @Override
-                public DirectIO handleEntity(final HttpEntity entity) throws IOException {
-                    final ObjectMapper mapper = new ObjectMapper();
-                    return mapper.readValue(entity.getContent(), DirectIO.class);
-                }
-            });
-        }
-        catch(IOException e) {
-            throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
-        }
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final DirectIO metadata = this.getMetadata(file);
+            final DirectIO metadata = (DirectIO) status.getParameters().get(CteraBulkFeature.DIRECTIO_PARAMETER);
             log.debug("DirectIO metadata {} retrieved for {}", metadata, file);
             final String secretKey = session.getOrCreateAPIKeys().secretKey;
             if(status.getLength() == 0) {

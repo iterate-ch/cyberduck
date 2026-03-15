@@ -30,6 +30,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -67,7 +69,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
-        final InputStream in = new CteraDirectIOReadFeature(session, versionid).read(test, segment, ConnectionCallback.noop);
+        new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(segment, segment).transfer(in, buffer);
@@ -78,7 +81,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
 
     @Test
     public void testReadSingleChunkWithOffset() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(65536);
         final OutputStream out = local.getOutputStream(false);
@@ -93,7 +97,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length - 1).setOffset(1L);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
-        final InputStream in = new CteraDirectIOReadFeature(session, versionid).read(test, segment, ConnectionCallback.noop);
+        new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(segment, segment).transfer(in, buffer);
@@ -104,7 +109,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
 
     @Test
     public void testReadSingleChunkEqualDefaultChunksize() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(4194304);
         final OutputStream out = local.getOutputStream(false);
@@ -119,7 +125,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
-        final InputStream in = new CteraDirectIOReadFeature(session, versionid).read(test, segment, ConnectionCallback.noop);
+        new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(segment, segment).transfer(in, buffer);
@@ -130,7 +137,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
 
     @Test
     public void testReadSingleChunkEqualDefaultChunksizeWithOffset() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(4194304);
         final OutputStream out = local.getOutputStream(false);
@@ -145,7 +153,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         final TransferStatus segment = new TransferStatus().setSegment(true).setLength(1L).setOffset(content.length - 1L);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
-        final InputStream in = new CteraDirectIOReadFeature(session, versionid).read(test, segment, ConnectionCallback.noop);
+        new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(segment, segment).transfer(in, buffer);
@@ -156,7 +165,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
 
     @Test
     public void testReadMultipleChunkSizeAligned() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(4194304 * 2);
         final OutputStream out = local.getOutputStream(false);
@@ -171,7 +181,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
-        final InputStream in = new CteraDirectIOReadFeature(session, versionid).read(test, segment, ConnectionCallback.noop);
+        new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(segment, segment).transfer(in, buffer);
@@ -182,7 +193,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
 
     @Test
     public void testReadMultipleChunkSize() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(8388609);
         final OutputStream out = local.getOutputStream(false);
@@ -197,7 +209,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         final TransferStatus segment = new TransferStatus().setSegment(true).setLength(content.length);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
-        final InputStream in = new CteraDirectIOReadFeature(session, versionid).read(test, segment, ConnectionCallback.noop);
+        new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(segment, segment).transfer(in, buffer);
@@ -208,7 +221,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
 
     @Test
     public void testReadMultipleChunkSizeWithOffset() throws Exception {
-        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(new DefaultHomeFinderService(session).find(),
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(8388609);
         final OutputStream out = local.getOutputStream(false);
@@ -223,7 +237,8 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         final TransferStatus segment = new TransferStatus().setSegment(true).setOffset(4194304L).setLength(content.length - 4194304);
         status.setSegments(Collections.singletonList(segment));
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
-        final InputStream in = new CteraDirectIOReadFeature(session, versionid).read(test, segment, ConnectionCallback.noop);
+        new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, segment, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(segment, segment).transfer(in, buffer);
@@ -248,10 +263,11 @@ public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setSegments(Collections.emptyList());
         final DefaultVersionIdProvider versionid = new DefaultVersionIdProvider(session);
+        new CteraBulkFeature(session, versionid).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test, local), status), ConnectionCallback.noop);
         assertTrue(new DAVFindFeature(session).find(test));
         final PathAttributes attributes = new CteraAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
-        final InputStream in = new CteraDirectIOReadFeature(session, versionid).read(test, status, ConnectionCallback.noop);
+        final InputStream in = new CteraDirectIOReadFeature(session).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
