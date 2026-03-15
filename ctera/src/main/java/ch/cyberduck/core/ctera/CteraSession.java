@@ -180,10 +180,8 @@ public class CteraSession extends DAVSession {
             final HttpPost post = new HttpPost(API_PATH);
             try {
                 final String userId = this.getPortalSession().getUserIdFromUserRef();
-                post.setEntity(
-                        new StringEntity(String.format("<obj><att id=\"type\"><val>user-defined</val></att><att id=\"name\"><val>createApiKey</val></att><att id=\"param\"><val>%s</val></att></obj>",
-                                userId), ContentType.TEXT_XML
-                        )
+                post.setEntity(new StringEntity(String.format("<obj><att id=\"type\"><val>user-defined</val></att><att id=\"name\"><val>createApiKey</val></att><att id=\"param\"><val>%s</val></att></obj>", userId),
+                        ContentType.TEXT_XML)
                 );
                 final APICredentials credentials = this.getClient().execute(post, new AbstractResponseHandler<APICredentials>() {
                     @Override
