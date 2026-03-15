@@ -22,7 +22,6 @@ import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
-import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -31,7 +30,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
@@ -67,10 +65,6 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
         }
-        // Write header
-        final FileHeader header = vault.getFileHeaderCryptor().create();
-        status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
-        status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
         final Path target = delegate.mkdir(writer, encrypt, status);
         // Implementation may return new copy of attributes without encryption attributes
         target.attributes().setDirectoryId(directoryId);
