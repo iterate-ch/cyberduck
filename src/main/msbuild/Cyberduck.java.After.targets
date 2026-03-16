@@ -1,5 +1,9 @@
 <Project>
 
-  <Target Name="CompileJava" />
+  <Target Name="_CompileJava" DependsOnTargets="ExportReferences;_ResolveClasspathFiles" Inputs="@(Compile);@(ClasspathFiles)" Outputs="$(_CompileJavaStampFile)">
+    <Touch Files="$(_CompileJavaStampFile)" AlwaysCreate="true" ForceTouch="true" />
+  </Target>
+
+  <Target Name="ExportReferences" />
 
 </Project>
