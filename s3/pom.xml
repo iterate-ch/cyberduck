@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>9.4.2-SNAPSHOT</version>
+        <version>9.5.0-SNAPSHOT</version>
     </parent>
     <artifactId>s3</artifactId>
     <packaging>jar</packaging>
@@ -59,6 +59,14 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-ssooidc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sso</artifactId>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>

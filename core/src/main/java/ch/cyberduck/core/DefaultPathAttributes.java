@@ -162,7 +162,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         created = copy.getCreationDate();
         owner = copy.getOwner();
         group = copy.getGroup();
-        permission = Permission.EMPTY == copy.getPermission() ? Permission.EMPTY : new Permission(copy.getPermission());
+        permission = Permission.EMPTY == copy.getPermission() ? Permission.EMPTY : new StaticPermission(copy.getPermission());
         acl = Acl.EMPTY == copy.getAcl() ? Acl.EMPTY : new Acl(copy.getAcl());
         checksum = Checksum.NONE == copy.getChecksum() ? Checksum.NONE : new Checksum(copy.getChecksum());
         etag = copy.getETag();

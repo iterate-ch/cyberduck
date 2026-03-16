@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -104,12 +105,12 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
             // ReadWrite 2
             // Synchronize	4	Read, write access and permission to syncronize using desktop client.
             // FullControl 99
-            final Permission permission;
+            final StaticPermission permission;
             if((f.getPermission() & 2) == 2 || (f.getPermission() & 4) == 4) {
-                permission = new Permission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
+                permission = new StaticPermission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
             }
             else {
-                permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
+                permission = new StaticPermission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
             }
             if((f.getFlags() & 1) == 1) {
                 // This item is a folder

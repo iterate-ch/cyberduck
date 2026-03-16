@@ -734,10 +734,10 @@ public class PreferencesController extends ToolbarWindowController {
     public void chmodUploadTypePopupChanged(NSPopUpButton sender) {
         Permission p = null;
         if(sender.selectedItem().tag() == 0) {
-            p = new Permission(preferences.getInteger("queue.upload.permissions.file.default"));
+            p = new StaticPermission(preferences.getInteger("queue.upload.permissions.file.default"));
         }
         if(sender.selectedItem().tag() == 1) {
-            p = new Permission(preferences.getInteger("queue.upload.permissions.folder.default"));
+            p = new StaticPermission(preferences.getInteger("queue.upload.permissions.folder.default"));
         }
         if(null == p) {
             log.error("No selected item for:{}", sender);
@@ -774,10 +774,10 @@ public class PreferencesController extends ToolbarWindowController {
     public void chmodDownloadTypePopupChanged(NSPopUpButton sender) {
         Permission p = null;
         if(sender.selectedItem().tag() == 0) {
-            p = new Permission(preferences.getInteger("queue.download.permissions.file.default"));
+            p = new StaticPermission(preferences.getInteger("queue.download.permissions.file.default"));
         }
         if(sender.selectedItem().tag() == 1) {
-            p = new Permission(preferences.getInteger("queue.download.permissions.folder.default"));
+            p = new StaticPermission(preferences.getInteger("queue.download.permissions.folder.default"));
         }
         if(null == p) {
             log.error("No selected item for:{}", sender);
@@ -1087,7 +1087,7 @@ public class PreferencesController extends ToolbarWindowController {
         if(dotherx.state() == NSCell.NSOnState) {
             o = o.or(Permission.Action.execute);
         }
-        final Permission permission = new Permission(u, g, o);
+        final Permission permission = new StaticPermission(u, g, o);
         if(chmodDownloadTypePopup.selectedItem().tag() == 0) {
             preferences.setProperty("queue.download.permissions.file.default", permission.getMode());
         }
@@ -1221,7 +1221,7 @@ public class PreferencesController extends ToolbarWindowController {
         if(uotherx.state() == NSCell.NSOnState) {
             o = o.or(Permission.Action.execute);
         }
-        final Permission permission = new Permission(u, g, o);
+        final Permission permission = new StaticPermission(u, g, o);
         if(chmodUploadTypePopup.selectedItem().tag() == 0) {
             preferences.setProperty("queue.upload.permissions.file.default", permission.getMode());
         }

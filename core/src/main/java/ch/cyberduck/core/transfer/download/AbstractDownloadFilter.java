@@ -28,6 +28,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -163,11 +164,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             Permission permission = Permission.EMPTY;
             if(preferences.getBoolean("queue.download.permissions.default")) {
                 if(file.isFile()) {
-                    permission = new Permission(
+                    permission = new StaticPermission(
                             preferences.getInteger("queue.download.permissions.file.default"));
                 }
                 if(file.isDirectory()) {
-                    permission = new Permission(
+                    permission = new StaticPermission(
                             preferences.getInteger("queue.download.permissions.folder.default"));
                 }
             }
@@ -314,17 +315,18 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {
+                final StaticPermission applied = new StaticPermission(status.getPermission());
                 if(file.isDirectory()) {
                     // Make sure we can read & write files to directory created.
-                    status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
+                    applied.setUser(applied.getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
                 }
                 if(file.isFile()) {
                     // Make sure the owner can always read and write.
-                    status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write));
+                    applied.setUser(applied.getUser().or(Permission.Action.read).or(Permission.Action.write));
                 }
-                log.info("Updating permissions of {} to {}", local, status.getPermission());
+                log.info("Updating permissions of {} to {}", local, applied);
                 try {
-                    local.attributes().setPermission(status.getPermission());
+                    local.attributes().setPermission(applied);
                 }
                 catch(AccessDeniedException e) {
                     // Ignore

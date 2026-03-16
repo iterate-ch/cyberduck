@@ -20,6 +20,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class PathAttributesDictionaryTest {
         attributes.setTrashed(true);
         attributes.setHidden(true);
         attributes.setModificationDate(System.currentTimeMillis());
-        attributes.setPermission(new Permission(Permission.Action.none, Permission.Action.write, Permission.Action.execute));
+        attributes.setPermission(new StaticPermission(Permission.Action.none, Permission.Action.write, Permission.Action.execute));
         PathAttributes clone = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
@@ -64,7 +65,7 @@ public class PathAttributesDictionaryTest {
     @Test
     public void testSerializeHashCode() {
         PathAttributes attributes = new DefaultPathAttributes();
-        attributes.setPermission(new Permission(644));
+        attributes.setPermission(new StaticPermission(644));
         attributes.setDuplicate(true);
         attributes.setVersionId("v-1");
         attributes.setFileId("myUniqueId");

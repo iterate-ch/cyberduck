@@ -484,7 +484,7 @@ public class CryptoVault implements Vault {
                 final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
-                        final Permission permission = new Permission(attributes.getPermission());
+                        final StaticPermission permission = new StaticPermission(attributes.getPermission());
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
                         permission.setGroup(permission.getGroup().or(Permission.Action.execute));
                         permission.setOther(permission.getOther().or(Permission.Action.execute));

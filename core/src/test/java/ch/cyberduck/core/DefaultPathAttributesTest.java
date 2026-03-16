@@ -27,7 +27,7 @@ public class DefaultPathAttributesTest {
         attributes.setVersionId(new AlphanumericRandomStringService().random());
         attributes.setDuplicate(true);
         attributes.setLockId(new AlphanumericRandomStringService().random());
-        attributes.setPermission(new Permission(644));
+        attributes.setPermission(new StaticPermission(644));
         attributes.setVerdict(PathAttributes.Verdict.pending);
         attributes.setTrashed(true);
         attributes.setHidden(true);
@@ -75,7 +75,7 @@ public class DefaultPathAttributesTest {
         final DefaultPathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(100);
         attributes.setModificationDate(System.currentTimeMillis());
-        attributes.setPermission(new Permission("644"));
+        attributes.setPermission(new StaticPermission("644"));
         final Acl acl = new Acl();
         acl.addAll(new Acl.CanonicalUser("user1"), new Acl.Role(Acl.Role.READ), new Acl.Role(Acl.Role.WRITE));
         acl.addAll(new Acl.CanonicalUser("user2"), new Acl.Role(Acl.Role.FULL));

@@ -93,13 +93,13 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     protected StoregateApiClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
-                .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
+                .setRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
                         Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                                 host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
                 )
-                .withParameter("login_hint", preferences.getProperty("storegate.login.hint"));
+                .setParameter("login_hint", preferences.getProperty("storegate.login.hint"));
         // Force login even if browser session already exists
-        authorizationService.withParameter("prompt", "login");
+        authorizationService.setParameter("prompt", "login");
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new OAuth2ErrorResponseInterceptor(host, authorizationService)));
         configuration.addInterceptorLast(authorizationService);

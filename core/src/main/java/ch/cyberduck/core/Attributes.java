@@ -45,7 +45,17 @@ public interface Attributes {
      */
     Permission getPermission();
 
+    /**
+     * Retrieves the name of the owner of the file.
+     *
+     * @return The owner's name as a string, or null if the owner is unknown.
+     */
     String getOwner();
 
+    /**
+     * Retrieves the name of the group to which the file belongs.
+     *
+     * @return The group name as a string, or null if the group is unknown.
+     */
     String getGroup();
 }

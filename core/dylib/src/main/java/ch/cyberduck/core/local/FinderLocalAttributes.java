@@ -168,7 +168,7 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     @Override
     public Permission getPermission() {
-        return new FinderLocalPermission(super.getPermission().getMode());
+        return new FinderLocalPermission();
     }
 
     /**
@@ -197,18 +197,6 @@ public class FinderLocalAttributes extends LocalAttributes {
      * Executable, readable and writable flags based on <code>NSFileManager</code>.
      */
     private final class FinderLocalPermission extends LocalPermission {
-        private FinderLocalPermission() {
-            //
-        }
-
-        private FinderLocalPermission(final String mode) {
-            super(mode);
-        }
-
-        private FinderLocalPermission(final int mode) {
-            super(mode);
-        }
-
         @Override
         public boolean isExecutable() {
             final NSURL resolved;

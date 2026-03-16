@@ -22,7 +22,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -44,7 +44,7 @@ public class SFTPTouchFeatureTest extends AbstractSFTPTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
-        new SFTPUnixPermissionFeature(session).setUnixPermission(test, new Permission("664"));
+        new SFTPUnixPermissionFeature(session).setUnixPermission(test, new StaticPermission("664"));
         // Test override
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), test, new TransferStatus());
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
