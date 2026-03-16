@@ -37,7 +37,6 @@ public class VaultRegistryCopyFeature implements Copy {
     private final Copy proxy;
     private final VaultRegistry registry;
 
-
     public VaultRegistryCopyFeature(final Session<?> session, final Copy proxy, final VaultRegistry registry) {
         this.session = session;
         this.destination = session;
