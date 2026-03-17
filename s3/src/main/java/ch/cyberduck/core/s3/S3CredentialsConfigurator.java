@@ -46,14 +46,9 @@ import java.util.function.Predicate;
 import com.amazonaws.auth.profile.internal.AbstractProfilesConfigFileScanner;
 import com.amazonaws.auth.profile.internal.AllProfiles;
 import com.amazonaws.auth.profile.internal.BasicProfile;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * Configure credentials from AWS CLI configuration and SSO cache
@@ -98,11 +93,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             if(profile.isProcessBasedProfile()) {
                 // Uses external process to retrieve temporary credentials
                 final String command = profile.getCredentialProcess();
-                final ObjectMapper mapper = JsonMapper.builder()
-                        .serializationInclusion(JsonInclude.Include.NON_NULL)
-                        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-                        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                        .visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY).build();
+                final ObjectMapper mapper = new ObjectMapper();
                 List<String> cmd = new ArrayList<>();
                 switch(Factory.Platform.getDefault()) {
                     case windows:
@@ -246,6 +237,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 || e.getProperties().containsKey("sso_session");
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class CachedCredential {
         @JsonProperty("AccessKeyId")
         private String accessKey;
