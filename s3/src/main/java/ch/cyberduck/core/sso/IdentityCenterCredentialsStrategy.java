@@ -62,7 +62,9 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
         this.region = prompt(host, prompt, host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
                 LocaleFactory.localizedString(String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"),
                 host.getProperty(Profile.SSO_REGION_KEY)).getIdentifier();
+        // Lookup using SSO API if explicit configuration option is missing
         this.accountId = host.getProperty(Profile.SSO_ACCOUNT_ID_KEY);
+        // Lookup using SSO API if explicit configuration option is missing
         this.roleName = host.getProperty(Profile.SSO_ROLE_NAME_KEY);
     }
 
