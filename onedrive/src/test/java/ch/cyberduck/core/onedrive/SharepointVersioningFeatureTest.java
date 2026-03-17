@@ -21,7 +21,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -56,8 +55,8 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
     @Test
     public void testList() throws Exception {
         final GraphFileIdProvider fileid = new GraphFileIdProvider(session);
-        final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final SharepointListService list = new SharepointListService(session, fileid);
+        final AttributedList<Path> drives = list.list(new Path(list.getDefaultSite(), DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
         final Path test = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());

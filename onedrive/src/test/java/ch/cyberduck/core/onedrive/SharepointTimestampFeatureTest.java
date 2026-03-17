@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -50,8 +49,8 @@ public class SharepointTimestampFeatureTest extends AbstractSharepointTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
-        final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final SharepointListService list = new SharepointListService(session, fileid);
+        final AttributedList<Path> drives = list.list(new Path(list.getDefaultSite(), DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), file, new TransferStatus().setMime("x-application/cyberduck"));
@@ -69,8 +68,8 @@ public class SharepointTimestampFeatureTest extends AbstractSharepointTest {
 
     @Test
     public void testSetTimestampDirectory() throws Exception {
-        final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final SharepointListService list = new SharepointListService(session, fileid);
+        final AttributedList<Path> drives = list.list(new Path(list.getDefaultSite(), DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), test, null);

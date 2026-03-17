@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -57,8 +56,8 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
     @Test
     public void testWrite() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session, fileid);
-        final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final SharepointListService list = new SharepointListService(session, fileid);
+        final AttributedList<Path> drives = list.list(new Path(list.getDefaultSite(), DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path container = drives.get(0);
         final Path folder = new GraphDirectoryFeature(session, fileid).mkdir(new GraphWriteFeature(session, fileid), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final PathAttributes folderAttributes = new GraphAttributesFinderFeature(session, fileid).find(folder);
