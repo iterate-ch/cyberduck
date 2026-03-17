@@ -19,23 +19,34 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.SSLNegotiateException;
 
 import org.junit.Test;
 
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
 import java.net.SocketException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 public class SSLExceptionMappingServiceTest {
 
     @Test
-    public void testMap() {
+    public void testMapSocketException() {
         final BackgroundException f = new SSLExceptionMappingService().map(new SSLException(
                 "Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe",
                 new SSLException("javax.net.ssl.SSLException: java.net.SocketException: Broken pipe",
                         new SocketException("Broken pipe"))));
+        assertSame(ConnectionRefusedException.class, f.getClass());
         assertEquals("Connection failed", f.getMessage());
         assertEquals("Broken pipe. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", f.getDetail());
+    }
+
+    @Test
+    public void testMapSSLFailure() {
+        final BackgroundException f = new SSLExceptionMappingService().map(new SSLHandshakeException("r"));
+        assertSame(SSLNegotiateException.class, f.getClass());
     }
 }

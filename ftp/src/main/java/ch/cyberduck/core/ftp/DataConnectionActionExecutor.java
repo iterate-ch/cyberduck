@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -55,9 +56,9 @@ public class DataConnectionActionExecutor {
             }
             return action.execute();
         }
-        catch(ConnectionTimeoutException failure) {
-            log.warn("Timeout opening data socket {}", failure.getMessage());
-            // Expect 421 response
+        catch(ConnectionRefusedException | ConnectionTimeoutException failure) {
+            log.warn("I/O error opening data socket {}", failure.getMessage());
+            // Drain any pending reply on the control channel to resynchronize after failed data connection
             session.getClient().completePendingCommand();
             throw failure;
         }

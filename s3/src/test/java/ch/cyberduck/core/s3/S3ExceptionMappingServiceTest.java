@@ -126,7 +126,7 @@ public class S3ExceptionMappingServiceTest {
 
     @Test
     public void testAlgorithmFailure() {
-        assertEquals("EC AlgorithmParameters not available. Please contact your web hosting service provider for assistance.",
+        assertEquals("EC AlgorithmParameters not available. The connection attempt was rejected. The server may be down, or your network may not be properly configured.",
             new S3ExceptionMappingService().map(new S3ServiceException(
                 new SSLException(
                     new RuntimeException(
