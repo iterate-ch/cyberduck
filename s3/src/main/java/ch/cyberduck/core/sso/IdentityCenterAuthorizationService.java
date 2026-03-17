@@ -91,11 +91,13 @@ public class IdentityCenterAuthorizationService {
                             .withNextToken(nextToken)
                             .withAccessToken(tokens.getAccessToken()));
                     list.addAll(result.getAccountList());
+                    log.debug("Retrieved account list {}", list);
                     nextToken = result.getNextToken();
                 }
                 while(null != nextToken);
                 if(list.size() == 1) {
                     accountId = list.get(0).getAccountId();
+                    log.debug("Using default account ID {}", accountId);
                 }
                 else {
                     accountId = prompt(host, prompt, list.stream().map(info -> new Location.Name(info.getAccountId()) {
@@ -116,11 +118,13 @@ public class IdentityCenterAuthorizationService {
                             .withAccountId(accountId)
                             .withAccessToken(tokens.getAccessToken()));
                     list.addAll(result.getRoleList());
+                    log.debug("Retrieved role list {}", list);
                     nextToken = result.getNextToken();
                 }
                 while(null != nextToken);
                 if(list.size() == 1) {
                     roleName = list.get(0).getRoleName();
+                    log.debug("Using default role name {}", roleName);
                 }
                 else {
                     roleName = prompt(host, prompt, list.stream().map(info -> new Location.Name(info.getRoleName())).collect(Collectors.toSet()),
