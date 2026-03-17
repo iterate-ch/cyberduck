@@ -21,7 +21,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.aws.AmazonSSOOIDCExceptionMappingService;
 import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3CredentialsConfigurator;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -131,7 +131,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
                         Inet4Address.getLoopbackAddress().getHostAddress(), temp.getLocalPort());
                 final RegisterClientResult registration = client.registerClient(new RegisterClientRequest()
                         // The friendly name of the client.
-                        .withClientName(new PreferencesUseragentProvider().get())
+                        .withClientName(PreferencesFactory.get().getProperty("application.name"))
                         // The service supports only public as a client type.
                         .withClientType("public")
                         .withIssuerUrl(issuerUrl)
