@@ -183,7 +183,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public CredentialsConfigurator reload() throws LoginCanceledException {
+    public S3CredentialsConfigurator reload() throws LoginCanceledException {
         // See https://docs.aws.amazon.com/sdkref/latest/guide/creds-config-files.html for configuration behavior
         final Local configFile = LocalFactory.get(directory, "config");
         final Local credentialsFile = LocalFactory.get(directory, "credentials");

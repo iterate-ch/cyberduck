@@ -15,7 +15,6 @@ package ch.cyberduck.core.sso;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -27,15 +26,12 @@ import ch.cyberduck.core.aws.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3CredentialsConfigurator;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpClient;
 import org.apache.logging.log4j.LogManager;
@@ -45,11 +41,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.services.ssooidc.AWSSSOOIDC;
 import com.amazonaws.services.ssooidc.AWSSSOOIDCClientBuilder;
 import com.amazonaws.services.ssooidc.model.AWSSSOOIDCException;
@@ -59,8 +52,6 @@ import com.amazonaws.services.ssooidc.model.RegisterClientRequest;
 import com.amazonaws.services.ssooidc.model.RegisterClientResult;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.openidconnect.IdTokenResponse;
-
-import static ch.cyberduck.core.s3.S3CredentialsConfigurator.toSsoPredicate;
 
 public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterceptor {
     private static final Logger log = LogManager.getLogger(RegisterClientOAuth2RequestInterceptor.class);
@@ -84,23 +75,6 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
                                                   final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws ConnectionCanceledException {
         super(client, host, null, null, null, null, host.getProtocol().getOAuthScopes(), true, prompt);
         this.host = host;
-        if(StringUtils.isBlank(host.getCredentials().getUsername())) {
-            final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator();
-            configurator.reload();
-            final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
-            if(!profiles.isEmpty()) {
-                try {
-                    final String profile = IdentityCenterAuthorizationService.prompt(host, prompt,
-                            profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
-                            LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
-                    log.debug("Configuring credentials from profile {}", profile);
-                    host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));
-                }
-                catch(ConnectionCanceledException e) {
-                    // Continue with manual configuration
-                }
-            }
-        }
         this.trust = trust;
         this.key = key;
         this.region = IdentityCenterAuthorizationService.prompt(host, prompt, host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
