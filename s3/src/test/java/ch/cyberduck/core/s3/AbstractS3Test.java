@@ -74,7 +74,7 @@ public abstract class AbstractS3Test extends VaultTest {
     public void setupDefault() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key")
         ));
@@ -94,7 +94,7 @@ public abstract class AbstractS3Test extends VaultTest {
     public void setupVirtualHost() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
                 PROPERTIES.get("s3.key")
         ));
@@ -114,7 +114,7 @@ public abstract class AbstractS3Test extends VaultTest {
     public void setupCloudFront() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, "d4fobtprygi46.cloudfront.net", new Credentials("anonymous")).setRegion("eu-central-1");
         cloudfront = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
