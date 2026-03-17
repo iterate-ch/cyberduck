@@ -185,8 +185,8 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                 final HttpRange range = HttpRange.withStatus(new TransferStatus()
                         .setLength(status.getLength())
                         .setOffset(status.getOffset()));
-                final String uploadSessionId = status.getParameters().get(BoxLargeUploadService.UPLOAD_SESSION_ID);
-                final String overall_length = status.getParameters().get(BoxLargeUploadService.OVERALL_LENGTH);
+                final String uploadSessionId = status.getParameters().get(BoxLargeUploadService.UPLOAD_SESSION_ID).toString();
+                final String overall_length = status.getParameters().get(BoxLargeUploadService.OVERALL_LENGTH).toString();
                 log.debug("Send range {} for file {}", range, file);
                 final HttpPut request = new HttpPut(String.format("%s/files/upload_sessions/%s", client.getBasePath(), uploadSessionId));
                 // Must not overlap with the range of a part already uploaded this session.

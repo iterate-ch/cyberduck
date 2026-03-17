@@ -1,7 +1,7 @@
 package ch.cyberduck.core.ctera;
 
 /*
- * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ctera.model.DirectIO;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.VersionIdProvider;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -33,14 +34,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CteraBulkFeature extends DisabledBulkFeature {
     private static final Logger log = LogManager.getLogger(CteraBulkFeature.class);
+
+    public static final String DIRECTIO_PARAMETER = "directio";
 
     private final CteraSession session;
     private final VersionIdProvider versionid;
@@ -57,46 +59,11 @@ public class CteraBulkFeature extends DisabledBulkFeature {
                 break;
             case download:
                 for(Map.Entry<TransferItem, TransferStatus> file : files.entrySet()) {
-                    final DirectIO metadata;
-                    try {
-                        metadata = this.getMetadata(file.getKey().remote);
-                    }
-                    catch(IOException e) {
-                        log.warn("Ignore DirectIO download failure {} for {}", e, file.getKey().remote);
-                        continue;
-                    }
+                    final DirectIO metadata = this.getMetadata(file.getKey().remote);
+                    log.debug("DirectIO metadata {} retrieved for {}", metadata, file.getKey().remote);
                     final TransferStatus status = file.getValue();
-                    if(status.isSegmented()) {
-                        final List<TransferStatus> segments = status.getSegments();
-                        if(segments.size() <= metadata.chunks.size()) {
-                            for(int i = 0; i < segments.size(); i++) {
-                                final TransferStatus segment = segments.get(i);
-                                if(i == 0) {
-                                    if(segment.getOffset() > 0) {
-                                        log.warn("DirectIO download for {} with an initial offset is not supported", file.getKey().remote);
-                                        continue;
-                                    }
-                                }
-                                segment.setUrl(metadata.chunks.get(i).url);
-                                final Map<String, String> parameters = new HashMap<>(segment.getParameters());
-                                parameters.put(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY, metadata.encrypt_info.wrapped_key);
-                                segment.setParameters(parameters);
-                            }
-                        }
-                        else {
-                            log.error("Mismatch between number of segments ({}) and chunks ({}) for {}",
-                                    segments.size(), metadata.chunks.size(), file.getKey().remote);
-                        }
-                    }
-                    else {
-                        if(metadata.actual_blocks_range.file_size == 0) {
-                            final Map<String, String> parameters = new HashMap<>(status.getParameters());
-                            parameters.put(CteraDirectIOReadFeature.CTERA_WRAPPEDKEY, metadata.encrypt_info.wrapped_key);
-                            status.setParameters(parameters);
-                        }
-                        else {
-                            log.warn("DirectIO download for {} with an initial offset is not supported", file.getKey().remote);
-                        }
+                    for(TransferStatus segment : status.getSegments()) {
+                        segment.setParameters(Collections.singletonMap(DIRECTIO_PARAMETER, metadata));
                     }
                 }
                 break;
@@ -104,17 +71,20 @@ public class CteraBulkFeature extends DisabledBulkFeature {
         return files;
     }
 
-    private DirectIO getMetadata(final Path file) throws IOException, BackgroundException {
+    private DirectIO getMetadata(final Path file) throws BackgroundException {
         final HttpGet request = new HttpGet(String.format("%s%s%s", new HostUrlProvider().withUsername(false).withPath(false)
                 .get(session.getHost()), CteraDirectIOInterceptor.DIRECTIO_PATH, versionid.getVersionId(file)));
-        final DirectIO metadata = session.getClient().getClient().execute(request, new AbstractResponseHandler<DirectIO>() {
-            @Override
-            public DirectIO handleEntity(final HttpEntity entity) throws IOException {
-                final ObjectMapper mapper = new ObjectMapper();
-                return mapper.readValue(entity.getContent(), DirectIO.class);
-            }
-        });
-        log.debug("DirectIO metadata {} retrieved for {}", metadata, file);
-        return metadata;
+        try {
+            return session.getClient().getClient().execute(request, new AbstractResponseHandler<DirectIO>() {
+                @Override
+                public DirectIO handleEntity(final HttpEntity entity) throws IOException {
+                    final ObjectMapper mapper = new ObjectMapper();
+                    return mapper.readValue(entity.getContent(), DirectIO.class);
+                }
+            });
+        }
+        catch(IOException e) {
+            throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
+        }
     }
 }

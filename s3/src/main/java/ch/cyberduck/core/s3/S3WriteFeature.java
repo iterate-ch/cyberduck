@@ -52,6 +52,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
@@ -77,7 +78,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     final RequestEntityRestStorageService client = session.getClient();
                     final Path bucket = containerService.getContainer(file);
                     client.putObjectWithRequestEntityImpl(
-                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object, entity, status.getParameters());
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object, entity,
+                            status.getParameters().entrySet().stream()
+                                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString())));
                     log.debug("Saved object {} with checksum {}", file, object.getETag());
                 }
                 catch(ServiceException e) {
