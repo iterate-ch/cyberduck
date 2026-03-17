@@ -24,7 +24,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.ui.cocoa.controller.PasswordController;
 
-public class PromptPasswordCallback implements PasswordCallback {
+public class PromptPasswordCallback extends PromptLocationCallback implements PasswordCallback {
 
     private final ProxyController controller;
 
@@ -32,6 +32,7 @@ public class PromptPasswordCallback implements PasswordCallback {
     private boolean suppressed;
 
     public PromptPasswordCallback(final ProxyController controller) {
+        super(controller);
         this.controller = controller;
     }
 
