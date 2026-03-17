@@ -41,7 +41,7 @@ public class DataConnectionActionExecutor {
      * @param action Action that needs to open a data connection
      * @return True if action was successful
      */
-    public <T> T data(final DataConnectionAction<T> action) throws IOException, BackgroundException {
+    public <T> T open(final DataConnectionAction<T> action) throws IOException, BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
             final FTPConnectMode mode = session.getConnectMode();

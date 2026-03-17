@@ -61,7 +61,7 @@ public class FTPReadFeature implements Read {
             if(status.isAppend()) {
                 session.getClient().setRestartOffset(status.getOffset());
             }
-            final InputStream in = new DataConnectionActionExecutor(session).data(new DataConnectionAction<InputStream>() {
+            final InputStream in = new DataConnectionActionExecutor(session).open(new DataConnectionAction<InputStream>() {
                 @Override
                 public InputStream execute() throws BackgroundException {
                     try {

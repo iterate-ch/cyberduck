@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThrows;
 public class DataConnectionActionExecutorTest extends AbstractFTPTest {
 
     @Test
-    public void testFallbackDataConnection500Error() throws Exception {
+    public void testFallbackOpenConnection500Error() throws Exception {
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override
             public Void execute() throws BackgroundException {
@@ -37,6 +37,6 @@ public class DataConnectionActionExecutorTest extends AbstractFTPTest {
             }
         };
         final DataConnectionActionExecutor f = new DataConnectionActionExecutor(session);
-        assertThrows(Exception.class, () -> f.data(action));
+        assertThrows(Exception.class, () -> f.open(action));
     }
 }
