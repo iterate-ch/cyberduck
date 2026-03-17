@@ -49,6 +49,11 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
     private final String accountId;
     private final String roleName;
 
+    /**
+     * A minimum scope of sso:account:access must be granted to get a refresh token back from the IAM Identity Center service.
+     */
+    public static final String SSO_ACCOUNT_ACCESS_SCOPE = "sso:account:access";
+
     public IdentityCenterCredentialsStrategy(final OAuth2RequestInterceptor oauth, final Host host,
                                              final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws ConnectionCanceledException {
         super(host, trust, key, prompt);

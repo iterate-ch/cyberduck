@@ -260,7 +260,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
-            if(host.getProtocol().getOAuthScopes().contains("sso:account:access")) {
+            if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
                 log.debug("Configure SSO");
                 final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt)
                         .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode);
