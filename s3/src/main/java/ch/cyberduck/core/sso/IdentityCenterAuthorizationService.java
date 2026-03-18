@@ -76,8 +76,8 @@ public class IdentityCenterAuthorizationService {
      * @param roleName  The friendly name of the role that is assigned to the user.
      * @return Short-lived access tokens
      */
-    public RoleCredentials getRoleCredentials(final OAuthTokens tokens, final String region,
-                                              @Nullable String accountId, @Nullable String roleName) throws BackgroundException {
+    public IdentityCenterRoleCredentials getRoleCredentials(final OAuthTokens tokens, final String region,
+                                                            @Nullable String accountId, @Nullable String roleName) throws BackgroundException {
         final AWSSSO client = AWSSSOClient.builder()
                 .withRegion(region)
                 .withClientConfiguration(new CustomClientConfiguration(host,
@@ -91,11 +91,13 @@ public class IdentityCenterAuthorizationService {
                             .withNextToken(nextToken)
                             .withAccessToken(tokens.getAccessToken()));
                     list.addAll(result.getAccountList());
+                    log.debug("Retrieved account list {}", list);
                     nextToken = result.getNextToken();
                 }
                 while(null != nextToken);
                 if(list.size() == 1) {
                     accountId = list.get(0).getAccountId();
+                    log.debug("Using default account ID {}", accountId);
                 }
                 else {
                     accountId = prompt(host, prompt, list.stream().map(info -> new Location.Name(info.getAccountId()) {
@@ -116,11 +118,13 @@ public class IdentityCenterAuthorizationService {
                             .withAccountId(accountId)
                             .withAccessToken(tokens.getAccessToken()));
                     list.addAll(result.getRoleList());
+                    log.debug("Retrieved role list {}", list);
                     nextToken = result.getNextToken();
                 }
                 while(null != nextToken);
                 if(list.size() == 1) {
                     roleName = list.get(0).getRoleName();
+                    log.debug("Using default role name {}", roleName);
                 }
                 else {
                     roleName = prompt(host, prompt, list.stream().map(info -> new Location.Name(info.getRoleName())).collect(Collectors.toSet()),
@@ -131,10 +135,12 @@ public class IdentityCenterAuthorizationService {
             log.debug("Getting role credentials for account {} and role {} with access token {}",
                     accountId, roleName, tokens);
             // Gets STS role credentials using the SSO access token for a given role name that is assigned to the user.
-            return client.getRoleCredentials(new GetRoleCredentialsRequest()
+            final RoleCredentials result = client.getRoleCredentials(new GetRoleCredentialsRequest()
                     .withAccountId(accountId)
                     .withRoleName(roleName)
                     .withAccessToken(tokens.getAccessToken())).getRoleCredentials();
+            return new IdentityCenterRoleCredentials(accountId, roleName,
+                    result.getAccessKeyId(), result.getSecretAccessKey(), result.getSessionToken(), result.getExpiration());
         }
         catch(AmazonClientException e) {
             throw new AmazonServiceExceptionMappingService().map(e);
@@ -155,5 +161,47 @@ public class IdentityCenterAuthorizationService {
             return input;
         }
         return new Location.Name(value);
+    }
+
+    public static final class IdentityCenterRoleCredentials {
+        private final String accountId;
+        private final String roleName;
+        private final String accessKeyId;
+        private final String secretAccessKey;
+        private final String sessionToken;
+        private final Long expiration;
+
+        public IdentityCenterRoleCredentials(final String accountId, final String roleName, final String accessKeyId, final String secretAccessKey, final String sessionToken, final Long expiration) {
+            this.accountId = accountId;
+            this.roleName = roleName;
+            this.accessKeyId = accessKeyId;
+            this.secretAccessKey = secretAccessKey;
+            this.sessionToken = sessionToken;
+            this.expiration = expiration;
+        }
+
+        public String getAccountId() {
+            return accountId;
+        }
+
+        public String getRoleName() {
+            return roleName;
+        }
+
+        public String getAccessKeyId() {
+            return accessKeyId;
+        }
+
+        public String getSecretAccessKey() {
+            return secretAccessKey;
+        }
+
+        public String getSessionToken() {
+            return sessionToken;
+        }
+
+        public Long getExpiration() {
+            return expiration;
+        }
     }
 }

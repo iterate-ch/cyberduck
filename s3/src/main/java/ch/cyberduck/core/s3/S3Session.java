@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -37,6 +38,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
@@ -52,6 +54,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.sso.IdentityCenterAuthorizationService;
 import ch.cyberduck.core.sso.IdentityCenterCredentialsStrategy;
 import ch.cyberduck.core.sso.RegisterClientOAuth2RequestInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsStrategy;
@@ -83,7 +86,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import com.amazonaws.auth.profile.internal.BasicProfile;
+
+import static ch.cyberduck.core.s3.S3CredentialsConfigurator.toSsoPredicate;
 import static com.amazonaws.services.s3.Headers.REQUESTER_PAYS_HEADER;
 import static com.amazonaws.services.s3.Headers.S3_ALTERNATE_DATE;
 
@@ -260,8 +267,28 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
-            if(host.getProtocol().getOAuthScopes().contains("sso:account:access")) {
+            if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
                 log.debug("Configure SSO");
+                final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
+                final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
+                if(!profiles.isEmpty()) {
+                    if(StringUtils.isBlank(host.getCredentials().getUsername())) {
+                        try {
+                            final String profile = IdentityCenterAuthorizationService.prompt(host, prompt,
+                                    profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
+                                    LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
+                            log.debug("Configuring credentials from profile {}", profile);
+                            host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));
+                        }
+                        catch(ConnectionCanceledException e) {
+                            // Continue with manual configuration
+                        }
+                    }
+                    else {
+                        // Copy properties from AWS CLI profile
+                        host.setCredentials(configurator.configure(host));
+                    }
+                }
                 final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt)
                         .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode);
                 log.debug("Add interceptor {}", oauth);

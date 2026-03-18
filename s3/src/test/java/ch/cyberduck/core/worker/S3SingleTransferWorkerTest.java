@@ -122,7 +122,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         out.close();
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         )) {
@@ -206,7 +206,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         out.close();
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         )) {
