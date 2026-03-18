@@ -48,7 +48,7 @@ public class FTPWriteFeature implements Write<Void> {
             if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            final OutputStream out = new DataConnectionActionExecutor(session).data(new DataConnectionAction<OutputStream>() {
+            final OutputStream out = new DataConnectionActionExecutor(session).open(new DataConnectionAction<OutputStream>() {
                 @Override
                 public OutputStream execute() throws BackgroundException {
                     try {
