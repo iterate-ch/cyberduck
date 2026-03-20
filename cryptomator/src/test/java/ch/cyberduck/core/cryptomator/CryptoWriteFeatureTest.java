@@ -57,8 +57,8 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
                 return super._getFeature(type);
             }
         };
-        final AbstractVault vault = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
-                new VaultMetadata(home, vaultVersion));
+        final AbstractVault vault = new CryptoVaultProvider(session).create(session, null, home, new VaultCredentials("test"),
+                new VaultMetadata(vaultVersion));
         int headerSize = vault.getFileHeaderCryptor().headerSize();
         // zero file size
         assertEquals(headerSize, vault.toCiphertextSize(0L, 0));

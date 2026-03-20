@@ -18,6 +18,9 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -33,6 +36,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.threading.DisabledCancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -173,7 +177,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vaultPath = new Path(home, "vault", EnumSet.of(Path.Type.directory));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, new VaultMetadata(vaultPath, VaultMetadata.Type.V8));
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vaultPath, new VaultMetadata(VaultMetadata.Type.V8));
         cryptomator.load(session, new VaultMetadataProvider() {
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
@@ -197,7 +201,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path vaultPath = new SFTPHomeDirectoryService(session).find();
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, new VaultMetadata(vaultPath, VaultMetadata.Type.V8));
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vaultPath, new VaultMetadata(VaultMetadata.Type.V8));
         cryptomator.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("12341234");
@@ -235,7 +239,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vaultPath = new Path(home, "vault", EnumSet.of(Path.Type.directory));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, new VaultMetadata(vaultPath, VaultMetadata.Type.V8));
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vaultPath, new VaultMetadata(VaultMetadata.Type.V8));
         cryptomator.load(session, new VaultMetadataProvider() {
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));

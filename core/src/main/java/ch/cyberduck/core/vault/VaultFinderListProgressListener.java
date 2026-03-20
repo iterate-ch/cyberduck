@@ -80,7 +80,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
         final VaultMetadata metadata = provider.metadata(file);
         if(metadata != null) {
             log.info("Found vault config or masterkey file {}", file);
-            final Vault vault = lookup.load(session, metadata);
+            final Vault vault = lookup.load(session, file.getParent(), metadata);
             if(vault.equals(Vault.DISABLED)) {
                 return;
             }

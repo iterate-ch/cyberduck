@@ -63,8 +63,8 @@ public class CryptoOutputStreamTest extends AbstractCryptoTests {
                 return super._getFeature(type);
             }
         };
-        final AbstractVault vault = new CryptoVaultProvider(session).create(session, null, new VaultCredentials("test"),
-                new VaultMetadata(home, vaultVersion));
+        final AbstractVault vault = new CryptoVaultProvider(session).create(session, null, home, new VaultCredentials("test"),
+                new VaultMetadata(vaultVersion));
         return vault;
     }
 

@@ -57,7 +57,7 @@ public class CryptoVaultProvider implements VaultProvider {
     @Override
     public VaultMetadata metadata(final Path path) {
         if(this.isVault(path)) {
-            return new VaultMetadata(path.getParent(), markers.get(path.getName()));
+            return new VaultMetadata(markers.get(path.getName()));
         }
         return null;
     }
@@ -67,19 +67,19 @@ public class CryptoVaultProvider implements VaultProvider {
         for(String marker : markers.keySet()) {
             final Path m = new Path(directory, marker, EnumSet.of(Path.Type.file));
             if(find.find(m, listener)) {
-                return new VaultMetadata(m.getParent(), markers.get(marker));
+                return new VaultMetadata(markers.get(marker));
             }
         }
         return null;
     }
 
     @Override
-    public synchronized AbstractVault provide(final Session<?> session, final VaultMetadata metadata) {
+    public synchronized AbstractVault provide(final Session<?> session, final Path directory, final VaultMetadata metadata) {
         switch(metadata.type) {
             case V8:
-                return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(metadata.root);
+                return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(directory);
             case UVF:
-                return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(metadata.root);
+                return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(directory);
             default:
                 log.error("Unknown vault type {}", metadata.type);
                 // TODO schmeissen, DISABLED zurück geben geht nicht weil kein AbstractVault
@@ -90,13 +90,13 @@ public class CryptoVaultProvider implements VaultProvider {
 
     //TODO create methode braucht es glaube ich nicht unbedingt
     @Override
-    public AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials, final VaultMetadata metadata) throws BackgroundException {
+    public AbstractVault create(final Session<?> session, final String region, final Path directory, final VaultCredentials credentials, final VaultMetadata metadata) throws BackgroundException {
         switch(metadata.type) {
             case V8:
-                return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(metadata.root).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
+                return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             case UVF:
                 //TODO plain UVF
-                return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(metadata.root).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
+                return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             default:
                 log.error("Unknown vault type {}", metadata.type);
                 // TODO schmeissen, DISABLED zurück geben geht nicht weil kein AbstractVault

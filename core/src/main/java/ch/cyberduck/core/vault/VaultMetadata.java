@@ -15,7 +15,6 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -23,7 +22,6 @@ import java.util.Objects;
 
 public class VaultMetadata implements Serializable {
 
-    public Path root;
     public Type type;
 
     public enum Type {
@@ -33,16 +31,12 @@ public class VaultMetadata implements Serializable {
     public VaultMetadata() {
     }
 
-    public VaultMetadata(final Path path, final Type type) {
-        this.root = path;
+    public VaultMetadata(final Type type) {
         this.type = type;
     }
 
     @Override
     public <T> T serialize(final Serializer<T> dict) {
-        if(root != null) {
-            dict.setObjectForKey(root, "Root");
-        }
         if(type != null) {
             dict.setStringForKey(type.name(), "Type");
         }
@@ -51,37 +45,17 @@ public class VaultMetadata implements Serializable {
 
     @Override
     public final boolean equals(final Object o) {
-        if(o == this) {
-            return true;
-        }
         if(!(o instanceof VaultMetadata)) {
             return false;
         }
 
         VaultMetadata that = (VaultMetadata) o;
-        if(!Objects.equals(root, that.root)) {
-            return false;
-        }
-        if(type != that.type) {
-            return false;
-        }
-        return true;
+        return type == that.type;
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(root);
-        result = 31 * result + Objects.hashCode(type);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("VaultMetadata{");
-        sb.append("root=").append(root);
-        sb.append(", type=").append(type);
-        sb.append('}');
-        return sb.toString();
+        return Objects.hashCode(type);
     }
 }
 

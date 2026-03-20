@@ -29,9 +29,9 @@ public interface VaultProvider {
 
     VaultMetadata find(Path directory, Find find, ListProgressListener listener) throws BackgroundException;
 
-    Vault provide(Session<?> session, VaultMetadata metadata);
+    Vault provide(Session<?> session, Path directory, VaultMetadata metadata);
 
-    Vault create(Session<?> session, String region, VaultCredentials credentials, VaultMetadata metadata) throws BackgroundException;
+    Vault create(Session<?> session, String region, Path directory, VaultCredentials credentials, VaultMetadata metadata) throws BackgroundException;
 
     VaultProvider DISABLED = new DisabledVaultProvider();
 }

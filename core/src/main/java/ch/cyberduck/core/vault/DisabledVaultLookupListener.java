@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
 
@@ -25,7 +26,7 @@ public final class DisabledVaultLookupListener implements VaultLookupListener {
     private static final Logger log = LogManager.getLogger(DisabledVaultLookupListener.class);
 
     @Override
-    public Vault load(final Session session, final VaultMetadata metadata) {
+    public Vault load(final Session session, Path directory, final VaultMetadata metadata) {
         log.warn("Ignore vault {}", metadata);
         return Vault.DISABLED;
     }

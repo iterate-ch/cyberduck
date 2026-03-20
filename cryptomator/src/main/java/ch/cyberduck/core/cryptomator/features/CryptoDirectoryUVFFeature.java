@@ -19,8 +19,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentWriter;
-import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -30,7 +28,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.DirectoryMetadata;
-import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.util.EnumSet;
 
@@ -68,10 +65,6 @@ public class CryptoDirectoryUVFFeature<Reply> extends CryptoDirectoryV7Feature<R
                     session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
         }
 
-        // Write metadata
-        final FileHeader header = vault.getFileHeaderCryptor().create();
-        status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
-        status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
         final Path target = delegate.mkdir(writer, encrypt, status);
         final Path recoveryDirectoryMetadataFile = new Path(target,
                 vault.getDirectoryMetadataFilename(),
