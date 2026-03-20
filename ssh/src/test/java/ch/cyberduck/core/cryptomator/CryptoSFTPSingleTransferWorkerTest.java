@@ -15,20 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -38,7 +25,6 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.notification.DisabledNotificationService;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
@@ -106,13 +92,14 @@ public class CryptoSFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         out2.close();
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback() {
+        final DefaultVaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("test");
             }
-        }));
-        PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());
+        });
+        vaults.add(cryptomator.load(session, PasswordCallback.noop));
+        session.withRegistry(vaults);
         final Host host = new Host(new TestProtocol());
         final Transfer t = new UploadTransfer(host, Collections.singletonList(new TransferItem(dir1, localDirectory1)), new NullFilter<>())
             .withOptions(new UploadFilterOptions(host).withTimestamp(true));

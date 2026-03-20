@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
@@ -47,7 +48,6 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.notification.DisabledNotificationService;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -105,13 +105,14 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
         out2.close();
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback() {
+        final DefaultVaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("test");
             }
-        }));
-        PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());
+        });
+        vaults.add(cryptomator.load(session, PasswordCallback.noop));
+        session.withRegistry(vaults);
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(dir1, localDirectory1)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
@@ -145,18 +146,18 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
 
     @Test
     public void testDownload() throws Exception {
-        PreferencesFactory.get().setProperty("factory.vault.class", CryptoVault.class.getName());
-
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback() {
+        final DefaultVaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("test");
             }
-        }));
+        });
+        vaults.add(cryptomator.load(session, PasswordCallback.noop));
+        session.withRegistry(vaults);
         final Path dir1 = cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new DAVWriteFeature(session)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
