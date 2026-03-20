@@ -26,6 +26,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ import java.util.Objects;
  * Attributes of a remote directory or file.
  */
 public class DefaultPathAttributes implements PathAttributes, Attributes, Serializable {
+    private static final Logger log = LogManager.getLogger(DefaultPathAttributes.class);
 
     /**
      * The file length
@@ -186,6 +189,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         metadata = new HashMap<>(copy.getMetadata());
         custom = new HashMap<>(copy.getCustom());
         verdict = copy.getVerdict();
+        vaultMetadata = copy.getVaultMetadata();
         decrypted = copy.getDecrypted();
         directoryId = copy.getDirectoryId();
     }
@@ -264,6 +268,9 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         }
         if(StringUtils.isNotBlank(storageClass)) {
             dict.setStringForKey(storageClass, "Storage Class");
+        }
+        if(vaultMetadata != null) {
+            dict.setObjectForKey(vaultMetadata, "VaultMetadata");
         }
         if(!custom.isEmpty()) {
             dict.setMapForKey(custom, "Custom");
@@ -517,6 +524,17 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
     }
 
     @Override
+    public VaultMetadata getVaultMetadata() {
+        return vaultMetadata;
+    }
+
+    @Override
+    public PathAttributes setVaultMetadata(final VaultMetadata vaultMetadata) {
+        this.vaultMetadata = vaultMetadata;
+        return this;
+    }
+
+    @Override
     public boolean isDuplicate() {
         return duplicate != null && duplicate;
     }
@@ -666,6 +684,9 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         if(!Objects.equals(lockId, that.lockId)) {
             return false;
         }
+        if(!Objects.equals(vaultMetadata, that.vaultMetadata)) {
+            return false;
+        }
         return true;
     }
 
@@ -681,6 +702,7 @@ public class DefaultPathAttributes implements PathAttributes, Attributes, Serial
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
         result = 31 * result + (verdict != null ? verdict.hashCode() : 0);
         result = 31 * result + (lockId != null ? lockId.hashCode() : 0);
+        result = 31 * result + (vaultMetadata != null ? vaultMetadata.hashCode() : 0);
         return result;
     }
 

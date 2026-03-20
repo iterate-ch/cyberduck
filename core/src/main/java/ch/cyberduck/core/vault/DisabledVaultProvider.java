@@ -39,12 +39,12 @@ public class DisabledVaultProvider implements VaultProvider {
     }
 
     @Override
-    public Vault provide(final Session<?> session, final VaultMetadata metadata) {
+    public Vault provide(final Session<?> session, final Path directory, final VaultMetadata metadata) {
         return Vault.DISABLED;
     }
 
     @Override
-    public Vault create(final Session<?> session, final String region, final VaultCredentials credentials, final VaultMetadata metadata) throws BackgroundException {
+    public Vault create(final Session<?> session, final String region, final Path directory, final VaultCredentials credentials, final VaultMetadata metadata) throws BackgroundException {
         return Vault.DISABLED;
     }
 }

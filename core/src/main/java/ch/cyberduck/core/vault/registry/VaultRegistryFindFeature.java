@@ -70,7 +70,7 @@ public class VaultRegistryFindFeature implements Find {
                     log.info("Found vault config {} or masterkey {}", vaultConfig, key);
                     try {
                         log.info("Found vault {}", directory);
-                        return lookup.load(session, metadata)
+                        return lookup.load(session, directory, metadata)
                                 .getFeature(session, Find.class, proxy)
                                 .find(file, listener);
                     }

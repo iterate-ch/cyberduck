@@ -17,15 +17,10 @@ package ch.cyberduck.core.vault;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.serializer.Deserializer;
-import ch.cyberduck.core.serializer.PathDictionary;
 
 public class VaultMetadataDictionary<T> {
 
     private final DeserializerFactory<T> factory;
-
-    public VaultMetadataDictionary() {
-        this.factory = new DeserializerFactory<>();
-    }
 
     public VaultMetadataDictionary(final DeserializerFactory<T> factory) {
         this.factory = factory;
@@ -35,9 +30,6 @@ public class VaultMetadataDictionary<T> {
         final Deserializer<T> dict = factory.create(serialized);
         final VaultMetadata vaultMetadata = new VaultMetadata();
         final T vaultObj = dict.objectForKey("Root");
-        if(vaultObj != null) {
-            vaultMetadata.root = new PathDictionary<>(factory).deserialize(vaultObj);
-        }
         final String type = dict.stringForKey("Type");
         if(type != null) {
             vaultMetadata.type = VaultMetadata.Type.valueOf(type);

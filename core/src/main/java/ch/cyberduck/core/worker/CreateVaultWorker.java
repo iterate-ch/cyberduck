@@ -16,6 +16,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
@@ -29,25 +30,27 @@ import java.util.Objects;
 public class CreateVaultWorker extends Worker<Vault> {
 
     private final String region;
+    private final Path directory;
     private final VaultCredentials passphrase;
     private final VaultMetadata metadata;
 
-    public CreateVaultWorker(final String region, final VaultCredentials passphrase, final VaultMetadata metadata) {
+    public CreateVaultWorker(final String region, final Path directory, final VaultCredentials passphrase, final VaultMetadata metadata) {
         this.region = region;
+        this.directory = directory;
         this.passphrase = passphrase;
         this.metadata = metadata;
     }
 
     @Override
     public Vault run(final Session<?> session) throws BackgroundException {
-        final Vault vault = VaultProviderFactory.get(session).create(session, region, passphrase, metadata);
+        final Vault vault = VaultProviderFactory.get(session).create(session, region, directory, passphrase, metadata);
         vault.close();
         return vault;
     }
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), metadata.root.getName());
+        return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), directory.getName());
     }
 
     @Override

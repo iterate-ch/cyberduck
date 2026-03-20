@@ -90,10 +90,8 @@ public class CryptoVaultTest {
         assertNotSame(home, vault.encrypt(session, home));
         assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
         final Path directory = new Path(home, "dir", EnumSet.of(Path.Type.directory));
-        assertNull(directory.attributes().getVault());
-        assertEquals(home, vault.encrypt(session, directory).attributes().getVaultMetadata().root);
+        assertNull(directory.attributes().getVaultMetadata());
         assertEquals(VaultMetadata.Type.UVF, vault.encrypt(session, directory).attributes().getVaultMetadata().type);
-        assertEquals(home, directory.attributes().getVaultMetadata().root);
         assertEquals(VaultMetadata.Type.UVF, directory.attributes().getVaultMetadata().type);
         assertEquals(vault.encrypt(session, directory), vault.encrypt(session, directory));
         assertEquals(new Path(home, directory.getName(), EnumSet.of(Path.Type.directory, Path.Type.decrypted)), vault.decrypt(session, vault.encrypt(session, directory, true)));

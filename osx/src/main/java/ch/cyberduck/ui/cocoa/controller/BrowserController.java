@@ -2430,8 +2430,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
-                        new CreateVaultWorker(region, passphrase,
-                                new VaultMetadata(folder, VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default")))) {
+                        new CreateVaultWorker(region, folder, passphrase,
+                                new VaultMetadata(VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default")))) {
                             @Override
                             public void cleanup(final Vault vault) {
                                 reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
@@ -2460,8 +2460,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else {
             // Unlock vault
             this.background(new WorkerBackgroundAction<>(this, pool, new LoadVaultWorker(new LoadingVaultLookupListener(pool.getVaultRegistry(),
-                    PasswordCallbackFactory.get(this)),
-                    new VaultMetadata(directory, VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default")))) {
+                    PasswordCallbackFactory.get(this)), directory,
+                    new VaultMetadata(VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default")))) {
                 @Override
                 public void cleanup(final Vault vault) {
                     if(vault != null) {

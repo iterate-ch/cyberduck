@@ -248,7 +248,7 @@ public class Terminal {
                 log.debug("Attempting to load vault from {}", vault);
                 try {
                     this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVaultRegistry(),
-                            new TerminalPasswordCallback()), new VaultMetadata(vault, VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default"))))));
+                            new TerminalPasswordCallback()), vault, new VaultMetadata(VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default"))))));
                 }
                 catch(TerminalBackgroundException e) {
                     return Exit.failure;

@@ -407,7 +407,7 @@ public class CryptoVault extends AbstractVault {
 
     @Override
     public VaultMetadata getMetadata() {
-        return new VaultMetadata(this.getHome(), VaultMetadata.Type.UVF);
+        return new VaultMetadata(VaultMetadata.Type.UVF);
     }
 
     @Override

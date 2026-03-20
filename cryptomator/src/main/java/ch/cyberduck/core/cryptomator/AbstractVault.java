@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.features.*;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -199,7 +200,7 @@ public abstract class AbstractVault implements Vault {
                 final PathAttributes attributes = new DefaultPathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     if(Permission.EMPTY != attributes.getPermission()) {
-                        final Permission permission = new Permission(attributes.getPermission());
+                        final StaticPermission permission = new StaticPermission(attributes.getPermission());
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
                         permission.setGroup(permission.getGroup().or(Permission.Action.execute));
                         permission.setOther(permission.getOther().or(Permission.Action.execute));
@@ -214,8 +215,6 @@ public abstract class AbstractVault implements Vault {
                     // Translate file size
                     attributes.setSize(this.toCleartextSize(0L, file.attributes().getSize()));
                 }
-                // Add reference to encrypted file
-                attributes.setEncrypted(file);
                 // Add reference for vault
                 attributes.setVaultMetadata(this.getMetadata());
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
