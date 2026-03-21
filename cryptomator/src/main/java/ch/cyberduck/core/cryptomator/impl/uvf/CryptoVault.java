@@ -141,9 +141,8 @@ public class CryptoVault extends AbstractVault {
                 final JWEHeader header = new JWEHeader.Builder(JWEAlgorithm.PBES2_HS512_A256KW, EncryptionMethod.A256GCM)
                         .jwkURL(URI.create("jwks.json"))
                         .contentType("json")
-                        // Probably a bug - refer to https://bitbucket.org/connect2id/nimbus-jose-jwt/issues/610/critical-headers-and
-                        //.criticalParams(Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM))
-                        //.customParam(UVF_SPEC_VERSION_KEY_PARAM, 1)
+                        .criticalParams(Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM))
+                        .customParam(UVF_SPEC_VERSION_KEY_PARAM, 1)
                         .keyID("org.cryptomator.uvf.vaultpassword")
                         .build();
                 final String kid = Base64.getUrlEncoder().encodeToString(new AlphanumericRandomStringService(4).random().getBytes(StandardCharsets.UTF_8));
