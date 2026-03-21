@@ -18,7 +18,7 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 
-public interface VaultMetadataUVFProvider extends VaultMetadataCallbackProvider {
+public interface VaultMetadataUVFProvider extends VaultMetadataProvider, JWKCallback {
 
     byte[] getMetadata();
 

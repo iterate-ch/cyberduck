@@ -15,19 +15,32 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.exception.LoginCanceledException;
 
-public class DefaultVaultMetadataUVFProvider extends DefaultVaultMetadataCallbackProvider implements VaultMetadataUVFProvider {
+public class DefaultVaultMetadataUVFProvider implements VaultMetadataUVFProvider {
 
     private final byte[] metadata;
     private final byte[] rootDirectoryMetadata;
     private final String dirPath;
+    private final JWKCallback callback;
 
-    public DefaultVaultMetadataUVFProvider(final byte[] metadata, final byte[] rootDirectoryMetadata, final String dirPath, final PasswordCallback callback) {
-        super(callback);
+    public DefaultVaultMetadataUVFProvider(final byte[] metadata, final byte[] rootDirectoryMetadata, final String dirPath, final JWKCallback callback) {
         this.metadata = metadata;
         this.rootDirectoryMetadata = rootDirectoryMetadata;
         this.dirPath = dirPath;
+        this.callback = callback;
+    }
+
+    @Override
+    public void close(final String input) {
+        callback.close(input);
+    }
+
+    @Override
+    public JWKCredentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+        return callback.prompt(bookmark, title, reason, options);
     }
 
     @Override

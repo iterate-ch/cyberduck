@@ -19,11 +19,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-public class DefaultJWKCallback implements JWKCallback {
+public class DefaultJWKCredentials implements JWKCallback {
 
     private final JWKCredentials key;
 
-    public DefaultJWKCallback(final JWKCredentials key) {
+    public DefaultJWKCredentials(final JWKCredentials key) {
         this.key = key;
     }
 

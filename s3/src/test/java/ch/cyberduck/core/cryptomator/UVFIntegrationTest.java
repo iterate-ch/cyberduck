@@ -36,7 +36,7 @@ import ch.cyberduck.core.threading.DisabledCancelCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultJWKCallback;
+import ch.cyberduck.core.vault.DefaultJWKCredentials;
 import ch.cyberduck.core.vault.DefaultVaultMetadataUVFProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.JWKCredentials;
@@ -164,7 +164,8 @@ public class UVFIntegrationTest {
                 final VaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback());
                 bookmark.setDefaultPath("/" + bucketName);
                 final CryptoVault vault = new CryptoVault(new DefaultPathHomeFeature(bookmark).find());
-                vaults.add(vault.load(storage, new DefaultVaultMetadataUVFProvider(jwe.getBytes(StandardCharsets.US_ASCII), null, null, new DefaultJWKCallback(new JWKCredentials(JWK.parse(memberKey))))));
+                vaults.add(vault.load(storage, new DefaultVaultMetadataUVFProvider(jwe.getBytes(StandardCharsets.US_ASCII), null, null,
+                        new DefaultJWKCredentials(new JWKCredentials(JWK.parse(memberKey))))));
                 final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
                 storage.withRegistry(vaults);
 

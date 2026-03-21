@@ -53,7 +53,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
-import ch.cyberduck.core.vault.VaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.logging.log4j.LogManager;
@@ -215,12 +214,12 @@ public class CryptoVault extends AbstractVault {
         return FILENAME_PATTERN;
     }
 
-    public AbstractVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public CryptoVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         return this.create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
     }
 
     @Override
-    public AbstractVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
+    public CryptoVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
         final VaultMetadataCredentialsProvider provider = VaultMetadataCredentialsProvider.cast(metadata);
         final VaultCredentials credentials = provider.getCredentials();
         final Host bookmark = session.getHost();
@@ -282,23 +281,19 @@ public class CryptoVault extends AbstractVault {
     }
 
     @Override
-    public Vault load(final Session<?> session, final VaultMetadataProvider provider) throws BackgroundException {
-        if(provider instanceof VaultMetadataCallbackProvider) {
-            VaultMetadataCallbackProvider callback = VaultMetadataCallbackProvider.cast(provider);
-            final Host bookmark = session.getHost();
-            String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
+    public CryptoVault load(final Session<?> session, final VaultMetadataProvider provider) throws BackgroundException {
+        final Host bookmark = session.getHost();
+        String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
+                new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
+        if(null == passphrase) {
+            // Legacy
+            passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
-            if(null == passphrase) {
-                // Legacy
-                passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
-            }
-            return this.unlock(session, callback.getPasswordCallback(), bookmark, passphrase);
         }
-        throw new VaultException("Unsupported metadata provider: " + provider.getClass().getName());
+        return this.unlock(session, provider, bookmark, passphrase);
     }
 
-    public Vault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+    public CryptoVault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
         final ch.cyberduck.core.cryptomator.impl.v8.CryptoVault.VaultConfig vaultConfig = this.readVaultConfig(session);
         this.unlock(vaultConfig, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())

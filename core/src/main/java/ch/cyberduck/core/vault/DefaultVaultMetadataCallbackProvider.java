@@ -15,9 +15,13 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.exception.LoginCanceledException;
 
-public class DefaultVaultMetadataCallbackProvider implements VaultMetadataCallbackProvider {
+public class DefaultVaultMetadataCallbackProvider implements VaultMetadataProvider {
 
     private final PasswordCallback callback;
 
@@ -26,7 +30,12 @@ public class DefaultVaultMetadataCallbackProvider implements VaultMetadataCallba
     }
 
     @Override
-    public PasswordCallback getPasswordCallback() {
-        return callback;
+    public void close(final String input) {
+        callback.close(input);
+    }
+
+    @Override
+    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+        return callback.prompt(bookmark, title, reason, options);
     }
 }

@@ -19,6 +19,10 @@ import com.nimbusds.jose.jwk.JWK;
 
 public class JWKCredentials extends VaultCredentials {
 
+    /**
+     * This variable holds the JSON Web Key (JWK) used for cryptographic operations,
+     * such as signing or encrypting data.
+     */
     private final JWK key;
 
     public JWKCredentials(final JWK key) {
