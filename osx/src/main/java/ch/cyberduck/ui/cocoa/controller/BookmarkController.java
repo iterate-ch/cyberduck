@@ -502,8 +502,8 @@ public class BookmarkController extends SheetController implements CollectionLis
     }
 
     @Override
-    public void display(final boolean key) {
-        super.display(key);
+    public void display(final boolean key, final String frameName) {
+        super.display(key, frameName);
         cascade = this.cascade(cascade);
     }
 

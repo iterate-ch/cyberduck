@@ -328,7 +328,6 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     public void setWindow(final NSWindow window) {
-        window.setFrameAutosaveName("Info");
         window.setHidesOnDeactivate(false);
         window.setShowsResizeIndicator(true);
         window.setContentMinSize(window.frame().size);
@@ -340,14 +339,19 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    public void display(final boolean key) {
-        super.display(key);
+    protected String windowFrameName() {
+        return "Info";
+    }
+
+    @Override
+    public void display(final boolean key, final String frameName) {
+        super.display(key, frameName);
         cascade = this.cascade(cascade);
     }
 
     @Override
     public void windowWillClose(final NSNotification notification) {
-        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(), this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
+        cascade = new NSPoint(window.frame().origin.x.doubleValue(), window.frame().origin.y.doubleValue() + window.frame().size.height.doubleValue());
         super.windowWillClose(notification);
     }
 
@@ -1852,7 +1856,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if progress animation has started and settings are toggled
      */
     protected boolean toggleS3Settings(final boolean stop) {
-        this.window().endEditingFor(null);
+        window.endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
                 || session.getHost().getProtocol().getType() == Protocol.Type.b2
@@ -2083,7 +2087,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if progress animation has started and settings are toggled
      */
     protected boolean toggleAclSettings(final boolean stop) {
-        this.window().endEditingFor(null);
+        window.endEditingFor(null);
         final boolean enabled = this.validateAclActions(stop);
         if(stop) {
             aclProgress.stopAnimation(null);
@@ -2114,7 +2118,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if progress animation has started and settings are toggled
      */
     protected boolean toggleMetadataSettings(final boolean stop) {
-        this.window().endEditingFor(null);
+        window.endEditingFor(null);
         final boolean feature = this.validateMetadataActions(stop);
         if(stop) {
             metadataProgress.stopAnimation(null);
@@ -2166,7 +2170,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if progress animation has started and settings are toggled
      */
     protected boolean toggleVersionsSettings(final boolean stop) {
-        this.window().endEditingFor(null);
+        window.endEditingFor(null);
         final boolean enabled = this.validateVersionsActions(stop);
         if(stop) {
             versionsProgress.stopAnimation(null);
@@ -2354,7 +2358,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if controls are enabled for the given protocol in idle state
      */
     protected boolean togglePermissionSettings(final boolean stop) {
-        this.window().endEditingFor(null);
+        window.endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.getFeature(UnixPermission.class) != null;
         recursiveButton.setEnabled(stop && enable);
@@ -2390,7 +2394,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if controls are enabled for the given protocol in idle state
      */
     protected boolean toggleDistributionSettings(final boolean stop) {
-        this.window().endEditingFor(null);
+        window.endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         boolean enable = !credentials.isAnonymousLogin() && cdn != null;
@@ -2597,7 +2601,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if progress animation has started and settings are toggled
      */
     protected boolean toggleSizeSettings(final boolean stop) {
-        this.window().endEditingFor(null);
+        window.endEditingFor(null);
         sizeButton.setEnabled(false);
         for(Path next : files) {
             if(next.isDirectory()) {

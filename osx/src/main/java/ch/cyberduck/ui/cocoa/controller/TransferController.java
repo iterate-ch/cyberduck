@@ -195,8 +195,7 @@ public class TransferController extends WindowController implements TransferList
     }
 
     @Override
-    public void setWindow(NSWindow window) {
-        window.setFrameAutosaveName("Transfers");
+    public void setWindow(final NSWindow window) {
         window.setContentMinSize(new NSSize(400d, 150d));
         window.setMovableByWindowBackground(true);
         window.setTitle(LocaleFactory.localizedString("Transfers"));
@@ -204,6 +203,11 @@ public class TransferController extends WindowController implements TransferList
             window.setTabbingIdentifier(preferences.getProperty("queue.window.tabbing.identifier"));
         }
         super.setWindow(window);
+    }
+
+    @Override
+    protected String windowFrameName() {
+        return "Transfers";
     }
 
     @Override
