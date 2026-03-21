@@ -339,7 +339,7 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    protected String windowFrameName() {
+    public String windowFrameName() {
         return "Info";
     }
 

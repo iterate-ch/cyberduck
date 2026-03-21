@@ -342,7 +342,7 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Override
-    protected String windowFrameName() {
+    public String windowFrameName() {
         return "Preferences";
     }
 

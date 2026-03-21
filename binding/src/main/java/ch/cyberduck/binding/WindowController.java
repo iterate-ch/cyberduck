@@ -97,7 +97,7 @@ public abstract class WindowController extends BundleController implements NSWin
         return window;
     }
 
-    protected String windowFrameName() {
+    public String windowFrameName() {
         return window.title();
     }
 

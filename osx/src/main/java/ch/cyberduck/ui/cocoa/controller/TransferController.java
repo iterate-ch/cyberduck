@@ -206,7 +206,7 @@ public class TransferController extends WindowController implements TransferList
     }
 
     @Override
-    protected String windowFrameName() {
+    public String windowFrameName() {
         return "Transfers";
     }
 

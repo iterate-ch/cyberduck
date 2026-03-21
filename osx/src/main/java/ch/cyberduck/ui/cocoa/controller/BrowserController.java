@@ -660,7 +660,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    protected String windowFrameName() {
+    public String windowFrameName() {
         if(pool != SessionPool.DISCONNECTED) {
             return pool.getHost().getUuid();
         }
