@@ -22,6 +22,9 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 
 public interface JWKCallback extends PasswordCallback {
 
+    /**
+     * Prompt user to select JWK
+     */
     @Override
     JWKCredentials prompt(Host bookmark, String title, String reason, LoginOptions options) throws LoginCanceledException;
 }

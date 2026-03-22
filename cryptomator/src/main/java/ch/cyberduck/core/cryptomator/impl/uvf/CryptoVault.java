@@ -38,7 +38,6 @@ import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.impl.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
@@ -164,7 +163,7 @@ public class CryptoVault extends AbstractVault {
                 final JWEObject jwe = new JWEObject(header, payload);
                 jwe.encrypt(new PasswordBasedEncrypter(credentials.getPassword(), PBKDF2_SALT_LENGTH, PBKDF2_ITERATION_COUNT));
                 final byte[] encryptedMetadata = jwe.serialize().getBytes(StandardCharsets.US_ASCII);
-                this.uploadTemplate(session, region, this.computeRootDirIdHash(payload.toString()), encryptedMetadata, this.computeRootDirUvf(payload.toString()));
+                this.uploadTemplate(session, region, encryptedMetadata, this.computeRootDirUvf(payload.toString()), this.computeRootDirIdHash(payload.toString()));
                 this.open(payload);
             }
             catch(JOSEException | JsonProcessingException e) {
@@ -175,13 +174,24 @@ public class CryptoVault extends AbstractVault {
         if(metadata instanceof VaultMetadataUVFProvider) {
             // Generic vault creation with provided metadata
             final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
-            this.uploadTemplate(session, region, provider.getDirPath(), provider.getMetadata(), provider.getRootDirectoryMetadata());
+            this.uploadTemplate(session, region, provider.getVaultMetadata(), provider.getRootDirectoryMetadata(), provider.getRootDirectoryIdHash());
             return this;
         }
         throw new VaultException("Unsupported metadata provider: " + metadata.getClass().getName());
     }
 
-    private void uploadTemplate(final Session<?> session, final String region, final String dirPath, final byte[] vaultUvf, final byte[] dirUvf) throws BackgroundException {
+    /**
+     * Uploads a template to create the vault's root directory with associated metadata and directory structure.
+     *
+     * @param session               The session used for the interaction with the backend.
+     * @param region                The region identifier used to associate the uploaded data.
+     * @param vaultMetadata         Metadata as JWE of the vault to be uploaded, represented as a byte array.
+     * @param rootDirectoryMetadata The encrypted directory metadata file, represented as a byte array.
+     * @param rootDirectoryIdHash   The hash of the root directory ID used to create the directory structure.
+     * @throws BackgroundException If an error occurs during the upload process.
+     */
+    private void uploadTemplate(final Session<?> session, final String region,
+                                final byte[] vaultMetadata, final byte[] rootDirectoryMetadata, final String rootDirectoryIdHash) throws BackgroundException {
         final Path home = this.getHome();
         log.debug("Create vault root directory at {}", home);
 
@@ -195,17 +205,17 @@ public class CryptoVault extends AbstractVault {
         final Path vault = directory.mkdir(session._getFeature(Write.class), home, status);
 
         final Path dataDir = new Path(vault, "d", EnumSet.of(Path.Type.directory));
-        final Path firstLevel = new Path(dataDir, dirPath.substring(0, 2), EnumSet.of(Path.Type.directory));
-        final Path secondLevel = new Path(firstLevel, dirPath.substring(2), EnumSet.of(Path.Type.directory));
+        final Path firstLevel = new Path(dataDir, rootDirectoryIdHash.substring(0, 2), EnumSet.of(Path.Type.directory));
+        final Path secondLevel = new Path(firstLevel, rootDirectoryIdHash.substring(2), EnumSet.of(Path.Type.directory));
 
         directory.mkdir(session._getFeature(Write.class), dataDir, status);
         directory.mkdir(session._getFeature(Write.class), firstLevel, status);
         directory.mkdir(session._getFeature(Write.class), secondLevel, status);
 
         // vault.uvf
-        new ContentWriter(session).write(this.getConfig(), vaultUvf);
+        new ContentWriter(session).write(this.getConfig(), vaultMetadata);
         // dir.uvf
-        new ContentWriter(session).write(new Path(secondLevel, "dir.uvf", EnumSet.of(Path.Type.file)), dirUvf);
+        new ContentWriter(session).write(new Path(secondLevel, "dir.uvf", EnumSet.of(Path.Type.file)), rootDirectoryMetadata);
     }
 
     private String computeRootDirIdHash(final String payloadJSON) throws JsonProcessingException {
@@ -232,7 +242,7 @@ public class CryptoVault extends AbstractVault {
         if(metadata instanceof VaultMetadataUVFProvider) {
             final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
             try {
-                final String jwe = new String(provider.getMetadata(), StandardCharsets.US_ASCII);
+                final String jwe = new String(provider.getVaultMetadata(), StandardCharsets.US_ASCII);
                 final JWK jwk = provider.prompt(session.getHost(), StringUtils.EMPTY, StringUtils.EMPTY, new LoginOptions()).getKey();
                 final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
                 jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM)));

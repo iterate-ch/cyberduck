@@ -21,31 +21,39 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 
 public class DefaultVaultMetadataUVFProvider implements VaultMetadataUVFProvider {
 
-    private final byte[] metadata;
+    private final byte[] vaultMetadata;
     private final byte[] rootDirectoryMetadata;
-    private final String dirPath;
-    private final JWKCallback callback;
+    private final String rootDirectoryIdHash;
+    private final JWKCallback jwk;
 
-    public DefaultVaultMetadataUVFProvider(final byte[] metadata, final byte[] rootDirectoryMetadata, final String dirPath, final JWKCallback callback) {
-        this.metadata = metadata;
+    /**
+     * Constructs a new instance of {@code DefaultVaultMetadataUVFProvider}.
+     *
+     * @param vaultMetadata         The metadata for the vault represented as a byte array.
+     * @param rootDirectoryMetadata The metadata for the root directory represented as a byte array.
+     * @param rootDirectoryIdHash   The hash identifier for the root directory as a string.
+     * @param jwk                   The {@code JWKCallback} instance used for key management and related operations.
+     */
+    public DefaultVaultMetadataUVFProvider(final byte[] vaultMetadata, final byte[] rootDirectoryMetadata, final String rootDirectoryIdHash, final JWKCallback jwk) {
+        this.vaultMetadata = vaultMetadata;
         this.rootDirectoryMetadata = rootDirectoryMetadata;
-        this.dirPath = dirPath;
-        this.callback = callback;
+        this.rootDirectoryIdHash = rootDirectoryIdHash;
+        this.jwk = jwk;
     }
 
     @Override
     public void close(final String input) {
-        callback.close(input);
+        jwk.close(input);
     }
 
     @Override
     public JWKCredentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-        return callback.prompt(bookmark, title, reason, options);
+        return jwk.prompt(bookmark, title, reason, options);
     }
 
     @Override
-    public byte[] getMetadata() {
-        return metadata;
+    public byte[] getVaultMetadata() {
+        return vaultMetadata;
     }
 
     @Override
@@ -54,7 +62,7 @@ public class DefaultVaultMetadataUVFProvider implements VaultMetadataUVFProvider
     }
 
     @Override
-    public String getDirPath() {
-        return dirPath;
+    public String getRootDirectoryIdHash() {
+        return rootDirectoryIdHash;
     }
 }

@@ -20,11 +20,32 @@ import ch.cyberduck.core.exception.UnsupportedException;
 
 public interface VaultMetadataUVFProvider extends VaultMetadataProvider, JWKCallback {
 
-    byte[] getMetadata();
+    /**
+     * Retrieves the JWE metadata associated with the vault.
+     *
+     * @return A byte array representing the vault metadata. This could include
+     * encrypted configuration data or other related information necessary
+     * for accessing or managing the vault.
+     */
+    byte[] getVaultMetadata();
 
+    /**
+     * Retrieves the metadata associated with the root directory of a vault.
+     *
+     * @return A byte array containing the metadata of the root directory. This metadata
+     * may include encrypted details, configuration information, or any other
+     * data required for managing or accessing the root directory of the vault.
+     */
     byte[] getRootDirectoryMetadata();
 
-    String getDirPath();
+    /**
+     * Retrieves the hash identifier of the root directory.
+     * This hash can be used as a unique identifier for the root directory
+     * within the vault's metadata.
+     *
+     * @return A string representing the hash of the root directory's identifier.
+     */
+    String getRootDirectoryIdHash();
 
     static VaultMetadataUVFProvider cast(VaultMetadataProvider provider) throws ConnectionCanceledException {
         if(provider instanceof VaultMetadataUVFProvider) {
