@@ -254,7 +254,7 @@ public class CryptoVault extends AbstractVault {
         }
         else {
             final Host bookmark = session.getHost();
-            String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
+            final String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
             payload = this.unlock(session, metadata, bookmark, passphrase).getPayload();
         }
@@ -300,7 +300,6 @@ public class CryptoVault extends AbstractVault {
         try {
             final JWEObject jweObject;
             try {
-
                 jweObject = JWEObject.parse(vaultUVF);
                 jweObject.decrypt(new PasswordBasedDecrypter(credentials.getPassword()));
             }
