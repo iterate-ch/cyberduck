@@ -40,7 +40,6 @@ import ch.cyberduck.core.cryptomator.impl.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
@@ -314,9 +313,6 @@ public class CryptoVault extends AbstractVault {
                             .anonymous(false)
                             .icon("cryptomator.tiff")
                             .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
-            if(null == credentials.getPassword()) {
-                throw new LoginCanceledException();
-            }
         }
         else {
             credentials = new VaultCredentials(passphrase).setSaved(false);

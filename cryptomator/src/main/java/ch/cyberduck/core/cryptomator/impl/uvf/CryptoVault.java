@@ -283,9 +283,6 @@ public class CryptoVault extends AbstractVault {
                             .anonymous(false)
                             .icon("cryptomator.tiff")
                             .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
-            if(null == credentials.getPassword()) {
-                throw new LoginCanceledException();
-            }
         }
         else {
             credentials = new VaultCredentials(passphrase).setSaved(false);
