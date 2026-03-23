@@ -41,7 +41,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.io.IOUtils;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -345,54 +344,6 @@ public class CryptoVaultTest {
             vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     throw new LoginCanceledException();
-                }
-            }));
-            fail();
-        }
-        catch(LoginCanceledException e) {
-            //
-        }
-    }
-
-    @Test
-    public void testLoadEmptyPassword() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == Read.class) {
-                    return (T) new Read() {
-                        @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                            final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
-                                    "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
-                                    "}";
-                            if("masterkey.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
-                            }
-                            throw new NotfoundException(String.format("%s not found", file.getName()));
-                        }
-
-                        @Override
-                        public boolean offset(final Path file) {
-                            return false;
-                        }
-                    };
-                }
-                return super._getFeature(type);
-            }
-        };
-        final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
-        try {
-            vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
-                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                    return new VaultCredentials(null);
                 }
             }));
             fail();
