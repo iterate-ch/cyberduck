@@ -22,7 +22,6 @@ import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,11 +34,9 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV8Provider {
 
     private final Path home;
     private final AbstractVault vault;
-    private final CryptoFilename filenameProvider;
 
     public CryptoDirectoryUVFProvider(final AbstractVault vault, final CryptoFilename filenameProvider) {
         super(vault, filenameProvider);
-        this.filenameProvider = filenameProvider;
         this.home = vault.getHome();
         this.vault = vault;
     }
@@ -53,15 +50,9 @@ public class CryptoDirectoryUVFProvider extends CryptoDirectoryV8Provider {
         final String ciphertextName = this.toEncrypted(session, directory.getParent(), cleartextName, EnumSet.of(Path.Type.directory));
         final Path metadataParent = new Path(parent, ciphertextName, EnumSet.of(Path.Type.directory));
         // Read directory id from file
-        try {
-            log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
-            final Path metadataFile = new Path(metadataParent, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
-            final byte[] ciphertext = new ContentReader(session).readBytes(metadataFile);
-            return this.vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(ciphertext);
-        }
-        catch(NotfoundException e) {
-            log.warn("Missing directory ID for folder {}", directory);
-            return this.createDirectoryId(directory);
-        }
+        log.debug("Read directory ID for folder {} from {}", directory, ciphertextName);
+        final Path metadataFile = new Path(metadataParent, vault.getDirectoryMetadataFilename(), EnumSet.of(Path.Type.file, Path.Type.encrypted));
+        final byte[] ciphertext = new ContentReader(session).readBytes(metadataFile);
+        return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(ciphertext);
     }
 }

@@ -19,6 +19,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Vault;
 
 import org.apache.logging.log4j.LogManager;
@@ -44,7 +45,13 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
                 return registry.find(session, directory);
             }
             log.info("Loading vault for session {}", session);
-            final Vault vault = VaultProviderFactory.get(session).provide(session, directory, metadata);
+            final Vault vault;
+            try {
+                vault = VaultProviderFactory.get(session).provide(session, directory, metadata);
+            }
+            catch(UnsupportedException e) {
+                throw new VaultUnlockCancelException(Vault.DISABLED, e);
+            }
             try {
                 if(registry.add(vault.load(session, new DefaultVaultMetadataCallbackProvider(prompt)))) {
                     final EnumSet<Path.Type> type = directory.getType();

@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -74,7 +75,7 @@ public class CryptoVaultProvider implements VaultProvider {
     }
 
     @Override
-    public synchronized AbstractVault provide(final Session<?> session, final Path directory, final VaultMetadata metadata) {
+    public synchronized AbstractVault provide(final Session<?> session, final Path directory, final VaultMetadata metadata) throws UnsupportedException {
         switch(metadata.type) {
             case V8:
                 return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(directory);
@@ -82,9 +83,7 @@ public class CryptoVaultProvider implements VaultProvider {
                 return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(directory);
             default:
                 log.error("Unknown vault type {}", metadata.type);
-                // TODO schmeissen, DISABLED zurück geben geht nicht weil kein AbstractVault
-                // throw new ...
-                return null;
+                throw new UnsupportedException(metadata.type.toString());
         }
     }
 
@@ -95,13 +94,10 @@ public class CryptoVaultProvider implements VaultProvider {
             case V8:
                 return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             case UVF:
-                //TODO plain UVF
                 return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             default:
                 log.error("Unknown vault type {}", metadata.type);
-                // TODO schmeissen, DISABLED zurück geben geht nicht weil kein AbstractVault
-                // throw new ...
-                return null;
+                throw new UnsupportedException(metadata.type.toString());
         }
     }
 }
