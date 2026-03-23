@@ -30,7 +30,6 @@ using ch.cyberduck.core.features;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.pasteboard;
 using ch.cyberduck.core.pool;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
@@ -40,14 +39,11 @@ using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using ch.cyberduck.ui.pasteboard;
-using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Refresh.Interactivity;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
-using DynamicData;
 using java.lang;
 using java.text;
 using java.util;
@@ -61,6 +57,7 @@ using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
 using Optional = java.util.Optional;
 using Path = ch.cyberduck.core.Path;
+using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
 using TransferItem = ch.cyberduck.core.transfer.TransferItem;
@@ -3814,8 +3811,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _directory;
 
                 public InnerLoadVaultWorker(BrowserController controller, VaultRegistry registry, Path directory)
-                    : base(new LoadingVaultLookupListener(registry,
-                        PasswordCallbackFactory.get(controller)), directory)
+                    : base(new LoadingVaultLookupListener(registry, PasswordCallbackFactory.get(controller)), directory, 
+                        new VaultMetadata(VaultMetadata.Type.valueOf(PreferencesFactory.get().getProperty("cryptomator.vault.default"))))
                 {
                     _controller = controller;
                     _directory = directory;
