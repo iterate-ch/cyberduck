@@ -29,6 +29,7 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.pasteboard;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.ssl;
@@ -57,7 +58,6 @@ using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
 using Optional = java.util.Optional;
 using Path = ch.cyberduck.core.Path;
-using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
 using TransferItem = ch.cyberduck.core.transfer.TransferItem;
@@ -1194,7 +1194,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
                 return null != Cache.get(Workdir).find(new SimplePathPredicate(Path.Type.file,
-                    String.Format("{0}{1}{2}", Workdir.getAbsolute(), Path.DELIMITER, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME)));
+                    String.Format("{0}{1}{2}", Workdir.getAbsolute(), Path.DELIMITER,
+                    HostPreferencesFactory.get(Pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"))));
             }
             return false;
         }

@@ -23,7 +23,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.registry.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,18 +33,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultRegistry {
     private static final Logger log = LogManager.getLogger(DefaultVaultRegistry.class);
-
-    public static final String DEFAULT_MASTERKEY_FILE_NAME =
-            PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");
-    public static final String DEFAULT_BACKUPKEY_FILE_NAME = String.format("%s.bkup",
-            PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"));
-
-    // TODO können die weg? wird z.b. weiter unten via hostpreferences geholt
-    public static final String DEFAULT_VAULTCONFIG_FILE_NAME =
-            PreferencesFactory.get().getProperty("cryptomator.vault.config.filename");
-
-    public static final String DEFAULT_VAULTCONFIGUVF_FILE_NAME =
-            PreferencesFactory.get().getProperty("cryptomator.vault.config.filename.uvf");
 
     private final PasswordCallback prompt;
 

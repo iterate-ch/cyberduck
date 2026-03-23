@@ -39,7 +39,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.PathDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
@@ -466,7 +465,7 @@ public class CryptoVaultTest {
             final Algorithm algorithm = Algorithm.HMAC256(masterkey.getEncoded());
             return JWT.create()
                     .withJWTId(new UUIDRandomStringService().random())
-                    .withKeyId(String.format("masterkeyfile:%s", DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME))
+                    .withKeyId(String.format("masterkeyfile:%s", "masterkey.cryptomator"))
                     .withClaim("format", version)
                     .withClaim("cipherCombo", cipher.toString())
                     .withClaim("shorteningThreshold", CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD)
