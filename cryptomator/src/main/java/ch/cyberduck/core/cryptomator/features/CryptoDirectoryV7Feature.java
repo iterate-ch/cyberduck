@@ -70,7 +70,12 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
         final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));
         decrypt.attributes().setFileId(directoryMetadataFolder.attributes().getFileId());
         decrypt.attributes().setVersionId(directoryMetadataFolder.attributes().getVersionId());
+        this.writeRecoveryMetadata(folder, target, dirMetadata);
         return decrypt;
+    }
+
+    protected void writeRecoveryMetadata(final Path folder, final Path target, final DirectoryMetadata metadata) throws BackgroundException {
+        // no-op
     }
 
     @Override
