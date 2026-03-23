@@ -23,6 +23,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -89,7 +90,12 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(new DriveWriteFeature(session, fileid), test, new TransferStatus());
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
-        final PathAttributes attributes = f.find(test);
+        final PathAttributes attributes = f.find(test, new DisabledListProgressListener() {
+            @Override
+            public void chunk(final Path directory, final AttributedList<Path> list) throws ListCanceledException {
+                fail();
+            }
+        });
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getFileId());
         assertNull(attributes.getVersionId());
