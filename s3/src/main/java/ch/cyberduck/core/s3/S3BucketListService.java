@@ -62,7 +62,9 @@ public class S3BucketListService implements RootListService {
                     // Null if the owner is not available
                     attr.setOwner(b.getOwner().getId());
                 }
-                attr.setCreationDate(b.getCreationDate().getTime());
+                if(b.getCreationDate() != null) {
+                    attr.setCreationDate(b.getCreationDate().getTime());
+                }
                 if(b.isLocationKnown()) {
                     attr.setRegion(b.getLocation());
                 }
