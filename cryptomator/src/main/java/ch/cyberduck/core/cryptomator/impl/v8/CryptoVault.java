@@ -133,11 +133,6 @@ public class CryptoVault extends AbstractVault {
         this.masterkeyPath = new Path(home, preferences.getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
         this.config = new Path(home, preferences.getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
         this.pepper = preferences.getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
-
-        //TODO nötig?
-        // New vault home with vault flag set for internal use
-        final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
-        type.add(Path.Type.vault);
     }
 
     public Path getHome() {
