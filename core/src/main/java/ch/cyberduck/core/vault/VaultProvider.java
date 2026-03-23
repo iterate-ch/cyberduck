@@ -19,18 +19,60 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 
 public interface VaultProvider {
+    /**
+     * Determines whether the given path corresponds to a vault.
+     *
+     * @param path The path to check for vault characteristics.
+     * @return {@code true} if the specified path represents a vault, {@code false} otherwise.
+     */
     boolean isVault(Path path);
 
+    /**
+     * Retrieves the metadata of the vault located at the specified path.
+     *
+     * @param path The path to the vault for which the metadata is to be retrieved.
+     * @return An instance of {@code VaultMetadata} that describes the properties of the vault at the given path.
+     */
     VaultMetadata metadata(Path path);
 
+    /**
+     * Searches for vault metadata in the specified directory using the given criteria.
+     *
+     * @param directory The path to the directory to search for vault metadata.
+     * @param find      The criteria or parameters used to locate the vault metadata.
+     * @param listener  A listener to report progress during the search operation.
+     * @return The vault metadata found in the specified directory based on the provided criteria.
+     * @throws BackgroundException If an error occurs during the search process.
+     */
     VaultMetadata find(Path directory, Find find, ListProgressListener listener) throws BackgroundException;
 
-    Vault provide(Session<?> session, Path directory, VaultMetadata metadata);
+    /**
+     * Provides access to an existing vault based on the given session, directory, and metadata.
+     *
+     * @param session   The session used for connecting to the storage backend.
+     * @param directory The path to the directory containing the vault.
+     * @param metadata  The metadata describing the properties of the vault to be accessed.
+     * @return An instance of the vault associated with the specified inputs.
+     * @throws UnsupportedException If the vault cannot be provided due to unsupported conditions.
+     */
+    Vault provide(Session<?> session, Path directory, VaultMetadata metadata) throws UnsupportedException;
 
+    /**
+     * Creates a new vault in the specified directory with the provided credentials and metadata.
+     *
+     * @param session     The session used for connecting to the storage backend.
+     * @param region      The region in which the vault should be created.
+     * @param directory   The path to the directory where the vault will be created.
+     * @param credentials The credentials required to authenticate and secure the vault.
+     * @param metadata    The metadata describing the properties of the vault to be created.
+     * @return An instance of the newly created vault.
+     * @throws BackgroundException If an error occurs during the vault creation process.
+     */
     Vault create(Session<?> session, String region, Path directory, VaultCredentials credentials, VaultMetadata metadata) throws BackgroundException;
 
     VaultProvider DISABLED = new DisabledVaultProvider();
