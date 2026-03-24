@@ -32,7 +32,7 @@ import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
-import ch.cyberduck.core.cryptomator.features.CryptoDirectoryUVFFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.impl.VaultMetadataCredentialsProvider;
@@ -408,7 +408,7 @@ public class CryptoVault extends AbstractVault {
     @Override
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) throws UnsupportedException {
         if(type == Directory.class) {
-            return (T) new CryptoDirectoryUVFFeature(session, (Directory) delegate, this);
+            return (T) new CryptoDirectoryFeature(session, (Directory) delegate, this);
         }
         return super.getFeature(session, type, delegate);
     }

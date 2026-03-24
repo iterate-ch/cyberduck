@@ -31,14 +31,14 @@ import org.cryptomator.cryptolib.api.DirectoryMetadata;
 
 import java.util.EnumSet;
 
-public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
-    private static final Logger log = LogManager.getLogger(CryptoDirectoryV7Feature.class);
+public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
+    private static final Logger log = LogManager.getLogger(CryptoDirectoryFeature.class);
 
     private final Session<?> session;
     private final Directory<Reply> delegate;
     private final AbstractVault vault;
 
-    public CryptoDirectoryV7Feature(final Session<?> session, final Directory<Reply> delegate, final AbstractVault vault) {
+    public CryptoDirectoryFeature(final Session<?> session, final Directory<Reply> delegate, final AbstractVault vault) {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
@@ -63,6 +63,11 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
             session._getFeature(Directory.class).mkdir(session._getFeature(Write.class), intermediate, new TransferStatus().setRegion(status.getRegion()));
         }
         final Path target = delegate.mkdir(writer, encrypt, status);
+        final Path recoveryDirectoryMetadataFile = new Path(target,
+                vault.getBackupDirectoryMetadataFilename(),
+                EnumSet.of(Path.Type.file));
+        log.debug("Write recovery metadata {} for folder {}", recoveryDirectoryMetadataFile, folder);
+        new ContentWriter(session).write(recoveryDirectoryMetadataFile, this.vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(dirMetadata));
         // Implementation may return new copy of attributes without encryption attributes
         target.attributes().setDirectoryId(encryptedMetadata);
         target.attributes().setDecrypted(folder);

@@ -304,7 +304,7 @@ public abstract class AbstractVault implements Vault {
                 return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
             }
             if(type == Directory.class) {
-                return (T) new CryptoDirectoryV7Feature(session, (Directory) delegate, this);
+                return (T) new CryptoDirectoryFeature(session, (Directory) delegate, this);
             }
             if(type == Upload.class) {
                 return (T) new CryptoUploadFeature(session, (Upload) delegate, this);
