@@ -935,8 +935,7 @@ public abstract class NSWindow extends NSResponder {
     public abstract boolean isDocumentEdited();
 
     /**
-     * Original signature : <code>BOOL isVisible()</code><br>
-     * <i>native declaration : :361</i>
+     * @return A Boolean value that indicates whether the window is visible onscreen (even when it’s obscured by other windows).
      */
     public abstract boolean isVisible();
 
@@ -1335,21 +1334,18 @@ public abstract class NSWindow extends NSResponder {
     public abstract void setFrameFromString(String string);
 
     /**
-     * Original signature : <code>void saveFrameUsingName(NSString*)</code><br>
-     * <i>native declaration : :467</i>
+     * Saves the window’s frame rectangle in the user defaults system under a given name.
+     * With the companion method setFrameUsingName(_:), you can save and reset an NSWindow object’s frame over various launches of an application.
+     *
+     * @param name The name under which the frame is to be saved.
      */
     public abstract void saveFrameUsingName(String name);
 
     /**
-     * Set force=YES to use setFrameUsingName on a non-resizable window<br> Original signature : <code>BOOL
-     * setFrameUsingName(NSString*, BOOL)</code><br>
-     * <i>native declaration : :469</i>
-     */
-    public abstract boolean setFrameUsingName_force(String name, boolean force);
-
-    /**
-     * Original signature : <code>BOOL setFrameUsingName(NSString*)</code><br>
-     * <i>native declaration : :470</i>
+     * Sets the window’s frame rectangle by reading the rectangle data stored under a given name from the defaults system.
+     * The frame is constrained according to the window’s minimum and maximum size settings. This method causes a windowWillResize(_:to:) message to be sent to the delegate
+     *
+     * @param name The name of the frame to read.
      */
     public abstract boolean setFrameUsingName(String name);
 
@@ -1418,6 +1414,7 @@ public abstract class NSWindow extends NSResponder {
 
     /**
      * Sets the size of the window’s content view to a given size, which is expressed in the window’s base coordinate system.
+     *
      * @param size The new size of the window’s content view in the window’s base coordinate system.
      */
     public abstract void setContentSize(NSSize size);

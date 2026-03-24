@@ -332,14 +332,18 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Override
-    public void setWindow(NSWindow window) {
+    public void setWindow(final NSWindow window) {
         window.setExcludedFromWindowsMenu(true);
-        window.setFrameAutosaveName("Preferences");
         if(window.respondsToSelector(Foundation.selector("setToolbarStyle:"))) {
             window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStylePreference);
         }
         window.setContentMinSize(new NSSize(600d, 200d));
         super.setWindow(window);
+    }
+
+    @Override
+    public String windowFrameName() {
+        return "Preferences";
     }
 
     @Override
