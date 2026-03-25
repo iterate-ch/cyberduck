@@ -24,7 +24,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
-import ch.cyberduck.core.cryptomator.impl.v8.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptoVaultTest;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -53,7 +53,7 @@ public class CryptoDirectoryV8ProviderTest {
         final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
         final SecureRandom random = new SecureRandom();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptoVault(home), new CryptoFilenameV7Provider());
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptomatorVault(home), new CryptoFilenameV7Provider());
         provider.toEncrypted(session, new Path("/vault/f", EnumSet.of(Path.Type.file)));
     }
 
@@ -63,7 +63,7 @@ public class CryptoDirectoryV8ProviderTest {
         final CryptorProvider crypto = CryptorProvider.forScheme(CryptorProvider.Scheme.SIV_GCM);
         final SecureRandom random = new SecureRandom();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptoVault(home), new CryptoFilenameV7Provider());
+        final CryptoDirectory provider = new CryptoDirectoryV8Provider(new CryptomatorVault(home), new CryptoFilenameV7Provider());
         provider.toEncrypted(session, new Path("/", EnumSet.of(Path.Type.directory)));
     }
 
@@ -91,7 +91,7 @@ public class CryptoDirectoryV8ProviderTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(CryptoVaultTest.createJWT(masterKey, CryptoVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(CryptoVaultTest.createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -106,7 +106,7 @@ public class CryptoDirectoryV8ProviderTest {
             }
         };
         final Path home = new Path("/vault", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(home);
+        final CryptomatorVault vault = new CryptomatorVault(home);
         vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");

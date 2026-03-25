@@ -16,7 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.uvf.UVFVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
@@ -76,7 +76,7 @@ import com.nimbusds.jose.jwk.JWK;
 import static org.junit.Assert.*;
 
 /**
- * Test {@link CryptoVault} implementation against test data from
+ * Test {@link UVFVault} implementation against test data from
  * <a href="https://github.com/cryptomator/cryptolib/tree/develop/src/test/java/org/cryptomator/cryptolib/v3/UVFIntegrationTest.java">org.cryptomator.cryptolib.v3.UVFIntegrationTest</a>
  */
 @Category(TestcontainerTest.class)
@@ -163,7 +163,7 @@ public class UVFIntegrationTest {
 
                 final VaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback());
                 bookmark.setDefaultPath("/" + bucketName);
-                final CryptoVault vault = new CryptoVault(new DefaultPathHomeFeature(bookmark).find());
+                final UVFVault vault = new UVFVault(new DefaultPathHomeFeature(bookmark).find());
                 vaults.add(vault.load(storage, new DefaultVaultMetadataUVFProvider(jwe.getBytes(StandardCharsets.US_ASCII), null, null,
                         new DefaultJWKCredentials(new JWKCredentials(JWK.parse(memberKey))))));
                 final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());

@@ -19,7 +19,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.cryptomator.CryptoVaultProvider;
-import ch.cyberduck.core.cryptomator.impl.v8.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.transfer.Transfer;

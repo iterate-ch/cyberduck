@@ -19,6 +19,8 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.DefaultVaultMetadataCredentialsProvider;
+import ch.cyberduck.core.cryptomator.impl.uvf.UVFVault;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Find;
@@ -76,9 +78,9 @@ public class CryptoVaultProvider implements VaultProvider {
     public synchronized AbstractVault provide(final Session<?> session, final Path directory, final VaultMetadata metadata) throws UnsupportedException {
         switch(metadata.type) {
             case V8:
-                return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(directory);
+                return new CryptomatorVault(directory);
             case UVF:
-                return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(directory);
+                return new UVFVault(directory);
             default:
                 log.error("Unknown vault type {}", metadata.type);
                 throw new UnsupportedException(metadata.type.toString());
@@ -90,9 +92,9 @@ public class CryptoVaultProvider implements VaultProvider {
     public AbstractVault create(final Session<?> session, final String region, final Path directory, final VaultCredentials credentials, final VaultMetadata metadata) throws BackgroundException {
         switch(metadata.type) {
             case V8:
-                return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
+                return new CryptomatorVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             case UVF:
-                return new ch.cyberduck.core.cryptomator.impl.uvf.CryptoVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
+                return new UVFVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             default:
                 log.error("Unknown vault type {}", metadata.type);
                 throw new UnsupportedException(metadata.type.toString());

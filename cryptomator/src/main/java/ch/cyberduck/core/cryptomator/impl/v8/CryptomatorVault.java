@@ -92,9 +92,9 @@ import com.google.auto.service.AutoService;
 import com.google.gson.JsonParseException;
 
 @AutoService(Vault.class)
-public class CryptoVault extends AbstractVault {
+public class CryptomatorVault extends AbstractVault {
 
-    private static final Logger log = LogManager.getLogger(CryptoVault.class);
+    private static final Logger log = LogManager.getLogger(CryptomatorVault.class);
 
 
     public static final String REGULAR_FILE_EXTENSION = ".c9r";
@@ -128,7 +128,7 @@ public class CryptoVault extends AbstractVault {
     private CryptoFilename filenameProvider;
     private CryptoDirectory directoryProvider;
 
-    public CryptoVault(final Path home) {
+    public CryptomatorVault(final Path home) {
         this.home = home;
         this.masterkeyPath = new Path(home, preferences.getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
         this.config = new Path(home, preferences.getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
@@ -208,12 +208,12 @@ public class CryptoVault extends AbstractVault {
         return FILENAME_PATTERN;
     }
 
-    public CryptoVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+    public CryptomatorVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         return this.create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
     }
 
     @Override
-    public CryptoVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
+    public CryptomatorVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
         final VaultMetadataCredentialsProvider provider = VaultMetadataCredentialsProvider.cast(metadata);
         final VaultCredentials credentials = provider.getCredentials();
         final Host bookmark = session.getHost();
@@ -275,7 +275,7 @@ public class CryptoVault extends AbstractVault {
     }
 
     @Override
-    public CryptoVault load(final Session<?> session, final VaultMetadataProvider provider) throws BackgroundException {
+    public CryptomatorVault load(final Session<?> session, final VaultMetadataProvider provider) throws BackgroundException {
         final Host bookmark = session.getHost();
         String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                 new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
@@ -287,15 +287,15 @@ public class CryptoVault extends AbstractVault {
         return this.unlock(session, provider, bookmark, passphrase);
     }
 
-    public CryptoVault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
-        final ch.cyberduck.core.cryptomator.impl.v8.CryptoVault.VaultConfig vaultConfig = this.readVaultConfig(session);
+    public CryptomatorVault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+        final CryptomatorVault.VaultConfig vaultConfig = this.readVaultConfig(session);
         this.unlock(vaultConfig, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
         );
         return this;
     }
 
-    public void unlock(final ch.cyberduck.core.cryptomator.impl.v8.CryptoVault.VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,
+    public void unlock(final CryptomatorVault.VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,
                        final String message) throws BackgroundException {
         final Credentials credentials;
         if(null == passphrase) {
@@ -327,7 +327,7 @@ public class CryptoVault extends AbstractVault {
         }
     }
 
-    private ch.cyberduck.core.cryptomator.impl.v8.CryptoVault.VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
+    private CryptomatorVault.VaultConfig readVaultConfig(final Session<?> session) throws BackgroundException {
         final MasterkeyFile masterkeyFile = this.readMasterkeyFile(session, masterkeyPath);
         try {
             return parseVaultConfigFromJWT(new ContentReader(session).read(config)).withMasterkeyFile(masterkeyFile);
@@ -338,9 +338,9 @@ public class CryptoVault extends AbstractVault {
         }
     }
 
-    public static ch.cyberduck.core.cryptomator.impl.v8.CryptoVault.VaultConfig parseVaultConfigFromJWT(final String token) {
+    public static CryptomatorVault.VaultConfig parseVaultConfigFromJWT(final String token) {
         final DecodedJWT decoded = JWT.decode(token);
-        return new ch.cyberduck.core.cryptomator.impl.v8.CryptoVault.VaultConfig(
+        return new CryptomatorVault.VaultConfig(
                 decoded.getClaim(JSON_KEY_VAULTVERSION).asInt(),
                 decoded.getClaim(JSON_KEY_SHORTENING_THRESHOLD).asInt(),
                 CryptorProvider.Scheme.valueOf(decoded.getClaim(JSON_KEY_CIPHERCONFIG).asString()),
@@ -357,7 +357,7 @@ public class CryptoVault extends AbstractVault {
         }
     }
 
-    protected void open(final ch.cyberduck.core.cryptomator.impl.v8.CryptoVault.VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
+    protected void open(final CryptomatorVault.VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
         try {
             final PerpetualMasterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
             this.open(vaultConfig, masterKey);
@@ -370,7 +370,7 @@ public class CryptoVault extends AbstractVault {
         }
     }
 
-    protected void open(final ch.cyberduck.core.cryptomator.impl.v8.CryptoVault.VaultConfig vaultConfig, final PerpetualMasterkey masterKey) throws BackgroundException {
+    protected void open(final CryptomatorVault.VaultConfig vaultConfig, final PerpetualMasterkey masterKey) throws BackgroundException {
         if(!SUPPORTED_VERSIONS.contains(vaultConfig.vaultVersion())) {
             throw new VaultException(String.format("Unsupported vault version %d", vaultConfig.vaultVersion()));
         }
@@ -491,10 +491,10 @@ public class CryptoVault extends AbstractVault {
         if(this == o) {
             return true;
         }
-        if(!(o instanceof CryptoVault)) {
+        if(!(o instanceof CryptomatorVault)) {
             return false;
         }
-        final CryptoVault that = (CryptoVault) o;
+        final CryptomatorVault that = (CryptomatorVault) o;
         return new SimplePathPredicate(home).test(that.home);
     }
 

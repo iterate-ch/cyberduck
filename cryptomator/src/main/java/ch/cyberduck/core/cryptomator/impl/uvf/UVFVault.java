@@ -91,8 +91,8 @@ import com.nimbusds.jose.crypto.PasswordBasedEncrypter;
 import com.nimbusds.jose.jwk.JWK;
 
 @AutoService(Vault.class)
-public class CryptoVault extends AbstractVault {
-    private static final Logger log = LogManager.getLogger(CryptoVault.class);
+public class UVFVault extends AbstractVault {
+    private static final Logger log = LogManager.getLogger(UVFVault.class);
 
     private static final String REGULAR_FILE_EXTENSION = ".uvf";
     private static final String FILENAME_DIRECTORYID = "dir";
@@ -125,13 +125,13 @@ public class CryptoVault extends AbstractVault {
 
     private int nonceSize;
 
-    public CryptoVault(final Path home) {
+    public UVFVault(final Path home) {
         this.home = home;
         this.masterkeyPath = new Path(home, preferences.getProperty("cryptomator.vault.config.filename.uvf"), EnumSet.of(Path.Type.file, Path.Type.vault));
     }
 
     @Override
-    public CryptoVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
+    public UVFVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
         if(metadata instanceof VaultMetadataCredentialsProvider) {
             // Passphrase based vault creation
             final VaultMetadataCredentialsProvider credentialsProvider = VaultMetadataCredentialsProvider.cast(metadata);
@@ -237,7 +237,7 @@ public class CryptoVault extends AbstractVault {
 
     // load -> unlock -> open
     @Override
-    public CryptoVault load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
+    public UVFVault load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
         final Payload payload;
         if(metadata instanceof VaultMetadataUVFProvider) {
             final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
@@ -418,10 +418,10 @@ public class CryptoVault extends AbstractVault {
         if(this == o) {
             return true;
         }
-        if(!(o instanceof CryptoVault)) {
+        if(!(o instanceof UVFVault)) {
             return false;
         }
-        final CryptoVault that = (CryptoVault) o;
+        final UVFVault that = (UVFVault) o;
         return new SimplePathPredicate(home).test(that.home);
     }
 
