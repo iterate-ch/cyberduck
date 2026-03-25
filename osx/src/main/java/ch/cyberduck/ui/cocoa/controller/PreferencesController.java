@@ -2470,7 +2470,7 @@ public class PreferencesController extends ToolbarWindowController {
                 preferences.setLogging(Level.DEBUG.toString());
                 break;
             default:
-                preferences.setLogging(Level.ERROR.toString());
+                preferences.resetLogging();
                 break;
         }
     }
