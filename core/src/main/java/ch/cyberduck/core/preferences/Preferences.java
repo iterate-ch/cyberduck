@@ -533,7 +533,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("factory.updater.arguments.class", DisabledUpdateCheckerArguments.class.getName());
         this.setDefault("factory.threadpool.class", DefaultThreadPool.class.getName());
         this.setDefault("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
-        this.setDefault("factory.vault.class", DisabledVault.class.getName());
         this.setDefault("factory.vaultprovider.class", DisabledVaultProvider.class.getName());
         this.setDefault("factory.vaultregistry.class", DefaultVaultRegistry.class.getName());
         this.setDefault("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
