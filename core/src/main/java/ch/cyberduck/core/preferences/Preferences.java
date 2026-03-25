@@ -328,9 +328,17 @@ public abstract class Preferences implements Locales, PreferencesReader {
     }
 
     /**
+     * Reset logging configuration to default level from configuration
+     */
+    public void resetLogging() {
+        this.deleteProperty("logging");
+        this.configureLogging(null);
+    }
+
+    /**
      * Reconfigure logging configuration
      *
-     * @param level Log level
+     * @param level Log level or null to use default level from configuration
      */
     protected void configureLogging(final String level) {
         // Call only once during initialization time of your application
@@ -346,10 +354,13 @@ public abstract class Preferences implements Locales, PreferencesReader {
             }
             catch(IOException e) {
                 log.error("Failure configuring log4j", e);
+                Configurator.setRootLevel(Level.ERROR);
             }
         }
-        // Allow to override default logging level
-        Configurator.setRootLevel(Level.toLevel(level, Level.ERROR));
+        if(StringUtils.isNotEmpty(level)) {
+            // Allow to override default logging level
+            Configurator.setRootLevel(Level.toLevel(level, Level.ERROR));
+        }
         // Map logging level to pass through bridge
         final ImmutableMap<Level, java.util.logging.Level> map = new ImmutableMap.Builder<Level, java.util.logging.Level>()
                 .put(Level.ALL, java.util.logging.Level.ALL)
@@ -369,7 +380,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 java.util.logging.Logger.getLogger(loggerConfig.getName()).setLevel(map.get(loggerConfig.getLevel()));
             }
         }
-        this.configureAppenders(level);
+        this.configureAppenders(LogManager.getRootLogger().getLevel().name());
     }
 
     private InputStream getLogConfiguration() {

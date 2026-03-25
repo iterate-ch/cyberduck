@@ -193,7 +193,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DebugLogChangedEvent()
         {
-            PreferencesFactory.get().setLogging(View.DebugLog ? Level.DEBUG.toString() : Level.ERROR.toString());
+            if (View.DebugLog)
+            {
+                PreferencesFactory.get().setLogging(Level.DEBUG.name());
+            }
+            else
+            {
+                PreferencesFactory.get().resetLogging();
+            }
         }
 
         private void View_SegmentedDownloadsChangedEvent()
