@@ -55,7 +55,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
@@ -92,7 +91,7 @@ public class CryptoLocalSingleTransferWorkerTest {
 
     @Test
     public void testUpload() throws Exception {
-        PreferencesFactory.get().setProperty("factory.vaultprovider.class", CryptoVaultProvider.class.getName());
+        PreferencesFactory.get().setProperty("factory.vaultprovider.class", DefaultVaultProvider.class.getName());
 
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
@@ -117,8 +116,7 @@ public class CryptoLocalSingleTransferWorkerTest {
         final OutputStream out2 = localFile2.getOutputStream(false);
         IOUtils.write(content, out2);
         out2.close();
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final DefaultVaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

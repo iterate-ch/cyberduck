@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferStatus;
+
 import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.lang3.StringUtils;

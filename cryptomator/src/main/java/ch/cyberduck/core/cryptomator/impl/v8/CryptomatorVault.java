@@ -35,10 +35,10 @@ import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.CredentialsVaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
-import ch.cyberduck.core.vault.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultUnlockException;
 
@@ -192,7 +192,7 @@ public class CryptomatorVault extends AbstractVault {
 
     @Override
     public void create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
-        final VaultMetadataCredentialsProvider provider = VaultMetadataCredentialsProvider.cast(metadata);
+        final CredentialsVaultMetadataProvider provider = CredentialsVaultMetadataProvider.cast(metadata);
         final VaultCredentials credentials = provider.getCredentials();
         final String passphrase = credentials.getPassword();
         final ByteArrayOutputStream mkArray = new ByteArrayOutputStream();
@@ -239,7 +239,7 @@ public class CryptomatorVault extends AbstractVault {
     @Override
     public void load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
         final VaultConfig vaultConfig = this.readVaultConfig(session);
-        this.unlock(vaultConfig, VaultMetadataCredentialsProvider.cast(metadata).getCredentials().getPassword());
+        this.unlock(vaultConfig, CredentialsVaultMetadataProvider.cast(metadata).getCredentials().getPassword());
     }
 
     protected PerpetualMasterkey unlock(final VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {

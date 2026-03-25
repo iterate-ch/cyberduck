@@ -15,69 +15,42 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.AbstractVault;
-import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
-import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
-import ch.cyberduck.core.vault.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
-import ch.cyberduck.core.vault.VaultMetadataUVFProvider;
-import ch.cyberduck.core.vault.VaultUnlockException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
-import org.cryptomator.cryptolib.api.DirectoryContentCryptor;
 import org.cryptomator.cryptolib.api.DirectoryMetadata;
 import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.RevolvingMasterkey;
 import org.cryptomator.cryptolib.api.UVFMasterkey;
 
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.util.Base64;
-import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.auto.service.AutoService;
-import com.nimbusds.jose.EncryptionMethod;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWEAlgorithm;
-import com.nimbusds.jose.JWEHeader;
-import com.nimbusds.jose.JWEObject;
-import com.nimbusds.jose.JWEObjectJSON;
-import com.nimbusds.jose.Payload;
-import com.nimbusds.jose.crypto.MultiDecrypter;
-import com.nimbusds.jose.crypto.PasswordBasedDecrypter;
-import com.nimbusds.jose.crypto.PasswordBasedEncrypter;
-import com.nimbusds.jose.jwk.JWK;
 
 @AutoService(Vault.class)
 public class UVFVault extends AbstractVault {
@@ -90,13 +63,6 @@ public class UVFVault extends AbstractVault {
     private static final String BACKUP_DIRECTORY_METADATA_FILENAME = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, REGULAR_FILE_EXTENSION);
 
     private static final Pattern FILENAME_PATTERN = Pattern.compile("^([A-Za-z0-9_=-]+)" + REGULAR_FILE_EXTENSION);
-
-    private static final String UVF_SPEC_VERSION_KEY_PARAM = "uvf.spec.version";
-    private static final String UVF_FILEFORMAT = "AES-256-GCM-32k";
-    private static final String UVF_NAME_FORMAT = "AES-SIV-512-B64URL";
-
-    private static final int PBKDF2_SALT_LENGTH = PasswordBasedEncrypter.MIN_SALT_LENGTH;
-    private static final int PBKDF2_ITERATION_COUNT = PasswordBasedEncrypter.MIN_RECOMMENDED_ITERATION_COUNT;
 
     /**
      * Root of vault directory
@@ -118,55 +84,11 @@ public class UVFVault extends AbstractVault {
 
     @Override
     public void create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
-        try {
-            if(metadata instanceof VaultMetadataCredentialsProvider) {
-                // Passphrase based vault creation
-                final VaultMetadataCredentialsProvider credentialsProvider = VaultMetadataCredentialsProvider.cast(metadata);
-                final VaultCredentials credentials = credentialsProvider.getCredentials();
-                final JWEHeader header = new JWEHeader.Builder(JWEAlgorithm.PBES2_HS512_A256KW, EncryptionMethod.A256GCM)
-                        .jwkURL(URI.create("jwks.json"))
-                        .contentType("json")
-                        .criticalParams(Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM))
-                        .customParam(UVF_SPEC_VERSION_KEY_PARAM, 1)
-                        .keyID("org.cryptomator.uvf.vaultpassword")
-                        .build();
-                final String kid = Base64.getUrlEncoder().encodeToString(new AlphanumericRandomStringService(4).random().getBytes(StandardCharsets.UTF_8));
-                final byte[] rawSeed = new byte[32];
-                FastSecureRandomProvider.get().provide().nextBytes(rawSeed);
-                final byte[] kdfSalt = new byte[32];
-                FastSecureRandomProvider.get().provide().nextBytes(kdfSalt);
-                final Payload payload = new Payload(new HashMap<String, Object>() {{
-                    put("fileFormat", UVF_FILEFORMAT);
-                    put("nameFormat", UVF_NAME_FORMAT);
-                    put("seeds", new HashMap<String, String>() {{
-                        put(kid, Base64.getUrlEncoder().encodeToString(rawSeed));
-                    }});
-                    put("initialSeed", kid);
-                    put("latestSeed", kid);
-                    put("kdf", "HKDF-SHA512");
-                    put("kdfSalt", Base64.getUrlEncoder().encodeToString(kdfSalt));
-                }});
-                final JWEObject jwe = new JWEObject(header, payload);
-                jwe.encrypt(new PasswordBasedEncrypter(credentials.getPassword(), PBKDF2_SALT_LENGTH, PBKDF2_ITERATION_COUNT));
-                final byte[] encryptedMetadata = jwe.serialize().getBytes(StandardCharsets.US_ASCII);
-                this.uploadTemplate(session, region, encryptedMetadata,
-                        this.computeRootDirUvf(payload.toString()), this.computeRootDirIdHash(payload.toString()));
-                this.open(payload);
-            }
-            else if(metadata instanceof VaultMetadataUVFProvider) {
-                // Generic vault creation with provided metadata
-                final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
-                final String vaultMetadata = provider.getVaultMetadata();
-                this.uploadTemplate(session, region, vaultMetadata.getBytes(StandardCharsets.US_ASCII),
-                        this.computeRootDirUvf(vaultMetadata), this.computeRootDirIdHash(vaultMetadata));
-            }
-            else {
-                throw new VaultException("Unsupported metadata provider: " + metadata.getClass().getName());
-            }
-        }
-        catch(JOSEException | JsonProcessingException e) {
-            throw new VaultException("Failure creating vault ", e);
-        }
+        // Generic vault creation with provided metadata
+        final UVFVaultMetadataProvider provider = UVFVaultMetadataProvider.cast(metadata);
+        final byte[] rootDirectoryMetadata = provider.computeRootDirUvf();
+        final String rootDirectoryIdHash = provider.computeRootDirIdHash();
+        this.uploadTemplate(session, region, provider.encrypt(), rootDirectoryMetadata, rootDirectoryIdHash);
     }
 
     /**
@@ -181,9 +103,8 @@ public class UVFVault extends AbstractVault {
      */
     private void uploadTemplate(final Session<?> session, final String region,
                                 final byte[] vaultMetadata, final byte[] rootDirectoryMetadata, final String rootDirectoryIdHash) throws BackgroundException {
-        final Path home = this.getHome();
-        log.debug("Create vault root directory at {}", home);
 
+        log.debug("Create vault root directory at {}", home);
         // Obtain non encrypted directory writer
         final Directory<?> directory = session._getFeature(Directory.class);
         final TransferStatus status = new TransferStatus().setRegion(region);
@@ -207,78 +128,16 @@ public class UVFVault extends AbstractVault {
         new ContentWriter(session).write(new Path(secondLevel, "dir.uvf", EnumSet.of(Path.Type.file)), rootDirectoryMetadata);
     }
 
-    private String computeRootDirIdHash(final String payloadJSON) throws JsonProcessingException {
-        final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(payloadJSON);
-        final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
-        final Cryptor cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
-        final byte[] rootDirId = masterKey.rootDirId();
-        return cryptor.fileNameCryptor(masterKey.firstRevision()).hashDirectoryId(rootDirId);
-    }
-
-    private byte[] computeRootDirUvf(final String payloadJSON) throws JsonProcessingException {
-        final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(payloadJSON);
-        final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
-        final Cryptor cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
-        DirectoryMetadata rootDirMetadata = cryptor.directoryContentCryptor().rootDirectoryMetadata();
-        DirectoryContentCryptor dirContentCryptor = cryptor.directoryContentCryptor();
-        return dirContentCryptor.encryptDirectoryMetadata(rootDirMetadata);
-    }
-
-    // load -> unlock -> open
     @Override
     public void load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
-        final Payload payload;
-        if(metadata instanceof VaultMetadataUVFProvider) {
-            final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
-            try {
-                final String jwe = provider.getVaultMetadata();
-                final JWK jwk = provider.getKey();
-                final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
-                jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM)));
-                payload = jweObject.getPayload();
-            }
-            catch(ParseException | JOSEException e) {
-                throw new VaultException("Failure retrieving key material", e);
-            }
-        }
-        else {
-            final VaultMetadataCredentialsProvider provider = VaultMetadataCredentialsProvider.cast(metadata);
-            payload = this.unlock(session, provider.getCredentials()).getPayload();
-        }
-        this.open(payload);
-    }
-
-    private void open(final Payload payload) {
-        masterKey = UVFMasterkey.fromDecryptedPayload(payload.toString());
-        final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
-        log.debug("Initialized crypto provider {}", provider);
-        this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
+        final UVFVaultMetadataProvider provider = UVFVaultMetadataProvider.cast(metadata);
+        this.masterKey = UVFMasterkey.fromDecryptedPayload(new String(provider.decrypt(), StandardCharsets.US_ASCII));
+        final CryptorProvider cryptorProvider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
+        log.debug("Initialized crypto provider {}", cryptorProvider);
+        this.cryptor = cryptorProvider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.filenameProvider = new CryptoFilenameV7Provider(Integer.MAX_VALUE);
         this.directoryProvider = new CryptoDirectoryUVFProvider(this, filenameProvider);
         this.nonceSize = 12;
-    }
-
-    private JWEObject unlock(final Session<?> session, final VaultCredentials passphrase) throws BackgroundException {
-        log.debug("Read UVF metadata {}", masterkeyPath);
-        final String vaultUVF = new String(new ContentReader(session).readBytes(masterkeyPath), StandardCharsets.US_ASCII);
-        return this.unlock(vaultUVF, passphrase);
-    }
-
-    private JWEObject unlock(final String vaultUVF, final VaultCredentials credentials) throws BackgroundException {
-        try {
-            final JWEObject jweObject;
-            try {
-                jweObject = JWEObject.parse(vaultUVF);
-                jweObject.decrypt(new PasswordBasedDecrypter(credentials.getPassword()));
-            }
-            catch(ParseException e) {
-                throw new VaultException("Failure retrieving key material", e);
-            }
-            return jweObject;
-        }
-        catch(JOSEException e) {
-            throw new VaultUnlockException(e.getMessage(), e);
-        }
     }
 
     @Override

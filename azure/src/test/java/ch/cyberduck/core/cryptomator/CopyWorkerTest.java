@@ -45,7 +45,6 @@ import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
@@ -79,8 +78,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final byte[] content = RandomUtils.nextBytes(40500);
@@ -105,8 +103,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path target = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(session), cryptomator).touch(
@@ -129,8 +126,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
     public void testCopyToDifferentFolderLongFilenameCryptomator() throws Exception {
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final Path source = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory));
         final Path target = new Path(targetFolder, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
@@ -154,8 +150,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
     public void testCopyFolder() throws Exception {
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
@@ -192,8 +187,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session).find(cleartextFile));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(
@@ -221,8 +215,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), cleartextFile, new TransferStatus());
         assertTrue(new AzureFindFeature(session).find(cleartextFolder));
         assertTrue(new AzureFindFeature(session).find(cleartextFile));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         // move directory into vault
@@ -246,8 +239,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         new AzureDirectoryFeature(session).mkdir(new AzureWriteFeature(session), clearFolder, new TransferStatus());
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(
@@ -272,8 +264,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(

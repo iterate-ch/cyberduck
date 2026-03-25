@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cryptomator.impl.uvf.JWKSetUVFVaultMetadataProvider;
 import ch.cyberduck.core.cryptomator.impl.uvf.UVFVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -36,7 +37,6 @@ import ch.cyberduck.core.threading.DisabledCancelCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataUVFProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.worker.DeleteWorker;
@@ -70,6 +70,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEObjectJSON;
 import com.nimbusds.jose.crypto.MultiDecrypter;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
 
 import static org.junit.Assert.*;
 
@@ -162,13 +163,13 @@ public class UVFIntegrationTest {
                 final VaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback());
                 bookmark.setDefaultPath("/" + bucketName);
                 final UVFVault vault = new UVFVault(new DefaultPathHomeFeature(bookmark).find());
-                vault.load(storage, new DefaultVaultMetadataUVFProvider(jwe, JWK.parse(memberKey)));
+                final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
+                vault.load(storage, new JWKSetUVFVaultMetadataProvider(jweObject, new JWKSet(JWK.parse(memberKey))));
                 vaults.add(vault);
                 final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
                 storage.withRegistry(vaults);
 
                 final JWK jwk = JWK.parse(memberKey);
-                final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
                 jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton("uvf.spec.version")));
                 try(final UVFMasterkey masterKey = UVFMasterkey.fromDecryptedPayload(jweObject.getPayload().toString())) {
                     assertArrayEquals(masterKey.rootDirId(), vault.getMasterkey().rootDirId());

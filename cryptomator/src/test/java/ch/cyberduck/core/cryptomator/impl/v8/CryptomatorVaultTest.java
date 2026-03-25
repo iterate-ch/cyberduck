@@ -34,7 +34,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.PathDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultUnlockException;
 
@@ -105,7 +104,7 @@ public class CryptomatorVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
-        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("vault123")));
+        vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
@@ -179,7 +178,7 @@ public class CryptomatorVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
-        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("vault123")));
+        vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
@@ -225,7 +224,7 @@ public class CryptomatorVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
-        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("vault123")));
+        vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
         assertEquals(Vault.State.open, vault.getState());
         assertEquals(home, new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())));
         vault.close();
@@ -269,7 +268,7 @@ public class CryptomatorVaultTest {
             }
         };
         final CryptomatorVault vault = new CryptomatorVault(new Path("/", EnumSet.of(Path.Type.directory)));
-        assertThrows(VaultUnlockException.class, () -> vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("null"))));
+        assertThrows(VaultUnlockException.class, () -> vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("null"))));
     }
 
     @Test
@@ -293,7 +292,7 @@ public class CryptomatorVaultTest {
             }
         };
         final CryptomatorVault vault = new CryptomatorVault(home);
-        vault.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
     }
 
     @Test
@@ -317,7 +316,7 @@ public class CryptomatorVaultTest {
             }
         };
         final CryptomatorVault vault = new CryptomatorVault(home);
-        vault.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0L, 0);
@@ -366,7 +365,7 @@ public class CryptomatorVaultTest {
             }
         };
         final CryptomatorVault vault = new CryptomatorVault(home);
-        vault.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         for(int i = 0; i < 26000000; i++) {
             assertEquals(i, vault.toCleartextSize(0L, vault.toCiphertextSize(0L, i)));
         }

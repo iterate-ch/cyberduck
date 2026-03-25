@@ -15,13 +15,13 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-public interface VaultMetadataCredentialsProvider extends VaultMetadataProvider {
+public interface CredentialsVaultMetadataProvider extends VaultMetadataProvider {
 
     VaultCredentials getCredentials();
 
-    static VaultMetadataCredentialsProvider cast(VaultMetadataProvider provider) {
-        if(provider instanceof VaultMetadataCredentialsProvider) {
-            return (VaultMetadataCredentialsProvider) provider;
+    static CredentialsVaultMetadataProvider cast(VaultMetadataProvider provider) {
+        if(provider instanceof CredentialsVaultMetadataProvider) {
+            return (CredentialsVaultMetadataProvider) provider;
         }
         else {
             throw new IllegalArgumentException("Unsupported metadata type " + provider.getClass());

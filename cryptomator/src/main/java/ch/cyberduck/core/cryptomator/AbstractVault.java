@@ -116,12 +116,12 @@ public abstract class AbstractVault implements Vault {
     }
 
     @Override
-    public Path encrypt(Session<?> session, Path file) throws BackgroundException {
+    public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
         return this.encrypt(session, file, false);
     }
 
     @Override
-    public Path encrypt(Session<?> session, Path file, boolean metadata) throws BackgroundException {
+    public Path encrypt(final Session<?> session, final Path file, final boolean metadata) throws BackgroundException {
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {

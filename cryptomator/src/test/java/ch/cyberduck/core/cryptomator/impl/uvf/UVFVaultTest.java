@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
 
@@ -78,7 +77,7 @@ public class UVFVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final UVFVault vault = new UVFVault(home);
-        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("mypassphrase")));
+        vault.load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v3"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v3"));
         assertEquals(Vault.State.open, vault.getState());
@@ -179,7 +178,7 @@ public class UVFVaultTest {
             }
         };
         final UVFVault vault = new UVFVault(home);
-        final DefaultVaultMetadataCredentialsProvider provider = new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("mypassphrase"));
+        final DefaultUVFVaultMetadataProvider provider = new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase"));
         vault.create(session, null, provider);
     }
 }

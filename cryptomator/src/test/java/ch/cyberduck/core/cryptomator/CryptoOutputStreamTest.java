@@ -19,13 +19,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
+import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ProxyOutputStream;
@@ -64,8 +64,8 @@ public class CryptoOutputStreamTest extends AbstractCryptoTests {
                 return super._getFeature(type);
             }
         };
-        final AbstractVault vault = new CryptoVaultProvider(session).provide(session, home, new VaultMetadata(vaultVersion));
-        vault.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault vault = new CryptomatorVault(home);
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         return vault;
     }
 

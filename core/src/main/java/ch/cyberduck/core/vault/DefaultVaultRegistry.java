@@ -222,9 +222,6 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == PathContainerService.class) {
             return (T) new VaultRegistryPathContainerService(session, (PathContainerService) proxy, this);
         }
-        if(type == VaultProvider.class) {
-            return (T) new VaultRegistryVaultProvider(session, (VaultProvider) proxy, this);
-        }
         return proxy;
     }
 }

@@ -22,13 +22,13 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
+import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.junit.Test;
@@ -63,7 +63,7 @@ public class CryptoBulkFeatureTest {
             }
         };
         final CryptomatorVault cryptomator = new CryptomatorVault(vault);
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        cryptomator.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override
             public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
@@ -120,7 +120,7 @@ public class CryptoBulkFeatureTest {
             }
         };
         final CryptomatorVault cryptomator = new CryptomatorVault(vault);
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        cryptomator.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override
             public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {

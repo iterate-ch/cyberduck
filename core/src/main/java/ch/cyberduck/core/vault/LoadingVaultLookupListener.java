@@ -25,7 +25,6 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -55,13 +54,6 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
                 return registry.find(session, directory);
             }
             log.info("Loading vault for session {}", session);
-            final Vault vault;
-            try {
-                vault = session.getFeature(VaultProvider.class).provide(session, directory, metadata);
-            }
-            catch(UnsupportedException e) {
-                throw new VaultUnlockCancelException(Vault.DISABLED, e);
-            }
             try {
                 final Host bookmark = session.getHost();
                 String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
@@ -91,44 +83,49 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
                 else {
                     credentials = new VaultCredentials(passphrase).setSaved(false);
                 }
-                this.load(session, vault, credentials);
-                if(credentials.isSaved()) {
-                    log.info("Save passphrase for {}", directory);
-                    // Save password with hostname and path to masterkey.cryptomator in keychain
-                    keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                            new DefaultUrlProvider(bookmark).toUrl(directory, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
-                }
+                final Vault vault = this.load(session, metadata, directory, credentials);
                 if(registry.add(vault)) {
                     final EnumSet<Path.Type> type = directory.getType();
                     type.add(Path.Type.vault);
                     directory.setType(type);
                 }
+                return vault;
             }
             catch(BackgroundException e) {
                 log.warn("Failure {} loading vault", e.getMessage());
-                throw new VaultUnlockCancelException(vault, e);
+                throw new VaultUnlockCancelException(directory, e);
             }
-            return vault;
         }
     }
 
-    private void load(final Session<?> session, final Vault vault, final VaultCredentials credentials) throws BackgroundException {
+    private Vault load(final Session<?> session, final VaultMetadata metadata, final Path directory, final VaultCredentials credentials) throws BackgroundException {
         try {
-            vault.load(session, new DefaultVaultMetadataCredentialsProvider(credentials));
+            final VaultProvider provider = session.getFeature(VaultProvider.class);
+            final Vault vault = provider.load(session, directory, metadata, credentials);
+            if(credentials.isSaved()) {
+                log.info("Save passphrase for {}", directory);
+                // Save password with hostname and path to masterkey.cryptomator in keychain
+                keychain.addPassword(String.format("Cryptomator Passphrase (%s)", session.getHost().getCredentials().getUsername()),
+                        new DefaultUrlProvider(session.getHost()).toUrl(directory, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+            }
+            return vault;
         }
         catch(VaultUnlockException e) {
             final Host bookmark = session.getHost();
             credentials.setPassword(prompt.prompt(
                     bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     String.format("%s %s.", e.getDetail(),
-                            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), vault.getHome())),
+                            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), directory)),
                     new LoginOptions()
                             .save(HostPreferencesFactory.get(bookmark).getBoolean("cryptomator.vault.keychain"))
                             .user(false)
                             .anonymous(false)
                             .icon("cryptomator.tiff")
                             .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator"))).getPassword());
-            this.load(session, vault, credentials);
+            return this.load(session, metadata, directory, credentials);
+        }
+        catch(BackgroundException e) {
+            throw new VaultUnlockCancelException(directory, e);
         }
     }
 }

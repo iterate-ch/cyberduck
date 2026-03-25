@@ -35,7 +35,6 @@ import ch.cyberduck.core.sftp.SFTPSymlinkFeature;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
@@ -62,8 +61,7 @@ public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
     public void testSymlink() throws Exception {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final Path target = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(

@@ -56,7 +56,6 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
@@ -85,7 +84,7 @@ public class CryptoSFTPSingleTransferWorkerTest extends AbstractSFTPTest {
 
     @Test
     public void testUpload() throws Exception {
-        PreferencesFactory.get().setProperty("factory.vaultprovider.class", CryptoVaultProvider.class.getName());
+        PreferencesFactory.get().setProperty("factory.vaultprovider.class", DefaultVaultProvider.class.getName());
 
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -108,8 +107,7 @@ public class CryptoSFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         final OutputStream out2 = localFile2.getOutputStream(false);
         IOUtils.write(content, out2);
         out2.close();
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         final DefaultVaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

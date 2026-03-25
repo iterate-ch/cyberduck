@@ -16,4 +16,5 @@ package ch.cyberduck.core.vault;
  */
 
 public interface VaultMetadataProvider {
+
 }

@@ -16,6 +16,9 @@ package ch.cyberduck.core.vault;
  */
 
 public class VaultUnlockException extends VaultException {
+    public VaultUnlockException() {
+    }
+
     public VaultUnlockException(final String detail) {
         super(detail);
     }

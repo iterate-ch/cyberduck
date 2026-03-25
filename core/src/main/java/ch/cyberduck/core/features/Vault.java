@@ -40,7 +40,6 @@ public interface Vault {
     /**
      * Open existing vault
      *
-     * @return Open vault
      * @throws LoginCanceledException User dismissed passphrase prompt
      * @throws BackgroundException    Failure reading master key from server
      * @throws NotfoundException      No master key file in home

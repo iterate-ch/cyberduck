@@ -24,6 +24,8 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
+import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -33,10 +35,8 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultMetadata;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -171,8 +171,8 @@ public class SFTPCryptomatorInteroperabilityTest {
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vaultPath = new Path(home, "vault", EnumSet.of(Path.Type.directory));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vaultPath, new VaultMetadata(VaultMetadata.Type.V8));
-        cryptomator.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("12341234")));
+        final AbstractVault cryptomator = new CryptomatorVault(vaultPath);
+        cryptomator.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("12341234")));
         session.withRegistry(new DefaultVaultRegistry(PasswordCallback.noop, cryptomator));
         Path p = new Path(new Path(vaultPath, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
         final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), ConnectionCallback.noop);
@@ -194,8 +194,8 @@ public class SFTPCryptomatorInteroperabilityTest {
         session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path vaultPath = new SFTPHomeDirectoryService(session).find();
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vaultPath, new VaultMetadata(VaultMetadata.Type.V8));
-        cryptomator.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("12341234")));
+        final AbstractVault cryptomator = new CryptomatorVault(vaultPath);
+        cryptomator.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("12341234")));
         session.withRegistry(new DefaultVaultRegistry(PasswordCallback.noop, cryptomator));
 
 /*
@@ -228,8 +228,8 @@ public class SFTPCryptomatorInteroperabilityTest {
         session.login(LoginCallback.noop, CancelCallback.noop);
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vaultPath = new Path(home, "vault", EnumSet.of(Path.Type.directory));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vaultPath, new VaultMetadata(VaultMetadata.Type.V8));
-        cryptomator.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("12341234")));
+        final AbstractVault cryptomator = new CryptomatorVault(vaultPath);
+        cryptomator.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("12341234")));
         session.withRegistry(new DefaultVaultRegistry(PasswordCallback.noop, cryptomator));
         Path p = new Path(new Path(vaultPath, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
         final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus(), ConnectionCallback.noop);

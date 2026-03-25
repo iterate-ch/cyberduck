@@ -23,11 +23,11 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVaultTest;
+import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
@@ -108,7 +108,7 @@ public class CryptoDirectoryV8ProviderTest {
         };
         final Path home = new Path("/vault", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
-        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("vault123")));
+        vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
         final CryptoDirectory provider = new CryptoDirectoryV8Provider(vault, new CryptoFilenameV7Provider());
         assertNotNull(provider.toEncrypted(session, home));
         final Path f = new Path("/vault/f", EnumSet.of(Path.Type.directory));

@@ -20,13 +20,14 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.impl.uvf.DefaultUVFVaultMetadataProvider;
 import ch.cyberduck.core.cryptomator.impl.uvf.UVFVault;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
+import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
@@ -79,7 +80,7 @@ public class CryptoReadFeatureTest {
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
 
-        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("vault")));
+        vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault")));
         CryptoReadFeature read = new CryptoReadFeature(session, null, vault);
 
         {
@@ -147,7 +148,7 @@ public class CryptoReadFeatureTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
-        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("vault")));
+        vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault")));
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
         {
             assertEquals(0, read.chunk(0));
@@ -202,7 +203,7 @@ public class CryptoReadFeatureTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final UVFVault vault = new UVFVault(home);
-        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("mypassphrase")));
+        vault.load(session, new DefaultUVFVaultMetadataProvider(new VaultCredentials("mypassphrase")));
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
         {
             assertEquals(0, read.chunk(0));

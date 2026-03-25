@@ -27,14 +27,13 @@ import ch.cyberduck.core.brick.BrickListService;
 import ch.cyberduck.core.brick.BrickWriteFeature;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.cryptomator.AbstractVault;
-import ch.cyberduck.core.cryptomator.CryptoVaultProvider;
+import ch.cyberduck.core.cryptomator.DefaultVaultProvider;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
@@ -61,8 +60,7 @@ public class BrickListServiceTest extends AbstractBrickTest {
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
-        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
+        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultMetadata(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new BrickListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<FileEntity>(session), cryptomator).touch(
