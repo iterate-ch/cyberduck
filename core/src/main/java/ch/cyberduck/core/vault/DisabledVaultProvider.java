@@ -23,10 +23,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 
 public class DisabledVaultProvider implements VaultProvider {
-    @Override
-    public boolean isVault(final Path path) {
-        return false;
-    }
 
     @Override
     public VaultMetadata metadata(final Path path) {

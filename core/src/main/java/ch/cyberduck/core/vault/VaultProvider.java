@@ -24,19 +24,12 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 
 public interface VaultProvider {
-    /**
-     * Determines whether the given path corresponds to a vault.
-     *
-     * @param path The path to check for vault characteristics.
-     * @return {@code true} if the specified path represents a vault, {@code false} otherwise.
-     */
-    boolean isVault(Path path);
 
     /**
      * Retrieves the metadata of the vault located at the specified path.
      *
      * @param path The path to the vault for which the metadata is to be retrieved.
-     * @return An instance of {@code VaultMetadata} that describes the properties of the vault at the given path.
+     * @return Describes the properties of the vault at the given path. Null when no vault is found.
      */
     VaultMetadata metadata(Path path);
 
