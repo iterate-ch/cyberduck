@@ -22,6 +22,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
 
@@ -57,8 +58,8 @@ public class CryptoWriteFeatureTest extends AbstractCryptoTests {
                 return super._getFeature(type);
             }
         };
-        final AbstractVault vault = new CryptoVaultProvider(session).create(session, null, home, new VaultCredentials("test"),
-                new VaultMetadata(vaultVersion));
+        final AbstractVault vault = new CryptoVaultProvider(session).provide(session, home, new VaultMetadata(vaultVersion));
+        vault.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
         int headerSize = vault.getFileHeaderCryptor().headerSize();
         // zero file size
         assertEquals(headerSize, vault.toCiphertextSize(0L, 0));

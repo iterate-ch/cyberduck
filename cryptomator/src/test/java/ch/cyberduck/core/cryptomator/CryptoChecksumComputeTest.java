@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
 
@@ -61,8 +62,8 @@ public class CryptoChecksumComputeTest extends AbstractCryptoTests {
                 return super._getFeature(type);
             }
         };
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, vault, new VaultCredentials("test"),
-                new VaultMetadata(vaultVersion));
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
+        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
         final ByteBuffer header = cryptomator.getFileHeaderCryptor().encryptHeader(cryptomator.getFileHeaderCryptor().create());
         // DEFAULT_PIPE_SIZE=1024
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();

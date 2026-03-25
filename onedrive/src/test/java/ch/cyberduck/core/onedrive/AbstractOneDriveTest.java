@@ -17,11 +17,9 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.vault.VaultMetadata;
-import ch.cyberduck.test.VaultTest;
 
 import org.junit.runners.Parameterized;
 

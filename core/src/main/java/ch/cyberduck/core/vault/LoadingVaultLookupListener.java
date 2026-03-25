@@ -53,7 +53,8 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
                 throw new VaultUnlockCancelException(Vault.DISABLED, e);
             }
             try {
-                if(registry.add(vault.load(session, new DefaultVaultMetadataCallbackProvider(prompt)))) {
+                vault.load(session, new DefaultVaultMetadataCallbackProvider(prompt));
+                if(registry.add(vault)) {
                     final EnumSet<Path.Type> type = directory.getType();
                     type.add(Path.Type.vault);
                     directory.setType(type);

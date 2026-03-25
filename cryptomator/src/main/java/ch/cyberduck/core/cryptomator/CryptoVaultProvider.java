@@ -18,14 +18,12 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.cryptomator.impl.uvf.UVFVault;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.vault.VaultProvider;
 
@@ -81,20 +79,6 @@ public class CryptoVaultProvider implements VaultProvider {
                 return new CryptomatorVault(directory);
             case UVF:
                 return new UVFVault(directory);
-            default:
-                log.error("Unknown vault type {}", metadata.type);
-                throw new UnsupportedException(metadata.type.toString());
-        }
-    }
-
-    //TODO create methode braucht es glaube ich nicht unbedingt
-    @Override
-    public AbstractVault create(final Session<?> session, final String region, final Path directory, final VaultCredentials credentials, final VaultMetadata metadata) throws BackgroundException {
-        switch(metadata.type) {
-            case V8:
-                return new CryptomatorVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
-            case UVF:
-                return new UVFVault(directory).create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
             default:
                 log.error("Unknown vault type {}", metadata.type);
                 throw new UnsupportedException(metadata.type.toString());

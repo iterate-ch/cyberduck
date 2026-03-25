@@ -82,11 +82,11 @@ public class CryptoReadFeatureTest {
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
 
-        assertEquals(home, vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
+        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault");
             }
-        })).getHome());
+        }));
         CryptoReadFeature read = new CryptoReadFeature(session, null, vault);
 
         {
@@ -154,11 +154,11 @@ public class CryptoReadFeatureTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
-        assertEquals(home, vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
+        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault");
             }
-        })).getHome());
+        }));
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
         {
             assertEquals(0, read.chunk(0));

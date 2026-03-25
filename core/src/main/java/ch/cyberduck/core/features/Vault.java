@@ -30,13 +30,12 @@ public interface Vault {
     /**
      * Create and open new vault
      *
-     * @return Open vault
      * @throws LoginCanceledException User dismissed passphrase prompt
      * @throws BackgroundException    Failure reading master key from server
      * @throws NotfoundException      No master key file in home
      */
 
-    Vault create(Session<?> session, String region, VaultMetadataProvider metadata) throws BackgroundException;
+    void create(Session<?> session, String region, VaultMetadataProvider metadata) throws BackgroundException;
 
     /**
      * Open existing vault
@@ -46,7 +45,7 @@ public interface Vault {
      * @throws BackgroundException    Failure reading master key from server
      * @throws NotfoundException      No master key file in home
      */
-    Vault load(Session<?> session, VaultMetadataProvider provider) throws BackgroundException;
+    void load(Session<?> session, VaultMetadataProvider provider) throws BackgroundException;
 
     /**
      * Close vault

@@ -19,8 +19,8 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;

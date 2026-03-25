@@ -27,8 +27,8 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
-import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;

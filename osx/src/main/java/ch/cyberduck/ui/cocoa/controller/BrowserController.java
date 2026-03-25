@@ -3487,11 +3487,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final Archive archive = Archive.forName(item.representedObject());
             item.setTitle(archive.getTitle(this.getSelectedPaths()));
         }
-        else if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
+        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.quicklook.action())) {
             item.setKeyEquivalent(" ");
             item.setKeyEquivalentModifierMask(0);
         }
-        else if(action.equals(Foundation.selector("lockUnlockEncryptedVaultButtonClicked:"))) {
+        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.cryptomator.action())) {
             if(this.isMounted()) {
                 final Path selected = new UploadTargetFinder(this.workdir()).find(this.getSelectedPath());
                 final VaultRegistry registry = pool.getVaultRegistry();

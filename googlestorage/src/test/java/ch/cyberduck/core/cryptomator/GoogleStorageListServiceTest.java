@@ -32,6 +32,7 @@ import ch.cyberduck.core.googlestorage.GoogleStorageObjectListService;
 import ch.cyberduck.core.googlestorage.GoogleStorageTouchFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
@@ -58,8 +59,8 @@ public class GoogleStorageListServiceTest extends AbstractGoogleStorageTest {
     public void testListCryptomator() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final AbstractVault cryptomator = new CryptoVaultProvider(session).create(session, null, vault, new VaultCredentials("test"),
-                new VaultMetadata(vaultVersion));
+        final AbstractVault cryptomator = new CryptoVaultProvider(session).provide(session, vault, new VaultMetadata(vaultVersion));
+        cryptomator.create(session, null, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("test")));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new GoogleStorageObjectListService(session), cryptomator).list(vault).isEmpty());
         final CryptoDirectoryFeature<StorageObject> mkdir = new CryptoDirectoryFeature<>(session, new GoogleStorageDirectoryFeature(session),

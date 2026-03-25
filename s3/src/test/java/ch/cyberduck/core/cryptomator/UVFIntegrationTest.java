@@ -164,8 +164,9 @@ public class UVFIntegrationTest {
                 final VaultRegistry vaults = new DefaultVaultRegistry(new DisabledPasswordCallback());
                 bookmark.setDefaultPath("/" + bucketName);
                 final UVFVault vault = new UVFVault(new DefaultPathHomeFeature(bookmark).find());
-                vaults.add(vault.load(storage, new DefaultVaultMetadataUVFProvider(jwe.getBytes(StandardCharsets.US_ASCII), null, null,
-                        new DefaultJWKCredentials(new JWKCredentials(JWK.parse(memberKey))))));
+                vault.load(storage, new DefaultVaultMetadataUVFProvider(jwe.getBytes(StandardCharsets.US_ASCII), null, null,
+                        new DefaultJWKCredentials(new JWKCredentials(JWK.parse(memberKey)))));
+                vaults.add(vault);
                 final PathAttributes attr = storage.getFeature(AttributesFinder.class).find(vault.getHome());
                 storage.withRegistry(vaults);
 

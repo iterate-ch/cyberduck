@@ -55,18 +55,5 @@ public interface VaultProvider {
      */
     Vault provide(Session<?> session, Path directory, VaultMetadata metadata) throws UnsupportedException;
 
-    /**
-     * Creates a new vault in the specified directory with the provided credentials and metadata.
-     *
-     * @param session     The session used for connecting to the storage backend.
-     * @param region      The region in which the vault should be created.
-     * @param directory   The path to the directory where the vault will be created.
-     * @param credentials The credentials required to authenticate and secure the vault.
-     * @param metadata    The metadata describing the properties of the vault to be created.
-     * @return An instance of the newly created vault.
-     * @throws BackgroundException If an error occurs during the vault creation process.
-     */
-    Vault create(Session<?> session, String region, Path directory, VaultCredentials credentials, VaultMetadata metadata) throws BackgroundException;
-
     VaultProvider DISABLED = new DisabledVaultProvider();
 }

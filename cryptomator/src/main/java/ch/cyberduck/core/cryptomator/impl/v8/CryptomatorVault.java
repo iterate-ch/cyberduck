@@ -35,8 +35,6 @@ import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV8Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
-import ch.cyberduck.core.vault.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -49,9 +47,11 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.vault.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 import org.apache.logging.log4j.LogManager;
@@ -208,12 +208,12 @@ public class CryptomatorVault extends AbstractVault {
         return FILENAME_PATTERN;
     }
 
-    public CryptomatorVault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
-        return this.create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
+    public void create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+        this.create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
     }
 
     @Override
-    public CryptomatorVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
+    public void create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
         final VaultMetadataCredentialsProvider provider = VaultMetadataCredentialsProvider.cast(metadata);
         final VaultCredentials credentials = provider.getCredentials();
         final Host bookmark = session.getHost();
@@ -266,7 +266,6 @@ public class CryptomatorVault extends AbstractVault {
         directory.mkdir(session._getFeature(Write.class), dataDir, status);
         directory.mkdir(session._getFeature(Write.class), firstLevel, status);
         directory.mkdir(session._getFeature(Write.class), secondLevel, status);
-        return this;
     }
 
     private static VaultConfig parseVaultConfigFromMasterKey(final MasterkeyFile masterkeyFile) {
@@ -275,7 +274,7 @@ public class CryptomatorVault extends AbstractVault {
     }
 
     @Override
-    public CryptomatorVault load(final Session<?> session, final VaultMetadataProvider provider) throws BackgroundException {
+    public void load(final Session<?> session, final VaultMetadataProvider provider) throws BackgroundException {
         final Host bookmark = session.getHost();
         String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                 new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
@@ -284,15 +283,14 @@ public class CryptomatorVault extends AbstractVault {
             passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
         }
-        return this.unlock(session, provider, bookmark, passphrase);
+        this.unlock(session, provider, bookmark, passphrase);
     }
 
-    public CryptomatorVault unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+    public void unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
         final CryptomatorVault.VaultConfig vaultConfig = this.readVaultConfig(session);
         this.unlock(vaultConfig, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
         );
-        return this;
     }
 
     public void unlock(final CryptomatorVault.VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,

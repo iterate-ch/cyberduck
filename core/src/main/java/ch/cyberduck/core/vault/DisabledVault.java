@@ -36,13 +36,13 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Vault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
-        return null;
+    public void create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
+        //
     }
 
     @Override
-    public Vault load(final Session<?> session, final VaultMetadataProvider provider) {
-        return this;
+    public void load(final Session<?> session, final VaultMetadataProvider provider) {
+        //
     }
 
     @Override

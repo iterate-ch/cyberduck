@@ -35,7 +35,6 @@ import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryUVFProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
-import ch.cyberduck.core.vault.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -50,6 +49,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.vault.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultMetadataUVFProvider;
 
@@ -131,7 +131,7 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public UVFVault create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
+    public void create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
         if(metadata instanceof VaultMetadataCredentialsProvider) {
             // Passphrase based vault creation
             final VaultMetadataCredentialsProvider credentialsProvider = VaultMetadataCredentialsProvider.cast(metadata);
@@ -169,15 +169,15 @@ public class UVFVault extends AbstractVault {
             catch(JOSEException | JsonProcessingException e) {
                 throw new VaultException("Failure creating vault ", e);
             }
-            return this;
         }
-        if(metadata instanceof VaultMetadataUVFProvider) {
+        else if(metadata instanceof VaultMetadataUVFProvider) {
             // Generic vault creation with provided metadata
             final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
             this.uploadTemplate(session, region, provider.getVaultMetadata(), provider.getRootDirectoryMetadata(), provider.getRootDirectoryIdHash());
-            return this;
         }
-        throw new VaultException("Unsupported metadata provider: " + metadata.getClass().getName());
+        else {
+            throw new VaultException("Unsupported metadata provider: " + metadata.getClass().getName());
+        }
     }
 
     /**
@@ -237,7 +237,7 @@ public class UVFVault extends AbstractVault {
 
     // load -> unlock -> open
     @Override
-    public UVFVault load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
+    public void load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
         final Payload payload;
         if(metadata instanceof VaultMetadataUVFProvider) {
             final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
@@ -259,7 +259,6 @@ public class UVFVault extends AbstractVault {
             payload = this.unlock(session, metadata, bookmark, passphrase).getPayload();
         }
         this.open(payload);
-        return this;
     }
 
     private void open(Payload payload) {

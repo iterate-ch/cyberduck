@@ -183,11 +183,11 @@ public class CryptoVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
-        assertEquals(home, vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
+        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
-        })).getHome());
+        }));
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
@@ -233,11 +233,11 @@ public class CryptoVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
-        assertEquals(home, vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
+        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
-        })).getHome());
+        }));
         assertEquals(Vault.State.open, vault.getState());
         assertEquals(home, new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())));
         vault.close();
