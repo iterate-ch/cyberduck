@@ -46,7 +46,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
         this.lookup = lookup;
         this.proxy = proxy;
         this.filecount = filecount;
-        this.provider = VaultProviderFactory.get(session);
+        this.provider = session.getFeature(VaultProvider.class);
     }
 
     @Override

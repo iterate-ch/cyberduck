@@ -47,7 +47,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
             log.info("Loading vault for session {}", session);
             final Vault vault;
             try {
-                vault = VaultProviderFactory.get(session).provide(session, directory, metadata);
+                vault = session.getFeature(VaultProvider.class).provide(session, directory, metadata);
             }
             catch(UnsupportedException e) {
                 throw new VaultUnlockCancelException(Vault.DISABLED, e);

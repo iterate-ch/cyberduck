@@ -36,6 +36,8 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.*;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.vault.VaultProvider;
+import ch.cyberduck.core.vault.VaultProviderFactory;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.logging.log4j.LogManager;
@@ -330,6 +332,9 @@ public abstract class Session<C> implements FeatureFactory, TranscriptListener {
         }
         if(type == Bulk.class) {
             return (T) new DisabledBulkFeature();
+        }
+        if(type == VaultProvider.class) {
+            return (T) VaultProviderFactory.get(this);
         }
         return host.getProtocol().getFeature(type);
     }

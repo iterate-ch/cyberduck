@@ -23,7 +23,7 @@ import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
-import ch.cyberduck.core.vault.VaultProviderFactory;
+import ch.cyberduck.core.vault.VaultProvider;
 
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -44,7 +44,7 @@ public class CreateVaultWorker extends Worker<Vault> {
 
     @Override
     public Vault run(final Session<?> session) throws BackgroundException {
-        final Vault vault = VaultProviderFactory.get(session).provide(session, directory, metadata);
+        final Vault vault = session.getFeature(VaultProvider.class).provide(session, directory, metadata);
         vault.create(session, region, new DefaultVaultMetadataCredentialsProvider(passphrase));
         vault.close();
         return vault;

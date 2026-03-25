@@ -25,7 +25,6 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.vault.VaultProvider;
-import ch.cyberduck.core.vault.VaultProviderFactory;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
@@ -51,7 +50,7 @@ public class VaultRegistryFindFeature implements Find {
         this.lookup = lookup;
         this.autodetect = HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.vault.autodetect")
                 && HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.enable");
-        this.provider = VaultProviderFactory.get(session);
+        this.provider = session.getFeature(VaultProvider.class);
     }
 
     @Override
