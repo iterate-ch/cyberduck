@@ -34,6 +34,8 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.vault.VaultCredentials;
 
+import ch.cyberduck.core.vault.VaultMetadata;
+
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSRect;
@@ -43,6 +45,7 @@ import java.util.Set;
 
 public class VaultController extends FolderController {
 
+    private final VaultMetadata metadata;
     private final Callback callback;
 
     @Outlet
@@ -57,13 +60,15 @@ public class VaultController extends FolderController {
 
     private final PasswordStrengthValidator passwordStrengthValidator = new PasswordStrengthValidator();
 
-    public VaultController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Location.Name defaultRegion, final Callback callback) {
+    public VaultController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions,
+                           final Location.Name defaultRegion, final VaultMetadata metadata, final Callback callback) {
         super(workdir, selected, cache, regions, defaultRegion, new FolderController.Callback() {
             @Override
             public void callback(final Path folder, final String region) {
                 //
             }
         });
+        this.metadata = metadata;
         this.callback = callback;
     }
 
@@ -87,24 +92,26 @@ public class VaultController extends FolderController {
 
     public NSView getAccessoryView(final NSAlert alert) {
         final NSView accessoryView = NSView.create();
-        confirmField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
-        confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
-        this.addAccessorySubview(accessoryView, confirmField);
+        switch(metadata.type) {
+            case V8:
+                confirmField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+                confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
+                this.addAccessorySubview(accessoryView, confirmField);
 
-        strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(0, 18));
-        strengthIndicator.setTickMarkPosition(1);
-        if(strengthIndicator.respondsToSelector(Foundation.selector("setLevelIndicatorStyle:"))) {
-            strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
+                strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(0, 18));
+                strengthIndicator.setTickMarkPosition(1);
+                if(strengthIndicator.respondsToSelector(Foundation.selector("setLevelIndicatorStyle:"))) {
+                    strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
+                }
+                this.addAccessorySubview(accessoryView, strengthIndicator);
+                passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
+                passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
+                notificationCenter.addObserver(this.id(),
+                        Foundation.selector("passwordFieldTextDidChange:"),
+                        NSControl.NSControlTextDidChangeNotification,
+                        passwordField.id());
+                this.addAccessorySubview(accessoryView, passwordField);
         }
-        this.addAccessorySubview(accessoryView, strengthIndicator);
-        passwordField = NSSecureTextField.textFieldWithString(StringUtils.EMPTY);
-        passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
-        notificationCenter.addObserver(this.id(),
-                Foundation.selector("passwordFieldTextDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
-                passwordField.id());
-        this.addAccessorySubview(accessoryView, passwordField);
-
         this.addAccessorySubview(accessoryView, super.getAccessoryView(alert));
         return accessoryView;
     }
@@ -112,14 +119,17 @@ public class VaultController extends FolderController {
     @Override
     public boolean validate(final int option) {
         if(super.validate(option)) {
-            if(StringUtils.isBlank(passwordField.stringValue())) {
-                return false;
-            }
-            if(StringUtils.isBlank(confirmField.stringValue())) {
-                return false;
-            }
-            if(!StringUtils.equals(passwordField.stringValue(), confirmField.stringValue())) {
-                return false;
+            switch(metadata.type) {
+                case V8:
+                    if(StringUtils.isBlank(passwordField.stringValue())) {
+                        return false;
+                    }
+                    if(StringUtils.isBlank(confirmField.stringValue())) {
+                        return false;
+                    }
+                    if(!StringUtils.equals(passwordField.stringValue(), confirmField.stringValue())) {
+                        return false;
+                    }
             }
             return true;
         }
@@ -129,7 +139,15 @@ public class VaultController extends FolderController {
     @Override
     public void callback(final int returncode, final Path file) {
         file.setType(EnumSet.of(Path.Type.directory));
-        final VaultCredentials credentials = new VaultCredentials(passwordField.stringValue()).setSaved(this.isSuppressed());
+        final VaultCredentials credentials;
+        switch(metadata.type) {
+            case V8:
+                credentials = new VaultCredentials(passwordField.stringValue()).setSaved(this.isSuppressed());
+                break;
+            default:
+                credentials = new VaultCredentials();
+                break;
+        }
         callback.callback(file, this.getLocation(), credentials);
     }
 

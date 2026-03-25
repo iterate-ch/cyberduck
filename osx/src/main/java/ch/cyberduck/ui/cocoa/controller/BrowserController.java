@@ -2431,13 +2431,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Location feature = pool.getFeature(Location.class);
         final Path selected = this.getSelectedPath();
         final Path workdir = this.getWorkdirFromSelection();
+        final VaultMetadata metadata = new VaultMetadata(VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default")));
         final AlertController sheet = new VaultController(workdir, selected, cache,
-                feature != null ? feature.getLocations(workdir) : Collections.emptySet(), feature != null ? feature.getDefault(workdir) : Location.unknown, new VaultController.Callback() {
+                feature != null ? feature.getLocations(workdir) : Collections.emptySet(), feature != null ? feature.getDefault(workdir) : Location.unknown,
+                metadata, new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
                         new CreateVaultWorker(region, folder, passphrase,
-                                new VaultMetadata(VaultMetadata.Type.valueOf(preferences.getProperty("cryptomator.vault.default")))) {
+                                metadata) {
                             @Override
                             public void cleanup(final Vault vault) {
                                 reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
