@@ -41,6 +41,9 @@ import com.google.common.collect.ImmutableMap;
 public class CryptoVaultProvider implements VaultProvider {
     private static final Logger log = LogManager.getLogger(CryptoVaultProvider.class);
 
+    /**
+     * List of known metadata filenames.
+     */
     private final Map<String, VaultMetadata.Type> markers;
 
     public CryptoVaultProvider(final Session<?> session) {
