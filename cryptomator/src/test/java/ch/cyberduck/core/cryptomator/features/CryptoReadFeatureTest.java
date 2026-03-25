@@ -16,10 +16,7 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -29,7 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
@@ -40,7 +37,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.cryptomator.impl.v8.CryptoVaultTest.createJWT;
+import static ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVaultTest.createJWT;
 import static org.junit.Assert.assertEquals;
 
 public class CryptoReadFeatureTest {
@@ -82,11 +79,7 @@ public class CryptoReadFeatureTest {
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
 
-        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault");
-            }
-        }));
+        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("vault")));
         CryptoReadFeature read = new CryptoReadFeature(session, null, vault);
 
         {
@@ -154,11 +147,7 @@ public class CryptoReadFeatureTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final CryptomatorVault vault = new CryptomatorVault(home);
-        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault");
-            }
-        }));
+        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("vault")));
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
         {
             assertEquals(0, read.chunk(0));
@@ -213,11 +202,7 @@ public class CryptoReadFeatureTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final UVFVault vault = new UVFVault(home);
-        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("mypassphrase");
-            }
-        }));
+        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("mypassphrase")));
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
         {
             assertEquals(0, read.chunk(0));

@@ -15,14 +15,6 @@ package ch.cyberduck.core.cryptomator.impl.v8;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -30,29 +22,25 @@ import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.ContentWriter;
-import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV8Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.vault.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
+import ch.cyberduck.core.vault.VaultUnlockException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -74,7 +62,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -93,9 +80,7 @@ import com.google.gson.JsonParseException;
 
 @AutoService(Vault.class)
 public class CryptomatorVault extends AbstractVault {
-
     private static final Logger log = LogManager.getLogger(CryptomatorVault.class);
-
 
     public static final String REGULAR_FILE_EXTENSION = ".c9r";
     public static final int VAULT_VERSION = 8;
@@ -117,9 +102,6 @@ public class CryptomatorVault extends AbstractVault {
     private final Path masterkeyPath;
     private final byte[] pepper;
 
-    private final PasswordStore keychain = PasswordStoreFactory.get();
-    private final Preferences preferences = PreferencesFactory.get();
-
     private final Path config;
 
     private int nonceSize;
@@ -130,9 +112,9 @@ public class CryptomatorVault extends AbstractVault {
 
     public CryptomatorVault(final Path home) {
         this.home = home;
-        this.masterkeyPath = new Path(home, preferences.getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
-        this.config = new Path(home, preferences.getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
-        this.pepper = preferences.getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
+        this.masterkeyPath = new Path(home, PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
+        this.config = new Path(home, PreferencesFactory.get().getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vault));
+        this.pepper = PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
     }
 
     public Path getHome() {
@@ -208,24 +190,10 @@ public class CryptomatorVault extends AbstractVault {
         return FILENAME_PATTERN;
     }
 
-    public void create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
-        this.create(session, region, new DefaultVaultMetadataCredentialsProvider(credentials));
-    }
-
     @Override
     public void create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
         final VaultMetadataCredentialsProvider provider = VaultMetadataCredentialsProvider.cast(metadata);
         final VaultCredentials credentials = provider.getCredentials();
-        final Host bookmark = session.getHost();
-        if(credentials.isSaved()) {
-            try {
-                keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
-            }
-            catch(LocalAccessDeniedException e) {
-                log.error("Failure {} saving credentials for {} in password store", e, bookmark);
-            }
-        }
         final String passphrase = credentials.getPassword();
         final ByteArrayOutputStream mkArray = new ByteArrayOutputStream();
         final PerpetualMasterkey mk = Masterkey.generate(FastSecureRandomProvider.get().provide());
@@ -258,7 +226,7 @@ public class CryptomatorVault extends AbstractVault {
                 .withClaim(JSON_KEY_SHORTENING_THRESHOLD, CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD)
                 .sign(algorithm);
         new ContentWriter(session).write(config, conf.getBytes(StandardCharsets.US_ASCII));
-        this.open(parseVaultConfigFromJWT(conf).withMasterkeyFile(masterkeyFile), passphrase);
+        this.unlock(parseVaultConfigFromJWT(conf).withMasterkeyFile(masterkeyFile), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home);
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
@@ -268,60 +236,23 @@ public class CryptomatorVault extends AbstractVault {
         directory.mkdir(session._getFeature(Write.class), secondLevel, status);
     }
 
-    private static VaultConfig parseVaultConfigFromMasterKey(final MasterkeyFile masterkeyFile) {
-        return new VaultConfig(masterkeyFile.version, CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
-                CryptorProvider.Scheme.SIV_CTRMAC, null, null);
-    }
-
     @Override
-    public void load(final Session<?> session, final VaultMetadataProvider provider) throws BackgroundException {
-        final Host bookmark = session.getHost();
-        String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
-        if(null == passphrase) {
-            // Legacy
-            passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
-        }
-        this.unlock(session, provider, bookmark, passphrase);
+    public void load(final Session<?> session, final VaultMetadataProvider metadata) throws BackgroundException {
+        final VaultConfig vaultConfig = this.readVaultConfig(session);
+        this.unlock(vaultConfig, VaultMetadataCredentialsProvider.cast(metadata).getCredentials().getPassword());
     }
 
-    public void unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
-        final CryptomatorVault.VaultConfig vaultConfig = this.readVaultConfig(session);
-        this.unlock(vaultConfig, passphrase, bookmark, prompt,
-                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
-        );
-    }
-
-    public void unlock(final CryptomatorVault.VaultConfig vaultConfig, final String passphrase, final Host bookmark, final PasswordCallback prompt,
-                       final String message) throws BackgroundException {
-        final Credentials credentials;
-        if(null == passphrase) {
-            credentials = prompt.prompt(
-                    bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
-                    message,
-                    new LoginOptions()
-                            .save(preferences.getBoolean("cryptomator.vault.keychain"))
-                            .user(false)
-                            .anonymous(false)
-                            .icon("cryptomator.tiff")
-                            .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
-        }
-        else {
-            credentials = new VaultCredentials(passphrase).setSaved(false);
-        }
+    protected PerpetualMasterkey unlock(final VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
         try {
-            this.open(vaultConfig, credentials.getPassword());
-            if(credentials.isSaved()) {
-                log.info("Save passphrase for {}", masterkeyPath);
-                // Save password with hostname and path to masterkey.cryptomator in keychain
-                keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
-            }
+            final PerpetualMasterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
+            this.open(vaultConfig, masterKey);
+            return masterKey;
         }
-        catch(CryptoAuthenticationException e) {
-            this.unlock(vaultConfig, null, bookmark, prompt, String.format("%s %s.", e.getDetail(),
-                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())));
+        catch(IllegalArgumentException | IOException e) {
+            throw new VaultException("Failure reading key file", e);
+        }
+        catch(InvalidPassphraseException e) {
+            throw new VaultUnlockException("Failure to decrypt master key file", e);
         }
     }
 
@@ -345,6 +276,11 @@ public class CryptomatorVault extends AbstractVault {
                 decoded.getAlgorithm(), decoded);
     }
 
+    private static VaultConfig parseVaultConfigFromMasterKey(final MasterkeyFile masterkeyFile) {
+        return new VaultConfig(masterkeyFile.version, CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD,
+                CryptorProvider.Scheme.SIV_CTRMAC, null, null);
+    }
+
     private MasterkeyFile readMasterkeyFile(final Session<?> session, final Path file) throws BackgroundException {
         log.debug("Read master key {}", file);
         try(Reader reader = new ContentReader(session).getReader(file)) {
@@ -352,19 +288,6 @@ public class CryptomatorVault extends AbstractVault {
         }
         catch(JsonParseException | IllegalArgumentException | IllegalStateException | IOException e) {
             throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e).withFile(file);
-        }
-    }
-
-    protected void open(final CryptomatorVault.VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
-        try {
-            final PerpetualMasterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
-            this.open(vaultConfig, masterKey);
-        }
-        catch(IllegalArgumentException | IOException e) {
-            throw new VaultException("Failure reading key file", e);
-        }
-        catch(InvalidPassphraseException e) {
-            throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
         }
     }
 
@@ -382,9 +305,9 @@ public class CryptomatorVault extends AbstractVault {
         this.nonceSize = vaultConfig.getNonceSize();
     }
 
-    private PerpetualMasterkey getMasterKey(final MasterkeyFile mkFile, final CharSequence passphrase) throws IOException {
+    private PerpetualMasterkey getMasterKey(final MasterkeyFile masterkeyFile, final CharSequence passphrase) throws IOException {
         final StringWriter writer = new StringWriter();
-        mkFile.write(writer);
+        masterkeyFile.write(writer);
         return new MasterkeyFileAccess(pepper, FastSecureRandomProvider.get().provide()).load(
                 new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8)), passphrase);
     }

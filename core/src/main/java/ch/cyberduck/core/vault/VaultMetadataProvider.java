@@ -15,7 +15,5 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.PasswordCallback;
-
-public interface VaultMetadataProvider extends PasswordCallback {
+public interface VaultMetadataProvider {
 }

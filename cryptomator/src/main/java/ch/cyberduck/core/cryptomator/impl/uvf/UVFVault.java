@@ -16,14 +16,6 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -42,9 +34,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
@@ -52,8 +42,8 @@ import ch.cyberduck.core.vault.VaultMetadata;
 import ch.cyberduck.core.vault.VaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultMetadataProvider;
 import ch.cyberduck.core.vault.VaultMetadataUVFProvider;
+import ch.cyberduck.core.vault.VaultUnlockException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -67,7 +57,6 @@ import org.cryptomator.cryptolib.api.UVFMasterkey;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.Collections;
@@ -109,9 +98,6 @@ public class UVFVault extends AbstractVault {
     private static final int PBKDF2_SALT_LENGTH = PasswordBasedEncrypter.MIN_SALT_LENGTH;
     private static final int PBKDF2_ITERATION_COUNT = PasswordBasedEncrypter.MIN_RECOMMENDED_ITERATION_COUNT;
 
-    private final PasswordStore keychain = PasswordStoreFactory.get();
-    private final Preferences preferences = PreferencesFactory.get();
-
     /**
      * Root of vault directory
      */
@@ -127,7 +113,7 @@ public class UVFVault extends AbstractVault {
 
     public UVFVault(final Path home) {
         this.home = home;
-        this.masterkeyPath = new Path(home, preferences.getProperty("cryptomator.vault.config.filename.uvf"), EnumSet.of(Path.Type.file, Path.Type.vault));
+        this.masterkeyPath = new Path(home, PreferencesFactory.get().getProperty("cryptomator.vault.config.filename.uvf"), EnumSet.of(Path.Type.file, Path.Type.vault));
     }
 
     @Override
@@ -246,7 +232,7 @@ public class UVFVault extends AbstractVault {
             final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
             try {
                 final String jwe = provider.getVaultMetadata();
-                final JWK jwk = provider.prompt(session.getHost(), StringUtils.EMPTY, StringUtils.EMPTY, new LoginOptions()).getKey();
+                final JWK jwk = provider.getKey();
                 final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
                 jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM)));
                 payload = jweObject.getPayload();
@@ -256,15 +242,13 @@ public class UVFVault extends AbstractVault {
             }
         }
         else {
-            final Host bookmark = session.getHost();
-            final String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
-            payload = this.unlock(session, metadata, bookmark, passphrase).getPayload();
+            final VaultMetadataCredentialsProvider provider = VaultMetadataCredentialsProvider.cast(metadata);
+            payload = this.unlock(session, provider.getCredentials()).getPayload();
         }
         this.open(payload);
     }
 
-    private void open(Payload payload) {
+    private void open(final Payload payload) {
         masterKey = UVFMasterkey.fromDecryptedPayload(payload.toString());
         final CryptorProvider provider = CryptorProvider.forScheme(CryptorProvider.Scheme.UVF_DRAFT);
         log.debug("Initialized crypto provider {}", provider);
@@ -274,31 +258,13 @@ public class UVFVault extends AbstractVault {
         this.nonceSize = 12;
     }
 
-    private JWEObject unlock(final Session<?> session, final PasswordCallback prompt, final Host bookmark, final String passphrase) throws BackgroundException {
+    private JWEObject unlock(final Session<?> session, final VaultCredentials passphrase) throws BackgroundException {
         log.debug("Read UVF metadata {}", masterkeyPath);
         final String vaultUVF = new String(new ContentReader(session).readBytes(masterkeyPath), StandardCharsets.US_ASCII);
-        return this.unlock(vaultUVF, passphrase, bookmark, prompt,
-                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())
-        );
+        return this.unlock(vaultUVF, passphrase);
     }
 
-    private JWEObject unlock(final String vaultUVF, final String passphrase, final Host bookmark, final PasswordCallback prompt,
-                             final String message) throws BackgroundException {
-        final Credentials credentials;
-        if(null == passphrase) {
-            credentials = prompt.prompt(
-                    bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
-                    message,
-                    new LoginOptions()
-                            .save(preferences.getBoolean("cryptomator.vault.keychain"))
-                            .user(false)
-                            .anonymous(false)
-                            .icon("cryptomator.tiff")
-                            .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
-        }
-        else {
-            credentials = new VaultCredentials(passphrase).setSaved(false);
-        }
+    private JWEObject unlock(final String vaultUVF, final VaultCredentials credentials) throws BackgroundException {
         try {
             final JWEObject jweObject;
             try {
@@ -308,17 +274,10 @@ public class UVFVault extends AbstractVault {
             catch(ParseException e) {
                 throw new VaultException("Failure retrieving key material", e);
             }
-            if(credentials.isSaved()) {
-                log.info("Save passphrase for {}", masterkeyPath);
-                // Save password with hostname and path to masterkey.cryptomator in keychain
-                keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterkeyPath, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
-            }
             return jweObject;
         }
         catch(JOSEException e) {
-            return this.unlock(vaultUVF, null, bookmark, prompt, String.format("%s %s.", e.getMessage(),
-                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())));
+            throw new VaultUnlockException(e.getMessage(), e);
         }
     }
 

@@ -16,10 +16,7 @@ package ch.cyberduck.core.cryptomator.impl.uvf;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -30,7 +27,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultMetadataCallbackProvider;
 import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
@@ -48,7 +44,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class CryptoVaultTest {
+public class UVFVaultTest {
 
     @Test
     public void testLoad() throws Exception {
@@ -65,6 +61,9 @@ public class CryptoVaultTest {
                             if("vault.uvf".equals(file.getName())) {
                                 return IOUtils.toInputStream(vaultUVF, Charset.defaultCharset());
                             }
+                            if("dir.uvf".equals(file.getName())) {
+
+                            }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
 
@@ -79,11 +78,7 @@ public class CryptoVaultTest {
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
         final UVFVault vault = new UVFVault(home);
-        vault.load(session, new DefaultVaultMetadataCallbackProvider(new DisabledPasswordCallback() {
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("mypassphrase");
-            }
-        }));
+        vault.load(session, new DefaultVaultMetadataCredentialsProvider(new VaultCredentials("mypassphrase")));
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v3"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v3"));
         assertEquals(Vault.State.open, vault.getState());

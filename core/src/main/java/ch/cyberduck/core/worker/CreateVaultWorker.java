@@ -15,21 +15,36 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.vault.VaultMetadataUVFProvider;
 import ch.cyberduck.core.vault.VaultProvider;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Objects;
 
-public class CreateVaultWorker extends Worker<Vault> {
+import com.nimbusds.jose.jwk.JWK;
 
+public class CreateVaultWorker extends Worker<Vault> {
+    private static final Logger log = LogManager.getLogger(CreateVaultWorker.class);
+
+    private final PasswordStore keychain = PasswordStoreFactory.get();
     private final String region;
     private final Path directory;
     private final VaultCredentials passphrase;
@@ -45,7 +60,31 @@ public class CreateVaultWorker extends Worker<Vault> {
     @Override
     public Vault run(final Session<?> session) throws BackgroundException {
         final Vault vault = session.getFeature(VaultProvider.class).provide(session, directory, metadata);
-        vault.create(session, region, new DefaultVaultMetadataCredentialsProvider(passphrase));
+        switch(metadata.type) {
+            case V8:
+                vault.create(session, region, new DefaultVaultMetadataCredentialsProvider(passphrase));
+                if(passphrase.isSaved()) {
+                    final Host bookmark = session.getHost();
+                    keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
+                            new DefaultUrlProvider(bookmark).toUrl(directory, EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl(), passphrase.getPassword());
+                }
+                break;
+            case UVF:
+                vault.create(session, region, new VaultMetadataUVFProvider() {
+                    @Override
+                    public String getVaultMetadata() {
+                        return null;
+                    }
+
+                    @Override
+                    public JWK getKey() {
+                        return null;
+                    }
+                });
+                break;
+            default:
+                throw new UnsupportedException(metadata.type.toString());
+        }
         vault.close();
         return vault;
     }

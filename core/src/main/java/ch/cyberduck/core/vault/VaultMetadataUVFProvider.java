@@ -18,16 +18,20 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 
-public interface VaultMetadataUVFProvider extends VaultMetadataProvider, JWKCallback {
+import com.nimbusds.jose.jwk.JWK;
+
+public interface VaultMetadataUVFProvider extends VaultMetadataProvider {
 
     /**
-     * Retrieves the JWE metadata associated with the vault.
-     *
-     * @return A byte array representing the vault metadata. This could include
-     * encrypted configuration data or other related information necessary
-     * for accessing or managing the vault.
+     * @return JWE metadata
      */
     String getVaultMetadata();
+
+    /**
+     *
+     * @return Key to decrypt vault metadata
+     */
+    JWK getKey();
 
     static VaultMetadataUVFProvider cast(VaultMetadataProvider provider) throws ConnectionCanceledException {
         if(provider instanceof VaultMetadataUVFProvider) {

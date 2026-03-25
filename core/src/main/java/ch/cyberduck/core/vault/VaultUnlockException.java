@@ -15,25 +15,12 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.exception.LoginCanceledException;
-
-public class DefaultJWKCredentials implements JWKCallback {
-
-    private final JWKCredentials key;
-
-    public DefaultJWKCredentials(final JWKCredentials key) {
-        this.key = key;
+public class VaultUnlockException extends VaultException {
+    public VaultUnlockException(final String detail) {
+        super(detail);
     }
 
-    @Override
-    public JWKCredentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-        return key;
-    }
-
-    @Override
-    public void close(final String input) {
-        //
+    public VaultUnlockException(final String detail, final Throwable cause) {
+        super(detail, cause);
     }
 }

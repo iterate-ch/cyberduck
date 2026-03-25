@@ -15,14 +15,12 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import com.nimbusds.jose.jwk.JWK;
 
 public class DefaultVaultMetadataUVFProvider implements VaultMetadataUVFProvider {
 
     private final String vaultMetadata;
-    private final JWKCallback jwk;
+    private final JWK jwk;
 
     /**
      * Constructs a new instance of {@code DefaultVaultMetadataUVFProvider}.
@@ -30,23 +28,18 @@ public class DefaultVaultMetadataUVFProvider implements VaultMetadataUVFProvider
      * @param vaultMetadata         The metadata for the vault represented as a byte array.
      * @param jwk                   The {@code JWKCallback} instance used for key management and related operations.
      */
-    public DefaultVaultMetadataUVFProvider(final String vaultMetadata, final JWKCallback jwk) {
+    public DefaultVaultMetadataUVFProvider(final String vaultMetadata, final JWK jwk) {
         this.vaultMetadata = vaultMetadata;
         this.jwk = jwk;
     }
 
     @Override
-    public void close(final String input) {
-        jwk.close(input);
-    }
-
-    @Override
-    public JWKCredentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-        return jwk.prompt(bookmark, title, reason, options);
-    }
-
-    @Override
     public String getVaultMetadata() {
         return vaultMetadata;
+    }
+
+    @Override
+    public JWK getKey() {
+        return jwk;
     }
 }

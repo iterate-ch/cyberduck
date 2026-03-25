@@ -15,11 +15,6 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.exception.LoginCanceledException;
-
 public class DefaultVaultMetadataCredentialsProvider implements VaultMetadataCredentialsProvider {
 
     private final VaultCredentials credentials;
@@ -30,16 +25,6 @@ public class DefaultVaultMetadataCredentialsProvider implements VaultMetadataCre
 
     @Override
     public VaultCredentials getCredentials() {
-        return credentials;
-    }
-
-    @Override
-    public void close(final String input) {
-        //
-    }
-
-    @Override
-    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         return credentials;
     }
 }

@@ -46,7 +46,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AbstractVault implements Vault {
-
     private static final Logger log = LogManager.getLogger(AbstractVault.class);
 
     public abstract Path getMasterkeyPath();
