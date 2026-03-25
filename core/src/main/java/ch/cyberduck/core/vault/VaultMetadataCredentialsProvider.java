@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator.impl;
+package ch.cyberduck.core.vault;
 
 /*
  * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
@@ -14,9 +14,6 @@ package ch.cyberduck.core.cryptomator.impl;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
-import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultMetadataProvider;
 
 public interface VaultMetadataCredentialsProvider extends VaultMetadataProvider {
 

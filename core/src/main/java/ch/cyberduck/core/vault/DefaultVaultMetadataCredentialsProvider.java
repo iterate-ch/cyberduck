@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator.impl;
+package ch.cyberduck.core.vault;
 
 /*
  * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.vault.VaultCredentials;
 
 public class DefaultVaultMetadataCredentialsProvider implements VaultMetadataCredentialsProvider {
 

@@ -18,7 +18,7 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.impl.DefaultVaultMetadataCredentialsProvider;
+import ch.cyberduck.core.vault.DefaultVaultMetadataCredentialsProvider;
 import ch.cyberduck.core.cryptomator.impl.uvf.UVFVault;
 import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
 import ch.cyberduck.core.exception.BackgroundException;
