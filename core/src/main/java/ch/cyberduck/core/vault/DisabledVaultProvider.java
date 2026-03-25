@@ -25,7 +25,7 @@ import ch.cyberduck.core.features.Vault;
 public class DisabledVaultProvider implements VaultProvider {
 
     @Override
-    public VaultMetadata metadata(final Path path) {
+    public VaultMetadata matches(final Path file) {
         return null;
     }
 

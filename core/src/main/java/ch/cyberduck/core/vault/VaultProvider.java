@@ -26,12 +26,12 @@ import ch.cyberduck.core.features.Vault;
 public interface VaultProvider {
 
     /**
-     * Retrieves the metadata of the vault located at the specified path.
+     * Determines if the file matches the vault metadata filename pattern.
      *
-     * @param path The path to the vault for which the metadata is to be retrieved.
-     * @return Describes the properties of the vault at the given path. Null when no vault is found.
+     * @param file The file to test to match the vault metadata filename pattern.
+     * @return Vault description or null when no match.
      */
-    VaultMetadata metadata(Path path);
+    VaultMetadata matches(Path file);
 
     /**
      * Searches for vault metadata in the specified directory using the given criteria.

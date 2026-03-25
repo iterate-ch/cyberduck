@@ -51,9 +51,9 @@ public class CryptoVaultProvider implements VaultProvider {
     }
 
     @Override
-    public VaultMetadata metadata(final Path path) {
-        if(markers.keySet().stream().anyMatch(marker -> path.getName().equals(marker))) {
-            return new VaultMetadata(markers.get(path.getName()));
+    public VaultMetadata matches(final Path file) {
+        if(markers.keySet().stream().anyMatch(marker -> file.getName().equals(marker))) {
+            return new VaultMetadata(markers.get(file.getName()));
         }
         return null;
     }
