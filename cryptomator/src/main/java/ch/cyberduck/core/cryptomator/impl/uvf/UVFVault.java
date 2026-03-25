@@ -132,11 +132,11 @@ public class UVFVault extends AbstractVault {
 
     @Override
     public void create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
-        if(metadata instanceof VaultMetadataCredentialsProvider) {
-            // Passphrase based vault creation
-            final VaultMetadataCredentialsProvider credentialsProvider = VaultMetadataCredentialsProvider.cast(metadata);
-            final VaultCredentials credentials = credentialsProvider.getCredentials();
-            try {
+        try {
+            if(metadata instanceof VaultMetadataCredentialsProvider) {
+                // Passphrase based vault creation
+                final VaultMetadataCredentialsProvider credentialsProvider = VaultMetadataCredentialsProvider.cast(metadata);
+                final VaultCredentials credentials = credentialsProvider.getCredentials();
                 final JWEHeader header = new JWEHeader.Builder(JWEAlgorithm.PBES2_HS512_A256KW, EncryptionMethod.A256GCM)
                         .jwkURL(URI.create("jwks.json"))
                         .contentType("json")
@@ -163,20 +163,23 @@ public class UVFVault extends AbstractVault {
                 final JWEObject jwe = new JWEObject(header, payload);
                 jwe.encrypt(new PasswordBasedEncrypter(credentials.getPassword(), PBKDF2_SALT_LENGTH, PBKDF2_ITERATION_COUNT));
                 final byte[] encryptedMetadata = jwe.serialize().getBytes(StandardCharsets.US_ASCII);
-                this.uploadTemplate(session, region, encryptedMetadata, this.computeRootDirUvf(payload.toString()), this.computeRootDirIdHash(payload.toString()));
+                this.uploadTemplate(session, region, encryptedMetadata,
+                        this.computeRootDirUvf(payload.toString()), this.computeRootDirIdHash(payload.toString()));
                 this.open(payload);
             }
-            catch(JOSEException | JsonProcessingException e) {
-                throw new VaultException("Failure creating vault ", e);
+            else if(metadata instanceof VaultMetadataUVFProvider) {
+                // Generic vault creation with provided metadata
+                final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
+                final String vaultMetadata = provider.getVaultMetadata();
+                this.uploadTemplate(session, region, vaultMetadata.getBytes(StandardCharsets.US_ASCII),
+                        this.computeRootDirUvf(vaultMetadata), this.computeRootDirIdHash(vaultMetadata));
+            }
+            else {
+                throw new VaultException("Unsupported metadata provider: " + metadata.getClass().getName());
             }
         }
-        else if(metadata instanceof VaultMetadataUVFProvider) {
-            // Generic vault creation with provided metadata
-            final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
-            this.uploadTemplate(session, region, provider.getVaultMetadata(), provider.getRootDirectoryMetadata(), provider.getRootDirectoryIdHash());
-        }
-        else {
-            throw new VaultException("Unsupported metadata provider: " + metadata.getClass().getName());
+        catch(JOSEException | JsonProcessingException e) {
+            throw new VaultException("Failure creating vault ", e);
         }
     }
 
@@ -242,7 +245,7 @@ public class UVFVault extends AbstractVault {
         if(metadata instanceof VaultMetadataUVFProvider) {
             final VaultMetadataUVFProvider provider = VaultMetadataUVFProvider.cast(metadata);
             try {
-                final String jwe = new String(provider.getVaultMetadata(), StandardCharsets.US_ASCII);
+                final String jwe = provider.getVaultMetadata();
                 final JWK jwk = provider.prompt(session.getHost(), StringUtils.EMPTY, StringUtils.EMPTY, new LoginOptions()).getKey();
                 final JWEObjectJSON jweObject = JWEObjectJSON.parse(jwe);
                 jweObject.decrypt(new MultiDecrypter(jwk, Collections.singleton(UVF_SPEC_VERSION_KEY_PARAM)));

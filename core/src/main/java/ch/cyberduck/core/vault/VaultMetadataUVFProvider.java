@@ -27,25 +27,7 @@ public interface VaultMetadataUVFProvider extends VaultMetadataProvider, JWKCall
      * encrypted configuration data or other related information necessary
      * for accessing or managing the vault.
      */
-    byte[] getVaultMetadata();
-
-    /**
-     * Retrieves the metadata associated with the root directory of a vault.
-     *
-     * @return A byte array containing the metadata of the root directory. This metadata
-     * may include encrypted details, configuration information, or any other
-     * data required for managing or accessing the root directory of the vault.
-     */
-    byte[] getRootDirectoryMetadata();
-
-    /**
-     * Retrieves the hash identifier of the root directory.
-     * This hash can be used as a unique identifier for the root directory
-     * within the vault's metadata.
-     *
-     * @return A string representing the hash of the root directory's identifier.
-     */
-    String getRootDirectoryIdHash();
+    String getVaultMetadata();
 
     static VaultMetadataUVFProvider cast(VaultMetadataProvider provider) throws ConnectionCanceledException {
         if(provider instanceof VaultMetadataUVFProvider) {

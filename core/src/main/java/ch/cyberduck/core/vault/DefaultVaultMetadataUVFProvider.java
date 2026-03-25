@@ -21,23 +21,17 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 
 public class DefaultVaultMetadataUVFProvider implements VaultMetadataUVFProvider {
 
-    private final byte[] vaultMetadata;
-    private final byte[] rootDirectoryMetadata;
-    private final String rootDirectoryIdHash;
+    private final String vaultMetadata;
     private final JWKCallback jwk;
 
     /**
      * Constructs a new instance of {@code DefaultVaultMetadataUVFProvider}.
      *
      * @param vaultMetadata         The metadata for the vault represented as a byte array.
-     * @param rootDirectoryMetadata The metadata for the root directory represented as a byte array.
-     * @param rootDirectoryIdHash   The hash identifier for the root directory as a string.
      * @param jwk                   The {@code JWKCallback} instance used for key management and related operations.
      */
-    public DefaultVaultMetadataUVFProvider(final byte[] vaultMetadata, final byte[] rootDirectoryMetadata, final String rootDirectoryIdHash, final JWKCallback jwk) {
+    public DefaultVaultMetadataUVFProvider(final String vaultMetadata, final JWKCallback jwk) {
         this.vaultMetadata = vaultMetadata;
-        this.rootDirectoryMetadata = rootDirectoryMetadata;
-        this.rootDirectoryIdHash = rootDirectoryIdHash;
         this.jwk = jwk;
     }
 
@@ -52,17 +46,7 @@ public class DefaultVaultMetadataUVFProvider implements VaultMetadataUVFProvider
     }
 
     @Override
-    public byte[] getVaultMetadata() {
+    public String getVaultMetadata() {
         return vaultMetadata;
-    }
-
-    @Override
-    public byte[] getRootDirectoryMetadata() {
-        return rootDirectoryMetadata;
-    }
-
-    @Override
-    public String getRootDirectoryIdHash() {
-        return rootDirectoryIdHash;
     }
 }
