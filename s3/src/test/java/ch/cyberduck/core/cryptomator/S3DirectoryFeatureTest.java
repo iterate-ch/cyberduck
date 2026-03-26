@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -39,6 +40,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultMetadata;
+import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -47,7 +49,6 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
@@ -75,7 +76,8 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new CryptoListService(session, new S3ListService(session, acl), cryptomator).list(vault)
                 .toStream().filter(f -> !f.attributes().isDuplicate() && !f.attributes().isTrashed()).collect(Collectors.toList()).isEmpty());
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
+        session.getRegistry().clear();
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }
 
     @Test
@@ -92,6 +94,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = cryptomator.getFeature(session, AttributesFinder.class, new S3AttributesFinderFeature(session, acl)).find(test);
         assertEquals(versionId, attributes.getVersionId());
-        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session, acl)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
+        session.getRegistry().clear();
+        new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }
 }

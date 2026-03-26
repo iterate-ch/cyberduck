@@ -93,6 +93,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(target, new TransferStatus().setLength(content.length), ConnectionCallback.noop), out));
         assertArrayEquals(content, out.toByteArray());
+        registry.clear();
         new DeleteWorker(LoginCallback.noop, Collections.singletonList(vault), ProgressListener.noop).run(session);
     }
 
