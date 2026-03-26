@@ -226,14 +226,6 @@ public class UVFVault extends AbstractVault {
     }
 
     @Override
-    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) throws UnsupportedException {
-        if(type == Directory.class) {
-            return (T) new CryptoDirectoryFeature(session, (Directory) delegate, this);
-        }
-        return super.getFeature(session, type, delegate);
-    }
-
-    @Override
     public boolean equals(final Object o) {
         if(this == o) {
             return true;
