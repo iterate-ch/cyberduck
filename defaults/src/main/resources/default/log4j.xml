@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-  ~ Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+  ~ Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
   ~ https://cyberduck.io/
   ~
   ~ This program is free software; you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
   ~ This program is distributed in the hope that it will be useful,
@@ -13,17 +13,20 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   -->
-<Configuration xmlns="https://logging.apache.org/xml/ns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-               xsi:schemaLocation="https://logging.apache.org/xml/ns https://logging.apache.org/xml/ns/log4j-config-2.xsd">
+<Configuration>
     <Appenders>
-        <Null name="disabled"/>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d [%t] %-5p %c - %m%n"/>
+        </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.google.api.client.http.HttpTransport" additivity="false" level="ERROR"/>
-        <Logger name="org.apache.http.wire" additivity="false" level="ERROR"/>
-        <Logger name="org.apache.http.headers" additivity="false" level="ERROR"/>
-        <Root level="ERROR">
-            <AppenderRef ref="disabled"/>
+        <Logger name="org.apache.http.wire" additivity="false" level="error"/>
+        <Logger name="org.apache.http.headers" additivity="false" level="error"/>
+        <Logger name="audit.transcript" additivity="true" level="debug"/>
+        <Logger name="transcript" additivity="true" level="debug"/>
+        <Logger name="ch.cyberduck" additivity="true" level="debug"/>
+        <Root level="debug">
+            <AppenderRef ref="console"/>
         </Root>
     </Loggers>
 </Configuration>

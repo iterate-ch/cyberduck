@@ -18,6 +18,9 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.exception.InteroperabilityException;
 
 public class VaultException extends InteroperabilityException {
+    public VaultException() {
+    }
+
     public VaultException(final String detail) {
         super(detail);
     }

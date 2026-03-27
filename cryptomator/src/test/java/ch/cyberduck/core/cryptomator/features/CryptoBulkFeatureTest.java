@@ -21,7 +21,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
+import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -61,8 +62,8 @@ public class CryptoBulkFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"));
+        final CryptomatorVault cryptomator = new CryptomatorVault(vault);
+        cryptomator.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override
             public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
@@ -87,7 +88,7 @@ public class CryptoBulkFeatureTest {
                 return item.remote.isDirectory();
             }
         }).findFirst().get().remote;
-        final String directoryId = encryptedDirectory.attributes().getDirectoryId();
+        final byte[] directoryId = encryptedDirectory.attributes().getDirectoryId();
         assertNotNull(directoryId);
         for(TransferItem file : pre.keySet().stream().filter(new Predicate<TransferItem>() {
             @Override
@@ -118,8 +119,8 @@ public class CryptoBulkFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"));
+        final CryptomatorVault cryptomator = new CryptomatorVault(vault);
+        cryptomator.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override
             public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {

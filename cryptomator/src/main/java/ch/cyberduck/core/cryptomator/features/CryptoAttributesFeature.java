@@ -52,6 +52,7 @@ public class CryptoAttributesFeature implements AttributesFinder {
         if(file.isDirectory()) {
             attributes.setSize(-1L);
         }
+        attributes.setVaultMetadata(vault.getMetadata());
         return attributes;
     }
 

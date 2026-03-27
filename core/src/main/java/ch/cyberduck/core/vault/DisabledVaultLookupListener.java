@@ -26,8 +26,8 @@ public final class DisabledVaultLookupListener implements VaultLookupListener {
     private static final Logger log = LogManager.getLogger(DisabledVaultLookupListener.class);
 
     @Override
-    public Vault load(final Session<?> session, final Path directory, final String masterkey, final String config, final byte[] pepper) {
-        log.warn("Ignore vault {}", directory);
+    public Vault load(final Session session, Path directory, final VaultMetadata metadata) {
+        log.warn("Ignore vault {}", metadata);
         return Vault.DISABLED;
     }
 }

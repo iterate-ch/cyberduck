@@ -16,21 +16,23 @@
 // feedback@cyberduck.io
 // 
 
-using ch.cyberduck.core;
-using ch.cyberduck.core.features;
-using ch.cyberduck.core.threading;
-using ch.cyberduck.core.vault;
-using ch.cyberduck.core.worker;
-using ch.cyberduck.core.preferences;
-using ch.cyberduck.ui.browser;
-using Ch.Cyberduck.Core;
-using java.util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using ch.cyberduck.core;
+using ch.cyberduck.core.features;
+using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.threading;
+using ch.cyberduck.core.vault;
+using ch.cyberduck.core.worker;
+using ch.cyberduck.ui.browser;
+using Ch.Cyberduck.Core;
+using java.util;
+using java.util.prefs;
 using static Ch.Cyberduck.ImageHelper;
+using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -95,10 +97,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCreateVaultWorker(BrowserController controller, Path folder, String filename,
                     String region, String passphrase)
-                    : base(region, new VaultCredentials(passphrase).setSaved(false), VaultFactory.get(folder,
-                        HostPreferencesFactory.get(controller.Pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        HostPreferencesFactory.get(controller.Pool.getHost()).getProperty("cryptomator.vault.config.filename"),
-                        Encoding.UTF8.GetBytes(HostPreferencesFactory.get(controller.Pool.getHost()).getProperty("cryptomator.vault.pepper"))))
+                    : base(region, folder, new VaultCredentials(passphrase).setSaved(false),
+                        new VaultMetadata(VaultMetadata.Type.valueOf(PreferencesFactory.get().getProperty("cryptomator.vault.default"))))
                 {
                     _controller = controller;
                     _folder = folder;

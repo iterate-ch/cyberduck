@@ -29,8 +29,8 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.pasteboard;
-using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
@@ -40,14 +40,11 @@ using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using ch.cyberduck.ui.pasteboard;
-using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Refresh.Interactivity;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
-using DynamicData;
 using java.lang;
 using java.text;
 using java.util;
@@ -1197,7 +1194,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
                 return null != Cache.get(Workdir).find(new SimplePathPredicate(Path.Type.file,
-                    String.Format("{0}{1}{2}", Workdir.getAbsolute(), Path.DELIMITER, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME)));
+                    String.Format("{0}{1}{2}", Workdir.getAbsolute(), Path.DELIMITER,
+                    HostPreferencesFactory.get(Pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"))));
             }
             return false;
         }
@@ -3814,8 +3812,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _directory;
 
                 public InnerLoadVaultWorker(BrowserController controller, VaultRegistry registry, Path directory)
-                    : base(new LoadingVaultLookupListener(registry,
-                        PasswordCallbackFactory.get(controller)), directory)
+                    : base(new LoadingVaultLookupListener(registry, PasswordCallbackFactory.get(controller)), directory, 
+                        new VaultMetadata(VaultMetadata.Type.valueOf(PreferencesFactory.get().getProperty("cryptomator.vault.default"))))
                 {
                     _controller = controller;
                     _directory = directory;

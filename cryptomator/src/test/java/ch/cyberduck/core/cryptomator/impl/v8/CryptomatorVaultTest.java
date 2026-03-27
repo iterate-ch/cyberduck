@@ -1,7 +1,7 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.cryptomator.impl.v8;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,19 +16,16 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameV7Provider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
@@ -37,12 +34,13 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.PathDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultUnlockException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
 import org.cryptomator.cryptolib.api.CryptorProvider;
-import org.cryptomator.cryptolib.api.Masterkey;
+import org.cryptomator.cryptolib.api.PerpetualMasterkey;
 import org.cryptomator.cryptolib.common.MasterkeyFile;
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
 import org.junit.Test;
@@ -55,15 +53,13 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import static ch.cyberduck.core.cryptomator.CryptoVault.VAULT_VERSION;
 import static org.junit.Assert.*;
 
-public class CryptoVaultTest {
+public class CryptomatorVaultTest {
 
     @Test
     public void testLoad() throws Exception {
@@ -89,7 +85,10 @@ public class CryptoVaultTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                            }
+                            if("dir.c9r".equals(file.getName())) {
+                                return new NullInputStream();
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -104,13 +103,8 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(home);
-        vault.load(session, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault123");
-            }
-        });
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
@@ -168,7 +162,7 @@ public class CryptoVaultTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -183,13 +177,8 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(home);
-        assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault123");
-            }
-        }).getHome());
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
@@ -219,7 +208,7 @@ public class CryptoVaultTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -234,13 +223,8 @@ public class CryptoVaultTest {
             }
         };
         final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
-        final CryptoVault vault = new CryptoVault(home);
-        assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("vault123");
-            }
-        }).getHome());
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("vault123")));
         assertEquals(Vault.State.open, vault.getState());
         assertEquals(home, new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())));
         vault.close();
@@ -269,7 +253,7 @@ public class CryptoVaultTest {
                                 return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                             }
                             if("vault.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(createJWT(masterKey, VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
+                                return IOUtils.toInputStream(createJWT(masterKey, CryptomatorVault.VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault123"), Charset.defaultCharset());
                             }
                             throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
@@ -283,127 +267,8 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final AtomicBoolean prompt = new AtomicBoolean();
-        final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
-        try {
-            vault.load(session, new DisabledPasswordCallback() {
-                @Override
-                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                    if(!prompt.get()) {
-                        assertEquals("Provide your passphrase to unlock the Cryptomator Vault /", reason);
-                        prompt.set(true);
-                        return new VaultCredentials("null");
-                    }
-                    else {
-                        assertEquals("Failure to decrypt master key file. Provide your passphrase to unlock the Cryptomator Vault /.", reason);
-                        throw new LoginCanceledException();
-                    }
-                }
-            });
-            fail();
-        }
-        catch(LoginCanceledException e) {
-            //
-        }
-        assertTrue(prompt.get());
-    }
-
-    @Test
-    public void testLoadCancel() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == Read.class) {
-                    return (T) new Read() {
-                        @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                            final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
-                                    "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
-                                    "}";
-                            if("masterkey.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
-                            }
-                            throw new NotfoundException(String.format("%s not found", file.getName()));
-                        }
-
-                        @Override
-                        public boolean offset(final Path file) {
-                            return false;
-                        }
-                    };
-                }
-                return super._getFeature(type);
-            }
-        };
-        final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
-        try {
-            vault.load(session, new DisabledPasswordCallback() {
-                @Override
-                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                    throw new LoginCanceledException();
-                }
-            });
-            fail();
-        }
-        catch(LoginCanceledException e) {
-            //
-        }
-    }
-
-    @Test
-    public void testLoadEmptyPassword() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == Read.class) {
-                    return (T) new Read() {
-                        @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                            final String masterKey = "{\n" +
-                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                    "  \"scryptCostParam\": 16384,\n" +
-                                    "  \"scryptBlockSize\": 8,\n" +
-                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                    "  \"version\": 5\n" +
-                                    "}";
-                            if("masterkey.cryptomator".equals(file.getName())) {
-                                return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
-                            }
-                            throw new NotfoundException(String.format("%s not found", file.getName()));
-                        }
-
-                        @Override
-                        public boolean offset(final Path file) {
-                            return false;
-                        }
-                    };
-                }
-                return super._getFeature(type);
-            }
-        };
-        final CryptoVault vault = new CryptoVault(new Path("/", EnumSet.of(Path.Type.directory)));
-        try {
-            vault.load(session, new DisabledPasswordCallback() {
-                @Override
-                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                    return new VaultCredentials(null);
-                }
-            });
-            fail();
-        }
-        catch(LoginCanceledException e) {
-            //
-        }
+        final CryptomatorVault vault = new CryptomatorVault(new Path("/", EnumSet.of(Path.Type.directory)));
+        assertThrows(VaultUnlockException.class, () -> vault.load(session, new MasterkeyVaultMetadataProvider(new VaultCredentials("null"))));
     }
 
     @Test
@@ -426,53 +291,8 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(home);
-        vault.create(session, null, new VaultCredentials("test"));
-    }
-
-    @Test
-    public void testCleartextSizeV6() throws Exception {
-        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == Directory.class) {
-                    return (T) new Directory() {
-
-                        @Override
-                        public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
-                            assertTrue(folder.equals(home) || folder.isChild(home));
-                            return folder;
-                        }
-                    };
-                }
-                return super._getFeature(type);
-            }
-        };
-        final CryptoVault vault = new CryptoVault(
-                home);
-        vault.create(session, null, new VaultCredentials("test"), 6);
-        // zero ciphertextFileSize
-        try {
-            vault.toCleartextSize(0L, 0);
-            fail();
-        }
-        catch(CryptoInvalidFilesizeException e) {
-        }
-        // ciphertextFileSize == headerSize
-        assertEquals(0L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize()));
-        // ciphertextFileSize == headerSize + 1
-        try {
-            vault.toCleartextSize(0L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize()) + 1);
-            fail();
-        }
-        catch(CryptoInvalidFilesizeException e) {
-        }
-        // ciphertextFileSize == headerSize + chunkHeaderSize + 1
-        assertEquals(1L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize() + 48 + 1));
-        // ciphertextFileSize == headerSize + (32768 + chunkHeaderSize) + (1 + chunkHeaderSize) + 1
-        assertEquals(32769L, vault.toCleartextSize(0L, vault.getFileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
     }
 
     @Test
@@ -495,9 +315,8 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(
-                home);
-        vault.create(session, null, new VaultCredentials("test"));
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0L, 0);
@@ -545,9 +364,8 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(
-                home);
-        vault.create(session, null, new VaultCredentials("test"));
+        final CryptomatorVault vault = new CryptomatorVault(home);
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         for(int i = 0; i < 26000000; i++) {
             assertEquals(i, vault.toCleartextSize(0L, vault.toCiphertextSize(0L, i)));
         }
@@ -561,12 +379,12 @@ public class CryptoVaultTest {
             final MasterkeyFile mkFile = MasterkeyFile.read(new StringReader(masterkeyCryptomator));
             final StringWriter writer = new StringWriter();
             mkFile.write(writer);
-            final Masterkey masterkey = new MasterkeyFileAccess(PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8),
+            final PerpetualMasterkey masterkey = new MasterkeyFileAccess(PreferencesFactory.get().getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8),
                     FastSecureRandomProvider.get().provide()).load(new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8)), passphrase);
             final Algorithm algorithm = Algorithm.HMAC256(masterkey.getEncoded());
             return JWT.create()
                     .withJWTId(new UUIDRandomStringService().random())
-                    .withKeyId(String.format("masterkeyfile:%s", DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME))
+                    .withKeyId(String.format("masterkeyfile:%s", "masterkey.cryptomator"))
                     .withClaim("format", version)
                     .withClaim("cipherCombo", cipher.toString())
                     .withClaim("shorteningThreshold", CryptoFilenameV7Provider.DEFAULT_NAME_SHORTENING_THRESHOLD)
