@@ -16,6 +16,7 @@
 // feedback@cyberduck.io
 //
 
+using System;
 using ch.cyberduck.cli;
 using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.core.serviceloader;
@@ -28,6 +29,7 @@ using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Proxy;
 using java.security;
 using sun.security.mscapi;
+using JavaSystem = java.lang.System;
 
 namespace Ch.Cyberduck.Cli
 {
@@ -47,6 +49,8 @@ namespace Ch.Cyberduck.Cli
         protected override void setDefaults()
         {
             base.setDefaults();
+
+            JavaSystem.setProperty("library.jansi.path", AppContext.BaseDirectory);
 
             this.setDefault("application.language", "en");
 

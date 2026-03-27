@@ -1,320 +1,208 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-  <Product Id="*" Name="Cyberduck" Language="1033" Version="!(bind.FileVersion.product.exe)" Manufacturer="iterate GmbH" UpgradeCode="B9C33495-4B77-4863-9A40-4E767388647E">
-    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
-
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Cyberduck"
+           Language="1033"
+           Version="!(bind.FileVersion.product.exe)"
+           Manufacturer="iterate GmbH"
+           UpgradeCode="B9C33495-4B77-4863-9A40-4E767388647E"
+           InstallerVersion="200">
     <MajorUpgrade AllowDowngrades="yes" />
-    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+    <MediaTemplate EmbedCab="true" />
 
     <Property Id="BUILDVERSION" Value="0" Secure="yes">
-      <RegistrySearch Id="BuildVersion" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Type="raw" Name="CurrentBuild" />
+      <RegistrySearch Id="BuildVersion"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+                      Type="raw"
+                      Name="CurrentBuild" />
     </Property>
 
-    <Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
-      <![CDATA[BUILDVERSION >= 14393]]>
-    </Condition>
+    <Launch Condition="BUILDVERSION &gt;= 14393"
+            Message="Windows 10 Anniversary Update (14393) or later is required to run this application." />
 
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="INSTALLLOCATION" Name="!(bind.property.ProductName)">
-          <Directory Id="PROFILES" Name="profiles" />
-        </Directory>
-      </Directory>
-      <Directory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="!(bind.property.ProductName)" />
-      </Directory>
-    </Directory>
-
-    <Icon Id="icon.ico" SourceFile="$(var.CyberduckDir)cyberduck-application.ico" />
-    <Icon Id="cd_document.ico" SourceFile="$(var.CyberduckDir)cyberduck-document.ico" />
+    <Icon Id="icon.ico" SourceFile="$(Cyberduck.TargetDir)cyberduck-application.ico" />
+    <Icon Id="cd_document.ico" SourceFile="$(Cyberduck.TargetDir)cyberduck-document.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
-    <Property Id="AUTOSTART" Value="0" />
     <Property Id="REINSTALLMODE" Value="dmus" />
 
-    <ComponentGroup Id="ProductComponents" Directory="INSTALLLOCATION">
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="!(bind.Property.ProductName)" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="!(bind.property.ProductName)" />
+    </StandardDirectory>
+
+    <ComponentGroup Id="Package">
+      <Files Directory="INSTALLFOLDER" Include="$(Cyberduck.TargetDir)**">
+        <Exclude Files="$(Cyberduck.TargetPath);$(Cyberduck.TargetDir)**.pdb" />
+      </Files>
+
       <Component Id="InstallLocationRegistrySearch">
-        <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
+        <RegistryValue Root="HKLM"
+                       Key="Software\[Manufacturer]\[ProductName]"
+                       Name="InstallDir"
+                       Type="string"
+                       Value="[INSTALLFOLDER]"
+                       KeyPath="yes" />
       </Component>
 
-      <Component Id="ProductExe">
-        <File Id="product.exe" Source="$(var.CyberduckPublishDir)Cyberduck.exe" KeyPath="yes" Checksum="yes">
+      <Component Id="Executable">
+        <!-- Contains anything that references [#product.exe] -->
+        <File Id="product.exe" Source="$(Cyberduck.TargetPath)" KeyPath="yes">
           <Shortcut Id="ApplicationStartMenuShortcut"
-            Name="Cyberduck"
-            Advertise="yes"
-            Description="Libre FTP, SFTP, WebDAV, SMB, S3 and OpenStack Swift browser"
-            Directory="ApplicationProgramsFolder"
-            WorkingDirectory="INSTALLLOCATION"
-            Icon="icon.ico">
+                    Name="Cyberduck"
+                    Advertise="yes"
+                    Description="Libre FTP, SFTP, WebDAV, SMB, S3 and OpenStack Swift browser"
+                    Directory="ApplicationProgramsFolder"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="icon.ico">
             <ShortcutProperty Key="System.AppUserModel.ID" Value="iterate.Cyberduck" />
           </Shortcut>
         </File>
+        <RemoveFolder Id="ApplicationProgramsFolder"
+                      Directory="ApplicationProgramsFolder"
+                      On="uninstall" />
 
-        <ProgId Id="Cyberduck.Bookmark" Description="Cyberduck Bookmark" Icon="cd_document.ico" Advertise="yes">
+        <ProgId Id="Cyberduck.Bookmark"
+                Description="Cyberduck Bookmark"
+                Icon="cd_document.ico"
+                Advertise="yes">
           <Extension Id="duck">
-            <Verb Id="open" Command="Open" Argument='"%1"' />
+            <Verb Id="open" Command="Open" Argument="&quot;%1&quot;" />
           </Extension>
         </ProgId>
-        <ProgId Id="Cyberduck Connection.Profile" Description="Cyberduck Connection Profile" Icon="cd_document.ico" Advertise="yes">
+        <ProgId Id="Cyberduck Connection.Profile"
+                Description="Cyberduck Connection Profile"
+                Icon="cd_document.ico"
+                Advertise="yes">
           <Extension Id="cyberduckprofile">
-            <Verb Id="open" Command="Open" Argument='"%1"' />
+            <Verb Id="open" Command="Open" Argument="&quot;%1&quot;" />
           </Extension>
         </ProgId>
-        <ProgId Id="Cyberduck.License" Description="Cyberduck License" Icon="cd_document.ico" Advertise="yes">
+        <ProgId Id="Cyberduck.License"
+                Description="Cyberduck License"
+                Icon="cd_document.ico"
+                Advertise="yes">
           <Extension Id="cyberducklicense">
-            <Verb Id="open" Command="Open" Argument='"%1"' />
+            <Verb Id="open" Command="Open" Argument="&quot;%1&quot;" />
           </Extension>
         </ProgId>
-        <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
 
         <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationDescription" Value="Libre FTP, SFTP, WebDAV, SMB, S3 and OpenStack Swift browser for Mac and Windows." Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationIcon" Value="[INSTALLLOCATION]Cyberduck.exe,0" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationName" Value="!(bind.property.ProductName)" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\DefaultIcon" Value="[APPLICATIONFOLDER]Cyberduck.exe,1" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".duck" Value="Cyberduck.Bookmark" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".cyberduckprofile" Value="Cyberduck Connection.Profile" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".cyberducklicense" Value="Cyberduck.License" Type="string" />
-
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\shell\Open\command" Value='"[INSTALLLOCATION]Cyberduck.exe" "%1"' Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="!(bind.property.ProductName)" Value="SOFTWARE\Cyberduck\Capabilities" Type="string" />
-
-        <!-- App Paths to support Start,Run -> "Cyberduck" -->
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe" Value="Cyberduck.exe" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe" Name="Path" Value="[APPLICATIONFOLDER]" Type="string" />
-
-        <!-- Extend to the "open with" list + Win7 jump menu pinning  -->
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\SupportedTypes" Name=".duck" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\SupportedTypes" Name=".cyberduckprofile" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\SupportedTypes" Name=".cyberducklicense" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\shell\open" Name="FriendlyAppName" Value="!(bind.property.ProductName)" Type="string" />
-
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.Bookmark" Name="FriendlyTypeName" Value="Cyberduck Bookmark" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck Connection.Profile" Name="FriendlyTypeName" Value="Cyberduck Connection Profile" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.License" Name="FriendlyTypeName" Value="Cyberduck License" Type="string" />
-      </Component>
-      <Component Id="Cyberduck.Exe.Config">
-        <File Source="$(var.CyberduckPublishDir)Cyberduck.exe.config" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="CustomOpenFileFolderDialog">
-        <File Source="$(var.CyberduckPublishDir)CustomOpenFileFolderDialog.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Cyberduck.Core">
-        <File Source="$(var.CyberduckPublishDir)Cyberduck.Core.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Cyberduck.Core.Native">
-        <File Source="$(var.CyberduckPublishDir)Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Cyberduck.Core.Refresh">
-        <File Source="$(var.CyberduckPublishDir)Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Cyberduck.Protocols">
-        <File Source="$(var.CyberduckPublishDir)Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Cyberduck.Bonjour">
-        <File Source="$(var.CyberduckPublishDir)Cyberduck.Bonjour.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Cyberduck.Bonjour.Native">
-        <File Source="$(var.CyberduckPublishDir)Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Cyberduck.Importer">
-        <File Source="$(var.CyberduckPublishDir)Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Cyberduck.Cryptomator">
-        <File Source="$(var.CyberduckPublishDir)Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="WinSparkle">
-        <File Source="$(var.CyberduckPublishDir)WinSparkle.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="objectlistview">
-        <File Source="$(var.CyberduckPublishDir)ObjectListView.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="jnidispatch">
-        <File Source="$(var.CyberduckPublishDir)jnidispatch.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="vcruntime140">
-        <File Source="$(var.CyberduckPublishDir)vcruntime140.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="vcruntime140_1">
-        <File Source="$(var.CyberduckPublishDir)vcruntime140_1.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-
-      <!-- IKVM -->
-      <Component Id="IKVM.ByteCode.dll">
-        <File Source="$(var.CyberduckPublishDir)IKVM.ByteCode.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="IKVM.CoreLib.dll">
-        <File Source="$(var.CyberduckPublishDir)IKVM.CoreLib.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ikvm.dll">
-        <File Source="$(var.CyberduckPublishDir)ikvm.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="IKVM.Java.dll">
-        <File Source="$(var.CyberduckPublishDir)IKVM.Java.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ikvm.properties">
-        <File Source="$(var.CyberduckPublishDir)ikvm.properties" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="IKVM.Runtime.dll">
-        <File Source="$(var.CyberduckPublishDir)IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="IKVM.Reflection.dll">
-        <File Source="$(var.CyberduckPublishDir)IKVM.Reflection.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-
-      <Component Id="System.Buffers">
-        <File Source="$(var.CyberduckPublishDir)System.Buffers.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="System.Memory">
-        <File Source="$(var.CyberduckPublishDir)System.Memory.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="System.Numerics.Vectors">
-        <File Source="$(var.CyberduckPublishDir)System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="System.Runtime.CompilerServices.Unsafe">
-        <File Source="$(var.CyberduckPublishDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="System.Threading.Tasks.Extensions">
-        <File Source="$(var.CyberduckPublishDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="System.ValueTuple">
-        <File Source="$(var.CyberduckPublishDir)System.ValueTuple.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="System.Text.Json">
-        <File Source="$(var.CyberduckPublishDir)System.Text.Json.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="System.Collections.Immutable">
-        <File Source="$(var.CyberduckPublishDir)System.Collections.Immutable.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="System.Reflection.Metadata">
-        <File Source="$(var.CyberduckPublishDir)System.Reflection.Metadata.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-
-      <!-- NuGet Dependencies -->
-      <!-- DotNetProjects.Extended.Wpf.Toolkit -->
-      <Component Id="DotNetProjects.Wpf.Extended.Toolkit.dll">
-        <File Source="$(var.CyberduckPublishDir)DotNetProjects.Wpf.Extended.Toolkit.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- ExceptionReporter -->
-      <Component Id="ExceptionReporter.WinForms">
-        <File Source="$(var.CyberduckPublishDir)ExceptionReporter.NET.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="DotNetZip">
-        <File Source="$(var.CyberduckPublishDir)DotNetZip.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="SimpleMapi">
-        <File Source="$(var.CyberduckPublishDir)SimpleMapi.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- Microsoft.Toolkit.Uwp.Notifications -->
-      <Component Id="MSTKUWPNotifications">
-        <File Source="$(var.CyberduckPublishDir)Microsoft.Toolkit.Uwp.Notifications.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- System.Reactive -->
-      <Component Id="System.Reactive">
-        <File Source="$(var.CyberduckPublishDir)System.Reactive.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- ReactiveUI.WPF-->
-      <Component Id="ReactiveUI.Wpf">
-        <File Source="$(var.CyberduckPublishDir)ReactiveUI.Wpf.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- ReactiveUI -->
-      <Component Id="ReactiveUI">
-        <File Source="$(var.CyberduckPublishDir)ReactiveUI.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- DynamicData -->
-      <Component Id="DynamicData">
-        <File Source="$(var.CyberduckPublishDir)DynamicData.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- Splat -->
-      <Component Id="Splat">
-        <File Source="$(var.CyberduckPublishDir)Splat.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- StructureMap -->
-      <Component Id="structuremap">
-        <File Source="$(var.CyberduckPublishDir)StructureMap.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- CommunityToolkit.Mvvm -->
-      <Component Id="CommunityToolkit.Mvvm">
-        <File Source="$(var.CyberduckPublishDir)CommunityToolkit.Mvvm.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="Microsoft.Bcl.AsyncInterfaces">
-        <File Source="$(var.CyberduckPublishDir)Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- /Nuget Dependencies -->
-
-      <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
-        <File Source="$(var.CyberduckDir)Acknowledgments.rtf" Checksum="yes" />
-        <File Source="$(var.LicenseFile)" Checksum="yes" />
-      </Component>
-
-      <!-- Protocol Handlers -->
-      <Component Id="URLAssociations">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities">
+          <RegistryValue Name="ApplicationDescription"
+                         Value="Libre FTP, SFTP, WebDAV, SMB, S3 and OpenStack Swift browser for Mac and Windows."
+                         Type="string" />
+          <RegistryValue Name="ApplicationIcon" Value="[#product.exe],0" Type="string" />
+          <RegistryValue Name="ApplicationName" Value="!(bind.property.ProductName)" Type="string" />
+          <RegistryValue Key="DefaultIcon" Value="[#product.exe],1" Type="string" />
+          <RegistryValue Key="shell\Open\command" Value="&quot;[#product.exe]&quot; &quot;%1&quot;" Type="string" />
+        </RegistryKey>
+        
         <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.ProtocolHandler">
           <RegistryValue Value="Cyberduck Protocol" Type="string" />
           <RegistryValue Key="DefaultIcon" Value="[#product.exe],0" Type="string" />
-          <RegistryValue Key="shell\open\command" Value='"[#product.exe]" "%1"' Type="string" />
+          <RegistryValue Key="shell\open\command"
+                         Value="&quot;[#product.exe]&quot; &quot;%1&quot;"
+                         Type="string" />
+        </RegistryKey>
+      </Component>
+
+      <Component Id="Registration">
+        <!-- App Paths to support Start,Run -> "Cyberduck" -->
+        <RegistryKey Root="HKLM"
+                     Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe">
+          <RegistryValue Value="Cyberduck.exe" Type="string" />
+          <RegistryValue Name="Path" Value="[INSTALLFOLDER]" Type="string" />
         </RegistryKey>
 
-        <RegistryKey Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations">
-          <RegistryValue Name="ftp" Value="Cyberduck.ProtocolHandler" Type="string" />
-          <RegistryValue Name="ftps" Value="Cyberduck.ProtocolHandler" Type="string" />
-          <RegistryValue Name="dav" Value="Cyberduck.ProtocolHandler" Type="string" />
-          <RegistryValue Name="davs" Value="Cyberduck.ProtocolHandler" Type="string" />
-          <RegistryValue Name="sftp" Value="Cyberduck.ProtocolHandler" Type="string" />
-          <RegistryValue Name="smb" Value="Cyberduck.ProtocolHandler" Type="string" />
-          <RegistryValue Name="s3" Value="Cyberduck.ProtocolHandler" Type="string" />
-          <RegistryValue Name="irods" Value="Cyberduck.ProtocolHandler" Type="string" />
+        <!-- Extend to the "open with" list + Win7 jump menu pinning -->
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe">
+          <RegistryKey Key="SupportedTypes">
+            <RegistryValue Name=".duck" Value="" Type="string" />
+            <RegistryValue Name=".cyberduckprofile" Value="" Type="string" />
+            <RegistryValue Name=".cyberducklicense" Value="" Type="string" />
+          </RegistryKey>
+          <RegistryValue Key="shell\open"
+                         Name="FriendlyAppName"
+                         Value="!(bind.property.ProductName)"
+                         Type="string" />
+        </RegistryKey>
+
+        <RegistryValue Root="HKLM"
+                       Key="SOFTWARE\RegisteredApplications"
+                       Name="!(bind.property.ProductName)"
+                       Value="SOFTWARE\Cyberduck\Capabilities"
+                       Type="string" />
+      </Component>
+
+      <Component Id="Associations">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes">
+          <RegistryValue Key="Cyberduck.Bookmark"
+                         Name="FriendlyTypeName"
+                         Value="Cyberduck Bookmark"
+                         Type="string" />
+          <RegistryValue Key="Cyberduck Connection.Profile"
+                         Name="FriendlyTypeName"
+                         Value="Cyberduck Connection Profile"
+                         Type="string" />
+          <RegistryValue Key="Cyberduck.License"
+                         Name="FriendlyTypeName"
+                         Value="Cyberduck License"
+                         Type="string" />
+        </RegistryKey>
+
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities">
+          <RegistryKey Key="FileAssociations">
+            <RegistryValue Name=".duck" Value="Cyberduck.Bookmark" Type="string" />
+            <RegistryValue Name=".cyberduckprofile" Value="Cyberduck Connection.Profile" Type="string" />
+            <RegistryValue Name=".cyberducklicense" Value="Cyberduck.License" Type="string" />
+          </RegistryKey>
+          <RegistryKey Key="URLAssociations">
+            <RegistryValue Name="ftp" Value="Cyberduck.ProtocolHandler" Type="string" />
+            <RegistryValue Name="ftps" Value="Cyberduck.ProtocolHandler" Type="string" />
+            <RegistryValue Name="dav" Value="Cyberduck.ProtocolHandler" Type="string" />
+            <RegistryValue Name="davs" Value="Cyberduck.ProtocolHandler" Type="string" />
+            <RegistryValue Name="sftp" Value="Cyberduck.ProtocolHandler" Type="string" />
+            <RegistryValue Name="smb" Value="Cyberduck.ProtocolHandler" Type="string" />
+            <RegistryValue Name="s3" Value="Cyberduck.ProtocolHandler" Type="string" />
+            <RegistryValue Name="irods" Value="Cyberduck.ProtocolHandler" Type="string" />
+          </RegistryKey>
         </RegistryKey>
       </Component>
+
+      <!-- Registration of URL Protocols. -->
       <Component Id="FTP.Handler" Permanent="yes" NeverOverwrite="yes">
-        <RegistryValue Root="HKCR" Key="ftp" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="ftp" Value="URL:FTP (File Transfer Protocol)" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\ftp" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\ftp" Value="URL:FTP (File Transfer Protocol)" Type="string" />
       </Component>
       <Component Id="FTPS.Handler" Permanent="yes" NeverOverwrite="yes">
-        <RegistryValue Root="HKCR" Key="ftps" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="ftps" Value="URL:FTP-SSL (Explicit AUTH TLS)" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\ftps" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\ftps" Value="URL:FTP-SSL (Explicit AUTH TLS)" Type="string" />
       </Component>
       <Component Id="SFTP.Handler" Permanent="yes" NeverOverwrite="yes">
-        <RegistryValue Root="HKCR" Key="sftp" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="sftp" Value="URL:SFTP (SSH File Transfer Protocol)" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\sftp" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\sftp" Value="URL:SFTP (SSH File Transfer Protocol)" Type="string" />
       </Component>
       <Component Id="DAV.Handler" Permanent="yes" NeverOverwrite="yes">
-        <RegistryValue Root="HKCR" Key="dav" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="dav" Value="URL:WebDAV (HTTP)" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\dav" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\dav" Value="URL:WebDAV (HTTP)" Type="string" />
       </Component>
       <Component Id="DAVS.Handler" Permanent="yes" NeverOverwrite="yes">
-        <RegistryValue Root="HKCR" Key="davs" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="davs" Value="URL:WebDAV (HTTPS)" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\davs" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\davs" Value="URL:WebDAV (HTTPS)" Type="string" />
       </Component>
       <Component Id="S3.Handler" Permanent="yes" NeverOverwrite="yes">
-        <RegistryValue Root="HKCR" Key="s3" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="s3" Value="URL:Amazon S3" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\s3" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\s3" Value="URL:Amazon S3" Type="string" />
       </Component>
       <Component Id="IRODS.Handler" Permanent="yes" NeverOverwrite="yes">
-        <RegistryValue Root="HKCR" Key="irods" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
-        <RegistryValue Root="HKCR" Key="irods" Value="URL:iRODS (Integrated Rule-Oriented Data System)" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\irods" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\irods" Value="URL:iRODS (Integrated Rule-Oriented Data System)" Type="string" />
       </Component>
     </ComponentGroup>
 
-    <Feature Id="ProductFeature" Title="cyberduck-WiX" Level="1">
-      <ComponentGroupRef Id="ProductComponents" />
-      <ComponentGroupRef Id="ProfileComponents" />
-      <ComponentGroupRef Id="IkvmRuntime" />
+    <Feature Id="Package">
+      <ComponentGroupRef Id="Package" />
     </Feature>
-
-    <Binary Id="WindowsVersionCustomAction.dll" SourceFile="$(var.WindowsVersionCustomAction.TargetDir)$(var.WindowsVersionCustomAction.TargetName).dll" />
-    <CustomAction Id="WindowsVersion" BinaryKey="WindowsVersionCustomAction.dll" DllEntry="CustomAction1" Execute="immediate" />
-    <Property Id="WixShellExecTarget" Value="[INSTALLLOCATION]Cyberduck.exe" />
-    <CustomAction Id="LaunchFile"
-      BinaryKey="WixCA"
-      DllEntry="WixShellExec"
-      Impersonate="yes" />
-
-    <InstallUISequence>
-      <Custom Action="WindowsVersion" Before="LaunchConditions" />
-    </InstallUISequence>
-    <InstallExecuteSequence>
-      <Custom Action="WindowsVersion" Before="LaunchConditions" />
-      <Custom Action='LaunchFile' After='InstallFinalize'>AUTOSTART=1</Custom>
-    </InstallExecuteSequence>
-  </Product>
+  </Package>
 </Wix>

@@ -1,0 +1,41 @@
+<Project>
+
+  <PropertyGroup>
+    <_SignToolArgsTarget Condition="'$(_SignToolArgsTarget)'=='' And '$(SignTool)'=='cng'">_SignToolArgsCNG</_SignToolArgsTarget>
+    <_SignToolArgsTarget Condition="'$(_SignToolArgsTarget)'==''">_SignToolArgsCertificateStore</_SignToolArgsTarget>
+    <SignToolArgsDependsOn>$(_SignToolArgsTarget);SignToolExecutableName</SignToolArgsDependsOn>
+  </PropertyGroup>
+
+  <Target Name="SignToolExecutableName" Returns="$(SignToolExecutableName)">
+    <PropertyGroup>
+      <SignToolExecutableName Condition="'$(SignToolExecutableName)'==''">SignTool.exe</SignToolExecutableName>
+    </PropertyGroup>
+    <ItemGroup>
+      <SignToolPath Include="PATH=$([MSBuild]::Escape('$(CommonExecutablePath)'))" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_SignToolArgsBase" Returns="$(SignToolArgsBase)">
+    <PropertyGroup>
+      <SignToolArgsBase>sign /d "Cyberduck" /fd sha256 /tr "http://timestamp.acs.microsoft.com" /td "sha256" /a</SignToolArgsBase>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="SignToolArgs" DependsOnTargets="$(SignToolArgsDependsOn)">
+    <Error Text="'$(SignTool)' unsupported." Condition="'$(SignToolArgsBase)'==''" />
+    <PropertyGroup>
+      <SignToolArgs>"$(SignToolExecutableName)" $(SignToolArgsBase)</SignToolArgs>
+    </PropertyGroup>
+  </Target>
+  <Target Name="_SignToolArgsCertificateStore" DependsOnTargets="_SignToolArgsBase" Returns="$(SignToolArgsBase)">
+    <PropertyGroup>
+      <SignToolArgsBase>$(SignToolArgsBase) /sm /n "iterate GmbH"</SignToolArgsBase>
+    </PropertyGroup>
+  </Target>
+  <Target Name="_SignToolArgsCNG" DependsOnTargets="_SignToolArgsBase" Returns="$(SignToolArgsBase)">
+    <PropertyGroup>
+      <SignToolArgsBase>$(SignToolArgsBase) /f "$(CyberduckDir)setup\cert\certificate.crt" /csp "$(SignToolCSP)" /kc "$(SignToolKC)"</SignToolArgsBase>
+    </PropertyGroup>
+  </Target>
+
+</Project>

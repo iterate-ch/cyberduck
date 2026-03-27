@@ -1,112 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" TreatAsLocalProperty="SignOutput" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
+﻿<Project Sdk="WixToolset.Sdk">
   <PropertyGroup>
-    <ProductVersion>3.11</ProductVersion>
-    <ProjectGuid>f6975079-f730-4a31-9909-de536e524764</ProjectGuid>
-    <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>duck-$(Version)</OutputName>
-    <OutputType>Package</OutputType>
-    <InstallerPlatform>x64</InstallerPlatform>
+    <OutputName>duck-$(FileVersion)-$(Platform)</OutputName>
+    <Platforms>x64;arm64</Platforms>
     <DefineConstants>
-      CyberduckDir=$(CyberduckDir);
-      ProfilesDir=$(CyberduckDir)profiles\default\;
-      LicenseFile=$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt;
-      $(DefineConstants)
-    </DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>
-    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Cyberduck CLI-WiX.wxs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <WixExtension Include="WixNetFxExtension">
-      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
-      <Name>WixNetFxExtension</Name>
-    </WixExtension>
-  </ItemGroup>
-
-  <ItemGroup>
-    <HarvestDirectory Include="$(CyberduckDir)profiles\default" SuppressRootDirectory="true" SuppressCom="true" SuppressRegistry="true">
-      <Link>Profiles</Link>
-      <DirectoryRefId>PROFILES</DirectoryRefId>
-      <ComponentGroupName>ProfileComponents</ComponentGroupName>
-      <PreprocessorVariable>var.ProfilesDir</PreprocessorVariable>
-    </HarvestDirectory>
-  </ItemGroup>
-
-  <PropertyGroup>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)Microsoft.Cpp.MSVC.Toolset.Common.props" />
-
-  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)'))" />
-  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
-    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
-  </Target>
-
-  <PropertyGroup>
-    <CLIPublishDir>$(IntermediateOutputPath)CLI\</CLIPublishDir>
-    <DefineConstants>
-      CLIPublishDir=$(CLIPublishDir);
-      IkvmRuntimeDir=$(CLIPublishDir)\ikvm;
+      ProductVersion=$(FileVersion);
       $(DefineConstants)
     </DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\csharp\duck.csproj">
-      <Name>CLI</Name>
-      <Project>{4b14000d-f435-4eca-a119-7aef03792dee}</Project>
-      <Targets>Publish</Targets>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-      <AdditionalProperties>PublishDir=$(CLIPublishDir);RuntimeIdentifier=win-x64</AdditionalProperties>
-    </ProjectReference>
-    <HarvestDirectory Include="$(CLIPublishDir)ikvm" SuppressCom="true" SuppressRegistry="true">
-      <Link>ikvm</Link>
-      <DirectoryRefId>INSTALLLOCATION</DirectoryRefId>
-      <ComponentGroupName>IkvmRuntime</ComponentGroupName>
-      <PreprocessorVariable>var.IkvmRuntimeDir</PreprocessorVariable>
-    </HarvestDirectory>
+    <ProjectReference Include="..\..\csharp\duck.csproj" SetPlatform="Platform=$(Platform)" Publish="true" />
   </ItemGroup>
-
-  <Target Name="SignMsi" DependsOnTargets="SignToolArgs">
-    <Exec Command="$(SignToolArgs) &quot;%(SignMsi.FullPath)&quot;" EnvironmentVariables="@(SignToolEnvironmentVariable)" />
-  </Target>
-  <!--
-	To modify your build process, add your task inside one of the targets below and uncomment it.
-	Other similar extension points exist, see Wix.targets.
-  -->
-  <Target Name="BundlePayloadExecutable" Returns="@(BundlePayloadExecutable)">
-    <ItemGroup>
-      <BundlePayloadExecutable Include="$(CLIPublishDir)**\*.dll;$(CLIPublishDir)**\*.exe" />
-    </ItemGroup>
-  </Target>
-  <Target Name="CollectSignPayload" DependsOnTargets="BundlePayloadExecutable;SignToolArgs" Outputs="%(BundlePayloadExecutable.Identity)" Returns="@(SignBundlePayload)">
-    <Exec Command="%22$(SignToolExecutable)%22 verify /q /pa %22%(BundlePayloadExecutable.Identity)%22"
-      EnvironmentVariables="@(SignToolEnvironmentVariable)"
-      IgnoreStandardErrorWarningFormat="true"
-      IgnoreExitCode="true">
-      <Output TaskParameter="ExitCode" PropertyName="PayloadSigned" />
-    </Exec>
-
-    <ItemGroup>
-      <SignBundlePayload Include="@(BundlePayloadExecutable)" Condition="'$(PayloadSigned)'!='0'" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="SignPayload" Condition=" '$(SignOutput)' == 'true' " DependsOnTargets="CollectSignPayload;SignToolArgs" AfterTargets="Compile" BeforeTargets="Link">
-    <Exec Command="$(SignToolArgs) @(SignBundlePayload->'%22%(Identity)%22', ' ')" EnvironmentVariables="@(SignToolEnvironmentVariable)" Condition="'@(SignBundlePayload)'!=''" />
-  </Target>
 </Project>
