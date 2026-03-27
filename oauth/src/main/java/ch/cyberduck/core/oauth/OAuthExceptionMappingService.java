@@ -41,6 +41,7 @@ public class OAuthExceptionMappingService extends AbstractExceptionMappingServic
             switch(details.getError()) {
                 // Error code "invalid_request", "invalid_client", "invalid_grant", "unauthorized_client", "unsupported_grant_type", "invalid_scope"
                 case "invalid_client":
+                case "invalid_request":
                 case "unauthorized_client":
                 case "unsupported_grant_type":
                 case "invalid_scope":

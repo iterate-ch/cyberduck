@@ -194,9 +194,9 @@ public class MainController extends BundleController implements NSApplication.De
     private BookmarkMenuDelegate bookmarkMenuDelegate;
 
     /**
-     * @param frame Frame autosave name
+     * @param frameName Frame autosave name
      */
-    public static BrowserController newDocument(final boolean force, final String frame) {
+    public static BrowserController newDocument(final boolean force, final String frameName) {
         final List<BrowserController> browsers = getBrowsers();
         if(!force) {
             for(BrowserController controller : browsers) {
@@ -213,10 +213,7 @@ public class MainController extends BundleController implements NSApplication.De
                 browsers.remove(controller);
             }
         });
-        controller.display();
-        if(StringUtils.isNotBlank(frame)) {
-            controller.window().setFrameUsingName(frame);
-        }
+        controller.display(true, null == frameName ? controller.windowFrameName() : frameName);
         browsers.add(controller);
         return controller;
     }
@@ -1087,7 +1084,6 @@ public class MainController extends BundleController implements NSApplication.De
                             = new HostDictionary<>().deserialize(browser.getSession().getHost().serialize(SerializerFactory.get()));
                     serialized.setWorkdir(browser.workdir());
                     sessions.add(serialized);
-                    browser.window().saveFrameUsingName(serialized.getUuid());
                 }
             }
             if(browser.isConnected()) {
@@ -1278,7 +1274,7 @@ public class MainController extends BundleController implements NSApplication.De
                                 if(browser.isMounted()) {
                                     if(new HostUrlProvider().get(browser.getSession().getHost()).equals(new HostUrlProvider().get(h))) {
                                         // Handle browser window already connected to the same host. #4215
-                                        browser.display();
+                                        browser.display(true, null);
                                         if(Path.Type.directory == detector.detect(h.getDefaultPath())) {
                                             browser.setWorkdir(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)));
                                         }

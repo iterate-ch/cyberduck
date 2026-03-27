@@ -34,6 +34,8 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SpectraReadFeature implements Read {
 
@@ -64,19 +66,20 @@ public class SpectraReadFeature implements Read {
                 public InputStream open() throws IOException {
                     try {
                         return session.getClient().getObjectImpl(
-                            false,
-                            containerService.getContainer(file).getName(),
-                            containerService.getKey(file),
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            file.attributes().getVersionId(),
-                            new HashMap<String, Object>(),
-                            chunk.getParameters())
-                            .getDataInputStream();
+                                        false,
+                                        containerService.getContainer(file).getName(),
+                                        containerService.getKey(file),
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        file.attributes().getVersionId(),
+                                        new HashMap<>(),
+                                        chunk.getParameters().entrySet().stream()
+                                                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString())))
+                                .getDataInputStream();
                     }
                     catch(ServiceException e) {
                         throw new IOException(e.getMessage(), e);

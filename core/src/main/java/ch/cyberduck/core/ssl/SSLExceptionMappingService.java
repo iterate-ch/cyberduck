@@ -22,7 +22,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.SSLNegotiateException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -98,10 +98,10 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         }
         if(ExceptionUtils.getRootCause(failure) instanceof GeneralSecurityException) {
             this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
-            return new InteroperabilityException(buffer.toString(), failure);
+            return new ConnectionRefusedException(buffer.toString(), failure);
         }
         this.append(buffer, message);
-        return new InteroperabilityException(buffer.toString(), failure);
+        return new ConnectionRefusedException(buffer.toString(), failure);
     }
 
     private enum Alert {

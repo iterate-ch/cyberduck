@@ -29,7 +29,6 @@ import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.ResolveFailedException;
-import ch.cyberduck.core.exception.SSLNegotiateException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.io.IOResumeException;
@@ -77,9 +76,6 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
             }
             if(cause instanceof ConnectionRefusedException) {
                 return Type.network;
-            }
-            if(cause instanceof SSLNegotiateException) {
-                return Type.application;
             }
             if(cause instanceof SSLHandshakeException) {
                 return Type.application;

@@ -156,7 +156,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
                     if(container.getKey().equals(containerService.getContainer(item.getKey().remote))) {
                         final TransferStatus status = item.getValue();
-                        final Map<String, String> parameters = new HashMap<>(status.getParameters());
+                        final Map<String, Object> parameters = new HashMap<>(status.getParameters());
                         parameters.put(REQUEST_PARAMETER_JOBID_IDENTIFIER, master.getJobId().toString());
                         status.setParameters(parameters);
                         status.setPart(counters.get(containerService.getKey(item.getKey().remote)));
@@ -191,7 +191,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             if(!status.getParameters().containsKey(REQUEST_PARAMETER_JOBID_IDENTIFIER)) {
                 throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
-            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
+            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER).toString();
             log.debug("Cancel job {}", job);
             final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             client.cancelJobSpectraS3(new CancelJobSpectraS3Request(job));
@@ -224,7 +224,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             if(!status.getParameters().containsKey(REQUEST_PARAMETER_JOBID_IDENTIFIER)) {
                 throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
-            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
+            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER).toString();
             log.debug("Query status for job {}", job);
             // Fetch current list from server
             final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
@@ -305,7 +305,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     chunk.setLength(object.getLength());
                     chunk.setOffset(object.getOffset());
                     // Job parameter already present from #pre
-                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                    final Map<String, Object> parameters = new HashMap<>(chunk.getParameters());
                     // Set offset for chunk.
                     parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
                     chunk.setParameters(parameters);

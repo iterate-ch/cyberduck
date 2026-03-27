@@ -21,7 +21,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -34,10 +33,12 @@ import org.junit.Before;
 public class AbstractCteraDirectIOTest extends VaultTest {
 
     protected CteraSession session;
+    private TestPasswordStore keychain;
 
     @After
     public void disconnect() throws Exception {
         session.close();
+        keychain.save(session.getHost());
     }
 
     @Before
@@ -52,10 +53,10 @@ public class AbstractCteraDirectIOTest extends VaultTest {
             }
         };
         host.setDefaultPath("/ServicesPortal/webdav/My Files");
-        PreferencesFactory.get().setDefault("ctera.download.directio.enable", String.valueOf(true));
-        session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), new TestPasswordStore());
+        keychain = new TestPasswordStore();
+        session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), keychain);
         final LoginConnectionService connect = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
-                new TestPasswordStore(), ProgressListener.noop, new DisabledProxyFinder());
+                keychain, ProgressListener.noop, new DisabledProxyFinder());
         connect.check(session, CancelCallback.noop);
     }
 }

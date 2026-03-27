@@ -160,7 +160,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     private Long modified;
     private Long created;
 
-    private Map<String, String> parameters
+    private Map<String, ?> parameters
             = Collections.emptyMap();
 
     private Map<String, String> metadata
@@ -522,11 +522,11 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return this;
     }
 
-    public Map<String, String> getParameters() {
+    public Map<String, ?> getParameters() {
         return parameters;
     }
 
-    public TransferStatus setParameters(final Map<String, String> parameters) {
+    public TransferStatus setParameters(final Map<String, ?> parameters) {
         this.parameters = parameters;
         return this;
     }

@@ -77,7 +77,7 @@ public class S3ProtocolTest {
     @Test
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+        final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         assertTrue(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());

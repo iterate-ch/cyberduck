@@ -158,7 +158,7 @@ public class FinderLocal extends Local {
             }
         }
         if(null == bookmark) {
-            log.warn("No security scoped bookmark for {}", path);
+            log.debug("No security scoped bookmark for {}", path);
             return null;
         }
         log.debug("Lock with bookmark {}", bookmark);

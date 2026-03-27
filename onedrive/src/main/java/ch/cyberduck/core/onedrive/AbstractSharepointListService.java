@@ -24,9 +24,11 @@ import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.SiteDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.SitesListService;
 
+import java.util.EnumSet;
 import java.util.Optional;
 
-import static ch.cyberduck.core.onedrive.SharepointListService.*;
+import static ch.cyberduck.core.onedrive.SharepointListService.DRIVES_CONTAINER;
+import static ch.cyberduck.core.onedrive.SharepointListService.SITES_CONTAINER;
 
 public abstract class AbstractSharepointListService implements ListService {
 
@@ -72,8 +74,8 @@ public abstract class AbstractSharepointListService implements ListService {
 
     protected AttributedList<Path> addSiteItems(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
-        list.add(new Path(directory, DRIVES_NAME.getName(), DRIVES_NAME.getType(), DRIVES_NAME.attributes()));
-        list.add(new Path(directory, SITES_NAME.getName(), SITES_NAME.getType(), SITES_NAME.attributes()));
+        list.add(new Path(directory, DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume)));
+        list.add(new Path(directory, SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume)));
         listener.chunk(directory, list);
         return list;
     }

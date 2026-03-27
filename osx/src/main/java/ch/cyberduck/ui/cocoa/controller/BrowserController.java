@@ -636,9 +636,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    public void setWindow(NSWindow window) {
-        // Save frame rectangle
-        window.setFrameAutosaveName("Browser");
+    public void setWindow(final NSWindow window) {
         if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
             window.setSubtitle(StringUtils.EMPTY);
         }
@@ -662,16 +660,24 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    public void display(final boolean key) {
-        super.display(key);
+    public String windowFrameName() {
+        if(pool != SessionPool.DISCONNECTED) {
+            return pool.getHost().getUuid();
+        }
+        return "Browser";
+    }
+
+    @Override
+    public void display(final boolean key, final String frameName) {
+        super.display(key, frameName);
         cascade = this.cascade(cascade);
     }
 
     @Override
     public void windowWillClose(final NSNotification notification) {
         // Convert from lower left to top left coordinates
-        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
-                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
+        cascade = new NSPoint(window.frame().origin.x.doubleValue(),
+                window.frame().origin.y.doubleValue() + window.frame().size.height.doubleValue());
         super.windowWillClose(notification);
     }
 
@@ -1788,7 +1794,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void searchButtonClicked(final ID sender) {
-        this.window().makeFirstResponder(searchField);
+        window.makeFirstResponder(searchField);
     }
 
     @Action
@@ -3346,6 +3352,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     scheduler.shutdown(false);
                 }
                 pool.shutdown();
+                window.setTitle(StringUtils.EMPTY);
+                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                    window.setSubtitle(StringUtils.EMPTY);
+                }
+                window.setRepresentedFilename(StringUtils.EMPTY);
+                window.saveFrameUsingName(pool.getHost().getUuid());
                 pool = SessionPool.DISCONNECTED;
                 setWorkdir(null);
                 cache.clear();
@@ -3353,11 +3365,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     editor.close();
                 }
                 editors.clear();
-                window.setTitle(StringUtils.EMPTY);
-                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-                    window.setSubtitle(StringUtils.EMPTY);
-                }
-                window.setRepresentedFilename(StringUtils.EMPTY);
                 navigation.clear();
                 disconnected.run();
             }

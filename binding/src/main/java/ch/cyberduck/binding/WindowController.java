@@ -30,6 +30,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
@@ -86,15 +87,18 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public void setWindow(final NSWindow window) {
         this.window = window;
+        this.window.setFrameAutosaveName(StringUtils.EMPTY);
         this.window.recalculateKeyViewLoop();
         this.window.setReleasedWhenClosed(true);
         this.window.setDelegate(this.id());
-        this.window.setCollectionBehavior(window.collectionBehavior()
-                | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorTransient);
     }
 
     public NSWindow window() {
         return window;
+    }
+
+    public String windowFrameName() {
+        return window.title();
     }
 
     @Override
@@ -106,16 +110,22 @@ public abstract class WindowController extends BundleController implements NSWin
      * Order front window
      */
     public void display() {
-        this.display(true);
+        this.display(true, this.isVisible() ? null : this.windowFrameName());
     }
 
     /**
      * Order front window
      *
-     * @param key Make key window
+     * @param key       Make key window
+     * @param frameName Property name
      */
-    public void display(final boolean key) {
+    public void display(final boolean key, final String frameName) {
         this.loadBundle();
+        if(frameName != null) {
+            if(window.setFrameUsingName(frameName)) {
+                log.debug("Restored frame {} for window {}", window.frame(), frameName);
+            }
+        }
         if(key) {
             window.makeKeyAndOrderFront(null);
         }
@@ -202,6 +212,14 @@ public abstract class WindowController extends BundleController implements NSWin
     @Delegate
     public void windowWillClose(final NSNotification notification) {
         window.endEditingFor(null);
+        // Save frame rectangle
+        final String frameName = this.windowFrameName();
+        if(frameName != null) {
+            log.debug("Save frame {} for window {}", window.frame(), frameName);
+            window.saveFrameUsingName(frameName);
+        }
+        // Workaround for macOS 26.x bug where closed windows leave an invisible rect that intercepts mouse events
+        window.setFrame_display_animate(new NSRect(new NSPoint(0, 0), new NSSize(0, 0)), false, false);
         log.debug("Window will close {}", notification);
         for(WindowListener listener : listeners.toArray(new WindowListener[listeners.size()])) {
             listener.windowWillClose();

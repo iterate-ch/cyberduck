@@ -31,7 +31,6 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     private final VaultRegistry registry;
 
     public VaultRegistryDirectoryFeature(final Session<?> session, final Directory<Reply> proxy, final VaultRegistry registry) {
-
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

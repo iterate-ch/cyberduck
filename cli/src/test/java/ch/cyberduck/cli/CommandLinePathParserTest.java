@@ -18,7 +18,6 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -50,7 +49,7 @@ public class CommandLinePathParserTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTP.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile")));
-        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile")));
 
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
                 new CommandLinePathParser(input, factory).parse("ftps://u@test.cyberduck.ch/"));

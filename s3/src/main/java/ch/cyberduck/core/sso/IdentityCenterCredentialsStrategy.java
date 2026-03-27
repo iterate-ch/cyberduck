@@ -28,12 +28,11 @@ import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.amazonaws.services.sso.model.RoleCredentials;
 
 public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizationService implements S3CredentialsStrategy {
     private static final Logger log = LogManager.getLogger(IdentityCenterCredentialsStrategy.class);
@@ -49,6 +48,11 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
     private final String accountId;
     private final String roleName;
 
+    /**
+     * A minimum scope of sso:account:access must be granted to get a refresh token back from the IAM Identity Center service.
+     */
+    public static final String SSO_ACCOUNT_ACCESS_SCOPE = "sso:account:access";
+
     public IdentityCenterCredentialsStrategy(final OAuth2RequestInterceptor oauth, final Host host,
                                              final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws ConnectionCanceledException {
         super(host, trust, key, prompt);
@@ -57,16 +61,10 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
         this.region = prompt(host, prompt, host.getProtocol().getRegions(), Profile.SSO_REGION_KEY,
                 LocaleFactory.localizedString(String.format("SSO Region (%s)", Profile.SSO_REGION_KEY), "Credentials"),
                 host.getProperty(Profile.SSO_REGION_KEY)).getIdentifier();
+        // Lookup using SSO API if explicit configuration option is missing
         this.accountId = host.getProperty(Profile.SSO_ACCOUNT_ID_KEY);
+        // Lookup using SSO API if explicit configuration option is missing
         this.roleName = host.getProperty(Profile.SSO_ROLE_NAME_KEY);
-    }
-
-    public TemporaryAccessTokens refresh(final Credentials credentials) throws BackgroundException {
-        final RoleCredentials roleCredentials = this.getRoleCredentials(
-                oauth.save(oauth.validate(credentials.getOauth())), region, accountId, roleName);
-        log.debug("Received temporary access tokens {}", roleCredentials);
-        return new TemporaryAccessTokens(roleCredentials.getAccessKeyId(),
-                roleCredentials.getSecretAccessKey(), roleCredentials.getSessionToken(), roleCredentials.getExpiration());
     }
 
     @Override
@@ -78,7 +76,14 @@ public class IdentityCenterCredentialsStrategy extends IdentityCenterAuthorizati
             // Get temporary credentials from Identity Center
             if(tokens.isExpired()) {
                 log.debug("Refresh expired tokens {} for {}", tokens, host);
-                credentials.setTokens(this.refresh(credentials));
+                final IdentityCenterRoleCredentials role = this.getRoleCredentials(oauth.save(oauth.validate(credentials.getOauth())),
+                        region, accountId, roleName);
+                log.debug("Received temporary access tokens {}", role);
+                credentials.setTokens(new TemporaryAccessTokens(role.getAccessKeyId(),
+                        role.getSecretAccessKey(), role.getSessionToken(), role.getExpiration()));
+                if(StringUtils.isBlank(credentials.getUsername())) {
+                    credentials.setUsername(String.format("%s-%s", role.getRoleName(), role.getAccountId()));
+                }
             }
             return credentials;
         }

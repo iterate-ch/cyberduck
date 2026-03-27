@@ -83,7 +83,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         }
         else {
             uploadUri = status.getUrl();
-            resourceId = status.getParameters().get(RESOURCE_ID);
+            resourceId = status.getParameters().get(RESOURCE_ID).toString();
         }
         final HttpResponseOutputStream<Chunk> stream = this.write(file, status,
                 new DelayedHttpEntityCallable<Chunk>(file) {

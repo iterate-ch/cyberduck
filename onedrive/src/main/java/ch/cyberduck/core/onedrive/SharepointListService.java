@@ -16,35 +16,26 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultPathAttributes;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.types.Site;
 
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.Optional;
 
 public class SharepointListService extends AbstractSharepointListService {
-    static final Logger log = LogManager.getLogger(SharepointListService.class);
 
-    public static final String DEFAULT_SITE = "Default";
     public static final String DRIVES_CONTAINER = "Drives";
     public static final String GROUPS_CONTAINER = "Groups";
     public static final String SITES_CONTAINER = "Sites";
-
-    public static final Path DEFAULT_NAME = new Path(DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory, Path.Type.symboliclink));
-    public static final Path DRIVES_NAME = new Path(DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
-    public static final Path GROUPS_NAME = new Path(GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
-    public static final Path SITES_NAME = new Path(SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
 
     private final SharepointSession session;
     private final GraphFileIdProvider fileid;
@@ -55,35 +46,13 @@ public class SharepointListService extends AbstractSharepointListService {
         this.fileid = fileid;
     }
 
-    private Optional<Path> getDefault(final Path directory) {
-        try {
-            final Site site = Site.byId(session.getClient(), "root");
-            final Site.Metadata metadata = site.getMetadata(null); // query: null: Default return set.
-            final EnumSet<Path.Type> type = EnumSet.copyOf(DEFAULT_NAME.getType());
-            final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new DefaultPathAttributes().setFileId(metadata.getId()));
-            path.setSymlinkTarget(
-                new Path(SITES_NAME, metadata.getSiteCollection().getHostname(), SITES_NAME.getType(),
-                        new DefaultPathAttributes().setFileId(metadata.getId())));
-            return Optional.of(path);
-        }
-        catch(IOException ex) {
-            log.error("Cannot get default site. Skipping.", ex);
-        }
-        return Optional.empty();
-    }
-
     @Override
     protected AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
-        getDefault(directory).ifPresent(list::add);
-        addDefaultItems(list);
+        list.add(new Path(directory, GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume)));
+        list.add(new Path(directory, SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume)));
         listener.chunk(directory, list);
         return list;
-    }
-
-    static void addDefaultItems(final AttributedList<Path> list) {
-        list.add(GROUPS_NAME);
-        list.add(SITES_NAME);
     }
 
     @Override
@@ -91,11 +60,6 @@ public class SharepointListService extends AbstractSharepointListService {
         final GraphSession.ContainerItem container = session.getContainer(directory);
         if(container.isDrive()) {
             return AttributedList.emptyList();
-        }
-
-        // Default?
-        if(!container.isDefined() && container.getContainerPath().map(p -> DEFAULT_SITE.equals(p.getName())).orElse(false)) {
-            return addSiteItems(directory, listener);
         }
         if(container.getCollectionPath().map(p -> GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
             if(!container.isDefined()) {
@@ -106,5 +70,22 @@ public class SharepointListService extends AbstractSharepointListService {
             }
         }
         return AttributedList.emptyList();
+    }
+
+    public Path getDefaultSite() throws BackgroundException {
+        try {
+            final Site.Metadata metadata = Site.byId(session.getClient(), "root").getMetadata(null);
+            return this.list(new Path(SharepointListService.SITES_CONTAINER,
+                    EnumSet.of(Path.Type.placeholder, Path.Type.directory, Path.Type.volume))).find(path -> metadata.getId().equals(path.attributes().getFileId()));
+        }
+        catch(OneDriveRuntimeException e) {
+            throw new GraphExceptionMappingService(fileid).map(e.getCause());
+        }
+        catch(OneDriveAPIException e) {
+            throw new GraphExceptionMappingService(fileid).map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 }

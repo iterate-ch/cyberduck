@@ -46,21 +46,13 @@ public class SharepointSession extends AbstractSharepointSession {
         if(parentContainer.getCollectionPath().map(p -> SharepointListService.GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
             return new Drive(getGroup(parentContainer.getContainerPath().get()), driveId);
         }
-        else if(parentContainer.getContainerPath().map(p -> SharepointListService.DEFAULT_SITE.equals(p.getName())).orElse(false)) {
-            // Handles /Default-case, which is a site.
-            return new Drive(getSite(parentContainer.getContainerPath().get()), driveId);
+        // finds:
+        // Sites/<site name>
+        final GraphSession.ContainerItem containerItem = getContainer(parentContainer.getContainerPath().get());
+        if(containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
+            return new Drive(getSite(containerItem.getContainerPath().get()), driveId);
         }
-        else {
-            // finds:
-            // Sites/<site name>
-            final GraphSession.ContainerItem containerItem = getContainer(parentContainer.getContainerPath().get());
-            if(containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
-                return new Drive(getSite(containerItem.getContainerPath().get()), driveId);
-            }
-            else {
-                return null;
-            }
-        }
+        return null;
     }
 
     @Override
