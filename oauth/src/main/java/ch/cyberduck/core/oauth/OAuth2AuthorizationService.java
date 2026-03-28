@@ -63,6 +63,7 @@ import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.auth.openidconnect.IdTokenResponse;
 import com.google.api.client.http.BasicAuthentication;
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
@@ -86,6 +87,7 @@ public class OAuth2AuthorizationService {
     private String clientsecret;
     private String tokenServerUrl;
     private String authorizationServerUrl;
+    private final String userinfoUrl;
     private String redirectUri = OOB_REDIRECT_URI;
     private FlowType flowType = FlowType.AuthorizationCode;
 
@@ -103,21 +105,22 @@ public class OAuth2AuthorizationService {
     private final HostPasswordStore store = PasswordStoreFactory.get();
 
     public OAuth2AuthorizationService(final HttpClient client, final Host host,
-                                      final String tokenServerUrl, final String authorizationServerUrl,
+                                      final String tokenServerUrl, final String authorizationServerUrl, final String userinfoUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
                                       final LoginCallback prompt) {
         this(new ApacheHttpTransport(client), host,
-                tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce, prompt);
+                tokenServerUrl, authorizationServerUrl, userinfoUrl, clientid, clientsecret, scopes, pkce, prompt);
     }
 
     public OAuth2AuthorizationService(final HttpTransport transport, final Host host,
-                                      final String tokenServerUrl, final String authorizationServerUrl,
+                                      final String tokenServerUrl, final String authorizationServerUrl, final String userinfoUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce,
                                       final LoginCallback prompt) {
         this.transport = transport;
         this.host = host;
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
+        this.userinfoUrl = userinfoUrl;
         this.prompt = prompt;
         this.clientid = clientid;
         this.clientsecret = clientsecret;
@@ -154,23 +157,12 @@ public class OAuth2AuthorizationService {
         log.warn("Missing tokens {} for {}", saved, host);
         final OAuthTokens tokens = this.authorize();
         log.debug("Retrieved tokens {} for {}", tokens, host);
-        return tokens;
-    }
-
-    /**
-     * Save updated tokens in keychain
-     *
-     * @return Same tokens saved
-     */
-    public OAuthTokens save(final OAuthTokens tokens) throws AccessDeniedException {
-        log.debug("Save new tokens {} for {}", tokens, host);
-        final Credentials credentials = host.getCredentials();
-        credentials.setOauth(tokens).setSaved(new LoginOptions().save);
         switch(flowType) {
             case PasswordGrant:
                 // Skip modifying username used for password grant
                 break;
             default:
+                final Credentials credentials = host.getCredentials();
                 if(StringUtils.isBlank(credentials.getUsername())) {
                     if(null != tokens.getIdToken()) {
                         try {
@@ -189,9 +181,48 @@ public class OAuth2AuthorizationService {
                             log.warn("Failure {} decoding JWT {}", e, tokens.getIdToken());
                         }
                     }
+                    else {
+                        if(userinfoUrl != null) {
+                            try {
+                                // https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
+                                log.debug("Request user info from UserInfo endpoint {}", userinfoUrl);
+                                final HttpRequest request = transport.createRequestFactory()
+                                        .buildGetRequest(new GenericUrl(userinfoUrl));
+                                request.getHeaders().setAuthorization(String.format("Bearer %s", tokens.getAccessToken()));
+                                request.setParser(json.createJsonObjectParser());
+                                final GenericJson response = request.execute().parseAs(GenericJson.class);
+                                log.debug("Received user info response {}", response);
+                                // Parse standard claims as per Section 5.3.2
+                                for(String claim : new String[]{"preferred_username", "email", "name", "nickname", "sub"}) {
+                                    final Object value = response.get(claim);
+                                    if(null == value) {
+                                        continue;
+                                    }
+                                    log.debug("Set username to {} from claim {}", value, claim);
+                                    credentials.setUsername(value.toString());
+                                    break;
+                                }
+                            }
+                            catch(IOException e) {
+                                log.warn("Failure {} fetching user info from UserInfo endpoint {}", e, userinfoUrl);
+                            }
+                        }
+                    }
                 }
                 break;
         }
+        return tokens;
+    }
+
+    /**
+     * Save updated tokens in keychain
+     *
+     * @return Same tokens saved
+     */
+    public OAuthTokens save(final OAuthTokens tokens) throws AccessDeniedException {
+        log.debug("Save new tokens {} for {}", tokens, host);
+        final Credentials credentials = host.getCredentials();
+        credentials.setOauth(tokens).setSaved(new LoginOptions().save);
         if(credentials.isSaved()) {
             store.save(host);
         }
