@@ -998,45 +998,10 @@
             </build>
         </profile>
         <profile>
-            <id>project-root-jenkins</id>
-            <activation>
-                <property>
-                    <name>env.JENKINS_HOME</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.commonjava.maven.plugins</groupId>
-                        <artifactId>directory-maven-plugin</artifactId>
-                        <version>1.0</version>
-                        <executions>
-                            <execution>
-                                <id>directories</id>
-                                <goals>
-                                    <goal>directory-of</goal>
-                                </goals>
-                                <phase>initialize</phase>
-                                <configuration>
-                                    <property>main.basedir</property>
-                                    <project>
-                                        <groupId>ch.cyberduck</groupId>
-                                        <artifactId>parent</artifactId>
-                                    </project>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>project-root-local</id>
             <!-- activate profile for non-Jenkins builds -->
             <activation>
-                <property>
-                    <name>!env.JENKINS_HOME</name>
-                </property>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
                 <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
