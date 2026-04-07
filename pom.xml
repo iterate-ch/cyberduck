@@ -999,16 +999,11 @@
         </profile>
         <profile>
             <id>project-root-jenkins</id>
-            <!-- activate profile for Jenkins builds -->
             <activation>
                 <property>
                     <name>env.JENKINS_HOME</name>
                 </property>
             </activation>
-            <properties>
-                <surefire.group.excluded>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest
-                </surefire.group.excluded>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -1049,6 +1044,9 @@
         </profile>
         <profile>
             <id>no-testcontainers</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <surefire.group.excluded>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest
                 </surefire.group.excluded>
