@@ -59,6 +59,7 @@
         <module>eue</module>
         <module>freenet</module>
         <module>deepbox</module>
+        <module>idgard</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->

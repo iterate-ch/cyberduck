@@ -323,6 +323,7 @@ public interface Protocol extends FeatureFactory, Comparable<Protocol>, Serializ
         ctera,
         box,
         deepbox,
+        idgard,
         none
     }
 

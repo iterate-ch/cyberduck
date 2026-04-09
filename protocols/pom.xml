@@ -172,5 +172,10 @@
             <artifactId>deepbox</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>idgard</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
