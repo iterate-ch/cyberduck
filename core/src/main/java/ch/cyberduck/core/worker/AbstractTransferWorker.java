@@ -396,16 +396,12 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             icon = IconService.disabled;
                         }
                         final BytecountStreamListener counter = new TransferStreamListener(transfer,
-                                new IconServiceStreamListener(segment, icon, stream));
+                                new IconServiceStreamListener(segment, icon, stream, transfer.getType()));
                         try {
                             transfer.transfer(s, d,
                                     segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                     segment.getRename().local != null ? segment.getRename().local : item.local,
                                     options, segment, connect, progress, counter);
-                            if(transfer.isComplete()) {
-                                // Remove custom icon if complete
-                                icon.remove();
-                            }
                         }
                         catch(BackgroundException e) {
                             release(s, Connection.source, e);
@@ -471,6 +467,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             }
                         }
                         finally {
+                            // Unpublish Finder NSProgress for this segment; do not wait for the whole transfer (multi-file
+                            // downloads would otherwise leave parent-folder progress stuck).
+                            icon.remove();
                             release(s, Connection.source, null);
                             release(d, Connection.destination, null);
                         }

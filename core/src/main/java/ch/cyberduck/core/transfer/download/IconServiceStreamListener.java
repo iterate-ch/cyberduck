@@ -19,7 +19,6 @@ package ch.cyberduck.core.transfer.download;
  */
 
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.transfer.Transfer;
@@ -30,16 +29,59 @@ public class IconServiceStreamListener extends BytecountStreamListener {
 
     private final TransferStatus status;
     private final IconService.Icon icon;
+    private final Transfer.Type transferType;
 
-    public IconServiceStreamListener(final TransferStatus status, final IconService.Icon icon, final StreamListener delegate) {
+    public IconServiceStreamListener(final TransferStatus status, final IconService.Icon icon, final StreamListener delegate,
+                                     final Transfer.Type transferType) {
         super(delegate);
         this.status = status;
         this.icon = icon;
+        this.transferType = transferType;
+    }
+
+    /**
+     * Finder / NSProgress updates must follow the same byte direction as {@link ch.cyberduck.core.transfer.TransferStreamListener}
+     * (downloads count {@code recv}, uploads count {@code sent}). Previously only {@code sent} was used, so download folder
+     * progress on the parent path never advanced and was never cleared by Finder.
+     */
+    private void updateIcon() {
+        final long transferred;
+        switch(this.transferType) {
+            case download:
+                transferred = this.getRecv();
+                break;
+            case sync:
+                transferred = this.getRecv() + this.getSent();
+                break;
+            default:
+                transferred = this.getSent();
+                break;
+        }
+        icon.update(new TransferProgress(status.getLength(), transferred));
     }
 
     @Override
     public void sent(final long bytes) {
         super.sent(bytes);
-        icon.update(new TransferProgress(status.getLength(), this.getSent()));
+        switch(this.transferType) {
+            case download:
+                break;
+            default:
+                this.updateIcon();
+                break;
+        }
+    }
+
+    @Override
+    public void recv(final long bytes) {
+        super.recv(bytes);
+        switch(this.transferType) {
+            case download:
+            case sync:
+                this.updateIcon();
+                break;
+            default:
+                break;
+        }
     }
 }
