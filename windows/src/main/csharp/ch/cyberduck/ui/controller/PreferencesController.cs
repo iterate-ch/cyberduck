@@ -154,6 +154,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultS3StorageClassChangedEvent += View_DefaultS3StorageClassChangedEvent;
             View.DefaultEncryptionChangedEvent += View_DefaultEncryptionChangedEvent;
             View.DefaultS3ACLChangedEvent += View_DefaultS3ACLChangedEvent;
+            View.UseS3VersioningChangedEvent += View_UseS3VersioningChangedEvent;
 
             #endregion
 
@@ -297,6 +298,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DefaultS3ACLChangedEvent()
         {
             PreferencesFactory.get().setProperty("s3.acl.default", View.DefaultS3ACL);
+        }
+        private void View_UseS3VersioningChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("s3.listing.versioning.enable", View.UseS3Versioning);
         }
         private void View_DefaultGoogleACLChangedEvent()
         {
@@ -1057,6 +1062,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultEncryption = Utils.IsNotBlank(algorithm) ? algorithm : Encryption.Algorithm.NONE.ToString();
             PopulateDefaultS3ACL();
             View.DefaultS3ACL = PreferencesFactory.get().getProperty("s3.acl.default");
+            View.UseS3Versioning = PreferencesFactory.get().getBoolean("s3.listing.versioning.enable");
 
             #endregion
 

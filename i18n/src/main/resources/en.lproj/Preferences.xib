@@ -89,6 +89,7 @@
                 <outlet property="panelGoogleStorage" destination="fzV-gA-bEt" id="teeja4neimuF"/>
                 <outlet property="panelLanguage" destination="408" id="485"/>
                 <outlet property="panelS3" destination="349" id="486"/>
+                <outlet property="s3VersioningCheckbox" destination="vrs-S3-btn" id="vrs-S3-out"/>
                 <outlet property="panelSFTP" destination="272" id="487"/>
                 <outlet property="panelTransfer" destination="99" id="488"/>
                 <outlet property="panelUpdate" destination="315" id="489"/>
@@ -1723,11 +1724,11 @@
             <point key="canvasLocation" x="-1448" y="107"/>
         </customView>
         <customView id="349" userLabel="Panel S3">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="436"/>
+            <rect key="frame" x="0.0" y="0.0" width="507" height="536"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <box fixedFrame="YES" title="Encryption" translatesAutoresizingMaskIntoConstraints="NO" id="350">
-                    <rect key="frame" x="17" y="117" width="473" height="97"/>
+                    <rect key="frame" x="17" y="217" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aiV-b9-PJY">
                         <rect key="frame" x="4" y="5" width="465" height="77"/>
@@ -1755,7 +1756,7 @@
                     </view>
                 </box>
                 <box fixedFrame="YES" title="Default Bucket Location" translatesAutoresizingMaskIntoConstraints="NO" id="356">
-                    <rect key="frame" x="17" y="319" width="473" height="97"/>
+                    <rect key="frame" x="17" y="419" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aDe-7a-zvt">
                         <rect key="frame" x="4" y="5" width="465" height="77"/>
@@ -1783,7 +1784,7 @@
                     </view>
                 </box>
                 <box fixedFrame="YES" title="Default Storage Class" translatesAutoresizingMaskIntoConstraints="NO" id="362">
-                    <rect key="frame" x="17" y="218" width="473" height="97"/>
+                    <rect key="frame" x="17" y="318" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wk5-XB-g4g">
                         <rect key="frame" x="4" y="5" width="465" height="77"/>
@@ -1812,7 +1813,7 @@
                     </view>
                 </box>
                 <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
-                    <rect key="frame" x="17" y="16" width="473" height="97"/>
+                    <rect key="frame" x="17" y="116" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Sgq-Kr-VcS">
                         <rect key="frame" x="4" y="5" width="465" height="77"/>
@@ -1831,6 +1832,33 @@
                                 <rect key="frame" x="9" y="40" width="447" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="Qg3-4s-tpR">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </box>
+                <box fixedFrame="YES" title="Versioning" translatesAutoresizingMaskIntoConstraints="NO" id="vrs-S3-box">
+                    <rect key="frame" x="17" y="16" width="473" height="97"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="vrs-S3-cnt">
+                        <rect key="frame" x="4" y="5" width="465" height="77"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vrs-S3-btn">
+                                <rect key="frame" x="10" y="42" width="449" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Show all versions of files" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="vrs-S3-cel">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vrs-S3-txt">
+                                <rect key="frame" x="9" y="8" width="447" height="28"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Show all file versions in browser. Disable for faster browsing of buckets with many versions." id="vrs-S3-txc">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

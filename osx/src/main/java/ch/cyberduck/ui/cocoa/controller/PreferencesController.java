@@ -2314,6 +2314,21 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSButton s3VersioningCheckbox;
+
+    public void setS3VersioningCheckbox(NSButton b) {
+        this.s3VersioningCheckbox = b;
+        this.s3VersioningCheckbox.setTarget(this.id());
+        this.s3VersioningCheckbox.setAction(Foundation.selector("s3VersioningCheckboxClicked:"));
+        this.s3VersioningCheckbox.setState(preferences.getBoolean("s3.listing.versioning.enable") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void s3VersioningCheckboxClicked(NSButton sender) {
+        preferences.setProperty("s3.listing.versioning.enable", sender.state() == NSCell.NSOnState);
+    }
+
+    @Outlet
     private NSPopUpButton defaultBucketLocationGoogleStorage;
 
     public void setDefaultBucketLocationGoogleStorage(NSPopUpButton b) {

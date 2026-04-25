@@ -661,6 +661,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return (string) defaultACLComboBox.SelectedValue; }
             set { defaultACLComboBox.SelectedValue = value; }
         }
+
+        public bool UseS3Versioning
+        {
+            get { return s3VersioningCheckbox.Checked; }
+            set { s3VersioningCheckbox.Checked = value; }
+        }
         public string DefaultGoogleACL
         {
             get { return (string) defaultGoogleACLComboBox.SelectedValue; }
@@ -813,6 +819,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler DefaultEncryptionChangedEvent = delegate { };
         public event VoidHandler DefaultS3ACLChangedEvent = delegate { };
         public event VoidHandler DefaultGoogleACLChangedEvent = delegate { };
+        public event VoidHandler UseS3VersioningChangedEvent = delegate { };
         public event VoidHandler DefaultDownloadThrottleChangedEvent = delegate { };
         public event VoidHandler DefaultUploadThrottleChangedEvent = delegate { };
         public event VoidHandler ConnectionTimeoutChangedEvent = delegate { };
@@ -1572,6 +1579,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void defaultACLComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             DefaultS3ACLChangedEvent();
+        }
+
+        private void s3VersioningCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            UseS3VersioningChangedEvent();
         }
 
         private void defaultGoogleLocationComboBox_SelectionChangeCommitted(object sender, EventArgs e)
