@@ -88,6 +88,12 @@ public class OpenSshConfig {
             = Collections.emptyMap();
 
     /**
+     * Cached Match host blocks read out of the configuration file.
+     */
+    private List<MatchBlock> matchBlocks
+            = Collections.emptyList();
+
+    /**
      * Obtain the user's configuration data.
      * <p/>
      * The configuration file is always returned to the caller, even if no file exists in the user's home directory at
@@ -125,6 +131,12 @@ public class OpenSshConfig {
             log.debug("Found host match in SSH config:{}", e.getValue());
             h.copyFrom(e.getValue());
         }
+        for(final MatchBlock mb : matchBlocks) {
+            if(isMatchHostApplicable(mb.patterns, hostName)) {
+                log.debug("Found match block applicable for {} in SSH config: {}", hostName, mb.host);
+                h.copyFrom(mb.host);
+            }
+        }
         if(h.port == 0) {
             h.port = -1;
         }
@@ -136,13 +148,16 @@ public class OpenSshConfig {
         final long mtime = configuration.attributes().getModificationDate();
         if(mtime != lastModified) {
             try {
+                final List<MatchBlock> newMatchBlocks = new ArrayList<>();
                 try(final InputStream in = configuration.getInputStream()) {
-                    hosts = this.parse(in, configuration.getParent(), new HashSet<>());
+                    hosts = this.parse(in, configuration.getParent(), new HashSet<>(), newMatchBlocks);
                 }
+                matchBlocks = newMatchBlocks;
             }
             catch(AccessDeniedException | IOException none) {
                 log.warn("Failure reading {}", configuration);
                 hosts = Collections.emptyMap();
+                matchBlocks = Collections.emptyList();
             }
             lastModified = mtime;
         }
@@ -151,11 +166,12 @@ public class OpenSshConfig {
 
     /**
      *
-     * @param in        Configuration file input stream
-     * @param directory Directory containing the configuration file.
-     * @param seen      Previously read configuration files.
+     * @param in          Configuration file input stream
+     * @param directory   Directory containing the configuration file.
+     * @param seen        Previously read configuration files.
+     * @param matchBlocks Accumulator for Match host blocks found during parsing.
      */
-    private Map<String, Host> parse(final InputStream in, final Local directory, final Set<Local> seen) throws IOException {
+    private Map<String, Host> parse(final InputStream in, final Local directory, final Set<Local> seen, final List<MatchBlock> matchBlocks) throws IOException {
         final Map<String, Host> m = new LinkedHashMap<>();
         final BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         final List<Host> current = new ArrayList<>(4);
@@ -181,6 +197,26 @@ public class OpenSshConfig {
                 }
                 continue;
             }
+            if("Match".equalsIgnoreCase(keyword)) {
+                current.clear();
+                // Only the "host" criteria keyword is supported; skip any other Match block
+                final String[] tokens = argValue.split("[ \t]+", 2);
+                if(tokens.length == 2 && "host".equalsIgnoreCase(tokens[0])) {
+                    final List<String> patterns = new ArrayList<>();
+                    for(final String p : tokens[1].split(",")) {
+                        final String trimmed = dequote(p.trim());
+                        if(!trimmed.isEmpty()) {
+                            patterns.add(trimmed);
+                        }
+                    }
+                    if(!patterns.isEmpty()) {
+                        final Host matchHost = new Host();
+                        matchBlocks.add(new MatchBlock(patterns, matchHost));
+                        current.add(matchHost);
+                    }
+                }
+                continue;
+            }
             if("Include".equalsIgnoreCase(keyword)) {
                 for(final String pattern : argValue.split("[ \t]")) {
                     for(final Local included : resolve(directory, dequote(pattern))) {
@@ -190,7 +226,7 @@ public class OpenSshConfig {
                         }
                         try {
                             try(final InputStream i = included.getInputStream()) {
-                                final Map<String, Host> sub = this.parse(i, included.getParent(), seen);
+                                final Map<String, Host> sub = this.parse(i, included.getParent(), seen, matchBlocks);
                                 for(final Map.Entry<String, Host> e : sub.entrySet()) {
                                     m.computeIfAbsent(e.getKey(), k -> e.getValue());
                                 }
@@ -319,6 +355,31 @@ public class OpenSshConfig {
         // Wildcards will be expanded and processed in lexical order
         result.sort(Comparator.comparing(Local::getAbsolute));
         return result;
+    }
+
+    /**
+     * Evaluates whether a {@code Match host} block applies to the given hostname.
+     * <p>
+     * A block applies when at least one positive pattern matches (or all patterns are negated) and no negated pattern
+     * matches. Negated patterns are prefixed with {@code !}.
+     */
+    private static boolean isMatchHostApplicable(final List<String> patterns, final String hostName) {
+        boolean hasPositive = false;
+        boolean anyPositiveMatch = false;
+        for(final String pattern : patterns) {
+            if(pattern.startsWith("!")) {
+                if(isHostMatch(pattern.substring(1), hostName)) {
+                    return false;
+                }
+            }
+            else {
+                hasPositive = true;
+                if(isHostMatch(pattern, hostName)) {
+                    anyPositiveMatch = true;
+                }
+            }
+        }
+        return !hasPositive || anyPositiveMatch;
     }
 
     private static boolean isHostPattern(final String s) {
@@ -497,6 +558,16 @@ public class OpenSshConfig {
             sb.append(", batchMode=").append(batchMode);
             sb.append('}');
             return sb.toString();
+        }
+    }
+
+    private static final class MatchBlock {
+        final List<String> patterns;
+        final Host host;
+
+        MatchBlock(final List<String> patterns, final Host host) {
+            this.patterns = patterns;
+            this.host = host;
         }
     }
 

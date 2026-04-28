@@ -75,4 +75,48 @@ public class OpenSshConfigTest {
         final OpenSshConfig.Host host = config.lookup("circular-host");
         assertEquals("circular.example.com", host.getHostName());
     }
+
+    @Test
+    public void testMatchHostGlobPattern() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
+        final OpenSshConfig.Host host = config.lookup("foo.example.com");
+        assertEquals("matchuser", host.getUser());
+        assertEquals(2222, host.getPort());
+    }
+
+    @Test
+    public void testMatchHostExactPattern() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
+        final OpenSshConfig.Host host = config.lookup("exact.example.com");
+        // Exact pattern block sets IdentityFile
+        assertEquals("~/.ssh/exact-key", host.getIdentityFile());
+    }
+
+    @Test
+    public void testMatchHostNegationExcludesHost() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
+        // excluded.example.com matches *.example.com but is negated in the third block
+        final OpenSshConfig.Host excluded = config.lookup("excluded.example.com");
+        assertEquals(null, excluded.getIdentityAgent());
+        // other.example.com is not excluded so it should get the IdentityAgent
+        final OpenSshConfig.Host other = config.lookup("other.example.com");
+        assertEquals("~/.ssh/agent.sock", other.getIdentityAgent());
+    }
+
+    @Test
+    public void testMatchHostNoMatchForUnrelatedHost() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
+        // Host outside *.example.com should not pick up any Match host settings
+        final OpenSshConfig.Host host = config.lookup("unrelated.org");
+        assertEquals(null, host.getUser());
+        assertEquals(-1, host.getPort());
+    }
+
+    @Test
+    public void testMatchUnsupportedCriteriaIsIgnored() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
+        // "Match user alice" must be ignored; Port 9999 must not leak to any host lookup
+        final OpenSshConfig.Host host = config.lookup("foo.example.com");
+        assertEquals(2222, host.getPort());
+    }
 }
