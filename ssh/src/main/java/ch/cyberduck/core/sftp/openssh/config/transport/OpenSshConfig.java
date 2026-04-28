@@ -55,7 +55,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -323,8 +322,8 @@ public class OpenSshConfig {
     private static List<Local> resolve(final Local directory, final String pattern) {
         final List<Local> result = new ArrayList<>();
         final Local parent;
-        if(Paths.get(pattern).isAbsolute()) {
-            parent = LocalFactory.get(Paths.get(pattern).getParent().toString());
+        if(FilenameUtils.getPrefixLength(pattern) != 0) {
+            parent = LocalFactory.get(FilenameUtils.getFullPathNoEndSeparator(pattern));
         }
         else {
             parent = directory;
