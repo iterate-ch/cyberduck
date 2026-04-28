@@ -39,11 +39,14 @@ package ch.cyberduck.core.sftp.openssh.config.transport;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
 import ch.cyberduck.core.sftp.openssh.config.fnmatch.FileNameMatcher;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,11 +55,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Simple configuration parser for the OpenSSH ~/.ssh/config file.
@@ -129,12 +136,8 @@ public class OpenSshConfig {
         final long mtime = configuration.attributes().getModificationDate();
         if(mtime != lastModified) {
             try {
-                final InputStream in = configuration.getInputStream();
-                try {
-                    hosts = this.parse(in);
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
+                try(final InputStream in = configuration.getInputStream()) {
+                    hosts = this.parse(in, configuration.getParent(), new HashSet<>());
                 }
             }
             catch(AccessDeniedException | IOException none) {
@@ -146,7 +149,13 @@ public class OpenSshConfig {
         return hosts;
     }
 
-    private Map<String, Host> parse(final InputStream in) throws IOException {
+    /**
+     *
+     * @param in        Configuration file input stream
+     * @param directory Directory containing the configuration file.
+     * @param seen      Previously read configuration files.
+     */
+    private Map<String, Host> parse(final InputStream in, final Local directory, final Set<Local> seen) throws IOException {
         final Map<String, Host> m = new LinkedHashMap<>();
         final BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         final List<Host> current = new ArrayList<>(4);
@@ -169,6 +178,29 @@ public class OpenSshConfig {
                     final String name = dequote(pattern);
                     Host c = m.computeIfAbsent(name, k -> new Host());
                     current.add(c);
+                }
+                continue;
+            }
+            if("Include".equalsIgnoreCase(keyword)) {
+                for(final String pattern : argValue.split("[ \t]")) {
+                    for(final Local included : resolve(directory, dequote(pattern))) {
+                        if(!seen.add(included)) {
+                            log.debug("Skipping already-included SSH config file {}", included);
+                            continue;
+                        }
+                        try {
+                            try(final InputStream i = included.getInputStream()) {
+                                final Map<String, Host> sub = this.parse(i, included.getParent(), seen);
+                                for(final Map.Entry<String, Host> e : sub.entrySet()) {
+                                    m.computeIfAbsent(e.getKey(), k -> e.getValue());
+                                }
+                            }
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn("Failure reading included SSH config {}", included);
+                            // Ignore and skip
+                        }
+                    }
                 }
                 continue;
             }
@@ -247,6 +279,46 @@ public class OpenSshConfig {
             }
         }
         return m;
+    }
+
+    /**
+     * Resolve include patterns relative to the given directory
+     */
+    private static List<Local> resolve(final Local directory, final String pattern) {
+        final List<Local> result = new ArrayList<>();
+        final Local parent;
+        if(Paths.get(pattern).isAbsolute()) {
+            parent = LocalFactory.get(Paths.get(pattern).getParent().toString());
+        }
+        else {
+            parent = directory;
+        }
+        // Include accepts the tokens %%, %C, %d, %h, %i, %j, %k, %L, %l, %n, %p, %r, and %u.
+        if(StringUtils.containsAny(pattern, '*')) {
+            // Each pathname may contain glob(7) wildcards
+            if(parent.isDirectory()) {
+                log.debug("Resolve files in {} matching {}", parent, PathNormalizer.name(pattern));
+                try {
+                    for(Local l : directory.list(new NullFilter<String>() {
+                        @Override
+                        public boolean accept(final String file) {
+                            return FilenameUtils.wildcardMatch(file, PathNormalizer.name(pattern));
+                        }
+                    })) {
+                        result.add(l);
+                    }
+                }
+                catch(AccessDeniedException e) {
+                    log.warn("Failure reading directory {}", parent);
+                }
+            }
+        }
+        else {
+            result.add(LocalFactory.get(parent, PathNormalizer.name(pattern)));
+        }
+        // Wildcards will be expanded and processed in lexical order
+        result.sort(Comparator.comparing(Local::getAbsolute));
+        return result;
     }
 
     private static boolean isHostPattern(final String s) {
