@@ -786,6 +786,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.groupBox3.Location = new System.Drawing.Point(3, 186);
 			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.AutoSize = true;
 			this.groupBox3.Size = new System.Drawing.Size(1, 100);
 			this.groupBox3.TabIndex = 2;
 			this.groupBox3.TabStop = false;
@@ -835,6 +836,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.groupBox23.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.groupBox23.Location = new System.Drawing.Point(3, 292);
 			this.groupBox23.Name = "groupBox23";
+			this.groupBox23.AutoSize = true;
 			this.groupBox23.Size = new System.Drawing.Size(1, 188);
 			this.groupBox23.TabIndex = 3;
 			this.groupBox23.TabStop = false;
