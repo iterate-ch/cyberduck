@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
+public class KeychainX509KeyManager extends DefaultCertificateStoreX509KeyManager implements X509KeyManager {
 
     private final Map<Key, String> memory = new HashMap<>();
     private final Set<String> aliases = new HashSet<>();
@@ -128,7 +128,7 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
         @Override
         public String toString() {
             return String.format("connection.ssl.keystore.%s:%s.%s.alias",
-                hostname, port, Arrays.toString(issuers));
+                    hostname, port, Arrays.toString(issuers));
         }
     }
 }
