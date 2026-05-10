@@ -31,6 +31,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.SocketTimeoutException;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FTPWriteFeature implements Write<Void> {
@@ -75,13 +77,21 @@ public class FTPWriteFeature implements Write<Void> {
         }
     }
 
-    public final class ReadReplyOutputStream extends VoidStatusOutputStream {
+    private final class ReadReplyOutputStream extends VoidStatusOutputStream {
+        private final long idleMillis;
+        private long lastIdleTimeMillis = System.currentTimeMillis();
+
         private final AtomicBoolean close;
         private final TransferStatus status;
 
         public ReadReplyOutputStream(final OutputStream proxy, final TransferStatus status) {
+            this(proxy, status, session.getClient().getControlKeepAliveTimeoutDuration());
+        }
+
+        public ReadReplyOutputStream(final OutputStream proxy, final TransferStatus status, final Duration idleDuration) {
             super(proxy);
             this.status = status;
+            this.idleMillis = idleDuration.toMillis();
             this.close = new AtomicBoolean();
         }
 
@@ -114,6 +124,24 @@ public class FTPWriteFeature implements Write<Void> {
             finally {
                 close.set(true);
             }
+        }
+
+        @Override
+        protected void afterWrite(final int n) throws IOException {
+            final long nowMillis = System.currentTimeMillis();
+            if(nowMillis - lastIdleTimeMillis > idleMillis) {
+                try {
+                    session.getClient().sendNoOp();
+                }
+                catch(final SocketTimeoutException e) {
+                    log.warn("Timeout waiting for keepalive reply");
+                }
+                catch(final IOException e) {
+                    // Ignored
+                }
+                lastIdleTimeMillis = nowMillis;
+            }
+            super.afterWrite(n);
         }
     }
 }
