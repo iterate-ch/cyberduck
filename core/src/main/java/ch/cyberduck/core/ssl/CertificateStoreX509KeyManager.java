@@ -51,11 +51,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
     protected final LazyInitializer<KeyStore> keystore;
 
     protected CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
-                                             final CertificateStore callback) {
-        this(prompt, bookmark, callback, null);
-    }
-
-    protected CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
                                              final CertificateStore callback, final LazyInitializer<KeyStore> keystore) {
         this.prompt = prompt;
         this.bookmark = bookmark;
