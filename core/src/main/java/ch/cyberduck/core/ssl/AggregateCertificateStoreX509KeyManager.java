@@ -15,13 +15,10 @@ package ch.cyberduck.core.ssl;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.CertificateIdentityCallback;
-import ch.cyberduck.core.CertificateStore;
-import ch.cyberduck.core.Host;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.Socket;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -36,22 +33,22 @@ import java.util.Map;
  * Certificates and keys from all delegates are presented as one unified list; routing to the
  * correct delegate is transparent to callers.
  */
-public class AggregateCertificateStoreX509KeyManager extends CertificateStoreX509KeyManager {
+public class AggregateCertificateStoreX509KeyManager implements X509KeyManager {
     private static final Logger log = LogManager.getLogger(AggregateCertificateStoreX509KeyManager.class);
 
-    private final List<CertificateStoreX509KeyManager> delegates;
-    private final Map<String, CertificateStoreX509KeyManager> aliasToDelegate = new LinkedHashMap<>();
+    private final CertificateStoreX509KeyManager[] delegates;
+    private final Map<String, CertificateStoreX509KeyManager> aliases = new LinkedHashMap<>();
 
-    public AggregateCertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
-                                                   final CertificateStore callback,
-                                                   final List<CertificateStoreX509KeyManager> delegates) {
-        super(prompt, bookmark, callback);
+    public AggregateCertificateStoreX509KeyManager(final CertificateStoreX509KeyManager... delegates) {
         this.delegates = delegates;
     }
 
-    private CertificateStoreX509KeyManager resolveDelegate(final String alias) {
-        if(aliasToDelegate.containsKey(alias)) {
-            return aliasToDelegate.get(alias);
+    /**
+     * Resolve delegate implementation handling alias
+     */
+    private CertificateStoreX509KeyManager resolve(final String alias) {
+        if(aliases.containsKey(alias)) {
+            return aliases.get(alias);
         }
         // Fallback for aliases resolved before list() was called (e.g. saved alias from preferences)
         for(CertificateStoreX509KeyManager delegate : delegates) {
@@ -64,14 +61,23 @@ public class AggregateCertificateStoreX509KeyManager extends CertificateStoreX50
         return null;
     }
 
+
+    @Override
+    public X509KeyManager init() {
+        for(CertificateStoreX509KeyManager delegate : delegates) {
+            delegate.init();
+        }
+        return this;
+    }
+
     @Override
     public List<String> list() {
-        aliasToDelegate.clear();
+        aliases.clear();
         final List<String> list = new ArrayList<>();
         for(CertificateStoreX509KeyManager delegate : delegates) {
             for(String alias : delegate.list()) {
-                if(!aliasToDelegate.containsKey(alias)) {
-                    aliasToDelegate.put(alias, delegate);
+                if(!aliases.containsKey(alias)) {
+                    aliases.put(alias, delegate);
                     list.add(alias);
                 }
                 else {
@@ -85,7 +91,7 @@ public class AggregateCertificateStoreX509KeyManager extends CertificateStoreX50
 
     @Override
     public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
-        final CertificateStoreX509KeyManager delegate = resolveDelegate(alias);
+        final CertificateStoreX509KeyManager delegate = resolve(alias);
         if(delegate == null) {
             log.info("No matching certificate found for alias {} and issuers {}", alias, Arrays.toString(issuers));
             return null;
@@ -94,8 +100,57 @@ public class AggregateCertificateStoreX509KeyManager extends CertificateStoreX50
     }
 
     @Override
+    public String[] getClientAliases(final String keyType, final Principal[] issuers) {
+        for(CertificateStoreX509KeyManager delegate : delegates) {
+            final String[] aliases = delegate.getClientAliases(keyType, issuers);
+            if(null == aliases) {
+                // No matches
+                continue;
+            }
+            return aliases;
+        }
+        return null;
+    }
+
+    @Override
+    public String chooseClientAlias(final String[] keyType, final Principal[] issuers, final Socket socket) {
+        for(CertificateStoreX509KeyManager delegate : delegates) {
+            final String alias = delegate.chooseClientAlias(keyType, issuers, socket);
+            if(null == alias) {
+                continue;
+            }
+            return alias;
+        }
+        return null;
+    }
+
+    @Override
+    public String[] getServerAliases(final String keyType, final Principal[] issuers) {
+        for(CertificateStoreX509KeyManager delegate : delegates) {
+            final String[] aliases = delegate.getServerAliases(keyType, issuers);
+            if(null == aliases) {
+                continue;
+            }
+            return aliases;
+        }
+        return null;
+    }
+
+    @Override
+    public String chooseServerAlias(final String keyType, final Principal[] issuers, final Socket socket) {
+        for(CertificateStoreX509KeyManager delegate : delegates) {
+            final String alias = delegate.chooseServerAlias(keyType, issuers, socket);
+            if(null == alias) {
+                continue;
+            }
+            return alias;
+        }
+        return null;
+    }
+
+    @Override
     public X509Certificate[] getCertificateChain(final String alias) {
-        final CertificateStoreX509KeyManager delegate = resolveDelegate(alias);
+        final CertificateStoreX509KeyManager delegate = this.resolve(alias);
         if(delegate == null) {
             log.warn("No certificate chain for alias {}", alias);
             return null;
@@ -105,7 +160,7 @@ public class AggregateCertificateStoreX509KeyManager extends CertificateStoreX50
 
     @Override
     public PrivateKey getPrivateKey(final String alias) {
-        final CertificateStoreX509KeyManager delegate = resolveDelegate(alias);
+        final CertificateStoreX509KeyManager delegate = this.resolve(alias);
         if(delegate == null) {
             log.warn("No private key for alias {}", alias);
             return null;
