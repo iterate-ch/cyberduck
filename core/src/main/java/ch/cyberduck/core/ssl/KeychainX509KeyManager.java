@@ -41,12 +41,12 @@ public class KeychainX509KeyManager extends DefaultCertificateStoreX509KeyManage
     private final Map<Key, String> memory = new HashMap<>();
     private final Set<String> aliases = new HashSet<>();
 
-    public KeychainX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore callback) {
-        super(prompt, bookmark, callback);
+    public KeychainX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore store) {
+        super(prompt, bookmark, store);
     }
 
-    public KeychainX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore callback, final LazyInitializer<KeyStore> keystore) {
-        super(prompt, bookmark, callback, keystore);
+    public KeychainX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore store, final LazyInitializer<KeyStore> keystore) {
+        super(prompt, bookmark, store, keystore);
     }
 
     @Override
