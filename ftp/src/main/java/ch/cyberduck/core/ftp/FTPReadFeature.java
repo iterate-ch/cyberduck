@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPReply;
@@ -136,20 +137,22 @@ public class FTPReadFeature implements Read {
 
         @Override
         protected void afterRead(final int n) throws IOException {
-            final long nowMillis = System.currentTimeMillis();
-            if(nowMillis - lastIdleTimeMillis > idleMillis) {
-                try {
-                    session.getClient().sendNoOp();
+            if(IOUtils.EOF != n) {
+                final long nowMillis = System.currentTimeMillis();
+                if(nowMillis - lastIdleTimeMillis > idleMillis) {
+                    try {
+                        session.getClient().sendNoOp();
+                    }
+                    catch(final SocketTimeoutException e) {
+                        log.warn("Timeout waiting for keepalive reply");
+                    }
+                    catch(final IOException e) {
+                        // Ignored
+                    }
+                    lastIdleTimeMillis = nowMillis;
                 }
-                catch(final SocketTimeoutException e) {
-                    log.warn("Timeout waiting for keepalive reply");
-                }
-                catch(final IOException e) {
-                    // Ignored
-                }
-                lastIdleTimeMillis = nowMillis;
+                super.afterRead(n);
             }
-            super.afterRead(n);
         }
     }
 }
