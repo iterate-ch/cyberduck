@@ -34,13 +34,13 @@ public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509Ke
     private static final Logger log = LogManager.getLogger(PKCS11CertificateStoreX509KeyManager.class);
 
     public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
-                                                final CertificateStore callback, final String libraryPath) {
-        super(prompt, bookmark, callback, buildKeyStore(libraryPath));
+                                                final CertificateStore store, final String libraryPath) {
+        super(prompt, bookmark, store, buildKeyStore(libraryPath));
     }
 
     public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
-                                                final CertificateStore callback, final LazyInitializer<KeyStore> keystore) {
-        super(prompt, bookmark, callback, keystore);
+                                                final CertificateStore store, final LazyInitializer<KeyStore> keystore) {
+        super(prompt, bookmark, store, keystore);
     }
 
     private static LazyInitializer<KeyStore> buildKeyStore(final String libraryPath) {
