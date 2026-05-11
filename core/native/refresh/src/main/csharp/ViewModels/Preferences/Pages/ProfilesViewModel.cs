@@ -52,7 +52,6 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             LoadProfiles.SelectMany(Observable.Return(false)).Subscribe(loadActive);
 
             var profiles = LoadProfiles.Select(s => s.AsObservableChangeSet()).Switch()
-                .Filter(x => x.getProfile().isPresent())
                 .Filter(this.WhenAnyValue(v => v.FilterText)
                     .Throttle(TimeSpan.FromMilliseconds(500))
                     .DistinctUntilChanged()
@@ -61,7 +60,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 .AsObservableList();
             
             profiles.Connect()
-                .Sort(SortExpressionComparer<ProfileViewModel>.Ascending(x => x.Profile))
+                .Sort(SortExpressionComparer<ProfileViewModel>.Ascending(x => x.Description))
                 .ObserveOnDispatcher()
                 .Bind(out this.profiles)
                 .Subscribe();
@@ -81,7 +80,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                     }
                     else
                     {
-                        protocols.unregister(p.Sender.Profile);
+                        protocols.unregister(p.Sender.ProfileDescription.getIdentifier(), p.Sender.ProfileDescription.getProvider());
                     }
                     profileListObserver.RaiseProfilesChanged();
                 });
@@ -107,7 +106,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
         {
             private readonly TaskCompletionSource<IEnumerable<ProfileDescription>> completionSource;
 
-            public InternalProfilesSynchronizeWorker(ProtocolFactory protocolFactory, TaskCompletionSource<IEnumerable<ProfileDescription>> completionSource) : base(protocolFactory, ProfilesFinder.Visitor.Prefetch)
+            public InternalProfilesSynchronizeWorker(ProtocolFactory protocols, TaskCompletionSource<IEnumerable<ProfileDescription>> completionSource) : base(protocols, ProfilesFinder.Visitor.Noop)
             {
                 this.completionSource = completionSource;
             }

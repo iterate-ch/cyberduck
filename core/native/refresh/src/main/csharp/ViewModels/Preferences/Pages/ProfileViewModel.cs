@@ -2,6 +2,7 @@
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.profiles;
 using ReactiveUI;
+using System.String;
 using System.Linq;
 using System.Reactive;
 
@@ -11,24 +12,29 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
     {
         private bool installed;
 
-        public ProfileViewModel(ProfileDescription profile)
+        public ProfileViewModel(ProfileDescription description)
         {
-            ProfileDescription = profile;
-            Profile = (Profile)profile.getProfile().get();
-            Installed = profile.isInstalled() && Profile.isEnabled();
-            IsEnabled = !(Profile.isBundled() || Utils.ConvertFromJavaList<Host>(BookmarkCollection.defaultCollection()).Any(x => x.getProtocol().Equals(Profile)));
+            ProfileDescription = description;
+            Installed = description.isInstalled() && description.isEnabled();
+            Enabled = !description.isBundled() && !Utils.ConvertFromJavaList<Host>(BookmarkCollection.defaultCollection()).Any(host =>
+                            host.getProtocol().getProvider().equals(description.getProvider())
+                                && host.getProtocol().getIdentifier().equals(description.getIdentifier()));
 
             OpenHelp = ReactiveCommand.Create(() =>
             {
-                BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help(Profile));
+                BrowserLauncherFactory.get().open(ProfileDescription.getHelp());
             });
         }
 
-        public bool IsEnabled { get; }
+        public bool Enabled { get; }
 
-        public string DefaultHostName => Profile.getDefaultHostname();
+        public string Name => ProfileDescription.getName();
 
-        public string Description => Profile.getDescription();
+        public string Description => ProfileDescription.getDescription();
+
+        public string DefaultHostName => String.Empty;
+
+        public string Thumbnail => ProfileDescription.getThumbnail();
 
         public bool Installed
         {
@@ -36,11 +42,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             set => this.RaiseAndSetIfChanged(ref installed, value);
         }
 
-        public string Name => Profile.getName();
-
         public ReactiveCommand<Unit, Unit> OpenHelp { get; }
-
-        public Profile Profile { get; }
 
         public ProfileDescription ProfileDescription { get; }
     }
