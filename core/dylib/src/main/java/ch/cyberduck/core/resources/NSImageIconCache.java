@@ -20,6 +20,7 @@ package ch.cyberduck.core.resources;
 import ch.cyberduck.binding.application.NSGraphics;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -154,14 +156,20 @@ public class NSImageIconCache implements IconCache<NSImage> {
      */
     @Override
     public NSImage iconNamed(final String name, final Integer width, final Integer height) {
-        // Search for an object whose name was set explicitly using the setName: method and currently
-        // resides in the image cache
-        NSImage image = this.load(name, width);
+        if(null == name) {
+            return this.iconNamed("notfound.tiff", width, height);
+        }
+        NSImage image;
+        if(Base64.isBase64(name)) {
+            image = convert(name, NSImage.imageWithData(NSData.dataWithBase64EncodedString(name)), width, height);
+        }
+        else {
+            // Search for an object whose name was set explicitly using the setName: method and currently
+            // resides in the image cache
+            image = this.load(name, width);
+        }
         if(null == image) {
-            if(null == name) {
-                return this.iconNamed("notfound.tiff", width, height);
-            }
-            else if(name.contains(PreferencesFactory.get().getProperty("local.delimiter"))) {
+            if(name.contains(PreferencesFactory.get().getProperty("local.delimiter"))) {
                 return cache(FilenameUtils.getName(name),
                         convert(FilenameUtils.getName(name), NSImage.imageWithContentsOfFile(name), width, height), width);
             }

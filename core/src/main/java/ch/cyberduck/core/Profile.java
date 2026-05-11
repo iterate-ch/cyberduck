@@ -19,23 +19,17 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookupFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -135,14 +129,9 @@ public class Profile implements Protocol {
     public static final String DEPRECATED_KEY = "Deprecated";
     public static final String HELP_KEY = "Help";
 
-    private Local disk;
-    private Local icon;
-
     public Profile(final Protocol parent, final Deserializer<?> dict) {
         this.parent = parent;
         this.dict = dict;
-        this.disk = this.write(this.value(DISK_KEY));
-        this.icon = this.write(this.value(ICON_KEY));
     }
 
     @Override
@@ -366,58 +355,25 @@ public class Profile implements Protocol {
 
     @Override
     public String disk() {
-        if(null == disk) {
+        final String v = this.value(DISK_KEY);
+        if(StringUtils.isBlank(v)) {
             return parent.disk();
         }
-        if(!disk.exists()) {
-            this.disk = this.write(this.value(DISK_KEY));
-        }
-        // Temporary file
-        return disk.getAbsolute();
+        return v;
     }
 
     @Override
     public String icon() {
-        if(null == icon) {
-            if(null == disk) {
-                return parent.icon();
-            }
-            return this.disk();
+        final String v = this.value(ICON_KEY);
+        if(StringUtils.isBlank(v)) {
+            return parent.icon();
         }
-        if(!icon.exists()) {
-            this.icon = this.write(this.value(ICON_KEY));
-        }
-        // Temporary file
-        return icon.getAbsolute();
+        return v;
     }
 
     @Override
     public String favicon() {
         return parent.favicon();
-    }
-
-    /**
-     * Write temporary file with data
-     *
-     * @param icon Base64 encoded image information
-     * @return Path to file
-     */
-    private Local write(final String icon) {
-        if(StringUtils.isBlank(icon)) {
-            return null;
-        }
-        final byte[] favicon = Base64.decodeBase64(icon);
-        final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
-        try {
-            try (final OutputStream out = file.getOutputStream(false)) {
-                IOUtils.write(favicon, out);
-            }
-            return file;
-        }
-        catch(IOException | AccessDeniedException e) {
-            log.error("Error writing temporary file", e);
-        }
-        return null;
     }
 
     @Override

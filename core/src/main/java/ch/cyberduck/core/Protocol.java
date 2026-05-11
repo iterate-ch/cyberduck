@@ -222,6 +222,8 @@ public interface Protocol extends FeatureFactory, Comparable<Protocol>, Serializ
     String getRegion();
 
     /**
+     * Either a filename or Base64 encoded image data
+     *
      * @return A mounted disk icon to display
      */
     String disk();

@@ -33,7 +33,7 @@ public interface IconCache<I> {
     }
 
     /**
-     * @param name Icon filename with extension
+     * @param name Icon filename with extension or Base64 encoded image data
      * @param size Requested size
      * @return Cached image
      */
