@@ -74,7 +74,7 @@ public class ProfilesSynchronizeWorkerTest {
         profiles.forEach(d -> assertTrue(d.isLatest()));
 
         assertFalse(profiles.contains(outdatedProfileDescription));
-        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())).findFirst().isPresent());
+        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).anyMatch(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())));
         assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())).findFirst().get().isInstalled());
         assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())).findFirst().get().isLatest());
         // Assert profile updated from remote
@@ -82,13 +82,13 @@ public class ProfilesSynchronizeWorkerTest {
         assertNotEquals(outdatedProfileDescription.getChecksum(), profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.getProfile().get().getProvider().equals(outdatedProfileDescription.getProfile().get().getProvider())).findFirst().get().getChecksum());
 
         assertTrue(profiles.contains(localonlyProfileDescription));
-        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(localonlyProfileDescription)).findFirst().isPresent());
+        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).anyMatch(d -> d.equals(localonlyProfileDescription)));
         assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(localonlyProfileDescription)).findFirst().get().isInstalled());
         assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(localonlyProfileDescription)).findFirst().get().isLatest());
         assertEquals(localonlyProfileDescription, profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(localonlyProfileDescription)).findFirst().get());
 
         assertTrue(profiles.contains(conflictProfileDescription));
-        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(conflictProfileDescription)).findFirst().isPresent());
+        assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).anyMatch(d -> d.equals(conflictProfileDescription)));
         assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(conflictProfileDescription)).findFirst().get().isInstalled());
         assertTrue(profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(conflictProfileDescription)).findFirst().get().isLatest());
         assertEquals(conflictProfileDescription, profiles.stream().filter(d -> d.getProfile().isPresent()).filter(d -> d.equals(conflictProfileDescription)).findFirst().get());
