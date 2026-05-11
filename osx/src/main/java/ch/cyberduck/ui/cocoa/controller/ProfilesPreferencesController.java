@@ -37,6 +37,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.profiles.LocalProfileDescription;
 import ch.cyberduck.core.profiles.ProfileDescription;
 import ch.cyberduck.core.profiles.ProfilesFinder;
 import ch.cyberduck.core.profiles.ProfilesSynchronizeWorker;
@@ -440,7 +441,11 @@ public class ProfilesPreferencesController extends BundleController {
                         // Download profile
                         final Optional<Local> file = description.getFile();
                         // Update with last version from repository
-                        file.ifPresent(protocols::register);
+                        file.ifPresent(local -> {
+                            repository.remove(description);
+                            repository.add(new LocalProfileDescription(protocols, ProtocolFactory.BUNDLED_PROFILE_PREDICATE,
+                                    protocols.register(local)));
+                        });
                         return null;
                     }
                 });
