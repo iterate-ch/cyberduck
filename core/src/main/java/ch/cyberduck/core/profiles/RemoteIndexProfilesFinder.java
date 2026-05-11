@@ -21,7 +21,6 @@ import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,10 +29,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
-import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.download.CompareFilter;
-import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +55,6 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
     private final ObjectMapper mapper = new ObjectMapper();
     private final ProtocolFactory protocols;
     private final Session<?> session;
-    private final TransferPathFilter comparison;
     private final Local temporary = LocalFactory.get(new TemporaryApplicationResourcesFinder().find(), "profiles");
 
     public RemoteIndexProfilesFinder(final Session<?> session) {
@@ -67,13 +62,8 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
     }
 
     public RemoteIndexProfilesFinder(final ProtocolFactory protocols, final Session<?> session) {
-        this(protocols, session, new CompareFilter(new DisabledDownloadSymlinkResolver(), session));
-    }
-
-    public RemoteIndexProfilesFinder(final ProtocolFactory protocols, final Session<?> session, final TransferPathFilter comparison) {
         this.protocols = protocols;
         this.session = session;
-        this.comparison = comparison;
     }
 
     /**
@@ -138,16 +128,13 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
                                     try {
                                         final Local local = LocalFactory.get(temporary, metadata.filename);
                                         final Path file = new Path(directory, metadata.filename, EnumSet.of(Path.Type.file));
-                                        if(comparison.accept(file, local, new TransferStatus().setExists(true), ProgressListener.noop)) {
-                                            final Read read = session.getFeature(Read.class);
-                                            log.info("Download profile {}", file);
-                                            // Read latest version
-                                            try(InputStream in = read.read(file.withAttributes(new DefaultPathAttributes(file.attributes())
-                                                    .setVersionId(version.version_id)), new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH), ConnectionCallback.noop); OutputStream out = local.getOutputStream(false)) {
-                                                IOUtils.copy(in, out);
-                                            }
+                                        final Read read = session.getFeature(Read.class);
+                                        log.info("Download profile {}", file);
+                                        // Read latest version
+                                        try(InputStream in = read.read(file.withAttributes(new DefaultPathAttributes(file.attributes())
+                                                .setVersionId(version.version_id)), new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH), ConnectionCallback.noop); OutputStream out = local.getOutputStream(false)) {
+                                            IOUtils.copy(in, out);
                                         }
-                                        // Skip download if previously cached
                                         return local;
                                     }
                                     catch(BackgroundException | IOException e) {
