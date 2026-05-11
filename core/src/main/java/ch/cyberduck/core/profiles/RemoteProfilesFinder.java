@@ -57,7 +57,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
     private final Session<?> session;
     private final TransferPathFilter comparison;
     private final Filter<Path> filter;
-    private final Local temporary;
+    private final Local temporary = LocalFactory.get(new TemporaryApplicationResourcesFinder().find(), "profiles");
 
     public RemoteProfilesFinder(final Session<?> session) {
         this(ProtocolFactory.get(), session);
@@ -78,7 +78,6 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         this.session = session;
         this.comparison = comparison;
         this.filter = filter;
-        this.temporary = LocalFactory.get(new TemporaryApplicationResourcesFinder().find(), "profiles");
     }
 
     @Override
