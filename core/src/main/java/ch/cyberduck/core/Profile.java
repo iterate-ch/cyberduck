@@ -191,17 +191,7 @@ public class Profile implements Protocol {
         if(this.isBundled()) {
             return true;
         }
-        final String protocol = parent.getIdentifier();
-        final String vendor = this.value(VENDOR_KEY);
-        if(StringUtils.isNotBlank(protocol) && StringUtils.isNotBlank(vendor)) {
-            final String property = PreferencesFactory.get().getProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", protocol, vendor)));
-            if(null == property) {
-                // Not previously configured. Assume enabled
-                return true;
-            }
-            return Boolean.parseBoolean(property);
-        }
-        return false;
+        return ProtocolFactory.get().isEnabled(this);
     }
 
     @Override
@@ -806,7 +796,6 @@ public class Profile implements Protocol {
         sb.append("parent=").append(parent);
         sb.append(", vendor=").append(this.value(VENDOR_KEY));
         sb.append(", description=").append(this.value(DESCRIPTION_KEY));
-        sb.append(", image=").append(disk);
         sb.append('}');
         return sb.toString();
     }
