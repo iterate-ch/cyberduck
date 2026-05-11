@@ -115,7 +115,7 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
             final ProfileMetadataList list = mapper.readValue(in, ProfileMetadataList.class);
             for(ProfileMetadata metadata : list.profiles) {
                 for(ProfileMetadataVersion version : metadata.versions) {
-                    profiles.add(new ProfileDescription(protocols, protocol -> true,
+                    profiles.add(visitor.visit(new ProfileDescription(protocols, protocol -> true,
                             new LazyInitializer<Checksum>() {
                                 @Override
                                 protected Checksum initialize() {
@@ -193,7 +193,7 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
                             }
                             return metadata.thumbnail;
                         }
-                    });
+                    }));
                 }
             }
         }
