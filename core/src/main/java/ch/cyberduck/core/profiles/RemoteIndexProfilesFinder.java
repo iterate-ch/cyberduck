@@ -146,7 +146,7 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
                     ) {
                         @Override
                         public boolean isLatest() {
-                            return version.latest;
+                            return Boolean.TRUE.equals(version.latest);
                         }
 
                         @Override
