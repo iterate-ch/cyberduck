@@ -143,12 +143,52 @@ public class ProfileDescription {
         }
     }
 
+    public String getIdentifier() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getIdentifier).orElse(null);
+    }
+
+    public String getProvider() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getProvider).orElse(null);
+    }
+
+    public String getName() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getName).orElse(null);
+    }
+
+    public String getDescription() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getDescription).orElse(null);
+    }
+
+    public String getHelp() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getHelp).orElse(null);
+    }
+
+    public String getThumbnail() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::disk).orElse(null);
+    }
+
     public boolean isLatest() {
         return true;
     }
 
     public boolean isInstalled() {
         return false;
+    }
+
+    public boolean isEnabled() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::isEnabled).orElse(false);
+    }
+
+    public boolean isBundled() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::isBundled).orElse(false);
     }
 
     @Override

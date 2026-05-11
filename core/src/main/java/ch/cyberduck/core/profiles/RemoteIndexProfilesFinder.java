@@ -36,6 +36,7 @@ import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.logging.log4j.LogManager;
@@ -159,6 +160,52 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
                         public boolean isLatest() {
                             return version.latest;
                         }
+
+                        @Override
+                        public boolean isEnabled() {
+                            return protocols.isEnabled(metadata.protocol, metadata.vendor);
+                        }
+
+                        @Override
+                        public boolean isBundled() {
+                            return false;
+                        }
+
+                        @Override
+                        public String getIdentifier() {
+                            return metadata.protocol;
+                        }
+
+                        @Override
+                        public String getProvider() {
+                            return metadata.vendor;
+                        }
+
+                        @Override
+                        public String getName() {
+                            return ProtocolFactory.get().forName(metadata.protocol).getName();
+                        }
+
+                        @Override
+                        public String getDescription() {
+                            if(null == metadata.description) {
+                                return StringUtils.EMPTY;
+                            }
+                            return metadata.description;
+                        }
+
+                        @Override
+                        public String getHelp() {
+                            return metadata.help;
+                        }
+
+                        @Override
+                        public String getThumbnail() {
+                            if(null == metadata.thumbnail) {
+                                return ProtocolFactory.get().forName(metadata.protocol).disk();
+                            }
+                            return metadata.thumbnail;
+                        }
                     });
                 }
             }
@@ -183,6 +230,12 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
         private String protocol;
         @JsonProperty("vendor")
         private String vendor;
+        @JsonProperty("description")
+        private String description;
+        @JsonProperty("help")
+        private String help;
+        @JsonProperty("thumbnail")
+        private String thumbnail;
         @JsonProperty("versions")
         private ProfileMetadataVersion[] versions;
     }
