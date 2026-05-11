@@ -137,21 +137,23 @@ public class FTPReadFeature implements Read {
 
         @Override
         protected void afterRead(final int n) throws IOException {
-            if(IOUtils.EOF != n) {
-                final long nowMillis = System.currentTimeMillis();
-                if(nowMillis - lastIdleTimeMillis > idleMillis) {
-                    try {
-                        session.getClient().sendNoOp();
+            if(idleMillis > 0) {
+                if(IOUtils.EOF != n) {
+                    final long nowMillis = System.currentTimeMillis();
+                    if(nowMillis - lastIdleTimeMillis > idleMillis) {
+                        try {
+                            session.getClient().sendNoOp();
+                        }
+                        catch(final SocketTimeoutException e) {
+                            log.warn("Timeout waiting for keepalive reply");
+                        }
+                        catch(final IOException e) {
+                            // Ignored
+                        }
+                        lastIdleTimeMillis = nowMillis;
                     }
-                    catch(final SocketTimeoutException e) {
-                        log.warn("Timeout waiting for keepalive reply");
-                    }
-                    catch(final IOException e) {
-                        // Ignored
-                    }
-                    lastIdleTimeMillis = nowMillis;
+                    super.afterRead(n);
                 }
-                super.afterRead(n);
             }
         }
     }

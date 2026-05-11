@@ -128,18 +128,20 @@ public class FTPWriteFeature implements Write<Void> {
 
         @Override
         protected void afterWrite(final int n) throws IOException {
-            final long nowMillis = System.currentTimeMillis();
-            if(nowMillis - lastIdleTimeMillis > idleMillis) {
-                try {
-                    session.getClient().sendNoOp();
+            if(idleMillis > 0) {
+                final long nowMillis = System.currentTimeMillis();
+                if(nowMillis - lastIdleTimeMillis > idleMillis) {
+                    try {
+                        session.getClient().sendNoOp();
+                    }
+                    catch(final SocketTimeoutException e) {
+                        log.warn("Timeout waiting for keepalive reply");
+                    }
+                    catch(final IOException e) {
+                        // Ignored
+                    }
+                    lastIdleTimeMillis = nowMillis;
                 }
-                catch(final SocketTimeoutException e) {
-                    log.warn("Timeout waiting for keepalive reply");
-                }
-                catch(final IOException e) {
-                    // Ignored
-                }
-                lastIdleTimeMillis = nowMillis;
             }
             super.afterWrite(n);
         }
