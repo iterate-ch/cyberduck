@@ -22,7 +22,11 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 
             OpenHelp = ReactiveCommand.Create(() =>
             {
-                BrowserLauncherFactory.get().open(ProfileDescription.getHelp());
+                 var help = ProfileDescription.getHelp();
+                 if (!string.IsNullOrWhiteSpace(help))
+                 {
+                     BrowserLauncherFactory.get().open(help);
+                 }
             });
         }
 
