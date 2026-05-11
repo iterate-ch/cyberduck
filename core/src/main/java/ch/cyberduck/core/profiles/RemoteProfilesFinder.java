@@ -71,7 +71,6 @@ public class RemoteProfilesFinder implements ProfilesFinder {
     @Override
     public Set<ProfileDescription> find(final Visitor visitor) throws BackgroundException {
         log.info("Fetch profiles from {}", session.getHost());
-        temporary.mkdir();
         final AttributedList<Path> list = session.getFeature(ListService.class).list(new DelegatingHomeFeature(
                 new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
         return list.filter(filter).toStream().map(file -> visitor.visit(new RemoteProfileDescription(protocols, file,
@@ -79,6 +78,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                     @Override
                     protected Local initialize() throws ConcurrentException {
                         try {
+                            temporary.mkdir();
                             final Local local = LocalFactory.get(temporary, file.getName());
                             final Read read = session.getFeature(Read.class);
                             log.info("Download profile {}", file);

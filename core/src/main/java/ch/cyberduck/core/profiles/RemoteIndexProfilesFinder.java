@@ -126,6 +126,7 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
                                 @Override
                                 protected Local initialize() throws ConcurrentException {
                                     try {
+                                        temporary.mkdir();
                                         final Local local = LocalFactory.get(temporary, metadata.filename);
                                         final Path file = new Path(directory, metadata.filename, EnumSet.of(Path.Type.file));
                                         final Read read = session.getFeature(Read.class);
