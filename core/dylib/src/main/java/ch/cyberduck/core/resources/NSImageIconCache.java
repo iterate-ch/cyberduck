@@ -42,7 +42,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
 
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
-    private NSImage cache(final String name, final NSImage image, final Integer size) {
+    private static NSImage cache(final String name, final NSImage image, final Integer size) {
         if(null == image) {
             log.warn("No icon named {}", name);
             return image;
@@ -88,8 +88,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
     public NSImage documentIcon(final String extension, final Integer size) {
         NSImage image = this.load(extension, size);
         if(null == image) {
-            return this.cache(extension,
-                    this.convert(extension, workspace.iconForFileType(extension), size), size);
+            return cache(extension, convert(extension, workspace.iconForFileType(extension), size), size);
         }
         return image;
     }
@@ -99,8 +98,8 @@ public class NSImageIconCache implements IconCache<NSImage> {
         final String name = String.format("NSDocument-%s%s", extension, badge.name());
         NSImage icon = this.iconNamed(name, size);
         if(null == icon) {
-            icon = this.badge(badge, this.documentIcon(extension, size));
-            this.cache(name, icon, size);
+            icon = badge(badge, this.documentIcon(extension, size));
+            cache(name, icon, size);
         }
         return icon;
     }
@@ -119,9 +118,9 @@ public class NSImageIconCache implements IconCache<NSImage> {
         final String name = String.format("NSFolder-%s", badge.name());
         NSImage folder = this.load(name, size);
         if(null == folder) {
-            folder = this.convert(name, this.iconNamed("NSFolder", size), size);
-            folder = this.badge(badge, folder);
-            this.cache(name, folder, size);
+            folder = convert(name, this.iconNamed("NSFolder", size), size);
+            folder = badge(badge, folder);
+            cache(name, folder, size);
         }
         return folder;
     }
@@ -133,7 +132,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
      * @param icon  Icon
      * @return Cached icon
      */
-    private NSImage badge(final NSImage badge, final NSImage icon) {
+    private static NSImage badge(final NSImage badge, final NSImage icon) {
         NSImage f = NSImage.imageWithSize(icon.size());
         f.lockFocus();
         icon.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
@@ -163,12 +162,11 @@ public class NSImageIconCache implements IconCache<NSImage> {
                 return this.iconNamed("notfound.tiff", width, height);
             }
             else if(name.contains(PreferencesFactory.get().getProperty("local.delimiter"))) {
-                return this.cache(FilenameUtils.getName(name), this.convert(FilenameUtils.getName(name),
-                        NSImage.imageWithContentsOfFile(name), width, height), width);
+                return cache(FilenameUtils.getName(name),
+                        convert(FilenameUtils.getName(name), NSImage.imageWithContentsOfFile(name), width, height), width);
             }
             else {
-                return this.cache(name, this.convert(name,
-                        NSImage.imageNamed(name), width, height), width);
+                return cache(name, convert(name, NSImage.imageNamed(name), width, height), width);
             }
         }
         return image;
@@ -185,8 +183,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
         if(file.exists()) {
             icon = this.load(file.getAbsolute(), size);
             if(null == icon) {
-                return this.cache(file.getName(),
-                        this.convert(file.getName(), workspace.iconForFile(file.getAbsolute()), size), size);
+                return cache(file.getName(), convert(file.getName(), workspace.iconForFile(file.getAbsolute()), size), size);
             }
         }
         if(null == icon) {
@@ -207,8 +204,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
             final String path = workspace.absolutePathForAppBundleWithIdentifier(app.getIdentifier());
             // Null if the bundle cannot be found
             if(StringUtils.isNotBlank(path)) {
-                return this.cache(app.getIdentifier(),
-                        this.convert(app.getIdentifier(), workspace.iconForFile(path), size), size);
+                return cache(app.getIdentifier(), convert(app.getIdentifier(), workspace.iconForFile(path), size), size);
             }
         }
         if(null == icon) {
@@ -275,14 +271,14 @@ public class NSImageIconCache implements IconCache<NSImage> {
 
     @Override
     public NSImage aliasIcon(final String extension, final Integer size) {
-        return this.badge(this.iconNamed("aliasbadge.tiff", size), this.documentIcon(extension, size));
+        return badge(this.iconNamed("aliasbadge.tiff", size), this.documentIcon(extension, size));
     }
 
-    private NSImage convert(final String name, final NSImage icon, final Integer size) {
-        return this.convert(name, icon, size, size);
+    private static NSImage convert(final String name, final NSImage icon, final Integer size) {
+        return convert(name, icon, size, size);
     }
 
-    private NSImage convert(final String name, final NSImage image, final Integer width, final Integer height) {
+    private static NSImage convert(final String name, final NSImage image, final Integer width, final Integer height) {
         if(null == image) {
             return null;
         }
