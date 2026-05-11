@@ -142,7 +142,7 @@ public class FTPReadFeature implements Read {
                     final long nowMillis = System.currentTimeMillis();
                     if(nowMillis - lastIdleTimeMillis > idleMillis) {
                         try {
-                            session.getClient().sendNoOp();
+                            session.getClient().noop();
                         }
                         catch(final SocketTimeoutException e) {
                             log.warn("Timeout waiting for keepalive reply");
