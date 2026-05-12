@@ -19,6 +19,8 @@ import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.Host;
 
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
+
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +34,11 @@ import java.security.Security;
 
 public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509KeyManager {
     private static final Logger log = LogManager.getLogger(PKCS11CertificateStoreX509KeyManager.class);
+
+    public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
+                                                final CertificateStore store) {
+        this(prompt, bookmark, store, HostPreferencesFactory.get(bookmark).getProperty("connection.ssl.keystore.pkcs11.library"));
+    }
 
     public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
                                                 final CertificateStore store, final String libraryPath) {
