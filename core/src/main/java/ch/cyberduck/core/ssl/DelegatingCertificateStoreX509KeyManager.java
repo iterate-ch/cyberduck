@@ -33,13 +33,13 @@ import java.util.Map;
  * Certificates and keys from all delegates are presented as one unified list; routing to the
  * correct delegate is transparent to callers.
  */
-public class AggregateCertificateStoreX509KeyManager implements X509KeyManager {
-    private static final Logger log = LogManager.getLogger(AggregateCertificateStoreX509KeyManager.class);
+public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager {
+    private static final Logger log = LogManager.getLogger(DelegatingCertificateStoreX509KeyManager.class);
 
     private final CertificateStoreX509KeyManager[] delegates;
     private final Map<String, CertificateStoreX509KeyManager> aliases = new LinkedHashMap<>();
 
-    public AggregateCertificateStoreX509KeyManager(final CertificateStoreX509KeyManager... delegates) {
+    public DelegatingCertificateStoreX509KeyManager(final CertificateStoreX509KeyManager... delegates) {
         this.delegates = delegates;
     }
 
