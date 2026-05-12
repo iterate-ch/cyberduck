@@ -171,7 +171,7 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
 
                         @Override
                         public String getName() {
-                            return ProtocolFactory.get().forName(metadata.protocol).getName();
+                            return protocols.forName(metadata.protocol).getName();
                         }
 
                         @Override
@@ -190,7 +190,7 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
                         @Override
                         public String getThumbnail() {
                             if(null == metadata.thumbnail) {
-                                return ProtocolFactory.get().forName(metadata.protocol).disk();
+                                return protocols.forName(metadata.protocol).disk();
                             }
                             return metadata.thumbnail;
                         }
