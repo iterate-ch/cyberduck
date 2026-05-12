@@ -2,9 +2,9 @@
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.profiles;
 using ReactiveUI;
-using System.String;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
@@ -22,23 +22,15 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 
             OpenHelp = ReactiveCommand.Create(() =>
             {
-                 var help = ProfileDescription.getHelp();
-                 if (!string.IsNullOrWhiteSpace(help))
-                 {
-                     BrowserLauncherFactory.get().open(help);
-                 }
-            });
+                BrowserLauncherFactory.get().open(ProfileDescription.getHelp());
+            }, Observable.Return(!string.IsNullOrWhiteSpace(ProfileDescription.getHelp())));
         }
 
-        public bool Enabled { get; }
-
-        public string Name => ProfileDescription.getName();
+        public string DefaultHostName => string.Empty;
 
         public string Description => ProfileDescription.getDescription();
 
-        public string DefaultHostName => String.Empty;
-
-        public string Thumbnail => ProfileDescription.getThumbnail();
+        public bool Enabled { get; }
 
         public bool Installed
         {
@@ -46,8 +38,12 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             set => this.RaiseAndSetIfChanged(ref installed, value);
         }
 
+        public string Name => ProfileDescription.getName();
+
         public ReactiveCommand<Unit, Unit> OpenHelp { get; }
 
         public ProfileDescription ProfileDescription { get; }
+
+        public string Thumbnail => ProfileDescription.getThumbnail();
     }
 }
