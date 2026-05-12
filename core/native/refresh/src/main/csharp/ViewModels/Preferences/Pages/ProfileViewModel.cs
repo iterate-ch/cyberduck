@@ -1,10 +1,12 @@
 ﻿using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.profiles;
+using java.util;
 using ReactiveUI;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
@@ -16,9 +18,9 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
         {
             ProfileDescription = description;
             Installed = description.isInstalled() && description.isEnabled();
-            Enabled = !description.isBundled() && !Utils.ConvertFromJavaList<Host>(BookmarkCollection.defaultCollection()).Any(host =>
-                            host.getProtocol().getProvider().equals(description.getProvider())
-                                && host.getProtocol().getIdentifier().equals(description.getIdentifier()));
+            Enabled = !description.isBundled()
+                && !BookmarkCollection.defaultCollection().AsEnumerable<Host>()
+                    .Any(host => IsDefaultProfile(description, host));
 
             OpenHelp = ReactiveCommand.Create(() =>
             {
@@ -45,5 +47,12 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
         public ProfileDescription ProfileDescription { get; }
 
         public string Thumbnail => ProfileDescription.getThumbnail();
+
+        private static bool IsDefaultProfile(ProfileDescription profile, Host host)
+        {
+            var protocol = host.getProtocol();
+            return protocol.getProvider().Equals(profile.getProvider())
+                && protocol.getIdentifier().Equals(profile.getIdentifier());
+        }
     }
 }
