@@ -57,6 +57,12 @@ public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509Ke
                 try {
                     log.info("Load PKCS11 store from library {}", libraryPath);
                     final Provider provider = configurePkcs11Provider(libraryPath);
+                    // Register globally so JSSE can resolve RSASSA-PSS from this provider
+                    // during TLS 1.3 CertificateVerify — required for RSA keys on hardware tokens
+                    if(Security.getProvider(provider.getName()) == null) {
+                        Security.addProvider(provider);
+                        log.debug("Registered PKCS11 provider {}", provider.getName());
+                    }
                     final KeyStore store = KeyStore.getInstance("PKCS11", provider);
                     store.load(null, null);
                     return store;
