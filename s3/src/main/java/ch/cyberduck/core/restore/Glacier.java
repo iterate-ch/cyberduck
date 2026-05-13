@@ -108,6 +108,7 @@ public class Glacier implements Restore {
     private AmazonS3 client(final Path container) throws BackgroundException {
         final AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard()
                 .withClientConfiguration(configuration)
+                .withPathStyleAccessEnabled(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.bucket.virtualhost.disable"))
                 .withCredentials(S3CredentialsStrategy.toCredentialsProvider(session.getAuthentication().get()));
         final Location.Name region = this.getRegion(container);
         if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
