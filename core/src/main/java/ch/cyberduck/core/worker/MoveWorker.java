@@ -106,27 +106,29 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 final Map<Path, Path> recursive = this.compile(feature, list, entry.getKey(), entry.getValue());
                 log.debug("Compiled recursive list {}", recursive);
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                    if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
-                        log.warn("Move operation is not recursive. Create directory {}", r.getValue());
+                    final Path s = r.getKey();
+                    final Path t = r.getValue();
+                    if(s.isDirectory() && !feature.isRecursive(s, t)) {
+                        log.warn("Move operation is not recursive. Create directory {}", t);
                         // Create directory unless copy implementation is recursive
-                        result.put(r.getKey(), session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), r.getValue(),
-                                new TransferStatus().setLength(0L).setRegion(r.getKey().attributes().getRegion())));
+                        result.put(s, session.getFeature(Directory.class).mkdir(session.getFeature(Write.class), t,
+                                new TransferStatus().setLength(0L).setRegion(s.attributes().getRegion())));
                     }
                     else {
                         final TransferStatus status = new TransferStatus()
-                                .setLockId(this.getLockId(r.getKey()))
-                                .setMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                                .setRegion(r.getKey().attributes().getRegion())
-                                .setModified(r.getKey().attributes().getModificationDate())
-                                .setCreated(r.getKey().attributes().getCreationDate())
-                                .setAcl(r.getKey().attributes().getAcl())
-                                .setPermission(r.getKey().attributes().getPermission())
-                                .setEncryption(r.getKey().attributes().getEncryption())
-                                .setStorageClass(r.getKey().attributes().getStorageClass())
-                                .setExists(new CachingFindFeature(session, cache).find(r.getValue()))
-                                .setLength(r.getKey().attributes().getSize());
+                                .setLockId(this.getLockId(s))
+                                .setMime(new MappingMimeTypeService().getMime(t.getName()))
+                                .setRegion(s.attributes().getRegion())
+                                .setModified(-1L != s.attributes().getModificationDate() ? s.attributes().getModificationDate() : null)
+                                .setCreated(-1L != s.attributes().getCreationDate() ? s.attributes().getCreationDate() : null)
+                                .setAcl(s.attributes().getAcl())
+                                .setPermission(s.attributes().getPermission())
+                                .setEncryption(s.attributes().getEncryption())
+                                .setStorageClass(s.attributes().getStorageClass())
+                                .setExists(new CachingFindFeature(session, cache).find(t))
+                                .setLength(s.attributes().getSize());
                         if(status.isExists()) {
-                            status.setRemote(new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(r.getValue()));
+                            status.setRemote(new CachingAttributesFinderFeature(session, cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(t));
                         }
                         final Delete.Callback delete = new Delete.Callback() {
                             @Override
@@ -135,12 +137,12 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                         file.getName()));
                             }
                         };
-                        final Path moved = feature.move(r.getKey(), r.getValue(), status, delete, callback);
+                        final Path moved = feature.move(s, t, status, delete, callback);
                         if(PathAttributes.EMPTY.equals(moved.attributes())) {
-                            result.put(r.getKey(), new Path(moved).withAttributes(session.getFeature(AttributesFinder.class).find(moved)));
+                            result.put(s, new Path(moved).withAttributes(session.getFeature(AttributesFinder.class).find(moved)));
                         }
                         else {
-                            result.put(r.getKey(), moved);
+                            result.put(s, moved);
                         }
                         final HostPreferences preferences = HostPreferencesFactory.get(session.getHost());
                         if(preferences.getBoolean("versioning.enable") && preferences.getBoolean("versioning.move.enable")) {
@@ -149,10 +151,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                                     // Move previous versions of file
                                     final Versioning versioning = session.getFeature(Versioning.class);
                                     if(versioning != null) {
-                                        if(versioning.getConfiguration(r.getKey()).isEnabled()) {
-                                            log.debug("List previous versions of {}", r.getKey());
-                                            for(Path version : versioning.list(r.getKey(), new DisabledListProgressListener())) {
-                                                final Path target = new Path(new DefaultVersioningFeature.DefaultVersioningDirectoryProvider().provide(r.getValue()),
+                                        if(versioning.getConfiguration(s).isEnabled()) {
+                                            log.debug("List previous versions of {}", s);
+                                            for(Path version : versioning.list(s, new DisabledListProgressListener())) {
+                                                final Path target = new Path(new DefaultVersioningFeature.DefaultVersioningDirectoryProvider().provide(t),
                                                         version.getName(), version.getType());
                                                 final Path directory = target.getParent();
                                                 if(!new CachingFindFeature(session, cache).find(directory)) {

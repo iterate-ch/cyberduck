@@ -17,7 +17,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -28,6 +28,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 @Category(IntegrationTest.class)
 public class AzureTouchFeatureTest extends AbstractAzureTest {
@@ -37,16 +38,16 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, String.format(".%s.", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), test, new TransferStatus());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
     public void testPreflightFilename() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AzureTouchFeature feature = new AzureTouchFeature(session);
-        feature.preflight(container, new AsciiRandomStringService().random());
-        feature.preflight(container, new AlphanumericRandomStringService().random());
-        feature.preflight(container, String.format("%s.suffix", new AlphanumericRandomStringService().random()));
-        feature.preflight(container, "?");
+        feature.preflight(container, Optional.of(new AsciiRandomStringService().random()));
+        feature.preflight(container, Optional.of(new AlphanumericRandomStringService().random()));
+        feature.preflight(container, Optional.of(String.format("%s.suffix", new AlphanumericRandomStringService().random())));
+        feature.preflight(container, Optional.of("?"));
     }
 }

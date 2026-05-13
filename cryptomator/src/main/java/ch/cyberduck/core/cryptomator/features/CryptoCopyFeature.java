@@ -16,10 +16,11 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,11 +38,11 @@ public class CryptoCopyFeature implements Copy {
 
     private final Session<?> session;
     private final Copy proxy;
-    private final CryptoVault vault;
+    private final AbstractVault vault;
 
     private Session<?> target;
 
-    public CryptoCopyFeature(final Session<?> session, final Copy proxy, final CryptoVault vault) {
+    public CryptoCopyFeature(final Session<?> session, final Copy proxy, final AbstractVault vault) {
         this.session = session;
         this.target = session;
         this.proxy = proxy;
@@ -73,7 +74,7 @@ public class CryptoCopyFeature implements Copy {
                         public TransferStatus setResponse(final PathAttributes attributes) {
                             status.setResponse(attributes);
                             // Will be converted back to clear text when decrypting file below set in default copy feature implementation using writer.
-                            super.setResponse(new PathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                            super.setResponse(new DefaultPathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
                             return this;
                         }
                     } : status,
@@ -107,8 +108,7 @@ public class CryptoCopyFeature implements Copy {
         }
         else {
             new DefaultCopyFeature(session).withTarget(target).preflight(
-                    vault.contains(source) ? vault.encrypt(session, source) : source,
-                    vault.contains(copy.get()) ? Optional.of(vault.encrypt(session, copy.get())) : copy);
+                    vault.contains(source) ? vault.encrypt(session, source) : source, copy);
         }
     }
 

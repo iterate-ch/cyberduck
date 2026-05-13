@@ -17,7 +17,7 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConflictException;
@@ -32,6 +32,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION;
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.READPERMISSION;
@@ -46,7 +47,7 @@ public class CteraDirectoryFeatureTest extends AbstractCteraTest {
         final Path result = new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         assertThrows(ConflictException.class, () -> new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), test, new TransferStatus()));
-        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
     }
 
@@ -54,21 +55,21 @@ public class CteraDirectoryFeatureTest extends AbstractCteraTest {
     public void testPreflightFileMissingCustomProps() throws Exception {
         final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         workdir.setAttributes(workdir.attributes().setAcl(Acl.EMPTY));
-        new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random());
+        new CteraDirectoryFeature(session).preflight(workdir, Optional.of(new AlphanumericRandomStringService().random()));
     }
 
     @Test
     public void testPreflightFileAccessDeniedCustomProps() throws Exception {
         final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         workdir.setAttributes(workdir.attributes().setAcl(new Acl(new Acl.CanonicalUser(), READPERMISSION)));
-        assertThrows(AccessDeniedException.class, () -> new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new CteraDirectoryFeature(session).preflight(workdir, Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
     public void testPreflightFileAccessGrantedCustomProps() throws Exception {
         final Path workdir = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         workdir.setAttributes(workdir.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)));
-        new CteraDirectoryFeature(session).preflight(workdir, new AlphanumericRandomStringService().random());
+        new CteraDirectoryFeature(session).preflight(workdir, Optional.of(new AlphanumericRandomStringService().random()));
         // assert no fail
     }
 }

@@ -18,6 +18,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 public interface PasswordCallback {
+    PasswordCallback noop = new DisabledPasswordCallback();
 
     /**
      * Programmatically set input and close input

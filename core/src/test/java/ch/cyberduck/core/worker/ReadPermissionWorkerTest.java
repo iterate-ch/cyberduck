@@ -17,12 +17,13 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.PermissionOverwrite;
-import ch.cyberduck.core.TestPermissionAttributes;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
@@ -43,8 +44,11 @@ public class ReadPermissionWorkerTest {
     public void testRun() throws Exception {
         final ReadPermissionWorker worker = new ReadPermissionWorker(
                 Arrays.asList(
-                        new Path("/a", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.all, Permission.Action.all, Permission.Action.none)),
-                        new Path("/b", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.all, Permission.Action.read_write, Permission.Action.read)))) {
+                        new Path("/a", EnumSet.of(Path.Type.file), new DefaultPathAttributes().setPermission(
+                                new StaticPermission(Permission.Action.all, Permission.Action.all, Permission.Action.none))),
+                        new Path("/b", EnumSet.of(Path.Type.file), new DefaultPathAttributes().setPermission(
+                                new StaticPermission(Permission.Action.all, Permission.Action.read_write, Permission.Action.read))))
+        ) {
             @Override
             public void cleanup(final PermissionOverwrite result) {
                 //

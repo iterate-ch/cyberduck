@@ -17,7 +17,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -46,10 +46,10 @@ public class SDSBatchDeleteFeatureTest extends AbstractSDSTest {
         final Path file2 = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), file1, new TransferStatus());
         new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), file2, new TransferStatus());
-        new SDSBatchDeleteFeature(session, nodeid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSBatchDeleteFeature(session, nodeid).delete(Arrays.asList(file1, file2), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session, nodeid).find(file1));
         assertFalse(new SDSFindFeature(session, nodeid).find(file2));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class SDSBatchDeleteFeatureTest extends AbstractSDSTest {
                 new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SDSFindFeature(session, nodeid).find(file));
         assertNotNull(nodeid.getVersionId(file));
-        new SDSBatchDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSBatchDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
         file.attributes().setVersionId(null);
         folder.attributes().setVersionId(null);
         try {
@@ -93,9 +93,9 @@ public class SDSBatchDeleteFeatureTest extends AbstractSDSTest {
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), file, new TransferStatus());
         assertTrue(new SDSFindFeature(session, nodeid).find(file));
-        new SDSBatchDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSBatchDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session, nodeid).find(folder));
-        new SDSBatchDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSBatchDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SDSFindFeature(session, nodeid).find(room));
     }
 

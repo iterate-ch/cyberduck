@@ -18,12 +18,14 @@ package ch.cyberduck.core.serializer;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.vault.VaultMetadataDictionary;
 
 import java.util.Collections;
 import java.util.Map;
@@ -42,7 +44,7 @@ public class PathAttributesDictionary<T> {
 
     public PathAttributes deserialize(final T serialized) {
         final Deserializer<T> dict = factory.create(serialized);
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         final String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
             attributes.setSize(Long.parseLong(sizeObj));
@@ -113,9 +115,9 @@ public class PathAttributesDictionary<T> {
         attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));
         attributes.setStorageClass(dict.stringForKey("Storage Class"));
-        final T vaultObj = dict.objectForKey("Vault");
-        if(vaultObj != null) {
-            attributes.setVault(new PathDictionary<>(factory).deserialize(vaultObj));
+        final T vaultMetadataObj = dict.objectForKey("Vault Version");
+        if(vaultMetadataObj != null) {
+            attributes.setVaultVersion(new VaultMetadataDictionary<>(factory).deserialize(vaultMetadataObj));
         }
         final Map<String, String> customObj = dict.mapForKey("Custom");
         if(customObj != null) {

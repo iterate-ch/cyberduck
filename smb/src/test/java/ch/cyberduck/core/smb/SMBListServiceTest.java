@@ -18,7 +18,7 @@ package ch.cyberduck.core.smb;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -57,7 +57,7 @@ public class SMBListServiceTest extends AbstractSMBTest {
         assertEquals(2, result.size());
         assertTrue(result.contains(testFile));
         assertTrue(result.contains(innerFolder));
-        new SMBDeleteFeature(session).delete(Arrays.asList(innerFolder, testFile, testFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Arrays.asList(innerFolder, testFile, testFolder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -67,6 +67,6 @@ public class SMBListServiceTest extends AbstractSMBTest {
                 new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> result = new SMBListService(session).list(emptyFolder, new DisabledListProgressListener());
         assertEquals(0, result.size());
-        new SMBDeleteFeature(session).delete(Collections.singletonList(emptyFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Collections.singletonList(emptyFolder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

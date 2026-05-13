@@ -61,7 +61,7 @@ import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.core.updater.DisabledUpdateCheckerArguments;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
-import ch.cyberduck.core.vault.DisabledVault;
+import ch.cyberduck.core.vault.DisabledVaultProvider;
 import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
 import ch.cyberduck.ui.quicklook.ApplicationLauncherQuicklook;
 
@@ -242,7 +242,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         if(defaults.exists()) {
             log.debug("Load defaults from {}", defaults);
             final Properties props = new Properties();
-            try (final InputStream in = defaults.getInputStream()) {
+            try(final InputStream in = defaults.getInputStream()) {
                 props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
             }
             catch(IllegalArgumentException | AccessDeniedException | IOException e) {
@@ -328,9 +328,17 @@ public abstract class Preferences implements Locales, PreferencesReader {
     }
 
     /**
+     * Reset logging configuration to default level from configuration
+     */
+    public void resetLogging() {
+        this.deleteProperty("logging");
+        this.configureLogging(null);
+    }
+
+    /**
      * Reconfigure logging configuration
      *
-     * @param level Log level
+     * @param level Log level or null to use default level from configuration
      */
     protected void configureLogging(final String level) {
         // Call only once during initialization time of your application
@@ -346,10 +354,13 @@ public abstract class Preferences implements Locales, PreferencesReader {
             }
             catch(IOException e) {
                 log.error("Failure configuring log4j", e);
+                Configurator.setRootLevel(Level.ERROR);
             }
         }
-        // Allow to override default logging level
-        Configurator.setRootLevel(Level.toLevel(level, Level.ERROR));
+        if(StringUtils.isNotEmpty(level)) {
+            // Allow to override default logging level
+            Configurator.setRootLevel(Level.toLevel(level, Level.ERROR));
+        }
         // Map logging level to pass through bridge
         final ImmutableMap<Level, java.util.logging.Level> map = new ImmutableMap.Builder<Level, java.util.logging.Level>()
                 .put(Level.ALL, java.util.logging.Level.ALL)
@@ -369,7 +380,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 java.util.logging.Logger.getLogger(loggerConfig.getName()).setLevel(map.get(loggerConfig.getLevel()));
             }
         }
-        this.configureAppenders(level);
+        this.configureAppenders(LogManager.getRootLogger().getLevel().name());
     }
 
     private InputStream getLogConfiguration() {
@@ -411,38 +422,66 @@ public abstract class Preferences implements Locales, PreferencesReader {
     }
 
     protected void configureAppenders(final String level) {
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        final Configuration config = ctx.getConfiguration();
+        final Appender defaultAppender = this.getDefaultAppender(config, level);
+        defaultAppender.start();
+        config.addAppender(defaultAppender);
+        config.getRootLogger().addAppender(defaultAppender, null, null);
+        final Appender auditAppender = this.getAuditAppender(config, level);
+        auditAppender.start();
+        for(LoggerConfig logger : config.getLoggers().values()) {
+            if(StringUtils.startsWith(logger.getName(), "audit")) {
+                logger.addAppender(auditAppender, null, null);
+            }
+        }
+        ctx.updateLoggers();
+    }
+
+    private Appender getDefaultAppender(final Configuration config, final String level) {
         final String logfolder = LogDirectoryFinderFactory.get().find().getAbsolute();
         final String appname = StringUtils.replaceChars(StringUtils.lowerCase(this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY);
         final Local active = LocalFactory.get(logfolder, String.format("%s.log", appname));
         final Local archives = LocalFactory.get(logfolder, String.format("%s-%%d{yyyy-MM-dd'T'HHmmss}.log.zip", appname));
-        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        final Configuration config = ctx.getConfiguration();
         final DeleteAction deleteAction = DeleteAction.createDeleteAction(logfolder, false, 1, false,
                 PathSortByModificationTime.createSorter(true),
                 new PathCondition[]{
                         IfFileName.createNameCondition(String.format("%s-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
                 },
                 null, new NullConfiguration());
-        final Appender appender = RollingFileAppender.newBuilder()
-                .setName(RollingFileAppender.class.getName())
+        return RollingFileAppender.newBuilder()
+                .setName("default")
                 .withFileName(active.getAbsolute())
                 .withFilePattern(archives.getAbsolute())
                 .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
                 .withStrategy(DefaultRolloverStrategy.newBuilder().
                         withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                        withCustomActions(new Action[]{new AbstractAction() {
-                            @Override
-                            public boolean execute() {
-                                log.info("Running version {} on {}", getVersion(), getSystem());
-                                return true;
-                            }
-                        }, deleteAction}).build())
+                        withCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
                 .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
                 .build();
-        appender.start();
-        config.addAppender(appender);
-        config.getRootLogger().addAppender(appender, null, null);
-        ctx.updateLoggers();
+    }
+
+    private Appender getAuditAppender(final Configuration config, final String level) {
+        final String logfolder = LogDirectoryFinderFactory.get().find().getAbsolute();
+        final String appname = StringUtils.replaceChars(StringUtils.lowerCase(this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY);
+        final Local active = LocalFactory.get(logfolder, String.format("%s-audit.log", appname));
+        final Local archives = LocalFactory.get(logfolder, String.format("%s-audit-%%d{yyyy-MM-dd'T'HHmmss}.log.zip", appname));
+        final DeleteAction deleteAction = DeleteAction.createDeleteAction(logfolder, false, 1, false,
+                PathSortByModificationTime.createSorter(true),
+                new PathCondition[]{
+                        IfFileName.createNameCondition(String.format("%s-audit-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
+                },
+                null, new NullConfiguration());
+        return RollingFileAppender.newBuilder()
+                .setName("audit")
+                .withFileName(active.getAbsolute())
+                .withFilePattern(archives.getAbsolute())
+                .withPolicy(SizeBasedTriggeringPolicy.createPolicy("50MB"))
+                .withStrategy(DefaultRolloverStrategy.newBuilder().
+                        withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
+                        withCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
+                .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
+                .build();
     }
 
     protected void setFactories() {
@@ -504,7 +543,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("factory.updater.arguments.class", DisabledUpdateCheckerArguments.class.getName());
         this.setDefault("factory.threadpool.class", DefaultThreadPool.class.getName());
         this.setDefault("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
-        this.setDefault("factory.vault.class", DisabledVault.class.getName());
+        this.setDefault("factory.vaultprovider.class", DisabledVaultProvider.class.getName());
         this.setDefault("factory.vaultregistry.class", DefaultVaultRegistry.class.getName());
         this.setDefault("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
         this.setDefault("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
@@ -572,5 +611,19 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 this.getProperty("os.name"),
                 this.getProperty("os.version"),
                 this.getProperty("os.arch"));
+    }
+
+    private static final class ApplicationVersionAction extends AbstractAction {
+        private final Preferences preferences;
+
+        public ApplicationVersionAction(final Preferences preferences) {
+            this.preferences = preferences;
+        }
+
+        @Override
+        public boolean execute() {
+            log.info("Running version {} on {}", preferences.getVersion(), preferences.getSystem());
+            return true;
+        }
     }
 }

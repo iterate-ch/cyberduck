@@ -18,16 +18,14 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVReadFeature;
@@ -38,12 +36,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -83,7 +82,7 @@ public class DAVSingleTransferWorkerTest extends AbstractDAVTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         final AtomicBoolean failed = new AtomicBoolean();
         final Host host = new Host(session.getHost()) {
             @Override
@@ -130,10 +129,10 @@ public class DAVSingleTransferWorkerTest extends AbstractDAVTest {
                 return super._getFeature(type);
             }
         };
-        new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
+        new LoginConnectionService(LoginCallback.noop,
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                ProgressListener.noop).connect(session, CancelCallback.noop);
         final AbstractTransferWorker worker = new SingleTransferWorker(
                 session, null, t, new TransferOptions(),
                 new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -146,7 +145,7 @@ public class DAVSingleTransferWorkerTest extends AbstractDAVTest {
             public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) {
                 return true;
             }
-        }, new DisabledProgressListener(), counter, new DisabledConnectionCallback(), new DisabledNotificationService());
+        }, ProgressListener.noop, counter, ConnectionCallback.noop, new DisabledNotificationService());
         assertTrue(worker.run(session));
         local.delete();
         assertEquals(t.getTransferred(), counter.getRecv(), 0L);
@@ -158,6 +157,6 @@ public class DAVSingleTransferWorkerTest extends AbstractDAVTest {
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(t.isComplete());
         assertTrue(failed.get());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

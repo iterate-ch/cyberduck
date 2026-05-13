@@ -1,5 +1,4 @@
-﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+﻿// Copyright (c) 2010-2026 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -14,23 +13,21 @@
 // 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.vault;
 using ch.cyberduck.core.worker;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.browser;
-using Ch.Cyberduck.Core;
 using java.util;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using static Ch.Cyberduck.ImageHelper;
+using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -39,7 +36,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly INewVaultPromptView _view;
 
         public VaultController(INewVaultPromptView view, BrowserController browserController,
-            IList<Location.Name> regions, Location.Name defaultRegion) : base(view, browserController, regions, defaultRegion)
+            IList<Location.Name> regions, Location.Name defaultRegion) : base(view, browserController, regions,
+            defaultRegion)
         {
             _view = view;
             _view.EnablePassphrase();
@@ -54,14 +52,17 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return false;
             }
+
             if (Utils.IsBlank(_view.PassphraseConfirm))
             {
                 return false;
             }
+
             if (!_view.Passphrase.Equals(_view.PassphraseConfirm))
             {
                 return false;
             }
+
             return true;
         }
 
@@ -95,10 +96,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCreateVaultWorker(BrowserController controller, Path folder, String filename,
                     String region, String passphrase)
-                    : base(region, new VaultCredentials(passphrase).setSaved(false), VaultFactory.get(folder,
-                        HostPreferencesFactory.get(controller.Pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        HostPreferencesFactory.get(controller.Pool.getHost()).getProperty("cryptomator.vault.config.filename"),
-                        Encoding.UTF8.GetBytes(HostPreferencesFactory.get(controller.Pool.getHost()).getProperty("cryptomator.vault.pepper"))))
+                    : base(region, folder, new VaultCredentials(passphrase).setSaved(false),
+                        new VaultVersion(VaultVersion.Type.valueOf(PreferencesFactory.get()
+                            .getProperty("cryptomator.vault.default"))))
                 {
                     _controller = controller;
                     _folder = folder;
@@ -111,7 +111,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _controller.ShowHiddenFiles = true;
                     }
-                    List<Path> folders = new List<Path>() {_folder};
+
+                    List<Path> folders = new List<Path>() { _folder };
                     _controller.Reload(_controller.Workdir, folders, folders);
                 }
             }

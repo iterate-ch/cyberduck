@@ -14,17 +14,20 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledUrlProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
+import ch.cyberduck.core.s3.S3CredentialsStrategy;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
@@ -32,6 +35,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.jets3t.service.Jets3tProperties;
 
 public class SpectraSession extends S3Session {
@@ -46,6 +50,29 @@ public class SpectraSession extends S3Session {
         final Jets3tProperties configuration = client.getConfiguration();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
         return client;
+    }
+
+    public SpectraCredentialsStrategy getAuthentication() {
+        return (SpectraCredentialsStrategy) super.getAuthentication();
+    }
+
+    @Override
+    protected SpectraCredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration, final LoginCallback prompt) {
+        return new SpectraCredentialsStrategy(host.getCredentials());
+    }
+
+    protected final class SpectraCredentialsStrategy implements S3CredentialsStrategy {
+        final Credentials credentials;
+
+        public SpectraCredentialsStrategy(final Credentials credentials) {
+            this.credentials = credentials
+                    .setTokens(new TemporaryAccessTokens(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        }
+
+        @Override
+        public Credentials get() {
+            return credentials;
+        }
     }
 
     @Override

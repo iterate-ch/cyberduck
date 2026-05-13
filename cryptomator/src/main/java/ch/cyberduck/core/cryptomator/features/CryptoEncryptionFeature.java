@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Vault;
@@ -31,7 +30,7 @@ public class CryptoEncryptionFeature implements Encryption {
     private final Encryption delegate;
     private final Vault vault;
 
-    public CryptoEncryptionFeature(final Session<?> session, final Encryption delegate, final CryptoVault vault) {
+    public CryptoEncryptionFeature(final Session<?> session, final Encryption delegate, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
@@ -39,22 +38,22 @@ public class CryptoEncryptionFeature implements Encryption {
 
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
-        return delegate.getEncryption(vault.encrypt(session, file));
+        return delegate.getEncryption(vault.encrypt(session, file, true));
     }
 
     @Override
     public void setEncryption(final Path file, final Algorithm algorithm) throws BackgroundException {
-        delegate.setEncryption(vault.encrypt(session, file), algorithm);
+        delegate.setEncryption(vault.encrypt(session, file, true), algorithm);
     }
 
     @Override
     public Algorithm getDefault(final Path file) throws BackgroundException {
-        return delegate.getDefault(vault.encrypt(session, file));
+        return delegate.getDefault(file);
     }
 
     @Override
     public Set<Algorithm> getKeys(final Path file, final LoginCallback prompt) throws BackgroundException {
-        return delegate.getKeys(vault.encrypt(session, file), prompt);
+        return delegate.getKeys(file, prompt);
     }
 
     @Override

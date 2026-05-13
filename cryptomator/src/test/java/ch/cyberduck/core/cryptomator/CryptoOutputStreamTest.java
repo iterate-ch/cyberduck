@@ -19,6 +19,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.impl.v8.CryptomatorVault;
+import ch.cyberduck.core.cryptomator.impl.v8.MasterkeyVaultMetadataProvider;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -30,6 +32,8 @@ import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,9 +42,10 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
-public class CryptoOutputStreamTest {
+@RunWith(value = Parameterized.class)
+public class CryptoOutputStreamTest extends AbstractCryptoTests {
 
-    private CryptoVault getVault() throws Exception {
+    private AbstractVault getVault() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
@@ -59,14 +64,14 @@ public class CryptoOutputStreamTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(home);
-        vault.create(session, null, new VaultCredentials("test"));
+        final AbstractVault vault = new CryptomatorVault(home);
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
         return vault;
     }
 
     @Test
     public void testSmallChunksToWrite() throws Exception {
-        final CryptoVault vault = this.getVault();
+        final AbstractVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
         final FileHeader header = vault.getFileHeaderCryptor().create();
         final CryptoOutputStream stream = new CryptoOutputStream(
@@ -89,7 +94,7 @@ public class CryptoOutputStreamTest {
 
     @Test
     public void testWriteWithChunkSize() throws Exception {
-        final CryptoVault vault = this.getVault();
+        final AbstractVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
         final FileHeader header = vault.getFileHeaderCryptor().create();
         final CryptoOutputStream stream = new CryptoOutputStream(
@@ -109,7 +114,7 @@ public class CryptoOutputStreamTest {
 
     @Test
     public void testWriteLargeChunk() throws Exception {
-        final CryptoVault vault = this.getVault();
+        final AbstractVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
         final FileHeader header = vault.getFileHeaderCryptor().create();
         final CryptoOutputStream stream = new CryptoOutputStream(

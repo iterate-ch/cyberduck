@@ -17,9 +17,9 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
@@ -57,20 +57,20 @@ public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
         final TransferStatus status = new TransferStatus();
         final byte[] initialContent = RandomUtils.nextBytes(32769);
         {
-            new StreamCopier(status, status).transfer(new ByteArrayInputStream(initialContent), writer.write(test, status.setLength(initialContent.length), new DisabledConnectionCallback()));
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(initialContent), writer.write(test, status.setLength(initialContent.length), ConnectionCallback.noop));
         }
         final OwncloudVersioningFeature feature = new OwncloudVersioningFeature(session);
         assertEquals(0, feature.list(test.withAttributes(new OwncloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener()).size());
         final PathAttributes initialAttributes = new OwncloudAttributesFinderFeature(session).find(test);
         final byte[] contentUpdate = RandomUtils.nextBytes(16258);
         {
-            new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentUpdate), writer.write(test, status.setLength(contentUpdate.length).setExists(true), new DisabledConnectionCallback()));
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentUpdate), writer.write(test, status.setLength(contentUpdate.length).setExists(true), ConnectionCallback.noop));
             final AttributedList<Path> versions = feature.list(test.withAttributes(new OwncloudAttributesFinderFeature(session).find(test)), new DisabledListProgressListener());
             assertEquals(1, versions.size());
         }
         {
             final byte[] contentLatest = RandomUtils.nextBytes(13247);
-            new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentLatest), writer.write(test, status.setLength(contentLatest.length).setExists(true), new DisabledConnectionCallback()));
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(contentLatest), writer.write(test, status.setLength(contentLatest.length).setExists(true), ConnectionCallback.noop));
         }
         final AttributedList<Path> versions = new AttributedList<>();
         do {
@@ -86,20 +86,20 @@ public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
             assertNotEquals(initialAttributes, new OwncloudAttributesFinderFeature(session).find(test));
             assertEquals(initialVersion.attributes(), new OwncloudAttributesFinderFeature(session).find(initialVersion));
             {
-                final InputStream reader = new OwncloudReadFeature(session).read(initialVersion, new TransferStatus(), new DisabledLoginCallback());
+                final InputStream reader = new OwncloudReadFeature(session).read(initialVersion, new TransferStatus(), LoginCallback.noop);
                 assertArrayEquals(initialContent, IOUtils.readFully(reader, initialContent.length));
                 reader.close();
             }
             final Path updatedVersion = versions.get(0);
             assertEquals(contentUpdate.length, new OwncloudAttributesFinderFeature(session).find(updatedVersion).getSize());
             {
-                final InputStream reader = new OwncloudReadFeature(session).read(updatedVersion, new TransferStatus(), new DisabledLoginCallback());
+                final InputStream reader = new OwncloudReadFeature(session).read(updatedVersion, new TransferStatus(), LoginCallback.noop);
                 assertArrayEquals(contentUpdate, IOUtils.readFully(reader, contentUpdate.length));
                 reader.close();
             }
         }
         feature.revert(initialVersion);
         assertEquals(initialVersion.attributes().getSize(), new OwncloudAttributesFinderFeature(session).find(test).getSize());
-        new DAVDeleteFeature(session).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(test, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

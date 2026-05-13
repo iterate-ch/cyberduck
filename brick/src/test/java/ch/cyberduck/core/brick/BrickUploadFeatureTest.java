@@ -17,12 +17,12 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,7 +57,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -65,9 +65,9 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
-        new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -86,7 +86,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
         feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -94,9 +94,9 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
-        new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -113,16 +113,16 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, new DisabledConnectionCallback());
+        feature.upload(new BrickWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, ConnectionCallback.noop);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new BrickFindFeature(session).find(test));
         assertEquals(content.length, new BrickAttributesFinderFeature(session).find(test).getSize());
         final byte[] compare = new byte[length];
-        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), new DisabledConnectionCallback()), compare);
+        IOUtils.readFully(new BrickReadFeature(session).read(test, new TransferStatus().setLength(length), ConnectionCallback.noop), compare);
         assertArrayEquals(content, compare);
-        new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 }

@@ -19,7 +19,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
@@ -380,7 +380,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     final Move move = session.getFeature(Move.class);
                     log.info("Rename file {} to {}", file, status.getDisplayname().remote);
                     move.move(file, status.getDisplayname().remote, new TransferStatus(status).setExists(status.getDisplayname().exists),
-                            new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                            new Delete.DisabledCallback(), ConnectionCallback.noop);
                 }
             }
         }

@@ -48,10 +48,10 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
             catch(InstantiationException | InvocationTargetException | IllegalAccessException |
                   NoSuchMethodException e) {
                 log.error("Failure loading callback class {}. {}", clazz, e.getMessage());
-                return new DisabledHostKeyCallback();
+                return HostKeyCallback.noop;
             }
         }
-        return new DisabledHostKeyCallback();
+        return HostKeyCallback.noop;
     }
 
     private static HostKeyCallbackFactory singleton;

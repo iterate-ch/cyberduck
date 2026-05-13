@@ -16,7 +16,7 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -44,7 +44,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(fileInRoom));
     }
 
@@ -56,7 +56,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
         new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), fileInRoom, new TransferStatus());
         final String lock = new StoregateLockFeature(session, nodeid).lock(fileInRoom);
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonMap(fileInRoom, new TransferStatus().setLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonMap(fileInRoom, new TransferStatus().setLockId(lock)), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(fileInRoom));
     }
 
@@ -71,15 +71,15 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(new StoregateWriteFeature(session, nodeid), file, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(room));
     }
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(String.format("/My files/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
-        new StoregateDeleteFeature(session, new StoregateIdProvider(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, new StoregateIdProvider(session)).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

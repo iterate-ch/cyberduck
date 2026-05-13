@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.vault.VaultFinderListService;
-import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.VaultLoader;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
@@ -35,12 +35,12 @@ public class VaultRegistryListService implements ListService {
     private static final Logger log = LogManager.getLogger(VaultRegistryListService.class);
 
     private final VaultRegistry registry;
-    private final VaultLookupListener lookup;
+    private final VaultLoader lookup;
     private final Session<?> session;
     private final ListService proxy;
     private final boolean autodetect;
 
-    public VaultRegistryListService(final Session<?> session, final ListService proxy, final VaultRegistry registry, final VaultLookupListener lookup) {
+    public VaultRegistryListService(final Session<?> session, final ListService proxy, final VaultRegistry registry, final VaultLoader lookup) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -79,6 +79,6 @@ public class VaultRegistryListService implements ListService {
 
     @Override
     public void preflight(final Path directory) throws BackgroundException {
-        registry.find(session, directory).getFeature(session, ListService.class, proxy).preflight(directory);
+        registry.find(session, directory, false).getFeature(session, ListService.class, proxy).preflight(directory);
     }
 }

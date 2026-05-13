@@ -17,7 +17,7 @@ package ch.cyberduck.core.ftp.list;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.ftp.FTPParserSelector;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
@@ -64,7 +64,7 @@ public class FTPListResponseReaderTest {
         assertTrue(parsed.isSymbolicLink());
         assertEquals("/www/basic/mk", parsed.getSymlinkTarget().getAbsolute());
         assertEquals("/www/basic", parsed.getSymlinkTarget().getParent().getAbsolute());
-        assertEquals(new Permission("rwxrwxrwx"), parsed.attributes().getPermission());
+        assertEquals(new StaticPermission("rwxrwxrwx"), parsed.attributes().getPermission());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class FTPListResponseReaderTest {
         assertEquals("/.dovecot.sieve", parsed.getAbsolute());
         assertEquals("/sieve/managesieve.sieve", parsed.getSymlinkTarget().getAbsolute());
         assertEquals("/sieve", parsed.getSymlinkTarget().getParent().getAbsolute());
-        assertEquals(new Permission("rwxrwxrwx"), parsed.attributes().getPermission());
+        assertEquals(new StaticPermission("rwxrwxrwx"), parsed.attributes().getPermission());
     }
 
     @Test(expected = FTPInvalidListException.class)
@@ -102,10 +102,10 @@ public class FTPListResponseReaderTest {
                 );
         final Path parsed = list.get(new Path("/t", EnumSet.of(Path.Type.file)));
         assertNotNull(parsed);
-        assertTrue(parsed.attributes().getPermission().isSticky());
-        assertTrue(parsed.attributes().getPermission().isSetuid());
-        assertTrue(parsed.attributes().getPermission().isSetgid());
-        assertEquals(new Permission("rwsrwSr-T"), parsed.attributes().getPermission());
+        assertTrue(((StaticPermission) parsed.attributes().getPermission()).isSticky());
+        assertTrue(((StaticPermission) parsed.attributes().getPermission()).isSetuid());
+        assertTrue(((StaticPermission) parsed.attributes().getPermission()).isSetgid());
+        assertEquals(new StaticPermission("rwsrwSr-T"), parsed.attributes().getPermission());
     }
 
     @Test
@@ -141,9 +141,9 @@ public class FTPListResponseReaderTest {
         final Path parsed = list.get(0);
         assertEquals("WelcomeTo_PeakFTP", parsed.getName());
         assertEquals("/data/FTP_pub", parsed.getParent().getAbsolute());
-        assertFalse(parsed.attributes().getPermission().isSticky());
-        assertFalse(parsed.attributes().getPermission().isSetuid());
-        assertFalse(parsed.attributes().getPermission().isSetgid());
+        assertFalse(((StaticPermission) parsed.attributes().getPermission()).isSticky());
+        assertFalse(((StaticPermission) parsed.attributes().getPermission()).isSetuid());
+        assertFalse(((StaticPermission) parsed.attributes().getPermission()).isSetgid());
     }
 
     @Test(expected = ListCanceledException.class)

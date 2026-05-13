@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -30,7 +31,7 @@ public class DriveHomeFinderService extends AbstractHomeFeature {
 
     public static final Path MYDRIVE_FOLDER
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("My Drive", "Google Drive")),
-            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume), new PathAttributes().setFileId(ROOT_FOLDER_ID));
+            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume), new DefaultPathAttributes().setFileId(ROOT_FOLDER_ID));
 
     public static final Path SHARED_FOLDER_NAME
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared with me", "Google Drive")),

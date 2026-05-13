@@ -15,10 +15,12 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
@@ -41,7 +43,7 @@ public class BrickAttributesFinderFeature implements AttributesFinder, Attribute
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            final FileEntity entity = new FilesApi(new BrickApiClient(session))
+            final FileEntity entity = new FilesApi(session.getClient())
                     .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
                             "stat", null, false, false);
             switch(entity.getType()) {
@@ -64,7 +66,7 @@ public class BrickAttributesFinderFeature implements AttributesFinder, Attribute
 
     @Override
     public PathAttributes toAttributes(final FileEntity entity) {
-        final PathAttributes attr = new PathAttributes();
+        final PathAttributes attr = new DefaultPathAttributes();
         attr.setChecksum(Checksum.parse(entity.getMd5()));
         attr.setRegion(entity.getRegion());
         if(entity.getSize() != null) {
@@ -77,7 +79,7 @@ public class BrickAttributesFinderFeature implements AttributesFinder, Attribute
             attr.setModificationDate(entity.getMtime().getMillis());
         }
         if(entity.getPermissions() != null) {
-            final Permission permission = new Permission();
+            final StaticPermission permission = new StaticPermission();
             if(entity.getPermissions().contains(PermissionType.r.name())) {
                 permission.setUser(permission.getUser().or(Permission.Action.read));
             }

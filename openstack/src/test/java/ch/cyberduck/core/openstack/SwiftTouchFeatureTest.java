@@ -8,11 +8,11 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -21,8 +21,8 @@ public class SwiftTouchFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testSupported() {
-        assertFalse(new SwiftTouchFeature(session, new SwiftRegionService(session)).isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), StringUtils.EMPTY));
-        assertTrue(new SwiftTouchFeature(session, new SwiftRegionService(session)).isSupported(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), StringUtils.EMPTY));
+        assertFalse(new SwiftTouchFeature(session, new SwiftRegionService(session)).isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), Optional.empty()));
+        assertTrue(new SwiftTouchFeature(session, new SwiftRegionService(session)).isSupported(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), Optional.empty()));
     }
 
     @Test

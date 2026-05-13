@@ -3,8 +3,8 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.IndexedListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -46,7 +46,7 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
             }
         }).isEmpty());
         assertTrue(callback.get());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -69,7 +69,7 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
         final PathAttributes attributes = list.get(0).attributes();
         assertEquals(attributes, new AzureAttributesFinderFeature(session).find(file));
         assertSame(directory, list.get(0).getParent());
-        new AzureDeleteFeature(session).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Arrays.asList(file, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -98,8 +98,8 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
         });
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());
-            new AzureDeleteFeature(session).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new AzureDeleteFeature(session).delete(Collections.singletonList(list.get(i)), LoginCallback.noop, new Delete.DisabledCallback());
         }
-        new AzureDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

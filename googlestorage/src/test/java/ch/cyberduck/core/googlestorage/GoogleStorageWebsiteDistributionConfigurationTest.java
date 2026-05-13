@@ -16,7 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -51,11 +51,11 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
         final DistributionConfiguration configuration = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Path bucket = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session).mkdir(new GoogleStorageWriteFeature(session), bucket, new TransferStatus());
-        configuration.write(bucket, new Distribution(Distribution.WEBSITE, null, true), new DisabledLoginCallback());
-        final Distribution distribution = configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginCallback());
+        configuration.write(bucket, new Distribution(Distribution.WEBSITE, null, true), LoginCallback.noop);
+        final Distribution distribution = configuration.read(bucket, Distribution.WEBSITE, LoginCallback.noop);
         assertTrue(distribution.isEnabled());
         assertEquals(configuration.getName(), distribution.getName());
-        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

@@ -73,7 +73,7 @@ public abstract class BookmarkContainerController extends DefaultBookmarkControl
             }
         }
         this.resize();
-        this.focus(window);
+        this.focus();
     }
 
     @Override

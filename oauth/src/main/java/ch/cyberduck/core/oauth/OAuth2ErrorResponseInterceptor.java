@@ -15,6 +15,7 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
@@ -28,11 +29,11 @@ import org.apache.logging.log4j.Logger;
 public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(OAuth2ErrorResponseInterceptor.class);
 
-    private final Host host;
+    private final Credentials credentials;
     private final OAuth2RequestInterceptor service;
 
     public OAuth2ErrorResponseInterceptor(final Host host, final OAuth2RequestInterceptor service) {
-        this.host = host;
+        this.credentials = host.getCredentials();
         this.service = service;
     }
 
@@ -42,7 +43,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
             case HttpStatus.SC_UNAUTHORIZED:
                 try {
                     log.warn("Attempt to refresh OAuth tokens for failure {}", response);
-                    service.save(service.authorizeWithRefreshToken(host.getCredentials().getOauth()));
+                    service.save(service.authorizeWithRefreshToken(credentials.getOauth()));
                     // Try again
                     return true;
                 }

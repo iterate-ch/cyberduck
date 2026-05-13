@@ -16,7 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -53,7 +53,7 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
         feature.setMetadata(test, status.setMetadata(Collections.emptyMap()));
         assertFalse(status.getResponse().getMetadata().containsKey("test"));
         assertFalse(feature.getMetadata(test).containsKey("test"));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -73,6 +73,6 @@ public class DriveMetadataFeatureTest extends AbstractDriveTest {
         catch(NotfoundException e) {
             assertNull(test.attributes().getFileId());
         }
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

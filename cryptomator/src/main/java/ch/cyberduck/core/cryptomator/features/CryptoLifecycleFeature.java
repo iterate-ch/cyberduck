@@ -36,12 +36,12 @@ public class CryptoLifecycleFeature implements Lifecycle {
 
     @Override
     public LifecycleConfiguration getConfiguration(final Path container) throws BackgroundException {
-        return delegate.getConfiguration(vault.encrypt(session, container));
+        return delegate.getConfiguration(vault.encrypt(session, container, true));
     }
 
     @Override
     public void setConfiguration(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
-        delegate.setConfiguration(vault.encrypt(session, container), configuration);
+        delegate.setConfiguration(vault.encrypt(session, container, true), configuration);
     }
 
     @Override

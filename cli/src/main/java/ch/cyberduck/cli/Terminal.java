@@ -23,7 +23,7 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -47,7 +47,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
-import ch.cyberduck.core.vault.LoadingVaultLookupListener;
+import ch.cyberduck.core.vault.RegistryVaultLoader;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
 import ch.cyberduck.core.worker.AttributesWorker;
@@ -239,14 +239,14 @@ public class Terminal {
                 final Path vault;
                 if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
                     final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
-                    vault = new Path(new TildePathExpander(home).expand(input.getOptionValue(action.name())), EnumSet.of(Path.Type.directory, Path.Type.vault));
+                    vault = new Path(new TildePathExpander(home).expand(input.getOptionValue(action.name())), EnumSet.of(Path.Type.directory));
                 }
                 else {
-                    vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory, Path.Type.vault));
+                    vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory));
                 }
                 log.debug("Attempting to load vault from {}", vault);
                 try {
-                    this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVaultRegistry(),
+                    this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new RegistryVaultLoader(source.getVaultRegistry(),
                             new TerminalPasswordCallback()), vault)));
                 }
                 catch(TerminalBackgroundException e) {
@@ -379,10 +379,10 @@ public class Terminal {
         final TerminalTransferErrorCallback error;
         final Host host = transfer.getSource();
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
-            host.setTransfer(Host.TransferType.concurrent);
+            host.setTransferType(Host.TransferType.concurrent);
         }
         else {
-            host.setTransfer(Host.TransferType.newconnection);
+            host.setTransferType(Host.TransferType.newconnection);
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.quiet.name())) {
             error = new TerminalTransferErrorCallback(reader -> false);
@@ -413,7 +413,7 @@ public class Terminal {
                 source, destination,
                 transfer.withCache(cache), new TransferOptions().reload(true), prompt, login, error, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                        ? new DisabledStreamListener() : new TerminalStreamListener(meter)
+                        ? StreamListener.noop : new TerminalStreamListener(meter)
         );
         try {
             this.execute(action);

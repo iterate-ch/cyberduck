@@ -16,7 +16,6 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,7 +33,7 @@ public class SegmentRetryCallable<T> extends DefaultRetryCallable<T> {
                                 final BackgroundExceptionCallable<T> delegate,
                                 final StreamCancelation status,
                                 final BytecountStreamListener counter) {
-        super(host, delegate, new DisabledProgressListener(), new TransferBackgroundActionState(status));
+        super(host, delegate, ProgressListener.noop, new TransferBackgroundActionState(status));
         this.counter = counter;
     }
 
@@ -42,7 +41,7 @@ public class SegmentRetryCallable<T> extends DefaultRetryCallable<T> {
                                 final BackgroundExceptionCallable<T> delegate,
                                 final StreamCancelation status,
                                 final BytecountStreamListener counter) {
-        super(host, retry, delay, delegate, new DisabledProgressListener(), new TransferBackgroundActionState(status));
+        super(host, retry, delay, delegate, ProgressListener.noop, new TransferBackgroundActionState(status));
         this.counter = counter;
     }
 

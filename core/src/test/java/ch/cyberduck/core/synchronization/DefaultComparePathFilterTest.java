@@ -1,7 +1,7 @@
 package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
@@ -10,6 +10,7 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -36,7 +37,7 @@ public class DefaultComparePathFilterTest {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 attr.set(true);
-                return new PathAttributes() {
+                return new DefaultPathAttributes() {
                     @Override
                     public Checksum getChecksum() {
                         return new Checksum(HashAlgorithm.md5, "a");
@@ -68,7 +69,7 @@ public class DefaultComparePathFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new DisabledProgressListener()));
+        }, ProgressListener.noop));
         assertTrue(found.get());
         assertTrue(attr.get());
     }
@@ -94,7 +95,7 @@ public class DefaultComparePathFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new DisabledProgressListener()));
+        }, ProgressListener.noop));
         assertTrue(found.get());
     }
 
@@ -119,7 +120,7 @@ public class DefaultComparePathFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new DisabledProgressListener()));
+        }, ProgressListener.noop));
         assertTrue(found.get());
     }
 
@@ -144,7 +145,7 @@ public class DefaultComparePathFilterTest {
             public boolean exists() {
                 return false;
             }
-        }, new DisabledProgressListener()));
+        }, ProgressListener.noop));
         assertTrue(found.get());
     }
 
@@ -163,7 +164,7 @@ public class DefaultComparePathFilterTest {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 attr.set(true);
-                return new PathAttributes() {
+                return new DefaultPathAttributes() {
                     @Override
                     public Checksum getChecksum() {
                         return new Checksum(HashAlgorithm.md5, "b");
@@ -213,7 +214,7 @@ public class DefaultComparePathFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new DisabledProgressListener()));
+        }, ProgressListener.noop));
         assertTrue(found.get());
         assertTrue(attr.get());
     }

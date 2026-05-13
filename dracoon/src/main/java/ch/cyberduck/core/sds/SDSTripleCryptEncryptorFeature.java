@@ -19,31 +19,19 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Encryptor;
 import ch.cyberduck.core.sds.io.swagger.client.JSON;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptEncryptingInputStream;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.error.CryptoSystemException;
-import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class SDSTripleCryptEncryptorFeature implements Encryptor {
-    private static final Logger log = LogManager.getLogger(SDSTripleCryptEncryptorFeature.class);
+public class SDSTripleCryptEncryptorFeature {
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -67,26 +55,6 @@ public class SDSTripleCryptEncryptorFeature implements Encryptor {
     public SDSTripleCryptEncryptorFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
         this.nodeid = nodeid;
-    }
-
-    @Override
-    public InputStream encrypt(final Path file, final InputStream proxy, final TransferStatus status) throws BackgroundException {
-        try {
-            final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-            log.debug("Read file key for file {}", file);
-            if(null == status.getFilekey()) {
-                status.setFilekey(generateFileKey());
-            }
-            final FileKey fileKey = reader.readValue(status.getFilekey().array());
-            return new TripleCryptEncryptingInputStream(session, proxy,
-                    Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-        }
-        catch(CryptoSystemException | UnknownVersionException e) {
-            throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
-        }
     }
 
     public boolean isEncrypted(final Path file) throws BackgroundException {

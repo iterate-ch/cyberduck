@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.CreateFolderResult;
@@ -54,9 +55,11 @@ public class DropboxDirectoryFeature implements Directory<Metadata> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(!DropboxTouchFeature.validate(filename)) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
+        if(filename.isPresent()) {
+            if(!DropboxTouchFeature.validate(filename.get())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+            }
         }
     }
 }

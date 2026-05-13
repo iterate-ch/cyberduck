@@ -26,6 +26,8 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
+
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
 
 public class DeepboxTouchFeature extends DefaultTouchFeature<Node> {
@@ -39,7 +41,7 @@ public class DeepboxTouchFeature extends DefaultTouchFeature<Node> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(workdir.isRoot()) {
             throw new AccessDeniedException(LocaleFactory.localizedString("Adding files is not permitted at the organisation level", "Deepbox")).withFile(workdir);
         }

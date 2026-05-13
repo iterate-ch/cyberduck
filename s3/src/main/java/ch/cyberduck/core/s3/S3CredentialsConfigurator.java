@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -33,26 +34,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 import com.amazonaws.auth.profile.internal.AbstractProfilesConfigFileScanner;
 import com.amazonaws.auth.profile.internal.AllProfiles;
 import com.amazonaws.auth.profile.internal.BasicProfile;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.google.common.base.Charsets;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
-import com.google.common.io.BaseEncoding;
 
 /**
  * Configure credentials from AWS CLI configuration and SSO cache
@@ -94,6 +90,44 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
             return false;
         }).map(Map.Entry::getValue).findFirst().orElse(StringUtils.isBlank(host.getCredentials().getUsername()) ? profiles.get("default") : null);
         if(null != profile) {
+            if(profile.isProcessBasedProfile()) {
+                // Uses external process to retrieve temporary credentials
+                final String command = profile.getCredentialProcess();
+                final ObjectMapper mapper = new ObjectMapper();
+                List<String> cmd = new ArrayList<>();
+                switch(Factory.Platform.getDefault()) {
+                    case windows:
+                        cmd.add("cmd");
+                        cmd.add("/c");
+                        break;
+                    default:
+                        cmd.add("sh");
+                        cmd.add("-c");
+                        break;
+                }
+                cmd.add(command);
+                final ProcessBuilder builder = new ProcessBuilder(cmd);
+                try {
+                    final Process process = builder.start();
+                    try(InputStream reader = process.getInputStream()) {
+                        final CachedCredential cached = mapper.readValue(reader, CachedCredential.class);
+                        credentials.setTokens(new TemporaryAccessTokens(
+                                cached.accessKey, cached.secretKey, cached.sessionToken, cached.getExpiration()));
+                        process.waitFor();
+                        if(process.exitValue() != 0) {
+                            throw new IOException(String.format("Unexpected exit code %d for process %s", process.exitValue(), command));
+                        }
+                        return credentials;
+                    }
+                    finally {
+                        process.destroy();
+                    }
+                }
+                catch(IOException | InterruptedException e) {
+                    log.warn("Failure \"{}\" parsing credentials from output of command {}", e.getMessage(), command);
+                    return credentials;
+                }
+            }
             if(profile.isRoleBasedProfile()) {
                 log.debug("Configure credentials from role based profile {}", profile.getProfileName());
                 if(StringUtils.isBlank(profile.getRoleSourceProfile())) {
@@ -106,38 +140,31 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 }
                 else {
                     final BasicProfile sourceProfile = profiles.get(profile.getRoleSourceProfile());
-                    if(sourceProfile.getProperties().containsKey("sso_start_url")) {
-                        log.debug("Set credentials from cached AWS CLI cache for {}", sourceProfile.getProfileName());
-                        // Read cached SSO credentials
-                        final CachedCredential cached = this.fetchSsoCredentials(sourceProfile.getProperties());
-                        if(null == cached) {
-                            return credentials;
-                        }
-                        // No further token exchange required
-                        return credentials.setTokens(new TemporaryAccessTokens(
-                                cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
-                    }
-                    else {
-                        // If a profile defines the role_arn property then the profile is treated as an assume role profile
-                        return credentials.setTokens(new TemporaryAccessTokens(
-                                        sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken()))
-                                .setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
-                                .setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
-                    }
+                    // If a profile defines the role_arn property then the profile is treated as an assume role profile
+                    return credentials.setTokens(new TemporaryAccessTokens(
+                                    sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken()))
+                            .setProperty(Profile.STS_ROLE_ARN_PROPERTY_KEY, profile.getRoleArn())
+                            .setProperty(Profile.STS_MFA_ARN_PROPERTY_KEY, profile.getPropertyValue("mfa_serial"));
                 }
             }
             else {
                 log.debug("Configure credentials from basic profile {}", profile.getProfileName());
-                final Map<String, String> profileProperties = profile.getProperties();
-                if(profileProperties.containsKey("sso_start_url") || profileProperties.containsKey("sso_session")) {
-                    // Read cached SSO credentials
-                    log.debug("Set credentials from cached AWS CLI cache for {}", profile.getProfileName());
-                    final CachedCredential cached = this.fetchSsoCredentials(profileProperties);
-                    if(null == cached) {
-                        return credentials;
+                if(toSsoPredicate().test(profile)) {
+                    log.debug("Configure with SSO properties {}", profile.getProperties());
+                    profile.getProperties().forEach(credentials::setProperty);
+                    if(profile.getProperties().containsKey("sso_session")) {
+                        // The sso-session section of the config file is used to group configuration variables for acquiring SSO access tokens
+                        // Example section definition line: [sso-session my-sso]
+                        final BasicProfile ssoProfile = profiles.get(String.format("sso-session %s", profile.getProperties().get("sso_session")));
+                        if(null == ssoProfile) {
+                            log.warn("Missing SSO profile with name {}", profile.getProperties().get("sso_session"));
+                        }
+                        else {
+                            log.debug("Configure with SSO properties {} from {}", ssoProfile.getProperties(), ssoProfile);
+                            ssoProfile.getProperties().forEach(credentials::setProperty);
+                        }
                     }
-                    return credentials.setTokens(new TemporaryAccessTokens(
-                            cached.accessKey, cached.secretKey, cached.sessionToken, Instant.parse(cached.expiration).toEpochMilli()));
+                    return credentials;
                 }
                 log.debug("Set credentials from profile {}", profile.getProfileName());
                 return credentials
@@ -156,7 +183,7 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public CredentialsConfigurator reload() throws LoginCanceledException {
+    public S3CredentialsConfigurator reload() throws LoginCanceledException {
         // See https://docs.aws.amazon.com/sdkref/latest/guide/creds-config-files.html for configuration behavior
         final Local configFile = LocalFactory.get(directory, "config");
         final Local credentialsFile = LocalFactory.get(directory, "credentials");
@@ -201,72 +228,16 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         return this;
     }
 
-    /**
-     * Read SSO credentials from cache file of AWS CLI
-     *
-     * @return Null on error reading from file or expired SSO credentials in cache
-     */
-    private CachedCredential fetchSsoCredentials(final Map<String, String> properties) {
-        // See https://github.com/boto/botocore/blob/412aeb96c9a6ebc72aa1bdf33e58ddd48c7b048d/botocore/credentials.py#L2078-L2098
-        try {
-            final ObjectMapper mapper = JsonMapper.builder()
-                    .serializationInclusion(Include.NON_NULL)
-                    .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                    .visibility(PropertyAccessor.FIELD, Visibility.ANY).build();
-            final CacheKey cacheKey = new CacheKey();
-            cacheKey.accountId = properties.get("sso_account_id");
-            cacheKey.roleName = properties.get("sso_role_name");
-            final String ssoSession = properties.get("sso_session");
-            if(ssoSession != null) {
-                cacheKey.sessionName = ssoSession;
-            }
-            else {
-                cacheKey.startUrl = properties.get("sso_start_url");
-            }
-            final String cacheKeyJson = mapper.writeValueAsString(cacheKey);
-            final HashCode hashCode = Hashing.sha1().newHasher().putString(cacheKeyJson, Charsets.UTF_8).hash();
-            final String hash = BaseEncoding.base16().lowerCase().encode(hashCode.asBytes());
-            final String cachedCredentialsJson = String.format("%s.json", hash);
-            final Local cachedCredentialsFile =
-                    LocalFactory.get(LocalFactory.get(LocalFactory.get(directory, "cli"), "cache"), cachedCredentialsJson);
-            log.debug("Attempting to read SSO credentials from {}", cachedCredentialsFile.getAbsolute());
-            if(!cachedCredentialsFile.exists()) {
-                log.warn("Missing file {} with cached SSO credentials.", cachedCredentialsFile.getAbsolute());
-                return null;
-            }
-            try(InputStream in = cachedCredentialsFile.getInputStream()) {
-                final CachedCredentials cached = mapper.readValue(in, CachedCredentials.class);
-                if(null == cached.credentials) {
-                    log.warn("Failure parsing SSO credentials.");
-                    return null;
-                }
-                final Instant expiration = Instant.parse(cached.credentials.expiration);
-                if(expiration.isBefore(Instant.now())) {
-                    log.warn("Expired AWS SSO credentials.");
-                    return null;
-                }
-                return cached.credentials;
-            }
-        }
-        catch(IOException | AccessDeniedException e) {
-            log.warn("Failure retrieving SSO credentials. {}", e.getMessage());
-            return null;
-        }
+    public Map<String, BasicProfile> getProfiles() {
+        return profiles;
     }
 
-    private static class CacheKey {
-        private String accountId;
-        private String roleName;
-        private String sessionName;
-        private String startUrl;
+    public static Predicate<BasicProfile> toSsoPredicate() {
+        return e -> e.getProperties().containsKey("sso_start_url")
+                || e.getProperties().containsKey("sso_session");
     }
 
-    private static class CachedCredentials {
-        @JsonProperty("Credentials")
-        private CachedCredential credentials;
-    }
-
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class CachedCredential {
         @JsonProperty("AccessKeyId")
         private String accessKey;
@@ -276,6 +247,15 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
         private String sessionToken;
         @JsonProperty("Expiration")
         private String expiration;
+
+        public Long getExpiration() {
+            try {
+                return Instant.parse(expiration).toEpochMilli();
+            }
+            catch(DateTimeParseException e) {
+                return -1L;
+            }
+        }
     }
 
     /**

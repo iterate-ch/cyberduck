@@ -32,10 +32,10 @@ public class VaultFinderListService implements ListService {
 
     private final Session<?> session;
     private final ListService delegate;
-    private final VaultLookupListener loader;
+    private final VaultLoader loader;
     private final int filecount;
 
-    public VaultFinderListService(final Session<?> session, final ListService delegate, final VaultLookupListener loader, final ListProgressListener listener) {
+    public VaultFinderListService(final Session<?> session, final ListService delegate, final VaultLoader loader, final ListProgressListener listener) {
         this.session = session;
         this.delegate = delegate;
         this.loader = loader;

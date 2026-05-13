@@ -17,8 +17,9 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
@@ -52,14 +53,14 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final String nodeId = new DeepboxAttributesFinderFeature(session, nodeid).find(file).getFileId();
         new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null); // assert no fail
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(file));
         // file not in trash is deleted but not purged (i.e. moved to the trash)
         final Path fileInTrash = new Path(trash, file.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new DeepboxFindFeature(session, nodeid).find(fileInTrash));
         assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, nodeid).find(fileInTrash).getFileId());
         // file in trash is purged (i.e. deleted permanently)
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(fileInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(fileInTrash), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(fileInTrash));
         try {
             new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null);
@@ -83,19 +84,19 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path file = new Path(subfolderWithContent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), file, new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new PathAttributes())));
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder.withAttributes(new DefaultPathAttributes())));
         assertFalse(new DefaultFindFeature(session).find(folder));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(subfolderWithContent.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(subfolderWithContent.withAttributes(new DefaultPathAttributes())));
         assertThrows(NotfoundException.class, () -> new DefaultFindFeature(session).find(subfolderWithContent));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(file.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(file.withAttributes(new DefaultPathAttributes())));
         // file not in trash is deleted but not purged (i.e. moved to the trash)
         final Path folderInTrash = new Path(trash, folder.getName(), EnumSet.of(Path.Type.directory));
         assertTrue(new DeepboxFindFeature(session, nodeid).find(folderInTrash));
         assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, nodeid).find(folderInTrash).getFileId());
         new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null); // assert no fail
         // file in trash is purged (i.e. deleted permanently)
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(folderInTrash), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(folderInTrash), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DeepboxFindFeature(session, nodeid).find(folderInTrash));
         try {
             new CoreRestControllerApi(session.getClient()).getNodeInfo(nodeId, null, null, null);
@@ -198,36 +199,36 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(Path.Type.file));
 
         new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), test, new TransferStatus());
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test.withAttributes(new PathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test.withAttributes(new DefaultPathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
-        new DeepboxRestoreFeature(session, nodeid).restore(testInTrash.withAttributes(new PathAttributes()), new DisabledLoginCallback());
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        new DeepboxRestoreFeature(session, nodeid).restore(testInTrash.withAttributes(new DefaultPathAttributes()), LoginCallback.noop);
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test.withAttributes(new PathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test.withAttributes(new DefaultPathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(testInTrash.withAttributes(new PathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(testInTrash.withAttributes(new DefaultPathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
     }
 
     @Test
@@ -239,37 +240,37 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(Path.Type.directory));
 
         new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), test, new TransferStatus());
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test.withAttributes(new PathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test.withAttributes(new DefaultPathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
-        new DeepboxRestoreFeature(session, nodeid).restore(testInTrash.withAttributes(new PathAttributes()), new DisabledLoginCallback());
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        new DeepboxRestoreFeature(session, nodeid).restore(testInTrash.withAttributes(new DefaultPathAttributes()), LoginCallback.noop);
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
 
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test.withAttributes(new PathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test.withAttributes(new DefaultPathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(testInTrash).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
-        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(testInTrash.withAttributes(new PathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(testInTrash.withAttributes(new DefaultPathAttributes())), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
     }
 
     @Test
@@ -282,15 +283,15 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(Path.Type.file));
 
         new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), test, new TransferStatus());
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
         new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
     }
 
     @Test
@@ -303,14 +304,14 @@ public class DeepboxTrashFeatureTest extends AbstractDeepboxTest {
         final Path testInTrash = new Path(trash, test.getName(), EnumSet.of(Path.Type.directory));
 
         new DeepboxDirectoryFeature(session, nodeid).mkdir(new DeepboxWriteFeature(session, nodeid), test, new TransferStatus());
-        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANDELETE));
         assertTrue(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANPURGE));
         assertFalse(new DeepboxAttributesFinderFeature(session, nodeid).find(test).getAcl().get(new Acl.CanonicalUser()).contains(CANREVERT));
 
         new DeepboxTrashFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new PathAttributes())));
-        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new PathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(test.withAttributes(new DefaultPathAttributes())));
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(testInTrash.withAttributes(new DefaultPathAttributes())));
     }
 }

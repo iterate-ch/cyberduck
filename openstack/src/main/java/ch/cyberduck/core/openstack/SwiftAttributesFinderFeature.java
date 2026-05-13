@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -78,7 +79,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
             if(containerService.isContainer(file)) {
                 final ContainerInfo info = session.getClient().getContainerInfo(region,
                         containerService.getContainer(file).getName());
-                final PathAttributes attributes = new PathAttributes();
+                final PathAttributes attributes = new DefaultPathAttributes();
                 attributes.setSize(info.getTotalSize());
                 attributes.setRegion(info.getRegion().getRegionId());
                 return attributes;
@@ -112,7 +113,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
                 // Try to find pending large file upload
                 final Write.Append append = new SwiftLargeObjectUploadFeature(session, regionService).append(file, new TransferStatus());
                 if(append.append) {
-                    return new PathAttributes().setSize(append.offset);
+                    return new DefaultPathAttributes().setSize(append.offset);
                 }
                 throw e;
             }
@@ -140,7 +141,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
 
     @Override
     public PathAttributes toAttributes(final StorageObject object) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         if(StringUtils.isNotBlank(object.getMd5sum())) {
             // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
             // the concatenated string of ETags for each of the segments in the manifest.
@@ -166,7 +167,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
     }
 
     public PathAttributes toAttributes(final ObjectMetadata metadata) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(Long.parseLong(metadata.getContentLength()));
         final String lastModified = metadata.getLastModified();
         try {

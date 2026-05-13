@@ -1,0 +1,9 @@
+<Project>
+
+  <Import Project="Cyberduck.References.props" />
+
+  <Import Project="Cyberduck.NuGet.targets" />
+
+  <Import Project="Cyberduck.Sign.targets" />
+
+</Project>

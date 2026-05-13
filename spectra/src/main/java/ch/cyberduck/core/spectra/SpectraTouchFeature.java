@@ -14,7 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -29,6 +29,7 @@ import org.jets3t.service.model.StorageObject;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.Optional;
 
 public class SpectraTouchFeature extends DefaultTouchFeature<StorageObject> {
 
@@ -42,12 +43,12 @@ public class SpectraTouchFeature extends DefaultTouchFeature<StorageObject> {
     @Override
     public Path touch(final Write<StorageObject> writer, final Path file, final TransferStatus status) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), status), new DisabledConnectionCallback());
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), status), ConnectionCallback.noop);
         return super.touch(writer, file, status);
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         // Creating files is only possible inside a bucket.
         if(workdir.isRoot()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);

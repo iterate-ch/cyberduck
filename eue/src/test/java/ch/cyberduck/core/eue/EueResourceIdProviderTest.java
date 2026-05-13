@@ -17,7 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -67,6 +67,6 @@ public class EueResourceIdProviderTest extends AbstractEueSessionTest {
         assertEquals(file.attributes().getFileId(), fileid.getFileId(file));
         assertEquals(file.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.lowerCase(file.getAbsolute()), file.getType())));
         assertEquals(file.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.upperCase(file.getAbsolute()), file.getType())));
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

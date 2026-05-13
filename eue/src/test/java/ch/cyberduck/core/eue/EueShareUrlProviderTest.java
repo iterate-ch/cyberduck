@@ -19,18 +19,23 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-public class EueShareUrlProviderTest {
+@Category(IntegrationTest.class)
+public class EueShareUrlProviderTest extends AbstractEueSessionTest {
 
     @Test
     public void toUrl() {
         assertEquals(DescriptiveUrl.EMPTY, new EueShareUrlProvider(new Host(new EueProtocol()), new UserSharesModel()).toUrl(
+                new Path("/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed));
+        assertEquals(DescriptiveUrl.EMPTY, new EueShareUrlProvider(new Host(new EueProtocol()), session.userShares()).toUrl(
                 new Path("/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed));
     }
 }

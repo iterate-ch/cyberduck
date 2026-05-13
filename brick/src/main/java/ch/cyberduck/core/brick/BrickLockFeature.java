@@ -35,7 +35,7 @@ public class BrickLockFeature implements Lock<String> {
     @Override
     public String lock(final Path file) throws BackgroundException {
         try {
-            return new LocksApi(new BrickApiClient(session))
+            return new LocksApi(session.getClient())
                 .postLocksPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
                     new LocksPathBody().exclusive(true).allowAccessByAnyUser(true)).getToken();
         }
@@ -47,7 +47,7 @@ public class BrickLockFeature implements Lock<String> {
     @Override
     public void unlock(final Path file, final String token) throws BackgroundException {
         try {
-            new LocksApi(new BrickApiClient(session))
+            new LocksApi(session.getClient())
                 .deleteLocksPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), token);
         }
         catch(ApiException e) {

@@ -18,8 +18,8 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.IndexedListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.features.Delete;
@@ -85,9 +85,9 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         });
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());
-            new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(list.get(i)), LoginCallback.noop, new Delete.DisabledCallback());
         }
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         final Path placeholder = new GoogleStorageTouchFeature(session).touch(
                 new GoogleStorageWriteFeature(session), new Path(container, String.format("^<%%%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
                 new GoogleStorageWriteFeature(session), new Path(container, String.format("%s +", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
                 new GoogleStorageWriteFeature(session), new Path(container, String.format("%s +", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener(), String.valueOf(Path.DELIMITER),
                 HostPreferencesFactory.get(session.getHost()).getInteger("googlestorage.listing.chunksize"), VersioningConfiguration.empty()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         final Path placeholder = new GoogleStorageTouchFeature(session).touch(
                 new GoogleStorageWriteFeature(session), new Path(container, String.format("test-\u001F-%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         final Path placeholder = new GoogleStorageTouchFeature(session).touch(
                 new GoogleStorageWriteFeature(session), new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
                 new GoogleStorageWriteFeature(session), new Path(directory, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener()).contains(placeholder));
         assertTrue(new GoogleStorageObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
-        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(placeholder, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(placeholder, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -160,6 +160,6 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
                 new GoogleStorageWriteFeature(session), new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

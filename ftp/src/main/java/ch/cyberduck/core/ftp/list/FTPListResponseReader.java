@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.ftp.parser.FTPExtendedFile;
 
 import org.apache.commons.lang3.StringUtils;
@@ -142,7 +143,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
             if(f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)) {
                 o = o.or(Permission.Action.execute);
             }
-            final Permission permission = new Permission(u, g, o);
+            final StaticPermission permission = new StaticPermission(u, g, o);
             if(f instanceof FTPExtendedFile) {
                 permission.setSetuid(((FTPExtendedFile) f).isSetuid());
                 permission.setSetgid(((FTPExtendedFile) f).isSetgid());

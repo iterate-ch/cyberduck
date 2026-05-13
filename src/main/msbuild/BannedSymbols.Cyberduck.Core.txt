@@ -1,0 +1,10 @@
+F:Windows.Win32.CorePInvoke.BHID_DataObject
+F:Windows.Win32.CorePInvoke.PATHCCH_ALLOW_LONG_PATHS
+M:Windows.Win32.CorePInvoke.ILCreateFromPath(System.String)
+M:Windows.Win32.CorePInvoke.ILCreateFromPath(Windows.Win32.Foundation.PCWSTR);
+M:Windows.Win32.CorePInvoke.ILCreateFromPathSafe(System.String)
+M:Windows.Win32.CorePInvoke.PathCchCanonicalizeEx(System.Span{System.Char}@,System.String,Windows.Win32.UI.Shell.PATHCCH_OPTIONS)
+M:Windows.Win32.CorePInvoke.PathCchCanonicalizeEx(Windows.Win32.Foundation.PWSTR,System.UIntPtr,System.String,Windows.Win32.UI.Shell.PATHCCH_OPTIONS)
+M:Windows.Win32.CorePInvoke.PathCchCanonicalizeEx(Windows.Win32.Foundation.PWSTR,System.UIntPtr,Windows.Win32.Foundation.PCWSTR,Windows.Win32.UI.Shell.PATHCCH_OPTIONS);
+M:Windows.Win32.CorePInvoke.PathCchStripPrefix(System.Span{System.Char}@,System.UIntPtr)
+M:Windows.Win32.CorePInvoke.PathCchStripPrefix(Windows.Win32.Foundation.PWSTR,System.UIntPtr)

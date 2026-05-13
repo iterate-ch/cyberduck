@@ -87,7 +87,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     public OutputStream getStream() {
         if(null == stream) {
             // Nothing to write
-            return NullOutputStream.NULL_OUTPUT_STREAM;
+            return NullOutputStream.INSTANCE;
         }
         return stream;
     }

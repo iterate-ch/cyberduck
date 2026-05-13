@@ -15,6 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 public interface HostPasswordStore extends PasswordStore {
@@ -33,7 +34,7 @@ public interface HostPasswordStore extends PasswordStore {
      * @throws LocalAccessDeniedException Failure accessing store
      * @see ch.cyberduck.core.Host#getCredentials()
      */
-    void save(Host bookmark) throws LocalAccessDeniedException;
+    void save(Host bookmark) throws AccessDeniedException;
 
     /**
      * Delete password in login keychain if any
@@ -41,5 +42,5 @@ public interface HostPasswordStore extends PasswordStore {
      * @param bookmark Hostname
      * @throws LocalAccessDeniedException Failure accessing store
      */
-    void delete(Host bookmark) throws LocalAccessDeniedException;
+    void delete(Host bookmark) throws AccessDeniedException;
 }

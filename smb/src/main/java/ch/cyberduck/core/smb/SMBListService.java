@@ -16,6 +16,7 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -74,12 +75,11 @@ public class SMBListService implements ListService {
                 else {
                     type.add(Path.Type.file);
                 }
-                final PathAttributes attr = new PathAttributes();
+                final PathAttributes attr = new DefaultPathAttributes();
                 attr.setAccessedDate(f.getLastAccessTime().toEpochMillis());
                 attr.setModificationDate(f.getLastWriteTime().toEpochMillis());
                 attr.setCreationDate(f.getCreationTime().toEpochMillis());
                 attr.setSize(f.getEndOfFile());
-                attr.setDisplayname(f.getFileName());
                 result.add(new Path(directory, filename, type, attr));
             }
             listener.chunk(directory, result);

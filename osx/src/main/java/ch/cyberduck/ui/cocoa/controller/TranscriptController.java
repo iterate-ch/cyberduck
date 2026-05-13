@@ -84,9 +84,11 @@ public abstract class TranscriptController extends BundleController implements T
                 public void run() {
                     switch(request) {
                         case request:
+                        case requestheader:
                             write(FIXED_WITH_FONT_REQUEST_ATTRIBUTES, transcript);
                             break;
                         case response:
+                        case responseheader:
                             write(FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
                             break;
                     }

@@ -16,20 +16,21 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class AbstractCteraTest extends VaultTest {
 
@@ -42,15 +43,16 @@ public class AbstractCteraTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new CteraProtocol(), "driveconnect.ctera.me", new Credentials(
-                PROPERTIES.get("ctera.user"), PROPERTIES.get("ctera.password"),
-                PROPERTIES.get("ctera.token")
-        ));
+        final Host host = new Host(new CteraProtocol(), "driveconnect.ctera.me", new Credentials(PROPERTIES.get("ctera.user")));
         host.setDefaultPath("/ServicesPortal/webdav/My Files");
         session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                fail(reason);
+                return null;
+            }
+        }, HostKeyCallback.noop, new TestPasswordStore(), ProgressListener.noop);
+        login.check(session, CancelCallback.noop);
     }
 }

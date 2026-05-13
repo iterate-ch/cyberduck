@@ -18,7 +18,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -52,7 +52,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
         test.attributes().setMetadata(metadata);
         feature.setMetadata(test, status.setMetadata(Collections.emptyMap()));
         assertFalse(feature.getMetadata(test).containsKey("Test"));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -67,6 +67,6 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
         assertEquals(status.getMetadata(), metadata);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

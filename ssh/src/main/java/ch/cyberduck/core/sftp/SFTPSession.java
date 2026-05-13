@@ -39,10 +39,8 @@ import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.compression.JcraftDelayedZlibCompression;
 import ch.cyberduck.core.sftp.compression.JcraftZlibCompression;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
-import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
-import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
@@ -144,19 +142,14 @@ public class SFTPSession extends Session<SSHClient> {
         final SSHClient connection = this.toClient(key, configuration);
         try {
             // Look for jump host configuration
-            final Host proxy = new OpenSSHJumpHostConfigurator().getJumphost(host.getHostname());
+            final Host proxy = host.getJumphost();
             if(null != proxy) {
                 log.info("Connect using jump host configuration {}", proxy);
                 final SSHClient hop = this.toClient(key, configuration);
                 hop.connect(proxy.getHostname(), proxy.getPort());
-                proxy.setCredentials(new OpenSSHCredentialsConfigurator().configure(proxy));
-                final KeychainLoginService service = new KeychainLoginService();
-                service.validate(proxy, prompt, new LoginOptions(proxy.getProtocol()));
                 // Authenticate with jump host
-                this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
+                this.authenticate(hop, proxy, prompt, CancelCallback.noop);
                 log.debug("Authenticated with jump host {}", proxy);
-                // Write credentials to keychain
-                service.save(proxy);
                 final DirectConnection tunnel = hop.newDirectConnection(
                         new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
                 // Connect to internal host
@@ -165,8 +158,6 @@ public class SFTPSession extends Session<SSHClient> {
             else {
                 connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
             }
-            final KeepAlive keepalive = connection.getConnection().getKeepAlive();
-            keepalive.setKeepAliveInterval(preferences.getInteger("ssh.heartbeat.seconds"));
             return connection;
         }
         catch(IOException e) {
@@ -176,13 +167,15 @@ public class SFTPSession extends Session<SSHClient> {
 
     private SSHClient toClient(final HostKeyCallback key, final Config configuration) {
         final SSHClient connection = new SSHClient(configuration);
+        final KeepAlive keepalive = connection.getConnection().getKeepAlive();
+        keepalive.setKeepAliveInterval(preferences.getInteger("ssh.heartbeat.seconds"));
         final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         connection.getTransport().setTimeoutMs(timeout);
         connection.setTimeout(timeout);
         connection.setSocketFactory(new ProxySocketFactory(host));
         connection.addHostKeyVerifier(new HostKeyVerifier() {
             @Override
-            public boolean verify(String hostname, int port, PublicKey publicKey) {
+            public boolean verify(final String hostname, final int port, final PublicKey publicKey) {
                 try {
                     return key.verify(host, publicKey);
                 }

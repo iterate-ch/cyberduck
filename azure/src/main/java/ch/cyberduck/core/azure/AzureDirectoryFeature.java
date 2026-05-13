@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import com.azure.core.exception.HttpResponseException;
 
@@ -69,28 +70,28 @@ public class AzureDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            if(!validate(filename)) {
-                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+            if(filename.isPresent()) {
+                if(!validate(filename.get())) {
+                    throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+                }
             }
+            // Empty argument if not known in validation
         }
     }
 
     public static boolean validate(final String filename) {
-        // Empty argument if not known in validation
-        if(StringUtils.isNotBlank(filename)) {
-            // Container names must be lowercase, between 3-63 characters long and must start with a letter or
-            // number. Container names may contain only letters, numbers, and the dash (-) character.
-            if(StringUtils.length(filename) > 63) {
-                return false;
-            }
-            if(StringUtils.length(filename) < 3) {
-                return false;
-            }
-            if(!StringUtils.isAlphanumeric(RegExUtils.removeAll(filename, "-"))) {
-                return false;
-            }
+        // Container names must be lowercase, between 3-63 characters long and must start with a letter or
+        // number. Container names may contain only letters, numbers, and the dash (-) character.
+        if(StringUtils.length(filename) > 63) {
+            return false;
+        }
+        if(StringUtils.length(filename) < 3) {
+            return false;
+        }
+        if(!StringUtils.isAlphanumeric(RegExUtils.removeAll(filename, "-"))) {
+            return false;
         }
         return true;
     }

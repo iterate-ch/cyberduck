@@ -153,13 +153,15 @@ public class LoginController extends AlertController {
     }
 
     @Override
-    protected void focus(final NSAlert alert) {
-        super.focus(alert);
-        if(options.user) {
-            usernameField.selectText(null);
-        }
+    public void focus() {
+        super.focus();
         if(options.password && !StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+            window.makeFirstResponder(passwordField);
             passwordField.selectText(null);
+        }
+        else {
+            window.makeFirstResponder(usernameField);
+            usernameField.selectText(null);
         }
     }
 

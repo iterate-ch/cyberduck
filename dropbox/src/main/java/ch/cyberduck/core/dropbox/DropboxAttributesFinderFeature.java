@@ -15,6 +15,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -56,7 +57,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder, Attribu
                 // Retrieve the namespace ID for a users home folder and team root folder
                 final FullAccount account = new DbxUserUsersRequests(session.getClient()).getCurrentAccount();
                 log.debug("Set root namespace {}", account.getRootInfo().getRootNamespaceId());
-                return new PathAttributes().setFileId(account.getRootInfo().getRootNamespaceId());
+                return new DefaultPathAttributes().setFileId(account.getRootInfo().getRootNamespaceId());
             }
             final Metadata metadata = new DbxUserFilesRequests(session.getClient(file)).getMetadata(containerService.getKey(file));
             if(metadata instanceof FileMetadata) {
@@ -78,7 +79,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder, Attribu
 
     @Override
     public PathAttributes toAttributes(final Metadata metadata) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         if(metadata instanceof FileMetadata) {
             final FileMetadata file = (FileMetadata) metadata;
             attributes.setSize(file.getSize());

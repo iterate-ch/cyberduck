@@ -16,22 +16,21 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -42,8 +41,7 @@ import static org.junit.Assert.fail;
 @Category(TestcontainerTest.class)
 public abstract class AbstractSMBTest {
 
-    @ClassRule
-    public static TestContainer container = TestContainer.getInstance();
+    private static final TestContainer container = new TestContainer();
 
     @BeforeClass
     public static void start() {
@@ -60,16 +58,16 @@ public abstract class AbstractSMBTest {
     @Before
     public void setup() throws BackgroundException {
         session = new SMBSession(new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445), "/user")
-                .withCredentials(new Credentials("WORKGROUP\\smbj", "pass")));
+                .setCredentials(new Credentials("WORKGROUP\\smbj", "pass")));
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new DisabledPasswordStore(), ProgressListener.noop);
+        login.check(session, CancelCallback.noop);
     }
 
     @After
@@ -100,13 +98,6 @@ public abstract class AbstractSMBTest {
             withEnv("LOCATION", "/smb");
             addExposedPort(SMB_PORT);
             waitingFor(Wait.forListeningPort());
-        }
-
-        static TestContainer getInstance() {
-            if(instance == null) {
-                instance = new TestContainer();
-            }
-            return instance;
         }
     }
 }

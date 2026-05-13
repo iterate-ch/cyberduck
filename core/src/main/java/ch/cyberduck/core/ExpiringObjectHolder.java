@@ -40,6 +40,15 @@ public class ExpiringObjectHolder<T> {
             return object;
         }
         log.warn("Expired object {}", object);
+        return this.expire();
+    }
+
+    public T expire() {
+        this.destroy(object);
         return object = null;
+    }
+
+    protected void destroy(final Object object) {
+        //
     }
 }

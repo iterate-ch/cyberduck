@@ -33,13 +33,13 @@ import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -198,7 +198,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         log.debug("Set new value {} for item {}", value, item);
         if(identifier.equals(BrowserColumn.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
-                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), new PathAttributes(item.attributes()).setVersionId(null));
+                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), new DefaultPathAttributes(item.attributes()).setVersionId(null));
                 new MoveController(controller).rename(item, renamed);
             }
         }
@@ -269,7 +269,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             else {
                 final Permission permission = item.attributes().getPermission();
                 value = NSAttributedString.attributedStringWithAttributes(
-                        permission.toString(),
+                        permission.getDescription(),
                         TableCellAttributes.browserFontLeftAlignment());
             }
         }
@@ -470,7 +470,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return NSDraggingInfo.NSDragOperationNone;
             }
             final Touch feature = controller.getSession().getFeature(Touch.class);
-            if(!feature.isSupported(destination, StringUtils.EMPTY)) {
+            if(!feature.isSupported(destination, Optional.empty())) {
                 // Target file system does not support creating files. Creating files is not supported
                 // for example in root of cloud storage accounts.
                 return NSDraggingInfo.NSDragOperationNone;

@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -22,6 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -33,8 +35,11 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StoregateAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
+    private static final Logger log = LogManager.getLogger(StoregateAttributesFinderFeature.class);
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
@@ -52,6 +57,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
                 for(RootFolder r : session.roots()) {
                     if(StringUtils.equalsIgnoreCase(file.getName(), PathNormalizer.name(r.getPath()))
                             || StringUtils.equalsIgnoreCase(file.getName(), PathNormalizer.name(r.getName()))) {
+                        log.debug("Found root folder match for {}", file);
                         return this.toAttributes(r);
                     }
                 }
@@ -67,7 +73,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
 
     @Override
     public PathAttributes toAttributes(final File f) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         if(0 != f.getModified().getMillis()) {
             attrs.setModificationDate(f.getModified().getMillis());
         }
@@ -99,12 +105,12 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
             // ReadWrite 2
             // Synchronize	4	Read, write access and permission to syncronize using desktop client.
             // FullControl 99
-            final Permission permission;
+            final StaticPermission permission;
             if((f.getPermission() & 2) == 2 || (f.getPermission() & 4) == 4) {
-                permission = new Permission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
+                permission = new StaticPermission(Permission.Action.read_write, Permission.Action.none, Permission.Action.none);
             }
             else {
-                permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
+                permission = new StaticPermission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
             }
             if((f.getFlags() & 1) == 1) {
                 // This item is a folder
@@ -117,7 +123,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
     }
 
     public PathAttributes toAttributes(final RootFolder f) {
-        final PathAttributes attrs = new PathAttributes();
+        final PathAttributes attrs = new DefaultPathAttributes();
         if(0 != f.getModified().getMillis()) {
             attrs.setModificationDate(f.getModified().getMillis());
         }

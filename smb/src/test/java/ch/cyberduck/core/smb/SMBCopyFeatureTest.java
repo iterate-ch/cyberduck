@@ -16,14 +16,14 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.TestcontainerTest;
@@ -49,12 +49,12 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
         final Path destinationFolder = new SMBDirectoryFeature(session).mkdir(
                 new SMBWriteFeature(session), new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Path fileCopied = new SMBCopyFeature(session).copy(file, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        final Path fileCopied = new SMBCopyFeature(session).copy(file, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertNotEquals(attr, new SMBAttributesFinderFeature(session).find(fileCopied));
         ListService list = new SMBListService(session);
         assertTrue(list.list(home, new DisabledListProgressListener()).contains(file));
         assertTrue(list.list(destinationFolder, new DisabledListProgressListener()).contains(copy));
-        new SMBDeleteFeature(session).delete(Arrays.asList(file, copy, destinationFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Arrays.asList(file, copy, destinationFolder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -68,10 +68,10 @@ public class SMBCopyFeatureTest extends AbstractSMBTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(destinationFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SMBTouchFeature(session).touch(new SMBWriteFeature(session), copy, new TransferStatus());
-        new SMBCopyFeature(session).copy(file, copy, new TransferStatus().setExists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new SMBCopyFeature(session).copy(file, copy, new TransferStatus().setExists(true), ConnectionCallback.noop, StreamListener.noop);
         ListService list = new SMBListService(session);
         assertTrue(list.list(sourceFolder, new DisabledListProgressListener()).contains(file));
         assertTrue(list.list(destinationFolder, new DisabledListProgressListener()).contains(copy));
-        new SMBDeleteFeature(session).delete(Arrays.asList(file, sourceFolder, copy, destinationFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SMBDeleteFeature(session).delete(Arrays.asList(file, sourceFolder, copy, destinationFolder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

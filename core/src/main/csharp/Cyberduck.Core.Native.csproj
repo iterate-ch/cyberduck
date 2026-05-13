@@ -18,7 +18,7 @@
   <PropertyGroup>
     <TargetFrameworks>net472;net8.0-windows10.0.22621.0</TargetFrameworks>
     <SupportedOSPlatformVersion>10.0.14393.0</SupportedOSPlatformVersion>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;arm64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IKVM" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
     <PackageReference Include="Microsoft.Windows.CsWin32">
       <PrivateAssets>all</PrivateAssets>
@@ -40,13 +39,13 @@
     <PackageReference Include="ReactiveUI" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' != '' And $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net472')) ">
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETFramework'">
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Security" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != '' And $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0')) ">
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp'">
     <PackageReference Include="System.Configuration.ConfigurationManager" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" />
   </ItemGroup>

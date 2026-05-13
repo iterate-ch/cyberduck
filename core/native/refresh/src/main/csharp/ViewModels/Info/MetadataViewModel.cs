@@ -196,7 +196,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                     copy.put(item.Key, item.Value);
                 }
 
-                var worker = new WriteMetadataWorkerImpl(pathsJava, copy, this, new DisabledProgressListener());
+                var worker = new WriteMetadataWorkerImpl(pathsJava, copy, this, ProgressListener.noop);
                 controller.background(new WorkerBackgroundAction(controller, session, worker));
                 return worker.Task;
             }

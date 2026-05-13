@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
@@ -56,7 +55,7 @@ public class CompareFilterTest {
             public boolean exists() {
                 return true;
             }
-        }, new TransferStatus().setExists(true), new DisabledProgressListener()));
+        }, new TransferStatus().setExists(true), ProgressListener.noop));
     }
 
     @Test
@@ -77,6 +76,6 @@ public class CompareFilterTest {
                                 return true;
                             }
                         },
-                        new TransferStatus().setExists(true), new DisabledProgressListener()));
+                        new TransferStatus().setExists(true), ProgressListener.noop));
     }
 }

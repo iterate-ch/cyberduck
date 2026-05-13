@@ -17,6 +17,7 @@ package ch.cyberduck.core.tus;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.dav.DAVClient;
@@ -52,8 +53,8 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
     private final TusCapabilities capabilities;
     private final DAVClient client;
 
-    public TusWriteFeature(final TusCapabilities capabilities, final DAVClient client) {
-        super(new VoidAttributesAdapter());
+    public TusWriteFeature(final Host host, final TusCapabilities capabilities, final DAVClient client) {
+        super(host, new VoidAttributesAdapter());
         this.capabilities = capabilities;
         this.client = client;
     }
@@ -63,7 +64,7 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
         final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>(file) {
             @Override
             public Void call(final HttpEntity entity) throws BackgroundException {
-                final HttpPatch request = new HttpPatch(status.getParameters().get(TusUploadFeature.UPLOAD_URL));
+                final HttpPatch request = new HttpPatch(status.getParameters().get(TusUploadFeature.UPLOAD_URL).toString());
                 request.setEntity(entity);
                 request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
                 final Checksum checksum = status.getChecksum();

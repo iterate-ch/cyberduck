@@ -15,8 +15,8 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
@@ -46,7 +46,7 @@ public class BrickTouchFeature implements Touch<FileEntity> {
             status.setSegment(true);
             status.setModified(System.currentTimeMillis());
             status.setPart(1);
-            new BrickWriteFeature(session).write(file, status, new DisabledConnectionCallback()).close();
+            new BrickWriteFeature(session).write(file, status, ConnectionCallback.noop).close();
             final FileEntity entity = upload.completeUpload(file, uploadPartEntity.getRef(), status, Collections.singletonList(status));
             return file.withAttributes(new BrickAttributesFinderFeature(session).toAttributes(entity));
         }

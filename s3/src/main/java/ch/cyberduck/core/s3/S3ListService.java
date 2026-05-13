@@ -16,6 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -94,7 +95,7 @@ public class S3ListService implements ListService {
         if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.upload.multipart.lookup")) {
             try {
                 for(MultipartUpload upload : new S3DefaultMultipartService(session).find(directory)) {
-                    final PathAttributes attributes = new PathAttributes();
+                    final PathAttributes attributes = new DefaultPathAttributes();
                     attributes.setHidden(true);
                     attributes.setVersionId(upload.getUploadId());
                     attributes.setModificationDate(upload.getInitiatedDate().getTime());

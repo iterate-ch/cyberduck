@@ -24,6 +24,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import java.util.Optional;
+
 public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
 
     private final Session<?> session;
@@ -31,7 +33,6 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     private final VaultRegistry registry;
 
     public VaultRegistryDirectoryFeature(final Session<?> session, final Directory<Reply> proxy, final VaultRegistry registry) {
-
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -43,7 +44,7 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         try {
             registry.find(session, workdir, false).getFeature(session, Directory.class, proxy).preflight(workdir, filename);
         }

@@ -4,7 +4,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
@@ -71,7 +71,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(new S3ObjectListService(session, acl).list(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener()).contains(test));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
         assertFalse(new S3FindFeature(session, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         final PathCache cache = new PathCache(1);
@@ -96,7 +96,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(virtualhost, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(new S3ObjectListService(virtualhost, acl).list(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener()).contains(test));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(virtualhost, acl).find(test));
         assertFalse(new S3FindFeature(virtualhost, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         final PathCache cache = new PathCache(1);

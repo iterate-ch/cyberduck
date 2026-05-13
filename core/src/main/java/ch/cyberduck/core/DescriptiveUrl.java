@@ -25,7 +25,7 @@ import java.util.Objects;
 
 public class DescriptiveUrl {
 
-    public static final DescriptiveUrl EMPTY = new DescriptiveUrl(StringUtils.EMPTY);
+    public static final DescriptiveUrl EMPTY = new DescriptiveUrl(StringUtils.EMPTY, Type.provider, StringUtils.EMPTY);
 
     private final String url;
     private final Type type;

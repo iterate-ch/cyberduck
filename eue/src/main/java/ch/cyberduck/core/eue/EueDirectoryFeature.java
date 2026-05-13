@@ -38,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.Optional;
 
 public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
     private static final Logger log = LogManager.getLogger(EueDirectoryFeature.class);
@@ -89,9 +90,11 @@ public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(!EueTouchFeature.validate(filename)) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
+        if(filename.isPresent()) {
+            if(!EueTouchFeature.validate(filename.get())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+            }
         }
     }
 }

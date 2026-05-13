@@ -69,6 +69,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.tableLayoutPanel33 = new System.Windows.Forms.TableLayoutPanel();
 			this.defaultACLComboBox = new System.Windows.Forms.ComboBox();
 			this.label5 = new System.Windows.Forms.Label();
+			this.groupBoxS3Versioning = new System.Windows.Forms.GroupBox();
+			this.tableLayoutPanelS3Versioning = new System.Windows.Forms.TableLayoutPanel();
+			this.s3VersioningCheckbox = new System.Windows.Forms.CheckBox();
+			this.labelS3Versioning = new System.Windows.Forms.Label();
 			this.managedBandwidthPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
 			this.tableLayoutPanel34 = new System.Windows.Forms.TableLayoutPanel();
 			this.groupBox25 = new System.Windows.Forms.GroupBox();
@@ -297,6 +301,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.tableLayoutPanel20.SuspendLayout();
 			this.groupBox23.SuspendLayout();
 			this.tableLayoutPanel33.SuspendLayout();
+			this.groupBoxS3Versioning.SuspendLayout();
+			this.tableLayoutPanelS3Versioning.SuspendLayout();
 			this.managedBandwidthPanel.SuspendLayout();
 			this.tableLayoutPanel34.SuspendLayout();
 			this.groupBox25.SuspendLayout();
@@ -659,10 +665,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.tableLayoutPanel28.Controls.Add(this.groupBox22, 0, 1);
 			this.tableLayoutPanel28.Controls.Add(this.groupBox3, 0, 2);
 			this.tableLayoutPanel28.Controls.Add(this.groupBox23, 0, 4);
+			this.tableLayoutPanel28.Controls.Add(this.groupBoxS3Versioning, 0, 5);
 			this.tableLayoutPanel28.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel28.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel28.Name = "tableLayoutPanel28";
-			this.tableLayoutPanel28.RowCount = 5;
+			this.tableLayoutPanel28.RowCount = 6;
+			this.tableLayoutPanel28.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel28.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel28.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel28.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -778,6 +786,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.groupBox3.Location = new System.Drawing.Point(3, 186);
 			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.AutoSize = true;
 			this.groupBox3.Size = new System.Drawing.Size(1, 100);
 			this.groupBox3.TabIndex = 2;
 			this.groupBox3.TabStop = false;
@@ -827,6 +836,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.groupBox23.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.groupBox23.Location = new System.Drawing.Point(3, 292);
 			this.groupBox23.Name = "groupBox23";
+			this.groupBox23.AutoSize = true;
 			this.groupBox23.Size = new System.Drawing.Size(1, 188);
 			this.groupBox23.TabIndex = 3;
 			this.groupBox23.TabStop = false;
@@ -870,9 +880,55 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.label5.TabIndex = 2;
 			this.label5.Text = "Choose the predefined set of grantees and permissions to apply to new buckets and" +
     " files.";
-			// 
+			//
+			// groupBoxS3Versioning
+			//
+			this.groupBoxS3Versioning.AutoSize = true;
+			this.groupBoxS3Versioning.Controls.Add(this.tableLayoutPanelS3Versioning);
+			this.groupBoxS3Versioning.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.groupBoxS3Versioning.Name = "groupBoxS3Versioning";
+			this.groupBoxS3Versioning.TabIndex = 5;
+			this.groupBoxS3Versioning.TabStop = false;
+			this.groupBoxS3Versioning.Text = "Versioning";
+			//
+			// tableLayoutPanelS3Versioning
+			//
+			this.tableLayoutPanelS3Versioning.AutoSize = true;
+			this.tableLayoutPanelS3Versioning.ColumnCount = 1;
+			this.tableLayoutPanelS3Versioning.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanelS3Versioning.Controls.Add(this.s3VersioningCheckbox, 0, 0);
+			this.tableLayoutPanelS3Versioning.Controls.Add(this.labelS3Versioning, 0, 1);
+			this.tableLayoutPanelS3Versioning.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanelS3Versioning.Name = "tableLayoutPanelS3Versioning";
+			this.tableLayoutPanelS3Versioning.Padding = new System.Windows.Forms.Padding(5);
+			this.tableLayoutPanelS3Versioning.RowCount = 2;
+			this.tableLayoutPanelS3Versioning.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanelS3Versioning.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanelS3Versioning.TabIndex = 0;
+			//
+			// s3VersioningCheckbox
+			//
+			this.s3VersioningCheckbox.AutoSize = true;
+			this.s3VersioningCheckbox.Location = new System.Drawing.Point(8, 8);
+			this.s3VersioningCheckbox.Name = "s3VersioningCheckbox";
+			this.s3VersioningCheckbox.TabIndex = 0;
+			this.s3VersioningCheckbox.Text = "Show all versions of files";
+			this.s3VersioningCheckbox.UseVisualStyleBackColor = true;
+			this.s3VersioningCheckbox.CheckedChanged += new System.EventHandler(this.s3VersioningCheckbox_CheckedChanged);
+			//
+			// labelS3Versioning
+			//
+			this.labelS3Versioning.AutoSize = true;
+			this.labelS3Versioning.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.labelS3Versioning.Location = new System.Drawing.Point(8, 31);
+			this.labelS3Versioning.Name = "labelS3Versioning";
+			this.labelS3Versioning.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
+			this.labelS3Versioning.Size = new System.Drawing.Size(450, 20);
+			this.labelS3Versioning.TabIndex = 1;
+			this.labelS3Versioning.Text = "Show all file versions in browser. Disable for faster browsing of buckets with many versions.";
+			//
 			// managedBandwidthPanel
-			// 
+			//
 			this.managedBandwidthPanel.Controls.Add(this.tableLayoutPanel34);
 			this.managedBandwidthPanel.Location = new System.Drawing.Point(0, 0);
 			this.managedBandwidthPanel.Name = "managedBandwidthPanel";
@@ -3677,6 +3733,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 			this.groupBox23.PerformLayout();
 			this.tableLayoutPanel33.ResumeLayout(false);
 			this.tableLayoutPanel33.PerformLayout();
+			this.groupBoxS3Versioning.ResumeLayout(false);
+			this.groupBoxS3Versioning.PerformLayout();
+			this.tableLayoutPanelS3Versioning.ResumeLayout(false);
+			this.tableLayoutPanelS3Versioning.PerformLayout();
 			this.managedBandwidthPanel.ResumeLayout(false);
 			this.managedBandwidthPanel.PerformLayout();
 			this.tableLayoutPanel34.ResumeLayout(false);
@@ -4044,6 +4104,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         private ManagedPanel managedGoogleCloudPanel;
         private System.Windows.Forms.ToolStripButton googleCloudButton;
         private System.Windows.Forms.GroupBox groupBox23;
+        private System.Windows.Forms.GroupBox groupBoxS3Versioning;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelS3Versioning;
+        private System.Windows.Forms.CheckBox s3VersioningCheckbox;
+        private System.Windows.Forms.Label labelS3Versioning;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel33;
         private System.Windows.Forms.ComboBox defaultACLComboBox;
         private System.Windows.Forms.Label label5;

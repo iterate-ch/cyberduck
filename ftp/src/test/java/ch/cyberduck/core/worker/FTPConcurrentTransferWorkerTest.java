@@ -24,8 +24,8 @@ import ch.cyberduck.core.ftp.FTPAttributesFinderFeature;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.DefaultSessionPool;
@@ -91,7 +91,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         };
         final Transfer t = new UploadTransfer(host, test, local);
         final BytecountStreamListener counter = new BytecountStreamListener();
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
+        final LoginConnectionService connect = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop, new DisabledPasswordStore(), ProgressListener.noop);
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
@@ -146,7 +146,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledConnectionCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService()
+                ConnectionCallback.noop, ProgressListener.noop, counter, new DisabledNotificationService()
         );
         assertTrue(worker.run(session));
         local.delete();
@@ -159,7 +159,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -182,8 +182,8 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         };
         final Transfer transfer = new UploadTransfer(host, list);
         final DefaultSessionPool pool = new DefaultSessionPool(
-                new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                        new DisabledProgressListener()),
+                new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop, new DisabledPasswordStore(),
+                        ProgressListener.noop),
                 new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
@@ -194,7 +194,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+                LoginCallback.noop, ProgressListener.noop, StreamListener.noop, new DisabledNotificationService()
         );
         pool.withMaxTotal(connections);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);

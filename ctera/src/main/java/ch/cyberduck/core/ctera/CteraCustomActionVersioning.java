@@ -20,7 +20,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
@@ -58,10 +57,12 @@ public class CteraCustomActionVersioning {
     private static final Logger log = LogManager.getLogger(CteraCustomActionVersioning.class);
 
     private final CteraSession session;
+    private final HostPasswordStore keychain;
     private final Path file;
 
-    public CteraCustomActionVersioning(final CteraSession session, final Path file) {
+    public CteraCustomActionVersioning(final CteraSession session, final HostPasswordStore keychain, final Path file) {
         this.session = session;
+        this.keychain = keychain;
         this.file = file;
     }
 
@@ -111,7 +112,7 @@ public class CteraCustomActionVersioning {
     }
 
     private String getDeviceName() throws BackgroundException {
-        final String token = this.getCteraTokens();
+        final String token = keychain.findLoginToken(session.getHost());
         if(StringUtils.isBlank(token)) {
             throw new InteroperabilityException("No token found");
         }
@@ -136,11 +137,6 @@ public class CteraCustomActionVersioning {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
-    }
-
-    protected String getCteraTokens() {
-        final HostPasswordStore keychain = PasswordStoreFactory.get();
-        return keychain.findLoginToken(session.getHost());
     }
 
     private static String getSessionTokenPayloadAsString() throws JsonProcessingException {

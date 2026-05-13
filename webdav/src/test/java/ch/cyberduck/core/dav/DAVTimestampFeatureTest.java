@@ -16,7 +16,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -51,7 +51,7 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
         assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
         new DAVMetadataFeature(session).setMetadata(file, status.setMetadata(Collections.emptyMap()));
         assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -64,6 +64,6 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
         final Path file = new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotEquals(5000L, new DAVAttributesFinderFeature(session).find(folder).getModificationDate());
         assertNotEquals(5000L, new DefaultAttributesFinderFeature(session).find(folder).getModificationDate());
-        new DAVDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(file, folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

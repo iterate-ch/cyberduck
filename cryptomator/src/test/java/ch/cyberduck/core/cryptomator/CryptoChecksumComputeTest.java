@@ -15,38 +15,55 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoChecksumCompute;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.core.vault.VaultVersion;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class CryptoChecksumComputeTest {
+@RunWith(value = Parameterized.class)
+public class CryptoChecksumComputeTest extends AbstractCryptoTests {
 
     @Test
     public void testCompute() throws Exception {
         final Path vault = new Path("/vault", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
+
+            private final Map<String, byte[]> fileStore = new HashMap<>();
+
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Directory.class) {
                     return (T) new Directory() {
-
                         @Override
                         public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(vault) || folder.isChild(vault));
@@ -54,14 +71,46 @@ public class CryptoChecksumComputeTest {
                         }
                     };
                 }
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                            if(fileStore.containsKey(file.getAbsolute())) {
+                                return new ByteArrayInputStream(fileStore.get(file.getAbsolute()));
+                            }
+                            throw new NotfoundException(file.getAbsolute());
+                        }
+                    };
+                }
+                if(type == Write.class) {
+                    return (T) new Write<Void>() {
+
+                        @Override
+                        public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                            return new StatusOutputStream<Void>(buffer) {
+                                @Override
+                                public void close() throws IOException {
+                                    super.close();
+                                    fileStore.put(file.getAbsolute(), buffer.toByteArray());
+                                }
+
+                                @Override
+                                public Void getStatus() {
+                                    return null;
+                                }
+                            };
+                        }
+                    };
+                }
                 return super._getFeature(type);
             }
         };
-        final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"));
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final ByteBuffer header = cryptomator.getFileHeaderCryptor().encryptHeader(cryptomator.getFileHeaderCryptor().create());
         // DEFAULT_PIPE_SIZE=1024
-        final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
         final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, cryptomator);
         final RandomNonceGenerator nonces = new RandomNonceGenerator(cryptomator.getNonceSize());

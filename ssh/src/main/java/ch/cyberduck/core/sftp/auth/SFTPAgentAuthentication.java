@@ -39,7 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -131,14 +131,22 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
     protected Collection<Identity> filter(final Credentials credentials, final Collection<Identity> identities) {
         if(credentials.isPublicKeyAuthentication()) {
             final Local selected = credentials.getIdentity();
-            for(Identity identity : identities) {
-                if(identity.getComment() != null) {
-                    final String candidate = new String(identity.getComment(), StandardCharsets.UTF_8);
-                    if(selected.getAbsolute().equals(candidate)) {
-                        log.debug("Matching identity {} found", candidate);
-                        return Collections.singletonList(identity);
+            try {
+                final Identity configured = isPrivateKey(selected) ?
+                        identityFromPrivateKey(selected) :
+                        identityFromPublicKey(selected);
+                if(configured != null) {
+                    for(Identity identity : identities) {
+                        if(Arrays.equals(identity.getBlob(), configured.getBlob())) {
+                            log.debug("Matching identity found by public key blob for {}", selected);
+                            return Collections.singletonList(identity);
+                        }
                     }
+                    log.warn("No agent identity matches public key blob for {}", selected);
                 }
+            }
+            catch(IOException | AccessDeniedException e) {
+                log.warn("Failure reading identity {} for key blob matching", selected, e);
             }
         }
         return identities;

@@ -17,19 +17,19 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
@@ -37,9 +37,9 @@ import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSAttributesFinderFeature;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectS3MultipartWriteFeature;
+import ch.cyberduck.core.sds.SDSDirectS3WriteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
 import ch.cyberduck.core.sds.SDSFindFeature;
-import ch.cyberduck.core.sds.SDSMultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -74,21 +74,21 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
     @Test
     public void testDownloadVersioned() throws Exception {
         final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new SDSMultipartWriteFeature(session, fileid), new Path(
+        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new SDSDirectS3WriteFeature(session, fileid), new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, fileid).write(test, writeStatus, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         final TransferStatus writeStatus = new TransferStatus().setExists(true).setLength(content.length).setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, fileid).write(test, writeStatus, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -102,14 +102,14 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, StreamListener.noop, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         test.attributes().setVersionId(versionId);
         assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test).getVersionId());
-        new SDSDeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, fileid).delete(Arrays.asList(test, room), LoginCallback.noop, new Delete.DisabledCallback());
         localFile.delete();
     }
 
@@ -118,7 +118,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
         final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
         final Local folder = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalDirectoryFeature().mkdir(folder);
-        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new SDSMultipartWriteFeature(session, fileid), new Path(
+        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new SDSDirectS3WriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Transfer t = new UploadTransfer(session.getHost(), room, folder);
         final BytecountStreamListener counter = new BytecountStreamListener();
@@ -128,11 +128,11 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                ProgressListener.noop, counter, LoginCallback.noop, new DisabledNotificationService()) {
 
         }.run(session));
         assertTrue(t.isComplete());
         assertTrue(new SDSFindFeature(session, fileid).find(room));
-        new SDSDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, fileid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

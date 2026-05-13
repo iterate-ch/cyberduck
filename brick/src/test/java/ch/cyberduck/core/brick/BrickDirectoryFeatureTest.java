@@ -16,7 +16,7 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
@@ -39,6 +39,6 @@ public class BrickDirectoryFeatureTest extends AbstractBrickTest {
         final Path directory = new BrickDirectoryFeature(session).mkdir(
                 new BrickWriteFeature(session), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertThrows(ConflictException.class, () -> new BrickDirectoryFeature(session).mkdir(new BrickWriteFeature(session), directory, new TransferStatus()));
-        new BrickDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -14,14 +14,13 @@ package ch.cyberduck.core.azure;/*
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -34,11 +33,11 @@ public class AbstractAzureTest extends VaultTest {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+        return new Object[]{VaultVersion.Type.V8, VaultVersion.Type.UVF};
     }
 
     @Parameterized.Parameter
-    public int vaultVersion;
+    public VaultVersion.Type vaultVersion;
 
     @After
     public void disconnect() throws Exception {
@@ -47,11 +46,11 @@ public class AbstractAzureTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                PROPERTIES.get("azure.user"), PROPERTIES.get("azure.password")
+        final Host host = new Host(new AzureProtocol(), PROPERTIES.get("azure.hostname"), new Credentials(
+                PROPERTIES.get("azure.user")
         ));
         session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+        new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
+                new TestPasswordStore(), ProgressListener.noop).check(session, CancelCallback.noop);
     }
 }

@@ -19,8 +19,8 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
@@ -54,7 +54,7 @@ public class GoogleStorageFindFeatureTest extends AbstractGoogleStorageTest {
                 new GoogleStorageWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(folder));
         assertFalse(new GoogleStorageFindFeature(session).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class GoogleStorageFindFeatureTest extends AbstractGoogleStorageTest {
         new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), file, new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(file));
         assertFalse(new GoogleStorageFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class GoogleStorageFindFeatureTest extends AbstractGoogleStorageTest {
         assertTrue(new GoogleStorageFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(new GoogleStorageObjectListService(session).list(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener()).contains(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new GoogleStorageFindFeature(session).find(test));
         assertFalse(new GoogleStorageFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         final PathCache cache = new PathCache(1);

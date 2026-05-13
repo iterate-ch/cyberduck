@@ -205,14 +205,14 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 }
                 else {
                     // Add bucket name to path
-                    resource += bucketName + Path.DELIMITER;
+                    resource += URIEncoder.encode(bucketName) + (StringUtils.isEmpty(objectKey) ? StringUtils.EMPTY : Path.DELIMITER);
                 }
             }
         }
         else {
             if(StringUtils.isNotBlank(bucketName)) {
                 // Add bucket name to path
-                resource += bucketName + Path.DELIMITER;
+                resource += URIEncoder.encode(bucketName) + (StringUtils.isEmpty(objectKey) ? StringUtils.EMPTY : Path.DELIMITER);
             }
         }
         final HttpUriRequest request;
@@ -220,8 +220,9 @@ public class RequestEntityRestStorageService extends RestS3Service {
         log.debug("Set hostname to {}", hostname);
         final String virtualPath;
         // Allow for non-standard virtual directory paths on the server-side
-        if(StringUtils.isNotBlank(host.getProtocol().getContext()) && !Scheme.isURL(host.getProtocol().getContext())) {
-            virtualPath = PathNormalizer.normalize(host.getProtocol().getContext());
+        final String context = host.getProtocol().getContext();
+        if(StringUtils.isNotBlank(context) && !Scheme.isURL(context)) {
+            virtualPath = PathNormalizer.normalize(context);
         }
         else {
             virtualPath = StringUtils.EMPTY;

@@ -19,7 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
@@ -57,7 +57,7 @@ public class AzureFindFeatureTest extends AbstractAzureTest {
                 new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureFindFeature(session).find(folder));
         assertFalse(new AzureFindFeature(session).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class AzureFindFeatureTest extends AbstractAzureTest {
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), file, new TransferStatus());
         assertTrue(new AzureFindFeature(session).find(file));
         assertFalse(new AzureFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class AzureFindFeatureTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(new AzureObjectListService(session).list(intermediate,
                 new DisabledListProgressListener()).contains(test));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session).find(test));
         assertFalse(new AzureFindFeature(session).find(intermediate));
         final PathCache cache = new PathCache(1);

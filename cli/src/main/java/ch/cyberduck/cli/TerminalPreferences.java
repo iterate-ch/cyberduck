@@ -17,7 +17,8 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.DisabledConnectionTimeout;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.StaticPermission;
+import ch.cyberduck.core.cryptomator.DefaultVaultProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.transfer.Transfer;
@@ -58,7 +59,7 @@ public class TerminalPreferences extends Preferences {
         for(Transfer.Type t : Transfer.Type.values()) {
             this.setDefault(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
         }
-        this.setDefault("factory.vault.class", CryptoVault.class.getName());
+        this.setDefault("factory.vaultprovider.class", DefaultVaultProvider.class.getName());
         this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
         this.setDefault("factory.connectiontimeout.class", DisabledConnectionTimeout.class.getName());
     }
@@ -81,7 +82,7 @@ public class TerminalPreferences extends Preferences {
         this.setDefault("logging", "fatal");
 
         this.setDefault("website.home", "https://duck.sh/");
-        this.setDefault("website.help", "https://help.duck.sh/");
+        this.setDefault("website.help", "https://docs.duck.sh/");
 
         System.setProperty("jna.library.path", this.getProperty("java.library.path"));
 
@@ -105,7 +106,7 @@ public class TerminalPreferences extends Preferences {
 
     public TerminalPreferences withDefaults(final CommandLine input) {
         if(input.hasOption(TerminalOptionsBuilder.Params.chmod.name())) {
-            final Permission permission = new Permission(input.getOptionValue(TerminalOptionsBuilder.Params.chmod.name()));
+            final Permission permission = new StaticPermission(input.getOptionValue(TerminalOptionsBuilder.Params.chmod.name()));
             this.setDefault("queue.upload.permissions.change", String.valueOf(true));
             this.setDefault("queue.upload.permissions.default", String.valueOf(true));
             this.setDefault("queue.upload.permissions.file.default", permission.getMode());

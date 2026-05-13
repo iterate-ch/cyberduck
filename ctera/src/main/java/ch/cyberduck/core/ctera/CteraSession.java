@@ -63,6 +63,7 @@ public class CteraSession extends DAVSession {
     protected PublicInfo info;
 
     private final HostPasswordStore keychain;
+    private final FileIdProvider fileid = new DefaultFileIdProvider(this);
     private final VersionIdProvider versionid = new DefaultVersionIdProvider(this);
 
     private APICredentials apiCredentials;
@@ -84,12 +85,12 @@ public class CteraSession extends DAVSession {
         configuration.disableRedirectHandling();
         if(preferences.getBoolean("ctera.download.directio.enable")) {
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    authentication = new CteraAuthenticationHandler(this, prompt), directio = new CteraDirectIOInterceptor(this)));
+                    authentication = new CteraAuthenticationHandler(this, keychain, prompt), directio = new CteraDirectIOInterceptor(this)));
             configuration.addInterceptorFirst(directio);
         }
         else {
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
-                    authentication = new CteraAuthenticationHandler(this, prompt)));
+                    authentication = new CteraAuthenticationHandler(this, keychain, prompt)));
         }
         configuration.addInterceptorFirst(new CteraCookieInterceptor());
         final DAVClient client = new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
@@ -180,10 +181,8 @@ public class CteraSession extends DAVSession {
             final HttpPost post = new HttpPost(API_PATH);
             try {
                 final String userId = this.getPortalSession().getUserIdFromUserRef();
-                post.setEntity(
-                        new StringEntity(String.format("<obj><att id=\"type\"><val>user-defined</val></att><att id=\"name\"><val>createApiKey</val></att><att id=\"param\"><val>%s</val></att></obj>",
-                                userId), ContentType.TEXT_XML
-                        )
+                post.setEntity(new StringEntity(String.format("<obj><att id=\"type\"><val>user-defined</val></att><att id=\"name\"><val>createApiKey</val></att><att id=\"param\"><val>%s</val></att></obj>", userId),
+                        ContentType.TEXT_XML)
                 );
                 final APICredentials credentials = this.getClient().execute(post, new AbstractResponseHandler<APICredentials>() {
                     @Override
@@ -233,6 +232,7 @@ public class CteraSession extends DAVSession {
 
     @Override
     public void disconnect() throws BackgroundException {
+        fileid.clear();
         versionid.clear();
         super.disconnect();
     }
@@ -241,10 +241,10 @@ public class CteraSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == VersionIdProvider.class) {
-            if(preferences.getBoolean("ctera.download.directio.enable")) {
-                return (T) versionid;
-            }
-            return null;
+            return (T) versionid;
+        }
+        if(type == FileIdProvider.class) {
+            return (T) fileid;
         }
         if(type == Touch.class) {
             return (T) new CteraTouchFeature(this);
@@ -265,7 +265,7 @@ public class CteraSession extends DAVSession {
             return null;
         }
         if(type == CustomActions.class) {
-            return (T) new CteraCustomActions(this);
+            return (T) new CteraCustomActions(this, keychain);
         }
         if(type == UrlProvider.class) {
             return (T) new CteraUrlProvider(host);
@@ -277,10 +277,7 @@ public class CteraSession extends DAVSession {
             return (T) new CteraListService(this);
         }
         if(type == Read.class) {
-            if(preferences.getBoolean("ctera.download.directio.enable")) {
-                return (T) new CteraDelegatingReadFeature(this);
-            }
-            return (T) new CteraReadFeature(this);
+            return (T) new CteraDelegatingReadFeature(this, versionid);
         }
         if(type == Write.class) {
             return (T) new CteraWriteFeature(this);

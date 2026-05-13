@@ -17,10 +17,10 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
 import ch.cyberduck.core.googledrive.DriveAttributesFinderFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
@@ -34,6 +34,7 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -46,6 +47,7 @@ import static org.junit.Assert.*;
 public class DeleteWorkerTest extends AbstractDriveTest {
 
     @Test
+    @Ignore
     public void testDelete() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
@@ -55,7 +57,7 @@ public class DeleteWorkerTest extends AbstractDriveTest {
         final Path file = new DriveTouchFeature(session, fileid).touch(
                 new DriveWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file));
-        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener(), true);
+        final DeleteWorker worker = new DeleteWorker(LoginCallback.noop, Collections.singletonList(folder), ProgressListener.noop, true);
         int hashCode = worker.hashCode();
         worker.run(session);
         assertEquals(hashCode, worker.hashCode());

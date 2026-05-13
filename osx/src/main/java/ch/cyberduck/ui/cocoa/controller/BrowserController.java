@@ -64,7 +64,6 @@ import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -87,10 +86,10 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferQueue;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.vault.LoadingVaultLookupListener;
+import ch.cyberduck.core.vault.RegistryVaultLoader;
 import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.core.vault.VaultFactory;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
@@ -143,7 +142,6 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
@@ -835,8 +833,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Override
     public void setWindow(final NSWindow window) {
-        // Save frame rectangle
-        window.setFrameAutosaveName("Browser");
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
         window.setContentMinSize(new NSSize(600d, 200d));
@@ -856,16 +852,24 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Override
-    public void display(final boolean key) {
-        super.display(key);
+    public String windowFrameName() {
+        if(pool != SessionPool.DISCONNECTED) {
+            return pool.getHost().getUuid();
+        }
+        return "Browser";
+    }
+
+    @Override
+    public void display(final boolean key, final String frameName) {
+        super.display(key, frameName);
         cascade = this.cascade(cascade);
     }
 
     @Override
     public void windowWillClose(final NSNotification notification) {
         // Convert from lower left to top left coordinates
-        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
-                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
+        cascade = new NSPoint(window.frame().origin.x.doubleValue(),
+                window.frame().origin.y.doubleValue() + window.frame().size.height.doubleValue());
         super.windowWillClose(notification);
     }
 
@@ -2000,7 +2004,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void searchButtonClicked(final ID sender) {
-        this.window().makeFirstResponder(searchField);
+        window.makeFirstResponder(searchField);
     }
 
     @Action
@@ -2549,17 +2553,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Location feature = pool.getFeature(Location.class);
         final Path selected = this.getSelectedPath();
         final Path workdir = this.getWorkdirFromSelection();
+        final VaultVersion metadata = new VaultVersion(VaultVersion.Type.valueOf(preferences.getProperty("cryptomator.vault.default")));
         final AlertController sheet = new VaultController(workdir, selected, cache,
-                feature != null ? feature.getLocations(workdir) : Collections.emptySet(), feature != null ? feature.getDefault(workdir) : Location.unknown, new VaultController.Callback() {
+                feature != null ? feature.getLocations(workdir) : Collections.emptySet(), feature != null ? feature.getDefault(workdir) : Location.unknown,
+                metadata, new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
-                        new CreateVaultWorker(region, passphrase, VaultFactory.get(folder,
-                                HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                                HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.config.filename"),
-                                HostPreferencesFactory.get(pool.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))) {
+                        new CreateVaultWorker(region, folder, passphrase,
+                                metadata) {
                             @Override
-                            public void cleanup(final Path vault) {
+                            public void cleanup(final Vault vault) {
                                 reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         })
@@ -2572,25 +2576,25 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void lockUnlockEncryptedVaultButtonClicked(final ID sender) {
         final Path directory = new UploadTargetFinder(workdir).find(this.getSelectedPath());
-        if(directory.attributes().getVault() != null) {
+        if(pool.getVaultRegistry().contains(directory)) {
             // Lock and remove all open vaults
-            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory.attributes().getVault()) {
+            this.background(new WorkerBackgroundAction<>(this, pool, new LockVaultWorker(pool.getVaultRegistry(), directory) {
                 @Override
                 public void cleanup(final Path vault) {
                     if(vault != null) {
-                        reload(vault, Collections.singleton(vault), Collections.emptyList(), true);
+                        reload(directory, Collections.singleton(directory), Collections.emptyList(), true);
                     }
                 }
             }));
         }
         else {
             // Unlock vault
-            this.background(new WorkerBackgroundAction<>(this, pool, new LoadVaultWorker(new LoadingVaultLookupListener(pool.getVaultRegistry(),
+            this.background(new WorkerBackgroundAction<>(this, pool, new LoadVaultWorker(new RegistryVaultLoader(pool.getVaultRegistry(),
                     PasswordCallbackFactory.get(this)), directory) {
                 @Override
                 public void cleanup(final Vault vault) {
                     if(vault != null) {
-                        reload(vault.getHome(), Collections.singleton(vault.getHome()), Collections.emptyList(), true);
+                        reload(directory, Collections.singleton(directory), Collections.emptyList(), true);
                     }
                 }
             }));
@@ -2846,8 +2850,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         uploadPanel = NSOpenPanel.openPanel();
         uploadPanel.setCanChooseDirectories(true);
         uploadPanel.setCanChooseFiles(pool.getFeature(Touch.class).isSupported(
-                new UploadTargetFinder(workdir).find(this.getSelectedPath()),
-                StringUtils.EMPTY));
+                new UploadTargetFinder(workdir).find(this.getSelectedPath()), Optional.empty()));
         uploadPanel.setCanCreateDirectories(false);
         uploadPanel.setTreatsFilePackagesAsDirectories(true);
         uploadPanel.setAllowsMultipleSelection(true);
@@ -3431,6 +3434,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     scheduler.shutdown(false);
                 }
                 pool.shutdown();
+                window.setTitle(StringUtils.EMPTY);
+                if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+                    window.setSubtitle(StringUtils.EMPTY);
+                }
+                window.setRepresentedFilename(StringUtils.EMPTY);
+                window.saveFrameUsingName(pool.getHost().getUuid());
                 pool = SessionPool.DISCONNECTED;
                 setWorkdir(null);
                 cache.clear();
@@ -3561,11 +3570,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final Archive archive = Archive.forName(item.representedObject());
             item.setTitle(archive.getTitle(this.getSelectedPaths()));
         }
-        else if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
+        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.quicklook.action())) {
             item.setKeyEquivalent(" ");
             item.setKeyEquivalentModifierMask(0);
         }
-        else if(action.equals(Foundation.selector("lockUnlockEncryptedVaultButtonClicked:"))) {
+        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.cryptomator.action())) {
             if(this.isMounted()) {
                 final Path selected = new UploadTargetFinder(this.workdir()).find(this.getSelectedPath());
                 final VaultRegistry registry = pool.getVaultRegistry();

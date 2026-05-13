@@ -21,7 +21,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.jets3t.service.impl.rest.httpclient.RestStorageService;
 
 import java.net.URI;
 
@@ -32,7 +31,7 @@ import com.spectralogic.ds3client.networking.ConnectionDetails;
 import com.spectralogic.ds3client.networking.NetworkClientImpl;
 
 public class SpectraClientBuilder {
-    public Ds3Client wrap(final RestStorageService client, final Host bookmark) {
+    public Ds3Client wrap(final SpectraSession session, final Host bookmark) {
         return new Ds3ClientImpl(new NetworkClientImpl(new ConnectionDetails() {
             @Override
             public String getEndpoint() {
@@ -41,8 +40,8 @@ public class SpectraClientBuilder {
 
             @Override
             public Credentials getCredentials() {
-                return new Credentials(client.getProviderCredentials().getAccessKey(),
-                    client.getProviderCredentials().getSecretKey());
+                return new Credentials(session.getAuthentication().get().getTokens().getAccessKeyId(),
+                        session.getAuthentication().get().getTokens().getSecretAccessKey());
             }
 
             @Override
@@ -84,6 +83,6 @@ public class SpectraClientBuilder {
             public String getUserAgent() {
                 return new PreferencesUseragentProvider().get();
             }
-        }, (CloseableHttpClient) client.getHttpClient()));
+        }, (CloseableHttpClient) session.getClient().getHttpClient()));
     }
 }

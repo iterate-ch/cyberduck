@@ -1,8 +1,8 @@
 package ch.cyberduck.core.irods;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2025 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,19 +13,20 @@ package ch.cyberduck.core.irods;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.irods.jargon.core.exception.JargonException;
-import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.pub.io.IRODSFile;
+import org.irods.irods4j.high_level.connection.IRODSConnection;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystem;
+import org.irods.irods4j.high_level.vfs.IRODSFilesystemException;
+
+import java.io.IOException;
 
 public class IRODSDirectoryFeature implements Directory<Void> {
 
@@ -38,13 +39,15 @@ public class IRODSDirectoryFeature implements Directory<Void> {
     @Override
     public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.getClient();
-            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(folder.getAbsolute());
-            fs.mkdir(f, false);
+            final IRODSConnection conn = session.getClient();
+            IRODSFilesystem.createCollection(conn.getRcComm(), folder.getAbsolute());
             return folder;
         }
-        catch(JargonException e) {
+        catch(IRODSFilesystemException e) {
             throw new IRODSExceptionMappingService().map("Cannot create folder {0}", e, folder);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }
 }

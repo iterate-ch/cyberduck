@@ -17,11 +17,13 @@ package ch.cyberduck.core.sftp.auth;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +41,11 @@ import static org.mockito.Mockito.when;
 
 public class SFTPAgentAuthenticationTest {
 
+    // "AQID" is Base64 for {1, 2, 3}
+    private static final byte[] MATCH_BLOB = {1, 2, 3};
+    private static final byte[] NO_MATCH_BLOB = {4, 5, 6};
+    private static final String PUBLIC_KEY_LINE = "ssh-rsa AQID comment";
+
     @Test
     public void filterIdentitiesMatch() {
         final SFTPAgentAuthentication authentication = new SFTPAgentAuthentication(new SSHClient(), new OpenSSHAgentAuthenticator(new AgentProxy(null)));
@@ -47,20 +54,25 @@ public class SFTPAgentAuthenticationTest {
             public boolean exists() {
                 return true;
             }
+
+            @Override
+            public InputStream getInputStream() throws AccessDeniedException {
+                return new ByteArrayInputStream(PUBLIC_KEY_LINE.getBytes(StandardCharsets.UTF_8));
+            }
         });
 
         final List<Identity> identities = new ArrayList<>();
         final Identity nomatch = mock(Identity.class);
-        when(nomatch.getComment()).thenReturn(StringUtils.getBytes("mykey2", StandardCharsets.UTF_8));
+        when(nomatch.getBlob()).thenReturn(NO_MATCH_BLOB);
         final Identity match = mock(Identity.class);
-        when(match.getComment()).thenReturn(StringUtils.getBytes("mykey", StandardCharsets.UTF_8));
+        when(match.getBlob()).thenReturn(MATCH_BLOB);
 
         identities.add(nomatch);
         identities.add(match);
 
         final Collection<Identity> filtered = authentication.filter(credentials, identities);
         assertEquals(1, filtered.size());
-        assertArrayEquals(match.getComment(), filtered.iterator().next().getComment());
+        assertArrayEquals(MATCH_BLOB, filtered.iterator().next().getBlob());
     }
 
     @Test
@@ -71,11 +83,16 @@ public class SFTPAgentAuthenticationTest {
             public boolean exists() {
                 return true;
             }
+
+            @Override
+            public InputStream getInputStream() {
+                return new ByteArrayInputStream(PUBLIC_KEY_LINE.getBytes(StandardCharsets.UTF_8));
+            }
         });
 
         final List<Identity> identities = new ArrayList<>();
         final Identity nomatch = mock(Identity.class);
-        when(nomatch.getComment()).thenReturn(StringUtils.getBytes("comment1", StandardCharsets.UTF_8));
+        when(nomatch.getBlob()).thenReturn(NO_MATCH_BLOB);
 
         identities.add(nomatch);
         identities.add(nomatch);
@@ -91,7 +108,7 @@ public class SFTPAgentAuthenticationTest {
 
         final List<Identity> identities = new ArrayList<>();
         final Identity nomatch = mock(Identity.class);
-        when(nomatch.getComment()).thenReturn(StringUtils.getBytes("comment1", StandardCharsets.UTF_8));
+        when(nomatch.getBlob()).thenReturn(NO_MATCH_BLOB);
 
         identities.add(nomatch);
         identities.add(nomatch);

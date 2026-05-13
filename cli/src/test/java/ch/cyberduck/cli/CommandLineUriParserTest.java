@@ -51,7 +51,7 @@ public class CommandLineUriParserTest {
         final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTP.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile")));
-        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile")));
         assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test", new Credentials("AWS456", null))
                 .compareTo(new CommandLineUriParser(input, factory).parse("s3:AWS456@cyberduck-test/key")));
         assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test", new Credentials("AWS456", null))

@@ -32,6 +32,7 @@ using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Proxy;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
+using ch.cyberduck.core.vault;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Pasteboard;
 using Ch.Cyberduck.Ui.Winforms.Threading;
@@ -117,7 +118,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 this.setDefault("factory.rendezvous.class", typeof(Rendezvous).AssemblyQualifiedName);
                 this.setDefault("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
             }
-            this.setDefault("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
+            this.setDefault("factory.vaultprovider.class", typeof(DefaultVaultProvider).AssemblyQualifiedName);
             this.setDefault("factory.securerandom.class", typeof(FastSecureRandomProvider).AssemblyQualifiedName);
             this.setDefault("factory.pasteboardservice.class", typeof(ClipboardService).AssemblyQualifiedName);
         }

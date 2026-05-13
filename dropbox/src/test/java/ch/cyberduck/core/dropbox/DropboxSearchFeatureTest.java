@@ -19,7 +19,7 @@ import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -70,6 +70,6 @@ public class DropboxSearchFeatureTest extends AbstractDropboxTest {
             assertTrue(result.contains(filesubdir));
             assertEquals(subdir, result.find(new SimplePathPredicate(filesubdir)).getParent());
         }
-        new DropboxDeleteFeature(session).delete(Arrays.asList(file, filesubdir, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Arrays.asList(file, filesubdir, subdir), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -4,7 +4,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -82,7 +82,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -112,7 +112,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
                         new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new SwiftAttributesFinderFeature(session).find(test));
         assertNotNull(new SwiftAttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         try {
             new SwiftAttributesFinderFeature(session).find(test);
             fail();

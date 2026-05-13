@@ -16,9 +16,11 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.Quota;
@@ -46,7 +48,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
 
     @Override
     public PathAttributes toAttributes(final Node node) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setRevision(node.getBranchVersion());
         if(node.isIsEncrypted() != null && !node.isIsEncrypted()) {
@@ -107,7 +109,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
     }
 
     public PathAttributes toAttributes(final DeletedNode node) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setDuplicate(true);
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
@@ -115,7 +117,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
         attributes.setSize(node.getSize());
         attributes.setOwner(node.getDeletedBy().getDisplayName());
         // Read of file in trash not supported
-        attributes.setPermission(new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none));
+        attributes.setPermission(new StaticPermission(Permission.Action.none, Permission.Action.none, Permission.Action.none));
         return attributes;
     }
 
@@ -135,7 +137,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
     }
 
     protected Permission toPermission(final Node node) {
-        final Permission permission = new Permission();
+        final StaticPermission permission = new StaticPermission();
         if(node.getPermissions() != null) {
             switch(node.getType()) {
                 case FOLDER:

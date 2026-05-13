@@ -16,7 +16,6 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3PathContainerService;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -101,7 +101,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      */
     @Override
     public Set<UUID> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+        final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
         final Map<Path, List<Ds3Object>> objects = new HashMap<Path, List<Ds3Object>>();
         for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
             final Path file = item.getKey().remote;
@@ -156,7 +156,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
                     if(container.getKey().equals(containerService.getContainer(item.getKey().remote))) {
                         final TransferStatus status = item.getValue();
-                        final Map<String, String> parameters = new HashMap<>(status.getParameters());
+                        final Map<String, Object> parameters = new HashMap<>(status.getParameters());
                         parameters.put(REQUEST_PARAMETER_JOBID_IDENTIFIER, master.getJobId().toString());
                         status.setParameters(parameters);
                         status.setPart(counters.get(containerService.getKey(item.getKey().remote)));
@@ -191,9 +191,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             if(!status.getParameters().containsKey(REQUEST_PARAMETER_JOBID_IDENTIFIER)) {
                 throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
-            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
+            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER).toString();
             log.debug("Cancel job {}", job);
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             client.cancelJobSpectraS3(new CancelJobSpectraS3Request(job));
         }
         catch(FailedRequestException e) {
@@ -224,10 +224,10 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             if(!status.getParameters().containsKey(REQUEST_PARAMETER_JOBID_IDENTIFIER)) {
                 throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
             }
-            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
+            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER).toString();
             log.debug("Query status for job {}", job);
             // Fetch current list from server
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             // For GET, the client may need to issue multiple GET requests for a single object if it has
             // been broken up into multiple pieces due to its large size
             // For PUT, This will allocate a working window of job chunks, if possible, and return a list of
@@ -283,7 +283,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         break;
                     }
                     if(StringUtils.equals(node.getEndPoint(), new Resolver().resolve(
-                            host.getHostname(), new DisabledCancelCallback())[0].getHostAddress())) {
+                            host.getHostname(), CancelCallback.noop)[0].getHostAddress())) {
                         break;
                     }
                     log.warn("Redirect to {} for file {}", node.getEndPoint(), file);
@@ -305,7 +305,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     chunk.setLength(object.getLength());
                     chunk.setOffset(object.getOffset());
                     // Job parameter already present from #pre
-                    final Map<String, String> parameters = new HashMap<>(chunk.getParameters());
+                    final Map<String, Object> parameters = new HashMap<>(chunk.getParameters());
                     // Set offset for chunk.
                     parameters.put(REQUEST_PARAMETER_OFFSET, Long.toString(chunk.getOffset()));
                     chunk.setParameters(parameters);
@@ -329,7 +329,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     protected void clear() throws BackgroundException {
         try {
             // Cancel all active jobs to remove references to cached objects
-            final Ds3Client ds3Client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client ds3Client = new SpectraClientBuilder().wrap(session, session.getHost());
             ds3Client.cancelAllActiveJobsSpectraS3(new CancelAllActiveJobsSpectraS3Request());
             // Clear cache
             final RequestEntityRestStorageService client = session.getClient();

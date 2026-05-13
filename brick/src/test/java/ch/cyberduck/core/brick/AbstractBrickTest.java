@@ -16,20 +16,19 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -47,11 +46,11 @@ public class AbstractBrickTest extends VaultTest {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+        return new Object[]{VaultVersion.Type.V8, VaultVersion.Type.UVF};
     }
 
     @Parameterized.Parameter
-    public int vaultVersion;
+    public VaultVersion.Type vaultVersion;
 
     @After
     public void disconnect() throws Exception {
@@ -64,7 +63,7 @@ public class AbstractBrickTest extends VaultTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Brick.cyberduckprofile"));
         final Host host = new Host(profile, "mountainduck.files.com", new Credentials(
-                PROPERTIES.get("brick.user"), PROPERTIES.get("brick.password")
+                PROPERTIES.get("brick.user")
         ));
         session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -73,7 +72,7 @@ public class AbstractBrickTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop, new TestPasswordStore(), ProgressListener.noop);
+        login.check(session, CancelCallback.noop);
     }
 }

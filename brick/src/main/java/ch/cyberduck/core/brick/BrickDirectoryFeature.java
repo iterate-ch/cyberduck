@@ -38,7 +38,7 @@ public class BrickDirectoryFeature implements Directory<FileEntity> {
     public Path mkdir(final Write<FileEntity> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             return new Path(folder).withAttributes(
-                    new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(new BrickApiClient(session))
+                    new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(session.getClient())
                             .postFoldersPath(StringUtils.removeStart(folder.getAbsolute(), String.valueOf(Path.DELIMITER)))));
         }
         catch(ApiException e) {

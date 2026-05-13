@@ -16,7 +16,7 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -47,7 +47,7 @@ public class BrickTimestampFeatureTest extends AbstractBrickTest {
         assertEquals(5000L, attr.getModificationDate());
         assertEquals(attr, status.getResponse());
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
-        new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class BrickTimestampFeatureTest extends AbstractBrickTest {
         new BrickTimestampFeature(session).setTimestamp(file, 5000L);
         assertEquals(5000L, new BrickAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
-        new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

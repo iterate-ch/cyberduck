@@ -32,12 +32,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class SDSDirectoryFeature implements Directory<Node> {
     private static final Logger log = LogManager.getLogger(SDSDirectoryFeature.class);
@@ -71,7 +71,7 @@ public class SDSDirectoryFeature implements Directory<Node> {
     private Path createFolder(final Path folder) throws BackgroundException, ApiException {
         final Node node = nodeid.retry(folder.getParent(), () -> new NodesApi(session.getClient()).createFolder(new CreateFolderRequest()
                 .parentId(Long.parseLong(nodeid.getVersionId(folder.getParent())))
-                .name(folder.getName()), StringUtils.EMPTY, null));
+                .name(folder.getName()), null));
         nodeid.cache(folder, String.valueOf(node.getId()));
         return new Path(folder).withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
     }
@@ -86,15 +86,14 @@ public class SDSDirectoryFeature implements Directory<Node> {
             roomRequest.setParentId(Long.parseLong(nodeid.getVersionId(room.getParent())));
         }
         roomRequest.setName(room.getName());
-        final Node node = new NodesApi(session.getClient()).createRoom(roomRequest, StringUtils.EMPTY, null);
+        final Node node = new NodesApi(session.getClient()).createRoom(roomRequest, null);
         nodeid.cache(room, String.valueOf(node.getId()));
         if(encrypt) {
             final EncryptRoomRequest options = new EncryptRoomRequest();
             options.setIsEncrypted(true);
             return new Path(room).withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new SDSAttributesAdapter(session).toAttributes(
-                            new NodesApi(session.getClient()).encryptRoom(options, Long.valueOf(nodeid.getVersionId(room
-                            )), StringUtils.EMPTY, null)));
+                            new NodesApi(session.getClient()).encryptRoom(options, Long.valueOf(nodeid.getVersionId(room)), null)));
         }
         else {
             return new Path(room).withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
@@ -103,15 +102,17 @@ public class SDSDirectoryFeature implements Directory<Node> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(workdir.isRoot()) {
             if(!HostPreferencesFactory.get(session.getHost()).getBoolean("sds.create.dataroom.enable")) {
                 log.warn("Disallow creating new top level data room {}", filename);
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
             }
         }
-        if(!SDSTouchFeature.validate(filename)) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+        if(filename.isPresent()) {
+            if(!SDSTouchFeature.validate(filename.get())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+            }
         }
         final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
         if(!permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)) {

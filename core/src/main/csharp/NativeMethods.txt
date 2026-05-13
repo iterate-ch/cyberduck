@@ -24,9 +24,11 @@ HWND_TOPMOST
 IApplicationAssociationRegistration
 IAssocHandler
 IAssocHandlerInvoker
-IDataObject
 IExtractIconW
+ILClone
 ILCreateFromPath
+ILFindLastID
+ILRemoveLastID 
 IQueryAssociations
 IShellItem
 KNOWN_FOLDER_FLAG
@@ -52,6 +54,7 @@ SetWindowPos
 SetWindowText
 SHAssocEnumHandlers
 SHCreateAssociationRegistration
+SHCreateDataObject
 SHCreateItemFromIDList
 Shell_GetCachedImageIndex
 ShellExecuteEx

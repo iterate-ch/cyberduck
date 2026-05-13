@@ -1,7 +1,7 @@
 package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -27,7 +27,7 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
@@ -43,7 +43,7 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
             // Not supported
         }
         assertTrue(new DAVFindFeature(session).find(test));
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
@@ -53,13 +53,13 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
         new DAVDirectoryFeature(session).mkdir(new DAVWriteFeature(session), test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
         new DAVTouchFeature(session).touch(new DAVWriteFeature(session), new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

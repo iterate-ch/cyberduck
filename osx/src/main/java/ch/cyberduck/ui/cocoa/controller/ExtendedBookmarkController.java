@@ -117,7 +117,7 @@ public class ExtendedBookmarkController extends BookmarkContainerController impl
 
     @Action
     public void transferPopupClicked(final NSPopUpButton sender) {
-        bookmark.setTransfer(Host.TransferType.valueOf(sender.selectedItem().representedObject()));
+        bookmark.setTransferType(Host.TransferType.valueOf(sender.selectedItem().representedObject()));
         this.update();
     }
 

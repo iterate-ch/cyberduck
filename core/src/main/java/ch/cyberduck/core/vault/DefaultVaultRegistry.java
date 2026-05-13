@@ -23,26 +23,16 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.registry.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultRegistry {
     private static final Logger log = LogManager.getLogger(DefaultVaultRegistry.class);
-
-    public static final String DEFAULT_MASTERKEY_FILE_NAME =
-        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");
-    public static final String DEFAULT_BACKUPKEY_FILE_NAME = String.format("%s.bkup",
-        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"));
-    public static final String DEFAULT_VAULTCONFIG_FILE_NAME =
-        PreferencesFactory.get().getProperty("cryptomator.vault.config.filename");
 
     private final PasswordCallback prompt;
 
@@ -63,18 +53,13 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
 
     @Override
     public boolean close(final Path directory) {
-        try {
-            return this.removeIf(vault -> {
-                if(new SimplePathPredicate(vault.getHome()).test(directory)) {
-                    vault.close();
-                    return true;
-                }
-                return false;
-            });
-        }
-        finally {
-            directory.attributes().setVault(null);
-        }
+        return this.removeIf(vault -> {
+            if(new SimplePathPredicate(vault.getHome()).test(directory)) {
+                vault.close();
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -84,7 +69,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
                 return true;
             }
             if(recursive) {
-                return vault.contains(directory);
+                if(vault.contains(directory)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -106,20 +93,21 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             }
         }
         if(autoload) {
-            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
-            if(file.attributes().getVault() != null) {
-                return listener.load(session, file.attributes().getVault(),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+            Path directory = file;
+            do {
+                if(directory.getType().contains(Path.Type.vault)) {
+                    final VaultLoader listener = new RegistryVaultLoader(this, prompt);
+                    final VaultVersion version = directory.attributes().getVaultVersion();
+                    if(null == version) {
+                        log.error("Missing vault version for {}", directory);
+                        return Vault.DISABLED;
+                    }
+                    log.debug("Loading vault {}", version);
+                    return listener.load(session, directory, version);
+                }
+                directory = directory.getParent();
             }
-            final Path directory = file.getParent();
-            if(directory.attributes().getVault() != null) {
-                return listener.load(session, directory.attributes().getVault(),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
-            }
+            while(!directory.isRoot());
         }
         return Vault.DISABLED;
     }
@@ -138,11 +126,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     protected <T> T _getFeature(final Session<?> session, final Class<T> type, final T proxy) {
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                    new LoadingVaultLookupListener(this, prompt));
+                    new RegistryVaultLoader(this, prompt));
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                    new LoadingVaultLookupListener(this, prompt));
+                    new RegistryVaultLoader(this, prompt));
         }
         if(type == Bulk.class) {
             return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);

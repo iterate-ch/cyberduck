@@ -19,7 +19,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -34,13 +34,10 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
@@ -88,7 +85,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         assertEquals(attributes, new CteraListService(session).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes());
         // Test wrong type
         assertThrows(NotfoundException.class, () -> f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new CteraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -115,18 +112,16 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
 
         // list parent folder to inspect attributes
         final List<DavResource> noAccess = new CteraListService(session).propfind(home).stream().filter(r -> r.getName().equals("NoAccess")).collect(Collectors.toList());
-        assertEquals(noAccess.size(), 1);
-        assertEquals(
-                Stream.of(
-                        new AbstractMap.SimpleEntry<>("writepermission", "false"),
-                        new AbstractMap.SimpleEntry<>("readpermission", "false"),
-                        new AbstractMap.SimpleEntry<>("deletepermission", "false"),
-                        new AbstractMap.SimpleEntry<>("createdirectoriespermission", "false"),
-                        new AbstractMap.SimpleEntry<>("guid", "c51c40dc-1de0-441c-a6bf-3d07c0420329:1"),
-                        new AbstractMap.SimpleEntry<>("fileid", "570825")
-                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
-                noAccess.get(0).getCustomProps());
-        assertEquals(new Acl(new Acl.CanonicalUser()), new CteraAttributesFinderFeature(session).toAttributes(noAccess.get(0)).getAcl());
+        assertEquals(1, noAccess.size());
+        final DavResource resource = noAccess.get(0);
+        assertEquals(6, resource.getCustomProps().size());
+        assertEquals("false", resource.getCustomProps().get(WRITEPERMISSION.getName()));
+        assertEquals("false", resource.getCustomProps().get(READPERMISSION.getName()));
+        assertEquals("false", resource.getCustomProps().get(DELETEPERMISSION.getName()));
+        assertEquals("false", resource.getCustomProps().get(CREATEDIRECTORIESPERMISSION.getName()));
+        assertEquals("bb64b3a4-399e-45d0-95af-43f1ace6e250:105620641", resource.getCustomProps().get(CTERA_GUID));
+        assertEquals("105620644", resource.getCustomProps().get(CTERA_FILEID));
+        assertEquals(new Acl(new Acl.CanonicalUser()), new CteraAttributesFinderFeature(session).toAttributes(resource).getAcl());
         // find fails with 403 in backend
         final AccessDeniedException findException = assertThrows(AccessDeniedException.class, () -> new CteraAttributesFinderFeature(session).find(new Path(home, "NoAccess", EnumSet.of(AbstractPath.Type.directory))));
         assertTrue(findException.getCause() instanceof SardineException);

@@ -24,18 +24,24 @@
     <import file="../../../build.xml"/>
 
     <target name="restore" depends="msbuild">
-        <msbuild buildfile="src/main/csharp/Cyberduck.Core.Refresh.csproj">
+        <msbuild buildfile="dirs.proj">
             <target name="Restore" />
         </msbuild>
     </target>
 
     <target name="build" depends="restore,msbuild">
         <!-- Create DLL Cyberduck.Core.Refresh -->
-        <msbuild buildfile="src/main/csharp/Cyberduck.Core.Refresh.csproj">
+        <msbuild buildfile="dirs.proj">
             <target name="Build"/>
 
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Platform" value="x64" />
+        </msbuild>
+    </target>
+
+    <target name="pack" depends="msbuild">
+        <!-- Create DLL Cyberduck.Core.Refresh -->
+        <msbuild buildfile="src/main/nuget/nuget.proj">
+            <target name="Restore;Pack"/>
         </msbuild>
     </target>
 </project>

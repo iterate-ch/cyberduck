@@ -17,6 +17,7 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -359,7 +360,7 @@ public class DeepboxListService implements ListService {
                     list.add(new Path(directory,
                             String.format("%s (%s)", DeepboxPathNormalizer.name(box.getCompany().getDisplayName()), DeepboxPathNormalizer.name(box.getBoxName())),
                             EnumSet.of(Path.Type.directory, Path.Type.volume),
-                            new PathAttributes().setFileId(box.getBoxNodeId()).setCustom(DeepboxIdProvider.DEEPBOX_NAME_PROEPRTY_KEY, box.getDeepBoxName()))
+                            new DefaultPathAttributes().setFileId(box.getBoxNodeId()).setCustom(DeepboxIdProvider.DEEPBOX_NAME_PROEPRTY_KEY, box.getDeepBoxName()))
                     );
                 }
                 // Mark duplicates

@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.PathDictionary;
 
+import ch.cyberduck.core.vault.VaultVersion;
+
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -60,12 +62,24 @@ public class PathTest {
 
     @Test
     public void testDictionaryRegion() {
-        Path path = new Path("/path/f", EnumSet.of(Path.Type.file));
-        path.attributes().setRegion("r");
-        final Path deserialized = new PathDictionary<>().deserialize(path.serialize(SerializerFactory.get()));
-        assertEquals(path, deserialized);
-        assertEquals("r", deserialized.attributes().getRegion());
+        Path f = new Path("/path/f", EnumSet.of(Path.Type.file));
+        f.getParent().attributes().setRegion("r");
+        final Path deserialized = new PathDictionary<>().deserialize(f.serialize(SerializerFactory.get()));
+        assertEquals(f, deserialized);
+        assertNull(deserialized.attributes().getRegion());
         assertEquals("r", deserialized.getParent().attributes().getRegion());
+    }
+
+    @Test
+    public void testDictionaryVaultVersion() {
+        Path f = new Path("/path/f", EnumSet.of(Path.Type.file));
+        f.getParent().attributes().setVaultVersion(new VaultVersion(VaultVersion.Type.V8));
+        f.getParent().setType(EnumSet.of(Path.Type.directory, Path.Type.vault));
+        final Path deserialized = new PathDictionary<>().deserialize(f.serialize(SerializerFactory.get()));
+        assertEquals(f, deserialized);
+        assertNull(deserialized.attributes().getRegion());
+        assertEquals(new VaultVersion(VaultVersion.Type.V8), deserialized.getParent().attributes().getVaultVersion());
+        assertEquals(EnumSet.of(Path.Type.directory, Path.Type.vault), deserialized.getParent().getType());
     }
 
     @Test

@@ -1,6 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <OutDir>$(OutputPath)</OutDir>
-    <IntDir>$(IntermediateOutputPath)</IntDir>
-  </PropertyGroup>
-</Project>

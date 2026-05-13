@@ -17,10 +17,11 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
@@ -87,7 +88,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
 
     @Override
     public PathAttributes toAttributes(final FileAttributes stat) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         switch(stat.getType()) {
             case REGULAR:
             case UNKNOWN:
@@ -95,7 +96,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
         }
         if(0 != stat.getMode().getPermissionsMask()) {
             if(!this.isServerBlacklisted()) {
-                attributes.setPermission(new Permission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
+                attributes.setPermission(new StaticPermission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
                 attributes.setOwner(String.valueOf(stat.getUID()));
                 attributes.setGroup(String.valueOf(stat.getGID()));
             }

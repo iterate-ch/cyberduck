@@ -30,9 +30,13 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.EnumSet;
 
 public class StoregateListService implements ListService {
+    private static final Logger log = LogManager.getLogger(StoregateListService.class);
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
@@ -54,8 +58,12 @@ public class StoregateListService implements ListService {
                 switch(root.getRootFolderType()) {
                     case 0: // My Files
                     case 1: // Common
+                        log.debug("Add root folder {}", root);
                         list.add(new Path(directory, PathNormalizer.name(root.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
                                 attributes.toAttributes(root)));
+                        break;
+                    default:
+                        log.warn("Ignoring root folder {}", root);
                         break;
                 }
                 listener.chunk(directory, list);

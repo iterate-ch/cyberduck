@@ -41,7 +41,6 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
-import org.rococoa.Rococoa;
 
 public class PasswordController extends AlertController {
 
@@ -122,8 +121,9 @@ public class PasswordController extends AlertController {
     }
 
     @Override
-    protected void focus(final NSAlert alert) {
-        super.focus(alert);
+    public void focus() {
+        super.focus();
+        window.makeFirstResponder(inputField);
         inputField.selectText(null);
     }
 

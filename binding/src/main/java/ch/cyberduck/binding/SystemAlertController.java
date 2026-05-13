@@ -30,9 +30,4 @@ public class SystemAlertController extends AlertController {
     public NSAlert loadAlert() {
         return alert;
     }
-
-    @Override
-    public NSAlert alert() {
-        return alert;
-    }
 }

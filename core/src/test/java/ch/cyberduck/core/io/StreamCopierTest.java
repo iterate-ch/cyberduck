@@ -54,7 +54,7 @@ public class StreamCopierTest {
                 assertTrue(this.getRecv() > this.getSent());
             }
         };
-        new StreamCopier(status, status).withListener(count).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
+        new StreamCopier(status, status).withListener(count).transfer(new NullInputStream(432768L), NullOutputStream.INSTANCE);
         assertTrue(status.isComplete());
         assertEquals(0L, status.getOffset());
         assertEquals(432768L, count.getSent());
@@ -98,7 +98,7 @@ public class StreamCopierTest {
     public void testTransferFixedLength() throws Exception {
         final TransferStatus status = new TransferStatus().setLength(432768L);
         final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(status, status).withLimit(432767L).withListener(count).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
+        new StreamCopier(status, status).withLimit(432767L).withListener(count).transfer(new NullInputStream(432768L), NullOutputStream.INSTANCE);
         assertEquals(0L, status.getOffset());
         assertEquals(432767L, count.getSent());
         assertEquals(432767L, count.getRecv());
@@ -109,7 +109,7 @@ public class StreamCopierTest {
     public void testReadNoEndofStream() throws Exception {
         final TransferStatus status = new TransferStatus().setLength(432768L);
         final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(status, status).withLimit(432768L).withListener(count).transfer(new NullInputStream(432770L), NullOutputStream.NULL_OUTPUT_STREAM);
+        new StreamCopier(status, status).withLimit(432768L).withListener(count).transfer(new NullInputStream(432770L), NullOutputStream.INSTANCE);
         assertEquals(432768L, count.getRecv());
         assertEquals(432768L, count.getSent());
         assertEquals(0L, status.getOffset());
@@ -121,7 +121,7 @@ public class StreamCopierTest {
         {
             final TransferStatus status = new TransferStatus();
             final BytecountStreamListener count = new BytecountStreamListener();
-            new StreamCopier(status, status).withOffset(1L).withListener(count).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
+            new StreamCopier(status, status).withOffset(1L).withListener(count).transfer(new NullInputStream(432768L), NullOutputStream.INSTANCE);
             assertEquals(432767L, count.getSent());
             assertEquals(432767L, count.getRecv());
             assertEquals(0L, status.getOffset());
@@ -130,7 +130,7 @@ public class StreamCopierTest {
         {
             final TransferStatus status = new TransferStatus();
             final BytecountStreamListener count = new BytecountStreamListener();
-            new StreamCopier(status, status).withOffset(1L).withListener(count).transfer(new NullInputStream(432768L), NullOutputStream.NULL_OUTPUT_STREAM);
+            new StreamCopier(status, status).withOffset(1L).withListener(count).transfer(new NullInputStream(432768L), NullOutputStream.INSTANCE);
             assertEquals(432767L, count.getSent());
             assertEquals(432767L, count.getRecv());
             assertEquals(0L, status.getOffset());
@@ -161,7 +161,7 @@ public class StreamCopierTest {
             @Override
             public void run() {
                 try {
-                    new StreamCopier(status, status).withListener(count).transfer(new NullInputStream(status.getLength()), NullOutputStream.NULL_OUTPUT_STREAM);
+                    new StreamCopier(status, status).withListener(count).transfer(new NullInputStream(status.getLength()), NullOutputStream.INSTANCE);
                 }
                 catch(BackgroundException e) {
                     assertTrue(e instanceof ConnectionCanceledException);

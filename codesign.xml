@@ -65,6 +65,7 @@
                 line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="*.dylib"/>
+                <include name="*.jnilib"/>
             </fileset>
             <srcfile/>
         </apply>

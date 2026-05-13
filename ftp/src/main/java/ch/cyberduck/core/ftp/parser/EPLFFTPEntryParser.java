@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp.parser;
  */
 
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
@@ -179,7 +180,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
         private Permission createSpecifiedPermission() {
             try {
                 int perm = Integer.valueOf(facts.get("up"), 8);
-                return new Permission(perm);
+                return new StaticPermission(perm);
             }
             catch(NumberFormatException ignored) {
             }

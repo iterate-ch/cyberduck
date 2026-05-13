@@ -16,20 +16,18 @@ package ch.cyberduck.core.nextcloud;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -55,7 +53,7 @@ public class AbstractNextcloudTest extends VaultTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Nextcloud.cyberduckprofile"));
         final Host host = new Host(profile, PROPERTIES.get("nextcloud.hostname"),
-                new Credentials(PROPERTIES.get("nextcloud.user"), PROPERTIES.get("nextcloud.password")));
+                new Credentials(PROPERTIES.get("nextcloud.user")));
         session = new NextcloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -68,14 +66,7 @@ public class AbstractNextcloudTest extends VaultTest {
             public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
-        }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
-    }
-
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            return "n";
-        }
+        }, HostKeyCallback.noop, new TestPasswordStore(), ProgressListener.noop);
+        login.check(session, CancelCallback.noop);
     }
 }

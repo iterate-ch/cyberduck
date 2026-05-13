@@ -19,6 +19,7 @@ package ch.cyberduck.core.proxy;
  */
 
 public class DisabledProxyFinder implements ProxyFinder {
+
     @Override
     public Proxy find(final String target) {
         return Proxy.DIRECT;

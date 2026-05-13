@@ -20,7 +20,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -80,7 +80,7 @@ public class SDSListServiceTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(3, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1).size()));
         assertEquals(3, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).size()));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -97,6 +97,6 @@ public class SDSListServiceTest extends AbstractSDSTest {
         assertEquals("0a", list.get(0).getName());
         assertEquals("a", list.get(1).getName());
         assertEquals("aa", list.get(2).getName());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

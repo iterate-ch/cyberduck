@@ -1,0 +1,128 @@
+package ch.cyberduck.core.cryptomator.legacy.features;
+
+/*
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.legacy.CryptomatorVault;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.shared.DefaultCopyFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.cryptomator.cryptolib.api.FileHeader;
+
+import java.util.EnumSet;
+import java.util.Optional;
+
+public class CryptoCopyFeature implements Copy {
+
+    private final Session<?> session;
+    private final Copy proxy;
+    private final CryptomatorVault vault;
+
+    private Session<?> target;
+
+    public CryptoCopyFeature(final Session<?> session, final Copy proxy, final CryptomatorVault vault) {
+        this.session = session;
+        this.target = session;
+        this.proxy = proxy;
+        this.vault = vault;
+    }
+
+    @Override
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
+        if(vault.contains(copy)) {
+            // Write header to be reused in writer
+            final FileHeader header = vault.getFileHeaderCryptor().create();
+            status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
+            status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
+                    new RandomNonceGenerator(vault.getNonceSize()) :
+                    new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength())));
+        }
+        if(vault.contains(source) && vault.contains(copy)) {
+            return vault.decrypt(session, proxy.withTarget(target).copy(
+                    vault.contains(source) ? vault.encrypt(session, source) : source,
+                    vault.contains(copy) ? vault.encrypt(session, copy) : copy, status, callback, listener));
+        }
+        else {
+            // Copy files from or into vault requires to pass through encryption features
+            final Path target = new DefaultCopyFeature(session).withTarget(this.target).copy(
+                    vault.contains(source) ? vault.encrypt(session, source) : source,
+                    vault.contains(copy) ? vault.encrypt(session, copy) : copy,
+                    vault.contains(copy) ? new TransferStatus(status) {
+                        @Override
+                        public TransferStatus setResponse(final PathAttributes attributes) {
+                            status.setResponse(attributes);
+                            // Will be converted back to clear text when decrypting file below set in default copy feature implementation using writer.
+                            super.setResponse(new DefaultPathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                            return this;
+                        }
+                    } : status,
+                    callback, listener);
+            if(vault.contains(copy)) {
+                return vault.decrypt(session, target);
+            }
+            return target;
+        }
+    }
+
+    @Override
+    public EnumSet<Flags> features(final Path source, final Path target) {
+        // Due to the encrypted folder layout copying is never recursive even when supported by the native implementation
+        return EnumSet.noneOf(Flags.class);
+    }
+
+    @Override
+    public void preflight(final Path source, final Optional<Path> copy) throws BackgroundException {
+        if(copy.isPresent()) {
+            if(vault.contains(source) && vault.contains(copy.get())) {
+                proxy.withTarget(target).preflight(
+                        vault.encrypt(session, source),
+                        Optional.of(vault.encrypt(session, copy.get())));
+            }
+            else {
+                new DefaultCopyFeature(session).withTarget(target).preflight(
+                        vault.contains(source) ? vault.encrypt(session, source) : source,
+                        vault.contains(copy.get()) ? Optional.of(vault.encrypt(session, copy.get())) : copy);
+            }
+        }
+        else {
+            new DefaultCopyFeature(session).withTarget(target).preflight(
+                    vault.contains(source) ? vault.encrypt(session, source) : source, copy);
+        }
+    }
+
+    @Override
+    public Copy withTarget(final Session<?> session) {
+        this.target = session;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoCopyFeature{");
+        sb.append("delegate=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
+}

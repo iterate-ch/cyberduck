@@ -1,10 +1,11 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -27,7 +28,7 @@ public class WriteMetadataWorkerTest {
     @Test
     public void testRunEmpty() throws Exception {
         final List<Path> files = new ArrayList<>();
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, Collections.emptyMap(), false, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, Collections.emptyMap(), false, ProgressListener.noop) {
             @Override
             public void cleanup(final Boolean result) {
                 fail();
@@ -72,7 +73,7 @@ public class WriteMetadataWorkerTest {
         final Map<String, String> updated = new HashMap<>();
         updated.put("key", "v1");
 
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, ProgressListener.noop) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
@@ -118,7 +119,7 @@ public class WriteMetadataWorkerTest {
         updated.put("nullified", null);
         updated.put("key", "v2");
 
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, ProgressListener.noop) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
@@ -169,7 +170,7 @@ public class WriteMetadataWorkerTest {
         updated.put("k1", "v1");
         updated.put("k2", "v2");
 
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, ProgressListener.noop) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
@@ -210,7 +211,8 @@ public class WriteMetadataWorkerTest {
 
     @Test
     public void testRunDifferent() throws Exception {
-        final PathAttributes attributesA = new PathAttributes();
+        final PathAttributes attributesA = new
+                DefaultPathAttributes();
         {
             final Map<String, String> map = new HashMap<>();
             map.put("equal", "equal");
@@ -218,7 +220,7 @@ public class WriteMetadataWorkerTest {
             map.put("unique", "unique");
             attributesA.setMetadata(map);
         }
-        final PathAttributes attributesB = new PathAttributes();
+        final PathAttributes attributesB = new DefaultPathAttributes();
         {
             final Map<String, String> map = new HashMap<>();
             map.put("equal", "equal");
@@ -236,7 +238,7 @@ public class WriteMetadataWorkerTest {
         updated.put("unique", null);
         updated.put("different", null);
 
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, ProgressListener.noop) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();

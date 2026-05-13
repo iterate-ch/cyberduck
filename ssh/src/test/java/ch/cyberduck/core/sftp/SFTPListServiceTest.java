@@ -21,9 +21,10 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -56,7 +57,7 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
         new SFTPSymlinkFeature(session).symlink(symlinkRelative, file.getName());
         new SFTPSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
         new SFTPDirectoryFeature(session).mkdir(new SFTPWriteFeature(session), directory, new TransferStatus());
-        final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
+        final Permission permission = new StaticPermission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
         new SFTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(file));
@@ -66,7 +67,7 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
         assertEquals(file, list.get(symlinkRelative).getSymlinkTarget());
         assertTrue(list.contains(symlinkAbsolute));
         assertEquals(file, list.get(symlinkAbsolute).getSymlinkTarget());
-        new SFTPDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative, directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -78,7 +79,7 @@ public class SFTPListServiceTest extends AbstractSFTPTest {
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(file));
         assertEquals(new Path(home, target, EnumSet.of(Path.Type.file)), list.get(file).getSymlinkTarget());
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

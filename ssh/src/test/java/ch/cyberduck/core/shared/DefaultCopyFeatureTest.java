@@ -16,12 +16,12 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
@@ -59,14 +59,14 @@ public class DefaultCopyFeatureTest extends AbstractSFTPTest {
         new SFTPTouchFeature(session).touch(new SFTPWriteFeature(session), source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
         final TransferStatus status = new TransferStatus().setLength(content.length);
-        final OutputStream out = new SFTPWriteFeature(session).write(source, status, new DisabledConnectionCallback());
+        final OutputStream out = new SFTPWriteFeature(session).write(source, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new DefaultCopyFeature(session).copy(source, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new DefaultCopyFeature(session).copy(source, target, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());
-        new SFTPDeleteFeature(session).delete(Arrays.asList(source, target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Arrays.asList(source, target), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

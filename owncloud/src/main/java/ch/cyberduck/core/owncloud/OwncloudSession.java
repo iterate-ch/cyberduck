@@ -135,7 +135,7 @@ public class OwncloudSession extends DAVSession {
         }
         if(type == Write.class) {
             if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
-                return (T) new TusWriteFeature(tus, client);
+                return (T) new TusWriteFeature(host, tus, client);
             }
             return (T) new NextcloudWriteFeature(this);
         }

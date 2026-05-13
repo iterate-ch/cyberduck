@@ -16,7 +16,7 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -56,7 +56,7 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
         assertEquals(-1L, attributes.getSize());
         assertNull(attributes.getRegion());
         assertEquals(EnumSet.of(Path.Type.directory, Path.Type.volume), container.getType());
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -88,7 +88,7 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
         assertEquals(Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"), attributes.getChecksum());
         // Missing support for modification date
         assertEquals(-1L, attributes.getModificationDate());
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
         final Path file = new Path(container, String.format("%s~", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new SpectraTouchFeature(session).touch(new SpectraWriteFeature(session), file, new TransferStatus());
         new SpectraAttributesFinderFeature(session).find(file);
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -110,6 +110,6 @@ public class SpectraAttributesFinderFeatureTest extends AbstractSpectraTest {
         final Path file = new Path(container, String.format("%s@", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         new SpectraTouchFeature(session).touch(new SpectraWriteFeature(session), file, new TransferStatus());
         new SpectraAttributesFinderFeature(session).find(file);
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

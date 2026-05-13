@@ -19,7 +19,7 @@ jobs:
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -32,7 +32,7 @@ jobs:
         if: runner.os == 'windows' || runner.os == 'macos'
       - run: msiexec /i setup\wix\Bonjour64.msi /Quiet /Passive /NoRestart
         if: runner.os == 'windows'
-      - uses: microsoft/setup-msbuild@v2
+      - uses: microsoft/setup-msbuild@v3
         if: runner.os == 'windows'
         with:
           msbuild-architecture: x64
@@ -46,5 +46,7 @@ jobs:
       - name: Build with Maven
         run: mvn --no-transfer-progress verify -DskipITs -DskipSign ${{ env.args }} --batch-mode -Drevision=0
       - name: Publish Test Report
-        if: ${{ always() }}
-        uses: scacap/action-surefire-report@v1.9.1
+        if: github.event.pull_request.head.repo.fork == false
+        uses: ScalableCapital/action-surefire-report@v2
+        with:
+          check_name: Test Report (${{ matrix.os }})

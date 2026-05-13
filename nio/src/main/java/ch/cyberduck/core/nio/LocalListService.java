@@ -50,28 +50,23 @@ public class LocalListService implements ListService {
             throw new LocalExceptionMappingService().map("Listing directory {0} failed",
                     new NoSuchFileException(directory.getAbsolute()), directory);
         }
-        try (DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(p)) {
+        try(DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(p)) {
             for(java.nio.file.Path n : stream) {
                 if(null == n.getFileName()) {
                     continue;
                 }
-                try {
-                    final PathAttributes attributes = feature.toAttributes(n);
-                    final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
-                    if(Files.isDirectory(n)) {
-                        type.add(Path.Type.directory);
-                    }
-                    else {
-                        type.add(Path.Type.file);
-                    }
-                    final Path file = new Path(directory, n.getFileName().toString(), type, attributes);
-                    if(this.post(n, file)) {
-                        paths.add(file);
-                        listener.chunk(directory, paths);
-                    }
+                final PathAttributes attributes = feature.toAttributes(n);
+                final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
+                if(Files.isDirectory(n)) {
+                    type.add(Path.Type.directory);
                 }
-                catch(IOException e) {
-                    log.warn("Failure reading attributes for {}", n);
+                else {
+                    type.add(Path.Type.file);
+                }
+                final Path file = new Path(directory, n.getFileName().toString(), type, attributes);
+                if(this.post(n, file)) {
+                    paths.add(file);
+                    listener.chunk(directory, paths);
                 }
             }
         }

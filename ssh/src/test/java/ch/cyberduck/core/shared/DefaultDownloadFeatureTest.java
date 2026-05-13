@@ -17,15 +17,15 @@ package ch.cyberduck.core.shared;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPReadFeature;
@@ -59,7 +59,7 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -68,16 +68,16 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2);
             new DefaultDownloadFeature(session).download(
-                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         {
             final TransferStatus status = new TransferStatus().setLength(content.length / 2).setOffset(content.length / 2).setAppend(true);
             new DefaultDownloadFeature(session).download(
-                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
@@ -85,7 +85,7 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         in.close();
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
-        delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().setLength(content.length);
-            final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -105,9 +105,9 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         {
             final TransferStatus status = new TransferStatus().setLength(-1L);
             new DefaultDownloadFeature(session).download(
-                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    new SFTPReadFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), StreamListener.noop,
                 status,
-                new DisabledConnectionCallback());
+                    ConnectionCallback.noop);
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
@@ -115,6 +115,6 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
         in.close();
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
-        delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        delete.delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

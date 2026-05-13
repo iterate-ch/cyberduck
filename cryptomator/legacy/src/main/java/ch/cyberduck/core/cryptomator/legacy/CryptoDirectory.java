@@ -1,0 +1,54 @@
+package ch.cyberduck.core.cryptomator.legacy;
+
+/*
+ * Copyright (c) 2002-2026 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
+
+import java.util.EnumSet;
+
+public interface CryptoDirectory {
+
+    /**
+     * Get encrypted filename for given clear text filename with id of parent encrypted directory.
+     *
+     * @param session     Connection
+     * @param directoryId Parent folder directory id
+     * @param filename    Clear text filename
+     * @param type        File type
+     * @return Encrypted filename
+     */
+    String toEncrypted(Session<?> session, byte[] directoryId, String filename, EnumSet<Path.Type> type) throws BackgroundException;
+
+    /**
+     * Get encrypted reference for clear text directory path.
+     *
+     * @param session     Connection
+     * @param directoryId Directory ID or null to read directory id from metadata file
+     * @param directory   Clear text
+     */
+    Path toEncrypted(Session<?> session, byte[] directoryId, Path directory) throws BackgroundException;
+
+    byte[] createDirectoryId(Path directory);
+
+    /**
+     * Remove from cache
+     */
+    void delete(Path directory);
+
+    void destroy();
+}

@@ -27,6 +27,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class FTPDirectoryFeature implements Directory<Void> {
 
@@ -57,7 +58,7 @@ public class FTPDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final Optional<String> filename) {
         // Skip checking permission mask
     }
 }

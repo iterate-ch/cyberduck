@@ -16,7 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -49,7 +49,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
         assertEquals(modified, attr.getModificationDate());
         assertEquals(attr, status.getResponse());
         assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session, fileid).getMetadata(test));
-        new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -62,6 +62,6 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
         new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         assertEquals(modified, new DriveAttributesFinderFeature(session, fileid).find(test).getModificationDate());
-        new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

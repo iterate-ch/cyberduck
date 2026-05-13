@@ -142,6 +142,7 @@ public final class KeychainCertificateStore implements CertificateStore {
                     continue;
                 }
                 certs.addObject(certificateRef);
+                FoundationKitFunctions.library.CFRelease(certificateRef);
             }
             catch(CertificateEncodingException e) {
                 log.error("Failure {} retrieving encoded certificate", e.getMessage());

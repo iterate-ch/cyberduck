@@ -30,6 +30,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.Optional;
 
 public class BoxDirectoryFeature implements Directory<File> {
 
@@ -55,9 +56,11 @@ public class BoxDirectoryFeature implements Directory<File> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(!BoxTouchFeature.validate(filename)) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
+        if(filename.isPresent()) {
+            if(!BoxTouchFeature.validate(filename.get())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+            }
         }
     }
 }

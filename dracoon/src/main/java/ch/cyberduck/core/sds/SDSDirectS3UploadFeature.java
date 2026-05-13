@@ -20,7 +20,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.concurrency.Interruptibles;
@@ -50,6 +49,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrl;
 import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadPart;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptEncryptingInputStream;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -57,7 +57,6 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -94,9 +93,6 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
     private final Integer concurrency;
     private final TemporaryFileService temp = TemporaryFileServiceFactory.instance();
 
-    private final PathContainerService containerService
-            = new SDSPathContainerService();
-
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this(session, nodeid, HostPreferencesFactory.get(session.getHost()).getLong("s3.upload.multipart.size"),
                 HostPreferencesFactory.get(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
@@ -115,8 +111,11 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             final InputStream in;
-            if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
-                in = new SDSTripleCryptEncryptorFeature(session, nodeid).encrypt(file, local.getInputStream(), status);
+            if(status.getFilekey() != null) {
+                final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+                final FileKey fileKey = reader.readValue(status.getFilekey().array());
+                in = new TripleCryptEncryptingInputStream(session, local.getInputStream(),
+                        Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
             }
             else {
                 in = local.getInputStream();
@@ -129,8 +128,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                     .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
                     .name(file.getName()));
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
-                    .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
-            log.debug("upload started for {} with response {}", file, createFileUploadResponse);
+                    .createFileUploadChannel(createFileUploadRequest);
+            log.debug("Upload started for {} with response {}", file, createFileUploadResponse);
             final Map<Integer, TransferStatus> etags = new HashMap<>();
             final List<PresignedUrl> presignedUrls = this.retrievePresignedUrls(createFileUploadResponse, status);
             final List<Future<TransferStatus>> parts = new ArrayList<>();
@@ -143,13 +142,13 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 for(int partNumber = 1; remaining >= 0; partNumber++) {
                     final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                     final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
-                    if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
+                    if(status.getFilekey() != null) {
                         final Local temporary = temp.create(String.format("%s-%d", random, partNumber));
                         log.debug("Encrypted contents for part {} to {}", partNumber, temporary);
                         final FileBuffer buffer = new FileBuffer(temporary);
                         new StreamCopier(status, StreamProgress.noop).withAutoclose(false).withLimit(length)
                                 .transfer(in, new BufferOutputStream(buffer));
-                        parts.add(this.submit(pool, write, file, temporary, buffer, throttle, streamListener, status,
+                        parts.add(this.submit(pool, new SDSDirectS3WriteFeature(session, nodeid), file, temporary, buffer, throttle, streamListener, status,
                                 presignedUrl.getUrl(), presignedUrl.getPartNumber(), 0L, length, callback));
                     }
                     else {
@@ -170,7 +169,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                     .forEach(part -> etags.put(part.getPart(), part));
             final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
                     .keepShareLinks(HostPreferencesFactory.get(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
-                    .resolutionStrategy(CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE);
+                    .resolutionStrategy(CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE)
+                    .isPrioritisedVirusScan(null);
             if(status.getFilekey() != null) {
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                 final FileKey fileKey = reader.readValue(status.getFilekey().array());
@@ -183,7 +183,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             etags.forEach((key, value) -> completeS3FileUploadRequest.addPartsItem(
                     new S3FileUploadPart().partEtag(value.getChecksum().hash).partNumber(key)));
             log.debug("Complete file upload with {} for {}", completeS3FileUploadRequest, file);
-            new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+            new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId());
             // Polling
             return new SDSUploadService(session, nodeid).await(file, status, createFileUploadResponse.getUploadId()).getNode();
         }
@@ -218,7 +218,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                     // Separate last part with non default part size
                     presignedUrls.addAll(new NodesApi(session.getClient()).generatePresignedUrlsFiles(
                             new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),
-                            createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
+                            createFileUploadResponse.getUploadId()).getUrls());
                 }
                 else {
                     presignedUrlsRequest.lastPartNumber(partNumber).size(length);
@@ -230,7 +230,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             }
         }
         presignedUrls.addAll(0, new NodesApi(session.getClient()).generatePresignedUrlsFiles(presignedUrlsRequest,
-                createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
+                createFileUploadResponse.getUploadId()).getUrls());
         return presignedUrls;
     }
 

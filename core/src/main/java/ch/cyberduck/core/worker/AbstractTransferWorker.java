@@ -147,7 +147,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     /**
      * Release session from pool for transfer
      */
-    protected abstract void release(Session session, Connection type, BackgroundException failure);
+    protected abstract void release(Session<?> session, Connection type, BackgroundException failure);
 
     @Override
     public Boolean initialize() {
@@ -200,7 +200,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             for(TransferItem next : transfer.getRoots()) {
                 // Check if parent directory is found in set to determine status
                 this.prepare(next.remote, next.local, new TransferStatus()
-                        .setExists(!transfer.getRoots().stream().anyMatch(f -> next.remote.isChild(f.remote))), action);
+                        .setExists(transfer.getRoots().stream().noneMatch(f -> next.remote.isChild(f.remote))), action);
             }
             this.await();
             meter.reset();
@@ -447,7 +447,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                         // Retry immediately
                                         log.info("Retry segment {} of {} with status {}", segment, item, retry);
                                         this.transferSegment(segment
-                                                .setNonces(retry.getNonces())
                                                 .setChecksum(retry.getChecksum())
                                                 .setLength(retry.getLength())
                                                 .setOffset(retry.getOffset())

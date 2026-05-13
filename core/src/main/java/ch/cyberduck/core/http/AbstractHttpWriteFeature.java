@@ -18,24 +18,27 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesAdapter;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
@@ -43,9 +46,11 @@ import java.util.concurrent.ThreadFactory;
 public abstract class AbstractHttpWriteFeature<R> implements HttpWriteFeature<R> {
     private static final Logger log = LogManager.getLogger(AbstractHttpWriteFeature.class);
 
+    private final Host host;
     private final AttributesAdapter<R> attributes;
 
-    public AbstractHttpWriteFeature(final AttributesAdapter<R> attributes) {
+    public AbstractHttpWriteFeature(final Host host, final AttributesAdapter<R> attributes) {
+        this.host = host;
         this.attributes = attributes;
     }
 
@@ -94,13 +99,7 @@ public abstract class AbstractHttpWriteFeature<R> implements HttpWriteFeature<R>
             public void run() {
                 try {
                     status.validate();
-                    if(status.getLength() != TransferStatus.UNKNOWN_LENGTH && PreferencesFactory.get().getInteger("http.request.entity.buffer.limit")
-                            > status.getLength()) {
-                        this.response = command.call(new BufferedHttpEntity(entity));
-                    }
-                    else {
-                        this.response = command.call(entity);
-                    }
+                    this.response = command.call(toBuffered(entity, HostPreferencesFactory.get(host).getLong("http.request.entity.buffer.limit")));
                 }
                 catch(Exception e) {
                     this.exception = e;
@@ -151,4 +150,15 @@ public abstract class AbstractHttpWriteFeature<R> implements HttpWriteFeature<R>
 
     @Override
     public abstract HttpResponseOutputStream<R> write(Path file, TransferStatus status, ConnectionCallback callback) throws BackgroundException;
+
+    public static HttpEntity toBuffered(final HttpEntity entity, final Long limit) throws IOException {
+        final long contentLength = entity.getContentLength();
+        if(contentLength == TransferStatus.UNKNOWN_LENGTH) {
+            return entity;
+        }
+        if(contentLength < limit) {
+            return new BufferedHttpEntity(entity);
+        }
+        return entity;
+    }
 }

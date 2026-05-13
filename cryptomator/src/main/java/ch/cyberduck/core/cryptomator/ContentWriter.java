@@ -15,9 +15,10 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
@@ -43,7 +44,7 @@ public class ContentWriter {
         this.write(file, content, new TransferStatus());
     }
 
-    public void write(final Path file, final byte[] content, final TransferStatus status) throws BackgroundException {
+    public PathAttributes write(final Path file, final byte[] content, final TransferStatus status) throws BackgroundException {
         final Write<?> write = session._getFeature(Write.class);
         status.setLength(content.length);
         status.setChecksum(write.checksum(file, status).compute(new ByteArrayInputStream(content), status));
@@ -51,7 +52,7 @@ public class ContentWriter {
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(file));
         }
-        final StatusOutputStream<?> out = write.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<?> out = write.write(file, status, ConnectionCallback.noop);
         try {
             IOUtils.write(content, out);
         }
@@ -61,5 +62,6 @@ public class ContentWriter {
         finally {
             new DefaultStreamCloser().close(out);
         }
+        return status.getResponse();
     }
 }

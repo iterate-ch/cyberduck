@@ -15,9 +15,9 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
 import java.util.EnumSet;
@@ -36,13 +36,13 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Path create(final Session<?> session, final String region, final VaultCredentials credentials) {
-        return null;
+    public void create(final Session<?> session, final String region, final VaultMetadataProvider metadata) throws BackgroundException {
+        //
     }
 
     @Override
-    public Vault load(final Session<?> session, final PasswordCallback prompt) {
-        return this;
+    public void load(final Session<?> session, final VaultMetadataProvider provider) {
+        //
     }
 
     @Override
@@ -96,6 +96,10 @@ public final class DisabledVault implements Vault {
         return home;
     }
 
+    @Override
+    public VaultVersion getVersion() {
+        return null;
+    }
 
     @Override
     public boolean equals(final Object o) {

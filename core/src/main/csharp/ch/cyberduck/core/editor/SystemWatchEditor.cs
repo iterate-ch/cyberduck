@@ -40,7 +40,7 @@ namespace Ch.Cyberduck.Core.Editor
 
         protected override void watch(Application application, ch.cyberduck.core.Local temporary, FileWatcherListener listener, ApplicationQuitCallback quit)
         {
-            _watcher.Path = temporary.getParent().getAbsolute();
+            _watcher.Path = temporary.getParent().PlatformPath();
             _watcher.Filter = temporary.getName();
             _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName |
                                     NotifyFilters.DirectoryName;

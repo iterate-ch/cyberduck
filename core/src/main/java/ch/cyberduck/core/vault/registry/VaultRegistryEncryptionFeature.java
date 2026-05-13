@@ -19,9 +19,12 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class VaultRegistryEncryptionFeature implements Encryption {
@@ -38,7 +41,15 @@ public class VaultRegistryEncryptionFeature implements Encryption {
 
     @Override
     public Set<Algorithm> getKeys(final Path file, final LoginCallback prompt) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Encryption.class, proxy).getKeys(file, prompt);
+        try {
+            return registry.find(session, file).getFeature(session, Encryption.class, proxy).getKeys(file, prompt);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getKeys(file, prompt);
+        }
+        catch(UnsupportedException e) {
+            return Collections.emptySet();
+        }
     }
 
     @Override
@@ -53,7 +64,15 @@ public class VaultRegistryEncryptionFeature implements Encryption {
 
     @Override
     public Algorithm getDefault(final Path file) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Encryption.class, proxy).getDefault(file);
+        try {
+            return registry.find(session, file).getFeature(session, Encryption.class, proxy).getDefault(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return proxy.getDefault(file);
+        }
+        catch(UnsupportedException e) {
+            return Algorithm.NONE;
+        }
     }
 
     @Override

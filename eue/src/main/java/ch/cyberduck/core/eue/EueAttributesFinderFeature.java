@@ -15,6 +15,7 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -103,8 +104,7 @@ public class EueAttributesFinderFeature implements AttributesFinder {
 
     protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32,
                                           final ShareCreationResponseEntity share) {
-        final PathAttributes attr = new PathAttributes();
-        attr.setDisplayname(entity.getName());
+        final PathAttributes attr = new DefaultPathAttributes();
         // Matches ETag response header
         attr.setETag(StringUtils.remove(entity.getMetaETag(), '"'));
         switch(entity.getResourceType()) {

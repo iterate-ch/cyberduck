@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>9.3.0-SNAPSHOT</version>
+        <version>9.5.0-SNAPSHOT</version>
     </parent>
     <artifactId>backblaze</artifactId>
     <packaging>jar</packaging>
@@ -33,7 +33,7 @@
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>20250517</version>
+                <version>20251224</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

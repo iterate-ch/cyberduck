@@ -16,6 +16,7 @@ package ch.cyberduck.ui.browser;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
@@ -62,6 +63,6 @@ public class RecursiveSearchFilterTest {
     @Test
     public void testAcceptFileVersions() {
         final RecursiveSearchFilter f = new RecursiveSearchFilter(new AttributedList<>(Arrays.asList(new Path("/f", EnumSet.of(Path.Type.file)))));
-        assertTrue(f.accept(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().setVersionId("1"))));
+        assertTrue(f.accept(new Path("/f", EnumSet.of(Path.Type.file), new DefaultPathAttributes().setVersionId("1"))));
     }
 }

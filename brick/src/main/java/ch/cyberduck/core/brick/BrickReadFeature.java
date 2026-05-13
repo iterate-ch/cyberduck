@@ -54,7 +54,8 @@ public class BrickReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileEntity entity = new FilesApi(new BrickApiClient(session))
+            final BrickApiClient client = session.getClient();
+            final FileEntity entity = new FilesApi(client)
                 .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
                     null, null, null, null);
             final HttpUriRequest request = new HttpGet(entity.getDownloadUri());
@@ -72,7 +73,7 @@ public class BrickReadFeature implements Read {
                 // Disable compression
                 request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
             }
-            final HttpResponse response = session.getClient().execute(request);
+            final HttpResponse response = client.getClient().execute(request);
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_OK:
                 case HttpStatus.SC_PARTIAL_CONTENT:

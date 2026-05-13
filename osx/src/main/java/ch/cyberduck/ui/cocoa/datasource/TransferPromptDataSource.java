@@ -187,7 +187,7 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
         if(identifier.equals(Column.warning.name())) {
             if(file.remote.isFile()) {
                 if(status.getLength() == 0) {
-                    return IconCacheFactory.<NSImage>get().iconNamed("NSCaution");
+                    return IconCacheFactory.<NSImage>get().iconNamed("NSCaution", 16);
                 }
             }
             return null;

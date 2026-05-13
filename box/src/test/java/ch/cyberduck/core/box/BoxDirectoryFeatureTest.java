@@ -16,7 +16,7 @@ package ch.cyberduck.core.box;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
@@ -30,6 +30,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -46,18 +47,18 @@ public class BoxDirectoryFeatureTest extends AbstractBoxTest {
         assertEquals(0L, folder.attributes().getSize());
         assertNotEquals(-1L, folder.attributes().getModificationDate());
         assertThrows(ConflictException.class, () -> new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), folder, new TransferStatus()));
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder));
     }
 
     @Test
     public void isSupported() {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        assertTrue(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), new AlphanumericRandomStringService().random()));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), String.format("%s ", new AlphanumericRandomStringService().random())));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), String.format("%s\\", new AlphanumericRandomStringService().random())));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), String.format("%s/", new AlphanumericRandomStringService().random())));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), "."));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), ".."));
+        assertTrue(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(new AlphanumericRandomStringService().random())));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(String.format("%s ", new AlphanumericRandomStringService().random()))));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(String.format("%s\\", new AlphanumericRandomStringService().random()))));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(String.format("%s/", new AlphanumericRandomStringService().random()))));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(".")));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of("..")));
     }
 }

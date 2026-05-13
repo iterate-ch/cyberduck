@@ -69,7 +69,7 @@ public class PathCacheTest {
     @Test
     public void testDirectoryWithFileIdDefaultPredicate() {
         final PathCache cache = new PathCache(1);
-        final Path f = new Path("/", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setFileId("1"));
+        final Path f = new Path("/", EnumSet.of(Path.Type.directory)).withAttributes(new DefaultPathAttributes().setFileId("1"));
         assertFalse(cache.containsKey(f));
         cache.put(f, new AttributedList<>());
         assertTrue(cache.containsKey(f));
@@ -86,7 +86,7 @@ public class PathCacheTest {
                 return new SimplePathPredicate(file);
             }
         };
-        final Path f = new Path("/", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().setFileId("1"));
+        final Path f = new Path("/", EnumSet.of(Path.Type.directory)).withAttributes(new DefaultPathAttributes().setFileId("1"));
         assertFalse(cache.containsKey(f));
         cache.put(f, new AttributedList<>());
         assertTrue(cache.containsKey(f));

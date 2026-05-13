@@ -21,9 +21,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -33,9 +33,9 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     private final Session<?> session;
     private final Upload<Reply> proxy;
-    private final CryptoVault vault;
+    private final Vault vault;
 
-    public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final CryptoVault vault) {
+    public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final Vault vault) {
         this.session = session;
         this.proxy = delegate;
         this.vault = vault;
@@ -43,12 +43,12 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     @Override
     public Reply upload(final Write<Reply> write, final Path file, final Local local, final BandwidthThrottle throttle, final ProgressListener progress, final StreamListener streamListener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return proxy.upload(write, vault.encrypt(session, file), local, throttle, progress, streamListener, status.setDestinationLength(new CryptoTransferStatus(vault, status).getLength()), callback);
+        return proxy.upload(write, vault.encrypt(session, file), local, throttle, progress, streamListener, status.setDestinationLength(new CryptoTransferStatus(vault, file, status).getLength()), callback);
     }
 
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return proxy.append(vault.encrypt(session, file), status.setDestinationLength(new CryptoTransferStatus(vault, status).getLength()));
+        return proxy.append(vault.encrypt(session, file), status.setDestinationLength(new CryptoTransferStatus(vault, file, status).getLength()));
     }
 
     @Override

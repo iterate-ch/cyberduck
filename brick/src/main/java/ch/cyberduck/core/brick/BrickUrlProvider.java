@@ -23,6 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 public class BrickUrlProvider extends HostWebUrlProvider {
 
     public BrickUrlProvider(final Host host) {
-        super(new Host(host).withWebURL(String.format("https://%s/files/", StringUtils.strip(host.getHostname()))));
+        super(new Host(host).setWebURL(String.format("https://%s/files/", StringUtils.strip(host.getHostname()))));
     }
 }

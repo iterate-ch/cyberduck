@@ -144,7 +144,7 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
             }
         };
         final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
-                "cyberduck", "eu-central-1", "f", "GET", expiry.getTimeInMillis());
+                "cyberduck", "my-eu-central-1", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
         assertEquals("cyberduck.wasabisys.com", URI.create(url).getHost());
     }
@@ -173,7 +173,7 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
 
     @Test
     public void testDnsBucketNamingDisabled() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+        final Host host = new Host(new S3Protocol(), "mys3", new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         )) {
             @Override
@@ -193,9 +193,41 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
-                "test-bucket", "region", "f", "GET", expiry.getTimeInMillis());
+                "test bucket", "region", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
-        assertEquals("s3.dualstack.region.amazonaws.com", URI.create(url).getHost());
-        assertEquals("/test-bucket/f", URI.create(url).getPath());
+        assertEquals("mys3", URI.create(url).getHost());
+        assertEquals("/test%20bucket/f", URI.create(url).getRawPath());
+        assertEquals("/test bucket/f", URI.create(url).getPath());
+    }
+
+    @Test
+    public void testContextPath() throws Exception {
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
+        final Host host = new Host(new S3Protocol() {
+            @Override
+            public String getContext() {
+                return "/storage/v1/s3";
+            }
+        }, "example.supabase.co") {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.bucket.virtualhost.disable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
+        final S3Session session = new S3Session(host) {
+            @Override
+            public S3CredentialsStrategy getAuthentication() {
+                return host::getCredentials;
+            }
+        };
+        final String url = new S3PresignedUrlProvider(session).create(session.getAuthentication().get(),
+                "bucket", "eu-west-1", "key.jpg", "GET", expiry.getTimeInMillis());
+        assertNotNull(url);
+        assertEquals("example.supabase.co", URI.create(url).getHost());
+        assertEquals("/storage/v1/s3/bucket/key.jpg", URI.create(url).getPath());
     }
 }

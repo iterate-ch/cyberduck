@@ -786,6 +786,26 @@ public abstract class NSWindow extends NSResponder {
     public abstract void update();
 
     /**
+     * Attempts to make a given responder the first responder for the window.
+     * <p>
+     * If responder isn’t already the first responder, this method first sends a resignFirstResponder message to the
+     * object that is the first responder. If that object refuses to resign, it remains the first responder, and this
+     * method immediately returns false. If the current first responder resigns, this method sends a becomeFirstResponder message to responder. If responder does not accept first responder status, the NSWindow object becomes first responder; in this case, the method returns true even if responder refuses first responder status.
+     * <p>
+     * If responder is nil, this method still sends resignFirstResponder to the current first responder. If the current
+     * first responder refuses to resign, it remains the first responder and this method immediately returns false. If
+     * the current first responder returns true from resignFirstResponder, the window is made its own first responder
+     * and this method returns true.
+     * <p>
+     * The Application Kit framework uses this method to alter the first responder in response to mouse-down events;
+     * you can also use it to explicitly set the first responder from within your program. The responder object is typically an NSView object in the window’s view hierarchy. If this method is called explicitly, first send acceptsFirstResponder to responder, and do not call makeFirstResponder: if acceptsFirstResponder returns false.
+     * <p>
+     * Use initialFirstResponder to the set the first responder to be used when the window is brought onscreen for
+     * the first time.
+     *
+     * @return true when the operation is successful; otherwise, false.
+     * @see #setInitialFirstResponder(NSView)
+     * <p>
      * Original signature : <code>BOOL makeFirstResponder(NSResponder*)</code><br>
      * <i>native declaration : :305</i>
      */
@@ -1052,8 +1072,7 @@ public abstract class NSWindow extends NSResponder {
     public abstract boolean isDocumentEdited();
 
     /**
-     * Original signature : <code>BOOL isVisible()</code><br>
-     * <i>native declaration : :361</i>
+     * @return A Boolean value that indicates whether the window is visible onscreen (even when it’s obscured by other windows).
      */
     public abstract boolean isVisible();
 
@@ -1452,21 +1471,18 @@ public abstract class NSWindow extends NSResponder {
     public abstract void setFrameFromString(String string);
 
     /**
-     * Original signature : <code>void saveFrameUsingName(NSString*)</code><br>
-     * <i>native declaration : :467</i>
+     * Saves the window’s frame rectangle in the user defaults system under a given name.
+     * With the companion method setFrameUsingName(_:), you can save and reset an NSWindow object’s frame over various launches of an application.
+     *
+     * @param name The name under which the frame is to be saved.
      */
     public abstract void saveFrameUsingName(String name);
 
     /**
-     * Set force=YES to use setFrameUsingName on a non-resizable window<br> Original signature : <code>BOOL
-     * setFrameUsingName(NSString*, BOOL)</code><br>
-     * <i>native declaration : :469</i>
-     */
-    public abstract boolean setFrameUsingName_force(String name, boolean force);
-
-    /**
-     * Original signature : <code>BOOL setFrameUsingName(NSString*)</code><br>
-     * <i>native declaration : :470</i>
+     * Sets the window’s frame rectangle by reading the rectangle data stored under a given name from the defaults system.
+     * The frame is constrained according to the window’s minimum and maximum size settings. This method causes a windowWillResize(_:to:) message to be sent to the delegate
+     *
+     * @param name The name of the frame to read.
      */
     public abstract boolean setFrameUsingName(String name);
 
@@ -1693,6 +1709,8 @@ public abstract class NSWindow extends NSResponder {
     public abstract CGFloat userSpaceScaleFactor();
 
     /**
+     * The view that’s made first responder (also called the key view) the first time the window is placed onscreen.
+     * <p>
      * Original signature : <code>void setInitialFirstResponder(NSView*)</code><br>
      * <i>from NSKeyboardUI native declaration : :539</i>
      */
@@ -1771,6 +1789,17 @@ public abstract class NSWindow extends NSResponder {
     public abstract boolean autorecalculatesKeyViewLoop();
 
     /**
+     * Marks the key view loop as “dirty” and in need of recalculation.
+     *
+     * The key view loop is recalculated the next time someone requests the next or previous key view of the window.
+     * The recalculated loop is based on the geometric order of the views in the window.
+     *
+     * If you don’t want to maintain the key view loop of your window manually, you can use this method to do it for you.
+     * When it’s first loaded, NSWindow calls this method automatically if your window doesn’t have a key view loop
+     * already established. If you add or remove views later, you can call this method manually to update the window’s
+     * key view loop. You can also set the autorecalculatesKeyViewLoop property to have the window recalculate
+     * the loop automatically.
+     *
      * Original signature : <code>void recalculateKeyViewLoop()</code><br>
      * <i>from NSKeyboardUI native declaration : :553</i>
      */

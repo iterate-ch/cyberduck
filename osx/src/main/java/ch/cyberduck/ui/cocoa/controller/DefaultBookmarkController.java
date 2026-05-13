@@ -23,6 +23,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.ui.LoginInputValidator;
 
 public abstract class DefaultBookmarkController extends BookmarkController {
@@ -47,9 +49,9 @@ public abstract class DefaultBookmarkController extends BookmarkController {
     }
 
     @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
+    public void focus() {
         this.addObserver(bookmark -> window.recalculateKeyViewLoop());
+        super.focus();
     }
 
     @Override

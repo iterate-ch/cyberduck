@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.*;
 
@@ -39,9 +40,11 @@ public class CteraTouchFeature extends DAVTouchFeature {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(!validate(filename)) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
+        if(filename.isPresent()) {
+            if(!validate(filename.get())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
+            }
         }
 
         // File/directory creation summary:

@@ -34,7 +34,7 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-public class GraphSharedLinkFeature implements Share<Object, Object> {
+public class GraphSharedLinkFeature implements Share<Void, Void> {
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -53,7 +53,7 @@ public class GraphSharedLinkFeature implements Share<Object, Object> {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback)
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback)
             throws BackgroundException {
         final DriveItem item = session.getItem(file);
         try {
@@ -72,7 +72,7 @@ public class GraphSharedLinkFeature implements Share<Object, Object> {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) {
         return DescriptiveUrl.EMPTY;
     }
 }

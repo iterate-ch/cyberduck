@@ -60,7 +60,7 @@ public class PermissionOverwrite {
     }
 
     public Permission resolve(final Permission original) {
-        return new Permission(
+        return new StaticPermission(
                 user.resolve(original.getUser()),
                 group.resolve(original.getGroup()),
                 other.resolve(original.getOther()),

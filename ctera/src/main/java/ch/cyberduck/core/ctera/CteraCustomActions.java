@@ -15,6 +15,7 @@ package ch.cyberduck.core.ctera;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,16 +27,18 @@ import java.util.Set;
 public class CteraCustomActions implements CustomActions {
 
     private final CteraSession session;
+    private final HostPasswordStore keychain;
 
-    public CteraCustomActions(final CteraSession session) {
+    public CteraCustomActions(final CteraSession session, final HostPasswordStore keychain) {
         this.session = session;
+        this.keychain = keychain;
     }
 
     @Override
     public void run(final Action type, final Path file) throws BackgroundException {
         switch(CteraActions.valueOf(type.name())) {
             case versioning:
-                new CteraCustomActionVersioning(session, file).run();
+                new CteraCustomActionVersioning(session, keychain, file).run();
                 break;
             case share:
         }

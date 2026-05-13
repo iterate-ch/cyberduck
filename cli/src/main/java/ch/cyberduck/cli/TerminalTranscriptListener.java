@@ -30,9 +30,11 @@ public class TerminalTranscriptListener implements TranscriptListener {
     public void log(final Type request, final String message) {
         switch(request) {
             case request:
+            case requestheader:
                 console.printf("%n%s> %s%s", Ansi.ansi().fg(Ansi.Color.GREEN), message, Ansi.ansi().reset());
                 break;
             case response:
+            case responseheader:
                 console.printf("%n%s< %s%s", Ansi.ansi().fg(Ansi.Color.RED), message, Ansi.ansi().reset());
                 break;
         }

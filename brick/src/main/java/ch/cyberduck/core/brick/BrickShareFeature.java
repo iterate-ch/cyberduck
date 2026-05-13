@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.MessageFormat;
 import java.util.Collections;
 
-public class BrickShareFeature implements Share {
+public class BrickShareFeature implements Share<Void, Void> {
 
     private final BrickSession session;
 
@@ -49,13 +49,13 @@ public class BrickShareFeature implements Share {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
             final Credentials password = callback.prompt(session.getHost(),
                     LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                     MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                     new LoginOptions().anonymous(true).keychain(false).icon(session.getHost().getProtocol().disk()));
-            return new DescriptiveUrl(new BundlesApi(new BrickApiClient(session))
+            return new DescriptiveUrl(new BundlesApi(session.getClient())
                     .postBundles(new BundlesBody().password(password.isPasswordAuthentication() ? password.getPassword() : null).paths(Collections.singletonList(
                             StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER))))).getUrl(), DescriptiveUrl.Type.signed);
         }
@@ -65,7 +65,7 @@ public class BrickShareFeature implements Share {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         return DescriptiveUrl.EMPTY;
     }
 }

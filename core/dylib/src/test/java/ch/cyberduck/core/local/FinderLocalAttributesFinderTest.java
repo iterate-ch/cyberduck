@@ -37,6 +37,16 @@ public class FinderLocalAttributesFinderTest {
     }
 
     @Test
+    public void testGetSizeDirectory() throws Exception {
+        assertEquals(-1, new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getSize());
+        final File f = new File(UUID.randomUUID().toString());
+        f.mkdir();
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
+        assertEquals(-1, a.getSize());
+        f.delete();
+    }
+
+    @Test
     public void testGetPermission() {
         assertEquals(Permission.EMPTY, new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getPermission());
     }

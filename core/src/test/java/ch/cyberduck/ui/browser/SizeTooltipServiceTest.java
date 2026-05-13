@@ -15,6 +15,7 @@ package ch.cyberduck.ui.browser;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
@@ -31,7 +32,7 @@ public class SizeTooltipServiceTest {
     @Test
     public void testGetTooltip() {
         final SizeTooltipService s = new SizeTooltipService();
-        final PathAttributes attr = new PathAttributes();
+        final PathAttributes attr = new DefaultPathAttributes();
         attr.setSize(-1L);
         assertEquals("--", s.getTooltip(new Path("/p", EnumSet.of(Path.Type.file), attr)));
         attr.setSize(0L);

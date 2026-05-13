@@ -15,13 +15,13 @@ package ch.cyberduck.core.openstack;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -61,7 +61,7 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
         final Path targetFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path copiedFile = new SwiftDefaultCopyFeature(session, regionService)
-            .copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+                .copy(sourceFile, targetFile, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         // copied file exists
         assertTrue(findFeature.find(copiedFile));
 
@@ -108,7 +108,7 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
         final Path targetFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path copiedFile = new SwiftLargeObjectCopyFeature(session, regionService)
-            .copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+                .copy(sourceFile, targetFile, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         // copied file exists
         assertTrue(findFeature.find(copiedFile));
 
@@ -156,7 +156,7 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
         final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path copiedFile = new SwiftDefaultCopyFeature(session, regionService)
-            .copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+                .copy(sourceFile, targetFile, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         // copied file exists
         assertTrue(findFeature.find(copiedFile));
 
@@ -205,7 +205,7 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SwiftObjectListService listService = new SwiftObjectListService(session, regionService);
         final Path copiedFile = new SwiftLargeObjectCopyFeature(session, regionService, segmentService)
-            .copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+                .copy(sourceFile, targetFile, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         // copied file exists
         assertTrue(findFeature.find(copiedFile));
 
@@ -235,7 +235,7 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
 
     private void prepareFile(final Path path, final SwiftRegionService regionService, final SwiftSegmentService segmentService) throws BackgroundException {
         final SwiftLargeUploadWriteFeature upload = new SwiftLargeUploadWriteFeature(session, regionService, segmentService);
-        final OutputStream out = upload.write(path, new TransferStatus(), new DisabledConnectionCallback());
+        final OutputStream out = upload.write(path, new TransferStatus(), ConnectionCallback.noop);
         final byte[] content = RandomUtils.nextBytes(1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();

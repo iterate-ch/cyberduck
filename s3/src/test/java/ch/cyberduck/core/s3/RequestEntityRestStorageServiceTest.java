@@ -16,9 +16,9 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
@@ -50,7 +50,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     public void testSetupConnection() throws Exception {
         final RequestEntityRestStorageService service = new RequestEntityRestStorageService(session, new HttpConnectionPoolBuilder(session.getHost(),
                 new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), session.getHost().getHostname()),
-                new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), new DisabledLoginCallback()));
+                new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), LoginCallback.noop));
         final RegionEndpointCache cache = service.getRegionEndpointCache();
         cache.clear();
         final String key = new AlphanumericRandomStringService().random();
@@ -69,7 +69,7 @@ public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
     public void testSetupConnectionVirtualHost() throws Exception {
         final RequestEntityRestStorageService service = new RequestEntityRestStorageService(virtualhost, new HttpConnectionPoolBuilder(virtualhost.getHost(),
                 new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), virtualhost.getHost().getHostname()),
-                new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), new DisabledLoginCallback()));
+                new DefaultX509KeyManager(), new DisabledProxyFinder()).build(new DisabledProxyFinder(), new DisabledTranscriptListener(), LoginCallback.noop));
         final RegionEndpointCache cache = service.getRegionEndpointCache();
         cache.clear();
         final String key = new AlphanumericRandomStringService().random();

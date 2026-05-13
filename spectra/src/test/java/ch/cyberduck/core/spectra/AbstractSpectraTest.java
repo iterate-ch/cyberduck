@@ -16,19 +16,18 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -54,7 +53,7 @@ public class AbstractSpectraTest extends VaultTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Spectra S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
-                PROPERTIES.get("spectra.user"), PROPERTIES.get("spectra.key")
+                PROPERTIES.get("spectra.user")
         ));
         session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
@@ -64,8 +63,8 @@ public class AbstractSpectraTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.check(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new TestPasswordStore(), ProgressListener.noop);
+        connect.check(session, CancelCallback.noop);
     }
 }

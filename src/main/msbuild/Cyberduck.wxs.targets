@@ -1,0 +1,42 @@
+<Project>
+
+  <Target Name="ResolveLocalBindPaths" DependsOnTargets="ResolveReferences" Returns="@(BindPathPayload)">
+    <ItemGroup>
+      <BindPathPayload Include="%(BindPath.Identity)\**" />
+    </ItemGroup>
+  </Target>
+  <Target Name="BindPathPayloadExecutable" DependsOnTargets="ResolveLocalBindPaths" Returns="@(BindPathPayloadExecutable)">
+    <ItemGroup>
+      <BindPathPayloadExecutable Include="@(BindPathPayload)" Condition="'%(Extension)'=='.dll' Or '%(Extension)'=='.exe'" />
+    </ItemGroup>
+  </Target>
+  <Target Name="ComputeSignPayload" DependsOnTargets="BindPathPayloadExecutable;SignToolExecutableName" Outputs="%(BindPathPayloadExecutable.Identity)">
+    <Exec Command="%22$(SignToolExecutableName)%22 verify /q /pa %22%(BindPathPayloadExecutable.Identity)%22"
+      EnvironmentVariables="@(SignToolPath)"
+      IgnoreStandardErrorWarningFormat="true"
+      IgnoreExitCode="true"
+      Condition="'@(BindPathPayloadExecutable)'!=''">
+      <Output TaskParameter="ExitCode" PropertyName="PayloadSigned" />
+    </Exec>
+
+    <ItemGroup>
+      <BindPathPayloadExecutable Update="%(BindPathPayloadExecutable.Identity)" Sign="$(PayloadSigned)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="SignPayload" BeforeTargets="CoreCompile" DependsOnTargets="ComputeSignPayload;SignToolArgs" Condition="'$(SignOutput)'=='true'">
+    <ItemGroup>
+      <_SignPayload Include="@(BindPathPayloadExecutable->WithoutMetadataValue('Sign', '0'))" />
+    </ItemGroup>
+    <Exec Command="$(SignToolArgs) @(_SignPayload->'%22%(Identity)%22', ' ')" EnvironmentVariables="@(SignToolPath)" Condition="'@(_SignPayload)'!=''" />
+  </Target>
+  <Target Name="SignMsi" DependsOnTargets="SignToolArgs" Condition="'$(SignOutput)'=='true'">
+    <Exec Command="$(SignToolArgs) &quot;%(SignMsi.FullPath)&quot;" EnvironmentVariables="@(SignToolPath)" />
+  </Target>
+  <Target Name="SignBundle" DependsOnTargets="SignToolArgs" Condition="'$(SignOutput)'=='true'">
+    <Exec Command="$(SignToolArgs) &quot;%(SignBundle.FullPath)&quot;" EnvironmentVariables="@(SignToolPath)" />
+  </Target>
+  <Target Name="SignBundleEngine" DependsOnTargets="SignToolArgs" Condition="'$(SignOutput)'=='true'">
+    <Exec Command="$(SignToolArgs) &quot;%(SignBundleEngine.FullPath)&quot;" EnvironmentVariables="@(SignToolPath)" />
+  </Target>
+
+</Project>

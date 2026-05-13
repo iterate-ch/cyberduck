@@ -66,10 +66,6 @@ public abstract class AlertController extends SheetController implements InputVa
 
     public abstract NSAlert loadAlert();
 
-    public NSAlert alert() {
-        return alert;
-    }
-
     @Override
     public void loadBundle() {
         alert = this.loadAlert();
@@ -83,18 +79,6 @@ public abstract class AlertController extends SheetController implements InputVa
         final NSWindow window = alert.window();
         log.debug("Use window {}", window);
         this.setWindow(window);
-        // Layout alert view on main thread
-        this.focus(alert);
-    }
-
-    @Override
-    public void setWindow(final NSWindow window) {
-        super.setWindow(window);
-        window.setReleasedWhenClosed(false);
-    }
-
-    protected void focus(final NSAlert alert) {
-        log.debug("Focus alert {}", alert);
         final NSEnumerator buttons = alert.buttons().objectEnumerator();
         NSObject button;
         while((button = buttons.nextObject()) != null) {
@@ -104,14 +88,27 @@ public abstract class AlertController extends SheetController implements InputVa
         }
         final NSView accessory = this.getAccessoryView(alert);
         if(accessory != null) {
+            log.debug("Add accessory view {}", accessory);
             final NSRect frame = this.getFrame(accessory);
             accessory.setFrameSize(frame.size);
             alert.setAccessoryView(accessory);
-            window.makeFirstResponder(accessory);
         }
-        // First call layout and then do any special positioning and sizing of the accessory view prior to running the alert
+        log.debug("Layout alert {}", alert);
+        // Layout alert view on main thread
         alert.layout();
+        this.awakeFromNib();
+    }
+
+    @Override
+    public void focus() {
+        log.debug("Realculate key view loop for alert {}", alert);
         window.recalculateKeyViewLoop();
+    }
+
+    @Override
+    public void setWindow(final NSWindow window) {
+        super.setWindow(window);
+        window.setReleasedWhenClosed(false);
     }
 
     protected NSRect getFrame(final NSView accessory) {

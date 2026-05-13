@@ -100,6 +100,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string DefaultEncryption { set; get; }
         string DefaultS3ACL { set; get; }
         string DefaultGoogleACL { set; get; }
+        bool UseS3Versioning { set; get; }
         float DefaultDownloadThrottle { set; get; }
         float DefaultUploadThrottle { set; get; }
         int ConnectionTimeout { set; get; }
@@ -200,6 +201,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DefaultEncryptionChangedEvent;
         event VoidHandler DefaultS3ACLChangedEvent;
         event VoidHandler DefaultGoogleACLChangedEvent;
+        event VoidHandler UseS3VersioningChangedEvent;
         event VoidHandler DefaultDownloadThrottleChangedEvent;
         event VoidHandler DefaultUploadThrottleChangedEvent;
         event VoidHandler ConnectionTimeoutChangedEvent;

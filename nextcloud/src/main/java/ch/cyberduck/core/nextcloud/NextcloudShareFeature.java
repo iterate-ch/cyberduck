@@ -53,7 +53,7 @@ import java.util.Set;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 
-public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
+public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<Void, Void> {
     private static final Logger log = LogManager.getLogger(NextcloudShareFeature.class);
 
     private final DAVSession session;
@@ -122,7 +122,7 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
      * int) 0 = user; 1 = group; 3 = public link; 6 = federated cloud share
      */
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&shareWith=%s",
                 bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
@@ -153,7 +153,7 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
 
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s%s/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&permissions=%d",
                 bookmark.getHostname(), new NextcloudHomeFeature(bookmark).find(NextcloudHomeFeature.Context.ocs).getAbsolute(),
@@ -203,5 +203,4 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share {
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
-
 }

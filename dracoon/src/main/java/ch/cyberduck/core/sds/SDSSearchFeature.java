@@ -56,11 +56,10 @@ public class SDSSearchFeature implements Search {
             do {
                 nodes = new NodesApi(session.getClient()).searchNodes(
                         String.format("*%s*", new NFCNormalizer().normalize(regex.toString())),
-                        StringUtils.EMPTY,
+                        null,
                         -1,
                         Long.valueOf(nodeid.getVersionId(workdir)),
-                        null, null, offset, chunksize, StringUtils.EMPTY
-                );
+                        null, null, offset, chunksize, false);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = new SDSAttributesAdapter(session).toAttributes(node);
                     final EnumSet<Path.Type> type;

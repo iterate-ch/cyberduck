@@ -16,9 +16,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
+    <AssemblyName>Cyberduck.Core.Native</AssemblyName>
     <_CoreBasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</_CoreBasePath>
   </PropertyGroup>
 
   <Import Project="$(_CoreBasePath)native/Directory.Build.props" />
-  
+
 </Project>

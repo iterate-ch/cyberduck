@@ -3,13 +3,13 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -19,7 +19,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -62,7 +61,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(status.isComplete());
@@ -78,7 +77,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         // d2b77e21aa68ebdcbfb589124b9f9192-1
         assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, acl).getClass(test));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -97,7 +96,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(virtualhost, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(status.isComplete());
@@ -113,7 +112,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         // d2b77e21aa68ebdcbfb589124b9f9192-1
         assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(virtualhost, acl).getClass(test));
-        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(virtualhost, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -134,7 +133,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, status, new DisabledLoginCallback());
+                ProgressListener.noop, count, status, LoginCallback.noop);
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertEquals(random.length, status.getResponse().getSize());
@@ -146,7 +145,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(random.length, attr.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session, acl).getClass(test));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -158,7 +157,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus();
-        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), status, null);
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, status, null);
     }
 
     @Test
@@ -175,13 +174,13 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
-        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null);
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, null);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -200,7 +199,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setLength(content.length);
         status.setModified(System.currentTimeMillis());
         final BytecountStreamListener count = new BytecountStreamListener();
-        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status, null);
+        m.upload(new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status, null);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
@@ -208,7 +207,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -238,8 +237,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         };
         try {
             feature.upload(new S3WriteFeature(session, acl), test, new Local(System.getProperty("java.io.tmpdir"), name),
-                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status,
-                    new DisabledLoginCallback());
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status,
+                    LoginCallback.noop);
         }
         catch(BackgroundException e) {
             // Expected
@@ -255,8 +254,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(10L * 1024L * 1024L, feature.append(upload, status).offset, 0L);
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(2L * 1024L * 1024L).setOffset(10L * 1024L * 1024L);
         new S3MultipartUploadService(session, acl, 10L * 1024L * 1024L, 1).upload(new S3WriteFeature(session, acl), test, local,
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, append,
-                new DisabledConnectionCallback());
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, append,
+                ConnectionCallback.noop);
         assertEquals(12L * 1024L * 1024L, count.getSent());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
@@ -264,11 +263,11 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(12L * 1024L * 1024L, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -299,8 +298,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                                 }
                             };
                         }
-                    }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count, status,
-                    new DisabledConnectionCallback());
+                    }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count, status,
+                    ConnectionCallback.noop);
         }
         catch(BackgroundException e) {
             // Expected
@@ -314,19 +313,19 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(content.length);
         new S3MultipartUploadService(session, acl, 10485760L, 1).upload(
                 new S3WriteFeature(session, acl), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledProgressListener(), count, append,
-                new DisabledConnectionCallback());
+                ProgressListener.noop, count, append,
+                ConnectionCallback.noop);
         assertEquals(32769L, count.getSent());
         assertTrue(append.isComplete());
         assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session, acl).find(test).getSize());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -342,7 +341,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     public void testSize() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3MultipartUploadService feature = new S3MultipartUploadService(session, acl, 5 * 1024L * 1024L, 5);
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L).setRemote(new PathAttributes().setSize(3L)));
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), new TransferStatus().setLength(0L).setRemote(new DefaultPathAttributes().setSize(3L)));
         assertFalse(append.append);
         assertEquals(0L, append.offset, 0L);
     }

@@ -16,7 +16,7 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.features.Delete;
@@ -46,15 +46,15 @@ public class StoregateLockFeatureTest extends AbstractStoregateTest {
         final String lock = new StoregateLockFeature(session, nodeid).lock(fileInRoom);
         assertNotNull(lock);
         try {
-            new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), LoginCallback.noop, new Delete.DisabledCallback());
             fail();
         }
         catch(LockedException e) {
             // expected
         }
         new StoregateLockFeature(session, nodeid).unlock(fileInRoom, lock);
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(fileInRoom));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

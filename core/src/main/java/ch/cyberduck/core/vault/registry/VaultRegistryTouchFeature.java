@@ -24,6 +24,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import java.util.Optional;
+
 public class VaultRegistryTouchFeature<R> implements Touch<R> {
 
     private final Session<?> session;
@@ -42,7 +44,7 @@ public class VaultRegistryTouchFeature<R> implements Touch<R> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         try {
             registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).preflight(workdir, filename);
         }

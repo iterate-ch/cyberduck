@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator.features;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Vault;
@@ -43,13 +44,13 @@ public class CryptoHeadersFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return delegate.getMetadata(vault.encrypt(session, file));
+        return delegate.getMetadata(vault.encrypt(session, file, true));
 
     }
 
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
-        delegate.setMetadata(vault.encrypt(session, file), status);
+        delegate.setMetadata(vault.encrypt(session, file, true), new CryptoTransferStatus(vault, file, status));
     }
 
     @Override

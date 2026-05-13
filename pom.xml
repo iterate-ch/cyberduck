@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>9.3.0-SNAPSHOT</version>
+    <version>9.5.0-SNAPSHOT</version>
 
     <modules>
         <module>defaults</module>
@@ -21,6 +21,7 @@
         <!-- Encryption-->
         <module>cryptomator</module>
         <module>cryptomator/dll</module>
+        <module>cryptomator/legacy</module>
         <!-- Native components -->
         <module>bonjour</module>
         <module>bonjour/dll</module>
@@ -83,16 +84,19 @@
         <argLine />
         <jna-version>5.14.0</jna-version>
         <jersey-version>2.38</jersey-version>
-        <jackson-version>2.19.2</jackson-version>
+        <jackson-version>2.21.3</jackson-version>
+        <jackson-annotations-version>2.21</jackson-annotations-version>
         <slf4j-version>1.7.36</slf4j-version>
-        <log4j-version>2.25.2</log4j-version>
-        <bouncycastle-version>1.82</bouncycastle-version>
+        <log4j-version>2.26.0</log4j-version>
+        <bouncycastle-version>1.84</bouncycastle-version>
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>1.46.3</google-http-client.version>
-        <jwt.version>4.5.0</jwt.version>
+        <jwt.version>4.5.2</jwt.version>
         <java-native-dll>8u312b07</java-native-dll>
         <rococoa-version>0.10.0</rococoa-version>
+        <jansi.version>2.4.2</jansi.version>
         <surefire.group.excluded>ch.cyberduck.test.IntegrationTest</surefire.group.excluded>
+        <surefire.exclude>ch.cyberduck.core.cryptomator.SFTPCryptomatorInteroperabilityTest</surefire.exclude>
     </properties>
 
     <dependencyManagement>
@@ -116,7 +120,7 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.18.1</version>
+                <version>1.18.8</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
@@ -166,22 +170,22 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.20.0</version>
+                <version>1.22.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
-                <version>3.12.0</version>
+                <version>3.13.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
-                <version>2.12.1</version>
+                <version>2.13.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.21.0</version>
+                <version>2.22.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-collections</groupId>
@@ -206,7 +210,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-                <version>1.14.0</version>
+                <version>1.15.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -216,7 +220,7 @@
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
-                <version>2.13.2</version>
+                <version>2.14.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
@@ -251,7 +255,7 @@
             <dependency>
                 <groupId>org.codehaus.woodstox</groupId>
                 <artifactId>stax2-api</artifactId>
-                <version>4.2.2</version>
+                <version>4.3.0</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -271,7 +275,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson-version}</version>
+                <version>${jackson-annotations-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -311,7 +315,7 @@
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.14.0</version>
+                <version>2.14.2</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger</groupId>
@@ -321,7 +325,7 @@
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>2.2.40</version>
+                <version>2.2.49</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
@@ -356,7 +360,7 @@
             <dependency>
                 <groupId>com.google.api-client</groupId>
                 <artifactId>google-api-client</artifactId>
-                <version>2.8.1</version>
+                <version>2.9.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.httpcomponents.client5</groupId>
@@ -395,7 +399,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.12.778</version>
+                <version>1.12.797</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -448,7 +452,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.14.1</version>
+                    <version>3.15.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
@@ -486,7 +490,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -496,7 +500,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.5.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                     </configuration>
@@ -504,7 +508,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.1</version>
                     <configuration>
                         <arguments>-DskipTests</arguments>
                     </configuration>
@@ -554,7 +558,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.4</version>
+                    <version>3.5.5</version>
                     <configuration>
                         <argLine>@{argLine} --add-opens=java.base/sun.security.ssl=ALL-UNNAMED
                             --add-opens=java.base/sun.security.util=ALL-UNNAMED
@@ -568,20 +572,23 @@
                             <DYLD_FALLBACK_FRAMEWORK_PATH>${project.build.directory}</DYLD_FALLBACK_FRAMEWORK_PATH>
                         </environmentVariables>
                         <excludedGroups>${surefire.group.excluded}</excludedGroups>
+                        <excludes>
+                            <exclude>${surefire.exclude}</exclude>
+                        </excludes>
                         <trimStackTrace>false</trimStackTrace>
                     </configuration>
                     <dependencies>
                         <dependency>
                             <groupId>org.apache.maven.surefire</groupId>
                             <artifactId>surefire-junit47</artifactId>
-                            <version>3.5.4</version>
+                            <version>3.5.5</version>
                         </dependency>
                     </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.5.4</version>
+                    <version>3.5.5</version>
                     <configuration>
                         <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         <encoding>UTF-8</encoding>
@@ -603,7 +610,7 @@
                         <dependency>
                             <groupId>org.apache.maven.surefire</groupId>
                             <artifactId>surefire-junit47</artifactId>
-                            <version>3.5.4</version>
+                            <version>3.5.5</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -615,7 +622,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.9.0</version>
+                    <version>3.10.0</version>
                     <executions>
                         <execution>
                             <id>copy-dependencies-dylib-target</id>
@@ -638,35 +645,35 @@
                             </goals>
                             <configuration>
                                 <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                                <excludeClassifiers>net472,net8.0</excludeClassifiers>
+                                <excludeClassifiers>net472,net8.0,net8.0-x64,net8.0-arm64,aarch64,arm64,x86_64</excludeClassifiers>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
                             </configuration>
                         </execution>
                         <execution>
-                            <id>copy-dependencies-dll-net472-target</id>
+                            <id>copy-dependencies-dll-x64-target</id>
                             <phase>generate-sources</phase>
                             <goals>
                                 <goal>copy-dependencies</goal>
                             </goals>
                             <configuration>
-                                <outputDirectory>${project.build.directory}/lib/net472</outputDirectory>
-                                <classifier>net472</classifier>
+                                <outputDirectory>${project.build.directory}/lib/x64</outputDirectory>
+                                <includeClassifiers>x86_64</includeClassifiers>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
                             </configuration>
                         </execution>
                         <execution>
-                            <id>copy-dependencies-dll-net8.0-target</id>
+                            <id>copy-dependencies-dll-arm64-target</id>
                             <phase>generate-sources</phase>
                             <goals>
                                 <goal>copy-dependencies</goal>
                             </goals>
                             <configuration>
-                                <outputDirectory>${project.build.directory}/lib/net8.0</outputDirectory>
-                                <classifier>net8.0</classifier>
+                                <outputDirectory>${project.build.directory}/lib/arm64</outputDirectory>
+                                <includeClassifiers>aarch64,arm64</includeClassifiers>
                                 <includeTypes>dll</includeTypes>
                                 <stripClassifier>true</stripClassifier>
                                 <stripVersion>true</stripVersion>
@@ -708,7 +715,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.7.1</version>
+                    <version>3.8.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -718,7 +725,7 @@
                         <dependency>
                             <groupId>org.apache.maven.doxia</groupId>
                             <artifactId>doxia-module-markdown</artifactId>
-                            <version>2.0.0</version>
+                            <version>2.1.0</version>
                         </dependency>
                     </dependencies>
                     <configuration>
@@ -729,12 +736,12 @@
                 <plugin>
                     <groupId>io.swagger</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>2.4.49</version>
+                    <version>2.4.52</version>
                 </plugin>
                 <plugin>
                     <groupId>io.swagger.codegen.v3</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>3.0.75</version>
+                    <version>3.0.79</version>
                     <configuration>
                         <configOptions>
                             <sourceFolder>src/main/java</sourceFolder>
@@ -809,7 +816,7 @@
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>extra-enforcer-rules</artifactId>
-                        <version>1.11.0</version>
+                        <version>1.12.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -1068,11 +1075,71 @@
                             <artifactId>maven-dependency-plugin</artifactId>
                             <executions>
                                 <execution>
+                                    <id>generate-nupkgs</id>
+                                    <phase>generate-sources</phase>
+                                    <goals>
+                                        <goal>resolve</goal>
+                                    </goals>
+                                    <configuration>
+                                        <outputFile>${project.build.directory}/.nuget/packages.list</outputFile>
+                                        <outputAbsoluteArtifactFilename>true</outputAbsoluteArtifactFilename>
+                                        <includeTypes>nupkg</includeTypes>
+                                    </configuration>
+                                </execution>
+                                <execution>
                                     <id>copy-dependencies-jar-target</id>
                                     <configuration>
                                         <prependGroupId>true</prependGroupId>
                                         <stripVersion>true</stripVersion>
                                         <includeScope>compile</includeScope>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>unpack-nupkg</id>
+                                    <phase>process-sources</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <target>
+                                            <property name="home" value="${main.basedir}" />
+                                            <ant antfile="${project.basedir}/build.xml" target="nuget-unpack" dir="." />
+                                        </target>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>run-msbuild-props-target</id>
+                                    <phase>generate-sources</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <target>
+                                            <property name="home" value="${main.basedir}" />
+                                            <property name="version" value="${project.version}" />
+                                            <property name="revision" value="${git.commitsCount}" />
+                                            <property name="hash" value="${git.revision}" />
+                                            <property name="sparkle.feed" value="${sparkle.feed}" />
+                                            <ant antfile="${project.basedir}/build.xml" target="msbuild-props" dir="." />
+                                        </target>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>pack-nupkg</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <target>
+                                            <property name="home" value="${main.basedir}" />
+                                            <ant antfile="${project.basedir}/build.xml" target="pack" dir="." />
+                                        </target>
                                     </configuration>
                                 </execution>
                             </executions>

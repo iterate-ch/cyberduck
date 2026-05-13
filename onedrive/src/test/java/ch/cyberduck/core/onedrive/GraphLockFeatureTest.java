@@ -18,8 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -46,8 +45,8 @@ public class GraphLockFeatureTest extends AbstractSharepointTest {
 
     @Test
     public void testLock() throws Exception {
-        final ListService list = new SharepointListService(session, fileid);
-        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final SharepointListService list = new SharepointListService(session, fileid);
+        final AttributedList<Path> drives = list.list(new Path(list.getDefaultSite(), DRIVES_CONTAINER, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
         final Path file = new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), new Path(drive,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -67,6 +66,6 @@ public class GraphLockFeatureTest extends AbstractSharepointTest {
             assertNotEquals(attr.getModificationDate(), latest.getModificationDate());
             assertNotEquals(attr.getETag(), latest.getETag());
         }
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -46,7 +46,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
@@ -66,10 +65,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Optional;
 
 import com.google.gson.JsonElement;
@@ -95,14 +92,8 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     @Override
     protected CloseableHttpClient connect(final ProxyFinder proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) {
-                request.addHeader(HttpHeaders.AUTHORIZATION,
-                        String.format("Basic %s", Base64.getEncoder().encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8))));
-            }
-        }).build(), host, prompt)
-                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl()
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
+                .setRedirectUri(host.getProtocol().getOAuthRedirectUrl()
                 );
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new OAuth2ErrorResponseInterceptor(host, authorizationService)));
@@ -200,7 +191,6 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                     log.warn("Ignore failure {} running Personal Agent Context Service (PACS) request", e.getMessage());
                 }
             }
-            userShares.set(this.userShares());
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map(e);
@@ -237,13 +227,14 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         this.basePath = basePath;
     }
 
-    public UserSharesModel userShares() throws BackgroundException {
+    public UserSharesModel userShares() {
         if(userShares.get() == null) {
             try {
                 userShares.set(new GetUserSharesApi(new EueApiClient(this)).shareGet(null, null));
             }
             catch(ApiException e) {
-                throw new EueExceptionMappingService().map(e);
+                log.warn("Failure {} retrieving user shares", e.toString());
+                userShares.set(new UserSharesModel());
             }
         }
         return userShares.get();
@@ -262,7 +253,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             return (T) new EueReadFeature(this, resourceid);
         }
         if(type == Write.class) {
-            return (T) new EueThresholdWriteFeature(this, resourceid);
+            return (T) new EueWriteFeature(this, resourceid);
         }
         if(type == MultipartWrite.class) {
             return (T) new EueMultipartWriteFeature(this, resourceid);
@@ -298,7 +289,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             return (T) new EueThresholdUploadService(this, resourceid, registry);
         }
         if(type == UrlProvider.class) {
-            return (T) new EueShareUrlProvider(host, userShares.get());
+            return (T) new EueShareUrlProvider(host, this.userShares());
         }
         if(type == Share.class) {
             return (T) new EueShareFeature(this, resourceid);

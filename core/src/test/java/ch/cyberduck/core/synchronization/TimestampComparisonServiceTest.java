@@ -1,5 +1,6 @@
 package ch.cyberduck.core.synchronization;
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
@@ -17,12 +18,12 @@ public class TimestampComparisonServiceTest {
     public void testCompareEqual() {
         TimestampComparisonService s = new TimestampComparisonService();
         final long timestamp = System.currentTimeMillis();
-        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().setModificationDate(timestamp), new PathAttributes().setModificationDate(timestamp)));
-        final int hashCode = s.hashCode(Path.Type.file, new PathAttributes().setModificationDate(timestamp));
-        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().setModificationDate(timestamp), new PathAttributes().setModificationDate(
+        assertEquals(Comparison.equal, s.compare(Path.Type.file, new DefaultPathAttributes().setModificationDate(timestamp), new DefaultPathAttributes().setModificationDate(timestamp)));
+        final int hashCode = s.hashCode(Path.Type.file, new DefaultPathAttributes().setModificationDate(timestamp));
+        assertEquals(Comparison.equal, s.compare(Path.Type.file, new DefaultPathAttributes().setModificationDate(timestamp), new DefaultPathAttributes().setModificationDate(
                 TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(timestamp))
         )));
-        assertEquals(hashCode, s.hashCode(Path.Type.file, new PathAttributes().setModificationDate(
+        assertEquals(hashCode, s.hashCode(Path.Type.file, new DefaultPathAttributes().setModificationDate(
                 TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(timestamp))
         )));
     }
@@ -32,8 +33,9 @@ public class TimestampComparisonServiceTest {
         TimestampComparisonService s = new TimestampComparisonService();
         final long timestamp = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
         assertEquals(Comparison.local, s.compare(Path.Type.file,
-                new PathAttributes().setModificationDate(timestamp),
-                new PathAttributes() {
+                new DefaultPathAttributes().setModificationDate(timestamp),
+                new
+                        DefaultPathAttributes() {
                     @Override
                     public long getModificationDate() {
                         final Calendar c = Calendar.getInstance(TimeZone.getDefault());

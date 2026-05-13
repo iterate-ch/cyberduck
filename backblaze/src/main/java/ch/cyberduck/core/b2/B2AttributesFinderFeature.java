@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -70,7 +71,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             // Pending large file upload
             final Write.Append append = new B2LargeUploadService(session, fileid).append(file, new TransferStatus());
             if(append.append) {
-                return new PathAttributes().setSize(append.offset);
+                return new DefaultPathAttributes().setSize(append.offset);
             }
             return PathAttributes.EMPTY;
         }
@@ -145,7 +146,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
     }
 
     protected PathAttributes toAttributes(final B2FileInfoResponse response) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         if(response.getFileInfo().containsKey(X_BZ_INFO_LARGE_FILE_SHA1)) {
             attributes.setChecksum(Checksum.parse(response.getFileInfo().get(X_BZ_INFO_LARGE_FILE_SHA1)));
         }
@@ -197,7 +198,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
     }
 
     protected PathAttributes toAttributes(final B2FileResponse response) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(response.getContentLength());
         if(response.getFileInfo().containsKey(X_BZ_INFO_LARGE_FILE_SHA1)) {
             attributes.setChecksum(Checksum.parse(response.getFileInfo().get(X_BZ_INFO_LARGE_FILE_SHA1)));
@@ -248,7 +249,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
     }
 
     protected PathAttributes toAttributes(final B2BucketResponse response) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setVersionId(response.getBucketId());
         attributes.setRegion(response.getBucketType().name());
         switch(response.getBucketType()) {
@@ -259,7 +260,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
     }
 
     protected PathAttributes toAttributes(final B2FinishLargeFileResponse response) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(response.getContentLength());
         if(response.getFileInfo().containsKey(X_BZ_INFO_LARGE_FILE_SHA1)) {
             attributes.setChecksum(Checksum.parse(response.getFileInfo().get(X_BZ_INFO_LARGE_FILE_SHA1)));

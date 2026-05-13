@@ -38,15 +38,18 @@ public class OAuthExceptionMappingService extends AbstractExceptionMappingServic
         final TokenErrorResponse details = failure.getDetails();
         if(null != details) {
             this.append(buffer, details.getErrorDescription());
-            switch(details.getError()) {
-                // Error code "invalid_request", "invalid_client", "invalid_grant", "unauthorized_client", "unsupported_grant_type", "invalid_scope"
-                case "invalid_client":
-                case "unauthorized_client":
-                case "unsupported_grant_type":
-                case "invalid_scope":
-                    return new LoginFailureException(buffer.toString(), failure);
-                case "invalid_grant":
-                    return new ExpiredTokenException(buffer.toString(), failure);
+            if(null != details.getError()) {
+                switch(details.getError()) {
+                    // Error code "invalid_request", "invalid_client", "invalid_grant", "unauthorized_client", "unsupported_grant_type", "invalid_scope"
+                    case "invalid_client":
+                    case "invalid_request":
+                    case "unauthorized_client":
+                    case "unsupported_grant_type":
+                    case "invalid_scope":
+                        return new LoginFailureException(buffer.toString(), failure);
+                    case "invalid_grant":
+                        return new ExpiredTokenException(buffer.toString(), failure);
+                }
             }
         }
         return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getStatusCode(), buffer.toString()));

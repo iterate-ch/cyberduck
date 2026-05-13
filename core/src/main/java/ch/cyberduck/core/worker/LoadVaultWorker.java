@@ -15,33 +15,34 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.VaultLoader;
+import ch.cyberduck.core.vault.VaultProvider;
+import ch.cyberduck.core.vault.VaultProviderFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class LoadVaultWorker extends Worker<Vault> {
 
-    private final VaultLookupListener listener;
+    private final VaultLoader loader;
     private final Path directory;
 
-    public LoadVaultWorker(final VaultLookupListener listener, final Path directory) {
-        this.listener = listener;
+    public LoadVaultWorker(final VaultLoader loader, final Path directory) {
+        this.loader = loader;
         this.directory = directory;
     }
 
     @Override
     public Vault run(final Session<?> session) throws BackgroundException {
-        return listener.load(session, directory,
-                HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+        final VaultProvider provider = VaultProviderFactory.get(session);
+        return loader.load(session, directory,
+                provider.find(directory, session.getFeature(Find.class), new DisabledListProgressListener()));
     }
 
     @Override
@@ -51,25 +52,24 @@ public class LoadVaultWorker extends Worker<Vault> {
 
     @Override
     public boolean equals(final Object o) {
-        if(this == o) {
-            return true;
-        }
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        final LoadVaultWorker that = (LoadVaultWorker) o;
+
+        LoadVaultWorker that = (LoadVaultWorker) o;
         return Objects.equals(directory, that.directory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(directory);
+        return Objects.hashCode(directory);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("LoadVaultWorker{");
-        sb.append("directory=").append(directory);
+        sb.append("loader=").append(loader);
+        sb.append(", directory=").append(directory);
         sb.append('}');
         return sb.toString();
     }

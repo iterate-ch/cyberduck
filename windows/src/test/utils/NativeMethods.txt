@@ -1,0 +1,3 @@
+CredDelete
+CredEnumerate
+CredFree

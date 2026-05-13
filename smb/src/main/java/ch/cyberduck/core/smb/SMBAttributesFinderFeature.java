@@ -15,6 +15,7 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -45,7 +46,7 @@ public class SMBAttributesFinderFeature implements AttributesFinder, AttributesA
         try {
             if(new SMBPathContainerService(session).isContainer(file)) {
                 final ShareInfo shareInformation = share.get().getShareInformation();
-                final PathAttributes attributes = new PathAttributes();
+                final PathAttributes attributes = new DefaultPathAttributes();
                 final long used = shareInformation.getTotalSpace() - shareInformation.getFreeSpace();
                 attributes.setSize(used);
                 attributes.setQuota(new Quota.Space(used, shareInformation.getFreeSpace()));
@@ -72,7 +73,7 @@ public class SMBAttributesFinderFeature implements AttributesFinder, AttributesA
 
     @Override
     public PathAttributes toAttributes(final FileAllInformation model) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setAccessedDate(model.getBasicInformation().getLastAccessTime().toEpochMillis());
         attributes.setModificationDate(model.getBasicInformation().getLastWriteTime().toEpochMillis());
         attributes.setCreationDate(model.getBasicInformation().getCreationTime().toEpochMillis());

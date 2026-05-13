@@ -16,20 +16,20 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -57,11 +57,11 @@ public abstract class AbstractS3Test extends VaultTest {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+        return new Object[]{VaultVersion.Type.V8, VaultVersion.Type.UVF};
     }
 
     @Parameterized.Parameter
-    public int vaultVersion;
+    public VaultVersion.Type vaultVersion;
 
     @After
     public void disconnect() throws Exception {
@@ -74,9 +74,9 @@ public abstract class AbstractS3Test extends VaultTest {
     public void setupDefault() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
+                PROPERTIES.get("s3.key")
         ));
         session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -85,18 +85,18 @@ public abstract class AbstractS3Test extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new TestPasswordStore(), ProgressListener.noop);
+        login.check(session, CancelCallback.noop);
     }
 
     @Before
     public void setupVirtualHost() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
-                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
+                PROPERTIES.get("s3.key")
         ));
         virtualhost = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -105,17 +105,17 @@ public abstract class AbstractS3Test extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(virtualhost, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new TestPasswordStore(), ProgressListener.noop);
+        login.check(virtualhost, CancelCallback.noop);
     }
 
     @Before
     public void setupCloudFront() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
-        final Host host = new Host(profile, "d4fobtprygi46.cloudfront.net", new Credentials("anonymous")).withRegion("eu-central-1");
+                this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
+        final Host host = new Host(profile, "d4fobtprygi46.cloudfront.net", new Credentials("anonymous")).setRegion("eu-central-1");
         cloudfront = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -123,8 +123,8 @@ public abstract class AbstractS3Test extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(cloudfront, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new DisabledPasswordStore(), ProgressListener.noop);
+        login.check(cloudfront, CancelCallback.noop);
     }
 }

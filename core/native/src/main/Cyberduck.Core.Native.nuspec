@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <description>$description$</description>
+    <authors>$authors$</authors>
+
+    <dependencies>
+      <group>
+        <dependency id="Cyberduck.Core" version="$version$" />
+        <dependency id="Microsoft.Toolkit.Uwp.Notifications" version="$PkgMicrosoft_Toolkit_Uwp_NotificationsVersion$" />
+        <dependency id="ReactiveUI" version="$PkgReactiveUIVersion$" />
+      </group>
+
+      <group targetFramework="net472">
+        <dependency id="Microsoft.Windows.SDK.Contracts" version="$PkgMicrosoft_Windows_SDK_ContractsVersion$" />
+      </group>
+
+      <group targetFramework="net8.0-windows10.0.22621.0">
+        <dependency id="System.Configuration.ConfigurationManager" version="$PkgSystem_Configuration_ConfigurationManagerVersion$" />
+        <dependency id="System.Security.Cryptography.ProtectedData" version="$PkgSystem_Security_Cryptography_ProtectedDataVersion$" />
+      </group>
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="$buildDir$x64/net472/Cyberduck.Core.Native.dll" target="lib/net472" />
+    <file src="$buildDir$x64/net8.0-windows10.0.22621.0/Cyberduck.Core.Native.dll" target="lib/net8.0-windows10.0.22621.0/win-x64" />
+    <file src="$buildDir$arm64/net8.0-windows10.0.22621.0/Cyberduck.Core.Native.dll" target="lib/net8.0-windows10.0.22621.0/win-arm64" />
+
+    <file src="build/**" target="" />
+  </files>
+</package>

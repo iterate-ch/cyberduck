@@ -16,11 +16,10 @@ package ch.cyberduck.core.auth;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.date.ISO8601DateFormatter;
@@ -39,9 +38,10 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -73,9 +73,31 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(address,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, address.getHostname()), key, ProxyFactory.get());
         final HttpClientBuilder configuration = builder.build(ProxyFactory.get(),
-                new DisabledTranscriptListener(), new DisabledLoginCallback());
+                new DisabledTranscriptListener(), LoginCallback.noop);
         try (CloseableHttpClient client = configuration.build()) {
-            final HttpRequestBase resource = new HttpGet(url);
+            final HttpGet resource = new HttpGet(url);
+            final String tokenUrl = String.format("%s://%s/latest/api/token", address.getProtocol().getScheme(), address.getHostname());
+            final HttpPut tokenRequest = new HttpPut(tokenUrl);
+            tokenRequest.addHeader("x-aws-ec2-metadata-token-ttl-seconds", "21600");
+            try {
+                final String token = client.execute(tokenRequest, response -> {
+                    if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                        final HttpEntity entity = response.getEntity();
+                        if(entity != null) {
+                            return EntityUtils.toString(entity, StandardCharsets.UTF_8);
+                        }
+                    }
+                    log.warn("Failed to retrieve IMDSv2 token, falling back to IMDSv1. Status: {}", response.getStatusLine());
+                    return null;
+                });
+                if(token != null) {
+                    resource.addHeader("x-aws-ec2-metadata-token", token);
+                }
+            }
+            catch(IOException e) {
+                log.warn("Failure {} retrieving IMDSv2 token, falling back to IMDSv1", e.getMessage());
+                return null;
+            }
             return client.execute(resource, response -> {
                 switch(response.getStatusLine().getStatusCode()) {
                     case HttpStatus.SC_OK:

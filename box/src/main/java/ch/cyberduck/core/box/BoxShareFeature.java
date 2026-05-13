@@ -39,7 +39,7 @@ import ch.cyberduck.core.features.Share;
 
 import java.text.MessageFormat;
 
-public class BoxShareFeature implements Share {
+public class BoxShareFeature implements Share<Void, Void> {
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
@@ -59,7 +59,7 @@ public class BoxShareFeature implements Share {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         if(file.isDirectory()) {
             return this.createFolderSharedLink(file, callback);
         }
@@ -67,7 +67,7 @@ public class BoxShareFeature implements Share {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         throw new UnsupportedException();
     }
 

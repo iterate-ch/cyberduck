@@ -18,7 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -47,7 +47,7 @@ public class SFTPTimestampFeatureTest extends AbstractSFTPTest {
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(modified)), new SFTPAttributesFinderFeature(session).find(test).getModificationDate());
         assertEquals(TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(modified)), new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
 
     }
 
@@ -59,7 +59,7 @@ public class SFTPTimestampFeatureTest extends AbstractSFTPTest {
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(modified)), new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0);
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
 
     }
 }

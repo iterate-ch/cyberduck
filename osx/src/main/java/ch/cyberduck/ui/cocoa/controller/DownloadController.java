@@ -78,9 +78,10 @@ public class DownloadController extends AlertController {
     }
 
     @Override
-    protected void focus(final NSAlert alert) {
-        super.focus(alert);
+    public void focus() {
+        super.focus();
         this.updateField(urlField, url);
+        window.makeFirstResponder(urlField);
         urlField.selectText(null);
     }
 

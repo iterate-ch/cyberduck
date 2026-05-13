@@ -16,8 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class ResourcesApi {
   private ApiClient apiClient;
+  private Map<String, String> headers;
 
   public ResourcesApi() {
     this(Configuration.getDefaultApiClient());
@@ -35,9 +37,13 @@ public class ResourcesApi {
     this.apiClient = apiClient;
   }
 
+  public void setHeadersOverrides(Map<String, String> headers) {
+    this.headers = headers;
+  }
+
   /**
    * Request list of subscription scopes
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.20.0&lt;/h3&gt;  ### Description: Retrieve a list of subscription scopes.  ### Precondition: Authenticated user.  ### Postcondition: List of scopes is returned.  ### Further Information: None.
+   * ### Description: Retrieve a list of subscription scopes.  ### Precondition: Authenticated user.  ### Postcondition: List of scopes is returned.  ### Further Information: None.
    * @return NotificationScopeList
    * @throws ApiException if fails to make API call
    */
@@ -66,6 +72,11 @@ public class ResourcesApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<NotificationScopeList> localVarReturnType = new GenericType<NotificationScopeList>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -111,6 +122,11 @@ public class ResourcesApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<Avatar> localVarReturnType = new GenericType<Avatar>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
 }

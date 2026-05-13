@@ -15,11 +15,12 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.AbstractVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InvalidFilenameException;
@@ -30,14 +31,15 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 public class CryptoTouchFeature<Reply> implements Touch<Reply> {
 
     private final Session<?> session;
     private final Touch<Reply> proxy;
-    private final CryptoVault vault;
+    private final AbstractVault vault;
 
-    public CryptoTouchFeature(final Session<?> session, final Touch<Reply> proxy, final CryptoVault cryptomator) {
+    public CryptoTouchFeature(final Session<?> session, final Touch<Reply> proxy, final AbstractVault cryptomator) {
         this.session = session;
         this.proxy = proxy;
         this.vault = cryptomator;
@@ -54,7 +56,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
             public TransferStatus setResponse(final PathAttributes attributes) {
                 status.setResponse(attributes);
                 // Will be converted back to clear text when decrypting file below set in default touch feature implementation using writer.
-                super.setResponse(new PathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                super.setResponse(new DefaultPathAttributes(attributes).setSize(vault.toCiphertextSize(0L, attributes.getSize())));
                 return this;
             }
         });
@@ -64,9 +66,11 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(!vault.getFilenameProvider().isValid(filename)) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
+        if(filename.isPresent()) {
+            if(!vault.getFilenameProvider().isValid(filename.get())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
+            }
         }
         proxy.preflight(vault.encrypt(session, workdir), filename);
     }

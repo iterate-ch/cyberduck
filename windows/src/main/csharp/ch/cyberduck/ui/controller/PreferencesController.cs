@@ -154,6 +154,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultS3StorageClassChangedEvent += View_DefaultS3StorageClassChangedEvent;
             View.DefaultEncryptionChangedEvent += View_DefaultEncryptionChangedEvent;
             View.DefaultS3ACLChangedEvent += View_DefaultS3ACLChangedEvent;
+            View.UseS3VersioningChangedEvent += View_UseS3VersioningChangedEvent;
 
             #endregion
 
@@ -193,7 +194,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DebugLogChangedEvent()
         {
-            PreferencesFactory.get().setLogging(View.DebugLog ? Level.DEBUG.toString() : Level.ERROR.toString());
+            if (View.DebugLog)
+            {
+                PreferencesFactory.get().setLogging(Level.DEBUG.name());
+            }
+            else
+            {
+                PreferencesFactory.get().resetLogging();
+            }
         }
 
         private void View_SegmentedDownloadsChangedEvent()
@@ -290,6 +298,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DefaultS3ACLChangedEvent()
         {
             PreferencesFactory.get().setProperty("s3.acl.default", View.DefaultS3ACL);
+        }
+        private void View_UseS3VersioningChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("s3.listing.versioning.enable", View.UseS3Versioning);
         }
         private void View_DefaultGoogleACLChangedEvent()
         {
@@ -492,11 +504,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Permission p = null;
             if (ForFiles.Equals(View.ChmodUploadType))
             {
-                p = new Permission(PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
+                p = new StaticPermission(PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
             }
             if (ForFolders.Equals(View.ChmodUploadType))
             {
-                p = new Permission(PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
+                p = new StaticPermission(PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
             }
             if (null == p)
             {
@@ -538,11 +550,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Permission p = null;
             if (ForFiles.Equals(View.ChmodDownloadType))
             {
-                p = new Permission(PreferencesFactory.get().getInteger("queue.download.permissions.file.default"));
+                p = new StaticPermission(PreferencesFactory.get().getInteger("queue.download.permissions.file.default"));
             }
             if (ForFolders.Equals(View.ChmodDownloadType))
             {
-                p = new Permission(PreferencesFactory.get().getInteger("queue.download.permissions.folder.default"));
+                p = new StaticPermission(PreferencesFactory.get().getInteger("queue.download.permissions.folder.default"));
             }
             if (null == p)
             {
@@ -619,7 +631,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 o = o.or(Permission.Action.execute);
             }
-            Permission permission = new Permission(u, g, o);
+            Permission permission = new StaticPermission(u, g, o);
             if (ForFiles.Equals(View.ChmodUploadType))
             {
                 PreferencesFactory.get().setProperty("queue.upload.permissions.file.default", permission.getMode());
@@ -671,7 +683,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 o = o.or(Permission.Action.execute);
             }
-            Permission permission = new Permission(u, g, o);
+            Permission permission = new StaticPermission(u, g, o);
             if (ForFiles.Equals(View.ChmodDownloadType))
             {
                 PreferencesFactory.get().setProperty("queue.download.permissions.file.default", permission.getMode());
@@ -839,7 +851,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DefaultProtocolChangedEvent()
         {
             Protocol selected = View.DefaultProtocol;
-            PreferencesFactory.get().setProperty("connection.protocol.default", String.Format("{0}-{1}", selected.getIdentifier(), selected.getProvider()));
+            PreferencesFactory.get().setProperty("connection.protocol.default", String.Format("{0}:{1}", selected.getIdentifier(), selected.getProvider()));
             PreferencesFactory.get().setProperty("connection.port.default", selected.getDefaultPort());
         }
 
@@ -1050,6 +1062,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultEncryption = Utils.IsNotBlank(algorithm) ? algorithm : Encryption.Algorithm.NONE.ToString();
             PopulateDefaultS3ACL();
             View.DefaultS3ACL = PreferencesFactory.get().getProperty("s3.acl.default");
+            View.UseS3Versioning = PreferencesFactory.get().getBoolean("s3.listing.versioning.enable");
 
             #endregion
 

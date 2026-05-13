@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 public interface LoginCallback extends ConnectionCallback {
+    LoginCallback noop = new DisabledLoginCallback();
 
     /**
      * Call this to allow the user to reenter the new login credentials.
@@ -42,9 +43,4 @@ public interface LoginCallback extends ConnectionCallback {
      * @return Selected file or null
      */
     Local select(final Local identity) throws LoginCanceledException;
-
-    @SuppressWarnings("unchecked")
-    default <T> T getFeature(final Class<T> type) {
-        return null;
-    }
 }

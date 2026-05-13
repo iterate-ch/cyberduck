@@ -16,16 +16,16 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
@@ -55,7 +55,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path drive = new OneDriveHomeFinderService().find();
-        new GraphReadFeature(session, fileid).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new GraphReadFeature(session, fileid).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, ConnectionCallback.noop);
     }
 
     @Test
@@ -67,16 +67,16 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new GraphReadFeature(session, fileid).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new GraphReadFeature(session, fileid).read(test, status, ConnectionCallback.noop);
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new GraphReadFeature(session, fileid).read(test, status, new DisabledConnectionCallback());
+            final InputStream in = new GraphReadFeature(session, fileid).read(test, status, ConnectionCallback.noop);
             assertNotNull(in);
             in.close();
         }
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -92,16 +92,16 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         IOUtils.write(content, out);
         out.close();
         new DefaultUploadFeature<DriveItem.Metadata>(session).upload(
-                new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
         final GraphReadFeature read = new GraphReadFeature(session, fileid);
         assertTrue(read.offset(test));
-        final InputStream in = read.read(test, status.setLength(content.length - 100), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, status.setLength(content.length - 100), ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -109,7 +109,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -118,7 +118,7 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(new GraphWriteFeature(session, fileid), test, new TransferStatus());
         final GraphReadFeature read = new GraphReadFeature(session, fileid);
-        final InputStream in = read.read(test, new TransferStatus().setOffset(1).setAppend(true), new DisabledConnectionCallback());
+        final InputStream in = read.read(test, new TransferStatus().setOffset(1).setAppend(true), ConnectionCallback.noop);
         assertNull(in);
     }
 
@@ -135,14 +135,14 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         IOUtils.write(content, out);
         out.close();
         new DefaultUploadFeature<DriveItem.Metadata>(session).upload(
-                new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(),
+                new GraphWriteFeature(session, fileid), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop,
                 new TransferStatus().setLength(content.length),
-                new DisabledConnectionCallback());
+                ConnectionCallback.noop);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new GraphReadFeature(session, fileid).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new GraphReadFeature(session, fileid).read(test, status, ConnectionCallback.noop);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -150,6 +150,6 @@ public class GraphReadFeatureTest extends AbstractOneDriveTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

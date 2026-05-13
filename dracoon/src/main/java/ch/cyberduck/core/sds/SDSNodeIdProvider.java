@@ -83,14 +83,14 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
                 if(StringUtils.isNoneBlank(file.getParent().attributes().getVersionId())) {
                     nodes = new NodesApi(session.getClient()).searchNodes(
                             URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
-                            StringUtils.EMPTY, 0, Long.valueOf(file.getParent().attributes().getVersionId()),
+                            null, 0, Long.valueOf(file.getParent().attributes().getVersionId()),
                             String.format("type:eq:%s", type),
                             null, offset, chunksize, null);
                 }
                 else {
                     nodes = new NodesApi(session.getClient()).searchNodes(
                             URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
-                            StringUtils.EMPTY, -1, null,
+                            null, -1, null,
                             String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
                             null, offset, chunksize, null);
                 }

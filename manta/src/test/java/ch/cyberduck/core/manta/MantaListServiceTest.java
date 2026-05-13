@@ -17,7 +17,7 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -47,7 +47,7 @@ public class MantaListServiceTest extends AbstractMantaTest {
         final Path folder = new MantaDirectoryFeature(session).mkdir(new MantaWriteFeature(session), new Path(
             testPathPrefix, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new MantaListService(session).list(folder, new DisabledListProgressListener()).isEmpty());
-        new MantaDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new MantaDeleteFeature(session).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

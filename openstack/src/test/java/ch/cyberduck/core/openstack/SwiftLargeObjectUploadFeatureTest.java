@@ -3,12 +3,11 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
@@ -16,7 +15,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -76,7 +74,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                         }
                     };
                 }
-            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, status, new DisabledLoginCallback());
+            }, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, listener, status, LoginCallback.noop);
         }
         catch(BackgroundException e) {
             // Expected
@@ -90,19 +88,19 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(content.length);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session),
                 1 * 1024L * 1024L, 1).upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), append,
-                new DisabledLoginCallback());
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, append,
+                LoginCallback.noop);
         assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -135,7 +133,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final BytecountStreamListener listener = new BytecountStreamListener();
         try {
             feature.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, new Local(System.getProperty("java.io.tmpdir"), name),
-                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, status, new DisabledLoginCallback());
+                    new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, listener, status, LoginCallback.noop);
         }
         catch(BackgroundException e) {
             // Expected
@@ -151,8 +149,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
         final TransferStatus append = new TransferStatus().setAppend(true).setLength(1024L * 1024L).setOffset(1024L * 1024L);
         feature.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local,
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), listener, append,
-            new DisabledLoginCallback());
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, listener, append,
+                LoginCallback.noop);
         assertEquals(2 * 1024L * 1024L, listener.getSent());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
@@ -161,11 +159,11 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertEquals(2, new SwiftSegmentService(session, regionService).list(test).size());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
     }
 
@@ -196,8 +194,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                     (long) (content.length / 2), 4);
 
             final BytecountStreamListener count = new BytecountStreamListener();
-            final StorageObject object = upload.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
-                    status, new DisabledConnectionCallback());
+            final StorageObject object = upload.upload(new SwiftWriteFeature(session, new SwiftRegionService(session)), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count,
+                    status, ConnectionCallback.noop);
             assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
             assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
             assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
@@ -211,7 +209,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             assertEquals(content.length, count.getSent());
 
             assertTrue(new SwiftFindFeature(session).find(test));
-            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), ConnectionCallback.noop);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
             in.close();
@@ -249,8 +247,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                     1048576L, 4);
 
             final BytecountStreamListener count = new BytecountStreamListener();
-            upload.upload(new SwiftWriteFeature(session, regionService), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), count,
-                    status, new DisabledConnectionCallback());
+            upload.upload(new SwiftWriteFeature(session, regionService), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, count,
+                    status, ConnectionCallback.noop);
 
             assertTrue(status.isComplete());
             assertEquals(content.length, status.getResponse().getSize());
@@ -266,7 +264,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             assertEquals(1L, segments.get(1).attributes().getSize());
 
             assertTrue(new SwiftFindFeature(session).find(test));
-            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), ConnectionCallback.noop);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).transfer(in, buffer);
             in.close();
@@ -274,7 +272,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             assertArrayEquals(content, buffer.toByteArray());
         }
 
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertEquals(0, new SwiftSegmentService(session).list(test).size());
         local.delete();
     }

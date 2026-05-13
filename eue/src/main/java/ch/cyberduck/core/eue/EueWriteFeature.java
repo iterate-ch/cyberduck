@@ -59,7 +59,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
     private final EueResourceIdProvider fileid;
 
     public EueWriteFeature(final EueSession session, final EueResourceIdProvider fileid) {
-        super(new EueAttributesAdapter());
+        super(session.getHost(), new EueAttributesAdapter());
         this.session = session;
         this.fileid = fileid;
     }
@@ -83,7 +83,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         }
         else {
             uploadUri = status.getUrl();
-            resourceId = status.getParameters().get(RESOURCE_ID);
+            resourceId = status.getParameters().get(RESOURCE_ID).toString();
         }
         final HttpResponseOutputStream<Chunk> stream = this.write(file, status,
                 new DelayedHttpEntityCallable<Chunk>(file) {

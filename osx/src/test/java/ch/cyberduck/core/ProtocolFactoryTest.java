@@ -40,7 +40,7 @@ public class ProtocolFactoryTest {
         factory.register(ftp);
         final Profile ftps = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile"));
         factory.register(ftps);
-        final Profile s3 = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+        final Profile s3 = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         factory.register(s3);
         assertSame(ftp, factory.forName(ftp.getIdentifier()));
         assertSame(ftp, factory.forName(ftp.getIdentifier(), ftp.getProvider()));

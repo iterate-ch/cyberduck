@@ -15,8 +15,8 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,7 +42,7 @@ public class DefaultRetryCallableTest {
                 count.incrementAndGet();
                 throw new ConnectionRefusedException("d", new SocketException());
             }
-        }, new DisabledProgressListener(), new TransferBackgroundActionState(new TransferStatus()));
+        }, ProgressListener.noop, new TransferBackgroundActionState(new TransferStatus()));
         try {
             c.call();
             fail();

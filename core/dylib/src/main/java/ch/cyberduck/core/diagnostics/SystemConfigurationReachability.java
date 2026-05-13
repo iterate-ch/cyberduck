@@ -19,6 +19,7 @@ package ch.cyberduck.core.diagnostics;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Proxy;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
@@ -28,6 +29,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostnameConfiguratorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.idna.PunycodeConverter;
+import ch.cyberduck.core.threading.DefaultThreadPool;
+import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,16 +45,25 @@ public class SystemConfigurationReachability implements Reachability {
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
-    private static final class NotificationFilterCallback extends Proxy {
+    private static final class ThreadedNotificationSelector extends Proxy {
         private final Callback proxy;
+        private final ThreadPool executor = new DefaultThreadPool("reachability", 1);
 
-        public NotificationFilterCallback(final Callback proxy) {
+        public ThreadedNotificationSelector(final Callback proxy) {
             this.proxy = proxy;
         }
 
+        @Delegate
         public void notify(final NSNotification notification) {
             log.debug("Received notification {}", notification);
-            proxy.change();
+            executor.execute(() -> {
+                proxy.change();
+                return null;
+            });
+        }
+
+        public void shutdown() {
+            executor.shutdown(true);
         }
     }
 
@@ -60,7 +72,7 @@ public class SystemConfigurationReachability implements Reachability {
         final String url = toURL(bookmark);
         return new Reachability.Monitor() {
             private final SystemConfigurationReachability.Native monitor = SystemConfigurationReachability.Native.monitorForUrl(url);
-            private final NotificationFilterCallback listener = new NotificationFilterCallback(callback);
+            private final ThreadedNotificationSelector listener = new ThreadedNotificationSelector(callback);
 
             @Override
             public Monitor start() {
@@ -76,6 +88,7 @@ public class SystemConfigurationReachability implements Reachability {
                 if(monitor.stopReachabilityMonitor()) {
                     notificationCenter.removeObserver(listener.id());
                 }
+                listener.shutdown();
                 return this;
             }
         };

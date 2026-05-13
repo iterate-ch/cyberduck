@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.DefaultSessionPool;
@@ -80,7 +80,7 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         final Transfer download = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
@@ -96,10 +96,10 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledConnectionCallback(), new DisabledProgressListener(), bytecount, new DisabledNotificationService()).run(session));
+        }, new DisabledTransferErrorCallback(), ConnectionCallback.noop, ProgressListener.noop, bytecount, new DisabledNotificationService()).run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         assertEquals(content.length, bytecount.getRecv());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         local.delete();
         localFile.delete();
     }
@@ -113,7 +113,7 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session).upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledProgressListener(), new DisabledStreamListener(), new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(new DAVWriteFeature(session), test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), ProgressListener.noop, StreamListener.noop, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         final AtomicBoolean failed = new AtomicBoolean();
         final Host host = new Host(session.getHost()) {
             @Override
@@ -138,9 +138,9 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
                 return new Credentials("test", "test");
             }
         },
-                new DisabledHostKeyCallback(),
+                HostKeyCallback.noop,
                 new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                ProgressListener.noop);
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
@@ -189,7 +189,7 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
             public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) {
                 return true;
             }
-        }, new DisabledConnectionCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService());
+        }, ConnectionCallback.noop, ProgressListener.noop, counter, new DisabledNotificationService());
         assertTrue(worker.run(session));
         local.delete();
         assertEquals(t.getTransferred(), counter.getRecv(), 0L);
@@ -201,6 +201,6 @@ public class DAVConcurrentTransferWorkerTest extends AbstractDAVTest {
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(t.isComplete());
         assertTrue(failed.get());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

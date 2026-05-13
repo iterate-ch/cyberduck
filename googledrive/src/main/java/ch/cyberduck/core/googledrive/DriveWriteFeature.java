@@ -60,7 +60,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
     private final DriveFileIdProvider fileid;
 
     public DriveWriteFeature(final DriveSession session, final DriveFileIdProvider fileid) {
-        super(new DriveAttributesFinderFeature(session, fileid));
+        super(session.getHost(), new DriveAttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
     }

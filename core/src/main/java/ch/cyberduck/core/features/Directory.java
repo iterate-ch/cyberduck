@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 /**
  * Create new folder on server
@@ -43,10 +44,10 @@ public interface Directory<Reply> {
 
     /**
      * @param workdir  Working directory in browser
-     * @param filename Folder name or null if unknown
+     * @param filename Folder name if known
      * @return True if creating directory is supported in the working directory
      */
-    default boolean isSupported(final Path workdir, final String filename) {
+    default boolean isSupported(final Path workdir, final Optional<String> filename) {
         try {
             this.preflight(workdir, filename);
             return true;
@@ -59,7 +60,7 @@ public interface Directory<Reply> {
     /**
      * @throws AccessDeniedException Permission failure for target directory
      */
-    default void preflight(final Path workdir, final String filename) throws BackgroundException {
+    default void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(!workdir.attributes().getPermission().isWritable()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                     "Cannot create folder {0}", "Error"), filename)).withFile(workdir);

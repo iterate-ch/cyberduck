@@ -16,21 +16,19 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -61,46 +59,8 @@ public class AbstractSDSTest extends VaultTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 throw new LoginCanceledException();
             }
-        }, new DisabledHostKeyCallback(),
-                new TestPasswordStore(), new DisabledProgressListener());
-        connect.check(session, new DisabledCancelCallback());
-    }
-
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(final String serviceName, final String accountName) {
-            if(accountName.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Token Expiry")) {
-                return PROPERTIES.get("dracoon.tokenexpiry");
-            }
-            return null;
-        }
-
-        @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Access Token")) {
-                return PROPERTIES.get("dracoon.accesstoken");
-            }
-            if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Refresh Token")) {
-                return PROPERTIES.get("dracoon.refreshtoken");
-            }
-            return null;
-        }
-
-        @Override
-        public void addPassword(final String serviceName, final String accountName, final String password) {
-            if(accountName.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Token Expiry")) {
-                VaultTest.add("dracoon.tokenexpiry", password);
-            }
-        }
-
-        @Override
-        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
-            if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Access Token")) {
-                VaultTest.add("dracoon.accesstoken", password);
-            }
-            if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Refresh Token")) {
-                VaultTest.add("dracoon.refreshtoken", password);
-            }
-        }
+        }, HostKeyCallback.noop,
+                new TestPasswordStore(), ProgressListener.noop);
+        connect.check(session, CancelCallback.noop);
     }
 }

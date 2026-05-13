@@ -82,7 +82,11 @@ public class FinderLocalAttributes extends LocalAttributes {
             }
             final NSDictionary dict = this.getNativeAttributes(path);
             // Returns an entry’s value given its key, or null if no value is associated with key.
-            return dict.objectForKey(name);
+            final NSObject value = dict.objectForKey(name);
+            if(null == value) {
+                throw new NotfoundException(name);
+            }
+            return value;
         }
         finally {
             local.release(resolved);
@@ -92,6 +96,9 @@ public class FinderLocalAttributes extends LocalAttributes {
     @Override
     public long getSize() {
         try {
+            if(local.isDirectory()) {
+                return -1L;
+            }
             final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSize);
             if(object.isKindOfClass(Rococoa.createClass("NSNumber", NSNumber._Class.class))) {
                 final NSNumber number = Rococoa.cast(object, NSNumber.class);
@@ -161,7 +168,7 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     @Override
     public Permission getPermission() {
-        return new FinderLocalPermission(super.getPermission().getMode());
+        return new FinderLocalPermission();
     }
 
     /**
@@ -190,18 +197,6 @@ public class FinderLocalAttributes extends LocalAttributes {
      * Executable, readable and writable flags based on <code>NSFileManager</code>.
      */
     private final class FinderLocalPermission extends LocalPermission {
-        private FinderLocalPermission() {
-            //
-        }
-
-        private FinderLocalPermission(final String mode) {
-            super(mode);
-        }
-
-        private FinderLocalPermission(final int mode) {
-            super(mode);
-        }
-
         @Override
         public boolean isExecutable() {
             final NSURL resolved;

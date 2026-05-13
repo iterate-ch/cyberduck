@@ -2,7 +2,7 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVLockFeature;
@@ -33,7 +33,7 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new CteraTouchFeature(session).touch(new CteraWriteFeature(session), test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
-        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
@@ -49,7 +49,7 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
             // Not supported
         }
         assertTrue(new DAVFindFeature(session).find(test));
-        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
@@ -59,14 +59,14 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
         new CteraDirectoryFeature(session).mkdir(new CteraWriteFeature(session), test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
         new CteraTouchFeature(session).touch(new CteraWriteFeature(session), new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

@@ -16,7 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConflictException;
@@ -31,6 +31,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -42,10 +43,10 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2DirectoryFeature feature = new B2DirectoryFeature(session, fileid);
-        assertTrue(feature.isSupported(bucket.getParent(), bucket.getName()));
+        assertTrue(feature.isSupported(bucket.getParent(), Optional.of(bucket.getName())));
         feature.mkdir(new B2WriteFeature(session, fileid), bucket, new TransferStatus());
         assertThrows(ConflictException.class, () -> feature.mkdir(new B2WriteFeature(session, fileid), bucket, new TransferStatus()));
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = ConflictException.class)
@@ -65,7 +66,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     public void testBucketInvalidCharacter() throws Exception {
         final Path bucket = new Path("untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        assertFalse(new B2DirectoryFeature(session, fileid).isSupported(bucket.getParent(), bucket.getName()));
+        assertFalse(new B2DirectoryFeature(session, fileid).isSupported(bucket.getParent(), Optional.of(bucket.getName())));
         try {
             new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), bucket, new TransferStatus());
         }
@@ -88,11 +89,11 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         assertNotEquals(PathAttributes.EMPTY, new B2AttributesFinderFeature(session, fileid).find(directory));
         assertEquals(directory.attributes().getVersionId(), new B2VersionIdProvider(session).getVersionId(new Path(bucket, filename, EnumSet.of(Path.Type.directory))));
         // Mark as hidden
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(directory).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(directory).withAttributes(PathAttributes.EMPTY)), LoginCallback.noop, new Delete.DisabledCallback());
         // .bzEmpty is deleted not hidden
         assertFalse(new B2FindFeature(session, fileid).find(directory));
         assertFalse(new DefaultFindFeature(session).find(directory));
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -105,6 +106,6 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final Path directory = new B2DirectoryFeature(session, fileid).mkdir(
                 new B2WriteFeature(session, fileid), new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
         assertEquals(timestamp, new B2AttributesFinderFeature(session, fileid).find(directory).getModificationDate());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

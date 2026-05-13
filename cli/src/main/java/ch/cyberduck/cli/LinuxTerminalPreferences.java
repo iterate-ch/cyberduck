@@ -45,6 +45,9 @@ public class LinuxTerminalPreferences extends TerminalPreferences {
     protected void setDefaults() {
         super.setDefaults();
 
+        this.setProperty("library.jansi.path", new ClasspathResourcesFinder().find().getAbsolute());
+        this.setProperty("jna.boot.library.path", new ClasspathResourcesFinder().find().getAbsolute());
+
         try {
             final Process echo = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", "echo ~"});
             this.setDefault("local.user.home", StringUtils.strip(IOUtils.toString(echo.getInputStream(), Charset.defaultCharset())));

@@ -26,11 +26,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 
-public class MantaDirectoryFeature implements Directory {
+public class MantaDirectoryFeature implements Directory<Void> {
 
     private final MantaSession session;
 
@@ -39,7 +40,7 @@ public class MantaDirectoryFeature implements Directory {
     }
 
     @Override
-    public Path mkdir(final Write writer, final Path folder, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Write<Void> writer, final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             session.getClient().putDirectory(folder.getAbsolute());
             return folder;
@@ -56,7 +57,7 @@ public class MantaDirectoryFeature implements Directory {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(!session.isUserWritable(workdir)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }

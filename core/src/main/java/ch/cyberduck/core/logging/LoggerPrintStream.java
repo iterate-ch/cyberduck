@@ -34,7 +34,7 @@ public class LoggerPrintStream extends PrintStream {
     private final Level level;
 
     public LoggerPrintStream() {
-        this(NullOutputStream.NULL_OUTPUT_STREAM);
+        this(NullOutputStream.INSTANCE);
     }
 
     public LoggerPrintStream(final OutputStream out) {

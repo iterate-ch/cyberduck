@@ -18,7 +18,7 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -44,7 +44,7 @@ public class BoxDeleteFeatureTest extends AbstractBoxTest {
     public void testDeleteNotFound() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class BoxDeleteFeatureTest extends AbstractBoxTest {
         final Path directory = new BoxDirectoryFeature(session, fileid).mkdir(new BoxWriteFeature(session, fileid), new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         assertTrue(new BoxFindFeature(session, fileid).find(directory, new DisabledListProgressListener()));
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new BoxFindFeature(session, fileid).find(directory, new DisabledListProgressListener())));
     }
 
@@ -65,11 +65,11 @@ public class BoxDeleteFeatureTest extends AbstractBoxTest {
         final Path file2 = new BoxTouchFeature(session, fileid).touch(new BoxWriteFeature(session, fileid), new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new BoxFindFeature(session, fileid).find(file1));
         assertTrue(new BoxFindFeature(session, fileid).find(file2));
-        new BoxDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new BoxFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
         assertFalse((new BoxFindFeature(session, fileid).find(file2, new DisabledListProgressListener())));
         assertTrue(new BoxFindFeature(session, fileid).find(folder, new DisabledListProgressListener()));
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new BoxFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
     }
 }

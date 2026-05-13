@@ -30,6 +30,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
@@ -40,12 +41,12 @@ public class EueTouchFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testSupported() {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f >f"));
-        assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f "));
-        assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f."));
+        assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), Optional.of("f >f")));
+        assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), Optional.of("f ")));
+        assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), Optional.of("f.")));
         // max path length exceeded. Allowed are 250, but the length was 255
         assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)),
-                new AsciiRandomStringService(255).random()));
+                Optional.of(new AsciiRandomStringService(255).random())));
     }
 
     @Test

@@ -18,7 +18,7 @@ package ch.cyberduck.core.dav.microsoft;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
@@ -52,7 +52,7 @@ public class MicrosoftIISDAVTimestampFeatureTest extends AbstractMicrosoftIISDAV
         assertEquals(status.getResponse(), attr);
         assertEquals(5000L, new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(file.getParent(),
                 new DisabledListProgressListener()).find(new DefaultPathPredicate(file)).attributes().getModificationDate());
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
         session.close();
     }
 }

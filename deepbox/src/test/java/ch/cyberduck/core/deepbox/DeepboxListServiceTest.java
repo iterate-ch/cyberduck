@@ -18,8 +18,9 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -71,7 +72,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             // no modification/creation date for DeepBoxes
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new PathAttributes())));
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new DefaultPathAttributes())));
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
         }
     }
@@ -91,7 +92,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             // no modification/creation date for Companies
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new PathAttributes())));
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new DefaultPathAttributes())));
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
         }
     }
@@ -131,7 +132,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             // no modification/creation date for Boxes
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new PathAttributes())));
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new DefaultPathAttributes())));
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
         }
     }
@@ -151,7 +152,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             // no modification/creation date for Boxes
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new PathAttributes())));
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new DefaultPathAttributes())));
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
         }
     }
@@ -198,7 +199,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             assertTrue(f.attributes().getModificationDate() > 0);
             assertTrue(f.attributes().getCreationDate() > 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new PathAttributes())));
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new DefaultPathAttributes())));
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
         }
     }
@@ -215,7 +216,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             assertTrue(f.attributes().getModificationDate() > 0);
             assertTrue(f.attributes().getCreationDate() > 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new PathAttributes())));
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new DefaultPathAttributes())));
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
         }
     }
@@ -245,7 +246,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             assertTrue(f.attributes().getModificationDate() > 0);
             assertTrue(f.attributes().getCreationDate() > 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new PathAttributes())));
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new DefaultPathAttributes())));
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
         }
     }
@@ -268,7 +269,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertEquals(numFiles, listing.size());
         }
         finally {
-            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -290,7 +291,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertEquals(numFiles, listing.size());
         }
         finally {
-            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -330,7 +331,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         assertTrue(nodeContent.getNodes().get(0).getNodeId().equals(nodeid.getFileId(file)) ||
                 nodeContent.getNodes().get(1).getNodeId().equals(nodeid.getFileId(file))
         );
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -350,7 +351,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
             assertTrue(f.attributes().isDuplicate());
         }
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -377,7 +378,7 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(Path f : new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener())) {
             assertTrue(f.attributes().isDuplicate());
         }
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

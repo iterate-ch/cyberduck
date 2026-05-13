@@ -17,9 +17,9 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -65,7 +65,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
             status.setModified(1620113107725L);
             status.setCreated(1695160857860L);
             final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             version = out.getStatus();
@@ -82,7 +82,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(nodeId);
         assertEquals(new StoregateAttributesFinderFeature(session, nodeid).toAttributes(version), attributes);
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -92,7 +92,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<File> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = writer.write(test, status.setExists(true), ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertEquals(nodeId, out.getStatus().getId());
@@ -101,7 +101,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         attributes = new StoregateAttributesFinderFeature(session, nodeid).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(nodeId, new StoregateIdProvider(session).getFileId(test));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<File> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -123,11 +123,11 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new StoregateReadFeature(session, nodeid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new StoregateReadFeature(session, nodeid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -144,7 +144,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         status.setLength(content.length);
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
         try {
-            final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
             out.close();
             fail();
         }
@@ -152,12 +152,12 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
             assertTrue(e.getCause() instanceof LockedException);
         }
         status.setLockId(lockId);
-        final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new StoregateLockFeature(session, nodeid).unlock(test, lockId);
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -175,11 +175,11 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         new StoregateLockFeature(session, nodeid).unlock(test, lockId);
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
         status.setLockId(lockId);
-        final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = TransferStatusCanceledException.class)
@@ -203,7 +203,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         };
         status.setLength(content.length);
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).withListener(listener).transfer(new ByteArrayInputStream(content), out);
         assertFalse(new DefaultFindFeature(session).find(test));

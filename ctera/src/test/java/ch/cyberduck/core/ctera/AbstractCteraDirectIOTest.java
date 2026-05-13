@@ -16,16 +16,15 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -34,18 +33,17 @@ import org.junit.Before;
 public class AbstractCteraDirectIOTest extends VaultTest {
 
     protected CteraSession session;
+    private TestPasswordStore keychain;
 
     @After
     public void disconnect() throws Exception {
         session.close();
+        keychain.save(session.getHost());
     }
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new CteraProtocol(), "dcdirect.ctera.me", new Credentials(
-                PROPERTIES.get("ctera.directio.user"), PROPERTIES.get("ctera.directio.password"),
-                PROPERTIES.get("ctera.directio.token")
-        )) {
+        final Host host = new Host(new CteraProtocol(), "dcdirect.ctera.me", new Credentials(PROPERTIES.get("ctera.directio.user"))) {
             @Override
             public String getProperty(final String key) {
                 if("ctera.download.directio.enable".equals(key)) {
@@ -55,32 +53,10 @@ public class AbstractCteraDirectIOTest extends VaultTest {
             }
         };
         host.setDefaultPath("/ServicesPortal/webdav/My Files");
-        session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), new TestPasswordStore());
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new TestPasswordStore(), new DisabledProgressListener(), new DisabledProxyFinder());
-        connect.check(session, new DisabledCancelCallback());
-    }
-
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(final String serviceName, final String accountName) {
-            if(accountName.equals("API Access Key (admin)")) {
-                return PROPERTIES.get("ctera.directio.accesskey");
-            }
-            if(accountName.equals("API Secret Key (admin)")) {
-                return PROPERTIES.get("ctera.directio.secretkey");
-            }
-            return null;
-        }
-
-        @Override
-        public void addPassword(final String serviceName, final String accountName, final String password) {
-            if(accountName.equals("API Access Key (admin)")) {
-                VaultTest.add("ctera.directio.accesskey", password);
-            }
-            if(accountName.equals("API Secret Key (admin)")) {
-                VaultTest.add("ctera.directio.secretkey", password);
-            }
-        }
+        keychain = new TestPasswordStore();
+        session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), keychain);
+        final LoginConnectionService connect = new LoginConnectionService(LoginCallback.noop, HostKeyCallback.noop,
+                keychain, ProgressListener.noop, new DisabledProxyFinder());
+        connect.check(session, CancelCallback.noop);
     }
 }

@@ -37,7 +37,6 @@ public class VaultRegistryCopyFeature implements Copy {
     private final Copy proxy;
     private final VaultRegistry registry;
 
-
     public VaultRegistryCopyFeature(final Session<?> session, final Copy proxy, final VaultRegistry registry) {
         this.session = session;
         this.destination = session;
@@ -98,7 +97,12 @@ public class VaultRegistryCopyFeature implements Copy {
             }
         }
         else {
-            proxy.preflight(source, optional);
+            try {
+                registry.find(session, source, false).getFeature(session, Copy.class, proxy).preflight(source, optional);
+            }
+            catch(VaultUnlockCancelException e) {
+                proxy.preflight(source, optional);
+            }
         }
     }
 

@@ -28,8 +28,6 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.EnumSet;
 
 public class SDSListService implements ListService {
@@ -56,7 +54,7 @@ public class SDSListService implements ListService {
             do {
                 nodes = new NodesApi(session.getClient()).requestNodes(null, 0,
                         Long.parseLong(nodeid.getVersionId(directory)),
-                        false, null, "name:asc", offset, chunksize, StringUtils.EMPTY);
+                        false, null, "name:asc", offset, chunksize, false);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
                     final EnumSet<Path.Type> type = feature.toType(node);

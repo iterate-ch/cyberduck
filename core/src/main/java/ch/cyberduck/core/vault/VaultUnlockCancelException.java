@@ -15,22 +15,22 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Vault;
 
 public class VaultUnlockCancelException extends ConnectionCanceledException {
-    private final Vault vault;
+    private final Path vault;
 
-    public VaultUnlockCancelException(final Vault vault) {
+    public VaultUnlockCancelException(final Path vault) {
         this.vault = vault;
     }
 
-    public VaultUnlockCancelException(final Vault vault, final Throwable cause) {
+    public VaultUnlockCancelException(final Path vault, final Throwable cause) {
         super(cause);
         this.vault = vault;
     }
 
-    public Vault getVault() {
+    public Path getVault() {
         return vault;
     }
 

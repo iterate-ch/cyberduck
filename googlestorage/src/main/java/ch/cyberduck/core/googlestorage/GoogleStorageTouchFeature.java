@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 import com.google.api.services.storage.model.StorageObject;
 
@@ -32,7 +33,7 @@ public class GoogleStorageTouchFeature extends DefaultTouchFeature<StorageObject
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         // Creating files is only possible inside a bucket.
         if(workdir.isRoot()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);

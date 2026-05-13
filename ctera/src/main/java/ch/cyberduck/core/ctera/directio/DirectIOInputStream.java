@@ -15,6 +15,8 @@ package ch.cyberduck.core.ctera.directio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ctera.model.DirectIO;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 
@@ -23,14 +25,12 @@ import java.io.InputStream;
 
 public class DirectIOInputStream extends ProxyInputStream {
 
-    private InputStream decryptedInputStream;
-    private final Decryptor decryptor;
-    private final EncryptInfo encryptInfo;
+    private final InputStream decryptedInputStream;
 
-    public DirectIOInputStream(final InputStream proxy, final EncryptInfo encryptInfo) {
+    public DirectIOInputStream(final InputStream proxy, final DirectIO.EncryptInfo encryptInfo, final String secretKey) throws IOException {
         super(proxy);
-        this.decryptor = new Decryptor();
-        this.encryptInfo = encryptInfo;
+        final Decryptor decryptor = new Decryptor();
+        this.decryptedInputStream = decryptor.decryptData(in, encryptInfo, secretKey);
     }
 
     @Override
@@ -46,23 +46,12 @@ public class DirectIOInputStream extends ProxyInputStream {
 
     @Override
     public int read(final byte[] dst, final int off, final int len) throws IOException {
-        this.initStream();
         return decryptedInputStream.read(dst, off, len);
-    }
-
-    private void initStream() throws IOException {
-        if(decryptedInputStream == null) {
-            this.readNextChunk();
-        }
     }
 
     @Override
     public long skip(final long len) throws IOException {
         return IOUtils.skip(this, len);
-    }
-
-    private void readNextChunk() throws IOException {
-        decryptedInputStream = decryptor.decryptData(this.in, encryptInfo);
     }
 }
 

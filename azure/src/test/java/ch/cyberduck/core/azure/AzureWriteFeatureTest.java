@@ -1,8 +1,8 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -43,7 +43,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         status.setMetadata(Collections.singletonMap("Cache-Control", "public,max-age=86400"));
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final OutputStream out = new AzureWriteFeature(session, BlobType.APPEND_BLOB).write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = new AzureWriteFeature(session, BlobType.APPEND_BLOB).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new AzureFindFeature(session).find(test));
@@ -53,19 +53,19 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
         final OutputStream overwrite = new AzureWriteFeature(session).write(test, new TransferStatus().setExists(true)
-                .setLength("overwrite".getBytes(StandardCharsets.UTF_8).length).setMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
+                .setLength("overwrite".getBytes(StandardCharsets.UTF_8).length).setMetadata(Collections.singletonMap("Content-Type", "text/plain")), ConnectionCallback.noop);
         new StreamCopier(StreamCancelation.noop, StreamProgress.noop)
                 .transfer(new ByteArrayInputStream("overwrite".getBytes(StandardCharsets.UTF_8)), overwrite);
         overwrite.close();
         // Test double close
         overwrite.close();
         assertEquals("overwrite".getBytes(StandardCharsets.UTF_8).length, new AzureAttributesFinderFeature(session).find(test).getSize());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         status.setMetadata(Collections.singletonMap("Cache-Control", "public,max-age=86400"));
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final OutputStream out = new AzureWriteFeature(session, BlobType.BLOCK_BLOB).write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = new AzureWriteFeature(session, BlobType.BLOCK_BLOB).write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(StreamCancelation.noop, StreamProgress.noop).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new AzureFindFeature(session).find(test));
@@ -88,18 +88,18 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus(), ConnectionCallback.noop);
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
         final OutputStream overwrite = new AzureWriteFeature(session).write(test, new TransferStatus().setExists(true)
-                .setLength("overwrite".getBytes(StandardCharsets.UTF_8).length).setMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
+                .setLength("overwrite".getBytes(StandardCharsets.UTF_8).length).setMetadata(Collections.singletonMap("Content-Type", "text/plain")), ConnectionCallback.noop);
         new StreamCopier(StreamCancelation.noop, StreamProgress.noop)
                 .transfer(new ByteArrayInputStream("overwrite".getBytes(StandardCharsets.UTF_8)), overwrite);
         overwrite.close();
         // Test double close
         overwrite.close();
         assertEquals("overwrite".getBytes(StandardCharsets.UTF_8).length, new AzureAttributesFinderFeature(session).find(test).getSize());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -1,0 +1,52 @@
+<Project>
+
+  <ItemGroup>
+    <CyberduckReference Update="Bonjour">
+      <ProjectPath>$(CyberduckDir)bonjour\dll\Cyberduck.Bonjour.ikvmproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Bonjour.Native">
+      <ProjectPath>$(CyberduckDir)bonjour\src\main\csharp\Cyberduck.Bonjour.Native.csproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Cli">
+      <ProjectPath>$(CyberduckDir)cli\dll\Cyberduck.Cli.ikvmproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Core">
+      <ProjectPath>$(CyberduckDir)core\dll\Cyberduck.Core.ikvmproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Core.Native">
+      <ProjectPath>$(CyberduckDir)core\src\main\csharp\Cyberduck.Core.Native.csproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Core.Refresh">
+      <ProjectPath>$(CyberduckDir)core\native\refresh\src\main\csharp\Cyberduck.Core.Refresh.csproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Cryptomator">
+      <ProjectPath>$(CyberduckDir)cryptomator\dll\Cyberduck.Cryptomator.ikvmproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Importer">
+      <ProjectPath>$(CyberduckDir)importer\dll\Cyberduck.Importer.ikvmproj</ProjectPath>
+    </CyberduckReference>
+    <CyberduckReference Update="Protocols">
+      <ProjectPath>$(CyberduckDir)protocols\dll\Cyberduck.Protocols.ikvmproj</ProjectPath>
+    </CyberduckReference>
+
+    <CyberduckReferenceIdentity Include="@(CyberduckReference->'Cyberduck.%(Identity)')" />
+    <CyberduckReferenceWithProjectPath Include="@(CyberduckReferenceIdentity->HasMetadata('ProjectPath'))" />
+    <!-- Any CyberduckReference that doesn't have a ProjectPath should be included by PackageReference, by default -->
+    <CyberduckPackageReference Include="@(CyberduckReferenceIdentity)" Exclude="@(CyberduckReferenceWithProjectPath)" />
+  </ItemGroup>
+
+  <!-- If in VisualStudio reference Projects directly -->
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)'=='True'">
+    <ProjectReference Include="@(CyberduckReferenceWithProjectPath->'%(ProjectPath)')" Name="%(Identity)" />
+  </ItemGroup>
+  <!-- Else use PackageReferences -->
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)'!='True'">
+    <CyberduckPackageReference Include="@(CyberduckReferenceIdentity)" Exclude="@(CyberduckPackageReference)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="@(CyberduckPackageReference)" Version="$(Version)" />
+    <PackageReference Include="@(CyberduckPackageReference)" />
+  </ItemGroup>
+
+</Project>

@@ -28,14 +28,14 @@ public class LimitedListProgressListenerTest {
 
     @Test
     public void testChunk() throws Exception {
-        new LimitedListProgressListener(new DisabledProgressListener()).chunk(
+        new LimitedListProgressListener(ProgressListener.noop).chunk(
                 new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), AttributedList.emptyList()
         );
     }
 
     @Test(expected = ListCanceledException.class)
     public void testChunkLimitContainer() throws Exception {
-        new LimitedListProgressListener(new DisabledProgressListener()).chunk(
+        new LimitedListProgressListener(ProgressListener.noop).chunk(
                 new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), new AttributedList<Path>() {
                     @Override
                     public int size() {
@@ -47,7 +47,7 @@ public class LimitedListProgressListenerTest {
 
     @Test(expected = ListCanceledException.class)
     public void testChunkLimitFolder() throws Exception {
-        new LimitedListProgressListener(new DisabledProgressListener()).chunk(
+        new LimitedListProgressListener(ProgressListener.noop).chunk(
                 new Path("/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), new AttributedList<Path>() {
                     @Override
                     public int size() {

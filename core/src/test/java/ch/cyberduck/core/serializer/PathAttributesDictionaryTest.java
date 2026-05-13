@@ -15,10 +15,12 @@ package ch.cyberduck.core.serializer;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
@@ -29,13 +31,13 @@ public class PathAttributesDictionaryTest {
 
     @Test
     public void testSerialize() {
-        PathAttributes attributes = new PathAttributes();
+        PathAttributes attributes = new DefaultPathAttributes();
         attributes.setOwner("u");
         attributes.setGroup("g");
         attributes.setTrashed(true);
         attributes.setHidden(true);
         attributes.setModificationDate(System.currentTimeMillis());
-        attributes.setPermission(new Permission(Permission.Action.none, Permission.Action.write, Permission.Action.execute));
+        attributes.setPermission(new StaticPermission(Permission.Action.none, Permission.Action.write, Permission.Action.execute));
         PathAttributes clone = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
@@ -48,7 +50,7 @@ public class PathAttributesDictionaryTest {
 
     @Test
     public void testGetAsDictionary() {
-        PathAttributes attributes = new PathAttributes();
+        PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(3L);
         attributes.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
         attributes.setModificationDate(5343L);
@@ -62,8 +64,8 @@ public class PathAttributesDictionaryTest {
 
     @Test
     public void testSerializeHashCode() {
-        PathAttributes attributes = new PathAttributes();
-        attributes.setPermission(new Permission(644));
+        PathAttributes attributes = new DefaultPathAttributes();
+        attributes.setPermission(new StaticPermission(644));
         attributes.setDuplicate(true);
         attributes.setVersionId("v-1");
         attributes.setFileId("myUniqueId");

@@ -89,6 +89,7 @@ public class QuicklookTransferBackgroundAction extends BrowserTransferBackground
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 final DownloadFilterOptions options = new DownloadFilterOptions(session.getHost());
+                options.open = false;
                 options.segments = false;
                 return new CompareFilter(new DisabledDownloadSymlinkResolver(), source, new Find() {
                     @Override

@@ -17,8 +17,8 @@ package ch.cyberduck.core.deepbox;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.model.Node;
@@ -57,7 +57,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         try {
             final byte[] content = RandomUtils.nextBytes(2047);
             final HttpResponseOutputStream<Node> out = new DeepboxWriteFeature(session, nodeid).write(file,
-                    new TransferStatus().setExists(true), new DisabledConnectionCallback());
+                    new TransferStatus().setExists(true), ConnectionCallback.noop);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
             final BytecountStreamListener count = new BytecountStreamListener();
@@ -70,7 +70,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             assertEquals(content.length, new DeepboxAttributesFinderFeature(session, nodeid).find(file).getSize());
         }
         finally {
-            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -82,7 +82,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         try {
             final byte[] content = RandomUtils.nextBytes(1047);
             final HttpResponseOutputStream<Node> out = new DeepboxWriteFeature(session, nodeid).write(file,
-                    new TransferStatus(), new DisabledConnectionCallback());
+                    new TransferStatus(), ConnectionCallback.noop);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
             final BytecountStreamListener count = new BytecountStreamListener();
@@ -95,7 +95,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             assertEquals(content.length, new DeepboxAttributesFinderFeature(session, nodeid).find(file).getSize());
         }
         finally {
-            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -105,7 +105,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2047);
-        final HttpResponseOutputStream<Node> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = new DeepboxWriteFeature(session, nodeid).write(file, new TransferStatus(), ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -115,7 +115,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -132,7 +132,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             final DeepboxWriteFeature writer = new DeepboxWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
@@ -145,7 +145,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         assertNotNull(nodeId);
         assertEquals(new DeepboxAttributesFinderFeature(session, nodeid).find(test), attributes);
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new DeepboxReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new DeepboxReadFeature(session, nodeid).read(test, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -155,7 +155,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
             final DeepboxWriteFeature writer = new DeepboxWriteFeature(session, nodeid);
-            final HttpResponseOutputStream<Node> out = writer.write(test, status.setExists(true), new DisabledConnectionCallback());
+            final HttpResponseOutputStream<Node> out = writer.write(test, status.setExists(true), ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertEquals(nodeId, new DeepboxAttributesFinderFeature(session, nodeid).find(test).getFileId());
@@ -164,7 +164,7 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(nodeId, new DeepboxIdProvider(session).getFileId(test));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -179,19 +179,19 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Node> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new DeepboxReadFeature(session, nodeid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new DeepboxReadFeature(session, nodeid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -216,11 +216,11 @@ public class DeepboxWriteFeatureTest extends AbstractDeepboxTest {
         };
         status.setLength(content.length);
         final DeepboxWriteFeature writer = new DeepboxWriteFeature(session, nodeid);
-        final HttpResponseOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         assertThrows(TransferStatusCanceledException.class, () -> new StreamCopier(status, status).withListener(listener).transfer(new ByteArrayInputStream(content), out));
         assertFalse(new DefaultFindFeature(session).find(test));
         assertThrows(TransferStatusCanceledException.class, out::getStatus);
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

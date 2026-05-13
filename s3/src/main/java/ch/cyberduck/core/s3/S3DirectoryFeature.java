@@ -33,6 +33,7 @@ import org.jets3t.service.utils.ServiceUtils;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class S3DirectoryFeature implements Directory<StorageObject> {
 
@@ -69,11 +70,11 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
 
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
             if(workdir.isRoot()) {
-                if(StringUtils.isNotBlank(filename)) {
-                    if(!ServiceUtils.isBucketNameValidDNSName(filename)) {
+                if(filename.isPresent()) {
+                    if(!ServiceUtils.isBucketNameValidDNSName(filename.get())) {
                         throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                     }
                 }

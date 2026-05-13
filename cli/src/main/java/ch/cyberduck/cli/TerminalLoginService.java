@@ -27,9 +27,9 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.X509KeyManager;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +44,7 @@ public class TerminalLoginService extends KeychainLoginService {
     }
 
     @Override
-    public void validate(final Host bookmark, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
+    public void validate(final Host bookmark, final X509KeyManager keys, final LoginCallback prompt, final LoginOptions options) throws ConnectionCanceledException, LoginFailureException {
         final Credentials credentials = bookmark.getCredentials();
         if(input.hasOption(TerminalOptionsBuilder.Params.anonymous.name())) {
             credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));
@@ -61,6 +61,6 @@ public class TerminalLoginService extends KeychainLoginService {
         if(StringUtils.isNotBlank(credentials.getUsername()) && StringUtils.isNotBlank(credentials.getPassword())) {
             return;
         }
-        super.validate(bookmark, prompt, options);
+        super.validate(bookmark, keys, prompt, options);
     }
 }

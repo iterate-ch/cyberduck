@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Share;
 
-public class DeepboxShareFeature implements Share<Object, Object> {
+public class DeepboxShareFeature implements Share<Void, Void> {
 
     private final DeepboxSession session;
     private final DeepboxIdProvider fileid;
@@ -45,12 +45,12 @@ public class DeepboxShareFeature implements Share<Object, Object> {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         return this.createFileSharedLink(file, callback);
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         throw new UnsupportedException();
     }
 

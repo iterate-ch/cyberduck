@@ -20,8 +20,8 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.IndexedListProgressListener;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -61,7 +61,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         assertTrue(list.contains(f1));
         assertTrue(list.contains(f2));
         assertTrue(list.contains(d1));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(f1, f2, d1f1, d1, placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(f1, f2, d1f1, d1, placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertEquals(1, list.size());
         assertTrue(list.contains(test));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(test, placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(test, placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -113,7 +113,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -138,7 +138,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         assertTrue(callback.get());
         final Path placeholder2 = new SwiftDirectoryFeature(session).mkdir(new SwiftWriteFeature(session, new SwiftRegionService(session)), new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new SwiftObjectListService(session).list(placeholder2, new DisabledListProgressListener()).isEmpty());
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, placeholder2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, placeholder2), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         assertTrue(list.contains(placeholder));
         assertTrue(list.contains(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertSame(list.get(placeholder), list.get(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -182,7 +182,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
             assertTrue(list.contains(child));
             assertEquals(EnumSet.of(Path.Type.file), list.get(child).getType());
         }
-        new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -213,8 +213,8 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         final AttributedList<Path> list = new SwiftObjectListService(session, regionService).list(directory, new DisabledListProgressListener());
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());
-            new SwiftDeleteFeature(session, regionService).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new SwiftDeleteFeature(session, regionService).delete(Collections.singletonList(list.get(i)), LoginCallback.noop, new Delete.DisabledCallback());
         }
-        new SwiftDeleteFeature(session, regionService).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session, regionService).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

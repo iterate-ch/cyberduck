@@ -5,6 +5,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
@@ -76,7 +77,7 @@ public class S3ProtocolTest {
     @Test
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+        final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         assertTrue(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());
@@ -88,5 +89,11 @@ public class S3ProtocolTest {
         assertFalse(new Credentials("user", "").validate(new S3Protocol(), new LoginOptions(new S3Protocol())));
         assertFalse(new Credentials("user", " ").validate(new S3Protocol(), new LoginOptions(new S3Protocol())));
         assertTrue(new Credentials("user", "key").validate(new S3Protocol(), new LoginOptions(new S3Protocol())));
+        assertFalse(new Credentials("alias").setTokens(new TemporaryAccessTokens("a", "b"))
+                .validate(new S3Protocol(), new LoginOptions(new S3Protocol())));
+        assertTrue(new Credentials("alias").setTokens(new TemporaryAccessTokens("a", "b"))
+                .validate(new S3Protocol(), new LoginOptions(new S3Protocol()).password(false).token(true)));
+        assertTrue(new Credentials("alias").setTokens(new TemporaryAccessTokens("a", "b", "c"))
+                .validate(new S3Protocol(), new LoginOptions(new S3Protocol()).password(false).token(true)));
     }
 }

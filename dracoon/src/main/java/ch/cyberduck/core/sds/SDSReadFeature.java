@@ -30,7 +30,6 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.DownloadTokenGenerateResponse;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -59,9 +58,8 @@ public class SDSReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final SDSApiClient client = session.getClient();
-            final DownloadTokenGenerateResponse token = new NodesApi(session.getClient()).generateDownloadUrl(Long.valueOf(nodeid.getVersionId(file)), StringUtils.EMPTY);
+            final DownloadTokenGenerateResponse token = new NodesApi(session.getClient()).generateDownloadUrl(Long.valueOf(nodeid.getVersionId(file)));
             final HttpUriRequest request = new HttpGet(token.getDownloadUrl());
-            request.addHeader("X-Sds-Auth-Token", StringUtils.EMPTY);
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;

@@ -21,6 +21,8 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -29,6 +31,6 @@ public class BoxTouchFeatureTest extends AbstractBoxTest {
     @Test
     public void testSupported() {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        assertTrue(new BoxTouchFeature(session, fileid).isSupported(Home.root(), "xacjivli-éf"));
+        assertTrue(new BoxTouchFeature(session, fileid).isSupported(Home.root(), Optional.of("xacjivli-éf")));
     }
 }

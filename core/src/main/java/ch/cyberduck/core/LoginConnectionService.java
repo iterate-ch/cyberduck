@@ -24,6 +24,7 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
+import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -88,12 +89,17 @@ public class LoginConnectionService implements ConnectionService {
         }
         if(session.isConnected()) {
             log.debug("Skip opening connection for session {}", session);
-            // Connection already open
+            // Connection is already open
             return false;
         }
-        // Obtain password from keychain or prompt
+        final Host jumphost = JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname());
+        if(null != jumphost) {
+            log.debug("Configure with jump host {}", jumphost);
+            bookmark.setJumphost(jumphost);
+        }
+        // Get password from the password store or prompt
         synchronized(login) {
-            login.validate(bookmark, prompt, new LoginOptions(bookmark.getProtocol()));
+            login.validate(bookmark, session.getFeature(X509KeyManager.class), prompt, new LoginOptions(bookmark.getProtocol()));
         }
         this.connect(session, callback);
         return true;
@@ -102,7 +108,7 @@ public class LoginConnectionService implements ConnectionService {
     @Override
     public void close(final Session<?> session) throws BackgroundException {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-            session.getHost().getHostname()));
+                session.getHost().getHostname()));
         // Close the underlying socket first
         session.interrupt();
     }
@@ -130,24 +136,24 @@ public class LoginConnectionService implements ConnectionService {
             }
         }
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
-            bookmark.getProtocol().getName(), hostname));
+                bookmark.getProtocol().getName(), hostname));
         // The IP address could successfully be determined
         session.open(proxy, key, prompt, cancel);
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
-            bookmark.getProtocol().getName()));
+                bookmark.getProtocol().getName()));
         // Update last accessed timestamp
         bookmark.setTimestamp(new Date());
         // Warning about insecure connection prior authenticating
         if(session.alert(prompt)) {
             // Warning if credentials are sent plaintext.
             prompt.warn(bookmark, MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
-                bookmark.getProtocol().getName()),
-                MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
-                    bookmark.getProtocol().getPasswordPlaceholder()),
-                    LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
-                LocaleFactory.localizedString("Continue", "Credentials"),
-                LocaleFactory.localizedString("Disconnect", "Credentials"),
-                String.format("connection.unsecure.%s", bookmark.getHostname()));
+                            bookmark.getProtocol().getName()),
+                    MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
+                                    bookmark.getProtocol().getPasswordPlaceholder()),
+                            LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                    LocaleFactory.localizedString("Continue", "Credentials"),
+                    LocaleFactory.localizedString("Disconnect", "Credentials"),
+                    String.format("connection.unsecure.%s", bookmark.getHostname()));
         }
         // Login
         try {
@@ -162,7 +168,7 @@ public class LoginConnectionService implements ConnectionService {
     private void authenticate(final Session<?> session, final CancelCallback callback) throws BackgroundException {
         if(!login.authenticate(session, listener, prompt, callback)) {
             if(session.isConnected()) {
-                // Next attempt with updated credentials but cancel when prompt is dismissed
+                // Next attempt with updated credentials but cancel when the prompt is dismissed
                 this.authenticate(session, callback);
             }
             else {

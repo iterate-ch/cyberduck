@@ -139,7 +139,7 @@ public class HostDictionary<T> {
             if(transferObj != null) {
                 final Host.TransferType transfer = Host.TransferType.valueOf(transferObj.toString());
                 if(PreferencesFactory.get().getList("queue.transfer.type.enabled").contains(transfer.name())) {
-                    bookmark.setTransfer(transfer);
+                    bookmark.setTransferType(transfer);
                 }
             }
             else {
@@ -147,7 +147,7 @@ public class HostDictionary<T> {
                 Object connObj = dict.stringForKey("Maximum Connections");
                 if(connObj != null) {
                     if(1 == Integer.parseInt(connObj.toString())) {
-                        bookmark.setTransfer(Host.TransferType.browser);
+                        bookmark.setTransferType(Host.TransferType.browser);
                     }
                 }
             }

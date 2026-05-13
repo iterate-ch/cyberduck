@@ -15,7 +15,10 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.transfer.ProxyTransferStatus;
@@ -27,11 +30,13 @@ import org.apache.logging.log4j.Logger;
 public class CryptoTransferStatus extends ProxyTransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = LogManager.getLogger(CryptoTransferStatus.class);
 
-    private final CryptoVault vault;
+    private final Vault vault;
+    private final Path file;
 
-    public CryptoTransferStatus(final CryptoVault vault, final TransferStatus proxy) {
+    public CryptoTransferStatus(final Vault vault, final Path file, final TransferStatus proxy) {
         super(proxy);
         this.vault = vault;
+        this.file = file;
         this.setLength(vault.toCiphertextSize(proxy.getOffset(), proxy.getLength()))
                 // Assume single chunk upload
                 .setOffset(0L == proxy.getOffset() ? 0L : vault.toCiphertextSize(0L, proxy.getOffset()))
@@ -42,10 +47,13 @@ public class CryptoTransferStatus extends ProxyTransferStatus implements StreamC
     public TransferStatus setResponse(final PathAttributes attributes) {
         try {
             attributes.setSize(vault.toCleartextSize(0L, attributes.getSize()));
-            attributes.setVault(vault.getHome());
+            attributes.setDisplayname(null);
+            if(file.getType().contains(Path.Type.vault)) {
+                attributes.setVaultVersion(vault.getVersion());
+            }
             super.setResponse(attributes);
         }
-        catch(CryptoInvalidFilesizeException e) {
+        catch(BackgroundException e) {
             log.warn("Failure {} translating file size from response {}", e, attributes);
         }
         return this;

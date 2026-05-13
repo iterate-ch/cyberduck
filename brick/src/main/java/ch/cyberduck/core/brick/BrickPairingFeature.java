@@ -19,11 +19,11 @@ import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateTrustCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Pairing;
@@ -70,7 +70,7 @@ public class BrickPairingFeature implements Pairing {
                         CertificateStoreFactory.get());
                 final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(bookmark,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key, ProxyFactory.get());
-                final HttpClientBuilder configuration = builder.build(ProxyFactory.get(), new DisabledTranscriptListener(), new DisabledLoginCallback());
+                final HttpClientBuilder configuration = builder.build(ProxyFactory.get(), new DisabledTranscriptListener(), LoginCallback.noop);
                 configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create().build());
                 final CloseableHttpClient client = configuration.build();
                 final HttpRequestBase resource = new HttpDelete(

@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Vault;
@@ -38,28 +39,28 @@ public class CryptoUnixPermission implements UnixPermission {
     }
 
     @Override
-    public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-        delegate.setUnixOwner(cryptomator.encrypt(session, file), owner);
-    }
-
-    @Override
     public Permission getDefault(final Path workdir, final EnumSet<Path.Type> type) {
         return delegate.getDefault(workdir, type);
     }
 
     @Override
+    public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+        delegate.setUnixOwner(cryptomator.encrypt(session, file, true), owner);
+    }
+
+    @Override
     public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-        delegate.setUnixGroup(cryptomator.encrypt(session, file), group);
+        delegate.setUnixGroup(cryptomator.encrypt(session, file, true), group);
     }
 
     @Override
     public Permission getUnixPermission(final Path file) throws BackgroundException {
-        return delegate.getUnixPermission(cryptomator.encrypt(session, file));
+        return delegate.getUnixPermission(cryptomator.encrypt(session, file, true));
     }
 
     @Override
     public void setUnixPermission(final Path file, final TransferStatus status) throws BackgroundException {
-        delegate.setUnixPermission(cryptomator.encrypt(session, file), status);
+        delegate.setUnixPermission(cryptomator.encrypt(session, file, true), new CryptoTransferStatus(cryptomator, file, status));
     }
 
     @Override

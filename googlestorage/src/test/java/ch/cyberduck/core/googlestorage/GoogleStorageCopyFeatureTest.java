@@ -16,12 +16,12 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AsciiRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
@@ -47,13 +47,13 @@ public class GoogleStorageCopyFeatureTest extends AbstractGoogleStorageTest {
         final Path copy = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final GoogleStorageCopyFeature feature = new GoogleStorageCopyFeature(session);
         assertTrue(feature.isSupported(test, Optional.of(copy)));
-        feature.copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        feature.copy(test, copy, new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertTrue(new GoogleStorageFindFeature(session).find(test));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new GoogleStorageFindFeature(session).find(copy));
         assertEquals("set",
             new GoogleStorageMetadataFeature(session).getMetadata(copy).get("cyberduck"));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -64,14 +64,14 @@ public class GoogleStorageCopyFeatureTest extends AbstractGoogleStorageTest {
         final Path test = new GoogleStorageTouchFeature(session).touch(new GoogleStorageWriteFeature(session), new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         assertNotNull(test.attributes().getVersionId());
         final Path copy = new GoogleStorageCopyFeature(session).copy(test,
-                new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+                new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), ConnectionCallback.noop, StreamListener.noop);
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertEquals("m", new GoogleStorageMetadataFeature(session).getMetadata(copy).get("cyberduck"));
         assertEquals(1, new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener())
                 .filter(new SearchFilter(copy.getName())).size());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertTrue(new GoogleStorageFindFeature(session).find(copy));
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(copy), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

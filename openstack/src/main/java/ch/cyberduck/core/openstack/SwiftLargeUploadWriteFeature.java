@@ -17,7 +17,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProgressListener;
@@ -174,7 +173,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                 if(completed.isEmpty()) {
                     // The minimum sized range is 1 byte. This is the same as the minimum segment size.
                     final HttpResponseOutputStream<StorageObject> out
-                            = new SwiftWriteFeature(session, regionService).write(file, overall.setLength(0L), new DisabledConnectionCallback());
+                            = new SwiftWriteFeature(session, regionService).write(file, overall.setLength(0L), ConnectionCallback.noop);
                     out.close();
                     response.set(out.getStatus());
                 }

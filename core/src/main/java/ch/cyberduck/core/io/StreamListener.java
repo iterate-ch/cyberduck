@@ -28,4 +28,6 @@ public interface StreamListener {
      * @param bytes Number of bytes retrieved
      */
     void recv(long bytes);
+
+    StreamListener noop = new DisabledStreamListener();
 }

@@ -4,6 +4,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class KeychainLoginServiceTest {
                 throw new LoginCanceledException();
             }
         };
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
         LoginService l = new KeychainLoginService(new DisabledPasswordStore());
         l.authenticate(session, new ProgressListener() {
             int i = 0;
@@ -44,14 +45,15 @@ public class KeychainLoginServiceTest {
                 }
                 i++;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, LoginCallback.noop, CancelCallback.noop);
     }
 
 
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
         LoginService l = new KeychainLoginService(new DisabledPasswordStore());
-        l.validate(new Host(new TestProtocol(), "h"), new DisabledLoginCallback(), new LoginOptions());
+        l.validate(new Host(new TestProtocol(), "h"),
+                new DefaultX509KeyManager(), LoginCallback.noop, new LoginOptions());
     }
 
     @Test
@@ -68,7 +70,7 @@ public class KeychainLoginServiceTest {
         final Credentials credentials = new Credentials();
         credentials.setUsername("u");
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", credentials);
-        l.validate(host, new DisabledLoginCallback(), new LoginOptions(host.getProtocol()));
+        l.validate(host, new DefaultX509KeyManager(), LoginCallback.noop, new LoginOptions(host.getProtocol()));
         assertTrue(keychain.get());
         assertFalse(host.getCredentials().isSaved());
         assertEquals("P", host.getCredentials().getPassword());

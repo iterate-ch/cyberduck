@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.file.FileSystems;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -52,23 +53,30 @@ public class FlatTemporaryFileServiceTest {
     @Test
     public void testCreateFile() {
         final String temp = StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), File.separator);
-        final String s = System.getProperty("file.separator");
-        assertEquals(String.format("%s%su%s-1807454463-f", temp, s, s),
-                new FlatTemporaryFileService().create("u", new Path("/p/f", EnumSet.of(Path.Type.file))).getAbsolute());
+        final String s = FileSystems.getDefault().getSeparator();
         final Path file = new Path("/p/f", EnumSet.of(Path.Type.file));
-        file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%s-1807454463-f", temp, s, s),
-                new FlatTemporaryFileService().create("u", file).getAbsolute());
+        {
+            final String attributes = String.valueOf(file.attributes().hashCode());
+            assertEquals(String.format("%s%suid%s%s-f", temp, s, s, attributes),
+                    new FlatTemporaryFileService().create("uid", file).getAbsolute());
+        }
+        {
+            file.attributes().setRegion("region");
+            final String attributes = String.valueOf(file.attributes().hashCode());
+            assertEquals(String.format("%s%suid%s%s-f", temp, s, s, attributes),
+                    new FlatTemporaryFileService().create("uid", file).getAbsolute());
+        }
     }
 
     @Test
     public void testCreateContainer() {
         final String temp = StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), File.separator);
-        final String s = System.getProperty("file.separator");
+        final String s = FileSystems.getDefault().getSeparator();
         final Path file = new Path("/container", EnumSet.of(Path.Type.directory));
         file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%s-1807454463-container", temp, s, s),
-                new FlatTemporaryFileService().create("u", file).getAbsolute());
+        final String attributes = String.valueOf(file.attributes().hashCode());
+        assertEquals(String.format("%s%suid%s%s-container", temp, s, s, attributes),
+                new FlatTemporaryFileService().create("uid", file).getAbsolute());
     }
 
     @Test
@@ -99,8 +107,9 @@ public class FlatTemporaryFileServiceTest {
         final Local local = new FlatTemporaryFileService().create("UID", file);
         assertTrue(local.getParent().exists());
         final String localFile = local.getAbsolute();
-        assertEquals(String.format("%s/%s/-1761278413-%s", temp, "UID", testPathFile).replace('/', File.separatorChar), localFile);
-        assertNotEquals(String.format("%s/%s%s/2/-1761278413-%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
+        final String attributes = String.valueOf(file.attributes().hashCode());
+        assertEquals(String.format("%s/%s/%s-%s", temp, "UID", attributes, testPathFile).replace('/', File.separatorChar), localFile);
+        assertNotEquals(String.format("%s/%s%s/2/%s-%s", temp, "UID", testPathMD5, attributes, testPathFile).replace('/', File.separatorChar), localFile);
     }
 
     @Test

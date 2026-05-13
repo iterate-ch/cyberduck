@@ -18,8 +18,8 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
@@ -59,7 +59,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final byte[] content = RandomUtils.nextBytes(8235);
         final TransferStatus status = new TransferStatus().setLength(content.length);
         status.setChecksum(Checksum.NONE);
-        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -67,7 +67,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         assertEquals(content.length, count.getSent());
         in.close();
         out.close();
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = TransferStatusCanceledException.class)
@@ -88,7 +88,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
                 }
             };
             status.setLength(content.length);
-            final StatusOutputStream<EueWriteFeature.Chunk> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<EueWriteFeature.Chunk> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).withListener(count).transfer(new ByteArrayInputStream(content), out);
             assertFalse(new DefaultFindFeature(session).find(test));
@@ -103,11 +103,11 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         // Rewrite
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        final StatusOutputStream<EueWriteFeature.Chunk> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<EueWriteFeature.Chunk> out = writer.write(test, status, ConnectionCallback.noop);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertFalse(new DefaultFindFeature(session).find(test));
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             final TransferStatus status = new TransferStatus().setLength(content.length).setModified(modified).setCreated(created);
             final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
             status.setChecksum(checksum);
-            final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
             final BytecountStreamListener count = new BytecountStreamListener();
@@ -142,7 +142,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             assertEquals(modified, attributes.getModificationDate());
             assertEquals(created, attributes.getCreationDate());
             final byte[] compare = new byte[content.length];
-            final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             IOUtils.readFully(stream, compare);
             stream.close();
             assertArrayEquals(content, compare);
@@ -156,7 +156,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             final TransferStatus status = new TransferStatus().setLength(content.length).setModified(ts);
             final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
             status.setChecksum(checksum).setExists(true);
-            final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
             final BytecountStreamListener count = new BytecountStreamListener();
@@ -174,12 +174,12 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             assertEquals(ts, attributes.getModificationDate());
             assertEquals(content.length, attributes.getSize());
             final byte[] compare = new byte[content.length];
-            final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+            final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
             IOUtils.readFully(stream, compare);
             stream.close();
             assertArrayEquals(content, compare);
         }
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -191,7 +191,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final TransferStatus status = new TransferStatus().setLength(content.length);
         final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         status.setChecksum(checksum);
-        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -200,11 +200,11 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -218,13 +218,13 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         EueUploadHelper.createResource(session, fileid.getFileId(file.getParent()), file.getName(), status, UploadType.SIMPLE);
         final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length));
         status.setChecksum(checksum);
-        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test(expected = QuotaException.class)
@@ -235,7 +235,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus().setLength(Long.MAX_VALUE);
         try {
-            feature.write(file, status, new DisabledConnectionCallback());
+            feature.write(file, status, ConnectionCallback.noop);
         }
         catch(QuotaException e) {
             assertEquals("RESOURCE_SIZE. Please contact your web hosting service provider for assistance.", e.getDetail());

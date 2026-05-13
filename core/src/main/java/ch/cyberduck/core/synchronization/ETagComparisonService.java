@@ -28,7 +28,8 @@ public class ETagComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         if(null != local.getETag() && null != remote.getETag()) {
-            if(StringUtils.equals(local.getETag(), remote.getETag())) {
+            if(StringUtils.equals(StringUtils.removeStart(StringUtils.removeEnd(local.getETag(), "\""), "\""),
+                    StringUtils.removeStart(StringUtils.removeEnd(remote.getETag(), "\""), "\""))) {
                 log.debug("Equal ETag {}", remote.getETag());
                 return Comparison.equal;
             }

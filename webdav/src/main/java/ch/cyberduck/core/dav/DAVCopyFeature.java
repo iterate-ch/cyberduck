@@ -18,9 +18,9 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Lock;
@@ -59,7 +59,9 @@ public class DAVCopyFeature implements Copy {
                 session.getClient().copy(new DAVPathEncoder().encode(source), target, status.isExists());
             }
             listener.sent(status.getLength());
-            return new Path(copy).withAttributes(new PathAttributes(source.attributes()).setLockId(null));
+            return new Path(copy).withAttributes(new DefaultPathAttributes(source.attributes())
+                    .setDisplayname(null)
+                    .setLockId(null));
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot copy {0}", e, source);

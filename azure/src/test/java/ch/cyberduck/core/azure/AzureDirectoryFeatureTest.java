@@ -1,7 +1,7 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConflictException;
@@ -16,6 +16,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +31,7 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
         assertEquals(PathAttributes.EMPTY, container.attributes());
         assertThrows(ConflictException.class, () -> feature.mkdir(new AzureWriteFeature(session), container, new TransferStatus()));
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session).find(container));
     }
 
@@ -38,11 +39,11 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
     public void testCreateContainerInvalidName() throws Exception {
         final Path container = new Path("untitled folder", EnumSet.of(Path.Type.directory));
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session);
-        assertFalse(feature.isSupported(container.getParent(), container.getName()));
-        assertThrows(InvalidFilenameException.class, () -> feature.preflight(container.getParent(), container.getName()));
+        assertFalse(feature.isSupported(container.getParent(), Optional.of(container.getName())));
+        assertThrows(InvalidFilenameException.class, () -> feature.preflight(container.getParent(), Optional.of(container.getName())));
         feature.mkdir(new AzureWriteFeature(session), container, new TransferStatus());
         assertTrue(new AzureFindFeature(session).find(container));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session).find(container));
     }
 
@@ -56,10 +57,10 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
         assertEquals(PathAttributes.EMPTY, placeholder.attributes());
         final Path file = new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(new AzureWriteFeature(session), file, new TransferStatus());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(placeholder), LoginCallback.noop, new Delete.DisabledCallback());
         // Still find common prefix
         assertTrue(new AzureFindFeature(session).find(placeholder));
         assertEquals(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session).find(placeholder));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

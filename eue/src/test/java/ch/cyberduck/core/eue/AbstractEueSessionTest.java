@@ -16,7 +16,6 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.CreateShareApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationRequestModel;
@@ -28,7 +27,9 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultVersion;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
@@ -48,7 +49,7 @@ public class AbstractEueSessionTest extends VaultTest {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+        return new Object[]{VaultVersion.Type.V8, VaultVersion.Type.UVF};
     }
 
     @Parameterized.Parameter
@@ -77,8 +78,8 @@ public class AbstractEueSessionTest extends VaultTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop, new TestPasswordStore(), ProgressListener.noop);
+        login.check(session, CancelCallback.noop);
     }
 
     private Factory.Platform.Name getSupportedPlatform() {
@@ -95,50 +96,12 @@ public class AbstractEueSessionTest extends VaultTest {
         session.close();
     }
 
-    public static class TestPasswordStore extends DisabledPasswordStore {
-        @Override
-        public String getPassword(final String serviceName, final String accountName) {
-            if(accountName.equals("GMX Cloud (1015156902205593160) OAuth2 Token Expiry")) {
-                return PROPERTIES.get("eue.tokenexpiry");
-            }
-            return null;
-        }
-
-        @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("GMX Cloud (1015156902205593160) OAuth2 Access Token")) {
-                return PROPERTIES.get("eue.accesstoken");
-            }
-            if(user.equals("GMX Cloud (1015156902205593160) OAuth2 Refresh Token")) {
-                return PROPERTIES.get("eue.refreshtoken");
-            }
-            return null;
-        }
-
-        @Override
-        public void addPassword(final String serviceName, final String accountName, final String password) {
-            if(accountName.equals("GMX Cloud (1015156902205593160) OAuth2 Token Expiry")) {
-                VaultTest.add("eue.tokenexpiry", password);
-            }
-        }
-
-        @Override
-        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
-            if(user.equals("GMX Cloud (1015156902205593160) OAuth2 Access Token")) {
-                VaultTest.add("eue.accesstoken", password);
-            }
-            if(user.equals("GMX Cloud (1015156902205593160) OAuth2 Refresh Token")) {
-                VaultTest.add("eue.refreshtoken", password);
-            }
-        }
-    }
-
     protected Path createFile(final EueResourceIdProvider fileid, Path file, final byte[] content) throws Exception {
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final TransferStatus status = new TransferStatus()
                 .setChecksum(feature.checksum(file, new TransferStatus().setLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().setLength(content.length)))
                 .setLength(content.length);
-        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();

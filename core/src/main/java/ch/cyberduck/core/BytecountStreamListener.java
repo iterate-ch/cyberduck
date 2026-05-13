@@ -16,7 +16,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.io.DelegateStreamListener;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,7 +25,7 @@ public class BytecountStreamListener extends DelegateStreamListener {
     private final AtomicLong recv = new AtomicLong(0L);
 
     public BytecountStreamListener() {
-        super(new DisabledStreamListener());
+        super(StreamListener.noop);
     }
 
     public BytecountStreamListener(final StreamListener delegate) {

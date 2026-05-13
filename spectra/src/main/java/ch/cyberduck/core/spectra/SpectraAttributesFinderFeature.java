@@ -16,6 +16,7 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -62,7 +63,7 @@ public class SpectraAttributesFinderFeature implements AttributesFinder, Attribu
 
     protected HeadObjectResponse details(final Path file) throws BackgroundException {
         try {
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             final HeadObjectResponse response = client.headObject(new HeadObjectRequest(containerService.getContainer(file).getName(), containerService.getKey(file)));
             switch(response.getStatus()) {
                 case DOESNTEXIST:
@@ -80,7 +81,7 @@ public class SpectraAttributesFinderFeature implements AttributesFinder, Attribu
 
     @Override
     public PathAttributes toAttributes(final HeadObjectResponse object) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(object.getObjectSize());
         final Map<String, String> metadata = new HashMap<>();
         for(String key : object.getMetadata().keys()) {

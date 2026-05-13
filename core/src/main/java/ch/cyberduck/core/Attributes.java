@@ -18,34 +18,44 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-public abstract class Attributes {
+public interface Attributes {
 
     /**
      * @return The length of the file
      */
-    public abstract long getSize();
+    long getSize();
 
     /**
      * @return The time the file was last modified in millis UTC or -1 if unknown
      */
-    public abstract long getModificationDate();
+    long getModificationDate();
 
     /**
      * @return The time the file was created in millis UTC or -1 if unknown
      */
-    public abstract long getCreationDate();
+    long getCreationDate();
 
     /**
      * @return The time the file was last accessed in millis UTC or -1 if unknown
      */
-    public abstract long getAccessedDate();
+    long getAccessedDate();
 
     /**
      * @return The file permission mask or null if unknown
      */
-    public abstract Permission getPermission();
+    Permission getPermission();
 
-    public abstract String getOwner();
+    /**
+     * Retrieves the name of the owner of the file.
+     *
+     * @return The owner's name as a string, or null if the owner is unknown.
+     */
+    String getOwner();
 
-    public abstract String getGroup();
+    /**
+     * Retrieves the name of the group to which the file belongs.
+     *
+     * @return The group name as a string, or null if the group is unknown.
+     */
+    String getGroup();
 }

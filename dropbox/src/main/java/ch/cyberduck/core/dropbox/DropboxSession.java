@@ -76,8 +76,8 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     protected CustomDbxRawClientV2 connect(final ProxyFinder proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws ConnectionCanceledException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
-                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-                .withParameter("token_access_type", "offline");
+                .setRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+                .setParameter("token_access_type", "offline");
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new OAuth2ErrorResponseInterceptor(host, authorizationService)));
@@ -89,7 +89,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         final CloseableHttpClient client = configuration.build();
         return new CustomDbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
                 .withAutoRetryDisabled()
-                .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(),
+                .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(host, client)).build(),
                 DbxHost.DEFAULT, null, null);
     }
 

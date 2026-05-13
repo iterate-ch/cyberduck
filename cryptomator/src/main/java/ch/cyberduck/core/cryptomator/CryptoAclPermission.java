@@ -20,32 +20,32 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.util.EnumSet;
 import java.util.List;
 
 public class CryptoAclPermission implements AclPermission {
 
     private final Session<?> session;
     private final AclPermission delegate;
-    private final CryptoVault cryptomator;
+    private final Vault vault;
 
-    public CryptoAclPermission(final Session<?> session, final AclPermission delegate, final CryptoVault cryptomator) {
+    public CryptoAclPermission(final Session<?> session, final AclPermission delegate, final Vault vault) {
 
         this.session = session;
         this.delegate = delegate;
-        this.cryptomator = cryptomator;
+        this.vault = vault;
     }
 
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
-        return delegate.getPermission(cryptomator.encrypt(session, file));
+        return delegate.getPermission(vault.encrypt(session, file));
     }
 
     @Override
     public void setPermission(final Path file, final TransferStatus status) throws BackgroundException {
-        delegate.setPermission(cryptomator.encrypt(session, file), status);
+        delegate.setPermission(vault.encrypt(session, file), new CryptoTransferStatus(vault, file, status));
     }
 
     @Override

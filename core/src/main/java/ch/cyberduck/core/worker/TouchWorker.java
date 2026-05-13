@@ -60,7 +60,6 @@ public class TouchWorker extends Worker<Path> {
                 .setModified(System.currentTimeMillis())
                 .setHidden(!SearchFilterFactory.HIDDEN_FILTER.accept(file))
                 .setExists(false)
-                .setLength(0L)
                 .setMime(new MappingMimeTypeService().getMime(file.getName()))
                 .setLockId(this.getLockId(file));
         final Path container = session.getFeature(PathContainerService.class).getContainer(file);

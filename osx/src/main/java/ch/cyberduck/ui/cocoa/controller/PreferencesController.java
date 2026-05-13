@@ -51,6 +51,8 @@ import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.updater.PeriodicUpdateChecker;
+import ch.cyberduck.core.updater.PeriodicUpdateCheckerFactory;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
@@ -88,6 +90,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     private final Preferences preferences
             = PreferencesFactory.get();
+
+    private final PeriodicUpdateChecker updater
+            = PeriodicUpdateCheckerFactory.get(this);
 
     private final ConnectionTimeout connectionTimeoutPreferences
             = ConnectionTimeoutFactory.get();
@@ -210,7 +215,7 @@ public class PreferencesController extends ToolbarWindowController {
         if(preferences.getBoolean("cryptomator.enable")) {
             this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.cryptomator), panelCryptomator);
         }
-        if(null != preferences.getProperty("SUExpectsDSASignature")) {
+        if(updater.hasUpdatePrivileges()) {
             this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.update), panelUpdate);
         }
         this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.language), panelLanguage);
@@ -327,14 +332,18 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Override
-    public void setWindow(NSWindow window) {
+    public void setWindow(final NSWindow window) {
         window.setExcludedFromWindowsMenu(true);
-        window.setFrameAutosaveName("Preferences");
         if(window.respondsToSelector(Foundation.selector("setToolbarStyle:"))) {
             window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStylePreference);
         }
         window.setContentMinSize(new NSSize(600d, 200d));
         super.setWindow(window);
+    }
+
+    @Override
+    public String windowFrameName() {
+        return "Preferences";
     }
 
     @Override
@@ -729,10 +738,10 @@ public class PreferencesController extends ToolbarWindowController {
     public void chmodUploadTypePopupChanged(NSPopUpButton sender) {
         Permission p = null;
         if(sender.selectedItem().tag() == 0) {
-            p = new Permission(preferences.getInteger("queue.upload.permissions.file.default"));
+            p = new StaticPermission(preferences.getInteger("queue.upload.permissions.file.default"));
         }
         if(sender.selectedItem().tag() == 1) {
-            p = new Permission(preferences.getInteger("queue.upload.permissions.folder.default"));
+            p = new StaticPermission(preferences.getInteger("queue.upload.permissions.folder.default"));
         }
         if(null == p) {
             log.error("No selected item for:{}", sender);
@@ -769,10 +778,10 @@ public class PreferencesController extends ToolbarWindowController {
     public void chmodDownloadTypePopupChanged(NSPopUpButton sender) {
         Permission p = null;
         if(sender.selectedItem().tag() == 0) {
-            p = new Permission(preferences.getInteger("queue.download.permissions.file.default"));
+            p = new StaticPermission(preferences.getInteger("queue.download.permissions.file.default"));
         }
         if(sender.selectedItem().tag() == 1) {
-            p = new Permission(preferences.getInteger("queue.download.permissions.folder.default"));
+            p = new StaticPermission(preferences.getInteger("queue.download.permissions.folder.default"));
         }
         if(null == p) {
             log.error("No selected item for:{}", sender);
@@ -1082,7 +1091,7 @@ public class PreferencesController extends ToolbarWindowController {
         if(dotherx.state() == NSCell.NSOnState) {
             o = o.or(Permission.Action.execute);
         }
-        final Permission permission = new Permission(u, g, o);
+        final Permission permission = new StaticPermission(u, g, o);
         if(chmodDownloadTypePopup.selectedItem().tag() == 0) {
             preferences.setProperty("queue.download.permissions.file.default", permission.getMode());
         }
@@ -1216,7 +1225,7 @@ public class PreferencesController extends ToolbarWindowController {
         if(uotherx.state() == NSCell.NSOnState) {
             o = o.or(Permission.Action.execute);
         }
-        final Permission permission = new Permission(u, g, o);
+        final Permission permission = new StaticPermission(u, g, o);
         if(chmodUploadTypePopup.selectedItem().tag() == 0) {
             preferences.setProperty("queue.upload.permissions.file.default", permission.getMode());
         }
@@ -1983,7 +1992,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
         final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
-        preferences.setProperty("connection.protocol.default", String.format("%s-%s", selected.getIdentifier(), selected.getProvider()));
+        preferences.setProperty("connection.protocol.default", String.format("%s:%s", selected.getIdentifier(), selected.getProvider()));
         preferences.setProperty("connection.port.default", selected.getDefaultPort());
     }
 
@@ -2305,6 +2314,21 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSButton s3VersioningCheckbox;
+
+    public void setS3VersioningCheckbox(NSButton b) {
+        this.s3VersioningCheckbox = b;
+        this.s3VersioningCheckbox.setTarget(this.id());
+        this.s3VersioningCheckbox.setAction(Foundation.selector("s3VersioningCheckboxClicked:"));
+        this.s3VersioningCheckbox.setState(preferences.getBoolean("s3.listing.versioning.enable") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void s3VersioningCheckboxClicked(NSButton sender) {
+        preferences.setProperty("s3.listing.versioning.enable", sender.state() == NSCell.NSOnState);
+    }
+
+    @Outlet
     private NSPopUpButton defaultBucketLocationGoogleStorage;
 
     public void setDefaultBucketLocationGoogleStorage(NSPopUpButton b) {
@@ -2461,7 +2485,7 @@ public class PreferencesController extends ToolbarWindowController {
                 preferences.setLogging(Level.DEBUG.toString());
                 break;
             default:
-                preferences.setLogging(Level.ERROR.toString());
+                preferences.resetLogging();
                 break;
         }
     }

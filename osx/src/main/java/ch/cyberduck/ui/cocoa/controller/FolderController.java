@@ -70,6 +70,7 @@ public class FolderController extends FileController {
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
+        final NSView input = super.getAccessoryView(alert);
         if(this.hasLocation()) {
             final NSView accessoryView = NSView.create();
             regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
@@ -86,10 +87,10 @@ public class FolderController extends FileController {
                 }
             });
             this.addAccessorySubview(accessoryView, regionPopup);
-            this.addAccessorySubview(accessoryView, super.getAccessoryView(alert));
+            this.addAccessorySubview(accessoryView, input);
             return accessoryView;
         }
-        return super.getAccessoryView(alert);
+        return input;
     }
 
     protected boolean hasLocation() {

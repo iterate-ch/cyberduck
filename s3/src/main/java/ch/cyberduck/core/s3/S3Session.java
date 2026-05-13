@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -37,7 +38,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.CustomServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.http.HttpSession;
@@ -53,6 +54,9 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.sso.IdentityCenterAuthorizationService;
+import ch.cyberduck.core.sso.IdentityCenterCredentialsStrategy;
+import ch.cyberduck.core.sso.RegisterClientOAuth2RequestInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAuthorizationService;
@@ -82,7 +86,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import com.amazonaws.auth.profile.internal.BasicProfile;
+
+import static ch.cyberduck.core.s3.S3CredentialsConfigurator.toSsoPredicate;
 import static com.amazonaws.services.s3.Headers.REQUESTER_PAYS_HEADER;
 import static com.amazonaws.services.s3.Headers.S3_ALTERNATE_DATE;
 
@@ -132,9 +140,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
+    protected void logout() throws BackgroundException {
+        scheduler.shutdown(false);
+        super.logout();
+    }
+
+    @Override
     public void disconnect() throws BackgroundException {
         try {
-            scheduler.shutdown(false);
             if(client != null) {
                 client.shutdown();
             }
@@ -252,12 +265,43 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
-                                                                 final LoginCallback prompt) throws LoginCanceledException {
+                                                                 final LoginCallback prompt) throws BackgroundException {
         if(host.getProtocol().isOAuthConfigurable()) {
+            if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
+                log.debug("Configure SSO");
+                final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
+                final Set<BasicProfile> profiles = configurator.getProfiles().values().stream().filter(toSsoPredicate()).collect(Collectors.toSet());
+                if(!profiles.isEmpty()) {
+                    if(StringUtils.isBlank(host.getCredentials().getUsername())) {
+                        try {
+                            final String profile = IdentityCenterAuthorizationService.prompt(host, prompt,
+                                    profiles.stream().map(p -> new Location.Name(p.getProfileName())).collect(Collectors.toSet()), null,
+                                    LocaleFactory.localizedString("Select AWS CLI Profile Name", "Credentials"), null).getIdentifier();
+                            log.debug("Configuring credentials from profile {}", profile);
+                            host.setCredentials(configurator.configure(host.setCredentials(new Credentials(profile))));
+                        }
+                        catch(ConnectionCanceledException e) {
+                            // Continue with manual configuration
+                        }
+                    }
+                    else {
+                        // Copy properties from AWS CLI profile
+                        host.setCredentials(configurator.configure(host));
+                    }
+                }
+                final OAuth2RequestInterceptor oauth = new RegisterClientOAuth2RequestInterceptor(configuration.build(), host, trust, key, prompt)
+                        .setFlowType(OAuth2AuthorizationService.FlowType.AuthorizationCode);
+                log.debug("Add interceptor {}", oauth);
+                configuration.addInterceptorLast(oauth);
+                final IdentityCenterCredentialsStrategy strategy = new IdentityCenterCredentialsStrategy(
+                        oauth, host, trust, key, prompt);
+                log.debug("Return authenticator {}", strategy);
+                return strategy;
+            }
             final OAuth2RequestInterceptor oauth = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
-                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                    .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             if(host.getProtocol().getAuthorization() != null) {
-                oauth.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+                oauth.setFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             }
             log.debug("Add interceptor {}", oauth);
             configuration.addInterceptorLast(oauth);

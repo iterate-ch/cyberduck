@@ -17,14 +17,14 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -97,7 +97,7 @@ public class S3EncryptionFeature implements Encryption {
                 final TransferStatus status = new TransferStatus();
                 status.setEncryption(setting);
                 status.setLength(file.attributes().getSize());
-                copy.copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+                copy.copy(file, file, status, ConnectionCallback.noop, StreamListener.noop);
             }
             catch(NotfoundException e) {
                 if(file.isDirectory()) {

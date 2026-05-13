@@ -19,7 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -67,7 +67,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertFalse(metadata.containsKey(Constants.KEY_FOR_COMPLETE_METADATA));
         feature.setMetadata(test, Collections.emptyMap());
         assertFalse(feature.getMetadata(test).containsKey("app"));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         test.withAttributes(status.getResponse());
         assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
 
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
         assertEquals(acl, acls.getPermission(test));
 
-        new S3DefaultDeleteFeature(session, acls).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acls).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -157,6 +157,6 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Map<String, String> metadata = feature.getMetadata(test);
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -17,8 +17,8 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -65,7 +65,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         status.setRemote(file.attributes());
         status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
         status.setChecksum(feature.checksum(file, status).compute(new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<File> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = feature.write(file, status, ConnectionCallback.noop);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -79,7 +79,7 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         final PathAttributes attributes = new BoxAttributesFinderFeature(session, fileid).find(file);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
-        final InputStream stream = new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), new DisabledConnectionCallback());
+        final InputStream stream = new BoxReadFeature(session, fileid).read(file, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
@@ -91,6 +91,6 @@ public class BoxWriteFeatureTest extends AbstractBoxTest {
         assertNotEquals(file.attributes().getModificationDate(), fileAttr.getModificationDate());
         assertEquals(1503654615000L, fileAttr.getCreationDate()); //milliseconds are ignored by the Box - GMT: Friday, 25. August 2017 09:50:14
         assertEquals(1503654614000L, fileAttr.getModificationDate()); //milliseconds are ignored by the Box - GMT: Friday, 25. August 2017 09:50:14
-        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

@@ -29,8 +29,8 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.pasteboard;
-using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
@@ -40,14 +40,11 @@ using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using ch.cyberduck.ui.pasteboard;
-using ch.cyberduck.ui.Views;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Refresh.Interactivity;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
-using DynamicData;
 using java.lang;
 using java.text;
 using java.util;
@@ -358,10 +355,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_LockUnlockVault()
         {
             Path directory = new UploadTargetFinder(Workdir).find(SelectedPath);
-            if (directory.attributes().getVault() != null)
+            if (Pool.getVaultRegistry().contains(directory))
             {
                 // Lock and remove all open vaults
-                LockVaultAction lockVault = new LockVaultAction(this, Pool.getVaultRegistry(), directory.attributes().getVault());
+                LockVaultAction lockVault = new LockVaultAction(this, Pool.getVaultRegistry(), directory);
                 Background(lockVault);
             }
             else
@@ -1017,7 +1014,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         return;
                 }
                 Touch feature = (Touch)Pool.getFeature(typeof(Touch));
-                if (!feature.isSupported(destination, String.Empty))
+                if (!feature.isSupported(destination, Optional.empty()))
                 {
                     args.Effect = DragDropEffects.None;
                     args.DropTargetLocation = DropTargetLocation.None;
@@ -1197,7 +1194,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 View.SetCryptomatorVaultTitle(LocaleFactory.localizedString("Unlock Vault", "Cryptomator"));
                 return null != Cache.get(Workdir).find(new SimplePathPredicate(Path.Type.file,
-                    String.Format("{0}{1}{2}", Workdir.getAbsolute(), Path.DELIMITER, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME)));
+                    String.Format("{0}{1}{2}", Workdir.getAbsolute(), Path.DELIMITER,
+                    HostPreferencesFactory.get(Pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"))));
             }
             return false;
         }
@@ -1687,7 +1685,7 @@ namespace Ch.Cyberduck.Ui.Controller
             for (int i = 0; i < _pasteboard.size(); i++)
             {
                 Path next = (Path)_pasteboard.get(i);
-                Path renamed = new Path(parent, next.getName(), next.getType(), new PathAttributes(next.attributes()));
+                Path renamed = new Path(parent, next.getName(), next.getType(), new DefaultPathAttributes(next.attributes()));
                 files.Add(next, renamed);
             }
             _pasteboard.clear();
@@ -1887,14 +1885,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() &&
                    ((Touch)Pool.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), Optional.empty());
         }
 
         private bool View_ValidateUpload()
         {
             return IsMounted() &&
                    ((Touch)Pool.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), Optional.empty());
         }
 
         private void View_Upload()
@@ -2063,15 +2061,15 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() &&
                    ((Directory)Pool.getFeature(typeof(Directory))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), Optional.empty());
         }
 
         private bool View_ValidateNewVault()
         {
             return IsMounted() && Pool.getVaultRegistry() != VaultRegistry.DISABLED &&
-                   null == Workdir.attributes().getVault() &&
+                   !Pool.getVaultRegistry().contains(Workdir) &&
                    ((Directory)Pool.getFeature(typeof(Directory))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), Optional.empty());
         }
 
         private void View_DuplicateFile()
@@ -2265,7 +2263,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             return;
                     }
                     Touch feature = (Touch)Pool.getFeature(typeof(Touch));
-                    if (!feature.isSupported(destination, String.Empty))
+                    if (!feature.isSupported(destination, Optional.empty()))
                     {
                         Log.trace("Pool does not allow file creation");
                         args.Effect = DragDropEffects.None;
@@ -3796,7 +3794,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (vault != null)
                     {
-                        _controller.Reload((Path)vault, new HashSet<Path>() { (Path)vault }, new List<Path>(), true);
+                        _controller.Reload(_directory, new HashSet<Path>() { _directory }, new List<Path>(), true);
                     }
                 }
             }
@@ -3814,8 +3812,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _directory;
 
                 public InnerLoadVaultWorker(BrowserController controller, VaultRegistry registry, Path directory)
-                    : base(new LoadingVaultLookupListener(registry,
-                        PasswordCallbackFactory.get(controller)), directory)
+                    : base(new RegistryVaultLoader(registry, PasswordCallbackFactory.get(controller)), directory)
                 {
                     _controller = controller;
                     _directory = directory;
@@ -3825,7 +3822,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (vault != null)
                     {
-                        _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>() { ((Vault)vault).getHome() }, new List<Path>(), true);
+                        _controller.Reload(_directory, new HashSet<Path>() { _directory }, new List<Path>(), true);
                     }
                 }
             }

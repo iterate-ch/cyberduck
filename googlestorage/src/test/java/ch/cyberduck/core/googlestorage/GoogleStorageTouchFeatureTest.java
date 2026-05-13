@@ -16,7 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,7 +40,7 @@ public class GoogleStorageTouchFeatureTest extends AbstractGoogleStorageTest {
                 new GoogleStorageWriteFeature(session), new Path(bucket, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().setMime("text/plain"));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertEquals(test.attributes().getVersionId(), new GoogleStorageAttributesFinderFeature(session).find(test).getVersionId());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new GoogleStorageFindFeature(session).find(test));
     }
 }

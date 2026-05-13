@@ -47,12 +47,12 @@ public class CryptoRedundancyFeature implements Redundancy {
 
     @Override
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
-        delegate.setClass(vault.encrypt(session, file), redundancy);
+        delegate.setClass(vault.encrypt(session, file, true), redundancy);
     }
 
     @Override
     public String getClass(final Path file) throws BackgroundException {
-        return delegate.getClass(vault.encrypt(session, file));
+        return delegate.getClass(vault.encrypt(session, file, true));
     }
 
     @Override

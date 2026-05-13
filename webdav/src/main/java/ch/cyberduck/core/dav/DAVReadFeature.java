@@ -117,13 +117,13 @@ public class DAVReadFeature implements Read {
         if(!status.getParameters().isEmpty()) {
             resource.append("?");
         }
-        for(Map.Entry<String, String> parameter : status.getParameters().entrySet()) {
+        for(Map.Entry<String, ?> parameter : status.getParameters().entrySet()) {
             if(!resource.toString().endsWith("?")) {
                 resource.append("&");
             }
             resource.append(URIEncoder.encode(parameter.getKey()))
                     .append("=")
-                    .append(URIEncoder.encode(parameter.getValue()));
+                    .append(URIEncoder.encode(parameter.getValue().toString()));
 
         }
         return new HttpGet(resource.toString());

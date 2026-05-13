@@ -168,7 +168,7 @@ public abstract class Transfer implements Serializable {
      * @param roots List of files to add to transfer
      */
     public Transfer(final Host host, final List<TransferItem> roots, final BandwidthThrottle bandwidth) {
-        this.host = host;
+        this.host = new Host(host);
         this.roots.addAll(roots);
         this.bandwidth = bandwidth;
     }

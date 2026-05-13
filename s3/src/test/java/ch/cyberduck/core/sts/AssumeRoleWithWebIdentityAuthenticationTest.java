@@ -16,11 +16,10 @@ package ch.cyberduck.core.sts;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
@@ -35,6 +34,7 @@ import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
@@ -57,8 +57,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         final Credentials credentials = new Credentials("rouser", "rouser");
         final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
 
         assertEquals("rouser", credentials.getUsername());
         assertEquals("rouser", credentials.getPassword());
@@ -80,8 +80,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertThrows(LoginFailureException.class, () -> session.login(new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        assertThrows(LoginFailureException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop));
         session.close();
     }
 
@@ -91,8 +91,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 AbstractAssumeRoleWithWebIdentityTest.class.getResourceAsStream("/S3 (OIDC).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalidPassword"));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertThrows(LoginFailureException.class, () -> session.login(new DisabledLoginCallback(), new DisabledCancelCallback()));
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        assertThrows(LoginFailureException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop));
         session.close();
     }
 
@@ -103,8 +103,8 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
         final Credentials credentials = new Credentials("rawuser", "rawuser");
         final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
-        session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
+        session.login(LoginCallback.noop, CancelCallback.noop);
 
         final OAuthTokens oauth = credentials.getOauth();
         assertTrue(oauth.validate());
@@ -143,10 +143,10 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 .setTokens(TemporaryAccessTokens.EMPTY);
         final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        assertThrows(LoginFailureException.class, () -> session.login(new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertThrows(LoginFailureException.class, () -> session.login(LoginCallback.noop, CancelCallback.noop));
     }
 
     /**
@@ -167,7 +167,7 @@ public class AssumeRoleWithWebIdentityAuthenticationTest extends AbstractAssumeR
                 ));
         final Host host = new Host(profile, profile.getDefaultHostname(), credentials);
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DisabledProxyFinder(), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         new S3BucketListService(session).list(

@@ -17,6 +17,7 @@ package ch.cyberduck.core.oauth;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Profile;
@@ -53,8 +54,12 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthTokenUrl()),
                 Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthAuthorizationUrl()),
-                null == host.getProperty(Profile.OAUTH_CLIENT_ID_KEY) ? host.getProtocol().getOAuthClientId() : host.getProperty(Profile.OAUTH_CLIENT_ID_KEY),
-                null == host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY) ? host.getProtocol().getOAuthClientSecret() : host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY),
+                prompt(host, prompt, Profile.OAUTH_CLIENT_ID_KEY, LocaleFactory.localizedString(
+                                Profile.OAUTH_CLIENT_ID_KEY, "Credentials"),
+                        null == host.getProperty(Profile.OAUTH_CLIENT_ID_KEY) ? host.getProtocol().getOAuthClientId() : host.getProperty(Profile.OAUTH_CLIENT_ID_KEY)),
+                prompt(host, prompt, Profile.OAUTH_CLIENT_SECRET_KEY, LocaleFactory.localizedString(
+                                Profile.OAUTH_CLIENT_SECRET_KEY, "Credentials"),
+                        null == host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY) ? host.getProtocol().getOAuthClientSecret() : host.getProperty(Profile.OAUTH_CLIENT_SECRET_KEY)),
                 host.getProtocol().getOAuthScopes(),
                 host.getProtocol().isOAuthPKCE(), prompt);
     }
@@ -69,10 +74,10 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         lock.lock();
         try {
-            final OAuthTokens tokens = host.getCredentials().getOauth();
+            OAuthTokens tokens = host.getCredentials().getOauth();
             if(tokens.isExpired()) {
                 try {
-                    this.save(this.authorizeWithRefreshToken(tokens));
+                    tokens = this.save(this.authorizeWithRefreshToken(tokens));
                 }
                 catch(BackgroundException e) {
                     log.warn("Failure {} refreshing OAuth tokens {}", e, tokens);
@@ -80,9 +85,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                 }
             }
             if(StringUtils.isNotBlank(tokens.getAccessToken())) {
-                log.info("Authorizing service request with OAuth2 tokens {}", tokens);
-                request.removeHeaders(HttpHeaders.AUTHORIZATION);
-                request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
+                this.addAuthorizationHeader(request, tokens);
             }
         }
         finally {
@@ -90,27 +93,34 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
         }
     }
 
+    protected void addAuthorizationHeader(final HttpRequest request, final OAuthTokens tokens) {
+        log.info("Authorizing service request with OAuth2 tokens {}", tokens);
+        request.removeHeaders(HttpHeaders.AUTHORIZATION);
+        request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
+    }
+
+
     @Override
-    public OAuth2RequestInterceptor withMethod(final Credential.AccessMethod method) {
-        super.withMethod(method);
+    public OAuth2RequestInterceptor setMethod(final Credential.AccessMethod method) {
+        super.setMethod(method);
         return this;
     }
 
     @Override
-    public OAuth2RequestInterceptor withRedirectUri(final String redirectUri) {
-        super.withRedirectUri(redirectUri);
+    public OAuth2RequestInterceptor setRedirectUri(final String redirectUri) {
+        super.setRedirectUri(redirectUri);
         return this;
     }
 
     @Override
-    public OAuth2RequestInterceptor withFlowType(final FlowType flowType) {
-        super.withFlowType(flowType);
+    public OAuth2RequestInterceptor setFlowType(final FlowType flowType) {
+        super.setFlowType(flowType);
         return this;
     }
 
     @Override
-    public OAuth2RequestInterceptor withParameter(final String key, final String value) {
-        super.withParameter(key, value);
+    public OAuth2RequestInterceptor setParameter(final String key, final String value) {
+        super.setParameter(key, value);
         return this;
     }
 }

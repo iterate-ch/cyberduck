@@ -17,6 +17,7 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -68,7 +69,7 @@ public class SpectraObjectListService extends S3AbstractListService {
         try {
             final String prefix = this.createPrefix(directory);
             final AttributedList<Path> objects = new AttributedList<>();
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             final Path bucket = containerService.getContainer(directory);
             long revision = 0L;
             String marker = null;
@@ -118,11 +119,11 @@ public class SpectraObjectListService extends S3AbstractListService {
                     lastKey = key;
                 }
                 for(CommonPrefixes common : response.getListBucketResult().getCommonPrefixes()) {
-                    final String key = StringUtils.chomp(common.getPrefix(), String.valueOf(Path.DELIMITER));
+                    final String key = StringUtils.removeEnd(common.getPrefix(), String.valueOf(Path.DELIMITER));
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
-                    objects.add(new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), new PathAttributes()));
+                    objects.add(new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), new DefaultPathAttributes()));
                 }
                 marker = response.getListBucketResult().getNextMarker();
                 listener.chunk(directory, objects);
@@ -145,7 +146,7 @@ public class SpectraObjectListService extends S3AbstractListService {
 
     @NotNull
     private PathAttributes toAttributes(final Contents object) {
-        final PathAttributes attr = new PathAttributes();
+        final PathAttributes attr = new DefaultPathAttributes();
         attr.setETag(object.getETag());
         attr.setModificationDate(object.getLastModified().getTime());
         attr.setOwner(object.getOwner().getDisplayName());

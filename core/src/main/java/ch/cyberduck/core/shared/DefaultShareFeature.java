@@ -24,7 +24,7 @@ import ch.cyberduck.core.features.Share;
 
 import java.util.EnumSet;
 
-public class DefaultShareFeature implements Share {
+public class DefaultShareFeature implements Share<Void, Void> {
 
     private final UrlProvider proxy;
 
@@ -41,12 +41,12 @@ public class DefaultShareFeature implements Share {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) {
         return proxy.toUrl(file, EnumSet.of(DescriptiveUrl.Type.signed)).find(DescriptiveUrl.Type.signed);
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         return DescriptiveUrl.EMPTY;
     }
 }

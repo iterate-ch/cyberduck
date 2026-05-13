@@ -26,6 +26,6 @@ public class NullWriteFeature implements Write<Void> {
 
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
-        return new VoidStatusOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);
+        return new VoidStatusOutputStream(NullOutputStream.INSTANCE);
     }
 }

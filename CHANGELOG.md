@@ -1,4 +1,36 @@
 # Changelog
+[9.5.0](https://github.com/iterate-ch/cyberduck/compare/release-9-4-1...release-9-5-0)
+* [Feature] AWS IAM Identity Center Support (S3) ([#13377](https://trac.cyberduck.io/ticket/13377))
+* [Feature] Connect with credentials from `credential_process` configuration directive in ~/.aws (S3) ([#11664](https://trac.cyberduck.io/ticket/11664))
+* [Feature] Add preference to include previous versions of files in browser (S3) ([#18020](https://trac.cyberduck.io/ticket/18020))
+* [Feature] Retrieve credentials from instance metadata using IMDSv2 (S3) ([#16104](https://trac.cyberduck.io/ticket/16104))
+* [Feature] Disable versioned listing by default (S3) ([#18031](https://trac.cyberduck.io/ticket/18031))
+* [Feature] Add option in Preferences to enable versioned listing (S3) ([#18031](https://trac.cyberduck.io/ticket/18031))
+* [Bugfix] Error downloading file from unlocked vault (Cryptomator) ([#17935](https://trac.cyberduck.io/ticket/17935))
+* [Bugfix] No trailing delimiter for path style requests with bucket name only ([#17901](https://trac.cyberduck.io/ticket/17901))
+* [Bugfix] Repeating file transfer in vault fails after restart (Cryptomator) ([#17974](https://trac.cyberduck.io/ticket/17974))
+* [Bugfix] Do not write file header to placeholder files for folders (Cryptomator, Mega.nz S4)
+* [Bugfix] Remove /Default symbolic link (Sharepoint) ([#17918](https://trac.cyberduck.io/ticket/17918))
+* [Bugfix] Map all SSL failures to network error and await server response on control connection (FTP) ([#17946](https://trac.cyberduck.io/ticket/17946))
+* [Bugfix] Browser window does not show up in Exposé & Mission Control (macOS) ([#17703](https://trac.cyberduck.io/ticket/17703))
+* [Bugfix] Compare public key blob instead of comment when retrieving key from agent (SFTP)
+* [Bugfix] Support "Include" directive when reading from OpenSSH config (SFTP) ([#10451](https://trac.cyberduck.io/ticket/10451))
+
+[9.4.1](https://github.com/iterate-ch/cyberduck/compare/release-9-4-0...release-9-4-1)
+* [Bugfix] Cleartext uploads to unlocked vault with auto detect disabled in Preferences (
+  Cryptomator) ([#17893](https://trac.cyberduck.io/ticket/17893))
+* [Bugfix] Unable to lock vault (Cryptomator) ([#17892](https://trac.cyberduck.io/ticket/17892))
+
+[9.4.0](https://github.com/iterate-ch/cyberduck/compare/release-9-3-1...release-9-4-0)
+* [Feature] Rewrite protocol implementation (iRODS)
+* [Bugfix] Do not preemptively save OAuth tokens with no username (Box, Dropbox, Google Drive, Google Storage, OneDrive)
+* [Bugfix] Fail when reading private key for selected certificate fails (WebDAV)
+* [Bugfix] Validate jumphost configuration on connect (SFTP)
+* [Bugfix] Include context path in presigned URLs (S3)
+* [Bugfix] Previous file versions missing in Info → Versions (Dropbox)
+
+[9.3.1](https://github.com/iterate-ch/cyberduck/compare/release-9-3-0...release-9-3-1)
+* [Bugfix] Validate tokens when using AWS S3 CLI connection profile (#17690)
 
 [9.3.0](https://github.com/iterate-ch/cyberduck/compare/release-9-2-4...release-9-3-0)
 * [Feature] Rewrite protocol implementation (Azure) ([#15967](https://trac.cyberduck.io/ticket/15967))
@@ -70,8 +102,8 @@
 [9.1.3](https://github.com/iterate-ch/cyberduck/compare/release-9-1-2...release-9-1-3)
 * [Bugfix] Invalid progress in Finder transferring multiple files (macOS) ([#16738](https://trac.cyberduck.io/ticket/16738))
 * [Bugfix] Diasble lookup of vaults by default. Must explicitly specify --vault (Cyptomator, CLI)
-* [Bugfix] Duplicate file menu item always disabled (FTP) ([#16798](https://github.com/iterate-ch/cyberduck/issues/16798))
-* [Bugfix] Allow OAuth configuration in connection profiles (WebDAV) ([#16792](https://github.com/iterate-ch/cyberduck/issues/16792))
+* [Bugfix] Duplicate file menu item always disabled (FTP) ([#16798](https://trac.cyberduck.io/ticket/16798))
+* [Bugfix] Allow OAuth configuration in connection profiles (WebDAV) ([#16792](https://trac.cyberduck.io/ticket/16792))
 
 [9.1.2](https://github.com/iterate-ch/cyberduck/compare/release-9-1-1...release-9-1-2)
 * [Bugfix] No fallback to IPv4 address when IPv6 connect attempt fails with unreachable network ([#16723](https://trac.cyberduck.io/ticket/16723))

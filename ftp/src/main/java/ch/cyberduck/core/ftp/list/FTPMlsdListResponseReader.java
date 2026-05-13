@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
@@ -127,7 +128,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     parsed.attributes().setGroup(facts.get("unix.group"));
                 }
                 if(facts.containsKey("unix.mode")) {
-                    parsed.attributes().setPermission(new Permission(facts.get("unix.mode")));
+                    parsed.attributes().setPermission(new StaticPermission(facts.get("unix.mode")));
                 }
                 else if(facts.containsKey("perm")) {
                     if(PreferencesFactory.get().getBoolean("ftp.parser.mlsd.perm.enable")) {
@@ -148,7 +149,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                                 user = user.or(Permission.Action.read);
                             }
                         }
-                        final Permission permission = new Permission(user, Permission.Action.none, Permission.Action.none);
+                        final Permission permission = new StaticPermission(user, Permission.Action.none, Permission.Action.none);
                         parsed.attributes().setPermission(permission);
                     }
                 }

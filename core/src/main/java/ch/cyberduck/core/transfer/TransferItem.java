@@ -51,11 +51,11 @@ public class TransferItem implements Referenceable, Serializable {
         return dict.getSerialized();
     }
 
-    public void setLocal(Local local) {
+    public void setLocal(final Local local) {
         this.local = local;
     }
 
-    public void setRemote(Path remote) {
+    public void setRemote(final Path remote) {
         this.remote = remote;
     }
 

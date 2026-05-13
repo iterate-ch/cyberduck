@@ -20,6 +20,7 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.StaticPermission;
 
 public class PermissionDictionary<T> {
 
@@ -35,6 +36,6 @@ public class PermissionDictionary<T> {
 
     public Permission deserialize(T serialized) {
         final Deserializer<T> dict = deserializer.create(serialized);
-        return new Permission(dict.stringForKey("Mask"));
+        return new StaticPermission(dict.stringForKey("Mask"));
     }
 }

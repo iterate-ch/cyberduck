@@ -52,6 +52,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
     private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
@@ -61,7 +62,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private final S3Session session;
 
     public S3WriteFeature(final S3Session session, final S3AccessControlListFeature acl) {
-        super(new S3AttributesAdapter(session.getHost()));
+        super(session.getHost(), new S3AttributesAdapter(session.getHost()));
         this.session = session;
         this.containerService = new S3PathContainerService(session.getHost());
         this.acl = acl;
@@ -77,7 +78,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     final RequestEntityRestStorageService client = session.getClient();
                     final Path bucket = containerService.getContainer(file);
                     client.putObjectWithRequestEntityImpl(
-                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object, entity, status.getParameters());
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object, entity,
+                            status.getParameters().entrySet().stream()
+                                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString())));
                     log.debug("Saved object {} with checksum {}", file, object.getETag());
                 }
                 catch(ServiceException e) {
@@ -98,7 +101,15 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * Add default metadata
      */
     protected S3Object getDetails(final Path file, final TransferStatus status) {
-        final S3Object object = new S3Object(containerService.getKey(file));
+        final S3Object object = new S3Object(containerService.getKey(file)) {
+            @Override
+            public long getContentLength() {
+                if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
+                    return status.getLength();
+                }
+                return super.getContentLength();
+            }
+        };
         final String mime = status.getMime();
         if(StringUtils.isNotBlank(mime)) {
             object.setContentType(mime);
@@ -144,9 +155,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             // Interoperable with rsync
             final Header header = S3TimestampFeature.toHeader(S3TimestampFeature.METADATA_CREATION_DATE, status.getCreated());
             object.addMetadata(String.format("%s%s", session.getRestMetadataPrefix(), header.getName()), header.getValue());
-        }
-        if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
-            object.setContentLength(status.getLength());
         }
         return object;
     }

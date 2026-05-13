@@ -22,6 +22,7 @@ import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 
 public class ConnectionController extends BookmarkContainerController {

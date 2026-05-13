@@ -1,15 +1,14 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AclPermission;
@@ -19,6 +18,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,7 +52,7 @@ public class AzureSessionTest extends AbstractAzureTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new AzureProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
-        final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(profile, PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user"), null, PROPERTIES.get("azure.token")
         ));
         final AzureSession session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -62,9 +62,9 @@ public class AzureSessionTest extends AbstractAzureTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        login.connect(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new DisabledPasswordStore(), ProgressListener.noop);
+        login.connect(session, CancelCallback.noop);
         session.close();
     }
 
@@ -73,7 +73,7 @@ public class AzureSessionTest extends AbstractAzureTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new AzureProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
-        final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(profile, PROPERTIES.get("azure.hostname"), new Credentials(
                 null, null, "?sv=2017-07-29&ss=bfqt&srt=sco&sp=rwdlacup&se=2030-05-20T04:29:30Z&st=2018-05-09T20:29:30Z&spr=https&sig=invalid"));
         final AzureSession session = new AzureSession(host);
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -90,9 +90,9 @@ public class AzureSessionTest extends AbstractAzureTest {
                     prompt.set(true);
                 }
             }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.connect(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new DisabledPasswordStore(), ProgressListener.noop);
+        connect.connect(session, CancelCallback.noop);
         assertTrue(session.isConnected());
         connect.close(session);
         assertFalse(session.isConnected());
@@ -100,7 +100,7 @@ public class AzureSessionTest extends AbstractAzureTest {
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidKey() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(new AzureProtocol(), PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user"), "6h9BmTcabGajIE/AVGzgu9JcC15JjrzkjdAIe+2daRK8XlyVdYT6zHtFMwXOtrlCw74jX9R0w4GN56vKQjOpVA=="
         ));
         final AzureSession session = new AzureSession(host);
@@ -110,13 +110,13 @@ public class AzureSessionTest extends AbstractAzureTest {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
                 return super.prompt(bookmark, username, title, reason, options);
             }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new DisabledPasswordStore(), ProgressListener.noop).connect(session, CancelCallback.noop);
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectKeyNotBase64() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
+        final Host host = new Host(new AzureProtocol(), PROPERTIES.get("azure.hostname"), new Credentials(
                 PROPERTIES.get("azure.user"), "6h9B"
         ));
         final AzureSession session = new AzureSession(host);
@@ -126,7 +126,7 @@ public class AzureSessionTest extends AbstractAzureTest {
                 assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
                 return super.prompt(bookmark, username, title, reason, options);
             }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+        }, HostKeyCallback.noop,
+                new DisabledPasswordStore(), ProgressListener.noop).connect(session, CancelCallback.noop);
     }
 }

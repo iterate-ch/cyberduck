@@ -17,7 +17,6 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
@@ -117,7 +116,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                     public TransferStatus call() throws BackgroundException {
                         final List<FileUploadPartEntity> uploadPartEntities;
                         try {
-                            uploadPartEntities = new FileActionsApi(new BrickApiClient(session))
+                            uploadPartEntities = new FileActionsApi(session.getClient())
                                     .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
                         }
                         catch(ApiException e) {
@@ -128,7 +127,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                             status.setChecksum(writer.checksum(file, status).compute(new ByteArrayInputStream(b, off, len), status));
                             status.setUrl(uploadPartEntity.getUploadUri());
                             status.setSegment(true);
-                            final HttpResponseOutputStream<FileEntity> proxy = writer.write(file, status, new DisabledConnectionCallback());
+                            final HttpResponseOutputStream<FileEntity> proxy = writer.write(file, status, ConnectionCallback.noop);
                             final byte[] content = Arrays.copyOfRange(b, off, len);
                             try {
                                 IOUtils.write(content, proxy);
@@ -177,7 +176,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
                 }
                 else {
                     try {
-                        response.set(new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
+                        response.set(new FilesApi(session.getClient()).postFilesPath(new FilesPathBody()
                                 .providedMtime(null != overall.getModified() ? new DateTime(overall.getModified()) : null)
                                 .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
                                 .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))

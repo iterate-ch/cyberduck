@@ -16,8 +16,10 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -65,19 +67,19 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
         if(new DefaultPathContainerService().isContainer(file)) {
             return PathAttributes.EMPTY;
         }
-        final Path query;
-        if(file.isPlaceholder()) {
-            query = new Path(file.getParent(), FilenameUtils.removeExtension(file.getName()), file.getType(), file.attributes());
-        }
-        else {
-            query = file;
-        }
         final AttributedList<Path> list;
         if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(file.getParent())) {
             list = new DriveTeamDrivesListService(session, fileid).list(file.getParent(), listener);
         }
         else {
-            list = new FileidDriveListService(session, fileid, query).list(file.getParent(), listener);
+            final Path query;
+            if(file.isPlaceholder()) {
+                query = new Path(file.getParent(), FilenameUtils.removeExtension(file.getName()), file.getType(), file.attributes());
+            }
+            else {
+                query = file;
+            }
+            list = new FileidDriveListService(session, fileid, query).list(file.getParent(), new DisabledListProgressListener());
         }
         final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(session.getCaseSensitivity(), file));
         if(null == found) {
@@ -99,7 +101,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
                 return PathAttributes.EMPTY;
             }
         }
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setFileId(f.getId());
         if(null != f.getTrashed()) {
             if(f.getTrashed()) {

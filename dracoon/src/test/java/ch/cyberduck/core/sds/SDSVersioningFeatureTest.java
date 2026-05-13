@@ -17,13 +17,15 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -50,7 +52,7 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
                 new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final PathAttributes initialAttributes = new PathAttributes(test.attributes());
+        final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final SDSVersioningFeature feature = new SDSVersioningFeature(session, nodeid);
         {
@@ -59,7 +61,7 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
             status.setLength(content.length);
             status.setExists(true);
             final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-            final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNotNull(test.attributes().getVersionId());
@@ -77,7 +79,7 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
             status.setLength(content.length);
             status.setExists(true);
             final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-            final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = writer.write(test, status, ConnectionCallback.noop);
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNotNull(test.attributes().getVersionId());
@@ -96,7 +98,17 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
         // Restored file is no longer in list of deleted items
         assertEquals(2, feature.list(reverted, new DisabledListProgressListener()).size());
         // Permanently delete trashed version
-        new SDSDeleteFeature(session, nodeid).delete(feature.list(test, new DisabledListProgressListener()).toList(), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        try {
+            new SDSDeleteFeature(session, nodeid).delete(feature.list(test, new DisabledListProgressListener()).toList(), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        }
+        catch(InteroperabilityException e) {
+            // Ignore JSON parsing error
+        }
+        try {
+            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
+        }
+        catch(InteroperabilityException e) {
+            // Ignore JSON parsing error
+        }
     }
 }

@@ -98,9 +98,9 @@ public class CustomHttpRequestExecutor extends HttpRequestExecutor {
                             case HttpPut.METHOD_NAME:
                             case HttpPost.METHOD_NAME:
                             case HttpPatch.METHOD_NAME:
-                                if(Arrays.asList(response.getAllHeaders()).stream()
+                                if(Arrays.stream(response.getAllHeaders())
                                         .filter(header -> HttpHeaders.WWW_AUTHENTICATE.equals(header.getName()))
-                                        .filter(header -> "NTLM".equals(header.getValue())).findAny().isPresent()) {
+                                        .anyMatch(header -> "NTLM".equals(header.getValue()))) {
                                     // Unauthenticated connection cannot proceed with PUT
                                     final HttpResponseException preflight = new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
                                     preflight.initCause(new RetriableAccessDeniedException(String.format("Authentication cannot proceed for %s",

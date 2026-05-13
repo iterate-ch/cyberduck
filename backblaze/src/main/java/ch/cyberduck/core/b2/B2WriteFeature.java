@@ -61,7 +61,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
         = new ThreadLocal<>();
 
     public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        super(new B2AttributesFinderFeature(session, fileid));
+        super(session.getHost(), new B2AttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
     }
@@ -78,7 +78,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 try {
                     final Checksum checksum = status.getChecksum();
                     if(status.isSegment()) {
-                        final B2GetUploadPartUrlResponse uploadUrl = session.getClient().getUploadPartUrl(status.getParameters().get("fileId"));
+                        final B2GetUploadPartUrlResponse uploadUrl = session.getClient().getUploadPartUrl(status.getParameters().get("fileId").toString());
                         return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
                     }
                     else {

@@ -48,7 +48,7 @@ public class SpectraFindFeature implements Find {
             return true;
         }
         try {
-            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            final Ds3Client client = new SpectraClientBuilder().wrap(session, session.getHost());
             if(containerService.isContainer(file)) {
                 final HeadBucketResponse response = client.headBucket(new HeadBucketRequest(containerService.getContainer(file).getName()));
                 switch(response.getStatus()) {

@@ -4,7 +4,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
@@ -50,7 +50,7 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
         assertFalse(feature.find(new Path(String.format("-%s", file.getAbsolute()), EnumSet.of(Path.Type.file))));
         assertFalse(feature.find(new Path(String.format("-%s", file.getAbsolute()), EnumSet.of(Path.Type.directory))));
         assertNotNull(new SwiftAttributesFinderFeature(session).find(file));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(file, other), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(file, other), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
         assertFalse(feature.find(new Path(String.format("-%s", file.getAbsolute()), EnumSet.of(Path.Type.file))));
         assertFalse(feature.find(new Path(String.format("-%s", file.getAbsolute()), EnumSet.of(Path.Type.directory))));
         assertNotNull(new SwiftAttributesFinderFeature(session).find(file));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(file, other), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(file, other), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(new SwiftObjectListService(session).list(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener()).contains(test));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(test));
         assertFalse(new SwiftFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         final PathCache cache = new PathCache(1);

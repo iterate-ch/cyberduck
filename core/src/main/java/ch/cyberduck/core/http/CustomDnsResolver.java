@@ -15,10 +15,10 @@ package ch.cyberduck.core.http;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Resolver;
 import ch.cyberduck.core.exception.ResolveCanceledException;
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.conn.DnsResolver;
 
@@ -32,7 +32,7 @@ public class CustomDnsResolver implements DnsResolver {
     @Override
     public InetAddress[] resolve(String host) throws UnknownHostException {
         try {
-            return resolver.resolve(host, new DisabledCancelCallback());
+            return resolver.resolve(host, CancelCallback.noop);
         }
         catch(ResolveFailedException | ResolveCanceledException e) {
             throw new UnknownHostException(e.getDetail(false));

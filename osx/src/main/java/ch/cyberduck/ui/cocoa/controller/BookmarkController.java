@@ -32,6 +32,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.Reachability;
 import ch.cyberduck.core.diagnostics.ReachabilityDiagnosticsFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -178,7 +179,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         observers.add(observer);
     }
 
-    public void focus(final NSWindow window) {
+    public void focus() {
         if(bookmark.getProtocol().isHostnameConfigurable()) {
             window.makeFirstResponder(hostField);
         }
@@ -186,7 +187,11 @@ public abstract class BookmarkController extends SheetController implements NSTa
             if(options.user) {
                 window.makeFirstResponder(usernameField);
             }
+            if(options.password && !StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                window.makeFirstResponder(passwordField);
+            }
         }
+        super.focus();
     }
 
     @Override
@@ -243,7 +248,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.file, Protocol.Type.none)))) {
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.file)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
@@ -402,13 +407,13 @@ public abstract class BookmarkController extends SheetController implements NSTa
 
                         @Override
                         public void cleanup(final Boolean result, final BackgroundException failure) {
-                            alertIcon.setImage(result ? null : IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
+                            alertIcon.setImage(result ? null : IconCacheFactory.<NSImage>get().iconNamed("NSCaution", 16));
                             super.cleanup(result, failure);
                         }
                     });
                 }
                 else {
-                    alertIcon.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSCaution"));
+                    alertIcon.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSCaution", 16));
                 }
             }
         });
@@ -572,7 +577,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
                         StringUtils.strip(passwordField.stringValue())
                 );
             }
-            catch(LocalAccessDeniedException e) {
+            catch(AccessDeniedException e) {
                 log.error("Failure saving credentials for {} in keychain. {}", bookmark, e);
             }
         }

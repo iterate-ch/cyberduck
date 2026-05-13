@@ -15,19 +15,19 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -37,8 +37,8 @@ public class SpectraTouchFeatureTest extends AbstractSpectraTest {
 
     @Test
     public void testFile() {
-        assertFalse(new SpectraTouchFeature(session).isSupported(Home.root(), StringUtils.EMPTY));
-        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), StringUtils.EMPTY));
+        assertFalse(new SpectraTouchFeature(session).isSupported(Home.root(), Optional.empty()));
+        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), Optional.empty()));
     }
 
     @Test
@@ -48,8 +48,8 @@ public class SpectraTouchFeatureTest extends AbstractSpectraTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random() + ".txt", EnumSet.of(Path.Type.file));
         new SpectraTouchFeature(session).touch(new SpectraWriteFeature(session), test, new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(test));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new SpectraFindFeature(session).find(test));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

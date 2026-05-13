@@ -18,6 +18,7 @@ package ch.cyberduck.core.serializer;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -44,6 +45,7 @@ public class PathDictionary<T> {
     public Path deserialize(final T serialized) {
         final Deserializer<T> dict = factory.create(serialized);
         final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
+        final PathAttributes attributes;
         final String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
             for(String t : StringUtils.splitByWholeSeparator(StringUtils.replaceEach(typeObj, new String[]{"[", "]"}, new String[]{"", ""}), ", ")) {
@@ -55,10 +57,9 @@ public class PathDictionary<T> {
                 }
             }
         }
-        final Path path;
         final T attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
-            final PathAttributes attributes = new PathAttributesDictionary<>(factory).deserialize(attributesObj);
+            attributes = new PathAttributesDictionary<>(factory).deserialize(attributesObj);
             // Legacy
             final String legacyTypeObj = factory.create(attributesObj).stringForKey("Type");
             if(legacyTypeObj != null) {
@@ -75,24 +76,33 @@ public class PathDictionary<T> {
                     type.add(Path.Type.volume);
                 }
             }
-            if(type.isEmpty()) {
-                return null;
-            }
+        }
+        else {
+            attributes = new DefaultPathAttributes();
+        }
+        if(type.isEmpty()) {
+            log.error("Missing type for {}", serialized);
+            return null;
+        }
+        final Path path;
+        final String name = dict.stringForKey("Name");
+        if(null == name) {
             final String absolute = dict.stringForKey("Remote");
             if(null == absolute) {
+                log.error("Missing path for {}", serialized);
                 return null;
             }
             path = new Path(absolute, type, attributes);
         }
         else {
-            if(type.isEmpty()) {
-                return null;
+            final T parentObj = dict.objectForKey("Parent");
+            if(null == parentObj) {
+                // Root
+                path = new Path(name, type, attributes);
             }
-            final String absolute = dict.stringForKey("Remote");
-            if(null == absolute) {
-                return null;
+            else {
+                path = new Path(new PathDictionary<>(factory).deserialize(parentObj), name, type, attributes);
             }
-            path = new Path(absolute, type);
         }
         final T symlinkObj = dict.objectForKey("Symbolic Link");
         if(symlinkObj != null) {

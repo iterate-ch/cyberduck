@@ -16,6 +16,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.CancellingListProgressListener;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -27,8 +28,8 @@ import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,7 +63,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
         }
         try {
             if(containerService.isContainer(file)) {
-                final PathAttributes attributes = new PathAttributes();
+                final PathAttributes attributes = new DefaultPathAttributes();
                 final BlobContainerClient client = session.getClient().getBlobContainerClient(containerService.getContainer(file).getName());
                 final BlobContainerProperties properties = client.getProperties();
                 attributes.setETag(properties.getETag());
@@ -105,13 +106,13 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
     }
 
     public PathAttributes toAttributes(final BlobProperties properties) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(properties.getBlobSize());
         attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
         if(properties.getContentMd5() != null) {
             attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
         }
-        attributes.setETag(properties.getETag());
+        attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(properties.getETag(), "\""), "\""));
         final Map<String, String> custom = new HashMap<>();
         custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
         attributes.setCustom(custom);
@@ -119,7 +120,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
     }
 
     public PathAttributes toAttributes(final BlobItemProperties properties) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setSize(properties.getContentLength());
         attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
         attributes.setETag(properties.getETag());

@@ -15,6 +15,8 @@ package ch.cyberduck.core.ctera.directio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ctera.model.DirectIO;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -44,10 +46,10 @@ public class Decryptor {
     private static final byte[] GZIP_MAGIC = {0x1F, (byte) 0x8B};
     private static final byte[] SNAPPY_MAGIC = {-126, 83, 78, 65, 80, 80, 89, 0};
 
-    public InputStream decryptData(final InputStream blockData, final EncryptInfo encryptInfo) throws IOException {
+    public InputStream decryptData(final InputStream blockData, final DirectIO.EncryptInfo encryptInfo, final String secretKey) throws IOException {
         try {
-            final DecryptKey decryptKey = new DecryptKey(encryptInfo.getWrappedKey());
-            decryptKey.decrypt(encryptInfo.getWrappingKey());
+            final DecryptKey decryptKey = new DecryptKey(encryptInfo.wrapped_key);
+            decryptKey.decrypt(secretKey);
             final SecretKeySpec key = new SecretKeySpec(Base64.decodeBase64(decryptKey.getDecryptedKey()), ENCRYPTION_KEY_ALGORITHM);
             blockData.read();
             final byte[] iv = new byte[16];

@@ -17,10 +17,11 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -56,14 +57,14 @@ public class DriveVersioningFeatureTest extends AbstractDriveTest {
         assertEquals(test.attributes().getVersionId(), attr.find(test).getVersionId());
         final DriveVersioningFeature feature = new DriveVersioningFeature(session, fileid);
         assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());
-        final PathAttributes initialAttributes = new PathAttributes(test.attributes());
+        final PathAttributes initialAttributes = new DefaultPathAttributes(test.attributes());
         {
             final byte[] content = RandomUtils.nextBytes(32769);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setExists(true);
             final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
-            final StatusOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNull(attr.toAttributes(out.getStatus()).getVersionId());
             final AttributedList<Path> versions = feature.list(test.withAttributes(attr.toAttributes(out.getStatus())), new DisabledListProgressListener());
@@ -78,7 +79,7 @@ public class DriveVersioningFeatureTest extends AbstractDriveTest {
             status.setLength(content.length);
             status.setExists(true);
             final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
-            final StatusOutputStream<File> out = writer.write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<File> out = writer.write(test, status, ConnectionCallback.noop);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNull(attr.toAttributes(out.getStatus()).getVersionId());
             final List<Path> versions = feature.list(test.withAttributes(attr.toAttributes(out.getStatus())), new DisabledListProgressListener()).toList();
@@ -94,8 +95,8 @@ public class DriveVersioningFeatureTest extends AbstractDriveTest {
         }
         new DriveDeleteFeature(session, fileid).delete(versions.toList(), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         for(Path version : new DriveListService(session, fileid).list(room, new DisabledListProgressListener())) {
-            new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(version), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(version), LoginCallback.noop, new Delete.DisabledCallback());
         }
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(room), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

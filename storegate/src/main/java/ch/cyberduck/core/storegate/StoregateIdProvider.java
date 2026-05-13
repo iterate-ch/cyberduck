@@ -72,6 +72,7 @@ public class StoregateIdProvider extends CachingFileIdProvider implements FileId
         for(RootFolder r : session.roots()) {
             if(StringUtils.equalsIgnoreCase(name, PathNormalizer.name(r.getPath()))
                     || StringUtils.equalsIgnoreCase(name, PathNormalizer.name(r.getName()))) {
+                log.debug("Found root folder match for {}", file);
                 if(service.isContainer(file)) {
                     return r.getPath();
                 }

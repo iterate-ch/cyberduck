@@ -112,9 +112,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         if(host.getProtocol().isOAuthConfigurable()) {
             authorizationService = new OAuth2RequestInterceptor(configuration.build(), host, prompt)
-                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                    .setRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             if(host.getProtocol().getAuthorization() != null) {
-                authorizationService.withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+                authorizationService.setFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             }
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
@@ -306,10 +306,10 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVReadFeature(this);
         }
         if(type == Write.class) {
-            return (T) new DAVWriteFeature(this, capabilities.expectcontinue);
+            return (T) new DAVWriteFeature(this, capabilities);
         }
         if(type == Upload.class) {
-            return (T) new DAVUploadFeature(this);
+            return (T) new DAVUploadFeature(this, capabilities);
         }
         if(type == Delete.class) {
             return (T) new DAVDeleteFeature(this);

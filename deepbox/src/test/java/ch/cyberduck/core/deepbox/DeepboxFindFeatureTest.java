@@ -16,7 +16,7 @@ package ch.cyberduck.core.deepbox;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
@@ -61,7 +61,7 @@ public class DeepboxFindFeatureTest extends AbstractDeepboxTest {
                 new DeepboxWriteFeature(session, nodeid), new Path(box, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DeepboxFindFeature(session, nodeid).find(folder));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -73,6 +73,6 @@ public class DeepboxFindFeatureTest extends AbstractDeepboxTest {
         assertTrue(new DeepboxFindFeature(session, nodeid).find(file));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(new Path(box, StringUtils.upperCase(file.getName()), EnumSet.of(Path.Type.file))));
         assertFalse(new DeepboxFindFeature(session, nodeid).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

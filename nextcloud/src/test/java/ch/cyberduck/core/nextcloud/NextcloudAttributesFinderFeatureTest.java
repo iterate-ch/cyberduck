@@ -1,10 +1,10 @@
 package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -87,7 +87,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
             // Expected
         }
         finally {
-            new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -115,7 +115,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
         {
             final TransferStatus status = new TransferStatus().setLength(source.length);
             final HttpResponseOutputStream<Void> out = new NextcloudWriteFeature(session).write(
-                    file, status, new DisabledConnectionCallback());
+                    file, status, ConnectionCallback.noop);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }

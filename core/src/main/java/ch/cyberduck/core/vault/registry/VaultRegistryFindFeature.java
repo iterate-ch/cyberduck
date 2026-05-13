@@ -22,14 +22,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.VaultLoader;
+import ch.cyberduck.core.vault.VaultProvider;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
+import ch.cyberduck.core.vault.VaultVersion;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 public class VaultRegistryFindFeature implements Find {
@@ -38,16 +39,18 @@ public class VaultRegistryFindFeature implements Find {
     private final Session<?> session;
     private final Find proxy;
     private final VaultRegistry registry;
-    private final VaultLookupListener lookup;
+    private final VaultLoader lookup;
     private final boolean autodetect;
+    private final VaultProvider provider;
 
-    public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry, final VaultLookupListener lookup) {
+    public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry, final VaultLoader lookup) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
         this.lookup = lookup;
         this.autodetect = HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.vault.autodetect")
                 && HostPreferencesFactory.get(session.getHost()).getBoolean("cryptomator.enable");
+        this.provider = session.getFeature(VaultProvider.class);
     }
 
     @Override
@@ -60,16 +63,12 @@ public class VaultRegistryFindFeature implements Find {
                         HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file));
                 final Path key = new Path(directory,
                         HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file));
-                if(proxy.find(vaultConfig, listener) || proxy.find(key, listener)) {
+                final VaultVersion version = provider.find(directory, proxy, listener);
+                if(version != null) {
                     log.info("Found vault config {} or masterkey {}", vaultConfig, key);
                     try {
                         log.info("Found vault {}", directory);
-                        return lookup.load(session, directory,
-                                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))
-                                .getFeature(session, Find.class, proxy)
-                                .find(file, listener);
+                        return lookup.load(session, directory, version).getFeature(session, Find.class, proxy).find(file, listener);
                     }
                     catch(VaultUnlockCancelException e) {
                         // Continue

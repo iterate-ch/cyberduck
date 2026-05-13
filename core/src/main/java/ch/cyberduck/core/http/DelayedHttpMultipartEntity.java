@@ -104,7 +104,7 @@ public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
     public OutputStream getStream() {
         if(null == stream) {
             // Nothing to write
-            return NullOutputStream.NULL_OUTPUT_STREAM;
+            return NullOutputStream.INSTANCE;
         }
         return stream;
     }

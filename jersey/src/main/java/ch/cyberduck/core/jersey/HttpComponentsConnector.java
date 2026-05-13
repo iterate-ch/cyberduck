@@ -18,6 +18,7 @@ package ch.cyberduck.core.jersey;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -36,6 +37,7 @@ import org.glassfish.jersey.message.internal.HeaderUtils;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
 import org.glassfish.jersey.message.internal.Statuses;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.HttpHeaders;
@@ -66,15 +68,21 @@ public class HttpComponentsConnector implements Connector {
     public ClientResponse apply(final ClientRequest clientRequest) throws ProcessingException {
         final HttpUriRequest request = this.toUriHttpRequest(clientRequest);
         final Map<String, String> clientHeadersSnapshot = writeOutBoundHeaders(clientRequest.getHeaders(), request);
-
+        if(StringUtils.equalsAny(clientRequest.getMethod(), HttpMethod.POST, HttpMethod.PUT)) {
+            if(clientRequest.getEntity() == null) {
+                if(!clientHeadersSnapshot.containsKey(HttpHeaders.CONTENT_LENGTH)) {
+                    request.setHeader(HttpHeaders.CONTENT_LENGTH, "0");
+                }
+            }
+        }
         try {
             final CloseableHttpResponse response;
             response = client.execute(new HttpHost(request.getURI().getHost(), request.getURI().getPort(), request.getURI().getScheme()), request, new BasicHttpContext(context));
             HeaderUtils.checkHeaderChanges(clientHeadersSnapshot, clientRequest.getHeaders(), this.getClass().getName());
 
             final Response.StatusType status = response.getStatusLine().getReasonPhrase() == null
-                ? Statuses.from(response.getStatusLine().getStatusCode())
-                : Statuses.from(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+                    ? Statuses.from(response.getStatusLine().getStatusCode())
+                    : Statuses.from(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
 
             final ClientResponse responseContext = new ClientResponse(status, clientRequest);
             final List<URI> redirectLocations = context.getRedirectLocations();
@@ -121,10 +129,10 @@ public class HttpComponentsConnector implements Connector {
     private HttpUriRequest toUriHttpRequest(final ClientRequest request) {
         final HttpEntity entity = this.getHttpEntity(request);
         return RequestBuilder
-            .create(request.getMethod())
-            .setUri(request.getUri())
-            .setEntity(entity)
-            .build();
+                .create(request.getMethod())
+                .setUri(request.getUri())
+                .setEntity(entity)
+                .build();
     }
 
     private static Map<String, String> writeOutBoundHeaders(final MultivaluedMap<String, Object> headers,

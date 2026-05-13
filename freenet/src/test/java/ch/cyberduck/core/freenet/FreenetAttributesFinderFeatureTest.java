@@ -1,7 +1,7 @@
 package ch.cyberduck.core.freenet;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
@@ -57,7 +57,7 @@ public class FreenetAttributesFinderFeatureTest extends AbstractFreenetTest {
             // Expected
         }
         finally {
-            new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
         }
     }
 
@@ -70,6 +70,6 @@ public class FreenetAttributesFinderFeatureTest extends AbstractFreenetTest {
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertEquals(TransferStatus.UNKNOWN_LENGTH, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

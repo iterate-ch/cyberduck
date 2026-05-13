@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class DeepboxDirectoryFeature implements Directory<Node> {
     private static final Logger log = LogManager.getLogger(DeepboxDirectoryFeature.class);
@@ -89,7 +90,7 @@ public class DeepboxDirectoryFeature implements Directory<Node> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(containerService.isInbox(workdir)) {
             throw new AccessDeniedException(LocaleFactory.localizedString("Adding folders is not permitted in the inbox", "Deepbox")).withFile(workdir);
         }

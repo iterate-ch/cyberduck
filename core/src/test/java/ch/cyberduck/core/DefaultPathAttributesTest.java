@@ -1,0 +1,114 @@
+package ch.cyberduck.core;
+
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+
+public class DefaultPathAttributesTest {
+
+    @Test
+    public void testCopy() {
+        final DefaultPathAttributes attributes = new DefaultPathAttributes();
+        attributes.setSize(1L);
+        attributes.setQuota(new Quota.Space(1L, 10L));
+        attributes.setModificationDate(System.currentTimeMillis());
+        attributes.setRevision(2L);
+        attributes.setFileId(new AlphanumericRandomStringService().random());
+        attributes.setDisplayname(new AlphanumericRandomStringService().random());
+        attributes.setVersionId(new AlphanumericRandomStringService().random());
+        attributes.setDuplicate(true);
+        attributes.setLockId(new AlphanumericRandomStringService().random());
+        attributes.setPermission(new StaticPermission(644));
+        attributes.setVerdict(PathAttributes.Verdict.pending);
+        attributes.setTrashed(true);
+        attributes.setHidden(true);
+        final DefaultPathAttributes clone = new DefaultPathAttributes(attributes);
+        assertEquals(clone.getPermission(), attributes.getPermission());
+        assertEquals(clone.getModificationDate(), attributes.getModificationDate());
+        assertEquals(clone, attributes);
+        assertEquals(clone.hashCode(), attributes.hashCode());
+        attributes.setSize(2L);
+        assertEquals(1L, clone.getSize());
+        attributes.setVersionId("b");
+        assertNotEquals(attributes.getVersionId(), clone.getVersionId());
+        assertEquals(attributes.getPermission(), clone.getPermission());
+        assertNotSame(attributes.getPermission(), clone.getPermission());
+        attributes.setLink(new DescriptiveUrl("http://g"));
+        assertEquals(DescriptiveUrl.EMPTY, clone.getLink());
+        assertTrue(clone.isTrashed());
+        assertTrue(clone.isHidden());
+    }
+
+    @Test
+    public void testPermissions() {
+        final DefaultPathAttributes attributes = new DefaultPathAttributes();
+        assertNull(attributes.getOwner());
+        assertNull(attributes.getGroup());
+        assertNotNull(attributes.getPermission());
+        assertEquals(Permission.EMPTY, attributes.getPermission());
+        assertEquals(Acl.EMPTY, attributes.getAcl());
+    }
+
+    @Test
+    public void testEquals() {
+        assertEquals(new DefaultPathAttributes(), new DefaultPathAttributes());
+        assertEquals(new DefaultPathAttributes().hashCode(), new DefaultPathAttributes().hashCode());
+        final DefaultPathAttributes r1 = new DefaultPathAttributes();
+        r1.setVersionId("r1");
+        final DefaultPathAttributes r2 = new DefaultPathAttributes();
+        r2.setVersionId("r2");
+        assertNotEquals(r1, r2);
+        assertNotEquals(r1.hashCode(), r2.hashCode());
+    }
+
+    @Test
+    public void testSerialize() {
+        final DefaultPathAttributes attributes = new DefaultPathAttributes();
+        attributes.setSize(100);
+        attributes.setModificationDate(System.currentTimeMillis());
+        attributes.setPermission(new StaticPermission("644"));
+        final Acl acl = new Acl();
+        acl.addAll(new Acl.CanonicalUser("user1"), new Acl.Role(Acl.Role.READ), new Acl.Role(Acl.Role.WRITE));
+        acl.addAll(new Acl.CanonicalUser("user2"), new Acl.Role(Acl.Role.FULL));
+        attributes.setAcl(acl);
+        attributes.setChecksum(new Checksum(HashAlgorithm.crc32, "abcdefab"));
+        attributes.setVersionId("v-1");
+        attributes.setFileId("f-1");
+        attributes.setDisplayname("d-1");
+        attributes.setDuplicate(true);
+        attributes.setRegion("region");
+        attributes.setStorageClass("storageClass");
+        attributes.setVerdict(PathAttributes.Verdict.pending);
+        attributes.setTrashed(false);
+        attributes.setHidden(true);
+        final Map<String, String> custom = new HashMap<>(attributes.getCustom());
+        custom.put("key", "value");
+        attributes.setCustom(custom);
+        final PathAttributes deserialized = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
+        assertEquals(attributes.getSize(), deserialized.getSize());
+        assertEquals(attributes.getModificationDate(), deserialized.getModificationDate());
+        assertEquals(attributes.getPermission(), deserialized.getPermission());
+        assertTrue(CollectionUtils.isEqualCollection(acl.asList(), deserialized.getAcl().asList()));
+        assertEquals(attributes.getChecksum(), deserialized.getChecksum());
+        assertEquals(attributes.getVersionId(), deserialized.getVersionId());
+        assertEquals(attributes.getFileId(), deserialized.getFileId());
+        assertEquals(attributes.isDuplicate(), deserialized.isDuplicate());
+        assertEquals(attributes.getRegion(), deserialized.getRegion());
+        assertEquals(attributes.getStorageClass(), deserialized.getStorageClass());
+        assertEquals(attributes.getVerdict(), deserialized.getVerdict());
+        assertEquals(attributes.getCustom(), deserialized.getCustom());
+        assertEquals(attributes, deserialized);
+        assertEquals(attributes.hashCode(), deserialized.hashCode());
+        assertFalse(deserialized.isTrashed());
+        assertTrue(deserialized.isHidden());
+    }
+}

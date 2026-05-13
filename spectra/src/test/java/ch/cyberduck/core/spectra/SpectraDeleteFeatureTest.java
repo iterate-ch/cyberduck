@@ -16,7 +16,7 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,6 +39,6 @@ public class SpectraDeleteFeatureTest extends AbstractSpectraTest {
         container.attributes().setRegion("US");
         new SpectraDirectoryFeature(session).mkdir(new SpectraWriteFeature(session), container, new TransferStatus());
         assertTrue(new SpectraFindFeature(session).find(container));
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

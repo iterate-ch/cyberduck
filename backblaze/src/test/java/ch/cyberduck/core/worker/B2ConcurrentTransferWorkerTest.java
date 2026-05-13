@@ -15,7 +15,20 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
@@ -97,18 +110,18 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
                 return super.getProperty(key);
             }
         };
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(),
-                new DisabledProgressListener());
+        final LoginConnectionService connect = new LoginConnectionService(LoginCallback.noop,
+                HostKeyCallback.noop,
+                new TestPasswordStore(),
+                ProgressListener.noop);
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         host, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
                     @Override
                     public Session create() {
-                        return new B2Session(host.withCredentials(new Credentials(
-                                PROPERTIES.get("b2.user"), PROPERTIES.get("b2.password")
+                        return new B2Session(host.setCredentials(new Credentials(
+                                PROPERTIES.get("b2.user")
                         )), new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
                             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this)
                             ) {
@@ -158,7 +171,7 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
             public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) {
                 return true;
             }
-        }, new DisabledConnectionCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService());
+        }, ConnectionCallback.noop, ProgressListener.noop, counter, new DisabledNotificationService());
 
         assertTrue(worker.run(session));
         local.delete();
@@ -168,6 +181,6 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
 }

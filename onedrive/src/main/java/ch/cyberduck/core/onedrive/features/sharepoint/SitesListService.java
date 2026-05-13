@@ -1,6 +1,7 @@
 package ch.cyberduck.core.onedrive.features.sharepoint;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
@@ -20,7 +21,6 @@ import org.nuxeo.onedrive.client.types.SharePointIds;
 import org.nuxeo.onedrive.client.types.Site;
 import org.nuxeo.onedrive.client.types.Site.Metadata;
 
-import java.net.URI;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,7 +63,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
         if(StringUtils.isBlank(metadata.getId())) {
             return false;
         }
-        if(StringUtils.isBlank(metadata.getName())) {
+        if(StringUtils.isBlank(metadata.getDisplayName())) {
             return false;
         }
         if(!session.isSingleSite() && directory.getParent().isRoot()) {
@@ -98,7 +98,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
     }
 
     private static boolean isInvalid(final String input) {
-        if(input == null || input.length() == 0) {
+        if(input == null || input.isEmpty()) {
             // fast fallback, empty strings
             return false;
         }
@@ -109,7 +109,7 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
             }
             return false;
         }
-        catch(IllegalArgumentException illegalArgumentException) {
+        catch(IllegalArgumentException e) {
             // invalid UUID, possibly bad.
             return true;
         }
@@ -117,12 +117,10 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
 
     @Override
     protected Path toPath(final Site.Metadata metadata, final Path directory) {
-        final PathAttributes attributes = new PathAttributes();
+        final PathAttributes attributes = new DefaultPathAttributes();
         attributes.setFileId(metadata.getId());
-        attributes.setDisplayname(metadata.getDisplayName());
         attributes.setLink(new DescriptiveUrl(metadata.getWebUrl()));
-
-        return new Path(directory, metadata.getName(),
+        return new Path(directory, metadata.getDisplayName(),
             EnumSet.of(Path.Type.volume, Path.Type.directory, Path.Type.placeholder), attributes);
     }
 
@@ -137,26 +135,26 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
                     return file != test && file.getName().equals(test.getName());
                 }
             });
-            if(result.size() > 0) {
-                final Set<Integer> set = duplicates.getOrDefault(file.getName(), new HashSet<>());
-                set.add(i);
-                duplicates.put(file.getName(), set);
+            if(!result.isEmpty()) {
+                duplicates.computeIfAbsent(file.getName(), key -> new HashSet<>())
+                    .add(i);
             }
         }
-
         for(Set<Integer> set : duplicates.values()) {
             for(Integer i : set) {
                 final Path file = list.get(i);
-
-                final URI webLink = URI.create(file.attributes().getLink().getUrl());
-                final String[] path = webLink.getPath().split(String.valueOf(Path.DELIMITER));
-                final String suffix = path[path.length - 2];
-
-                final Path rename = new Path(file.getParent(), String.format("%s (%s)", file.getName(), suffix), file.getType(), file.attributes());
-
+                final String siteIdUnique = getSiteId(file.attributes().getFileId());
+                final Path rename = new Path(file.getParent(), String.format("%s (%s)", file.getName(), siteIdUnique), file.getType(), file.attributes());
                 list.set(i, rename);
             }
         }
+    }
+
+    private static String getSiteId(final String fileId) {
+        // caller ensures that fileId is valid ("tenant,siteId,webId")
+        final int siteIdStart = fileId.indexOf(',');
+        final int siteIdEnd = fileId.indexOf(',', siteIdStart + 1);
+        return fileId.substring(siteIdStart + 1, siteIdEnd);
     }
 
     enum SharepointID {

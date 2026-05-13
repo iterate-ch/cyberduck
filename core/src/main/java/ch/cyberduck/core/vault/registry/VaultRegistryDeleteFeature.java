@@ -78,7 +78,7 @@ public class VaultRegistryDeleteFeature implements Delete {
     @Override
     public EnumSet<Flags> features(final Path file) {
         try {
-            return registry.find(session, file).getFeature(session, Delete.class, proxy).features(file);
+            return registry.find(session, file, false).getFeature(session, Delete.class, proxy).features(file);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.features(file);

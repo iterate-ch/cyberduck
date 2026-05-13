@@ -105,7 +105,8 @@ public class BrickPairingSchedulerFeature {
             resource.setHeader(HttpHeaders.ACCEPT, "application/json");
             resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             log.info("Fetch credentials for paring key {} from {}", token, resource);
-            final JsonObject json = session.getClient().execute(resource, new AbstractResponseHandler<JsonObject>() {
+            final BrickApiClient client = session.getClient();
+            final JsonObject json = client.getClient().execute(resource, new AbstractResponseHandler<JsonObject>() {
                 @Override
                 public JsonObject handleEntity(final HttpEntity entity) throws IOException {
                     final ByteArrayOutputStream out = new ByteArrayOutputStream();

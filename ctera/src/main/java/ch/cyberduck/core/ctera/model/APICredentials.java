@@ -29,6 +29,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public final class APICredentials {
 
     public String accessKey;
-
     public String secretKey;
 }

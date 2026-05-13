@@ -27,7 +27,7 @@ import java.util.EnumSet;
 
 import com.google.api.services.drive.model.Permission;
 
-public class DriveSharingUrlProvider implements Share {
+public class DriveSharingUrlProvider implements Share<Void, Void> {
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
@@ -53,7 +53,7 @@ public class DriveSharingUrlProvider implements Share {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         final Permission permission = new Permission();
         // To make a file public you will need to assign the role reader to the type anyone
         permission.setRole("reader");
@@ -69,7 +69,7 @@ public class DriveSharingUrlProvider implements Share {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         return DescriptiveUrl.EMPTY;
     }
 }

@@ -15,11 +15,7 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
-public class SSLNegotiateException extends InteroperabilityException {
-    public SSLNegotiateException(final String detail) {
-        super(detail);
-    }
-
+public class SSLNegotiateException extends ConnectionRefusedException {
     public SSLNegotiateException(final String detail, final Throwable cause) {
         super(detail, cause);
     }

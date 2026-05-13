@@ -17,11 +17,12 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -58,10 +59,10 @@ public class EueListServiceTest extends AbstractEueSessionTest {
             assertEquals(bucket.attributes(), new EueAttributesFinderFeature(session, fileid).find(bucket, new DisabledListProgressListener()));
         }
         assertNotNull(list.find(f -> f.attributes().getFileId().equals(EueResourceIdProvider.TRASH)));
-        assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new PathAttributes().setFileId("TRASH"))));
+        assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new DefaultPathAttributes().setFileId("TRASH"))));
         assertEquals(folder.attributes().getFileId(), list.find(new SimplePathPredicate(folder)).attributes().getFileId());
         assertSame(root, list.find(new SimplePathPredicate(folder)).getParent());
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test
@@ -122,7 +123,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertNotNull(list.find(new SimplePathPredicate(subfolder)));
         assertEquals(subfolder.attributes().getFileId(), list.find(new SimplePathPredicate(subfolder)).attributes().getFileId());
         assertSame(folder, list.find(new SimplePathPredicate(subfolder)).getParent());
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
         assertFalse((new EueFindFeature(session, fileid).find(subfolder, new DisabledListProgressListener())));
     }
@@ -143,7 +144,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertEquals(filename, list.find(new DefaultPathPredicate(file)).getName());
         assertEquals(file.attributes().getFileId(), list.get(file).attributes().getFileId());
         assertSame(folder, list.get(file).getParent());
-        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
         assertFalse((new EueFindFeature(session, fileid).find(file, new DisabledListProgressListener())));
     }

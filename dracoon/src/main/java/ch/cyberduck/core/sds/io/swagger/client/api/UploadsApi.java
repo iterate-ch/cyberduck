@@ -18,8 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class UploadsApi {
   private ApiClient apiClient;
+  private Map<String, String> headers;
 
   public UploadsApi() {
     this(Configuration.getDefaultApiClient());
@@ -35,6 +37,10 @@ public class UploadsApi {
 
   public void setApiClient(ApiClient apiClient) {
     this.apiClient = apiClient;
+  }
+
+  public void setHeadersOverrides(Map<String, String> headers) {
+    this.headers = headers;
   }
 
   /**
@@ -71,6 +77,11 @@ public class UploadsApi {
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
     String[] localVarAuthNames = new String[] {  };
+
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
 
     apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
@@ -115,6 +126,11 @@ public class UploadsApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -128,11 +144,11 @@ public class UploadsApi {
    * Range Requests
    * @see <a href="https://tools.ietf.org/html/rfc7233">Upload file Documentation</a>
    */
-  public ChunkUploadResponse uploadFileByTokenAsMultipart1(String token, File file, String contentRange) throws ApiException {
+  public ChunkUploadResponse uploadFileByTokenAsMultipart(String token, File file, String contentRange) throws ApiException {
     Object localVarPostBody = null;
     // verify the required parameter 'token' is set
     if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling uploadFileByTokenAsMultipart1");
+      throw new ApiException(400, "Missing the required parameter 'token' when calling uploadFileByTokenAsMultipart");
     }
     // create path and map variables
     String localVarPath = "/v4/uploads/{token}"
@@ -162,6 +178,11 @@ public class UploadsApi {
     String[] localVarAuthNames = new String[] {  };
 
     GenericType<ChunkUploadResponse> localVarReturnType = new GenericType<ChunkUploadResponse>() {};
+
+    if (headers != null) {
+      localVarHeaderParams.putAll(headers);
+    }
+
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
 }
