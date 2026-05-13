@@ -33,6 +33,7 @@ import ch.cyberduck.core.DefaultCharsetProvider;
 import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ssl.DelegatingCertificateStoreX509KeyManager;
@@ -76,7 +77,7 @@ public class DefaultBookmarkController extends BookmarkController {
 
     private final X509KeyManager x509KeyManager = new DelegatingCertificateStoreX509KeyManager(
             new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get()),
-            new PKCS11CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get())
+            new PKCS11CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
     );
 
     public DefaultBookmarkController(final Host bookmark) {
