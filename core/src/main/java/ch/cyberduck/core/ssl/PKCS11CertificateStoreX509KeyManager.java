@@ -17,8 +17,12 @@ package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStore;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -26,7 +30,9 @@ import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.security.auth.login.LoginException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.Provider;
@@ -36,36 +42,64 @@ public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509Ke
     private static final Logger log = LogManager.getLogger(PKCS11CertificateStoreX509KeyManager.class);
 
     public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
-                                                final CertificateStore store) {
-        this(prompt, bookmark, store, HostPreferencesFactory.get(bookmark).getProperty("connection.ssl.keystore.pkcs11.library"));
+                                                final CertificateStore store, final LoginCallback login) {
+        this(prompt, bookmark, store, login, HostPreferencesFactory.get(bookmark).getProperty("connection.ssl.keystore.pkcs11.library"));
     }
 
     public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
-                                                final CertificateStore store, final String libraryPath) {
-        super(prompt, bookmark, store, buildKeyStore(libraryPath));
+                                                final CertificateStore store, final LoginCallback login,
+                                                final String libraryPath) {
+        super(prompt, bookmark, store, buildKeyStore(libraryPath, bookmark, login));
     }
 
-    public PKCS11CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark,
-                                                final CertificateStore store, final LazyInitializer<KeyStore> keystore) {
-        super(prompt, bookmark, store, keystore);
-    }
-
-    private static LazyInitializer<KeyStore> buildKeyStore(final String libraryPath) {
+    private static LazyInitializer<KeyStore> buildKeyStore(final String libraryPath, final Host bookmark, final LoginCallback login) {
         return new LazyInitializer<KeyStore>() {
             @Override
             protected KeyStore initialize() throws ConcurrentException {
                 try {
                     log.info("Load PKCS11 store from library {}", libraryPath);
-                    final Provider provider = configurePkcs11Provider(libraryPath);
-                    // Register globally so JSSE can resolve RSASSA-PSS from this provider
-                    // during TLS 1.3 CertificateVerify — required for RSA keys on hardware tokens
-                    if(Security.getProvider(provider.getName()) == null) {
+                    // SunPKCS11 names the configured provider as "SunPKCS11-{name}"
+                    final String providerName = "SunPKCS11-Cyberduck";
+                    Provider provider = Security.getProvider(providerName);
+                    if(provider == null) {
+                        provider = configurePkcs11Provider(libraryPath);
+                        // Register globally so JSSE can resolve RSASSA-PSS from this provider
+                        // during TLS 1.3 CertificateVerify — required for RSA keys on hardware tokens
                         Security.addProvider(provider);
                         log.debug("Registered PKCS11 provider {}", provider.getName());
                     }
+                    else {
+                        log.debug("Reusing existing PKCS11 provider {}", providerName);
+                    }
                     final KeyStore store = KeyStore.getInstance("PKCS11", provider);
-                    store.load(null, null);
+                    char[] pin = null;
+                    while(true) {
+                        try {
+                            store.load(null, pin);
+                            break;
+                        }
+                        catch(IOException e) {
+                            if(e.getCause() instanceof LoginException) {
+                                // Token requires PIN or provided PIN was incorrect — prompt and retry
+                                log.debug("Token requires PIN: {}", e.getCause().getMessage());
+                                final Credentials credentials = login.prompt(bookmark,
+                                        bookmark.getCredentials().getUsername(),
+                                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                        LocaleFactory.localizedString("Enter PIN for PKCS11 token", "Credentials"),
+                                        new LoginOptions().user(false).password(true).keychain(false)
+                                );
+                                pin = credentials.getPassword().toCharArray();
+                            }
+                            else {
+                                throw e;
+                            }
+                        }
+                    }
                     return store;
+                }
+                catch(LoginCanceledException e) {
+                    log.info("PIN prompt canceled for {}", libraryPath);
+                    throw new ConcurrentException(e);
                 }
                 catch(Exception e) {
                     log.error("Failed to initialize PKCS11 keystore from {}: {}", libraryPath, e.getMessage());

@@ -622,7 +622,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
         // List of certificates with private key
         final List<String> list = new DelegatingCertificateStoreX509KeyManager(
                 new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get()),
-                new PKCS11CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get())
+                new PKCS11CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
         ).list();
         this.addObserver(bookmark -> {
             certificatePopup.setEnabled(options.certificate);
