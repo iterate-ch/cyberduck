@@ -40,7 +40,9 @@ import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
+import ch.cyberduck.core.ssl.DelegatingCertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.PKCS11CertificateStoreX509KeyManager;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.LoginInputValidator;
 
@@ -618,8 +620,10 @@ public abstract class BookmarkController extends SheetController implements NSTa
         final Selector action = Foundation.selector("certificateSelectionChanged:");
         this.certificatePopup.setAction(action);
         // List of certificates with private key
-        final List<String> list = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
-                CertificateStoreFactory.get()).list();
+        final List<String> list = new DelegatingCertificateStoreX509KeyManager(
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get()),
+                new PKCS11CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get())
+        ).list();
         this.addObserver(bookmark -> {
             certificatePopup.setEnabled(options.certificate);
             certificatePopup.removeAllItems();
