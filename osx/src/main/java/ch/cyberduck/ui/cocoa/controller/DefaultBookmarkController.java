@@ -35,7 +35,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.ssl.DelegatingCertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.PKCS11CertificateStoreX509KeyManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +59,7 @@ public class DefaultBookmarkController extends BookmarkController {
     private static final Logger log = LogManager.getLogger(DefaultBookmarkController.class);
 
     private static final String TIMEZONE_CONTINENT_PREFIXES =
-        "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+            "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
@@ -71,8 +74,10 @@ public class DefaultBookmarkController extends BookmarkController {
     @Outlet
     private NSPopUpButton encodingPopup;
 
-    private final KeychainX509KeyManager x509KeyManager = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
-        CertificateStoreFactory.get());
+    private final X509KeyManager x509KeyManager = new DelegatingCertificateStoreX509KeyManager(
+            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get()),
+            new PKCS11CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get())
+    );
 
     public DefaultBookmarkController(final Host bookmark) {
         this(bookmark, new LoginOptions(bookmark.getProtocol()));
@@ -95,9 +100,9 @@ public class DefaultBookmarkController extends BookmarkController {
     public void setNicknameField(final NSTextField f) {
         this.nicknameField = f;
         notificationCenter.addObserver(this.id(),
-            Foundation.selector("nicknameFieldDidChange:"),
-            NSControl.NSControlTextDidChangeNotification,
-            f.id());
+                Foundation.selector("nicknameFieldDidChange:"),
+                NSControl.NSControlTextDidChangeNotification,
+                f.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -115,9 +120,9 @@ public class DefaultBookmarkController extends BookmarkController {
     public void setLabelsField(final NSTokenField f) {
         this.labelsField = f;
         notificationCenter.addObserver(this.id(),
-            Foundation.selector("tokenFieldDidChange:"),
-            NSControl.NSControlTextDidEndEditingNotification,
-            f.id());
+                Foundation.selector("tokenFieldDidChange:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                f.id());
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -148,9 +153,9 @@ public class DefaultBookmarkController extends BookmarkController {
     public void setPasswordField(final NSSecureTextField f) {
         super.setPasswordField(f);
         this.notificationCenter.addObserver(this.id(),
-            Foundation.selector("passwordFieldTextDidEndEditing:"),
-            NSControl.NSControlTextDidEndEditingNotification,
-            f.id());
+                Foundation.selector("passwordFieldTextDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                f.id());
     }
 
     @Action
@@ -167,11 +172,11 @@ public class DefaultBookmarkController extends BookmarkController {
             }
             try {
                 keychain.addPassword(bookmark.getProtocol().getScheme(),
-                    bookmark.getPort(),
-                    bookmark.getHostname(),
-                    bookmark.getCredentials().getUsername(),
-                    // Remove control characters (char &lt;= 32) from both ends
-                    StringUtils.strip(passwordField.stringValue())
+                        bookmark.getPort(),
+                        bookmark.getHostname(),
+                        bookmark.getCredentials().getUsername(),
+                        // Remove control characters (char &lt;= 32) from both ends
+                        StringUtils.strip(passwordField.stringValue())
                 );
             }
             catch(AccessDeniedException e) {
