@@ -86,7 +86,7 @@ public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509Ke
                                         bookmark.getCredentials().getUsername(),
                                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                                         LocaleFactory.localizedString("Enter PIN for PKCS11 token", "Credentials"),
-                                        new LoginOptions().user(false).password(true).keychain(false)
+                                        new LoginOptions().user(false).password(true).keychain(false).icon(bookmark.getProtocol().disk())
                                 );
                                 pin = credentials.getPassword().toCharArray();
                             }
