@@ -320,7 +320,7 @@ public class OpenSshConfig {
             parent = directory;
         }
         // Include accepts the tokens %%, %C, %d, %h, %i, %j, %k, %L, %l, %n, %p, %r, and %u.
-        if(StringUtils.containsAny(pattern, '*')) {
+        if(StringUtils.containsAny(pattern, '*', '?')) {
             // Each pathname may contain glob(7) wildcards
             if(parent.isDirectory()) {
                 log.debug("Resolve files in {} matching {}", parent, PathNormalizer.name(pattern));
