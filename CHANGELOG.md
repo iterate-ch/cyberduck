@@ -1,5 +1,6 @@
 # Changelog
 [9.5.0](https://github.com/iterate-ch/cyberduck/compare/release-9-4-1...release-9-5-0)
+* [Feature] Support for Liquid Glass (macOS) ([#17459](https://trac.cyberduck.io/ticket/17459))
 * [Feature] AWS IAM Identity Center Support (S3) ([#13377](https://trac.cyberduck.io/ticket/13377))
 * [Feature] Connect with credentials from `credential_process` configuration directive in ~/.aws (S3) ([#11664](https://trac.cyberduck.io/ticket/11664))
 * [Feature] Add preference to include previous versions of files in browser (S3) ([#18020](https://trac.cyberduck.io/ticket/18020))
@@ -38,7 +39,6 @@
 * [Feature] Connect with Multi-Bucket Application Keys that grant access to a specific group of buckets within an
   account, including the option to limit access based on a single file prefix (
   B2) ([#17139](https://trac.cyberduck.io/ticket/17139))
-* [Feature] Support for Liquid Glass (macOS) ([#17459](https://trac.cyberduck.io/ticket/17459))
 * [Feature] Connect with connection profile obtaining temporary credentials from AWS Security Token Service (STS) by
   assuming role with optional Multi-Factor Authentication (MFA) input (
   S3) ([#17437](https://trac.cyberduck.io/ticket/17437))
