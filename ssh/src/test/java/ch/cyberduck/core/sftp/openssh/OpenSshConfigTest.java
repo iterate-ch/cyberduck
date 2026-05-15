@@ -120,4 +120,15 @@ public class OpenSshConfigTest {
         final OpenSshConfig.Host host = config.lookup("foo.example.com");
         assertEquals(2222, host.getPort());
     }
+
+    @Test
+    public void testMatchHostFromIncludePrecedence() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-match-host"));
+        final OpenSshConfig.Host host = config.lookup("include-host-a");
+        assertEquals("host-a.example.com", host.getHostName());
+        // First-match-wins: User from the Host block takes precedence over Match host block
+        assertEquals("auser", host.getUser());
+        // IdentityFile is only set by the Match block, so it must be applied
+        assertEquals("~/.ssh/match-key", host.getIdentityFile());
+    }
 }
