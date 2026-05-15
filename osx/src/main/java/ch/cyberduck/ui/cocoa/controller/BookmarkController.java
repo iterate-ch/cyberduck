@@ -597,14 +597,16 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.certificatePopup.setTarget(this.id());
         final Selector action = Foundation.selector("certificateSelectionChanged:");
         this.certificatePopup.setAction(action);
+        // List of certificates with private key
+        final List<String> list = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
+                CertificateStoreFactory.get()).list();
         this.addObserver(bookmark -> {
             certificatePopup.setEnabled(options.certificate);
             certificatePopup.removeAllItems();
             certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
             if(options.certificate) {
                 certificatePopup.menu().addItem(NSMenuItem.separatorItem());
-                for(String certificate : new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
-                        CertificateStoreFactory.get()).list()) {
+                for(String certificate : list) {
                     certificatePopup.addItemWithTitle(certificate);
                     certificatePopup.lastItem().setRepresentedObject(certificate);
                 }
