@@ -1,0 +1,5 @@
+Match user alice
+    Port 9999
+
+Match host *.example.com user alice
+    IdentityFile ~/.ssh/combined-key

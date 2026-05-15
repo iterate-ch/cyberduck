@@ -107,6 +107,10 @@ public class OpenSshConfig {
      * @return r configuration for the requested name. Never null.
      */
     public Host lookup(final String hostName) {
+        return this.lookup(hostName, null);
+    }
+
+    public Host lookup(final String hostName, final String user) {
         Host h = hosts.get(hostName);
         if(h == null) {
             h = new Host();
@@ -128,7 +132,7 @@ public class OpenSshConfig {
         // Match host criteria are matched against the target hostname, after any substitution by the Hostname option
         final String targetHostName = h.hostName != null ? h.hostName : hostName;
         for(final MatchBlock mb : matchBlocks) {
-            if(isMatchHostApplicable(mb.patterns, targetHostName)) {
+            if(isMatchApplicable(mb, targetHostName, user)) {
                 log.debug("Found match block applicable for {} in SSH config: {}", targetHostName, mb.host);
                 h.copyFrom(mb.host);
             }
@@ -191,21 +195,46 @@ public class OpenSshConfig {
             }
             if("Match".equalsIgnoreCase(keyword)) {
                 current.clear();
-                // Only the "host" criteria keyword is supported; skip any other Match block
-                final String[] tokens = argValue.split("[ \t]+", 2);
-                if(tokens.length == 2 && "host".equalsIgnoreCase(tokens[0])) {
-                    final List<String> patterns = new ArrayList<>();
-                    for(final String p : tokens[1].split(",")) {
-                        final String trimmed = dequote(p.trim());
-                        if(!trimmed.isEmpty()) {
-                            patterns.add(trimmed);
+                final List<String> hostPatterns = new ArrayList<>();
+                final List<String> userPatterns = new ArrayList<>();
+                boolean unknown = false;
+                final String[] tokens = argValue.split("[ \t]+");
+                int ti = 0;
+                while(ti < tokens.length) {
+                    final String criterion = tokens[ti];
+                    if("host".equalsIgnoreCase(criterion)) {
+                        ti++;
+                        if(ti < tokens.length) {
+                            for(final String p : tokens[ti].split(",")) {
+                                final String trimmed = dequote(p.trim());
+                                if(!trimmed.isEmpty()) {
+                                    hostPatterns.add(trimmed);
+                                }
+                            }
                         }
                     }
-                    if(!patterns.isEmpty()) {
-                        final Host matchHost = new Host();
-                        matchBlocks.add(new MatchBlock(patterns, matchHost));
-                        current.add(matchHost);
+                    else if("user".equalsIgnoreCase(criterion)) {
+                        ti++;
+                        if(ti < tokens.length) {
+                            for(final String p : tokens[ti].split(",")) {
+                                final String trimmed = dequote(p.trim());
+                                if(!trimmed.isEmpty()) {
+                                    userPatterns.add(trimmed);
+                                }
+                            }
+                        }
                     }
+                    else {
+                        log.warn("Unknown Match criterion: {}", criterion);
+                        unknown = true;
+                        break;
+                    }
+                    ti++;
+                }
+                if(!unknown && (!hostPatterns.isEmpty() || !userPatterns.isEmpty())) {
+                    final Host matchHost = new Host();
+                    matchBlocks.add(new MatchBlock(hostPatterns, userPatterns, matchHost));
+                    current.add(matchHost);
                 }
                 continue;
             }
@@ -350,23 +379,44 @@ public class OpenSshConfig {
     }
 
     /**
-     * Evaluates whether a {@code Match host} block applies to the given hostname.
+     * Evaluates whether a {@code Match} block applies given the target hostname and optional user.
      * <p>
-     * A block applies when at least one positive pattern matches (or all patterns are negated) and no negated pattern
+     * All present criteria must match. If {@code user} criteria are present but no user is provided, the block is
+     * skipped because the criteria cannot be evaluated.
+     */
+    private static boolean isMatchApplicable(final MatchBlock mb, final String hostName, final String user) {
+        if(!mb.hostPatterns.isEmpty() && !isPatternsMatch(mb.hostPatterns, hostName)) {
+            return false;
+        }
+        if(!mb.userPatterns.isEmpty()) {
+            if(user == null) {
+                return false;
+            }
+            if(!isPatternsMatch(mb.userPatterns, user)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Evaluates a comma-separated pattern list against a value.
+     * <p>
+     * A list applies when at least one positive pattern matches (or all patterns are negated) and no negated pattern
      * matches. Negated patterns are prefixed with {@code !}.
      */
-    private static boolean isMatchHostApplicable(final List<String> patterns, final String hostName) {
+    private static boolean isPatternsMatch(final List<String> patterns, final String value) {
         boolean hasPositive = false;
         boolean anyPositiveMatch = false;
         for(final String pattern : patterns) {
             if(pattern.startsWith("!")) {
-                if(isHostMatch(pattern.substring(1), hostName)) {
+                if(isHostMatch(pattern.substring(1), value)) {
                     return false;
                 }
             }
             else {
                 hasPositive = true;
-                if(isHostMatch(pattern, hostName)) {
+                if(isHostMatch(pattern, value)) {
                     anyPositiveMatch = true;
                 }
             }
@@ -554,11 +604,13 @@ public class OpenSshConfig {
     }
 
     private static final class MatchBlock {
-        final List<String> patterns;
+        final List<String> hostPatterns;
+        final List<String> userPatterns;
         final Host host;
 
-        MatchBlock(final List<String> patterns, final Host host) {
-            this.patterns = patterns;
+        MatchBlock(final List<String> hostPatterns, final List<String> userPatterns, final Host host) {
+            this.hostPatterns = hostPatterns;
+            this.userPatterns = userPatterns;
             this.host = host;
         }
     }

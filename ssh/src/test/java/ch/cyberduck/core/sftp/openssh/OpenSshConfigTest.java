@@ -114,11 +114,46 @@ public class OpenSshConfigTest {
     }
 
     @Test
-    public void testMatchUnsupportedCriteriaIsIgnored() {
+    public void testMatchUserCriteriaNotEvaluatedWithoutUser() {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
-        // "Match user alice" must be ignored; Port 9999 must not leak to any host lookup
+        // Without a user, Match user blocks cannot be evaluated and must be skipped
         final OpenSshConfig.Host host = config.lookup("foo.example.com");
         assertEquals(2222, host.getPort());
+    }
+
+    @Test
+    public void testMatchUserCriteriaMatchesUser() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
+        final OpenSshConfig.Host host = config.lookup("any.host", "alice");
+        assertEquals(9999, host.getPort());
+    }
+
+    @Test
+    public void testMatchUserCriteriaNoMatchForOtherUser() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
+        final OpenSshConfig.Host host = config.lookup("any.host", "bob");
+        assertEquals(-1, host.getPort());
+    }
+
+    @Test
+    public void testMatchHostAndUserCombinedBothMatch() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
+        final OpenSshConfig.Host host = config.lookup("foo.example.com", "alice");
+        assertEquals("~/.ssh/combined-key", host.getIdentityFile());
+    }
+
+    @Test
+    public void testMatchHostAndUserCombinedHostMismatch() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
+        final OpenSshConfig.Host host = config.lookup("unrelated.org", "alice");
+        assertNull(host.getIdentityFile());
+    }
+
+    @Test
+    public void testMatchHostAndUserCombinedUserMismatch() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-user"));
+        final OpenSshConfig.Host host = config.lookup("foo.example.com", "bob");
+        assertNull(host.getIdentityFile());
     }
 
     @Test
