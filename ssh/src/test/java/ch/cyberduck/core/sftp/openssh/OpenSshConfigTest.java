@@ -21,6 +21,7 @@ import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class OpenSshConfigTest {
 
@@ -97,7 +98,7 @@ public class OpenSshConfigTest {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
         // excluded.example.com matches *.example.com but is negated in the third block
         final OpenSshConfig.Host excluded = config.lookup("excluded.example.com");
-        assertEquals(null, excluded.getIdentityAgent());
+        assertNull(excluded.getIdentityAgent());
         // other.example.com is not excluded so it should get the IdentityAgent
         final OpenSshConfig.Host other = config.lookup("other.example.com");
         assertEquals("~/.ssh/agent.sock", other.getIdentityAgent());
@@ -108,7 +109,7 @@ public class OpenSshConfigTest {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-match-host"));
         // Host outside *.example.com should not pick up any Match host settings
         final OpenSshConfig.Host host = config.lookup("unrelated.org");
-        assertEquals(null, host.getUser());
+        assertNull(host.getUser());
         assertEquals(-1, host.getPort());
     }
 
