@@ -125,9 +125,11 @@ public class OpenSshConfig {
             log.debug("Found host match in SSH config:{}", e.getValue());
             h.copyFrom(e.getValue());
         }
+        // Match host criteria are matched against the target hostname, after any substitution by the Hostname option
+        final String targetHostName = h.hostName != null ? h.hostName : hostName;
         for(final MatchBlock mb : matchBlocks) {
-            if(isMatchHostApplicable(mb.patterns, hostName)) {
-                log.debug("Found match block applicable for {} in SSH config: {}", hostName, mb.host);
+            if(isMatchHostApplicable(mb.patterns, targetHostName)) {
+                log.debug("Found match block applicable for {} in SSH config: {}", targetHostName, mb.host);
                 h.copyFrom(mb.host);
             }
         }
