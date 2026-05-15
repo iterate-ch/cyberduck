@@ -43,7 +43,15 @@ public class AbstractCteraTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new CteraProtocol(), "driveconnect.ctera.me", new Credentials(PROPERTIES.get("ctera.user")));
+        final Host host = new Host(new CteraProtocol(), PROPERTIES.get("ctera.hostname"), new Credentials(PROPERTIES.get("ctera.user"))) {
+            @Override
+            public String getProperty(final String key) {
+                if("ctera.download.directio.enable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
         host.setDefaultPath("/ServicesPortal/webdav/My Files");
         session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {

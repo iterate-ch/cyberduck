@@ -412,9 +412,13 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         }
         // Nullify version to add delete marker
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(null))), LoginCallback.noop, new Delete.DisabledCallback());
-        assertTrue(new DefaultFindFeature(session).find(folder1, new DisabledListProgressListener()));
-        assertTrue(new B2ObjectListService(session, fileid).list(folder1, new DisabledListProgressListener()).contains(folder2));
-        assertTrue(new DefaultFindFeature(session).find(folder2, new DisabledListProgressListener()));
+        assertFalse(new DefaultFindFeature(session).find(folder1, new DisabledListProgressListener()));
+        final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(folder1, new DisabledListProgressListener());
+        assertTrue(list.contains(folder2));
+        for(Path f : list) {
+            assertTrue(f.attributes().isTrashed());
+        }
+        assertFalse(new DefaultFindFeature(session).find(folder2, new DisabledListProgressListener()));
         assertEquals(2, new B2ObjectListService(session, fileid).list(folder2, new DisabledListProgressListener()).size());
         assertThrows(NotfoundException.class, () -> new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()).list(folder2, new DisabledListProgressListener()));
         for(Path f : new B2ObjectListService(session, fileid).list(folder2, new DisabledListProgressListener())) {
@@ -436,6 +440,79 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         assertTrue(list.contains(file1));
         assertTrue(list.contains(folder1));
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(file1, folder1, bucket), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListFolderCreateModifyDelete() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
+                new B2WriteFeature(session, fileid),
+                new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new TransferStatus());
+        // Create folder
+        final Path folder = new B2DirectoryFeature(session, fileid).mkdir(
+                new B2WriteFeature(session, fileid),
+                new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)),
+                new TransferStatus());
+        // Create file in folder
+        final Path file = new Path(folder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
+        {
+            final byte[] content = RandomUtils.nextBytes(32);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, ConnectionCallback.noop);
+            IOUtils.write(content, out);
+            out.close();
+            file.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
+        }
+        // Versioned listing: file and folder appear (1 version each)
+        assertTrue(new B2ObjectListService(session, fileid, 10, new VersioningConfiguration(true)).list(folder, new DisabledListProgressListener()).contains(file));
+        assertTrue(new B2ObjectListService(session, fileid, 10, new VersioningConfiguration(true)).list(bucket, new DisabledListProgressListener()).contains(folder));
+        // Modify file (overwrite with new content)
+        {
+            final byte[] content = RandomUtils.nextBytes(64);
+            final TransferStatus status = new TransferStatus().setLength(content.length);
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, ConnectionCallback.noop);
+            IOUtils.write(content, out);
+            out.close();
+            file.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
+        }
+        // Versioned listing: current version + previous duplicate visible
+        {
+            final AttributedList<Path> list = new B2ObjectListService(session, fileid, 10, new VersioningConfiguration(true)).list(folder, new DisabledListProgressListener());
+            assertEquals(2, list.size());
+            assertTrue(list.contains(file));
+            assertNull(list.find(new SimplePathPredicate(file)).attributes().getRevision());
+            assertEquals(Long.valueOf(1L), list.find(path -> path.attributes().isDuplicate()).attributes().getRevision());
+        }
+        // Delete file: add hide marker by nullifying version
+        new B2DeleteFeature(session, fileid).delete(
+                Collections.singletonList(new Path(file).withAttributes(new DefaultPathAttributes(file.attributes()).setVersionId(null))),
+                LoginCallback.noop, new Delete.DisabledCallback());
+        // Delete folder placeholder
+        new B2DeleteFeature(session, fileid).delete(
+                Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+        // Versioned listing: all file versions are trashed or duplicate (hide marker present, no live entries)
+        final AttributedList<Path> versions = new B2ObjectListService(session, fileid, 10, new VersioningConfiguration(true)).list(folder, new DisabledListProgressListener());
+        assertFalse(versions.isEmpty());
+        for(Path f : versions) {
+            assertTrue(f.attributes().isTrashed() || f.attributes().isDuplicate());
+        }
+        // Versioned bucket listing: folder appears as trashed (no live content beneath prefix)
+        {
+            final AttributedList<Path> bucketVersioned = new B2ObjectListService(session, fileid, 10, new VersioningConfiguration(true)).list(bucket, new DisabledListProgressListener());
+            assertNotNull(bucketVersioned.find(new SimplePathPredicate(folder)));
+            assertTrue(bucketVersioned.find(new SimplePathPredicate(folder)).attributes().isTrashed());
+        }
+        // Non-versioned listing: folder not accessible, file not accessible
+        assertTrue(new B2ObjectListService(session, fileid, 10, VersioningConfiguration.empty()).list(bucket, new DisabledListProgressListener()).isEmpty());
+        assertThrows(NotfoundException.class, () -> new B2ObjectListService(session, fileid, 10, VersioningConfiguration.empty()).list(folder, new DisabledListProgressListener()));
+        // Cleanup
+        for(Path f : versions) {
+            new B2DeleteFeature(session, fileid).delete(Collections.singletonList(f), LoginCallback.noop, new Delete.DisabledCallback());
+        }
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

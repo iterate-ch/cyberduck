@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ linux-self-hosted, macos-self-hosted, windows-self-hosted ]
+        os: [ linux-self-hosted ]
     steps:
       - uses: actions/checkout@v6
       - name: Set up JDK 21

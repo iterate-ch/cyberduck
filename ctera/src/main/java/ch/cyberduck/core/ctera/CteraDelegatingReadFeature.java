@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -33,12 +32,10 @@ public class CteraDelegatingReadFeature implements Read {
     private static final Logger log = LogManager.getLogger(CteraDelegatingReadFeature.class);
 
     private final CteraSession session;
-    private final VersionIdProvider versionid;
     private final boolean directio;
 
-    public CteraDelegatingReadFeature(final CteraSession session, final VersionIdProvider versionid) {
+    public CteraDelegatingReadFeature(final CteraSession session) {
         this.session = session;
-        this.versionid = versionid;
         this.directio = HostPreferencesFactory.get(session.getHost()).getBoolean("ctera.download.directio.enable");
     }
 

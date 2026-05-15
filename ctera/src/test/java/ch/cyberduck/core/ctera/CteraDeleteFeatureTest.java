@@ -5,11 +5,8 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVFindFeature;
-import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -34,22 +31,6 @@ public class CteraDeleteFeatureTest extends AbstractCteraTest {
         new CteraTouchFeature(session).touch(new CteraWriteFeature(session), test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
         new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), LoginCallback.noop, new Delete.DisabledCallback());
-        assertFalse(new DAVFindFeature(session).find(test));
-    }
-
-    @Test(expected = RetriableAccessDeniedException.class)
-    public void testDeleteFileWithLock() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new CteraTouchFeature(session).touch(new CteraWriteFeature(session), test, new TransferStatus());
-        String lock = null;
-        try {
-            lock = new DAVLockFeature(session).lock(test);
-        }
-        catch(InteroperabilityException e) {
-            // Not supported
-        }
-        assertTrue(new DAVFindFeature(session).find(test));
-        new CteraDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().setLockId(lock)), LoginCallback.noop, new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 

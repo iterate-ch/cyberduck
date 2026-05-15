@@ -15,6 +15,7 @@
 * [Bugfix] Browser window does not show up in Exposé & Mission Control (macOS) ([#17703](https://trac.cyberduck.io/ticket/17703))
 * [Bugfix] Compare public key blob instead of comment when retrieving key from agent (SFTP)
 * [Bugfix] Support "Include" directive when reading from OpenSSH config (SFTP) ([#10451](https://trac.cyberduck.io/ticket/10451))
+* [Bugfix] Exclude trashed folders in list by default (Backblaze B2) ([#18101](https://trac.cyberduck.io/ticket/18101))
 
 [9.4.1](https://github.com/iterate-ch/cyberduck/compare/release-9-4-0...release-9-4-1)
 * [Bugfix] Cleartext uploads to unlocked vault with auto detect disabled in Preferences (
