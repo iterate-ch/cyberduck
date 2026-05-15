@@ -76,11 +76,6 @@ public class OpenSshConfig {
     private final Local configuration;
 
     /**
-     * Modification time of {@link #configuration} when {@link #hosts} loaded.
-     */
-    private long lastModified;
-
-    /**
      * Cached entries read out of the configuration file.
      */
     private Map<String, Host> hosts
@@ -144,21 +139,17 @@ public class OpenSshConfig {
     }
 
     public Map<String, Host> refresh() {
-        final long mtime = configuration.attributes().getModificationDate();
-        if(mtime != lastModified) {
-            try {
-                final List<MatchBlock> newMatchBlocks = new ArrayList<>();
-                try(final InputStream in = configuration.getInputStream()) {
-                    hosts = this.parse(in, configuration.getParent(), new HashSet<>(), newMatchBlocks);
-                }
-                matchBlocks = newMatchBlocks;
+        try {
+            final List<MatchBlock> newMatchBlocks = new ArrayList<>();
+            try(final InputStream in = configuration.getInputStream()) {
+                hosts = this.parse(in, configuration.getParent(), new HashSet<>(), newMatchBlocks);
             }
-            catch(AccessDeniedException | IOException none) {
-                log.warn("Failure reading {}", configuration);
-                hosts = Collections.emptyMap();
-                matchBlocks = Collections.emptyList();
-            }
-            lastModified = mtime;
+            matchBlocks = newMatchBlocks;
+        }
+        catch(AccessDeniedException | IOException none) {
+            log.warn("Failure reading {}", configuration);
+            hosts = Collections.emptyMap();
+            matchBlocks = Collections.emptyList();
         }
         return hosts;
     }
