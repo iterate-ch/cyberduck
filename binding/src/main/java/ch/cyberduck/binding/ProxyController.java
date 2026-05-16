@@ -336,7 +336,7 @@ public class ProxyController extends AbstractController {
         }
     }
 
-    public static final class PopoverAlertRunner extends Proxy implements AlertRunner, AlertRunner.CloseHandler, WindowListener {
+    public static class PopoverAlertRunner extends Proxy implements AlertRunner, AlertRunner.CloseHandler, WindowListener {
         private final NSPopover popover = NSPopover.create();
         private final NSView positioningView;
         private final NSRect positioningRect;
