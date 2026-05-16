@@ -10,6 +10,8 @@
 * [Feature] Display file details for file transfers as popover (macOS)
 * [Feature] Display "Bookmark" window as popover (macOS)
 * [Feature] Hide controls for unavailable options in "Bookmark" window (macOS)
+* [Feature] Display labels of bookmarks in list view (macOS)
+* [Feature] Add "Connect" button in "Bookmark" window (macOS)
 * [Feature] Make available all configuration options in "Connection" window (macOS)
 * [Feature] Add "More Options" as tab in "Connection" and "Bookmark" windows (macOS)
 * [Feature] Add "Connect" and "Disconnect" items to "Go" menu (macOS)
