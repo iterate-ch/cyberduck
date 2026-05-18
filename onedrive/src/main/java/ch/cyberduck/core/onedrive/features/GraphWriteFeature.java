@@ -106,7 +106,13 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
 
         @Override
         protected void handleIOException(final IOException e) throws IOException {
-            upload.cancelUpload();
+            try {
+                upload.cancelUpload();
+            }
+            catch(IOException c) {
+                c.addSuppressed(e);
+                throw c;
+            }
             throw e;
         }
     }
