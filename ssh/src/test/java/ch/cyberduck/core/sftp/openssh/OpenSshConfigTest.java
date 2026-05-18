@@ -18,12 +18,35 @@ package ch.cyberduck.core.sftp.openssh;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class OpenSshConfigTest {
+
+    @Rule
+    public TemporaryFolder tmp = new TemporaryFolder();
+
+    @Test
+    public void testIncludeAbsolutePath() throws Exception {
+        final File config = tmp.newFile("config-include-absolute");
+        try(final FileWriter w = new FileWriter(config)) {
+            w.write("Include " + Paths.get("src/test/resources/openssh/include-a").toAbsolutePath() + "\n");
+        }
+        final OpenSshConfig sshConfig = new OpenSshConfig(new Local(config.getAbsolutePath()));
+        final OpenSshConfig.Host host = sshConfig.lookup("include-host-a");
+        assertEquals("host-a.example.com", host.getHostName());
+        assertEquals("auser", host.getUser());
+        assertEquals(2222, host.getPort());
+        config.delete();
+    }
 
     @Test
     public void testIncludeSpecificFile() {
