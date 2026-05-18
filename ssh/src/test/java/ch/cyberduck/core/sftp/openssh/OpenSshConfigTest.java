@@ -49,6 +49,22 @@ public class OpenSshConfigTest {
     }
 
     @Test
+    public void testIncludeAbsolutePathWithWildcard() throws Exception {
+        final File config = tmp.newFile("config-include-absolute-glob");
+        final String dir = Paths.get("src/test/resources/openssh").toAbsolutePath().toString();
+        try(final FileWriter w = new FileWriter(config)) {
+            w.write("Include " + dir + "/include-*\n");
+        }
+        final OpenSshConfig sshConfig = new OpenSshConfig(new Local(config.getAbsolutePath()));
+        final OpenSshConfig.Host hostA = sshConfig.lookup("include-host-a");
+        assertEquals("host-a.example.com", hostA.getHostName());
+        assertEquals("auser", hostA.getUser());
+        final OpenSshConfig.Host hostB = sshConfig.lookup("include-host-b");
+        assertEquals("host-b.example.com", hostB.getHostName());
+        assertEquals("buser", hostB.getUser());
+    }
+
+    @Test
     public void testIncludeSpecificFile() {
         final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config-include-specific"));
         final OpenSshConfig.Host host = config.lookup("include-host-a");

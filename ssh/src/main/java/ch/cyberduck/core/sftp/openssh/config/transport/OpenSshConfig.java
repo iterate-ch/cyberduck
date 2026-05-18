@@ -356,7 +356,7 @@ public class OpenSshConfig {
             if(parent.isDirectory()) {
                 log.debug("Resolve files in {} matching {}", parent, PathNormalizer.name(pattern));
                 try {
-                    for(Local l : directory.list(new NullFilter<String>() {
+                    for(Local l : parent.list(new NullFilter<String>() {
                         @Override
                         public boolean accept(final String file) {
                             return FilenameUtils.wildcardMatch(file, PathNormalizer.name(pattern));
