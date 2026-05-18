@@ -33,6 +33,7 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
@@ -77,7 +78,7 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
             final int partsize = HostPreferencesFactory.get(session.getHost()).getInteger("onedrive.upload.multipart.partsize.minimum")
                     * HostPreferencesFactory.get(session.getHost()).getInteger("onedrive.upload.multipart.partsize.factor");
-            return new HttpResponseOutputStream<DriveItem.Metadata>(new MemorySegementingOutputStream(proxy, partsize), new GraphAttributesFinderFeature(session, fileid), status) {
+            return new HttpResponseOutputStream<DriveItem.Metadata>(new MemorySegementingOutputStream(new UploadSessionOutputStream(upload, proxy), partsize), new GraphAttributesFinderFeature(session, fileid), status) {
                 @Override
                 public DriveItem.Metadata getStatus() {
                     return proxy.getStatus();
@@ -92,6 +93,20 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
         }
         catch(OneDriveRuntimeException e) {
             throw new GraphExceptionMappingService(fileid).map("Upload {0} failed", e.getCause(), file);
+        }
+    }
+
+    private static final class UploadSessionOutputStream extends ProxyOutputStream {
+        private final UploadSession upload;
+
+        public UploadSessionOutputStream(final UploadSession upload, final OutputStream delegate) {
+            super(delegate);
+            this.upload = upload;
+        }
+
+        @Override
+        protected void handleIOException(final IOException e) throws IOException {
+            upload.cancelUpload();
         }
     }
 
@@ -145,7 +160,7 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
                             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                         }
                         catch(OneDriveRuntimeException e) {
-                            throw new GraphExceptionMappingService(fileid).map("Download {0} failed", e.getCause(), file);
+                            throw new GraphExceptionMappingService(fileid).map("Upload {0} failed", e.getCause(), file);
                         }
                         return null;
                     }
