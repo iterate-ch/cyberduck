@@ -1,0 +1,3 @@
+Host include-host-b
+    HostName host-b.example.com
+    User buser

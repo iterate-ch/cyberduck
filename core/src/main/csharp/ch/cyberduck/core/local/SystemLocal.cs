@@ -201,7 +201,7 @@ namespace Ch.Cyberduck.Core.Local
             //       e.g. on Windows when converting a Path to Local the leading slash has to be stripped, this
             //       translation would also be responsible for cleaning up bad file and path names (blocked chars).
             var path = name.AsSpan(start);
-            var skipped = pathRoot.Length > 0 && IsDirectorySeparator(pathRoot[pathRoot.Length - 1]) ? 1 : 0;
+            var skipped = pathRoot.Length == 0 || IsDirectorySeparator(pathRoot[pathRoot.Length - 1]) ? 1 : 0;
             for (int lastSegment = 0, index = 0; index != -1; lastSegment += index + 1)
             {
                 var segment = path.Slice(lastSegment);

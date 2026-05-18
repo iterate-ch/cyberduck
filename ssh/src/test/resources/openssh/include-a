@@ -1,0 +1,4 @@
+Host include-host-a
+    HostName host-a.example.com
+    User auser
+    Port 2222

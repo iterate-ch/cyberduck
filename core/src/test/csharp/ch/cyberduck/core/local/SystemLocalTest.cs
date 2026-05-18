@@ -55,11 +55,13 @@ namespace Ch.Cyberduck.Core.Local
                 /* 00 */ "C:\\C:",
                 /* 01 */ @"\\?\C:",
                 /* 02 */ @"\\?\C:\",
+                /* 03 */ @"C:\\A\\B"
             ])] string path,
             [Values([
                 /* 00 */ "C:\\C_",
                 /* 01 */ "C:\\",
                 /* 02 */ "C:\\",
+                /* 03 */ @"C:\A\B"
             ])] string expected)
         {
             Assert.That(new SystemLocal(path).getAbsolute(), Is.EqualTo(expected));
@@ -109,7 +111,8 @@ namespace Ch.Cyberduck.Core.Local
         [Test]
         public void TestTildePath()
         {
-            Assert.That(new SystemLocal("~/.ssh/known_hosts").getAbsolute(), Is.Not.Empty);
+            var known_hosts = new SystemLocal("~/.ssh/known_hosts").getAbsolute();
+            Assert.That(known_hosts, Does.Not.StartWith("\\"));
         }
 
         /// <remarks>
