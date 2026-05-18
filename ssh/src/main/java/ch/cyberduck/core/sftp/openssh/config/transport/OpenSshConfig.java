@@ -354,12 +354,12 @@ public class OpenSshConfig {
         if(StringUtils.containsAny(pattern, '*', '?')) {
             // Each pathname may contain glob(7) wildcards
             if(parent.isDirectory()) {
-                log.debug("Resolve files in {} matching {}", parent, PathNormalizer.name(pattern));
+                log.debug("Resolve files in {} matching {}", parent, FilenameUtils.getName(pattern));
                 try {
                     for(Local l : parent.list(new NullFilter<String>() {
                         @Override
                         public boolean accept(final String file) {
-                            return FilenameUtils.wildcardMatch(file, PathNormalizer.name(pattern));
+                            return FilenameUtils.wildcardMatch(file, FilenameUtils.getName(pattern));
                         }
                     })) {
                         result.add(l);
@@ -371,7 +371,7 @@ public class OpenSshConfig {
             }
         }
         else {
-            result.add(LocalFactory.get(parent, PathNormalizer.name(pattern)));
+            result.add(LocalFactory.get(parent, FilenameUtils.getName(pattern)));
         }
         // Wildcards will be expanded and processed in lexical order
         result.sort(Comparator.comparing(Local::getAbsolute));
