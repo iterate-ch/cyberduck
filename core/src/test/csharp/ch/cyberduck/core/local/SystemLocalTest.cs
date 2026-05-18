@@ -109,7 +109,8 @@ namespace Ch.Cyberduck.Core.Local
         [Test]
         public void TestTildePath()
         {
-            Assert.That(new SystemLocal("~/.ssh/known_hosts").getAbsolute(), Is.Not.Empty);
+            var known_hosts = new SystemLocal("~/.ssh/known_hosts").getAbsolute();
+            Assert.That(known_hosts, Does.Not.StartWith("\\"));
         }
 
         /// <remarks>
