@@ -55,11 +55,13 @@ namespace Ch.Cyberduck.Core.Local
                 /* 00 */ "C:\\C:",
                 /* 01 */ @"\\?\C:",
                 /* 02 */ @"\\?\C:\",
+                /* 03 */ @"C:\\A\\B"
             ])] string path,
             [Values([
                 /* 00 */ "C:\\C_",
                 /* 01 */ "C:\\",
                 /* 02 */ "C:\\",
+                /* 03 */ @"C:\A\B"
             ])] string expected)
         {
             Assert.That(new SystemLocal(path).getAbsolute(), Is.EqualTo(expected));
