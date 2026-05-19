@@ -115,86 +115,7 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
             final ProfileMetadataList list = mapper.readValue(in, ProfileMetadataList.class);
             for(ProfileMetadata metadata : list.profiles) {
                 for(ProfileMetadataVersion version : metadata.versions) {
-                    profiles.add(visitor.visit(new ProfileDescription(protocols, protocol -> true,
-                            new LazyInitializer<Checksum>() {
-                                @Override
-                                protected Checksum initialize() {
-                                    return Checksum.parse(version.checksum);
-                                }
-                            },
-                            new LazyInitializer<Local>() {
-                                @Override
-                                protected Local initialize() throws ConcurrentException {
-                                    try {
-                                        temporary.mkdir();
-                                        final Local local = LocalFactory.get(temporary, metadata.filename);
-                                        final Path file = new Path(directory, metadata.filename, EnumSet.of(Path.Type.file));
-                                        final Read read = session.getFeature(Read.class);
-                                        log.info("Download profile {}", file);
-                                        // Read latest version
-                                        try(InputStream in = read.read(file.withAttributes(new DefaultPathAttributes(file.attributes())
-                                                .setVersionId(version.version_id)), new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH), ConnectionCallback.noop); OutputStream out = local.getOutputStream(false)) {
-                                            IOUtils.copy(in, out);
-                                        }
-                                        return local;
-                                    }
-                                    catch(BackgroundException | IOException e) {
-                                        throw new ConcurrentException(e);
-                                    }
-                                }
-                            }
-                    ) {
-                        @Override
-                        public boolean isLatest() {
-                            return Boolean.TRUE.equals(version.latest);
-                        }
-
-                        @Override
-                        public boolean isEnabled() {
-                            return protocols.isEnabled(metadata.protocol, metadata.vendor);
-                        }
-
-                        @Override
-                        public boolean isBundled() {
-                            return false;
-                        }
-
-                        @Override
-                        public String getIdentifier() {
-                            return metadata.protocol;
-                        }
-
-                        @Override
-                        public String getProvider() {
-                            return metadata.vendor;
-                        }
-
-                        @Override
-                        public String getName() {
-                            return protocols.forName(metadata.protocol).getName();
-                        }
-
-                        @Override
-                        public String getDescription() {
-                            if(null == metadata.description) {
-                                return StringUtils.EMPTY;
-                            }
-                            return metadata.description;
-                        }
-
-                        @Override
-                        public String getHelp() {
-                            return metadata.help;
-                        }
-
-                        @Override
-                        public String getThumbnail() {
-                            if(null == metadata.thumbnail) {
-                                return protocols.forName(metadata.protocol).disk();
-                            }
-                            return metadata.thumbnail;
-                        }
-                    }));
+                    profiles.add(visitor.visit(new RemoteIndexProfileDescription(temporary, protocols, version, metadata, directory)));
                 }
             }
         }
@@ -238,5 +159,94 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
         private String version_id;
         @JsonProperty("latest")
         private Boolean latest;
+    }
+
+    private final class RemoteIndexProfileDescription extends ProfileDescription {
+        private final ProtocolFactory factory;
+        private final ProfileMetadataVersion version;
+        private final ProfileMetadata metadata;
+
+        public RemoteIndexProfileDescription(final Local temporary, final ProtocolFactory factory, final ProfileMetadataVersion version, final ProfileMetadata metadata, final Path directory) {
+            super(factory, protocol -> true, new LazyInitializer<Checksum>() {
+                @Override
+                protected Checksum initialize() {
+                    return Checksum.parse(version.checksum);
+                }
+            }, new LazyInitializer<Local>() {
+                @Override
+                protected Local initialize() throws ConcurrentException {
+                    try {
+                        temporary.mkdir();
+                        final Local local = LocalFactory.get(temporary, metadata.filename);
+                        final Path file = new Path(directory, metadata.filename, EnumSet.of(Path.Type.file));
+                        final Read read = session.getFeature(Read.class);
+                        RemoteIndexProfilesFinder.log.info("Download profile {}", file);
+// Read latest version
+                        try(InputStream in = read.read(file.withAttributes(new DefaultPathAttributes(file.attributes())
+                                .setVersionId(version.version_id)), new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH), ConnectionCallback.noop); OutputStream out = local.getOutputStream(false)) {
+                            IOUtils.copy(in, out);
+                        }
+                        return local;
+                    }
+                    catch(BackgroundException | IOException e) {
+                        throw new ConcurrentException(e);
+                    }
+                }
+            });
+            this.factory = factory;
+            this.version = version;
+            this.metadata = metadata;
+        }
+
+        @Override
+        public boolean isLatest() {
+            return Boolean.TRUE.equals(version.latest);
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return factory.isEnabled(metadata.protocol, metadata.vendor);
+        }
+
+        @Override
+        public boolean isBundled() {
+            return false;
+        }
+
+        @Override
+        public String getIdentifier() {
+            return metadata.protocol;
+        }
+
+        @Override
+        public String getProvider() {
+            return metadata.vendor;
+        }
+
+        @Override
+        public String getName() {
+            return factory.forName(metadata.protocol).getName();
+        }
+
+        @Override
+        public String getDescription() {
+            if(null == metadata.description) {
+                return StringUtils.EMPTY;
+            }
+            return metadata.description;
+        }
+
+        @Override
+        public String getHelp() {
+            return metadata.help;
+        }
+
+        @Override
+        public String getThumbnail() {
+            if(null == metadata.thumbnail) {
+                return factory.forName(metadata.protocol).disk();
+            }
+            return metadata.thumbnail;
+        }
     }
 }
