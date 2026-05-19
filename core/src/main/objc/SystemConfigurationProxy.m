@@ -84,6 +84,10 @@ JNF_COCOA_EXIT(env);
             NSArray *pacProxies = (NSArray*)CFNetworkCopyProxiesForAutoConfigurationScript((CFStringRef)pacScript, (CFURLRef)[NSURL URLWithString:targetURL], &err);
             if(err) {
         		NSLog(@"Failure retrieving proxies from auto configuration script: %@", err);
+                CFRelease(err);
+                if(pacProxies) {
+                    CFRelease(pacProxies);
+                }
                 continue;
             }
             NSEnumerator *enumerator = [pacProxies objectEnumerator];
