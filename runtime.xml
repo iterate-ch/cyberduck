@@ -43,6 +43,16 @@
             <srcfile/>
             <globmapper from="*" to="@rpath/*"/>
         </apply>
+        <apply executable="codesign" failonerror="true"
+               type="file"
+               parallel="false" spawn="false" force="true">
+            <arg line="--remove-signature"/>
+            <fileset dir="${directory}">
+                <include name="*.dylib"/>
+                <include name="*.so"/>
+            </fileset>
+            <srcfile/>
+        </apply>
     </target>
 
     <target name="lipo">
