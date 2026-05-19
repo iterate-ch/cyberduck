@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -28,15 +29,27 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import com.google.common.base.Throwables;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 import synapticloop.b2.Action;
 import synapticloop.b2.exception.B2ApiException;
@@ -69,6 +82,7 @@ public class B2ObjectListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        final ThreadPool pool = ThreadPoolFactory.get("list", HostPreferencesFactory.get(session.getHost()).getInteger("b2.listing.concurrency"));
         try {
             final AttributedList<Path> objects = new AttributedList<>();
             Marker marker = new Marker(null, null);
@@ -93,7 +107,20 @@ public class B2ObjectListService implements ListService {
                             this.createPrefix(directory),
                             String.valueOf(Path.DELIMITER));
                 }
-                marker = this.parse(directory, objects, response, revisions);
+                final List<Future<Path>> folders = new ArrayList<>();
+                marker = this.parse(directory, objects, response, revisions, containerId, pool, folders);
+                for(Future<Path> f : folders) {
+                    try {
+                        objects.add(Uninterruptibles.getUninterruptibly(f));
+                    }
+                    catch(ExecutionException e) {
+                        log.warn("Listing versioned objects failed with execution failure {}", e.getMessage());
+                        for(Throwable cause : ExceptionUtils.getThrowableList(e)) {
+                            Throwables.throwIfInstanceOf(cause, BackgroundException.class);
+                        }
+                        throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
+                    }
+                }
                 if(null == marker.nextFileId) {
                     if(!response.getFiles().isEmpty()) {
                         hasDirectoryPlaceholder = true;
@@ -114,6 +141,9 @@ public class B2ObjectListService implements ListService {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        finally {
+            pool.shutdown(false);
+        }
     }
 
     private String createPrefix(final Path directory) {
@@ -122,7 +152,8 @@ public class B2ObjectListService implements ListService {
     }
 
     private Marker parse(final Path directory, final AttributedList<Path> objects,
-                         final B2ListFilesResponse response, final Map<String, Long> revisions) {
+                         final B2ListFilesResponse response, final Map<String, Long> revisions,
+                         final String containerId, final ThreadPool pool, final List<Future<Path>> folders) {
         final B2AttributesFinderFeature attr = new B2AttributesFinderFeature(session, fileid);
         for(B2FileInfoResponse info : response.getFiles()) {
             if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
@@ -136,10 +167,15 @@ public class B2ObjectListService implements ListService {
             }
             if(StringUtils.isBlank(info.getFileId())) {
                 // Common prefix
-                final Path placeholder = new Path(directory.isDirectory() ? directory : directory.getParent(),
-                        PathNormalizer.name(StringUtils.removeEnd(info.getFileName(), String.valueOf(Path.DELIMITER))),
-                        EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-                objects.add(placeholder);
+                if(versioning.isEnabled()) {
+                    // Determine trashed state asynchronously by checking for live content beneath the prefix
+                    folders.add(this.submit(pool, directory, containerId, info.getFileName()));
+                }
+                else {
+                    objects.add(new Path(directory.isDirectory() ? directory : directory.getParent(),
+                            PathNormalizer.name(StringUtils.removeEnd(info.getFileName(), String.valueOf(Path.DELIMITER))),
+                            EnumSet.of(Path.Type.directory, Path.Type.placeholder)));
+                }
                 continue;
             }
             final PathAttributes attributes = attr.toAttributes(info);
@@ -162,6 +198,44 @@ public class B2ObjectListService implements ListService {
             return new Marker(response.getNextFileName(), response.getNextFileId());
         }
         return new Marker(response.getNextFileName(), response.getNextFileId());
+    }
+
+    /**
+     * Determine path from prefix. Path will have trashed attribute set when no live (non-hidden) content
+     * exists beneath the prefix.
+     *
+     * @param pool        Thread pool to run task with
+     * @param directory   The directory for which contents are listed
+     * @param containerId B2 bucket ID
+     * @param prefix      Common prefix found in directory listing (ends with delimiter)
+     * @return Path to add to directory list
+     */
+    private Future<Path> submit(final ThreadPool pool, final Path directory, final String containerId, final String prefix) {
+        return pool.execute(new BackgroundExceptionCallable<Path>() {
+            @Override
+            public Path call() throws BackgroundException {
+                try {
+                    final PathAttributes folderAttributes = new DefaultPathAttributes();
+                    // Query without delimiter to check recursively for any live files beneath this prefix.
+                    // Hide markers are excluded by listFileNames, so an empty result means all content is deleted.
+                    final B2ListFilesResponse liveContent = session.getClient().listFileNames(
+                            containerId, null, 1, prefix, null);
+                    if(liveContent.getFiles().isEmpty()) {
+                        log.debug("Set trashed attribute for prefix {}", prefix);
+                        folderAttributes.setTrashed(true);
+                    }
+                    return new Path(directory.isDirectory() ? directory : directory.getParent(),
+                            PathNormalizer.name(StringUtils.removeEnd(prefix, String.valueOf(Path.DELIMITER))),
+                            EnumSet.of(Path.Type.directory, Path.Type.placeholder), folderAttributes);
+                }
+                catch(B2ApiException e) {
+                    throw new B2ExceptionMappingService(fileid).map("Listing directory {0} failed", e, directory);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map(e);
+                }
+            }
+        });
     }
 
     private static final class Marker {

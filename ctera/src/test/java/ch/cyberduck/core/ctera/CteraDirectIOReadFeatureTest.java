@@ -50,7 +50,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class CteraDirectIOReadFeatureTest extends AbstractCteraDirectIOTest {
+public class CteraDirectIOReadFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testReadSingleChunk() throws Exception {

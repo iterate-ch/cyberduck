@@ -1,0 +1,6 @@
+Include include-?
+
+# The criteria for the host keyword are matched against the target hostname, after any substitution by the Hostname or CanonicalizeHostname options.
+Match host host-a.example.com
+    User alice
+    IdentityFile ~/.ssh/match-key

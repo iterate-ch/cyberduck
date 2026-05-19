@@ -274,7 +274,6 @@ public class ApplicationPreferences<T> : DefaultPreferences
 
         this.setDefault("local.user.home", EnvironmentInfo.UserProfilePath);
         this.setDefault("local.delimiter", $"{Path.DirectorySeparatorChar}");
-        this.setDefault("local.normalize.tilde", bool.FalseString);
         this.setDefault("local.normalize.unicode", bool.FalseString);
 
         // SSL Keystore

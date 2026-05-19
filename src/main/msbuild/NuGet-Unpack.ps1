@@ -28,5 +28,5 @@ foreach ($line in Get-Content $PackagesListPath) {
     New-Item -Force -Type Directory $TargetDirectory
     Get-ChildItem $TargetDirectory | Remove-Item -Recurse -Force
     tar.exe xf $NupkgFile -C $TargetDirectory
-    Set-Content "$TargetDirectory\.nupkg.metadata" '{}'
+    Set-Content "$TargetDirectory\.nupkg.metadata" '{ "contentHash": "" }'
 }

@@ -86,7 +86,13 @@ public class MountWorker extends Worker<Path> {
             // Retrieve directory listing of working directory
             final ListWorker worker = new ListWorker(cache, home, listener);
             listener.message(worker.getActivity());
-            cache.put(home, worker.run(session));
+            try {
+                cache.put(home, worker.run(session));
+            }
+            catch(BackgroundException f) {
+                f.addSuppressed(e);
+                throw f;
+            }
             return home;
         }
     }

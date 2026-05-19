@@ -17,9 +17,15 @@ package ch.cyberduck.binding;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.application.NSPopover;
+import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.NSViewController;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.application.WindowListener;
+import ch.cyberduck.binding.foundation.FoundationKitFunctions;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSThread;
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -28,11 +34,14 @@ import ch.cyberduck.core.threading.MainAction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
@@ -164,7 +173,9 @@ public class ProxyController extends AbstractController {
      */
     public int alert(final SheetController sheet, final SheetCallback callback, final AlertRunner runner, final CountDownLatch signal) {
         log.debug("Alert with runner {} and callback {}", runner, callback);
-        alerts.add(runner);
+        synchronized(alerts) {
+            alerts.add(runner);
+        }
         final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
         final CountDownLatch state = new CountDownLatch(1);
         final SheetCallback.DelegatingSheetCallback chain = new SheetCallback.DelegatingSheetCallback(new SheetCallback.ReturnCodeSheetCallback(option), sheet, callback);
@@ -174,7 +185,11 @@ public class ProxyController extends AbstractController {
                 log.info("Load bundle for alert {}", sheet);
                 sheet.loadBundle();
                 runner.alert(sheet.window(), new SheetCallback.DelegatingSheetCallback(new SignalSheetCallback(state),
-                        chain, new SignalSheetCallback(signal), (returncode) -> alerts.remove(runner)));
+                        chain, new SignalSheetCallback(signal), (returncode) -> {
+                    synchronized(alerts) {
+                        alerts.remove(runner);
+                    }
+                }));
             }
         }, true);
         if(!NSThread.isMainThread()) {
@@ -308,6 +323,87 @@ public class ProxyController extends AbstractController {
         public void callback(final int returncode) {
             log.debug("Signal {} after closing sheet with code {}", signal, returncode);
             signal.countDown();
+        }
+    }
+
+    public static class PopoverAlertRunner extends Proxy implements AlertRunner, AlertRunner.CloseHandler, WindowListener {
+        private final NSPopover popover = NSPopover.create();
+        private final NSView positioningView;
+        private final NSRect positioningRect;
+        private final SheetController controller;
+        private final AtomicReference<Proxy> reference = new AtomicReference<>();
+        private final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
+
+        public PopoverAlertRunner(final NSView positioningView, final SheetController controller) {
+            this(positioningView, positioningView.frame(), controller);
+        }
+
+        public PopoverAlertRunner(final NSView positioningView, final NSRect positioningRect, final SheetController controller) {
+            this.positioningView = positioningView;
+            this.positioningRect = positioningRect;
+            this.controller = controller;
+            this.controller.addHandler(this);
+        }
+
+        @Override
+        public void alert(final NSWindow sheet, final SheetCallback callback) {
+            NSApplication.sharedApplication().activateIgnoringOtherApps(true);
+            final Proxy proxy = new PopoverDelegate(controller, option, callback);
+            reference.set(proxy);
+            popover.setDelegate(proxy.id());
+            popover.setAnimates(true);
+            popover.setBehavior(NSPopover.NSPopoverBehaviorSemitransient);
+            final NSViewController viewController = NSViewController.create();
+            viewController.setView(sheet.contentView());
+            popover.setContentViewController(viewController);
+            popover.showRelativeToRect_ofView_preferredEdge(positioningRect, positioningView,
+                    FoundationKitFunctions.NSRectEdge.NSMinYEdge);
+            controller.addListener(this);
+        }
+
+        @Override
+        public void windowDidResize(final NSSize windowFrame) {
+            log.debug("Resize popover to {}", windowFrame);
+            popover.setContentSize(controller.view().fittingSize());
+        }
+
+        @Override
+        public void closed(final NSWindow sheet, final int returncode) {
+            option.set(returncode);
+            popover.performClose(null);
+        }
+    }
+
+    public static final class PopoverDelegate extends Proxy {
+        private final SheetController controller;
+        private final AtomicInteger returncode;
+        private final SheetCallback callback;
+
+        public PopoverDelegate(final SheetController controller, final AtomicInteger returncode, final SheetCallback callback) {
+            this.controller = controller;
+            this.returncode = returncode;
+            this.callback = callback;
+        }
+
+        @Delegate
+        public void popoverWillClose(final NSNotification notification) {
+            final NSObject popoverCloseReasonValue = notification.userInfo().objectForKey(NSPopover.NSPopoverCloseReasonKey);
+            if(popoverCloseReasonValue != null) {
+                if(NSPopover.NSPopoverCloseReasonValue.NSPopoverCloseReasonStandard.equals(popoverCloseReasonValue.toString())) {
+                    log.debug("Notify {} of return code {}", callback, returncode.get());
+                    // No window close notification for popover
+                    controller.invalidate();
+                    callback.callback(returncode.get());
+                }
+                else {
+                    log.debug("Ignore notification {}", notification);
+                }
+            }
+        }
+
+        @Delegate
+        public boolean popoverShouldDetach(final NSPopover popover) {
+            return true;
         }
     }
 }

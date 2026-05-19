@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ linux-self-hosted, macos-self-hosted, windows-self-hosted ]
+        os: [ linux-self-hosted ]
     steps:
       - uses: actions/checkout@v6
       - name: Set up JDK 21
@@ -30,6 +30,6 @@ jobs:
         run: mvn verify -pl protocols -am --no-transfer-progress --batch-mode --fail-at-end -D"enforcer.skip"
       - name: Publish Test Report
         if: ${{ always() }}
-        uses: scacap/action-surefire-report@v1.10.0
+        uses: ScalableCapital/action-surefire-report@v2
         with:
           check_name: Test Report (${{ matrix.os }})

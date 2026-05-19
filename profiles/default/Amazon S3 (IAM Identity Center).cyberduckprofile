@@ -29,6 +29,8 @@
         <string>Amazon S3 (IAM Identity Center)</string>
         <key>Hostname Configurable</key>
         <false/>
+        <key>Port Configurable</key>
+        <false/>
         <key>Scopes</key>
         <array>
             <string>sso:account:access</string>

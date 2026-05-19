@@ -58,7 +58,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class CteraConcurrentTransferWorkerTest extends AbstractCteraDirectIOTest {
+public class CteraConcurrentTransferWorkerTest extends AbstractCteraTest {
 
     @Test
     public void testBelowSegmentSizeUpAndDownload() throws Exception {
