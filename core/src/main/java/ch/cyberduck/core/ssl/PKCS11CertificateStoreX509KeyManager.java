@@ -43,6 +43,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
+import java.security.ProviderException;
 import java.security.Security;
 import java.security.cert.CertificateException;
 
@@ -130,7 +131,8 @@ public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509Ke
                     }
                     return store;
                 }
-                catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException e) {
+                catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException |
+                      ProviderException e) {
                     throw new ConcurrentException(e);
                 }
             }
