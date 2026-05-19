@@ -41,9 +41,6 @@
         <exec executable="/usr/bin/xcrun" failonerror="true">
             <arg line="install_name_tool -id @rpath/${library.name} ${file}"/>
         </exec>
-        <exec executable="codesign" failonerror="true">
-            <arg line="--remove-signature ${file}"/>
-        </exec>
     </target>
 
     <target name="lipo">
