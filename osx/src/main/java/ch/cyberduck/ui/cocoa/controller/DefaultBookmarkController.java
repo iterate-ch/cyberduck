@@ -28,9 +28,9 @@ import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.DefaultCharsetProvider;
-import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
@@ -76,8 +76,8 @@ public class DefaultBookmarkController extends BookmarkController {
     private NSPopUpButton encodingPopup;
 
     private final X509KeyManager x509KeyManager = new DelegatingCertificateStoreX509KeyManager(
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get()),
-            new PKCS11CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
+            new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get()),
+            new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
     );
 
     public DefaultBookmarkController(final Host bookmark) {
