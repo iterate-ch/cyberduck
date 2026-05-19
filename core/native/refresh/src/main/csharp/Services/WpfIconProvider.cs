@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ch.cyberduck.core;
+using ch.cyberduck.core.profiles;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
-    using System.IO;
-
     public class WpfIconProvider : IconProvider<BitmapSource>
     {
         public WpfIconProvider(IconCache cache, IIconProviderImageSource BitmapSource) : base(cache, BitmapSource)
@@ -34,6 +37,10 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             => Get(protocol, protocol.icon(), "Icon", false, out _);
 
         public IEnumerable<BitmapSource> GetResources(string name) => Get(name, name, default, false, out var _);
+
+        public BitmapSource GetThumbnail(ProfileDescription profile, int size)
+            => IconCache.TryGetIcon(profile, size, out BitmapSource image, "Thumbnail")
+            ? image : Get(profile, profile.getThumbnail(), size, "Thumbnail");
 
         protected override BitmapSource Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
         {
@@ -127,7 +134,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             }
         }
 
-        private IEnumerable<BitmapSource> Get(object key, string path, string classifier, bool returnDefault, out BitmapSource @default)
+        private IEnumerable<BitmapSource> Get(object key, string name, string classifier, bool returnDefault, out BitmapSource @default)
         {
             BitmapSource image = default;
             var images = IconCache.Filter<BitmapSource>(((object key, string classifier, int) f) => Equals(key, f.key) && Equals(classifier, f.classifier));
@@ -136,8 +143,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 using (IconCache.WriteLock())
                 {
                     bool isDefault = !IconCache.TryGetIcon<BitmapSource>(key, out _, classifier);
-                    using Stream stream = GetStream(path);
-                    images = GetImages(stream, (c, s) => c.TryGetIcon<BitmapSource>(key, s, out _, classifier), (c, s, i) =>
+                    images = GetImages(name, (c, s) => c.TryGetIcon<BitmapSource>(key, s, out _, classifier), (c, s, i) =>
                     {
                         if (isDefault)
                         {
@@ -155,6 +161,47 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             @default = image;
 
             return images;
+        }
+
+        private IEnumerable<BitmapSource> GetImages(string name, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
+        {
+            if (!TryGetBase64Images(name, getCache, cacheIcon, out var images))
+            {
+                using var stream = GetStream(name);
+                images = GetImages(stream, getCache, cacheIcon);
+            }
+
+            return images;
+        }
+
+        private unsafe bool TryGetBase64Images(string name, GetCacheIconCallback getCache, CacheIconCallback cacheIcon, out IEnumerable<BitmapSource> images)
+        {
+#if NETCOREAPP
+            if (System.Buffers.Text.Base64.IsValid(name))
+            {
+                var buffer = MemoryMarshal.AsBytes(name.AsSpan());
+                fixed (byte* nameLocal = buffer)
+                {
+                    using UnmanagedMemoryStream bufferStream = new(nameLocal, 0, buffer.Length, FileAccess.Read);
+                    // Instead of prefilling the buffer like in .NET Framework, just convert the Base64-buffer on-the-fly.
+                    using var memoryStream = Encoding.CreateTranscodingStream(bufferStream, Encoding.Unicode, Encoding.UTF8);
+                    using CryptoStream imageStream = new(memoryStream, new FromBase64Transform(), CryptoStreamMode.Read);
+#else
+            try
+            {
+                using (MemoryStream imageStream = new(Convert.FromBase64String(name), false))
+                {
+#endif
+                    images = GetImages(imageStream, getCache, cacheIcon);
+                    return true;
+                }
+            } // Close the fixed-Block.
+#if !NETCOREAPP
+            catch { /* We don't have an easy way of validating Base64 input. Let it error out. */ }
+#endif
+
+            images = null;
+            return false;
         }
 
         private IEnumerable<BitmapSource> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
