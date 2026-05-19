@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -83,8 +84,11 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
                 }
             }
         }
-        catch(ConcurrentException | KeyStoreException e) {
-            log.error("Keystore not loaded {}", e.getMessage());
+        catch(ConcurrentException e) {
+            log.error("Keystore not loaded: {}", ExceptionUtils.getRootCause(e).getMessage());
+        }
+        catch(KeyStoreException e) {
+            log.error("Keystore not loaded: {}", e.getMessage());
         }
         list.sort(String::compareTo);
         return list;
