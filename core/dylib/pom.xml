@@ -135,5 +135,12 @@
             <version>0.27.1</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>opensc</groupId>
+            <artifactId>libopensc</artifactId>
+            <type>dylib</type>
+            <version>0.27.1</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 </project>
