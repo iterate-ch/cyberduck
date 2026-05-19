@@ -31,6 +31,18 @@
             </fileset>
             <srcfile/>
         </apply>
+        <apply executable="/usr/bin/xcrun" failonerror="true"
+               type="file" relative="true" dir="${directory}"
+               parallel="false" spawn="false" force="true">
+            <arg line="install_name_tool -id"/>
+            <targetfile/>
+            <fileset dir="${directory}">
+                <include name="*.dylib"/>
+                <include name="*.so"/>
+            </fileset>
+            <srcfile/>
+            <globmapper from="*" to="@rpath/*"/>
+        </apply>
     </target>
 
     <target name="lipo">
