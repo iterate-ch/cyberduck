@@ -27,6 +27,7 @@
             <arg line="install_name_tool -change ${oldname} ${newname}"/>
             <fileset dir="${directory}">
                 <include name="*.dylib"/>
+                <include name="*.so"/>
             </fileset>
             <srcfile/>
         </apply>
