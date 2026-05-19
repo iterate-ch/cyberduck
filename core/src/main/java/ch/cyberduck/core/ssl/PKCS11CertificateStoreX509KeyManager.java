@@ -131,7 +131,7 @@ public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509Ke
                     return store;
                 }
                 catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException e) {
-                    throw new RuntimeException(e);
+                    throw new ConcurrentException(e);
                 }
             }
         };
