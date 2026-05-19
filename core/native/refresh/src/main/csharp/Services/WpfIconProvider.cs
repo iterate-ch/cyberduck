@@ -39,9 +39,16 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         public IEnumerable<BitmapSource> GetResources(string name) => Get(name, name, default, false, out var _);
 
         public BitmapSource GetThumbnail(ProfileDescription profile, int size)
-            => IconCache.TryGetIcon(profile, size, out BitmapSource image, "Thumbnail")
-            ? image : Get(profile, profile.getThumbnail(), size, "Thumbnail");
+        {
+            var thumbnail = profile.getThumbnail();
+            if (!IconCache.TryGetIcon(thumbnail.GetHashCode(), size, out BitmapSource image, "Thumbnail"))
+            {
+                image = Get(thumbnail.GetHashCode(), profile.getThumbnail(), size, "Thumbnail");
+            }
 
+            return image;
+        }
+        
         protected override BitmapSource Get(IntPtr nativeIcon, CacheIconCallback cacheIcon)
         {
             var source = Imaging.CreateBitmapSourceFromHIcon(nativeIcon, default, default);
