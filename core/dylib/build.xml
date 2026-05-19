@@ -31,7 +31,7 @@
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="libcore"/>
 
-    <target name="dylib" if="platform.mac">
+    <target name="dylib">
         <local name="build.settings"/>
         <property name="build.settings"
                   value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
