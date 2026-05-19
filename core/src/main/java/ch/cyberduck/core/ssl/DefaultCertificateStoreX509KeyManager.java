@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.ProviderException;
 import java.security.cert.CertificateException;
 
 public class DefaultCertificateStoreX509KeyManager extends CertificateStoreX509KeyManager {
@@ -71,7 +72,7 @@ public class DefaultCertificateStoreX509KeyManager extends CertificateStoreX509K
                 try {
                     store.load(null, null);
                 }
-                catch(IOException | NoSuchAlgorithmException | CertificateException e) {
+                catch(IOException | NoSuchAlgorithmException | CertificateException | ProviderException e) {
                     log.error("Loading of key store failed. {}", e.getMessage());
                     throw new ConcurrentException(e);
                 }
