@@ -128,5 +128,12 @@
             <version>${jna-version}</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>opensc</groupId>
+            <artifactId>opensc-pkcs11</artifactId>
+            <type>so</type>
+            <version>0.27.1</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 </project>
