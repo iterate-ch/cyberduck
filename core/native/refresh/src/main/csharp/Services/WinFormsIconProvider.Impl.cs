@@ -1,12 +1,10 @@
 ﻿using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using Ch.Cyberduck.Core.Refresh.Media.Imaging;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
@@ -55,98 +53,83 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return images;
         }
 
-        private unsafe bool TryGetBase64Images(string name, GetCacheIconCallback getCache, CacheIconCallback cacheIcon, out IEnumerable<Image> images)
+        private bool TryGetBase64Images(string name, GetCacheIconCallback getCache, CacheIconCallback cacheIcon, out IEnumerable<Image> images)
         {
 #if NETCOREAPP
-            if (System.Buffers.Text.Base64.IsValid(name))
+            if (!Base64.IsValid(name))
             {
-                var buffer = MemoryMarshal.AsBytes(name.AsSpan());
-                fixed (byte* nameLocal = buffer)
-                {
-                    using UnmanagedMemoryStream bufferStream = new(nameLocal, 0, buffer.Length, FileAccess.Read);
-                    // Instead of prefilling the buffer like in .NET Framework, just convert the Base64-buffer on-the-fly.
-                    using var memoryStream = Encoding.CreateTranscodingStream(bufferStream, Encoding.Unicode, Encoding.UTF8);
-                    using CryptoStream imageStream = new(memoryStream, new FromBase64Transform(), CryptoStreamMode.Read);
-#else
+                goto exit;
+            }
+#endif
             try
             {
-                using (MemoryStream imageStream = new(Convert.FromBase64String(name), false))
-                {
-#endif
-                    return TryGetImages(imageStream, getCache, cacheIcon, out images);
-                }
+                using MemoryStream imageStream = new(Convert.FromBase64String(name), false);
+                return TryGetImages(imageStream, getCache, cacheIcon, out images);
             }
-#if !NETCOREAPP
             catch { /* We don't have an easy way of validating Base64 input. Let it error out. */ }
-#endif
 
+#if NETCOREAPP
+        exit:
+#endif
             images = null;
             return false;
         }
 
         private bool TryGetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon, out IEnumerable<Image> images)
         {
-            var source = Image.FromStream(stream);
+            using var source = Image.FromStream(stream);
 
             if (ImageFormat.Gif.Equals(source.RawFormat))
             {
-                // Gif cannot be cached/duplicated/or anything else, really.
-                // underlying stream must not be closed (learned the hard way).
-                //dispose = false;
-                cacheIcon(IconCache, source.Width, source);
-                images = [source];
-                return true;
+                MemoryStream gifStream = new();
+                source.Save(gifStream, ImageFormat.Gif);
+                var image = Image.FromStream(gifStream);
+                cacheIcon(IconCache, source.Width, image);
+                images = [image];
             }
-
-            //dispose = true;
-            using (source)
+            else if (ImageFormat.Icon.Equals(source.RawFormat))
             {
-                if (ImageFormat.Icon.Equals(source.RawFormat))
+                if (!stream.CanSeek)
                 {
-                    if (!stream.CanSeek)
-                    {
-                        images = null;
-                        return false;
-                    }
-
-                    source.Dispose();
-                    stream.Position = 0;
-                    GDIIcon icon = new(stream);
-                    foreach (var item in icon.Frames)
-                    {
-                        cacheIcon(IconCache, item.Width, item);
-                    }
-                    images = icon.Frames;
-                    return true;
+                    images = null;
+                    return false;
                 }
-                else if (ImageFormat.Tiff.Equals(source.RawFormat))
-                {
-                    List<Image> frames = new();
-                    FrameDimension frameDimension = new(source.FrameDimensionsList[0]);
-                    var pageCount = source.GetFrameCount(FrameDimension.Page);
-                    for (int i = 0; i < pageCount; i++)
-                    {
-                        source.SelectActiveFrame(frameDimension, i);
-                        if (getCache(IconCache, source.Width)) continue;
 
-                        Bitmap copy = new(source);
-                        copy.SetResolution(96, 96);
-                        frames.Add(copy);
-                        cacheIcon(IconCache, copy.Width, copy);
-                    }
-                    images = frames;
-                    return true;
-                }
-                else
+                stream.Position = 0;
+                GDIIcon icon = new(stream);
+                foreach (var item in icon.Frames)
                 {
+                    cacheIcon(IconCache, item.Width, item);
+                }
+
+                images = icon.Frames;
+            }
+            else if (ImageFormat.Tiff.Equals(source.RawFormat))
+            {
+                List<Image> frames = new();
+                FrameDimension frameDimension = new(source.FrameDimensionsList[0]);
+                var pageCount = source.GetFrameCount(FrameDimension.Page);
+                for (int i = 0; i < pageCount; i++)
+                {
+                    source.SelectActiveFrame(frameDimension, i);
+                    if (getCache(IconCache, source.Width)) continue;
+
                     Bitmap copy = new(source);
                     copy.SetResolution(96, 96);
+                    frames.Add(copy);
                     cacheIcon(IconCache, copy.Width, copy);
-                    images = [copy];
-                    return true;
                 }
+                images = frames;
+            }
+            else
+            {
+                Bitmap copy = new(source);
+                copy.SetResolution(96, 96);
+                cacheIcon(IconCache, copy.Width, copy);
+                images = [copy];
             }
 
+            return true;
         }
     }
 }
