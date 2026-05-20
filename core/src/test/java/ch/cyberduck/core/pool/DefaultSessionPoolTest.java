@@ -72,7 +72,7 @@ public class DefaultSessionPoolTest {
                 return true;
             }
         };
-        final DefaultSessionPool pool = new DefaultSessionPool(connect,
+        final DefaultSessionPool pool = new DefaultSessionPool(
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), bookmark,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
@@ -102,7 +102,7 @@ public class DefaultSessionPoolTest {
                 return true;
             }
         };
-        final DefaultSessionPool pool = new DefaultSessionPool(connect,
+        final DefaultSessionPool pool = new DefaultSessionPool(
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), bookmark,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
