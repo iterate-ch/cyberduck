@@ -93,6 +93,16 @@
             <param name="newname" value="${bundle.runtime.lib}"/>
             <param name="directory" value="${app.bundle}/${bundle.frameworks}"/>
         </antcall>
+        <foreach target="shared-library-install-name-change" param="file">
+            <path>
+                <fileset dir="${app.bundle}/${bundle.frameworks}">
+                    <include name="libopensc.dylib"/>
+                    <include name="opensc-pkcs11.so"/>
+                </fileset>
+            </path>
+            <param name="oldname" value="/Library/OpenSC/lib/libopensc.13.dylib"/>
+            <param name="newname" value="@rpath/libopensc.dylib"/>
+        </foreach>
         <!-- Remove architectures -->
         <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
             <param name="bundle" value="${app.bundle}"/>
