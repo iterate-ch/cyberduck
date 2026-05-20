@@ -55,24 +55,10 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 .Filter(this.WhenAnyValue(v => v.FilterText)
                     .Throttle(TimeSpan.FromMilliseconds(500))
                     .DistinctUntilChanged()
-                    .Select(v =>
-                    {
-                        SearchProfilePredicate profile = new(v);
-                        return (Func<ProfileDescription, bool>)(p =>
-                        {
-                            try
-                            {
-                                return profile.test(p);
-                            }
-                            catch
-                            {
-                                return false;
-                            }
-                        });
-                    }))
+                    .Select(v => (Func<ProfileDescription, bool>)new SearchProfilePredicate(v).test))
                 .Transform(x => new ProfileViewModel(x))
                 .AsObservableList();
-
+            
             profiles.Connect()
                 .Sort(SortExpressionComparer<ProfileViewModel>.Ascending(x => x.Description))
                 .ObserveOnDispatcher()

@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -67,43 +68,43 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
     }
 
     /**
-     *     {
-     *       "filename": "AWS PrivateLink for Amazon S3 (VPC endpoint).cyberduckprofile",
-     *       "protocol": "s3",
-     *       "vendor": "s3-privatelink",
-     *       "versions": [
-     *         {
-     *           "checksum": "255b117667ac1f0fd1ecfe25ae99440d",
-     *           "modified": "2025-12-02T09:09:07Z",
-     *           "version_id": "sMABDfcz3m0pwQeU85uI2.pW.JTGGT4T",
-     *           "latest": true
-     *         },
-     *         {
-     *           "checksum": "9a6fcc93e68a669952da5e47719af3c9",
-     *           "modified": "2022-09-15T12:55:09Z",
-     *           "version_id": ".iXSL9g6EWEIthW6gENMGgSileSI0XG8",
-     *           "latest": false
-     *         },
-     *         {
-     *           "checksum": "3fbf79c16d3187f135a5fbf32e0cbaf7",
-     *           "modified": "2021-11-30T11:54:30Z",
-     *           "version_id": "S71y2mc.dq8BXtF11g85Z9ZLvulhZDJk",
-     *           "latest": false
-     *         },
-     *         {
-     *           "checksum": "3fbf79c16d3187f135a5fbf32e0cbaf7",
-     *           "modified": "2021-10-27T06:00:55Z",
-     *           "version_id": "E.cXq21hr0xLkqtNMUZjBuZaj2HfA.n9",
-     *           "latest": false
-     *         },
-     *         {
-     *           "checksum": "7188dafb0c649fe123b70cbe5b7bfa40",
-     *           "modified": "2021-10-27T06:00:49Z",
-     *           "version_id": "nosIgW.rj3jrGn9jwdf_S.8fnKMO2ZW1",
-     *           "latest": false
-     *         }
-     *       ]
-     *     }
+     * {
+     * "filename": "AWS PrivateLink for Amazon S3 (VPC endpoint).cyberduckprofile",
+     * "protocol": "s3",
+     * "vendor": "s3-privatelink",
+     * "versions": [
+     * {
+     * "checksum": "255b117667ac1f0fd1ecfe25ae99440d",
+     * "modified": "2025-12-02T09:09:07Z",
+     * "version_id": "sMABDfcz3m0pwQeU85uI2.pW.JTGGT4T",
+     * "latest": true
+     * },
+     * {
+     * "checksum": "9a6fcc93e68a669952da5e47719af3c9",
+     * "modified": "2022-09-15T12:55:09Z",
+     * "version_id": ".iXSL9g6EWEIthW6gENMGgSileSI0XG8",
+     * "latest": false
+     * },
+     * {
+     * "checksum": "3fbf79c16d3187f135a5fbf32e0cbaf7",
+     * "modified": "2021-11-30T11:54:30Z",
+     * "version_id": "S71y2mc.dq8BXtF11g85Z9ZLvulhZDJk",
+     * "latest": false
+     * },
+     * {
+     * "checksum": "3fbf79c16d3187f135a5fbf32e0cbaf7",
+     * "modified": "2021-10-27T06:00:55Z",
+     * "version_id": "E.cXq21hr0xLkqtNMUZjBuZaj2HfA.n9",
+     * "latest": false
+     * },
+     * {
+     * "checksum": "7188dafb0c649fe123b70cbe5b7bfa40",
+     * "modified": "2021-10-27T06:00:49Z",
+     * "version_id": "nosIgW.rj3jrGn9jwdf_S.8fnKMO2ZW1",
+     * "latest": false
+     * }
+     * ]
+     * }
      */
     @Override
     public Set<ProfileDescription> find(final Visitor visitor) throws BackgroundException {
@@ -181,7 +182,7 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
                         final Path file = new Path(directory, metadata.filename, EnumSet.of(Path.Type.file));
                         final Read read = session.getFeature(Read.class);
                         RemoteIndexProfilesFinder.log.info("Download profile {}", file);
-// Read latest version
+                        // Read latest version
                         try(InputStream in = read.read(file.withAttributes(new DefaultPathAttributes(file.attributes())
                                 .setVersionId(version.version_id)), new TransferStatus().setLength(TransferStatus.UNKNOWN_LENGTH), ConnectionCallback.noop); OutputStream out = local.getOutputStream(false)) {
                             IOUtils.copy(in, out);
@@ -225,7 +226,11 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
 
         @Override
         public String getName() {
-            return factory.forName(metadata.protocol).getName();
+            final Protocol protocol = factory.forName(metadata.protocol);
+            if(null == protocol) {
+                return null;
+            }
+            return protocol.getName();
         }
 
         @Override
@@ -244,7 +249,11 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
         @Override
         public String getThumbnail() {
             if(null == metadata.thumbnail) {
-                return factory.forName(metadata.protocol).disk();
+                final Protocol protocol = factory.forName(metadata.protocol);
+                if(null == protocol) {
+                    return null;
+                }
+                return protocol.disk();
             }
             return metadata.thumbnail;
         }

@@ -31,6 +31,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -38,31 +39,40 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class RemoteIndexProfilesFinderTest {
 
     @Test
     public void testFind() throws Exception {
-        final ProtocolFactory protocols = new ProtocolFactory(Collections.singleton(new S3Protocol() {
+        final S3Protocol protocol = new S3Protocol() {
             @Override
             public boolean isEnabled() {
                 return true;
             }
-        }));
+        };
+        final ProtocolFactory protocols = new ProtocolFactory(Collections.singleton(protocol));
         final Session<?> session = new S3Session(new HostParser(protocols).get("s3:/profiles.cyberduck.io")
                 .setCredentials(new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name"))), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(new DisabledProxyFinder(), HostKeyCallback.noop, LoginCallback.noop, CancelCallback.noop);
-        final RemoteIndexProfilesFinder finder = new RemoteIndexProfilesFinder(session);
-        final Set<ProfileDescription> stream = finder.find();
-        assertFalse(stream.isEmpty());
+        final RemoteIndexProfilesFinder finder = new RemoteIndexProfilesFinder(protocols, session);
+        final Set<ProfileDescription> set = finder.find();
+        assertFalse(set.isEmpty());
         // Check for versions of S3 (HTTP).cyberduckprofile
-        assertFalse(stream.stream().filter(ProfileDescription::isLatest).collect(Collectors.toSet()).isEmpty());
-        assertFalse(stream.stream().filter(description -> !description.isLatest()).collect(Collectors.toSet()).isEmpty());
-        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("b9afd8d6da91e7b520559fa9eaac54c1"))));
-        assertTrue(stream.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("19ecbfe2d8f09644197c1ef53e207792"))));
+        assertFalse(set.stream().filter(ProfileDescription::isLatest).collect(Collectors.toSet()).isEmpty());
+        assertFalse(set.stream().filter(description -> !description.isLatest()).collect(Collectors.toSet()).isEmpty());
+        assertTrue(set.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("b9afd8d6da91e7b520559fa9eaac54c1"))));
+        assertTrue(set.stream().anyMatch(description -> description.getChecksum().equals(Checksum.parse("19ecbfe2d8f09644197c1ef53e207792"))));
+        set.forEach(d -> {
+            if(protocol.getIdentifier().equals(d.getIdentifier())) {
+                assertNotNull(d.getName());
+            }
+            else {
+                assertNull(d.getName());
+            }
+            assertTrue(new SearchProfilePredicate(StringUtils.EMPTY).test(d));
+        });
         session.close();
     }
 }
