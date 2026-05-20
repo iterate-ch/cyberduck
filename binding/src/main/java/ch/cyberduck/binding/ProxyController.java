@@ -384,6 +384,9 @@ public class ProxyController extends AbstractController {
         @Override
         public void windowDidResize(final NSSize windowFrame) {
             log.debug("Resize popover to {}", windowFrame);
+            if(popover.isDetached()) {
+                return;
+            }
             final NSSize intrinsicContentSize = controller.view().intrinsicContentSize();
             // Adjust height only
             popover.setContentSize(new NSSize(popover.contentSize().width.doubleValue(), intrinsicContentSize.height.doubleValue()));
