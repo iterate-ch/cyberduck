@@ -42,16 +42,5 @@
         </exec>
     </target>
 
-    <target name="build" depends="version,dylib">
-        <foreach target="shared-library-install-name-change" param="file">
-            <path>
-                <fileset dir="${build}">
-                    <include name="libopensc.dylib"/>
-                    <include name="opensc-pkcs11.so"/>
-                </fileset>
-            </path>
-            <param name="oldname" value="/Library/OpenSC/lib/libopensc.13.dylib"/>
-            <param name="newname" value="@rpath/libopensc.dylib"/>
-        </foreach>
-    </target>
+    <target name="build" depends="version,dylib"/>
 </project>
