@@ -110,13 +110,12 @@ public class B2ConcurrentTransferWorkerTest extends AbstractB2Test {
                 return super.getProperty(key);
             }
         };
-        final LoginConnectionService connect = new LoginConnectionService(LoginCallback.noop,
-                HostKeyCallback.noop,
-                new TestPasswordStore(),
-                ProgressListener.noop);
-        final DefaultSessionPool pool = new DefaultSessionPool(connect,
+        final DefaultSessionPool pool = new DefaultSessionPool(
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host,
-                new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                new GenericObjectPool<>(new PooledSessionFactory(new LoginConnectionService(LoginCallback.noop,
+                        HostKeyCallback.noop,
+                        new TestPasswordStore(),
+                        ProgressListener.noop), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         host, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
                     @Override
                     public Session create() {

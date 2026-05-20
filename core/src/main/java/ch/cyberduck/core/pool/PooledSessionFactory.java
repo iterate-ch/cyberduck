@@ -33,7 +33,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
+public class PooledSessionFactory extends BasePooledObjectFactory<Session<?>> {
     private static final Logger log = LogManager.getLogger(PooledSessionFactory.class);
 
     private final ConnectionService connect;
@@ -52,32 +52,32 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     }
 
     @Override
-    public Session create() {
+    public Session<?> create() {
         log.debug("Create new session for host {} in pool", bookmark);
         return SessionFactory.create(bookmark, trust, key).withRegistry(registry);
     }
 
     @Override
-    public PooledObject<Session> wrap(final Session session) {
+    public PooledObject<Session<?>> wrap(final Session<?> session) {
         return new DefaultPooledObject<>(session);
     }
 
     @Override
-    public void activateObject(final PooledObject<Session> p) throws BackgroundException {
-        final Session session = p.getObject();
+    public void activateObject(final PooledObject<Session<?>> p) throws BackgroundException {
+        final Session<?> session = p.getObject();
         log.debug("Activate session {}", session);
         connect.check(session, CancelCallback.noop);
     }
 
     @Override
-    public void passivateObject(final PooledObject<Session> p) {
-        final Session session = p.getObject();
+    public void passivateObject(final PooledObject<Session<?>> p) {
+        final Session<?> session = p.getObject();
         log.debug("Pause session {}", session);
     }
 
     @Override
-    public void destroyObject(final PooledObject<Session> p) throws BackgroundException {
-        final Session session = p.getObject();
+    public void destroyObject(final PooledObject<Session<?>> p) throws BackgroundException {
+        final Session<?> session = p.getObject();
         log.debug("Destroy session {}", session);
         connect.close(session);
     }

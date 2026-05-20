@@ -55,9 +55,9 @@ public class DefaultSessionPool implements SessionPool {
 
     private final VaultRegistry registry;
 
-    private final GenericObjectPool<Session> pool;
+    private final GenericObjectPool<Session<?>> pool;
 
-    private static final GenericObjectPoolConfig<Session> configuration = new GenericObjectPoolConfig<>();
+    private static final GenericObjectPoolConfig<Session<?>> configuration = new GenericObjectPoolConfig<>();
 
     static {
         configuration.setJmxEnabled(false);
@@ -74,12 +74,12 @@ public class DefaultSessionPool implements SessionPool {
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final VaultRegistry registry, final TranscriptListener transcript, final Host bookmark) {
-        this(connect, registry, transcript, bookmark,
+        this(registry, transcript, bookmark,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, trust, key, bookmark, registry), configuration, abandon));
     }
 
-    public DefaultSessionPool(final ConnectionService connect, final VaultRegistry registry, final TranscriptListener transcript,
-                              final Host bookmark, final GenericObjectPool<Session> pool) {
+    public DefaultSessionPool(final VaultRegistry registry, final TranscriptListener transcript,
+                              final Host bookmark, final GenericObjectPool<Session<?>> pool) {
         this.transcript = transcript;
         this.bookmark = bookmark;
         this.registry = registry;
