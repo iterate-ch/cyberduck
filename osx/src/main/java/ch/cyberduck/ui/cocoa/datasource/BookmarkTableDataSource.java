@@ -27,16 +27,12 @@ import ch.cyberduck.binding.application.NSTableView;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.binding.foundation.NSMutableArray;
-import ch.cyberduck.binding.foundation.NSMutableDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
-import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.threading.WindowMainAction;
@@ -44,8 +40,8 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.ui.browser.BookmarkColumn;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
+import ch.cyberduck.ui.cocoa.controller.HostController;
 import ch.cyberduck.ui.cocoa.controller.TransferControllerFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,12 +56,15 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 public class BookmarkTableDataSource extends ListDataSource {
     private static final Logger log = LogManager.getLogger(BookmarkTableDataSource.class);
+
+    private final Map<Host, HostController> controllers
+            = new HashMap<>();
 
     protected final BrowserController controller;
 
@@ -92,57 +91,7 @@ public class BookmarkTableDataSource extends ListDataSource {
     public void setSource(final AbstractHostCollection source) {
         this.source.removeListener(listener); //Remove previous listener
         this.source = source;
-        this.source.addListener(listener = new CollectionListener<Host>() {
-            private ScheduledFuture<?> delayed = null;
-
-            @Override
-            public void collectionLoaded() {
-                controller.invoke(new WindowMainAction(controller) {
-                    @Override
-                    public void run() {
-                        controller.reloadBookmarks();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemAdded(final Host item) {
-                controller.invoke(new WindowMainAction(controller) {
-                    @Override
-                    public void run() {
-                        controller.reloadBookmarks();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemRemoved(final Host item) {
-                controller.invoke(new WindowMainAction(controller) {
-                    @Override
-                    public void run() {
-                        controller.reloadBookmarks();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemChanged(final Host item) {
-                if(null != delayed) {
-                    delayed.cancel(false);
-                }
-                // Delay to 1 second. When typing changes we don't have to save every iteration.
-                delayed = timerPool.schedule(new Runnable() {
-                    public void run() {
-                        controller.invoke(new WindowMainAction(controller) {
-                            @Override
-                            public void run() {
-                                controller.reloadBookmarks();
-                            }
-                        });
-                    }
-                }, 1L, TimeUnit.SECONDS);
-            }
-        });
+        this.source.addListener(listener = new BookmarkReloadListener());
         this.setFilter(null);
     }
 
@@ -178,50 +127,26 @@ public class BookmarkTableDataSource extends ListDataSource {
         return filtered;
     }
 
+    public HostController getController(final int row) {
+        return this.getController(this.getSource().get(row));
+    }
+
+    public HostController getController(final Host host) {
+        if(!controllers.containsKey(host)) {
+            final HostController c = new HostController(controller, host);
+            controllers.put(host, c);
+        }
+        return controllers.get(host);
+    }
+
     @Override
     public NSInteger numberOfRowsInTableView(NSTableView view) {
         return new NSInteger(this.getSource().size());
     }
 
     @Override
-    public NSObject tableView_objectValueForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn,
-                                                            final NSInteger row) {
-        if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
-            return null;
-        }
-        final String identifier = tableColumn.identifier();
-        final Host host = this.getSource().get(row.intValue());
-        if(identifier.equals(BookmarkColumn.icon.name())) {
-            return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
-                PreferencesFactory.get().getInteger("bookmark.icon.size"));
-        }
-        if(identifier.equals(BookmarkColumn.bookmark.name())) {
-            final NSMutableDictionary dict = NSMutableDictionary.dictionary();
-            dict.setObjectForKey(BookmarkNameProvider.toString(host), "Nickname");
-            dict.setObjectForKey(host.getHostname(), "Hostname");
-            if(StringUtils.isNotBlank(host.getCredentials().getUsername())) {
-                dict.setObjectForKey(host.getCredentials().getUsername(), "Username");
-            }
-            final String comment = this.getSource().getComment(host);
-            if(StringUtils.isNotBlank(comment)) {
-                dict.setObjectForKey(comment, "Comment");
-            }
-            return dict;
-        }
-        if(identifier.equals(BookmarkColumn.status.name())) {
-            final SessionPool session = controller.getSession();
-            if(host.equals(session.getHost())) {
-                switch(session.getState()) {
-                    case open:
-                        return IconCacheFactory.<NSImage>get().iconNamed("NSStatusAvailable", 16);
-                    case opening:
-                    case closing:
-                        return IconCacheFactory.<NSImage>get().iconNamed("NSStatusPartiallyAvailable", 16);
-                }
-            }
-            return null;
-        }
-        throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
+    public NSObject tableView_objectValueForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn, final NSInteger row) {
+        return null;
     }
 
     /**
@@ -531,4 +456,43 @@ public class BookmarkTableDataSource extends ListDataSource {
         return promisedDragNames;
     }
 
+    private final class BookmarkReloadListener implements CollectionListener<Host> {
+        @Override
+        public void collectionLoaded() {
+            controller.invoke(new WindowMainAction(controller) {
+                @Override
+                public void run() {
+                    controller.reloadBookmarks();
+                }
+            });
+        }
+
+        @Override
+        public void collectionItemAdded(final Host item) {
+            controller.invoke(new WindowMainAction(controller) {
+                @Override
+                public void run() {
+                    controller.reloadBookmarks();
+                }
+            });
+        }
+
+        @Override
+        public void collectionItemRemoved(final Host item) {
+            controller.invoke(new WindowMainAction(controller) {
+                @Override
+                public void run() {
+                    controller.reloadBookmarks();
+                }
+            });
+        }
+
+        @Override
+        public void collectionItemChanged(final Host item) {
+            final HostController controller = controllers.get(item);
+            if(null != controller) {
+                controller.update();
+            }
+        }
+    }
 }

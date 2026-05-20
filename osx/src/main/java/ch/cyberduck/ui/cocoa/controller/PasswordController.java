@@ -129,12 +129,10 @@ public class PasswordController extends AlertController {
 
     @Override
     public boolean validate(final int option) {
-        if(option == SheetCallback.ALTERNATE_OPTION) {
-            if(options.anonymous) {
-                return true;
-            }
+        if(option == DEFAULT_OPTION) {
+            return StringUtils.isNotBlank(inputField.stringValue());
         }
-        return StringUtils.isNotBlank(inputField.stringValue());
+        return true;
     }
 
     @Override

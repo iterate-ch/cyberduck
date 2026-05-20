@@ -15,6 +15,7 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
@@ -30,7 +31,7 @@ import org.rococoa.ID;
 
 public class TaskController extends BundleController {
 
-    private final BackgroundAction task;
+    private final BackgroundAction<?> task;
 
     @Outlet
     private NSTextField name;
@@ -43,23 +44,27 @@ public class TaskController extends BundleController {
     @Outlet
     private NSView view;
 
-    public TaskController(final BackgroundAction task) {
+    public TaskController(final BackgroundAction<?> task) {
         this.task = task;
     }
 
+    @Outlet
     public void setName(NSTextField name) {
         this.name = name;
         this.name.setStringValue(task.getName());
     }
 
+    @Outlet
     public void setText(NSTextField text) {
         this.text = text;
         this.text.setStringValue(task.getActivity());
     }
 
+    @Outlet
     public void setProgress(NSProgressIndicator progress) {
         this.progress = progress;
         this.progress.setDisplayedWhenStopped(false);
+        this.progress.setUsesThreadedAnimation(true);
         this.progress.setIndeterminate(true);
         if(task.isRunning()) {
             this.progress.startAnimation(null);
@@ -95,17 +100,19 @@ public class TaskController extends BundleController {
         });
     }
 
+    @Outlet
     public void setStopButton(NSButton stopButton) {
         this.stopButton = stopButton;
         this.stopButton.setTarget(this.id());
         this.stopButton.setAction(Foundation.selector("stopButtonClicked:"));
     }
 
+    @Action
     public void stopButtonClicked(final ID sender) {
         task.cancel();
     }
 
-    public void setView(NSView view) {
+    public void setView(final NSView view) {
         this.view = view;
     }
 

@@ -4,7 +4,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
+        <customObject id="-2" userLabel="File's Owner">
             <connections>
                 <outlet property="applicationMenu" destination="227" id="355"/>
                 <outlet property="archiveMenu" destination="273" id="356"/>
@@ -30,14 +30,14 @@
                 <menuItem title="Cyberduck" id="226">
                     <menu key="submenu" title="Cyberduck" systemMenu="apple" id="227">
                         <items>
-                            <menuItem title="Cyberduck에 관하여" id="228">
+                            <menuItem title="About Cyberduck" id="228">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="aboutMenuClicked:" target="-2" id="366"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="업데이트 확인…" id="229">
+                            <menuItem title="Check for Update…" id="229">
                                 <connections>
                                     <action selector="updateMenuClicked:" target="-2" id="367"/>
                                 </connections>
@@ -61,18 +61,18 @@
                             <menuItem isSeparatorItem="YES" id="234">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="서비스" id="235">
-                                <menu key="submenu" title="서비스" systemMenu="services" id="236"/>
+                            <menuItem title="Services" id="235">
+                                <menu key="submenu" title="Services" systemMenu="services" id="236"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="237">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Cyberduck 숨기기" keyEquivalent="h" id="238">
+                            <menuItem title="Hide Cyberduck" keyEquivalent="h" id="238">
                                 <connections>
                                     <action selector="hide:" target="224" id="370"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="다른 윈도우 숨기기" keyEquivalent="h" id="239">
+                            <menuItem title="Hide Others" keyEquivalent="h" id="239">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="hideOtherApplications:" target="224" id="371"/>
@@ -86,7 +86,7 @@
                             <menuItem isSeparatorItem="YES" id="241">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Cyberduck 끝내기" keyEquivalent="q" id="242">
+                            <menuItem title="Quit Cyberduck" keyEquivalent="q" id="242">
                                 <connections>
                                     <action selector="terminate:" target="224" id="373"/>
                                 </connections>
@@ -103,28 +103,28 @@
                             </attributes>
                         </fragment>
                     </attributedString>
-                    <menu key="submenu" title="파일" id="244">
+                    <menu key="submenu" title="File" id="244">
                         <items>
-                            <menuItem title="새 브라우저" tag="1" keyEquivalent="n" id="245">
+                            <menuItem title="New Browser" tag="1" keyEquivalent="n" id="245">
                                 <attributedString key="attributedTitle"/>
                                 <connections>
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="연결 시도" keyEquivalent="o" id="246">
+                            <menuItem title="Open Connection…" keyEquivalent="o" id="246">
                                 <connections>
                                     <action selector="connectButtonClicked:" target="-1" id="375"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="247"/>
-                            <menuItem title="새 다운로드" keyEquivalent="" id="248">
+                            <menuItem title="New Download" keyEquivalent="" id="248">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="newDownloadMenuClicked:" target="-2" id="376"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="249"/>
-                            <menuItem title="새 폴더…" keyEquivalent="N" id="250">
+                            <menuItem title="New Folder…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
@@ -135,36 +135,36 @@
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="새 파일…" keyEquivalent="f" id="251">
+                            <menuItem title="New File…" keyEquivalent="f" id="251">
                                 <connections>
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="새 심볼릭 링크…" id="252">
+                            <menuItem title="New Symbolic Link…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="255"/>
-                            <menuItem title="파일이름 변경…" id="253">
+                            <menuItem title="Rename…" id="253">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="복제…" keyEquivalent="d" id="254">
+                            <menuItem title="Duplicate…" keyEquivalent="d" id="254">
                                 <connections>
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="t4E-eL-Tgs"/>
-                            <menuItem title="정보" image="info.circle" catalog="system" tag="2" keyEquivalent="i" id="261">
+                            <menuItem title="Info" image="info.circle" catalog="system" tag="2" keyEquivalent="i" id="261">
                                 <connections>
                                     <action selector="infoButtonClicked:" target="-1" id="383"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="훑어보기" image="eye.circle" catalog="system" id="260">
+                            <menuItem title="Quick Look" image="eye.circle" catalog="system" id="260">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -176,7 +176,7 @@
                                 <menu key="submenu" title="다음의 프로그램으로 편집" id="259"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="262"/>
-                            <menuItem title="다운로드" keyEquivalent="" id="263">
+                            <menuItem title="Download" keyEquivalent="" id="263">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
                                     <action selector="downloadButtonClicked:" target="-1" id="384"/>
@@ -215,7 +215,7 @@ CA
                                     <action selector="deleteFileButtonClicked:" target="-1" id="389"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="원상태로" id="270">
+                            <menuItem title="Revert" id="270">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
@@ -228,7 +228,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="271"/>
-                            <menuItem title="금고 잠그기" keyEquivalent="l" id="bBu-IP-reP">
+                            <menuItem title="Lock Vault" keyEquivalent="l" id="bBu-IP-reP">
                                 <connections>
                                     <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="GdE-9v-Sbq"/>
                                 </connections>
@@ -244,7 +244,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Xdd-Sj-x3y"/>
-                            <menuItem title="URL 열기" id="256">
+                            <menuItem title="Open URL" id="256">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="URL 열기" id="257"/>
                             </menuItem>
@@ -362,10 +362,24 @@ CA
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="직접 가기" id="306">
-                    <menu key="submenu" title="직접 가기" id="307">
+                <menuItem title="Go" id="306">
+                    <menu key="submenu" title="Go" id="307">
                         <items>
-                            <menuItem title="새로 고침" keyEquivalent="r" id="308">
+                            <menuItem title="Connect" id="6X5-2H-kSb">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="connectBookmarkButtonClicked:" target="-1" id="Eei-nI-ZKE"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Disconnect" keyEquivalent="y" id="qbG-8n-3N3">
+                                <connections>
+                                    <action selector="disconnectButtonClicked:" target="-1" id="5pF-4d-jNq"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Refresh" keyEquivalent="r" id="308">
                                 <connections>
                                     <action selector="reloadButtonClicked:" target="-1" id="406"/>
                                 </connections>
@@ -391,24 +405,24 @@ CA
                                     <action selector="upButtonClicked:" target="-1" id="410"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="하위 폴더" keyEquivalent="" id="314">
+                            <menuItem title="Inside" keyEquivalent="" id="314">
                                 <connections>
                                     <action selector="insideButtonClicked:" target="-1" id="411"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="검색…" keyEquivalent="/" id="315">
+                            <menuItem title="Search…" keyEquivalent="/" id="315">
                                 <connections>
                                     <action selector="searchButtonClicked:" target="-1" id="412"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="316"/>
-                            <menuItem title="명령어 보내기…" keyEquivalent="c" id="317">
+                            <menuItem title="Send Command…" keyEquivalent="c" id="317">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="터미널.app에서 열기" id="318">
+                            <menuItem title="Open in Terminal" id="318">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openTerminalButtonClicked:" target="-1" id="414"/>
@@ -420,27 +434,22 @@ CA
                                     <action selector="interruptButtonClicked:" target="-1" id="415"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="접속 종료" keyEquivalent="y" id="321">
-                                <connections>
-                                    <action selector="disconnectButtonClicked:" target="-1" id="416"/>
-                                </connections>
-                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="책갈피" id="322">
-                    <menu key="submenu" title="책갈피" id="323">
+                <menuItem title="Bookmark" id="322">
+                    <menu key="submenu" title="Bookmark" id="323">
                         <items>
-                            <menuItem title="책갈피 토글" keyEquivalent="b" id="324">
+                            <menuItem title="Toggle Bookmarks" keyEquivalent="b" id="324">
                                 <connections>
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="다음으로 정렬" id="325">
+                            <menuItem title="Sort By" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="다음으로 정렬" id="326">
+                                <menu key="submenu" title="Sort By" id="326">
                                     <items>
-                                        <menuItem title="별명" keyEquivalent="1" id="327">
+                                        <menuItem title="Nickname" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>
@@ -462,23 +471,23 @@ CA
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="330"/>
-                            <menuItem title="새 책갈피" keyEquivalent="B" id="331">
+                            <menuItem title="New Bookmark" keyEquivalent="B" id="331">
                                 <connections>
                                     <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="책갈피 삭제" id="332">
+                            <menuItem title="Delete Bookmark" id="332">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="deleteBookmarkButtonClicked:" target="-1" id="422"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="책갈피 편집" keyEquivalent="e" id="333">
+                            <menuItem title="Edit Bookmark" keyEquivalent="e" id="333">
                                 <connections>
                                     <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="책갈피 복제" id="334">
+                            <menuItem title="Duplicate Bookmark" id="334">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
@@ -497,12 +506,12 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" tag="1" id="339"/>
-                            <menuItem title="전송" keyEquivalent="t" id="340">
+                            <menuItem title="Transfers" keyEquivalent="t" id="340">
                                 <connections>
                                     <action selector="showTransferQueueClicked:" target="-1" id="426"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="활동" keyEquivalent="0" id="341">
+                            <menuItem title="Activity" keyEquivalent="0" id="341">
                                 <connections>
                                     <action selector="showActivityWindowClicked:" target="-1" id="427"/>
                                 </connections>
@@ -538,7 +547,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="349"/>
-                            <menuItem title="버그 보고하기" id="350">
+                            <menuItem title="Report a Bug" id="350">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="bugreportMenuClicked:" target="-2" id="432"/>
@@ -563,6 +572,7 @@ CA
                     </connections>
                 </menuItem>
             </items>
+            <point key="canvasLocation" x="139" y="51"/>
         </menu>
     </objects>
     <resources>

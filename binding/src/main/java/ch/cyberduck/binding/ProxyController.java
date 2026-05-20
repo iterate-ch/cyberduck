@@ -163,6 +163,16 @@ public class ProxyController extends AbstractController {
             = new HashSet<>();
 
     /**
+     * @param sheet    Controller for alert window
+     * @param callback Handler invoked after sheet is dismissed with selected option
+     * @param runner   Implementation to display alert window
+     * @return Selected alert option by user
+     */
+    public int alert(final SheetController sheet, final SheetCallback callback, final AlertRunner runner) {
+        return this.alert(sheet, callback, runner, new CountDownLatch(1));
+    }
+
+    /**
      * Display as sheet attached to window of parent controller
      *
      * @param sheet    Alert window controller
@@ -333,16 +343,26 @@ public class ProxyController extends AbstractController {
         private final SheetController controller;
         private final AtomicReference<Proxy> reference = new AtomicReference<>();
         private final AtomicInteger option = new AtomicInteger(SheetCallback.CANCEL_OPTION);
+        private final int behaviour;
 
         public PopoverAlertRunner(final NSView positioningView, final SheetController controller) {
             this(positioningView, positioningView.frame(), controller);
         }
 
+        public PopoverAlertRunner(final NSView positioningView, final SheetController controller, final int behaviour) {
+            this(positioningView, positioningView.frame(), controller, behaviour);
+        }
+
         public PopoverAlertRunner(final NSView positioningView, final NSRect positioningRect, final SheetController controller) {
+            this(positioningView, positioningRect, controller, NSPopover.NSPopoverBehaviorSemitransient);
+        }
+
+        public PopoverAlertRunner(final NSView positioningView, final NSRect positioningRect, final SheetController controller, final int behaviour) {
             this.positioningView = positioningView;
             this.positioningRect = positioningRect;
             this.controller = controller;
             this.controller.addHandler(this);
+            this.behaviour = behaviour;
         }
 
         @Override
@@ -351,8 +371,8 @@ public class ProxyController extends AbstractController {
             final Proxy proxy = new PopoverDelegate(controller, option, callback);
             reference.set(proxy);
             popover.setDelegate(proxy.id());
-            popover.setAnimates(true);
-            popover.setBehavior(NSPopover.NSPopoverBehaviorSemitransient);
+            popover.setAnimates(false);
+            popover.setBehavior(behaviour);
             final NSViewController viewController = NSViewController.create();
             viewController.setView(sheet.contentView());
             popover.setContentViewController(viewController);
@@ -364,7 +384,9 @@ public class ProxyController extends AbstractController {
         @Override
         public void windowDidResize(final NSSize windowFrame) {
             log.debug("Resize popover to {}", windowFrame);
-            popover.setContentSize(controller.view().fittingSize());
+            final NSSize intrinsicContentSize = controller.view().intrinsicContentSize();
+            // Adjust height only
+            popover.setContentSize(new NSSize(popover.contentSize().width.doubleValue(), intrinsicContentSize.height.doubleValue()));
         }
 
         @Override
@@ -405,5 +427,17 @@ public class ProxyController extends AbstractController {
         public boolean popoverShouldDetach(final NSPopover popover) {
             return true;
         }
+    }
+
+    /**
+     * Adjust frame of subview to match the parent view and attach with translating autoresizing mask into constraints
+     *
+     * @param parent  Container View
+     * @param subview Content View
+     */
+    protected void addSubview(final NSView parent, final NSView subview) {
+        subview.setTranslatesAutoresizingMaskIntoConstraints(true);
+        subview.setFrame(parent.bounds());
+        parent.addSubview(subview);
     }
 }

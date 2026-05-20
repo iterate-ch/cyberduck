@@ -180,9 +180,8 @@ public class LoginController extends AlertController {
 
     @Override
     public boolean validate(final int option) {
-        switch(option) {
-            case DEFAULT_OPTION:
-                return super.validate(option);
+        if(option == DEFAULT_OPTION) {
+            return super.validate(option);
         }
         return true;
     }
@@ -221,7 +220,8 @@ public class LoginController extends AlertController {
         }
     }
 
-    public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
+    @Action
+    public void privateKeyPanelDidEnprivateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
                 final NSObject url = privateKeyOpenPanel.URLs().lastObject();
