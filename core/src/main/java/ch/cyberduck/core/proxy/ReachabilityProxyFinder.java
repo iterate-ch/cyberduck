@@ -38,7 +38,7 @@ public class ReachabilityProxyFinder implements ProxyFinder, Reachability.Callba
 
     public ReachabilityProxyFinder(final Host host, final ProxyFinder delegate, final Reachability reachability) {
         this.delegate = delegate;
-        this.monitor = reachability.monitor(host, this);
+        this.monitor = reachability.monitor(host, this).start();
     }
 
     @Override
