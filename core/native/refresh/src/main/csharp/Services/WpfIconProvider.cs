@@ -41,10 +41,15 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         public BitmapSource GetThumbnail(ProfileDescription profile, int size)
         {
-            var thumbnail = profile.getThumbnail();
-            if (!IconCache.TryGetIcon(thumbnail.GetHashCode(), size, out BitmapSource image, "Thumbnail"))
+            if (profile.getThumbnail() is not { } thumbnail)
             {
-                image = Get(thumbnail.GetHashCode(), profile.getThumbnail(), size, "Thumbnail", true);
+                return null;
+            }
+
+            var key = thumbnail.GetHashCode();
+            if (!IconCache.TryGetIcon(key, size, out BitmapSource image, "Thumbnail"))
+            {
+                image = Get(key, thumbnail, size, "Thumbnail", true);
             }
 
             return image;
