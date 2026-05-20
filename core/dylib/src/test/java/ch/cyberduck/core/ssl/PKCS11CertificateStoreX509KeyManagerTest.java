@@ -28,9 +28,16 @@ import static org.junit.Assert.assertTrue;
 public class PKCS11CertificateStoreX509KeyManagerTest {
 
     @Test
-    public void testList() {
+    public void testListBundled() {
         final PKCS11CertificateStoreX509KeyManager manager = new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop,
                 new Host(new TestProtocol()), new DisabledCertificateStore(), LoginCallback.noop, "opensc-pkcs11.so");
+        assertTrue(manager.list().isEmpty());
+    }
+
+    @Test
+    public void testListInstalled() {
+        final PKCS11CertificateStoreX509KeyManager manager = new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop,
+                new Host(new TestProtocol()), new DisabledCertificateStore(), LoginCallback.noop, "/opt/homebrew/lib/opensc-pkcs11.so");
         assertTrue(manager.list().isEmpty());
     }
 }
