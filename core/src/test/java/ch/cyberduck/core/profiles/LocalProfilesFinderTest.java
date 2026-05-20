@@ -16,10 +16,8 @@ package ch.cyberduck.core.profiles;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
 
@@ -32,7 +30,7 @@ public class LocalProfilesFinderTest {
 
     @Test
     public void find() throws Exception {
-        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        final ProtocolFactory protocols = new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.s3;
@@ -42,11 +40,8 @@ public class LocalProfilesFinderTest {
             public boolean isEnabled() {
                 return false;
             }
-        })));
-        final Profile profile = reader.read(
-            new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
-        );
-        final LocalProfilesFinder finder = new LocalProfilesFinder(ProtocolFactory.get(), new Local("src/test/resources/"));
+        }));
+        final LocalProfilesFinder finder = new LocalProfilesFinder(protocols, new Local("src/test/resources/"));
         final Set<ProfileDescription> stream = finder.find();
         assertFalse(stream.isEmpty());
     }
