@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                             IconCache.CacheIcon<Image>(key, s, classifier);
                         }
                         IconCache.CacheIcon(key, s, i, classifier);
-                    }, out _);
+                    });
                 }
             }
 
@@ -41,7 +41,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return images;
         }
 
-        private IEnumerable<Image> GetImages(string name, GetCacheIconCallback getCache, CacheIconCallback cacheIcon, out bool dispose)
+        private IEnumerable<Image> GetImages(string name, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
         {
             if (!TryGetBase64Images(name, getCache, cacheIcon, out var images))
             {
@@ -49,7 +49,6 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 _ = TryGetImages(stream, getCache, cacheIcon, out images);
             }
 
-            dispose = false;
             return images;
         }
 
