@@ -35,7 +35,7 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
 
     private final ProtocolFactory registry;
     private final LocalProfilesFinder local;
-    private final RemoteProfilesFinder remote;
+    private final RemoteIndexProfilesFinder remote;
 
     public ProtocolFactoryProfilesSynchronizer(final Session<?> session) {
         this(ProtocolFactory.get(), session, LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
@@ -50,22 +50,22 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
 
     public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final LocalProfilesFinder local, final Session<?> session) {
         this(registry, local,
-                // Find all profiles from repository
-                new RemoteProfilesFinder(registry, session));
+                // Find index of all profiles from repository
+                new RemoteIndexProfilesFinder(registry, session));
     }
 
-    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final RemoteProfilesFinder remote) {
+    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final RemoteIndexProfilesFinder remote) {
         this(registry, LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
                 PreferencesFactory.get().getProperty("profiles.folder.name")), remote);
     }
 
-    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final Local directory, final RemoteProfilesFinder remote) {
+    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final Local directory, final RemoteIndexProfilesFinder remote) {
         this(registry,
                 // Find all locally installed profiles
                 new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE), remote);
     }
 
-    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final LocalProfilesFinder local, final RemoteProfilesFinder remote) {
+    public ProtocolFactoryProfilesSynchronizer(final ProtocolFactory registry, final LocalProfilesFinder local, final RemoteIndexProfilesFinder remote) {
         this.registry = registry;
         this.local = local;
         this.remote = remote;

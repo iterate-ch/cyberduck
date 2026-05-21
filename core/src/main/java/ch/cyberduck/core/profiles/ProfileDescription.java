@@ -53,12 +53,12 @@ public class ProfileDescription {
 
     /**
      * @param protocols Registered protocols
-     * @param parent    Filter to apply for parent protocol reference in registered protocols
+     * @param filter    Filter to apply for parent protocol reference in registered protocols
      * @param checksum  Checksum of connection profile
      * @param local     File on disk
      */
-    public ProfileDescription(final ProtocolFactory protocols, final Predicate<Protocol> parent, final Checksum checksum, final Local local) {
-        this(protocols, parent, new LazyInitializer<Checksum>() {
+    public ProfileDescription(final ProtocolFactory protocols, final Predicate<Protocol> filter, final Checksum checksum, final Local local) {
+        this(protocols, filter, new LazyInitializer<Checksum>() {
             @Override
             protected Checksum initialize() {
                 return checksum;
@@ -71,7 +71,7 @@ public class ProfileDescription {
         });
     }
 
-    public ProfileDescription(final ProtocolFactory protocols, final Predicate<Protocol> parent,
+    public ProfileDescription(final ProtocolFactory protocols, final Predicate<Protocol> filter,
                               final LazyInitializer<Checksum> checksum, final LazyInitializer<Local> local) {
         this.checksum = checksum;
         this.local = local;
@@ -79,7 +79,7 @@ public class ProfileDescription {
             @Override
             protected Profile initialize() throws ConcurrentException {
                 try {
-                    return new ProfilePlistReader(protocols, parent).read(local.get());
+                    return new ProfilePlistReader(protocols, filter).read(local.get());
                 }
                 catch(AccessDeniedException e) {
                     log.warn("Failure {} reading profile {}", e, local.get());
@@ -143,12 +143,52 @@ public class ProfileDescription {
         }
     }
 
+    public String getIdentifier() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getIdentifier).orElse(null);
+    }
+
+    public String getProvider() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getProvider).orElse(null);
+    }
+
+    public String getName() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getName).orElse(null);
+    }
+
+    public String getDescription() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getDescription).orElse(null);
+    }
+
+    public String getHelp() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::getHelp).orElse(null);
+    }
+
+    public String getThumbnail() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::disk).orElse(null);
+    }
+
     public boolean isLatest() {
         return true;
     }
 
     public boolean isInstalled() {
         return false;
+    }
+
+    public boolean isEnabled() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::isEnabled).orElse(false);
+    }
+
+    public boolean isBundled() {
+        final Optional<Profile> profile = this.getProfile();
+        return profile.map(Profile::isBundled).orElse(false);
     }
 
     @Override

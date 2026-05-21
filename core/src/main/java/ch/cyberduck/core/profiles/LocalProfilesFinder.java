@@ -62,7 +62,9 @@ public class LocalProfilesFinder implements ProfilesFinder {
         if(directory.exists()) {
             log.debug("Load profiles from {}", directory);
             return directory.list().filter(new ProfileFilter()).toList().stream()
-                    .map(file -> visitor.visit(new LocalProfileDescription(protocols, parent, file))).collect(Collectors.toSet());
+                    .map(file -> visitor.visit(new LocalProfileDescription(protocols, parent, file)))
+                    .filter(d -> d.getProfile().isPresent())
+                    .collect(Collectors.toSet());
         }
         return Collections.emptySet();
     }

@@ -1,9 +1,11 @@
-﻿using Ch.Cyberduck.Core.Refresh.Media.Imaging;
+﻿using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using Ch.Cyberduck.Core.Refresh.Media.Imaging;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
@@ -19,32 +21,19 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 using (IconCache.WriteLock())
                 {
                     bool isDefault = !IconCache.TryGetIcon<Image>(key, out _, classifier);
-                    Stream stream = default;
-                    bool dispose = true;
-                    try
+                    images = GetImages(path, (c, s) => c.TryGetIcon<Image>(key, out _, classifier), (c, s, i) =>
                     {
-                        stream = GetStream(path);
-                        images = GetImages(stream, (c, s) => c.TryGetIcon<Image>(key, out _, classifier), (c, s, i) =>
+                        if (isDefault)
                         {
-                            if (isDefault)
+                            isDefault = false;
+                            if (returnDefault)
                             {
-                                isDefault = false;
-                                if (returnDefault)
-                                {
-                                    image = i;
-                                }
-                                IconCache.CacheIcon<Image>(key, s, classifier);
+                                image = i;
                             }
-                            IconCache.CacheIcon(key, s, i, classifier);
-                        }, out dispose);
-                    }
-                    finally
-                    {
-                        if (dispose && stream != null)
-                        {
-                            stream.Dispose();
+                            IconCache.CacheIcon<Image>(key, s, classifier);
                         }
-                    }
+                        IconCache.CacheIcon(key, s, i, classifier);
+                    });
                 }
             }
 
@@ -52,58 +41,94 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return images;
         }
 
-        private IEnumerable<Image> GetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon, out bool dispose)
+        private IEnumerable<Image> GetImages(string name, GetCacheIconCallback getCache, CacheIconCallback cacheIcon)
         {
-            Image source = Image.FromStream(stream);
+            if (!TryGetBase64Images(name, getCache, cacheIcon, out var images))
+            {
+                using var stream = GetStream(name);
+                _ = TryGetImages(stream, getCache, cacheIcon, out images);
+            }
+
+            return images;
+        }
+
+        private bool TryGetBase64Images(string name, GetCacheIconCallback getCache, CacheIconCallback cacheIcon, out IEnumerable<Image> images)
+        {
+#if NETCOREAPP
+            if (!Base64.IsValid(name))
+            {
+                goto exit;
+            }
+#endif
+            try
+            {
+                using MemoryStream imageStream = new(Convert.FromBase64String(name), false);
+                return TryGetImages(imageStream, getCache, cacheIcon, out images);
+            }
+            catch { /* We don't have an easy way of validating Base64 input. Let it error out. */ }
+
+#if NETCOREAPP
+        exit:
+#endif
+            images = null;
+            return false;
+        }
+
+        private bool TryGetImages(Stream stream, GetCacheIconCallback getCache, CacheIconCallback cacheIcon, out IEnumerable<Image> images)
+        {
+            using var source = Image.FromStream(stream);
 
             if (ImageFormat.Gif.Equals(source.RawFormat))
             {
-                // Gif cannot be cached/duplicated/or anything else, really.
-                // underlying stream must not be closed (learned the hard way).
-                dispose = false;
-                cacheIcon(IconCache, source.Width, source);
-                return new[] { source };
+                MemoryStream gifStream = new();
+                source.Save(gifStream, ImageFormat.Gif);
+                var image = Image.FromStream(gifStream);
+                cacheIcon(IconCache, source.Width, image);
+                images = [image];
             }
-
-            dispose = true;
-            using (source)
+            else if (ImageFormat.Icon.Equals(source.RawFormat))
             {
-                if (ImageFormat.Icon.Equals(source.RawFormat))
+                if (!stream.CanSeek)
                 {
-                    source.Dispose();
-                    stream.Position = 0;
-                    GDIIcon icon = new(stream);
-                    foreach (var item in icon.Frames)
-                    {
-                        cacheIcon(IconCache, item.Width, item);
-                    }
-                    return icon.Frames;
+                    images = null;
+                    return false;
                 }
-                else if (ImageFormat.Tiff.Equals(source.RawFormat))
-                {
-                    List<Image> frames = new();
-                    FrameDimension frameDimension = new(source.FrameDimensionsList[0]);
-                    var pageCount = source.GetFrameCount(FrameDimension.Page);
-                    for (int i = 0; i < pageCount; i++)
-                    {
-                        source.SelectActiveFrame(frameDimension, i);
-                        if (getCache(IconCache, source.Width)) continue;
 
-                        Bitmap copy = new(source);
-                        copy.SetResolution(96, 96);
-                        frames.Add(copy);
-                        cacheIcon(IconCache, copy.Width, copy);
-                    }
-                    return frames;
-                }
-                else
+                stream.Position = 0;
+                GDIIcon icon = new(stream);
+                foreach (var item in icon.Frames)
                 {
+                    cacheIcon(IconCache, item.Width, item);
+                }
+
+                images = icon.Frames;
+            }
+            else if (ImageFormat.Tiff.Equals(source.RawFormat))
+            {
+                List<Image> frames = new();
+                FrameDimension frameDimension = new(source.FrameDimensionsList[0]);
+                var pageCount = source.GetFrameCount(FrameDimension.Page);
+                for (int i = 0; i < pageCount; i++)
+                {
+                    source.SelectActiveFrame(frameDimension, i);
+                    if (getCache(IconCache, source.Width)) continue;
+
                     Bitmap copy = new(source);
                     copy.SetResolution(96, 96);
+                    frames.Add(copy);
                     cacheIcon(IconCache, copy.Width, copy);
-                    return new[] { copy };
                 }
+                images = frames;
             }
+            else
+            {
+                Bitmap copy = new(source);
+                copy.SetResolution(96, 96);
+                cacheIcon(IconCache, copy.Width, copy);
+                images = [copy];
+            }
+
+            return true;
         }
     }
 }

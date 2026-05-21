@@ -167,13 +167,33 @@ public final class ProtocolFactory {
      * @param profile Connection profile
      */
     public void unregister(final Profile profile) {
-        if(registered.remove(profile)) {
+        this.unregister(profile.getIdentifier(), profile.getProvider());
+    }
+
+    public void unregister(final String identifier, final String provider) {
+        if(registered.removeIf(protocol -> protocol.getIdentifier().equals(identifier) && protocol.getProvider().equals(provider))) {
             preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled",
-                    profile.getIdentifier(), profile.getProvider())), false);
+                    identifier, provider)), false);
         }
         else {
-            log.warn("Failure removing protocol {}", profile);
+            log.warn("Failure removing protocol {}:{}", identifier, provider);
         }
+    }
+
+    public boolean isEnabled(final Profile profile) {
+        return this.isEnabled(profile.getIdentifier(), profile.getProvider());
+    }
+
+    public boolean isEnabled(String protocol, String vendor) {
+        if(StringUtils.isNotBlank(protocol) && StringUtils.isNotBlank(vendor)) {
+            final String property = preferences.getProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", protocol, vendor)));
+            if(null == property) {
+                // Not previously configured. Assume enabled
+                return true;
+            }
+            return Boolean.parseBoolean(property);
+        }
+        return false;
     }
 
     /**

@@ -23,6 +23,7 @@ import ch.cyberduck.core.io.Checksum;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 
 public final class RemoteProfileDescription extends ProfileDescription {
+
     private final Path file;
 
     /**
@@ -47,7 +48,7 @@ public final class RemoteProfileDescription extends ProfileDescription {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("PathProfileDescription{");
+        final StringBuilder sb = new StringBuilder("RemoteProfileDescription{");
         sb.append("file=").append(file);
         sb.append('}');
         return sb.toString();
