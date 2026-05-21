@@ -1863,7 +1863,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
             @Delegate
-            public String tableView_typeSelectStringForTableColumn_row(final NSTableView view, final  NSTableColumn tableColumn, final NSInteger row) {
+            public String tableView_typeSelectStringForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn, final NSInteger row) {
                 return BookmarkNameProvider.toString(bookmarkModel.getSource().get(row.intValue()));
             }
 
@@ -2109,13 +2109,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final BookmarkContainerController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
+        final NSTableCellView cell = bookmarkModel.getController(bookmarkTable.selectedRow().intValue()).view();
         this.alert(c, returncode -> {
             final Host bookmark = c.getBookmark();
             if(returncode == SheetCallback.DEFAULT_OPTION) {
                 mount(bookmark);
             }
-        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable,
-                bookmarkTable.rectOfRow(bookmarkTable.selectedRow()), c) : new FloatingWindowAlertRunner(c));
+        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(cell, cell.frame(), c) : new FloatingWindowAlertRunner(c));
     }
 
     @Action
@@ -2155,12 +2155,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
         this.addBookmark(bookmark);
         final BookmarkContainerController c = BookmarkControllerFactory.create(bookmarks, bookmark);
+        final NSTableCellView cell = bookmarkModel.getController(bookmarkModel.getSource().lastIndexOf(bookmark)).view();
         this.alert(c, returncode -> {
             if(returncode == SheetCallback.DEFAULT_OPTION) {
                 mount(bookmark);
             }
-        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(bookmarkTable,
-                bookmarkTable.rectOfRow(new NSInteger(bookmarkModel.getSource().lastIndexOf(bookmark))), c) : new FloatingWindowAlertRunner(c));
+        }, preferences.getBoolean("bookmark.window.popover") ? new PopoverAlertRunner(cell, cell.frame(), c) : new FloatingWindowAlertRunner(c));
     }
 
     public void addBookmark(final Host bookmark) {
