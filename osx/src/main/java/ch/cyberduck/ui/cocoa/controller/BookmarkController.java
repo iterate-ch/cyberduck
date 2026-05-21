@@ -35,7 +35,6 @@ import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
@@ -87,6 +86,9 @@ public abstract class BookmarkController extends SheetController implements NSTa
 
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
+
+    // List of certificates with private key
+    private final Set<String> certificates = new HashSet<>();
 
     @Outlet
     private NSTabView tabView;
@@ -179,6 +181,15 @@ public abstract class BookmarkController extends SheetController implements NSTa
 
     public void addObserver(final BookmarkObserver observer) {
         observers.add(observer);
+    }
+
+    @Override
+    public void display(final boolean key, final String frameName) {
+        super.display(key, frameName);
+        certificates.addAll(new DelegatingCertificateStoreX509KeyManager(
+                new KeychainX509KeyManager(CertificateIdentityCallback.noop, this.bookmark, CertificateStoreFactory.get()),
+                new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop, this.bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
+        ).list());
     }
 
     public void focus() {
@@ -599,18 +610,13 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.certificatePopup.setTarget(this.id());
         final Selector action = Foundation.selector("certificateSelectionChanged:");
         this.certificatePopup.setAction(action);
-        // List of certificates with private key
-        final List<String> list = new DelegatingCertificateStoreX509KeyManager(
-                new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get()),
-                new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
-        ).list();
         this.addObserver(bookmark -> {
             certificatePopup.setEnabled(options.certificate);
             certificatePopup.removeAllItems();
             certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
             if(options.certificate) {
                 certificatePopup.menu().addItem(NSMenuItem.separatorItem());
-                for(String certificate : list) {
+                for(String certificate : certificates) {
                     certificatePopup.addItemWithTitle(certificate);
                     certificatePopup.lastItem().setRepresentedObject(certificate);
                 }
