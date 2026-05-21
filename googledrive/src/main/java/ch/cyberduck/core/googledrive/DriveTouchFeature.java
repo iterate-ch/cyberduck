@@ -30,6 +30,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.Optional;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
@@ -71,7 +72,7 @@ public class DriveTouchFeature implements Touch<File> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(workdir.isRoot()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
         }

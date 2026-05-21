@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
     private static final Logger log = LogManager.getLogger(SDSDelegatingWriteFeature.class);
@@ -68,7 +69,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
 
     @Override
     public void preflight(final Path file) throws BackgroundException {
-        new SDSTouchFeature(session, nodeid).preflight(file.getParent(), file.getName());
+        new SDSTouchFeature(session, nodeid).preflight(file.getParent(), Optional.of(file.getName()));
     }
 
     @Override

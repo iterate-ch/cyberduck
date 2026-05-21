@@ -57,7 +57,7 @@ public class TransferTableDataSource extends ListDataSource {
     private static final Logger log = LogManager.getLogger(TransferTableDataSource.class);
 
     private final Map<Transfer, ProgressController> controllers
-            = new HashMap<Transfer, ProgressController>();
+            = new HashMap<>();
 
     private TransferFilter filter
             = new NullTransferFilter();
@@ -112,7 +112,7 @@ public class TransferTableDataSource extends ListDataSource {
         if(filter instanceof NullTransferFilter) {
             return collection;
         }
-        final Collection<Transfer> filtered = new Collection<Transfer>(collection);
+        final Collection<Transfer> filtered = new Collection<>(collection);
         // Temporarily remove the transfer from the collection copy
         filtered.removeIf(transfer -> !filter.accept(transfer));
         return filtered;
@@ -176,7 +176,7 @@ public class TransferTableDataSource extends ListDataSource {
                 continue;
             }
             final Host host = pasteboard.getBookmark();
-            final List<TransferItem> downloads = new ArrayList<TransferItem>();
+            final List<TransferItem> downloads = new ArrayList<>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(
                         download, LocalFactory.get(new DownloadDirectoryFinder().find(host), download.getName())));
@@ -200,13 +200,5 @@ public class TransferTableDataSource extends ListDataSource {
             controllers.put(t, controller);
         }
         return controllers.get(t);
-    }
-
-    public boolean isHighlighted(final int row) {
-        return this.getController(row).isHighlighted();
-    }
-
-    public void setHighlighted(final int row, final boolean highlighted) {
-        this.getController(row).setHighlighted(highlighted);
     }
 }

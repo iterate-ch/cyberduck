@@ -196,12 +196,7 @@ public class KeychainLoginService implements LoginService {
             }
             catch(LoginCanceledException c) {
                 // Canceled by user
-                try {
-                    c.initCause(e);
-                }
-                catch(IllegalArgumentException | IllegalStateException r) {
-                    log.warn("Ignore error {} initializing failure {} with cause {}", r, e, c);
-                }
+                c.addSuppressed(e);
                 throw c;
             }
             log.debug("Reset credentials for {}", bookmark);

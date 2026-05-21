@@ -17,139 +17,86 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.NSControl;
-import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
-import ch.cyberduck.binding.application.NSText;
-import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.binding.application.NSTextFieldCell;
-import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSData;
-import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.DefaultWebUrlProvider;
+import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSSize;
 
-public class ExtendedBookmarkController extends DefaultBookmarkController {
+import static ch.cyberduck.core.features.AclPermission.preferences;
 
-    @Outlet
-    private NSButton toggleOptionsButton;
+public class ExtendedBookmarkController extends BookmarkContainerController implements CollectionListener<Host> {
+
+    private final Host bookmark;
+
     @Outlet
     private NSPopUpButton transferPopup;
     @Outlet
     private NSPopUpButton downloadPathPopup;
     @Outlet
     private NSOpenPanel downloadFolderOpenPanel;
-    @Outlet
-    private NSTextView commentField;
-    @Outlet
-    private NSPopUpButton connectmodePopup;
-    @Outlet
-    private NSImage favicon;
-    @Outlet
-    private NSTextField webURLField;
-    @Outlet
-    private NSButton webUrlImage;
 
-    public ExtendedBookmarkController(final Host bookmark) {
+    public ExtendedBookmarkController(final Host bookmark, final AbstractHostCollection collection) {
         super(bookmark);
+        this.bookmark = bookmark;
+        this.addObserver(collection::collectionItemChanged);
     }
 
     @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        this.setState(toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
+    protected String getBundleName() {
+        return "Edit";
+    }
+
+    @Override
+    public void collectionLoaded() {
+        //
+    }
+
+    @Override
+    public void collectionItemAdded(final Host item) {
+        //
+    }
+
+    @Override
+    public void collectionItemRemoved(final Host item) {
+        if(item.equals(bookmark)) {
+            this.close();
+        }
+    }
+
+    @Override
+    public void collectionItemChanged(final Host item) {
+        //
     }
 
     @Override
     public void setWindow(final NSWindow window) {
-        window.setContentMinSize(window.frame().size);
-        window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
+        this.addObserver(bookmark -> window.setTitle(BookmarkNameProvider.toString(bookmark)));
+        window.setTitlebarAppearsTransparent(true);
         super.setWindow(window);
     }
 
-    @Override
-    public void windowWillClose(final NSNotification notification) {
-        preferences.setProperty("bookmark.toggle.options", toggleOptionsButton.state());
-        super.windowWillClose(notification);
-    }
-
-    public void setToggleOptionsButton(final NSButton toggleOptionsButton) {
-        this.toggleOptionsButton = toggleOptionsButton;
-    }
-
-    public void setCommentField(final NSTextView field) {
-        this.commentField = field;
-        this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
-        this.notificationCenter.addObserver(this.id(),
-            Foundation.selector("commentInputDidChange:"),
-            NSText.TextDidChangeNotification,
-            field.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(Host bookmark) {
-                updateField(commentField, bookmark.getComment());
-            }
-        });
-    }
-
-    @Action
-    public void commentInputDidChange(final NSNotification sender) {
-        bookmark.setComment(commentField.textStorage().string());
-    }
-
-    public void setConnectmodePopup(final NSPopUpButton button) {
-        this.connectmodePopup = button;
-        this.connectmodePopup.setTarget(this.id());
-        this.connectmodePopup.setAction(Foundation.selector("connectmodePopupClicked:"));
-        this.connectmodePopup.removeAllItems();
-        for(FTPConnectMode m : FTPConnectMode.values()) {
-            this.connectmodePopup.addItemWithTitle(m.toString());
-            this.connectmodePopup.lastItem().setRepresentedObject(m.name());
-            if(m.equals(FTPConnectMode.unknown)) {
-                this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
-            }
-        }
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(Host bookmark) {
-                connectmodePopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.ftp);
-                connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
-            }
-        });
-    }
-
-    @Action
-    public void connectmodePopupClicked(final NSPopUpButton sender) {
-        bookmark.setFTPConnectMode(FTPConnectMode.valueOf(sender.selectedItem().representedObject()));
-        this.update();
-    }
-
+    @Outlet
     public void setTransferPopup(final NSPopUpButton button) {
         this.transferPopup = button;
         this.transferPopup.setTarget(this.id());
@@ -160,17 +107,12 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         this.transferPopup.lastItem().setRepresentedObject(unknown.name());
         this.transferPopup.lastItem().setToolTip(Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type")).toString());
         this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(String name : preferences.getList("queue.transfer.type.enabled")) {
+        for(String name : HostPreferencesFactory.get(bookmark).getList("queue.transfer.type.enabled")) {
             final Host.TransferType t = Host.TransferType.valueOf(name);
             this.transferPopup.addItemWithTitle(t.toString());
             this.transferPopup.lastItem().setRepresentedObject(t.name());
         }
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(Host bookmark) {
-                transferPopup.selectItemAtIndex(transferPopup.indexOfItemWithRepresentedObject(bookmark.getTransferType().name()));
-            }
-        });
+        transferPopup.selectItemAtIndex(transferPopup.indexOfItemWithRepresentedObject(bookmark.getTransferType().name()));
     }
 
     @Action
@@ -179,6 +121,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         this.update();
     }
 
+    @Outlet
     public void setDownloadPathPopup(final NSPopUpButton button) {
         this.downloadPathPopup = button;
         this.downloadPathPopup.setTarget(this.id());
@@ -221,8 +164,8 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
             downloadFolderOpenPanel.setCanChooseDirectories(true);
             downloadFolderOpenPanel.setAllowsMultipleSelection(false);
             downloadFolderOpenPanel.setCanCreateDirectories(true);
-            downloadFolderOpenPanel.beginSheetForDirectory(null, null, this.window, this.id(),
-                Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
+            downloadFolderOpenPanel.beginSheetForDirectory(null, null, window, this.id(),
+                    Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
             final Local folder = LocalFactory.get(sender.selectedItem().representedObject());
@@ -231,6 +174,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         }
     }
 
+    @Action
     public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
@@ -249,76 +193,5 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         downloadPathPopup.selectItem(item);
         downloadFolderOpenPanel = null;
         this.update();
-    }
-
-    public void setWebURLField(final NSTextField field) {
-        this.webURLField = field;
-        final NSTextFieldCell cell = this.webURLField.cell();
-        notificationCenter.addObserver(this.id(),
-            Foundation.selector("webURLInputDidChange:"),
-            NSControl.NSControlTextDidChangeNotification,
-            field.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(Host bookmark) {
-                updateField(webURLField, bookmark.getWebURL());
-                cell.setPlaceholderString(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
-            }
-        });
-    }
-
-    @Action
-    public void webURLInputDidChange(final NSNotification sender) {
-        bookmark.setWebURL(webURLField.stringValue());
-        this.update();
-    }
-
-    public void setWebUrlImage(final NSButton button) {
-        this.webUrlImage = button;
-        this.webUrlImage.setTarget(this.id());
-        this.webUrlImage.setAction(Foundation.selector("webUrlButtonClicked:"));
-        this.webUrlImage.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(Host bookmark) {
-                if(preferences.getBoolean("bookmark.favicon.download")) {
-                    background(new AbstractBackgroundAction<Void>() {
-                        @Override
-                        public Void run() {
-                            final String f = bookmark.getProtocol().favicon();
-                            if(StringUtils.isNotBlank(f)) {
-                                favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
-                            }
-                            else {
-                                String url = String.format("%sfavicon.ico", new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
-                                // Default favicon location
-                                final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
-                                if(null == data) {
-                                    return null;
-                                }
-                                favicon = NSImage.imageWithData(data);
-                            }
-                            if(null != favicon) {
-                                favicon.setSize(new NSSize(16, 16));
-                            }
-                            return null;
-                        }
-
-                        @Override
-                        public void cleanup() {
-                            if(null != favicon) {
-                                webUrlImage.setImage(favicon);
-                            }
-                        }
-                    });
-                }
-                webUrlImage.setToolTip(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
-            }
-        });
-    }
-
-    @Action
-    public void webUrlButtonClicked(final NSButton sender) {
-        BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(bookmark).getUrl());
     }
 }

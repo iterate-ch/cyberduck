@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
 
@@ -47,7 +48,7 @@ public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
             // Creating files is only possible inside a bucket.
             if(workdir.isRoot()) {

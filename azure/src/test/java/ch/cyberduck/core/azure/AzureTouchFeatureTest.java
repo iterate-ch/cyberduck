@@ -28,6 +28,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 @Category(IntegrationTest.class)
 public class AzureTouchFeatureTest extends AbstractAzureTest {
@@ -44,9 +45,9 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
     public void testPreflightFilename() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AzureTouchFeature feature = new AzureTouchFeature(session);
-        feature.preflight(container, new AsciiRandomStringService().random());
-        feature.preflight(container, new AlphanumericRandomStringService().random());
-        feature.preflight(container, String.format("%s.suffix", new AlphanumericRandomStringService().random()));
-        feature.preflight(container, "?");
+        feature.preflight(container, Optional.of(new AsciiRandomStringService().random()));
+        feature.preflight(container, Optional.of(new AlphanumericRandomStringService().random()));
+        feature.preflight(container, Optional.of(String.format("%s.suffix", new AlphanumericRandomStringService().random())));
+        feature.preflight(container, Optional.of("?"));
     }
 }

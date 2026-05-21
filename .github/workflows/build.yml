@@ -20,6 +20,8 @@ jobs:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -47,6 +49,6 @@ jobs:
         run: mvn --no-transfer-progress verify -DskipITs -DskipSign ${{ env.args }} --batch-mode -Drevision=0
       - name: Publish Test Report
         if: github.event.pull_request.head.repo.fork == false
-        uses: scacap/action-surefire-report@v1.10.0
+        uses: ScalableCapital/action-surefire-report@v2
         with:
           check_name: Test Report (${{ matrix.os }})

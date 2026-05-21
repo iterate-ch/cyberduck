@@ -22,12 +22,12 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -37,8 +37,8 @@ public class SpectraTouchFeatureTest extends AbstractSpectraTest {
 
     @Test
     public void testFile() {
-        assertFalse(new SpectraTouchFeature(session).isSupported(Home.root(), StringUtils.EMPTY));
-        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), StringUtils.EMPTY));
+        assertFalse(new SpectraTouchFeature(session).isSupported(Home.root(), Optional.empty()));
+        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.directory, Path.Type.volume)), Optional.empty()));
     }
 
     @Test

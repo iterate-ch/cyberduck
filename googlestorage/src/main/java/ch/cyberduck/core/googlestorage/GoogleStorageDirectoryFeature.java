@@ -32,6 +32,7 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
@@ -77,20 +78,19 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(workdir.isRoot()) {
-            if(StringUtils.isNotBlank(filename)) {
-                if(StringUtils.startsWith(filename, "goog")) {
+            if(filename.isPresent()) {
+                if(StringUtils.startsWith(filename.get(), "goog")) {
                     throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
-                if(StringUtils.contains(filename, "google")) {
+                if(StringUtils.contains(filename.get(), "google")) {
                     throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
-                if(!ServiceUtils.isBucketNameValidDNSName(filename)) {
+                if(!ServiceUtils.isBucketNameValidDNSName(filename.get())) {
                     throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
             }
         }
     }
-
 }

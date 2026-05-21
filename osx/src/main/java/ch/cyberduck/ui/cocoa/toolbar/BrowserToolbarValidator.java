@@ -45,7 +45,6 @@ import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
 
-import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
@@ -236,25 +235,25 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         else if(action.equals(newfolder.action())) {
             return this.isBrowser() && controller.isMounted() &&
                     controller.getSession().getFeature(Directory.class).isSupported(
-                            new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
+                            new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), Optional.empty()
                     );
         }
         else if(action.equals(Foundation.selector("createEncryptedVaultButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getVaultRegistry() != VaultRegistry.DISABLED &&
                     !controller.getSession().getVaultRegistry().contains(controller.workdir()) &&
                     controller.getSession().getFeature(Directory.class).isSupported(
-                            new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
+                            new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), Optional.empty()
                     );
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
-                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
+                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), Optional.empty()
             );
         }
         else if(action.equals(upload.action())) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
                     new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()),
-                    StringUtils.EMPTY);
+                    Optional.empty());
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Symlink.class) != null

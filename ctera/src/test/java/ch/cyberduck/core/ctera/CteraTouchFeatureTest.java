@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION;
 import static ch.cyberduck.core.ctera.CteraAttributesFinderFeature.WRITEPERMISSION;
@@ -38,28 +39,28 @@ public class CteraTouchFeatureTest extends AbstractCteraTest {
     public void testPreflightFileMissingCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         file.setAttributes(file.attributes().setAcl(Acl.EMPTY));
-        new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random());
+        new CteraTouchFeature(session).preflight(file, Optional.of(new AlphanumericRandomStringService().random()));
     }
 
     @Test
     public void testPreflightReadPermission() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         file.setAttributes(file.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.READPERMISSION)));
-        assertThrows(AccessDeniedException.class, () -> new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new CteraTouchFeature(session).preflight(file, Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
     public void testPreflightNoPermissions() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         file.setAttributes(file.attributes().setAcl(new Acl(new Acl.CanonicalUser())));
-        assertThrows(AccessDeniedException.class, () -> new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new CteraTouchFeature(session).preflight(file, Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
     public void testPreflightWritePermission() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         file.setAttributes(file.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.WRITEPERMISSION)));
-        new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random());
+        new CteraTouchFeature(session).preflight(file, Optional.of(new AlphanumericRandomStringService().random()));
         // assert no fail
     }
 
@@ -67,7 +68,7 @@ public class CteraTouchFeatureTest extends AbstractCteraTest {
     public void testPreflightCreateDirectoriesPermission() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         file.setAttributes(file.attributes().setAcl(new Acl(new Acl.CanonicalUser(), CteraAttributesFinderFeature.CREATEDIRECTORIESPERMISSION)));
-        new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random());
+        new CteraTouchFeature(session).preflight(file, Optional.of(new AlphanumericRandomStringService().random()));
         // assert no fail
     }
 
@@ -79,14 +80,14 @@ public class CteraTouchFeatureTest extends AbstractCteraTest {
                         new Acl.UserAndRole(new Acl.CanonicalUser(), WRITEPERMISSION),
                         new Acl.UserAndRole(new Acl.CanonicalUser(), CREATEDIRECTORIESPERMISSION)
                 )));
-        new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random());
+        new CteraTouchFeature(session).preflight(file, Optional.of(new AlphanumericRandomStringService().random()));
         // assert no fail
     }
 
     @Test
     public void testPreflightFileAccessGrantedCustomProps() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new CteraTouchFeature(session).preflight(file, new AlphanumericRandomStringService().random());
+        new CteraTouchFeature(session).preflight(file, Optional.of(new AlphanumericRandomStringService().random()));
         // assert no fail
     }
 }

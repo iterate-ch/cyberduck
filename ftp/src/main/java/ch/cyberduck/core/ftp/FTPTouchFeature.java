@@ -18,6 +18,8 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
+import java.util.Optional;
+
 public class FTPTouchFeature extends DefaultTouchFeature<Void> {
 
     public FTPTouchFeature(final FTPSession session) {
@@ -25,7 +27,7 @@ public class FTPTouchFeature extends DefaultTouchFeature<Void> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) {
+    public void preflight(final Path workdir, final Optional<String> filename) {
         // Skip checking permission mask
     }
 }

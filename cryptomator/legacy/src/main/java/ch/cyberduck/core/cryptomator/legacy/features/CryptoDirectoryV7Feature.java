@@ -30,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     private static final Logger log = LogManager.getLogger(CryptoDirectoryV7Feature.class);
@@ -73,12 +74,12 @@ public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public boolean isSupported(final Path workdir, final Optional<String> name) {
         return delegate.isSupported(workdir, name);
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         delegate.preflight(cryptomator.encrypt(session, workdir), filename);
     }
 

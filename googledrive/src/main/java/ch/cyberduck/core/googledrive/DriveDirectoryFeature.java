@@ -17,7 +17,6 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Optional;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
@@ -81,7 +81,7 @@ public class DriveDirectoryFeature implements Directory<File> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         new DriveTouchFeature(session, fileid).preflight(workdir, filename);
     }
 }

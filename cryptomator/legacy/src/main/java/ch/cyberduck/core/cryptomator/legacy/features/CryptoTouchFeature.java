@@ -31,6 +31,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 public class CryptoTouchFeature<Reply> implements Touch<Reply> {
 
@@ -65,9 +66,11 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        if(!cryptomator.getFilenameProvider().isValid(filename)) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
+        if(filename.isPresent()) {
+            if(!cryptomator.getFilenameProvider().isValid(filename.get())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename));
+            }
         }
         proxy.preflight(cryptomator.encrypt(session, workdir), filename);
     }

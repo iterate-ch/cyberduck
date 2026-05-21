@@ -22,8 +22,6 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.irods.irods4j.high_level.connection.IRODSConnection;
 import org.irods.irods4j.low_level.api.IRODSApi;
 import org.irods.irods4j.low_level.api.IRODSException;
@@ -31,6 +29,8 @@ import org.irods.irods4j.low_level.api.IRODSException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class IRODSTouchFeature implements Touch {
 
@@ -65,10 +65,5 @@ public class IRODSTouchFeature implements Touch {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
         }
-    }
-
-    @Override
-    public boolean isSupported(final Path workdir, final String filename) {
-        return true;
     }
 }

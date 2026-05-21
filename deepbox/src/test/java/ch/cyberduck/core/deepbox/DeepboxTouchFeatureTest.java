@@ -34,6 +34,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static ch.cyberduck.core.deepbox.DeepboxAttributesFinderFeature.CANADDCHILDREN;
 import static org.junit.Assert.*;
@@ -44,7 +45,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
     @Test
     public void testTouchRoot() throws Exception {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, fileid).preflight(Home.root(), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, fileid).preflight(Home.root(), Optional.of(new AlphanumericRandomStringService().random())));
         assertThrows(NotfoundException.class, () -> new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus()));
     }
 
@@ -53,7 +54,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider fileid = new DeepboxIdProvider(session);
         final Path documents = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new DeepboxTouchFeature(session, fileid).touch(new DeepboxWriteFeature(session, fileid), new Path(documents, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new DeepboxTouchFeature(session, fileid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(documents)), test.getName());
+        new DeepboxTouchFeature(session, fileid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, fileid).find(documents)), Optional.of(test.getName()));
         assertTrue(new DeepboxFindFeature(session, fileid).find(test));
         new DeepboxDeleteFeature(session, fileid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
     }
@@ -73,7 +74,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
@@ -82,7 +83,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
@@ -91,7 +92,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final Path folder = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertEquals(Acl.EMPTY, attributes.getAcl());
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
@@ -102,9 +103,9 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4_DEEPBOX4, ORG4_DEEPBOX4_BOX1).getBoxPolicy().isCanAddQueue());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
         // assert no fail
-        new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random());
+        new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random()));
         // DeepBox inbox is flat
-        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
@@ -114,8 +115,8 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new BoxRestControllerApi(session.getClient()).getBox(ORG1_DEEPBOX1, ORG1_DEEPBOX1_BOX1).getBoxPolicy().isCanAddQueue());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
@@ -126,9 +127,9 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         assertTrue(new BoxRestControllerApi(session.getClient()).getBox(ORG4_DEEPBOX4, ORG4_DEEPBOX4_BOX1).getBoxPolicy().isCanAddFilesRoot());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
         // assert no fail
-        new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random());
+        new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random()));
         // assert no fail
-        new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random());
+        new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random()));
     }
 
     @Test
@@ -138,8 +139,8 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new BoxRestControllerApi(session.getClient()).getBox(ORG1_DEEPBOX1, ORG1_DEEPBOX1_BOX1).getBoxPolicy().isCanAddFilesRoot());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
@@ -148,8 +149,8 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final Path folder = new Path("/ORG 1 - DeepBox Desktop App/ORG 1 - DeepBox Desktop App/ORG1:Box1/Trash/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
@@ -160,9 +161,9 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         assertTrue(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanAddChildren());
         assertTrue(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
         // assert no fail
-        new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random());
+        new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random()));
         // assert no fail
-        new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random());
+        new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random()));
     }
 
     @Test
@@ -172,8 +173,8 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanAddChildren());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
@@ -183,8 +184,8 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final PathAttributes attributes = new DeepboxAttributesFinderFeature(session, nodeid).find(folder);
         assertFalse(new CoreRestControllerApi(session.getClient()).getNodeInfo(attributes.getFileId(), null, null, null).getNode().getPolicy().isCanAddChildren());
         assertFalse(attributes.getAcl().get(new Acl.CanonicalUser()).contains(CANADDCHILDREN));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), new AlphanumericRandomStringService().random()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxDirectoryFeature(session, nodeid).preflight(folder.withAttributes(attributes), Optional.of(new AlphanumericRandomStringService().random())));
     }
 
     @Test
@@ -192,7 +193,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Trash", EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(parent, folder.getName()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(parent, Optional.of(folder.getName())));
         assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), folder, new TransferStatus()));
     }
 
@@ -201,7 +202,7 @@ public class DeepboxTouchFeatureTest extends AbstractDeepboxTest {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
         final Path parent = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory));
         final Path file = new Path(parent, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(parent, file.getName()));
+        assertThrows(AccessDeniedException.class, () -> new DeepboxTouchFeature(session, nodeid).preflight(parent, Optional.of(file.getName())));
         assertThrows(NotfoundException.class, () -> new DeepboxTouchFeature(session, nodeid).touch(new DeepboxWriteFeature(session, nodeid), file, new TransferStatus()));
     }
 }

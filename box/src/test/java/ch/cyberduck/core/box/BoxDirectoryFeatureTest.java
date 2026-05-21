@@ -30,6 +30,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -53,11 +54,11 @@ public class BoxDirectoryFeatureTest extends AbstractBoxTest {
     @Test
     public void isSupported() {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
-        assertTrue(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), new AlphanumericRandomStringService().random()));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), String.format("%s ", new AlphanumericRandomStringService().random())));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), String.format("%s\\", new AlphanumericRandomStringService().random())));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), String.format("%s/", new AlphanumericRandomStringService().random())));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), "."));
-        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), ".."));
+        assertTrue(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(new AlphanumericRandomStringService().random())));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(String.format("%s ", new AlphanumericRandomStringService().random()))));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(String.format("%s\\", new AlphanumericRandomStringService().random()))));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(String.format("%s/", new AlphanumericRandomStringService().random()))));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of(".")));
+        assertFalse(new BoxDirectoryFeature(session, fileid).isSupported(Home.root(), Optional.of("..")));
     }
 }

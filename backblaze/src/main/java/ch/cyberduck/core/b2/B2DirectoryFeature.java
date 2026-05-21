@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
@@ -79,23 +80,23 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(workdir.isRoot()) {
             // Empty argument if not known in validation
-            if(StringUtils.isNotBlank(filename)) {
+            if(filename.isPresent()) {
                 // Bucket names must be a minimum of 6 and a maximum of 50 characters long, and must be globally unique;
                 // two different B2 accounts cannot have buckets with the name name. Bucket names can consist of: letters,
                 // digits, and "-". Bucket names cannot start with "b2-"; these are reserved for internal Backblaze use.
-                if(StringUtils.startsWith(filename, "b2-")) {
+                if(StringUtils.startsWith(filename.get(), "b2-")) {
                     throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
-                if(StringUtils.length(filename) > 50) {
+                if(StringUtils.length(filename.get()) > 50) {
                     throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
-                if(StringUtils.length(filename) < 6) {
+                if(StringUtils.length(filename.get()) < 6) {
                     throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
-                if(!StringUtils.isAlphanumeric(RegExUtils.removeAll(filename, "-"))) {
+                if(!StringUtils.isAlphanumeric(RegExUtils.removeAll(filename.get(), "-"))) {
                     throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
                 }
             }

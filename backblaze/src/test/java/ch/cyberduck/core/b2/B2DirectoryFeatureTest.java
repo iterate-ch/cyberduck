@@ -31,6 +31,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -42,7 +43,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2DirectoryFeature feature = new B2DirectoryFeature(session, fileid);
-        assertTrue(feature.isSupported(bucket.getParent(), bucket.getName()));
+        assertTrue(feature.isSupported(bucket.getParent(), Optional.of(bucket.getName())));
         feature.mkdir(new B2WriteFeature(session, fileid), bucket, new TransferStatus());
         assertThrows(ConflictException.class, () -> feature.mkdir(new B2WriteFeature(session, fileid), bucket, new TransferStatus()));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
@@ -65,7 +66,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     public void testBucketInvalidCharacter() throws Exception {
         final Path bucket = new Path("untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        assertFalse(new B2DirectoryFeature(session, fileid).isSupported(bucket.getParent(), bucket.getName()));
+        assertFalse(new B2DirectoryFeature(session, fileid).isSupported(bucket.getParent(), Optional.of(bucket.getName())));
         try {
             new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), bucket, new TransferStatus());
         }

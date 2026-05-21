@@ -32,12 +32,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class SDSDirectoryFeature implements Directory<Node> {
     private static final Logger log = LogManager.getLogger(SDSDirectoryFeature.class);
@@ -102,15 +102,17 @@ public class SDSDirectoryFeature implements Directory<Node> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(workdir.isRoot()) {
             if(!HostPreferencesFactory.get(session.getHost()).getBoolean("sds.create.dataroom.enable")) {
                 log.warn("Disallow creating new top level data room {}", filename);
                 throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
             }
         }
-        if(!SDSTouchFeature.validate(filename)) {
-            throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+        if(filename.isPresent()) {
+            if(!SDSTouchFeature.validate(filename.get())) {
+                throw new InvalidFilenameException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename));
+            }
         }
         final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
         if(!permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)) {

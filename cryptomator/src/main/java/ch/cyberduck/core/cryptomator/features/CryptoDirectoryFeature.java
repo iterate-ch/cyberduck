@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.DirectoryMetadata;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     private static final Logger log = LogManager.getLogger(CryptoDirectoryFeature.class);
@@ -87,13 +88,13 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
+    public boolean isSupported(final Path workdir, final Optional<String> name) {
         return delegate.isSupported(workdir, name);
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
-        vault.getDirectoryProvider().createDirectoryId(new Path(workdir, filename, EnumSet.of(Path.Type.directory)));
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
+        filename.ifPresent(s -> vault.getDirectoryProvider().createDirectoryId(new Path(workdir, s, EnumSet.of(Path.Type.directory))));
         delegate.preflight(vault.encrypt(session, workdir), filename);
     }
 

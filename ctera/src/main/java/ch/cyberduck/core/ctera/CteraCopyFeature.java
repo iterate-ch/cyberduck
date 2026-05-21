@@ -37,7 +37,7 @@ public class CteraCopyFeature extends DAVCopyFeature {
             assumeRole(target, WRITEPERMISSION);
             // no createfilespermission required for now
             if(source.isDirectory()) {
-                assumeRole(target.getParent(), target.getName(), CREATEDIRECTORIESPERMISSION);
+                assumeRole(target, CREATEDIRECTORIESPERMISSION);
             }
         }
     }

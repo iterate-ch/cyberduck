@@ -401,16 +401,10 @@ public class CryptomatorVaultTest {
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Directory.class) {
                     return (T) new Directory() {
-
                         @Override
                         public Path mkdir(final Write writer, final Path folder, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
-                        }
-
-                        @Override
-                        public boolean isSupported(final Path workdir, final String name) {
-                            throw new UnsupportedOperationException();
                         }
                     };
                 }

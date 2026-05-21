@@ -65,9 +65,9 @@ public class ActivityController extends WindowController {
         // Initialize to listen for background tasks
         registry.addListener(backgroundActionListener);
         // Add already running background actions
-        final BackgroundAction[] actions = registry.toArray(
-                new BackgroundAction[registry.size()]);
-        for(final BackgroundAction action : actions) {
+        final BackgroundAction<?>[] actions = registry.toArray(
+                new BackgroundAction<?>[registry.size()]);
+        for(final BackgroundAction<?> action : actions) {
             tasks.put(action, new TaskController(action));
         }
         this.reload();
@@ -140,7 +140,7 @@ public class ActivityController extends WindowController {
 
     public void setTable(NSTableView table) {
         this.table = table;
-        this.table.setRowHeight(new CGFloat(42));
+        this.table.setRowHeight(new CGFloat(52));
         {
             final NSTableColumn c = tableColumnsFactory.create(ActivityColumn.single.name());
             c.setMinWidth(80f);
@@ -197,6 +197,7 @@ public class ActivityController extends WindowController {
                 return false;
             }
 
+            @Delegate
             public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
                 final TaskController controller = getController(row);
                 if(null == controller) {

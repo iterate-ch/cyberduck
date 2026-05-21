@@ -16,6 +16,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -38,8 +39,8 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
     public void testCreateContainerInvalidName() throws Exception {
         final Path container = new Path("untitled folder", EnumSet.of(Path.Type.directory));
         final AzureDirectoryFeature feature = new AzureDirectoryFeature(session);
-        assertFalse(feature.isSupported(container.getParent(), container.getName()));
-        assertThrows(InvalidFilenameException.class, () -> feature.preflight(container.getParent(), container.getName()));
+        assertFalse(feature.isSupported(container.getParent(), Optional.of(container.getName())));
+        assertThrows(InvalidFilenameException.class, () -> feature.preflight(container.getParent(), Optional.of(container.getName())));
         feature.mkdir(new AzureWriteFeature(session), container, new TransferStatus());
         assertTrue(new AzureFindFeature(session).find(container));
         new AzureDeleteFeature(session).delete(Collections.singletonList(container), LoginCallback.noop, new Delete.DisabledCallback());

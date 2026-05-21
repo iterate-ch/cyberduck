@@ -158,8 +158,6 @@ public class SFTPSession extends Session<SSHClient> {
             else {
                 connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
             }
-            final KeepAlive keepalive = connection.getConnection().getKeepAlive();
-            keepalive.setKeepAliveInterval(preferences.getInteger("ssh.heartbeat.seconds"));
             return connection;
         }
         catch(IOException e) {
@@ -169,6 +167,8 @@ public class SFTPSession extends Session<SSHClient> {
 
     private SSHClient toClient(final HostKeyCallback key, final Config configuration) {
         final SSHClient connection = new SSHClient(configuration);
+        final KeepAlive keepalive = connection.getConnection().getKeepAlive();
+        keepalive.setKeepAliveInterval(preferences.getInteger("ssh.heartbeat.seconds"));
         final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         connection.getTransport().setTimeoutMs(timeout);
         connection.setTimeout(timeout);

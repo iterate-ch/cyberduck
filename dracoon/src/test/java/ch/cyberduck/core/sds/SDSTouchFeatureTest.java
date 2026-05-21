@@ -35,7 +35,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -44,6 +43,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -53,9 +53,9 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     @Test
     public void testSupported() {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), StringUtils.EMPTY));
-        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), StringUtils.EMPTY));
-        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), StringUtils.EMPTY));
+        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), Optional.empty()));
+        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), Optional.empty()));
+        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), Optional.empty()));
     }
 
     @Test(expected = BackgroundException.class)
@@ -77,8 +77,8 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
                 new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
             final SDSTouchFeature feature = new SDSTouchFeature(session, nodeid);
-            assertFalse(feature.isSupported(room, "?"));
-            assertThrows(InvalidFilenameException.class, () -> feature.preflight(room, "?"));
+            assertFalse(feature.isSupported(room, Optional.of("?")));
+            assertThrows(InvalidFilenameException.class, () -> feature.preflight(room, Optional.of("?")));
             feature.touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
@@ -97,8 +97,8 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
                 new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         try {
             final SDSTouchFeature feature = new SDSTouchFeature(session, nodeid);
-            assertFalse(feature.isSupported(room, "?"));
-            assertThrows(InvalidFilenameException.class, () -> feature.preflight(room, "?"));
+            assertFalse(feature.isSupported(room, Optional.of("?")));
+            assertThrows(InvalidFilenameException.class, () -> feature.preflight(room, Optional.of("?")));
             feature.touch(new SDSDirectS3MultipartWriteFeature(session, nodeid), new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
@@ -132,7 +132,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         final long quota = 1L + PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize");
         updateRoomRequest.setQuota(quota);
         assertEquals(quota, new NodesApi(session.getClient()).updateRoom(updateRoomRequest, Long.valueOf(room.attributes().getVersionId()), null).getQuota(), 0L);
-        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room)), StringUtils.EMPTY));
+        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room)), Optional.empty()));
         assertEquals(quota, room.attributes().getQuota().available, 0L);
         final byte[] content = RandomUtils.nextBytes(2);
         final TransferStatus status = new TransferStatus();
@@ -150,7 +150,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
             }
         }
         while(attr.getSize() != 2L);
-        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(attr), StringUtils.EMPTY));
+        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(room.withAttributes(attr), Optional.empty()));
         assertEquals(quota, attr.getQuota().available, 0L);
         assertEquals(2L, attr.getSize());
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), LoginCallback.noop, new Delete.DisabledCallback());

@@ -1014,7 +1014,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         return;
                 }
                 Touch feature = (Touch)Pool.getFeature(typeof(Touch));
-                if (!feature.isSupported(destination, String.Empty))
+                if (!feature.isSupported(destination, Optional.empty()))
                 {
                     args.Effect = DragDropEffects.None;
                     args.DropTargetLocation = DropTargetLocation.None;
@@ -1885,14 +1885,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() &&
                    ((Touch)Pool.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), Optional.empty());
         }
 
         private bool View_ValidateUpload()
         {
             return IsMounted() &&
                    ((Touch)Pool.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), Optional.empty());
         }
 
         private void View_Upload()
@@ -2061,7 +2061,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() &&
                    ((Directory)Pool.getFeature(typeof(Directory))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), Optional.empty());
         }
 
         private bool View_ValidateNewVault()
@@ -2069,7 +2069,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return IsMounted() && Pool.getVaultRegistry() != VaultRegistry.DISABLED &&
                    !Pool.getVaultRegistry().contains(Workdir) &&
                    ((Directory)Pool.getFeature(typeof(Directory))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
+                       new UploadTargetFinder(Workdir).find(SelectedPath), Optional.empty());
         }
 
         private void View_DuplicateFile()
@@ -2263,7 +2263,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             return;
                     }
                     Touch feature = (Touch)Pool.getFeature(typeof(Touch));
-                    if (!feature.isSupported(destination, String.Empty))
+                    if (!feature.isSupported(destination, Optional.empty()))
                     {
                         Log.trace("Pool does not allow file creation");
                         args.Effect = DragDropEffects.None;

@@ -1,0 +1,12 @@
+Match host *.example.com
+    User matchuser
+    Port 2222
+
+Match host exact.example.com
+    IdentityFile ~/.ssh/exact-key
+
+Match host *.example.com,!excluded.example.com
+    IdentityAgent ~/.ssh/agent.sock
+
+Match user alice
+    Port 9999

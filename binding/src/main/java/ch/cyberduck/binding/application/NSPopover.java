@@ -103,6 +103,14 @@ public abstract class NSPopover extends NSResponder {
     public abstract void setContentViewController(NSViewController controller);
 
     /**
+     * You must set the content view controller of the popover before the popover is shown. Changes to the popover’s content
+     * view controller while the popover is shown will cause the popover to animate if the animates property is true.
+     *
+     * @return The view controller that manages the content of the popover.
+     */
+    public abstract NSViewController contentViewController();
+
+    /**
      * Shows the popover anchored to the specified view.
      * <p>
      * This method raises NSInternalInconsistencyException if contentViewController or the view controller’s view is nil.

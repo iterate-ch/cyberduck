@@ -14,12 +14,12 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -29,10 +29,10 @@ public class S3TouchFeatureTest extends AbstractS3Test {
     @Test
     public void testFile() {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        assertFalse(new S3TouchFeature(session, acl).isSupported(Home.root(), StringUtils.EMPTY));
-        assertTrue(new S3TouchFeature(session, acl).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
-        assertTrue(new S3TouchFeature(virtualhost, acl).isSupported(Home.root(), StringUtils.EMPTY));
-        assertTrue(new S3TouchFeature(virtualhost, acl).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), StringUtils.EMPTY));
+        assertFalse(new S3TouchFeature(session, acl).isSupported(Home.root(), Optional.empty()));
+        assertTrue(new S3TouchFeature(session, acl).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), Optional.empty()));
+        assertTrue(new S3TouchFeature(virtualhost, acl).isSupported(Home.root(), Optional.empty()));
+        assertTrue(new S3TouchFeature(virtualhost, acl).isSupported(new Path(Home.root(), "/container", EnumSet.of(Path.Type.volume, Path.Type.directory)), Optional.empty()));
     }
 
     @Test
@@ -41,8 +41,8 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3TouchFeature feature = new S3TouchFeature(session, acl);
         final String filename = new AsciiRandomStringService().random();
-        assertFalse(feature.isSupported(Home.root(), filename));
-        assertTrue(feature.isSupported(container, filename));
+        assertFalse(feature.isSupported(Home.root(), Optional.of(filename)));
+        assertTrue(feature.isSupported(container, Optional.of(filename)));
         final Path test = feature.touch(new S3WriteFeature(session, new S3AccessControlListFeature(session)), new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
@@ -57,7 +57,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final S3TouchFeature feature = new S3TouchFeature(virtualhost, acl);
         final String filename = new AsciiRandomStringService().random();
-        assertTrue(feature.isSupported(Home.root(), filename));
+        assertTrue(feature.isSupported(Home.root(), Optional.of(filename)));
         final Path test = feature.touch(new S3WriteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)), new Path(filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));

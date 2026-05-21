@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -107,11 +108,11 @@ public class OfflineGraphDirectoryTouchFeatureTest {
 
             if(feature instanceof Touch) {
                 final Touch touch = (Touch) feature;
-                assertEquals(String.format("Create \"%s\" in \"%s\".", name, parent.getAbsolute()), testCase.isValid, touch.isSupported(parent, name));
+                assertEquals(String.format("Create \"%s\" in \"%s\".", name, parent.getAbsolute()), testCase.isValid, touch.isSupported(parent, Optional.of(name)));
             }
             else if(feature instanceof Directory) {
                 final Directory directory = (Directory) feature;
-                assertEquals(String.format("Create \"%s\" in \"%s\".", name, parent.getAbsolute()), testCase.isValid, directory.isSupported(parent, name));
+                assertEquals(String.format("Create \"%s\" in \"%s\".", name, parent.getAbsolute()), testCase.isValid, directory.isSupported(parent, Optional.of(name)));
             }
             else {
                 fail();

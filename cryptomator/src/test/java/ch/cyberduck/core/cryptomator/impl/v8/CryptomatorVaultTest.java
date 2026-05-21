@@ -354,11 +354,6 @@ public class CryptomatorVaultTest {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }
-
-                        @Override
-                        public boolean isSupported(final Path workdir, final String name) {
-                            throw new UnsupportedOperationException();
-                        }
                     };
                 }
                 return super._getFeature(type);

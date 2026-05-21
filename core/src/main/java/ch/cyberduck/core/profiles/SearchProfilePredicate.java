@@ -15,8 +15,6 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Protocol;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.function.Predicate;
@@ -31,15 +29,10 @@ public class SearchProfilePredicate implements Predicate<ProfileDescription> {
 
     @Override
     public boolean test(final ProfileDescription entry) {
-        if(!entry.getProfile().isPresent()) {
-            return false;
-        }
-        final Protocol protocol = entry.getProfile().get();
         for(String i : StringUtils.split(input, StringUtils.SPACE)) {
-            if(StringUtils.containsIgnoreCase(protocol.getName(), i)
-                || StringUtils.containsIgnoreCase(protocol.getDescription(), i)
-                || StringUtils.containsIgnoreCase(protocol.getDefaultHostname(), i)
-                || StringUtils.containsIgnoreCase(protocol.getProvider(), i)) {
+            if(StringUtils.containsIgnoreCase(entry.getName(), i)
+                    || StringUtils.containsIgnoreCase(entry.getDescription(), i)
+                    || StringUtils.containsIgnoreCase(entry.getProvider(), i)) {
                 continue;
             }
             return false;

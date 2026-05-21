@@ -276,11 +276,41 @@ public class ProtocolFactoryTest {
 
     @Test
     public void testForNameOrDefault() throws Exception {
-        final TestProtocol ftp = new TestProtocol(Scheme.ftp);
-        final TestProtocol dav = new TestProtocol(Scheme.dav);
-        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(ftp, dav)));
-        assertEquals(dav, f.forNameOrDefault("dav"));
+        final TestProtocol ftp = new TestProtocol(Scheme.ftp) {
+            @Override
+            public String getIdentifier() {
+                return "test-ftp";
+            }
+        };
+        final TestProtocol dav = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "test-dav";
+            }
+        };
+        final TestProtocol davProfileCustomprovider = new TestProtocol(Scheme.dav) {
+            @Override
+            public String getIdentifier() {
+                return "test-dav";
+            }
+
+            @Override
+            public String getProvider() {
+                return "custom";
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(ftp, dav, davProfileCustomprovider)));
+        assertEquals(dav, f.forName("test-dav"));
+        assertEquals(dav, f.forNameOrDefault("test-dav"));
+        assertEquals(dav, f.forNameOrDefault("test-dav:test-dav"));
+        assertEquals(dav, f.forName("test-dav:test-dav"));
+        assertEquals(davProfileCustomprovider, f.forNameOrDefault("test-dav:custom"));
+        assertEquals(davProfileCustomprovider, f.forNameOrDefault("test-dav-custom"));
+        assertEquals(davProfileCustomprovider, f.forName("test-dav:custom"));
+        assertEquals(davProfileCustomprovider, f.forName("test-dav-custom"));
+        assertNull(f.forName("invalid"));
         assertEquals(ftp, f.forNameOrDefault("invalid"));
+        assertEquals(ftp, f.forNameOrDefault("test-ftp"));
         assertEquals(ftp, f.forNameOrDefault("ftp"));
     }
 

@@ -41,6 +41,7 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -51,7 +52,7 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
     public void testDisallowedName() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
         final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("~%s.tmp", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        assertFalse(touch.isSupported(new DefaultHomeFinderService(session).find(), file.getName()));
+        assertFalse(touch.isSupported(new DefaultHomeFinderService(session).find(), Optional.of(file.getName())));
         touch.touch(new DropboxWriteFeature(session), file, new TransferStatus());
     }
 

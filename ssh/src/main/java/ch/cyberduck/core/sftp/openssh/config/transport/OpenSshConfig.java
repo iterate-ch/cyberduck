@@ -39,11 +39,14 @@ package ch.cyberduck.core.sftp.openssh.config.transport;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
 import ch.cyberduck.core.sftp.openssh.config.fnmatch.FileNameMatcher;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,9 +57,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Simple configuration parser for the OpenSSH ~/.ssh/config file.
@@ -70,15 +76,16 @@ public class OpenSshConfig {
     private final Local configuration;
 
     /**
-     * Modification time of {@link #configuration} when {@link #hosts} loaded.
-     */
-    private long lastModified;
-
-    /**
      * Cached entries read out of the configuration file.
      */
     private Map<String, Host> hosts
             = Collections.emptyMap();
+
+    /**
+     * Cached Match host blocks read out of the configuration file.
+     */
+    private List<MatchBlock> matchBlocks
+            = Collections.emptyList();
 
     /**
      * Obtain the user's configuration data.
@@ -100,6 +107,10 @@ public class OpenSshConfig {
      * @return r configuration for the requested name. Never null.
      */
     public Host lookup(final String hostName) {
+        return this.lookup(hostName, null);
+    }
+
+    public Host lookup(final String hostName, final String user) {
         Host h = hosts.get(hostName);
         if(h == null) {
             h = new Host();
@@ -118,6 +129,14 @@ public class OpenSshConfig {
             log.debug("Found host match in SSH config:{}", e.getValue());
             h.copyFrom(e.getValue());
         }
+        // Match host criteria are matched against the target hostname, after any substitution by the Hostname option
+        final String targetHostName = h.hostName != null ? h.hostName : hostName;
+        for(final MatchBlock mb : matchBlocks) {
+            if(isMatchApplicable(mb, targetHostName, user)) {
+                log.debug("Found match block applicable for {} in SSH config: {}", targetHostName, mb.host);
+                h.copyFrom(mb.host);
+            }
+        }
         if(h.port == 0) {
             h.port = -1;
         }
@@ -126,27 +145,29 @@ public class OpenSshConfig {
     }
 
     public Map<String, Host> refresh() {
-        final long mtime = configuration.attributes().getModificationDate();
-        if(mtime != lastModified) {
-            try {
-                final InputStream in = configuration.getInputStream();
-                try {
-                    hosts = this.parse(in);
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                }
+        try {
+            final List<MatchBlock> newMatchBlocks = new ArrayList<>();
+            try(final InputStream in = configuration.getInputStream()) {
+                hosts = this.parse(in, configuration.getParent(), new HashSet<>(), newMatchBlocks);
             }
-            catch(AccessDeniedException | IOException none) {
-                log.warn("Failure reading {}", configuration);
-                hosts = Collections.emptyMap();
-            }
-            lastModified = mtime;
+            matchBlocks = newMatchBlocks;
+        }
+        catch(AccessDeniedException | IOException none) {
+            log.warn("Failure reading {}", configuration);
+            hosts = Collections.emptyMap();
+            matchBlocks = Collections.emptyList();
         }
         return hosts;
     }
 
-    private Map<String, Host> parse(final InputStream in) throws IOException {
+    /**
+     *
+     * @param in          Configuration file input stream
+     * @param directory   Directory containing the configuration file.
+     * @param seen        Previously read configuration files.
+     * @param matchBlocks Accumulator for Match host blocks found during parsing.
+     */
+    private Map<String, Host> parse(final InputStream in, final Local directory, final Set<Local> seen, final List<MatchBlock> matchBlocks) throws IOException {
         final Map<String, Host> m = new LinkedHashMap<>();
         final BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         final List<Host> current = new ArrayList<>(4);
@@ -169,6 +190,74 @@ public class OpenSshConfig {
                     final String name = dequote(pattern);
                     Host c = m.computeIfAbsent(name, k -> new Host());
                     current.add(c);
+                }
+                continue;
+            }
+            if("Match".equalsIgnoreCase(keyword)) {
+                current.clear();
+                final List<String> hostPatterns = new ArrayList<>();
+                final List<String> userPatterns = new ArrayList<>();
+                boolean unknown = false;
+                final String[] tokens = argValue.split("[ \t]+");
+                int ti = 0;
+                while(ti < tokens.length) {
+                    final String criterion = tokens[ti];
+                    if("host".equalsIgnoreCase(criterion)) {
+                        ti++;
+                        if(ti < tokens.length) {
+                            for(final String p : tokens[ti].split(",")) {
+                                final String trimmed = dequote(p.trim());
+                                if(!trimmed.isEmpty()) {
+                                    hostPatterns.add(trimmed);
+                                }
+                            }
+                        }
+                    }
+                    else if("user".equalsIgnoreCase(criterion)) {
+                        ti++;
+                        if(ti < tokens.length) {
+                            for(final String p : tokens[ti].split(",")) {
+                                final String trimmed = dequote(p.trim());
+                                if(!trimmed.isEmpty()) {
+                                    userPatterns.add(trimmed);
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        log.warn("Unknown Match criterion: {}", criterion);
+                        unknown = true;
+                        break;
+                    }
+                    ti++;
+                }
+                if(!unknown && (!hostPatterns.isEmpty() || !userPatterns.isEmpty())) {
+                    final Host matchHost = new Host();
+                    matchBlocks.add(new MatchBlock(hostPatterns, userPatterns, matchHost));
+                    current.add(matchHost);
+                }
+                continue;
+            }
+            if("Include".equalsIgnoreCase(keyword)) {
+                for(final String pattern : argValue.split("[ \t]")) {
+                    for(final Local included : resolve(directory, dequote(pattern))) {
+                        if(!seen.add(included)) {
+                            log.debug("Skipping already-included SSH config file {}", included);
+                            continue;
+                        }
+                        try {
+                            try(final InputStream i = included.getInputStream()) {
+                                final Map<String, Host> sub = this.parse(i, included.getParent(), seen, matchBlocks);
+                                for(final Map.Entry<String, Host> e : sub.entrySet()) {
+                                    m.computeIfAbsent(e.getKey(), k -> e.getValue());
+                                }
+                            }
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn("Failure reading included SSH config {}", included);
+                            // Ignore and skip
+                        }
+                    }
                 }
                 continue;
             }
@@ -247,6 +336,92 @@ public class OpenSshConfig {
             }
         }
         return m;
+    }
+
+    /**
+     * Resolve include patterns relative to the given directory
+     */
+    private static List<Local> resolve(final Local directory, final String pattern) {
+        final List<Local> result = new ArrayList<>();
+        final Local parent;
+        if(FilenameUtils.getPrefixLength(pattern) != 0) {
+            parent = LocalFactory.get(FilenameUtils.getFullPathNoEndSeparator(pattern));
+        }
+        else {
+            parent = directory;
+        }
+        // Include accepts the tokens %%, %C, %d, %h, %i, %j, %k, %L, %l, %n, %p, %r, and %u.
+        if(StringUtils.containsAny(pattern, '*', '?')) {
+            // Each pathname may contain glob(7) wildcards
+            if(parent.isDirectory()) {
+                log.debug("Resolve files in {} matching {}", parent, FilenameUtils.getName(pattern));
+                try {
+                    for(Local l : parent.list(new NullFilter<String>() {
+                        @Override
+                        public boolean accept(final String file) {
+                            return FilenameUtils.wildcardMatch(file, FilenameUtils.getName(pattern));
+                        }
+                    })) {
+                        result.add(l);
+                    }
+                }
+                catch(AccessDeniedException e) {
+                    log.warn("Failure reading directory {}", parent);
+                }
+            }
+        }
+        else {
+            result.add(LocalFactory.get(parent, FilenameUtils.getName(pattern)));
+        }
+        // Wildcards will be expanded and processed in lexical order
+        result.sort(Comparator.comparing(Local::getAbsolute));
+        return result;
+    }
+
+    /**
+     * Evaluates whether a {@code Match} block applies given the target hostname and optional user.
+     * <p>
+     * All present criteria must match. If {@code user} criteria are present but no user is provided, the block is
+     * skipped because the criteria cannot be evaluated.
+     */
+    private static boolean isMatchApplicable(final MatchBlock mb, final String hostName, final String user) {
+        if(!mb.hostPatterns.isEmpty() && !isPatternsMatch(mb.hostPatterns, hostName)) {
+            return false;
+        }
+        if(!mb.userPatterns.isEmpty()) {
+            if(user == null) {
+                return false;
+            }
+            if(!isPatternsMatch(mb.userPatterns, user)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Evaluates a comma-separated pattern list against a value.
+     * <p>
+     * A list applies when at least one positive pattern matches (or all patterns are negated) and no negated pattern
+     * matches. Negated patterns are prefixed with {@code !}.
+     */
+    private static boolean isPatternsMatch(final List<String> patterns, final String value) {
+        boolean hasPositive = false;
+        boolean anyPositiveMatch = false;
+        for(final String pattern : patterns) {
+            if(pattern.startsWith("!")) {
+                if(isHostMatch(pattern.substring(1), value)) {
+                    return false;
+                }
+            }
+            else {
+                hasPositive = true;
+                if(isHostMatch(pattern, value)) {
+                    anyPositiveMatch = true;
+                }
+            }
+        }
+        return !hasPositive || anyPositiveMatch;
     }
 
     private static boolean isHostPattern(final String s) {
@@ -425,6 +600,18 @@ public class OpenSshConfig {
             sb.append(", batchMode=").append(batchMode);
             sb.append('}');
             return sb.toString();
+        }
+    }
+
+    private static final class MatchBlock {
+        final List<String> hostPatterns;
+        final List<String> userPatterns;
+        final Host host;
+
+        MatchBlock(final List<String> hostPatterns, final List<String> userPatterns, final Host host) {
+            this.hostPatterns = hostPatterns;
+            this.userPatterns = userPatterns;
+            this.host = host;
         }
     }
 

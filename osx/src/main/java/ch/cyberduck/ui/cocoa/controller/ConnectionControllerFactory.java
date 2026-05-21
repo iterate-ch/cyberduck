@@ -27,7 +27,7 @@ import java.util.Map;
 public final class ConnectionControllerFactory {
 
     private static final Map<WindowController, ConnectionController> open
-        = new HashMap<WindowController, ConnectionController>();
+        = new HashMap<>();
 
     private ConnectionControllerFactory() {
         //

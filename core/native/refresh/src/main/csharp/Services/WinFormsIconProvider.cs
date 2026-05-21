@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using static Windows.Win32.CorePInvoke;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {

@@ -29,6 +29,7 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.proxy.ReachabilityProxyFinder;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -65,6 +66,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -141,28 +143,15 @@ public class HttpConnectionPoolBuilder {
     }
 
     /**
-     * @param proxyfinder Proxy configuration
-     * @param listener    Log listener
-     * @param prompt      Prompt for proxy credentials
+     * @param proxy    Proxy configuration
+     * @param listener Log listener
+     * @param prompt   Prompt for proxy credentials
      * @return Builder for HTTP client
      */
-    public HttpClientBuilder build(final ProxyFinder proxyfinder, final TranscriptListener listener, final LoginCallback prompt) {
+    public HttpClientBuilder build(final ProxyFinder proxy, final TranscriptListener listener, final LoginCallback prompt) {
         final HttpClientBuilder configuration = HttpClients.custom();
-        configuration.setRoutePlanner(new DefaultRoutePlanner(DefaultSchemePortResolver.INSTANCE) {
-            @Override
-            protected HttpHost determineProxy(final HttpHost target, final HttpRequest request, final HttpContext context) {
-                // Use HTTP Connect proxy implementation provided here instead of relying on internal proxy support in socket factory
-                final Proxy proxy = proxyfinder.find(target.toURI());
-                switch(proxy.getType()) {
-                    case HTTP:
-                    case HTTPS:
-                        final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
-                        log.info("Setup proxy {}", h);
-                        return h;
-                }
-                return null;
-            }
-        });
+        final CustomProxyRoutePlanner planner = new CustomProxyRoutePlanner(host, proxy);
+        configuration.setRoutePlanner(planner);
         configuration.setProxyAuthenticationStrategy(new CallbackProxyAuthenticationStrategy(ProxyCredentialsStoreFactory.get(), host, prompt));
         configuration.setUserAgent(new PreferencesUseragentProvider().get());
         final int timeout = connectionTimeout.getTimeout() * 1000;
@@ -195,7 +184,8 @@ public class HttpConnectionPoolBuilder {
         configuration.setRequestExecutor(new CustomHttpRequestExecutor(host, listener));
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
-        final PoolingHttpClientConnectionManager connectionManager = this.createConnectionManager(this.createRegistry());
+        final Registry<ConnectionSocketFactory> registry = this.createRegistry();
+        final PoolingHttpClientConnectionManager connectionManager = this.createConnectionManager(registry, planner);
         configuration.setConnectionManager(connectionManager);
         configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
@@ -238,15 +228,49 @@ public class HttpConnectionPoolBuilder {
                 .register(Scheme.https.toString(), sslSocketFactory).build();
     }
 
-    public PoolingHttpClientConnectionManager createConnectionManager(final Registry<ConnectionSocketFactory> registry) {
+    public PoolingHttpClientConnectionManager createConnectionManager(final Registry<ConnectionSocketFactory> registry, final CustomProxyRoutePlanner proxy) {
         log.debug("Setup connection pool with registry {}", registry);
         final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(
                 new CustomHttpClientConnectionOperator(registry, DefaultSchemePortResolver.INSTANCE, new CustomDnsResolver()),
-                ManagedHttpClientConnectionFactory.INSTANCE, -1, TimeUnit.MILLISECONDS);
+                ManagedHttpClientConnectionFactory.INSTANCE, -1, TimeUnit.MILLISECONDS) {
+            @Override
+            public void shutdown() {
+                proxy.close();
+                super.shutdown();
+            }
+        };
         manager.setMaxTotal(HostPreferencesFactory.get(host).getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(HostPreferencesFactory.get(host).getInteger("http.connections.route"));
         // Detect connections that have become stale (half-closed) while kept inactive in the pool
         manager.setValidateAfterInactivity(HostPreferencesFactory.get(host).getInteger("http.connections.stale.check.ms"));
         return manager;
+    }
+
+    private static final class CustomProxyRoutePlanner extends DefaultRoutePlanner implements Closeable {
+        private final ReachabilityProxyFinder finder;
+
+        public CustomProxyRoutePlanner(final Host host, ProxyFinder proxy) {
+            super(DefaultSchemePortResolver.INSTANCE);
+            this.finder = new ReachabilityProxyFinder(host, proxy);
+        }
+
+        @Override
+        protected HttpHost determineProxy(final HttpHost target, final HttpRequest request, final HttpContext context) {
+            // Use HTTP Connect proxy implementation provided here instead of relying on internal proxy support in socket factory
+            final Proxy proxy = finder.find(target.toURI());
+            switch(proxy.getType()) {
+                case HTTP:
+                case HTTPS:
+                    final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
+                    log.info("Setup proxy {}", h);
+                    return h;
+            }
+            return null;
+        }
+
+        @Override
+        public void close() {
+            finder.close();
+        }
     }
 }

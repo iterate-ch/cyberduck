@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -59,7 +60,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
                     break;
                 default:
                     final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                    assertTrue(feature.isSupported(test.getParent(), test.getName()));
+                    assertTrue(feature.isSupported(test.getParent(), Optional.of(test.getName())));
                     test.attributes().setRegion(region.getIdentifier());
                     feature.mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus().setRegion(region.getIdentifier()));
                     assertTrue(new S3FindFeature(session, acl).find(test));
@@ -92,7 +93,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, acl);
         for(Location.Name region : Collections.singletonList(new S3LocationFeature.S3Region("us-east-1"))) {
             final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-            assertTrue(feature.isSupported(test.getParent(), test.getName()));
+            assertTrue(feature.isSupported(test.getParent(), Optional.of(test.getName())));
             test.attributes().setRegion(region.getIdentifier());
             feature.mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus().setRegion(region.getIdentifier()));
             assertTrue(new S3FindFeature(session, acl).find(test));
@@ -125,7 +126,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, acl);
         for(Location.Name region : Collections.singletonList(new S3LocationFeature.S3Region("us-east-1"))) {
             final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-            assertTrue(feature.isSupported(test.getParent(), test.getName()));
+            assertTrue(feature.isSupported(test.getParent(), Optional.of(test.getName())));
             test.attributes().setRegion(region.getIdentifier());
             feature.mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus().setRegion(region.getIdentifier()));
             assertTrue(new S3FindFeature(session, acl).find(test));
@@ -139,8 +140,8 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     public void testCreateBucketInvalidName() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), "untitled folder", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3DirectoryFeature(session, acl).isSupported(test.getParent(), test.getName()));
-        assertTrue(new S3DirectoryFeature(virtualhost, acl).isSupported(test.getParent(), test.getName()));
+        assertFalse(new S3DirectoryFeature(session, acl).isSupported(test.getParent(), Optional.of(test.getName())));
+        assertTrue(new S3DirectoryFeature(virtualhost, acl).isSupported(test.getParent(), Optional.of(test.getName())));
         final S3LocationFeature.S3Region region = new S3LocationFeature.S3Region("eu-west-2");
         test.attributes().setRegion(region.getIdentifier());
         new S3DirectoryFeature(session, acl).mkdir(new S3WriteFeature(session, new S3AccessControlListFeature(session)), test, new TransferStatus().setRegion(region.getIdentifier()));

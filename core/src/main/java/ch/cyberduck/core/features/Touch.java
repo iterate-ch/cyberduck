@@ -40,7 +40,7 @@ public interface Touch<Reply> {
      * @param filename Relative filename
      * @return True if creating an empty file is possible.
      */
-    default boolean isSupported(final Path workdir, final String filename) {
+    default boolean isSupported(final Path workdir, final java.util.Optional<String> filename) {
         try {
             this.preflight(workdir, filename);
             return true;
@@ -53,7 +53,7 @@ public interface Touch<Reply> {
     /**
      * @throws AccessDeniedException Permission failure for target directory
      */
-    default void preflight(final Path workdir, final String filename) throws BackgroundException {
+    default void preflight(final Path workdir, final java.util.Optional<String> filename) throws BackgroundException {
         if(!workdir.attributes().getPermission().isWritable()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString(
                     "Cannot create {0}", "Error"), filename)).withFile(workdir);

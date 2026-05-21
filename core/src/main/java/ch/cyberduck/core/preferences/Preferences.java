@@ -61,7 +61,6 @@ import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.core.updater.DisabledUpdateCheckerArguments;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
-import ch.cyberduck.core.vault.DisabledVault;
 import ch.cyberduck.core.vault.DisabledVaultProvider;
 import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
 import ch.cyberduck.ui.quicklook.ApplicationLauncherQuicklook;
@@ -451,7 +450,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 },
                 null, new NullConfiguration());
         return RollingFileAppender.newBuilder()
-                .setName(RollingFileAppender.class.getName())
+                .setName("default")
                 .withFileName(active.getAbsolute())
                 .withFilePattern(archives.getAbsolute())
                 .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
@@ -474,7 +473,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 },
                 null, new NullConfiguration());
         return RollingFileAppender.newBuilder()
-                .setName(RollingFileAppender.class.getName())
+                .setName("audit")
                 .withFileName(active.getAbsolute())
                 .withFilePattern(archives.getAbsolute())
                 .withPolicy(SizeBasedTriggeringPolicy.createPolicy("50MB"))

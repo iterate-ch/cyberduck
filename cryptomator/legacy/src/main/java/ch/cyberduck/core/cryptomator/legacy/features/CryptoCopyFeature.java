@@ -108,8 +108,7 @@ public class CryptoCopyFeature implements Copy {
         }
         else {
             new DefaultCopyFeature(session).withTarget(target).preflight(
-                    vault.contains(source) ? vault.encrypt(session, source) : source,
-                    vault.contains(copy.get()) ? Optional.of(vault.encrypt(session, copy.get())) : copy);
+                    vault.contains(source) ? vault.encrypt(session, source) : source, copy);
         }
     }
 

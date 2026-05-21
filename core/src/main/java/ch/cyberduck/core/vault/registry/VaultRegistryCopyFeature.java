@@ -97,7 +97,12 @@ public class VaultRegistryCopyFeature implements Copy {
             }
         }
         else {
-            proxy.preflight(source, optional);
+            try {
+                registry.find(session, source, false).getFeature(session, Copy.class, proxy).preflight(source, optional);
+            }
+            catch(VaultUnlockCancelException e) {
+                proxy.preflight(source, optional);
+            }
         }
     }
 

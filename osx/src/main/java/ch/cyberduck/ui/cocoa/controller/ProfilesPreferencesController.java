@@ -33,10 +33,8 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.profiles.LocalProfileDescription;
@@ -46,6 +44,7 @@ import ch.cyberduck.core.profiles.ProfilesSynchronizeWorker;
 import ch.cyberduck.core.profiles.ProfilesWorkerBackgroundAction;
 import ch.cyberduck.core.profiles.SearchProfilePredicate;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +57,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,8 +74,8 @@ public class ProfilesPreferencesController extends BundleController {
     /**
      * Synchronized ist of available profiles
      */
-    private final Map<ProfileDescription, Profile> repository
-            = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Set<ProfileDescription> repository
+            = Collections.synchronizedSet(new LinkedHashSet<>());
 
     @Delegate
     private ProfilesTableDataSource profilesTableDataSource;
@@ -133,12 +132,12 @@ public class ProfilesPreferencesController extends BundleController {
     private void reload() {
         final String input = searchField.stringValue();
         if(StringUtils.isBlank(input)) {
-            this.profilesTableDataSource.withSource(toSorted(repository.keySet()));
+            this.profilesTableDataSource.withSource(toSorted(repository));
         }
         else {
             // Setup search filter
             this.profilesTableDataSource.withSource(toSorted(
-                    repository.keySet().stream().filter(new SearchProfilePredicate(input)).collect(Collectors.toSet())));
+                    repository.stream().filter(new SearchProfilePredicate(input)).collect(Collectors.toSet())));
         }
         // Reload with current cache
         this.profilesTableView.reloadData();
@@ -146,7 +145,7 @@ public class ProfilesPreferencesController extends BundleController {
 
     public void setProfilesTableView(final NSOutlineView profilesTableView) {
         this.profilesTableView = profilesTableView;
-        this.profilesTableDataSource = new ProfilesTableDataSource().withSource(toSorted(repository.keySet()));
+        this.profilesTableDataSource = new ProfilesTableDataSource().withSource(toSorted(repository));
         this.profilesTableView.setDataSource(profilesTableDataSource.id());
         this.profilesTableDelegate = new ProfilesTableDelegate(profilesTableView.tableColumnWithIdentifier("Default"));
         this.profilesTableView.setDelegate(profilesTableDelegate.id());
@@ -166,14 +165,10 @@ public class ProfilesPreferencesController extends BundleController {
             try {
                 progressIndicator.startAnimation(null);
                 this.background(new ProfilesWorkerBackgroundAction(controller,
-                        new ProfilesSynchronizeWorker(protocols, ProfilesFinder.Visitor.Prefetch) {
+                        new ProfilesSynchronizeWorker(protocols, ProfilesFinder.Visitor.Noop) {
                             @Override
                             public void cleanup(final Set<ProfileDescription> set) {
-                                for(ProfileDescription description : set) {
-                                    if(description.getProfile().isPresent()) {
-                                        repository.put(description, description.getProfile().get());
-                                    }
-                                }
+                                repository.addAll(set);
                                 reload();
                                 progressIndicator.stopAnimation(null);
                             }
@@ -194,7 +189,7 @@ public class ProfilesPreferencesController extends BundleController {
         }
 
         private ProfileDescription fromChecksum(final NSObject hash) {
-            final Optional<ProfileDescription> found = repository.keySet().stream()
+            final Optional<ProfileDescription> found = repository.stream()
                     .filter(description -> description.getChecksum().hash.equals(hash.toString())).findFirst();
             return found.orElse(null);
         }
@@ -225,7 +220,7 @@ public class ProfilesPreferencesController extends BundleController {
             if(null == description) {
                 return null;
             }
-            return repository.get(description).getDescription();
+            return description.getDescription();
         }
 
         @Override
@@ -284,7 +279,7 @@ public class ProfilesPreferencesController extends BundleController {
             if(null == description) {
                 return false;
             }
-            return !repository.get(description).isBundled();
+            return true;
         }
 
         public NSView outlineView_viewForTableColumn_item(final NSOutlineView outlineView, final NSTableColumn tableColumn, final NSObject item) {
@@ -292,11 +287,10 @@ public class ProfilesPreferencesController extends BundleController {
             if(null == description) {
                 return null;
             }
-            final Profile profile = repository.get(description);
             if(controllers.containsKey(description)) {
                 return controllers.get(description).getCellView();
             }
-            final ProfileTableViewController controller = new ProfileTableViewController(description, profile);
+            final ProfileTableViewController controller = new ProfileTableViewController(description);
             controllers.put(description, controller);
             return controller.getCellView();
         }
@@ -380,7 +374,6 @@ public class ProfilesPreferencesController extends BundleController {
 
     public final class ProfileTableViewController extends BundleController {
         private final ProfileDescription description;
-        private final Profile profile;
 
         @Outlet
         private NSTableCellView cellView;
@@ -393,9 +386,8 @@ public class ProfilesPreferencesController extends BundleController {
         @Outlet
         private NSButton helpButton;
 
-        public ProfileTableViewController(final ProfileDescription description, final Profile profile) {
+        public ProfileTableViewController(final ProfileDescription description) {
             this.description = description;
-            this.profile = profile;
             this.loadBundle();
         }
 
@@ -409,14 +401,14 @@ public class ProfilesPreferencesController extends BundleController {
 
         public void setImageView(final NSImageView imageView) {
             this.imageView = imageView;
-            this.imageView.setImage(IconCacheFactory.<NSImage>get().iconNamed(profile.icon(), 32));
+            this.imageView.setImage(IconCacheFactory.<NSImage>get().iconNamed(description.getThumbnail(), 32));
         }
 
         public void setTextField(final NSTextField textField) {
             this.textField = textField;
-            final NSMutableAttributedString description = NSMutableAttributedString.create(profile.getDescription(), PRIMARY_FONT_ATTRIBUTES);
-            description.appendAttributedString(NSMutableAttributedString.create(String.format("\n%s", profile.getName()), SECONDARY_FONT_ATTRIBUTES));
-            this.textField.setAttributedStringValue(description);
+            final NSMutableAttributedString s = NSMutableAttributedString.create(description.getDescription(), PRIMARY_FONT_ATTRIBUTES);
+            s.appendAttributedString(NSMutableAttributedString.create(String.format("\n%s", description.getName()), SECONDARY_FONT_ATTRIBUTES));
+            this.textField.setAttributedStringValue(s);
         }
 
         public void setCheckbox(final NSButton checkbox) {
@@ -424,38 +416,49 @@ public class ProfilesPreferencesController extends BundleController {
             this.checkbox.setState(NSCell.NSOnState);
             this.checkbox.setTarget(this.id());
             this.checkbox.setAction(Foundation.selector("profileCheckboxClicked:"));
-            this.checkbox.setEnabled(!profile.isBundled());
-            if(BookmarkCollection.defaultCollection().stream().filter(host -> host.getProtocol().equals(profile)).findAny().isPresent()) {
+            this.checkbox.setEnabled(!description.isBundled());
+            if(BookmarkCollection.defaultCollection().stream().anyMatch(host -> host.getProtocol().getProvider().equals(description.getProvider())
+                    && host.getProtocol().getIdentifier().equals(description.getIdentifier()))) {
                 this.checkbox.setEnabled(false);
             }
-            this.checkbox.setState(description.isInstalled() && profile.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
+            this.checkbox.setState(description.isInstalled() && description.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
         }
 
         public void setHelpButton(final NSButton helpButton) {
             this.helpButton = helpButton;
             this.helpButton.setTarget(this.id());
             this.helpButton.setAction(Foundation.selector("helpButtonClicked:"));
+            this.helpButton.setEnabled(StringUtils.isNotBlank(description.getHelp()));
         }
 
         @Action
         public void profileCheckboxClicked(final NSButton sender) {
             boolean enabled = sender.state() == NSCell.NSOnState;
             if(enabled) {
-                final Optional<Local> file = description.getFile();
-                // Update with last version from repository
-                file.ifPresent(local -> repository.put(new LocalProfileDescription(protocols, ProtocolFactory.BUNDLED_PROFILE_PREDICATE,
-                        protocols.register(local)), profile));
+                this.background(new AbstractBackgroundAction<Void>() {
+                    @Override
+                    public Void run() {
+                        // Download profile
+                        final Optional<Local> file = description.getFile();
+                        // Update with last version from repository
+                        file.ifPresent(local -> {
+                            repository.remove(description);
+                            repository.add(new LocalProfileDescription(protocols, ProtocolFactory.BUNDLED_PROFILE_PREDICATE,
+                                    protocols.register(local)));
+                        });
+                        return null;
+                    }
+                });
             }
             else {
-                final Optional<Profile> profile = description.getProfile();
                 // Uninstall profile
-                profile.ifPresent(protocols::unregister);
+                protocols.unregister(description.getIdentifier(), description.getProvider());
             }
         }
 
         @Action
         public void helpButtonClicked(final NSButton sender) {
-            BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help(profile));
+            BrowserLauncherFactory.get().open(description.getHelp());
         }
 
         @Override
@@ -472,8 +475,7 @@ public class ProfilesPreferencesController extends BundleController {
      */
     private static List<ProfileDescription> toSorted(final Set<ProfileDescription> profiles) {
         return profiles.stream()
-                .filter(description -> description.getProfile().isPresent())
-                .sorted(Comparator.comparing(o -> o.getProfile().get()))
+                .sorted(Comparator.comparing(ProfileDescription::getDescription))
                 .collect(Collectors.toList());
     }
 }

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner">
+            <connections>
+                <outlet property="bookmarkIconView" destination="Ys1-wo-Sly" id="ooveuv7O"/>
+                <outlet property="hostnameField" destination="30j-fz-u1W" id="ueW4chie"/>
+                <outlet property="labelsField" destination="aZf-3t-zaJ" id="ueM7Yeit"/>
+                <outlet property="nicknameField" destination="zO9-JC-CRa" id="chohsh8R"/>
+                <outlet property="progressIndicator" destination="ECj-UT-9CR" id="li9exieB"/>
+                <outlet property="statusIconView" destination="UdX-Vz-yWI" id="Hai9quee"/>
+                <outlet property="usernameField" destination="ml7-lB-fLT" id="aivie0EH"/>
+                <outlet property="view" destination="c22-O7-iKe" id="Wo5Aehoh"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="c22-O7-iKe" customClass="NSTableCellView">
+            <rect key="frame" x="0.0" y="0.0" width="450" height="72"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <customView focusRingType="none" translatesAutoresizingMaskIntoConstraints="NO" id="dZb-zh-zHZ" userLabel="Container View">
+                    <rect key="frame" x="4" y="4" width="442" height="64"/>
+                    <subviews>
+                        <imageView horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UdX-Vz-yWI" userLabel="Status Image View">
+                            <rect key="frame" x="0.0" y="24" width="16" height="16"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="16" id="Nsb-pi-HUl"/>
+                                <constraint firstAttribute="width" constant="16" id="dQX-3w-Gac"/>
+                            </constraints>
+                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" id="r2Y-Yt-FSu"/>
+                        </imageView>
+                        <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zO9-JC-CRa" userLabel="Nickname Label">
+                            <rect key="frame" x="94" y="48" width="34" height="16"/>
+                            <constraints>
+                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="30" id="POL-CS-00p"/>
+                            </constraints>
+                            <textFieldCell key="cell" lineBreakMode="truncatingMiddle" id="JZ9-9u-Klk">
+                                <font key="font" metaFont="systemBold"/>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                        <tokenField focusRingType="none" horizontalHuggingPriority="750" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aZf-3t-zaJ" userLabel="Labels Token Field">
+                            <rect key="frame" x="132" y="48" width="64" height="16"/>
+                            <constraints>
+                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="9C0-KS-N6d"/>
+                            </constraints>
+                            <tokenFieldCell key="cell" lineBreakMode="truncatingMiddle" alignment="left" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="48c-c1-kSD">
+                                <font key="font" metaFont="system"/>
+                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </tokenFieldCell>
+                        </tokenField>
+                        <stackView focusRingType="none" distribution="fill" orientation="vertical" alignment="leading" spacing="3" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="r2U-sp-LT6" userLabel="Details Stack View">
+                            <rect key="frame" x="96" y="10" width="306" height="31"/>
+                            <subviews>
+                                <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="30j-fz-u1W" userLabel="Hostname Label">
+                                    <rect key="frame" x="-2" y="17" width="54" height="14"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="88v-2E-xDd"/>
+                                    </constraints>
+                                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" id="MbQ-lq-enV">
+                                        <font key="font" metaFont="systemLight" size="11"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ml7-lB-fLT" userLabel="Username Label">
+                                    <rect key="frame" x="-2" y="0.0" width="54" height="14"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="VM4-gp-lRp"/>
+                                    </constraints>
+                                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" id="4ia-Jg-jKH">
+                                        <font key="font" metaFont="systemLight" size="11"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                            </subviews>
+                            <visibilityPriorities>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                            </visibilityPriorities>
+                            <customSpacing>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                            </customSpacing>
+                        </stackView>
+                        <progressIndicator maxValue="100" displayedWhenStopped="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="ECj-UT-9CR">
+                            <rect key="frame" x="410" y="16" width="32" height="32"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="32" id="Kko-dt-7xP"/>
+                                <constraint firstAttribute="width" constant="32" id="QMn-QZ-EKC"/>
+                            </constraints>
+                        </progressIndicator>
+                        <imageView horizontalHuggingPriority="150" verticalHuggingPriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Ys1-wo-Sly" userLabel="Disk Image View">
+                            <rect key="frame" x="24" y="32" width="64" height="0.0"/>
+                            <constraints>
+                                <constraint firstAttribute="width" relation="lessThanOrEqual" constant="64" id="P8I-MS-FkZ"/>
+                                <constraint firstAttribute="height" relation="lessThanOrEqual" constant="64" id="gx6-dp-GJ5"/>
+                            </constraints>
+                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="ns5-Lz-qNp"/>
+                        </imageView>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="ECj-UT-9CR" firstAttribute="leading" secondItem="r2U-sp-LT6" secondAttribute="trailing" constant="8" symbolic="YES" id="1MK-1y-pDh"/>
+                        <constraint firstItem="ECj-UT-9CR" firstAttribute="centerY" secondItem="dZb-zh-zHZ" secondAttribute="centerY" id="4WP-uf-7XS"/>
+                        <constraint firstItem="Ys1-wo-Sly" firstAttribute="leading" secondItem="UdX-Vz-yWI" secondAttribute="trailing" constant="8" symbolic="YES" id="6M1-O0-5ZO"/>
+                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="16" id="86q-Tl-D0O"/>
+                        <constraint firstItem="zO9-JC-CRa" firstAttribute="leading" secondItem="Ys1-wo-Sly" secondAttribute="trailing" constant="8" symbolic="YES" id="ANE-OW-VyO"/>
+                        <constraint firstItem="aZf-3t-zaJ" firstAttribute="centerY" secondItem="zO9-JC-CRa" secondAttribute="centerY" id="Mdl-sw-FZK"/>
+                        <constraint firstItem="Ys1-wo-Sly" firstAttribute="centerY" secondItem="ECj-UT-9CR" secondAttribute="centerY" id="UxC-9r-tD6"/>
+                        <constraint firstItem="UdX-Vz-yWI" firstAttribute="leading" secondItem="dZb-zh-zHZ" secondAttribute="leading" id="XJO-w4-PCa"/>
+                        <constraint firstItem="UdX-Vz-yWI" firstAttribute="centerY" secondItem="Ys1-wo-Sly" secondAttribute="centerY" id="Xzz-3I-ZsA"/>
+                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="aZf-3t-zaJ" secondAttribute="trailing" constant="20" symbolic="YES" id="Zfs-8d-HBf"/>
+                        <constraint firstItem="UdX-Vz-yWI" firstAttribute="centerY" secondItem="dZb-zh-zHZ" secondAttribute="centerY" id="aMj-PY-fkJ"/>
+                        <constraint firstItem="zO9-JC-CRa" firstAttribute="top" secondItem="dZb-zh-zHZ" secondAttribute="top" id="k0N-lh-FQj"/>
+                        <constraint firstItem="aZf-3t-zaJ" firstAttribute="leading" secondItem="zO9-JC-CRa" secondAttribute="trailing" constant="8" symbolic="YES" id="pCL-GE-w35"/>
+                        <constraint firstItem="r2U-sp-LT6" firstAttribute="top" secondItem="zO9-JC-CRa" secondAttribute="bottom" constant="7" id="tEc-bB-nrn"/>
+                        <constraint firstAttribute="trailing" secondItem="ECj-UT-9CR" secondAttribute="trailing" id="tIN-gL-we1"/>
+                        <constraint firstItem="aZf-3t-zaJ" firstAttribute="top" secondItem="dZb-zh-zHZ" secondAttribute="top" id="uZ9-NG-Pgk"/>
+                        <constraint firstItem="Ys1-wo-Sly" firstAttribute="centerY" secondItem="dZb-zh-zHZ" secondAttribute="centerY" id="ugD-Me-LgL"/>
+                        <constraint firstItem="ECj-UT-9CR" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="aZf-3t-zaJ" secondAttribute="trailing" constant="8" symbolic="YES" id="uxz-WD-x4g"/>
+                        <constraint firstItem="r2U-sp-LT6" firstAttribute="leading" secondItem="Ys1-wo-Sly" secondAttribute="trailing" constant="8" symbolic="YES" id="xvP-ZN-5q9"/>
+                    </constraints>
+                </customView>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="dZb-zh-zHZ" secondAttribute="trailing" constant="4" id="55Z-dT-ZQy"/>
+                <constraint firstItem="dZb-zh-zHZ" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="4" id="7jn-H5-ZoA"/>
+                <constraint firstAttribute="bottom" secondItem="dZb-zh-zHZ" secondAttribute="bottom" constant="4" id="C0V-8o-apH"/>
+                <constraint firstItem="dZb-zh-zHZ" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="4" id="W8N-NR-AMP"/>
+            </constraints>
+            <connections>
+                <outlet property="imageView" destination="Ys1-wo-Sly" id="6ql-YM-7Cr"/>
+                <outlet property="textField" destination="zO9-JC-CRa" id="HJg-U6-vuX"/>
+            </connections>
+            <point key="canvasLocation" x="283" y="81"/>
+        </customView>
+    </objects>
+</document>

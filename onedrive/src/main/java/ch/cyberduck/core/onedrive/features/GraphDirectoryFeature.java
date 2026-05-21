@@ -34,6 +34,7 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 public class GraphDirectoryFeature implements Directory<DriveItem.Metadata> {
 
@@ -68,7 +69,7 @@ public class GraphDirectoryFeature implements Directory<DriveItem.Metadata> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         if(!session.isAccessible(workdir)) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create folder {0}", "Error"), filename)).withFile(workdir);
         }

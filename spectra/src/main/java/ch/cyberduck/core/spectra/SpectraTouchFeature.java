@@ -29,6 +29,7 @@ import org.jets3t.service.model.StorageObject;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.Optional;
 
 public class SpectraTouchFeature extends DefaultTouchFeature<StorageObject> {
 
@@ -47,7 +48,7 @@ public class SpectraTouchFeature extends DefaultTouchFeature<StorageObject> {
     }
 
     @Override
-    public void preflight(final Path workdir, final String filename) throws BackgroundException {
+    public void preflight(final Path workdir, final Optional<String> filename) throws BackgroundException {
         // Creating files is only possible inside a bucket.
         if(workdir.isRoot()) {
             throw new AccessDeniedException(MessageFormat.format(LocaleFactory.localizedString("Cannot create {0}", "Error"), filename)).withFile(workdir);
