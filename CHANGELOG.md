@@ -1,4 +1,5 @@
 # Changelog
+
 [9.5.0](https://github.com/iterate-ch/cyberduck/compare/release-9-4-1...release-9-5-0)
 * [Feature] Support for Liquid Glass (macOS) ([#17459](https://trac.cyberduck.io/ticket/17459))
 * [Feature] AWS IAM Identity Center Support (S3) ([#13377](https://trac.cyberduck.io/ticket/13377))
@@ -18,6 +19,7 @@
 * [Feature] Only show navigation bar in list and outline view of "Browser" window (macOS)
 * [Feature] Display progress indicator in browser view (macOS)
 * [Feature] Display progress indicator in bookmark view (macOS)
+* [Feature] Index of connection profiles allows instant display in Preferences → Profiles
 * [Bugfix] Error downloading file from unlocked vault (Cryptomator) ([#17935](https://trac.cyberduck.io/ticket/17935))
 * [Bugfix] No trailing delimiter for path style requests with bucket name only ([#17901](https://trac.cyberduck.io/ticket/17901))
 * [Bugfix] Repeating file transfer in vault fails after restart (Cryptomator) ([#17974](https://trac.cyberduck.io/ticket/17974))
