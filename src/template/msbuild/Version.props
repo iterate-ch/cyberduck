@@ -1,12 +1,12 @@
 <Project>
 
   <PropertyGroup Label="AssemblyInfo">
-    <AssemblyVersion>${version}</AssemblyVersion>
+    <Copyright><![CDATA[${copyright}]]></Copyright>
     <InformationalVersion>${fullversion}</InformationalVersion>
     <Revision>${revision}</Revision>
     <Revision Condition=" '$(Revision)' == '' ">0</Revision>
-    <FileVersion>$(AssemblyVersion).$(Revision)</FileVersion>
-    <Copyright><![CDATA[${copyright}]]></Copyright>
+    <AssemblyVersion>${normalized.version}.$(Revision)</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(InformationalVersion)</Version>
   </PropertyGroup>
 
