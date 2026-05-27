@@ -61,6 +61,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -87,7 +88,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
             = PasswordStoreFactory.get();
 
     // List of certificates with private key
-    private final Set<String> certificates = new HashSet<>();
+    private final Set<String> certificates = new LinkedHashSet<>();
 
     @Outlet
     private NSTabView tabView;
