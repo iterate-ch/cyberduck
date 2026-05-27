@@ -31,6 +31,8 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -178,7 +180,9 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
             attributes.setETag(object.getEtag());
         }
         // The content generation of this object. Used for object versioning.
-        attributes.setVersionId(String.valueOf(object.getGeneration()));
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable")) {
+            attributes.setVersionId(String.valueOf(object.getGeneration()));
+        }
         // Noncurrent versions of objects have a timeDeleted property.
         attributes.setDuplicate(object.getTimeDeleted() != null);
         if(object.getKmsKeyName() != null) {
