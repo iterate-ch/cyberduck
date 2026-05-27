@@ -180,7 +180,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
             attributes.setETag(object.getEtag());
         }
         // The content generation of this object. Used for object versioning.
-        if(HostPreferencesFactory.get(session.getHost()).getBoolean("s3.listing.versioning.enable")) {
+        if(HostPreferencesFactory.get(session.getHost()).getBoolean("googlestorage.listing.versioning.enable")) {
             attributes.setVersionId(String.valueOf(object.getGeneration()));
         }
         // Noncurrent versions of objects have a timeDeleted property.
