@@ -366,7 +366,10 @@ public class Profile implements Protocol {
     public String icon() {
         final String v = this.value(ICON_KEY);
         if(StringUtils.isBlank(v)) {
-            return parent.icon();
+            if(StringUtils.isBlank(this.value(DISK_KEY))) {
+                return parent.icon();
+            }
+            return this.value(DISK_KEY);
         }
         return v;
     }
