@@ -25,8 +25,10 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Combines multiple {@link CertificateStoreX509KeyManager} delegates into a single key manager.
@@ -101,15 +103,19 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
 
     @Override
     public String[] getClientAliases(final String keyType, final Principal[] issuers) {
+        final Set<String> aliases = new LinkedHashSet<>();
         for(CertificateStoreX509KeyManager delegate : delegates) {
-            final String[] aliases = delegate.getClientAliases(keyType, issuers);
-            if(null == aliases) {
+            final String[] c = delegate.getClientAliases(keyType, issuers);
+            if(null == c) {
                 // No matches
                 continue;
             }
-            return aliases;
+            aliases.addAll(Arrays.asList(c));
         }
-        return null;
+        if(aliases.isEmpty()) {
+            return null;
+        }
+        return aliases.toArray(new String[0]);
     }
 
     @Override
@@ -126,14 +132,18 @@ public class DelegatingCertificateStoreX509KeyManager implements X509KeyManager 
 
     @Override
     public String[] getServerAliases(final String keyType, final Principal[] issuers) {
+        final Set<String> aliases = new LinkedHashSet<>();
         for(CertificateStoreX509KeyManager delegate : delegates) {
-            final String[] aliases = delegate.getServerAliases(keyType, issuers);
-            if(null == aliases) {
+            final String[] c = delegate.getServerAliases(keyType, issuers);
+            if(null == c) {
                 continue;
             }
-            return aliases;
+            aliases.addAll(Arrays.asList(c));
         }
-        return null;
+        if(aliases.isEmpty()) {
+            return null;
+        }
+        return aliases.toArray(new String[0]);
     }
 
     @Override
