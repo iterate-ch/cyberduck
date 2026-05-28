@@ -362,6 +362,7 @@ public class ProxyController extends AbstractController {
             this.positioningRect = positioningRect;
             this.controller = controller;
             this.controller.addHandler(this);
+            this.controller.addListener(this);
             this.behaviour = behaviour;
         }
 
@@ -378,7 +379,6 @@ public class ProxyController extends AbstractController {
             popover.setContentViewController(viewController);
             popover.showRelativeToRect_ofView_preferredEdge(positioningRect, positioningView,
                     FoundationKitFunctions.NSRectEdge.NSMinYEdge);
-            controller.addListener(this);
         }
 
         @Override
@@ -408,6 +408,11 @@ public class ProxyController extends AbstractController {
             this.controller = controller;
             this.returncode = returncode;
             this.callback = callback;
+        }
+
+        @Delegate
+        public void popoverDidShow(final NSNotification notification) {
+            controller.focus();
         }
 
         @Delegate

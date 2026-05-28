@@ -56,7 +56,6 @@ import org.apache.http.impl.auth.SPNegoSchemeFactory;
 import org.apache.http.impl.client.AIMDBackoffManager;
 import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
@@ -142,6 +141,17 @@ public class HttpConnectionPoolBuilder {
         this.connectionTimeout = connectionTimeout;
     }
 
+    private static final class CustomHttpClientBuilder extends HttpClientBuilder {
+        public CustomHttpClientBuilder() {
+            super();
+        }
+
+        @Override
+        public void addCloseable(final Closeable closeable) {
+            super.addCloseable(closeable);
+        }
+    }
+
     /**
      * @param proxy    Proxy configuration
      * @param listener Log listener
@@ -149,9 +159,10 @@ public class HttpConnectionPoolBuilder {
      * @return Builder for HTTP client
      */
     public HttpClientBuilder build(final ProxyFinder proxy, final TranscriptListener listener, final LoginCallback prompt) {
-        final HttpClientBuilder configuration = HttpClients.custom();
+        final CustomHttpClientBuilder configuration = new CustomHttpClientBuilder();
         final CustomProxyRoutePlanner planner = new CustomProxyRoutePlanner(host, proxy);
         configuration.setRoutePlanner(planner);
+        configuration.addCloseable(planner);
         configuration.setProxyAuthenticationStrategy(new CallbackProxyAuthenticationStrategy(ProxyCredentialsStoreFactory.get(), host, prompt));
         configuration.setUserAgent(new PreferencesUseragentProvider().get());
         final int timeout = connectionTimeout.getTimeout() * 1000;
@@ -185,7 +196,7 @@ public class HttpConnectionPoolBuilder {
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
         final Registry<ConnectionSocketFactory> registry = this.createRegistry();
-        final PoolingHttpClientConnectionManager connectionManager = this.createConnectionManager(registry, planner);
+        final PoolingHttpClientConnectionManager connectionManager = this.createConnectionManager(registry);
         configuration.setConnectionManager(connectionManager);
         configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
@@ -228,17 +239,11 @@ public class HttpConnectionPoolBuilder {
                 .register(Scheme.https.toString(), sslSocketFactory).build();
     }
 
-    public PoolingHttpClientConnectionManager createConnectionManager(final Registry<ConnectionSocketFactory> registry, final CustomProxyRoutePlanner proxy) {
+    public PoolingHttpClientConnectionManager createConnectionManager(final Registry<ConnectionSocketFactory> registry) {
         log.debug("Setup connection pool with registry {}", registry);
         final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(
                 new CustomHttpClientConnectionOperator(registry, DefaultSchemePortResolver.INSTANCE, new CustomDnsResolver()),
-                ManagedHttpClientConnectionFactory.INSTANCE, -1, TimeUnit.MILLISECONDS) {
-            @Override
-            public void shutdown() {
-                proxy.close();
-                super.shutdown();
-            }
-        };
+                ManagedHttpClientConnectionFactory.INSTANCE, -1, TimeUnit.MILLISECONDS);
         manager.setMaxTotal(HostPreferencesFactory.get(host).getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(HostPreferencesFactory.get(host).getInteger("http.connections.route"));
         // Detect connections that have become stale (half-closed) while kept inactive in the pool
