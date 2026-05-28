@@ -187,10 +187,20 @@ public abstract class BookmarkController extends SheetController implements NSTa
     @Override
     public void display(final boolean key, final String frameName) {
         super.display(key, frameName);
-        certificates.addAll(new DelegatingCertificateStoreX509KeyManager(
-                new KeychainX509KeyManager(CertificateIdentityCallback.noop, this.bookmark, CertificateStoreFactory.get()),
-                new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop, this.bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
-        ).list());
+        if(options.certificate) {
+            this.loadCertificateAliases();
+        }
+    }
+
+    private Set<String> loadCertificateAliases() {
+        if(certificates.isEmpty()) {
+            log.debug("Loading certificate aliases for bookmark {}", bookmark);
+            certificates.addAll(new DelegatingCertificateStoreX509KeyManager(
+                    new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get()),
+                    new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
+            ).list());
+        }
+        return certificates;
     }
 
     public void focus() {
@@ -308,6 +318,9 @@ public abstract class BookmarkController extends SheetController implements NSTa
             bookmark.setPort(HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname()));
             bookmark.setCredentials(CredentialsConfiguratorFactory.get(selected).configure(bookmark));
             options.configure(selected);
+            if(options.certificate) {
+                this.loadCertificateAliases();
+            }
             validator.configure(selected);
         }
         this.update();
