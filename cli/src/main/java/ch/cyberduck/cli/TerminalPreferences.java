@@ -130,6 +130,7 @@ public class TerminalPreferences extends Preferences {
             if(null == system) {
                 return proxy.getProperty(property);
             }
+            log.debug("Return system property {} for {}", system, property);
             return system;
         }
         return env;
