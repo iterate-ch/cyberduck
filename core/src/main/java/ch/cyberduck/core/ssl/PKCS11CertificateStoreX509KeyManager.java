@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -131,8 +132,11 @@ public class PKCS11CertificateStoreX509KeyManager extends CertificateStoreX509Ke
                     }
                     return store;
                 }
-                catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException |
-                      ProviderException e) {
+                catch(ProviderException e) {
+                    // Token has been removed
+                    throw new ConcurrentException(new UnsupportedException(e));
+                }
+                catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException e) {
                     throw new ConcurrentException(e);
                 }
             }
