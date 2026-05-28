@@ -160,8 +160,10 @@ public class LoginController extends AlertController {
             passwordField.selectText(null);
         }
         else {
-            window.makeFirstResponder(usernameField);
-            usernameField.selectText(null);
+            if(options.user) {
+                window.makeFirstResponder(usernameField);
+                usernameField.selectText(null);
+            }
         }
     }
 
