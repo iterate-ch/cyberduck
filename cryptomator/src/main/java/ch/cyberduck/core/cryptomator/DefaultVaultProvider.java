@@ -84,7 +84,11 @@ public class DefaultVaultProvider implements VaultProvider {
         final AbstractVault vault;
         switch(version.type) {
             case V8:
-                vault = new CryptomatorVault(directory);
+                vault = new CryptomatorVault(directory,
+                        new Path(directory, HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vaultmetadata)),
+                        new Path(directory, HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vaultmetadata)),
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8)
+                );
                 vault.load(session, new MasterkeyVaultMetadataProvider(credentials));
                 break;
             case UVF:
@@ -110,7 +114,11 @@ public class DefaultVaultProvider implements VaultProvider {
         final AbstractVault vault;
         switch(version.type) {
             case V8:
-                vault = new CryptomatorVault(directory);
+                vault = new CryptomatorVault(directory,
+                        new Path(directory, HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file, Path.Type.vaultmetadata)),
+                        new Path(directory, HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file, Path.Type.vaultmetadata)),
+                        HostPreferencesFactory.get(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8)
+                );
                 final MasterkeyVaultMetadataProvider masterkey = new MasterkeyVaultMetadataProvider(credentials);
                 vault.create(session, region, masterkey);
                 break;
