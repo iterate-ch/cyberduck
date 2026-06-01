@@ -189,11 +189,9 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
                     // Large file has been started, but not finished or canceled
                     attributes.setHidden(true);
                     break;
-                default:
-                    attributes.setSize(response.getContentLength());
-                    break;
             }
         }
+        attributes.setSize(response.getContentLength());
         return attributes;
     }
 
@@ -239,9 +237,6 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
                 case start:
                     // Large file has been started, but not finished or canceled
                     attributes.setHidden(true);
-                    break;
-                default:
-                    attributes.setSize(response.getContentLength());
                     break;
             }
         }
