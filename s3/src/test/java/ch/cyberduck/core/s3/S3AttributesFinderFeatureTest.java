@@ -12,6 +12,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -110,31 +111,17 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals(testWithVersionId.attributes().getVersionId(), versionId);
         assertEquals(testWithVersionId.attributes(), attr);
         assertFalse(attr.isDuplicate());
+        // Set delete marker
         new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        {
-            final PathAttributes marker = new S3AttributesFinderFeature(session, acl).find(testWithVersionId);
-            assertTrue(marker.isDuplicate());
-            assertNotNull(marker.getVersionId());
-            assertEquals(versionId, marker.getVersionId());
-        }
-        {
-            try {
-                new S3AttributesFinderFeature(session, acl).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
-                fail();
-            }
-            catch(NotfoundException e) {
-                // Delete marker
-            }
-        }
-        {
-            try {
-                new S3AttributesFinderFeature(session, acl).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY));
-                fail();
-            }
-            catch(NotfoundException e) {
-                // Delete marker
-            }
-        }
+        final PathAttributes marker = new S3AttributesFinderFeature(session, acl).find(testWithVersionId);
+        assertTrue(marker.isDuplicate());
+        assertNotNull(marker.getVersionId());
+        assertEquals(versionId, marker.getVersionId());
+        // Delete marker
+        assertEquals(attr.getVersionId(), new S3AttributesFinderFeature(session, acl).find(testWithVersionId).getVersionId());
+        assertEquals(attr.getVersionId(), new DefaultAttributesFinderFeature(session).find(testWithVersionId).getVersionId());
+        assertThrows(NotfoundException.class, () -> new S3AttributesFinderFeature(session, acl).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)));
+        assertThrows(NotfoundException.class, () -> new DefaultAttributesFinderFeature(session).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)));
     }
 
     @Test
