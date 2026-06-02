@@ -71,7 +71,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
             new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), bucket, new TransferStatus());
         }
         catch(InteroperabilityException e) {
-            assertEquals("Invalid characters in bucketName: must be alphanumeric or '-'. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Invalid characters in bucketName: must be alphanumeric, '-', or '.'. Please contact your web hosting service provider for assistance.", e.getDetail());
             assertEquals("Cannot create folder untitled folder.", e.getMessage());
             throw e;
         }

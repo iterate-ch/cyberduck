@@ -77,7 +77,15 @@ public abstract class AbstractS3Test extends VaultTest {
                 this.getClass().getResourceAsStream("/Amazon S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key")
-        ));
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.listing.versioning.enable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
         session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
