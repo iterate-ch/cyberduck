@@ -84,6 +84,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         final Path decrypt = vault.decrypt(session, vault.encrypt(session, target, true));
         decrypt.attributes().setFileId(directoryMetadataFolder.attributes().getFileId());
         decrypt.attributes().setVersionId(directoryMetadataFolder.attributes().getVersionId());
+        decrypt.attributes().setVaultVersion(vault.getVersion());
         return decrypt;
     }
 

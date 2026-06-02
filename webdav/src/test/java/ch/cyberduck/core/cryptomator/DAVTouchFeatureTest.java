@@ -108,4 +108,22 @@ public class DAVTouchFeatureTest extends AbstractDAVTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testTouchEncrypted() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
+        final Path template = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<Void>(
+                session), cryptomator).touch(new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator), template, new TransferStatus())
+                .withAttributes(cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(template));
+        assertEquals(test.attributes().getVaultVersion(), cryptomator.getVersion());
+        assertTrue(cryptomator.getFeature(session, Find.class, new DAVFindFeature(session)).find(test));
+        assertEquals(test.attributes(), cryptomator.getFeature(session, AttributesFinder.class, new DAVAttributesFinderFeature(session)).find(test));
+        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
+    }
 }
