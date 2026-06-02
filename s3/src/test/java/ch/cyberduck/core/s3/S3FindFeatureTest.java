@@ -4,8 +4,10 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
@@ -104,5 +106,19 @@ public class S3FindFeatureTest extends AbstractS3Test {
         assertFalse(new CachingFindFeature(virtualhost, cache).find(directory));
         assertTrue(cache.isCached(directory.getParent()));
         assertFalse(new S3FindFeature(virtualhost, acl).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+    }
+
+    @Test
+    public void testFindDeleteMarker() throws Exception {
+        final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path f = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path testWithVersionId = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, acl), f, new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(f));
+        // Set delete marker
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        // Delete marker
+        assertTrue(new S3FindFeature(session, acl).find(testWithVersionId));
+        assertFalse(new S3FindFeature(session, acl).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)));
     }
 }
