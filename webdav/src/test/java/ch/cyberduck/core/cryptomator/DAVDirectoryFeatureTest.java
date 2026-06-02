@@ -61,7 +61,7 @@ public class DAVDirectoryFeatureTest extends AbstractDAVTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final Path test = cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(
                 cryptomator.getFeature(session, Write.class, new DAVWriteFeature(session)), new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertEquals(test.attributes().getVaultVersion(), cryptomator.getVersion());
+        assertEquals(cryptomator.getVersion(), test.attributes().getVaultVersion());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(test, vault), LoginCallback.noop, new Delete.DisabledCallback());
     }
