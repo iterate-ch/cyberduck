@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -15,24 +15,24 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
-        <window title="New Connection" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" id="3" customClass="NSPanel">
+        <window title="Nouvelle connexion" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" id="3" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" resizable="YES"/>
             <rect key="contentRect" x="460" y="215" width="500" height="300"/>
             <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
             <value key="minSize" type="size" width="500" height="60"/>
             <view key="contentView" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4">
-                <rect key="frame" x="0.0" y="240" width="442" height="60"/>
+                <rect key="frame" x="0.0" y="240" width="459" height="60"/>
                 <subviews>
-                    <customView id="cjf-RS-AF0">
-                        <rect key="frame" x="0.0" y="60" width="442" height="0.0"/>
+                    <customView ambiguous="YES" id="cjf-RS-AF0">
+                        <rect key="frame" x="0.0" y="60" width="459" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="jUk-Uf-XtH" userLabel="Action View">
+                    <customView ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jUk-Uf-XtH" userLabel="Action View">
                         <rect key="frame" x="0.0" y="0.0" width="500" height="60"/>
                         <subviews>
-                            <button tag="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14">
-                                <rect key="frame" x="401" y="13" width="86" height="32"/>
-                                <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
+                            <button tag="1000" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="14">
+                                <rect key="frame" x="401" y="13" width="98" height="32"/>
+                                <buttonCell key="cell" type="push" title="Connecter" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -43,9 +43,9 @@ DQ
                                     <action selector="closeSheet:" target="-2" id="92"/>
                                 </connections>
                             </button>
-                            <button tag="1001" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="10">
-                                <rect key="frame" x="265" y="13" width="76" height="32"/>
-                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="11">
+                            <button tag="1001" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="10">
+                                <rect key="frame" x="265" y="13" width="81" height="32"/>
+                                <buttonCell key="cell" type="push" title="Annuler" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="11">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -56,7 +56,7 @@ Gw
                                     <action selector="closeSheet:" target="-2" id="91"/>
                                 </connections>
                             </button>
-                            <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="66">
+                            <button horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="66">
                                 <rect key="frame" x="237" y="16" width="25" height="25"/>
                                 <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" inset="2" id="67">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -73,7 +73,7 @@ Gw
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button tag="1002" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9x4-GT-xnj" userLabel="Save">
+                            <button tag="1002" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9x4-GT-xnj" userLabel="Save">
                                 <rect key="frame" x="339" y="13" width="64" height="32"/>
                                 <buttonCell key="cell" type="push" title="Save" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="J9z-Gi-v6F">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -87,16 +87,21 @@ Gw
                         <constraints>
                             <constraint firstItem="14" firstAttribute="leading" secondItem="9x4-GT-xnj" secondAttribute="trailing" constant="12" symbolic="YES" id="0Op-uc-DQS"/>
                             <constraint firstAttribute="bottom" secondItem="9x4-GT-xnj" secondAttribute="bottom" constant="20" symbolic="YES" id="6nc-ya-emv"/>
+                            <constraint firstItem="10" firstAttribute="centerY" secondItem="14" secondAttribute="centerY" id="APH-ty-bH4"/>
                             <constraint firstItem="66" firstAttribute="centerY" secondItem="10" secondAttribute="centerY" id="Gad-g0-NBC"/>
                             <constraint firstItem="10" firstAttribute="centerY" secondItem="14" secondAttribute="centerY" id="Ho1-2B-gjd"/>
                             <constraint firstAttribute="height" constant="60" id="IY7-xx-Spw"/>
                             <constraint firstAttribute="trailing" secondItem="14" secondAttribute="trailing" constant="20" symbolic="YES" id="JU8-K5-5VY"/>
                             <constraint firstItem="30" firstAttribute="centerY" secondItem="66" secondAttribute="centerY" id="cj2-tt-acL"/>
+                            <constraint firstItem="10" firstAttribute="centerY" secondItem="9x4-GT-xnj" secondAttribute="centerY" id="cn9-nh-gY1"/>
                             <constraint firstItem="10" firstAttribute="centerY" secondItem="9x4-GT-xnj" secondAttribute="centerY" id="dIK-1n-G85"/>
+                            <constraint firstItem="66" firstAttribute="centerY" secondItem="10" secondAttribute="centerY" id="ePi-1B-zTv"/>
                             <constraint firstItem="66" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="30" secondAttribute="trailing" constant="12" symbolic="YES" id="fbi-ws-nrw"/>
                             <constraint firstAttribute="bottom" secondItem="10" secondAttribute="bottom" constant="20" symbolic="YES" id="iXV-Gl-5PK"/>
                             <constraint firstAttribute="bottom" secondItem="66" secondAttribute="bottom" constant="20" symbolic="YES" id="jMC-0W-Wm5"/>
                             <constraint firstAttribute="bottom" secondItem="14" secondAttribute="bottom" constant="20" symbolic="YES" id="mfD-l2-9vG"/>
+                            <constraint firstItem="30" firstAttribute="centerY" secondItem="66" secondAttribute="centerY" id="oPx-yR-2Ny"/>
+                            <constraint firstItem="9x4-GT-xnj" firstAttribute="centerY" secondItem="14" secondAttribute="centerY" id="ooq-7s-haB"/>
                             <constraint firstItem="10" firstAttribute="leading" secondItem="66" secondAttribute="trailing" constant="12" symbolic="YES" id="ovX-Qe-LJs"/>
                             <constraint firstAttribute="bottom" secondItem="30" secondAttribute="bottom" constant="20" symbolic="YES" id="tBB-nE-Wai"/>
                             <constraint firstItem="30" firstAttribute="leading" secondItem="jUk-Uf-XtH" secondAttribute="leading" constant="20" symbolic="YES" id="uQe-nI-aDF"/>

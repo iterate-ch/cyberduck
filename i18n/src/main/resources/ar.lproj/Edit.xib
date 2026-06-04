@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -26,15 +26,15 @@
                 <rect key="frame" x="0.0" y="240" width="400" height="60"/>
                 <subviews>
                     <customView id="cjf-RS-AF0" userLabel="Content View">
-                        <rect key="frame" x="0.0" y="60" width="800" height="0.0"/>
+                        <rect key="frame" x="0.0" y="60" width="179" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="ax1-78-ilT" userLabel="Action View">
                         <rect key="frame" x="0.0" y="0.0" width="500" height="60"/>
                         <subviews>
                             <button tag="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14">
-                                <rect key="frame" x="401" y="13" width="86" height="32"/>
-                                <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
+                                <rect key="frame" x="401" y="13" width="64" height="32"/>
+                                <buttonCell key="cell" type="push" title="أتصال" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
