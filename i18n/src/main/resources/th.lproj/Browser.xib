@@ -453,7 +453,7 @@ CA
         </menu>
         <menu title="Menu" id="99">
             <items>
-                <menuItem title="Connect" id="100">
+                <menuItem title="เชื่อมต่อ" id="100">
                     <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
@@ -462,7 +462,7 @@ DQ
                         <action selector="connectBookmarkButtonClicked:" target="-1" id="178"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Disconnect" keyEquivalent="D" id="i2x-ZJ-UNQ">
+                <menuItem title="ยกเลิกการเชื่อมต่อ" keyEquivalent="D" id="i2x-ZJ-UNQ">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="disconnectButtonClicked:" target="-1" id="YXB-XN-Cmw"/>
