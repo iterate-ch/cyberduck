@@ -17,7 +17,7 @@
 #  dkocher@cyberduck.ch
 
 workdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-nibtool="ibtool"
+nibtool="/usr/bin/xcrun ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
 arch="$(/usr/bin/arch)"
