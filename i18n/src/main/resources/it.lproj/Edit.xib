@@ -19,21 +19,21 @@
         <customObject id="2" customClass="NSApplication"/>
         <window title="Modifica preferito" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" titlebarAppearsTransparent="YES" id="3" userLabel="Edit Bookmark" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-            <rect key="contentRect" x="460" y="215" width="500" height="300"/>
+            <rect key="contentRect" x="460" y="215" width="520" height="300"/>
             <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
-            <value key="minSize" type="size" width="500" height="200"/>
+            <value key="minSize" type="size" width="300" height="200"/>
             <view key="contentView" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4">
                 <rect key="frame" x="0.0" y="240" width="400" height="60"/>
                 <subviews>
                     <customView id="cjf-RS-AF0" userLabel="Content View">
-                        <rect key="frame" x="0.0" y="60" width="800" height="0.0"/>
+                        <rect key="frame" x="0.0" y="60" width="400" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="ax1-78-ilT" userLabel="Action View">
-                        <rect key="frame" x="0.0" y="0.0" width="500" height="60"/>
+                        <rect key="frame" x="0.0" y="0.0" width="520" height="60"/>
                         <subviews>
                             <button tag="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14">
-                                <rect key="frame" x="401" y="13" width="113" height="32"/>
+                                <rect key="frame" x="421" y="13" width="113" height="32"/>
                                 <buttonCell key="cell" type="push" title="Connessione" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -79,7 +79,7 @@ DQ
                 </constraints>
             </view>
             <contentBorderThickness minY="60"/>
-            <point key="canvasLocation" x="718" y="-78"/>
+            <point key="canvasLocation" x="628.5" y="-78"/>
         </window>
         <customView id="tPC-9y-THV">
             <rect key="frame" x="0.0" y="0.0" width="400" height="48"/>
