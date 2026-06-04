@@ -41,6 +41,14 @@ type          = STRINGS
 minimum_perc  = 0
 resource_name = Bookmark
 
+[o:cyberduck:p:cyberduck:r:Edit]
+file_filter   = <lang>.lproj/Edit.strings
+source_file   = en.lproj/Edit.strings
+source_lang   = en
+type          = STRINGS
+minimum_perc  = 0
+resource_name = Edit
+
 [o:cyberduck:p:cyberduck:r:Browser]
 file_filter   = <lang>.lproj/Browser.strings
 source_file   = en.lproj/Browser.strings
@@ -384,7 +392,6 @@ source_lang   = en
 type          = STRINGS
 minimum_perc  = 0
 resource_name = Upload
-
 
 [o:cyberduck:p:cyberduck:r:Share]
 file_filter   = <lang>.lproj/Share.strings
