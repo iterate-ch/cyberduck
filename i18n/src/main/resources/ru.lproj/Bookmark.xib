@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -33,15 +33,15 @@
             </connections>
         </customObject>
         <view horizontalCompressionResistancePriority="250" id="2Kx-No-QF1">
-            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <rect key="frame" x="0.0" y="0.0" width="606" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <popUpButton verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="qu9-6n-E5M" userLabel="Protocol Popup">
-                    <rect key="frame" x="17" y="556" width="567" height="25"/>
+                    <rect key="frame" x="17" y="556" width="573" height="25"/>
                     <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="uS9-0Q-NRr" id="Tna-5W-SCA">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="message"/>
-                        <menu key="menu" title="OtherViews" id="eYn-Wr-S2v">
+                        <menu key="menu" title="Отображение" id="eYn-Wr-S2v">
                             <items>
                                 <menuItem title=" " state="on" id="uS9-0Q-NRr"/>
                             </items>
@@ -49,38 +49,37 @@
                     </popUpButtonCell>
                 </popUpButton>
                 <tabView translatesAutoresizingMaskIntoConstraints="NO" id="yX9-yd-D7S">
-                    <rect key="frame" x="13" y="10" width="574" height="536"/>
+                    <rect key="frame" x="13" y="10" width="580" height="536"/>
                     <constraints>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="300" id="IDe-hp-N6z"/>
-                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="300" id="ccc-0E-2Wk"/>
-                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="400" id="d5O-Vy-7Le"/>
+                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="400" id="MB0-pf-oij"/>
                     </constraints>
                     <font key="font" metaFont="system"/>
                     <tabViewItems>
-                        <tabViewItem label="Connection" identifier="1" id="Eet-ov-fqC">
+                        <tabViewItem label="Соединение" identifier="1" id="Eet-ov-fqC">
                             <view key="view" id="i0w-JP-hdB" userLabel="Tab View">
-                                <rect key="frame" x="10" y="33" width="554" height="490"/>
+                                <rect key="frame" x="10" y="33" width="560" height="490"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalHuggingPriority="750" verticalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QIL-y3-36a">
-                                        <rect key="frame" x="20" y="282" width="514" height="188"/>
+                                        <rect key="frame" x="20" y="282" width="520" height="188"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pSw-oV-gTk">
-                                                <rect key="frame" x="0.0" y="167" width="514" height="21"/>
+                                                <rect key="frame" x="0.0" y="167" width="520" height="21"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Xhi-kD-4lp">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Kj2-Yq-DwO"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Server:" id="viT-bS-sV8">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Сервер:" id="viT-bS-sV8">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
                                                     <stackView distribution="fillProportionally" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ol5-Sm-uF6">
-                                                        <rect key="frame" x="158" y="0.0" width="356" height="21"/>
+                                                        <rect key="frame" x="158" y="0.0" width="362" height="21"/>
                                                         <subviews>
                                                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="L04-rl-TAx" userLabel="Server Text Field">
                                                                 <rect key="frame" x="0.0" y="0.0" width="246" height="21"/>
@@ -97,20 +96,22 @@
                                                                 <rect key="frame" x="254" y="3" width="16" height="16"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="16" id="SRx-0y-W1V"/>
+                                                                    <constraint firstAttribute="width" constant="16" id="Y3K-Cu-MzL"/>
                                                                     <constraint firstAttribute="width" constant="16" id="aLN-Ae-Qkg"/>
+                                                                    <constraint firstAttribute="height" constant="16" id="cLm-kn-Wl7"/>
                                                                 </constraints>
                                                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="TsO-Op-pze"/>
                                                             </imageView>
                                                             <textField horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Iqg-mp-jra">
-                                                                <rect key="frame" x="276" y="3" width="34" height="16"/>
-                                                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Port:" id="cot-v0-5xs">
+                                                                <rect key="frame" x="276" y="3" width="40" height="16"/>
+                                                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Порт:" id="cot-v0-5xs">
                                                                     <font key="font" metaFont="system"/>
                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
                                                             </textField>
                                                             <textField horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="r0A-uY-vq2" userLabel="Port Text Field">
-                                                                <rect key="frame" x="316" y="0.0" width="40" height="21"/>
+                                                                <rect key="frame" x="322" y="0.0" width="40" height="21"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" constant="40" id="mcd-XS-I7t"/>
                                                                 </constraints>
@@ -131,8 +132,10 @@
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="1jw-Ky-49v"/>
                                                             <constraint firstItem="XMm-K8-Y0j" firstAttribute="leading" secondItem="L04-rl-TAx" secondAttribute="trailing" constant="8" symbolic="YES" id="ErD-A9-VZ9"/>
+                                                            <constraint firstItem="Iqg-mp-jra" firstAttribute="leading" secondItem="XMm-K8-Y0j" secondAttribute="trailing" constant="8" symbolic="YES" id="FIM-V5-syB"/>
                                                             <constraint firstItem="r0A-uY-vq2" firstAttribute="leading" secondItem="Iqg-mp-jra" secondAttribute="trailing" constant="8" symbolic="YES" id="MSJ-K1-Pzl"/>
                                                             <constraint firstItem="Iqg-mp-jra" firstAttribute="leading" secondItem="XMm-K8-Y0j" secondAttribute="trailing" constant="8" symbolic="YES" id="O3X-dA-gxt"/>
+                                                            <constraint firstItem="XMm-K8-Y0j" firstAttribute="leading" secondItem="L04-rl-TAx" secondAttribute="trailing" constant="8" symbolic="YES" id="PeZ-Dd-F8M"/>
                                                         </constraints>
                                                         <visibilityPriorities>
                                                             <integer value="1000"/>
@@ -161,7 +164,7 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rod-1T-W8m">
-                                                <rect key="frame" x="0.0" y="138" width="514" height="21"/>
+                                                <rect key="frame" x="0.0" y="138" width="520" height="21"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="jqf-kB-PHA" userLabel="Username Label">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
@@ -175,7 +178,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Ciu-Zv-VlC" userLabel="Username Text Field">
-                                                        <rect key="frame" x="158" y="0.0" width="356" height="21"/>
+                                                        <rect key="frame" x="158" y="0.0" width="362" height="21"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="nEP-uA-fOI"/>
                                                         </constraints>
@@ -199,7 +202,7 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1RC-Ds-Whd">
-                                                <rect key="frame" x="0.0" y="114" width="514" height="16"/>
+                                                <rect key="frame" x="0.0" y="114" width="520" height="16"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="wS1-Vy-CQV" userLabel="Anonymous Label">
                                                         <rect key="frame" x="-2" y="0.0" width="154" height="16"/>
@@ -213,8 +216,8 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <button horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="W6c-7b-puJ">
-                                                        <rect key="frame" x="156" y="-1" width="358" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Anonymous Login" bezelStyle="regularSquare" imagePosition="left" alignment="left" lineBreakMode="truncatingMiddle" inset="2" id="QIp-1i-VGV">
+                                                        <rect key="frame" x="156" y="-1" width="364" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Анонимный вход" bezelStyle="regularSquare" imagePosition="left" alignment="left" lineBreakMode="truncatingMiddle" inset="2" id="QIp-1i-VGV">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -236,7 +239,7 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="n1T-xb-QHg">
-                                                <rect key="frame" x="0.0" y="85" width="514" height="21"/>
+                                                <rect key="frame" x="0.0" y="85" width="520" height="21"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="9gh-NJ-mK9" userLabel="Password Label">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
@@ -250,7 +253,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="GuU-jB-XfB" customClass="AutofillDisabledSecureTextField">
-                                                        <rect key="frame" x="158" y="0.0" width="356" height="21"/>
+                                                        <rect key="frame" x="158" y="0.0" width="362" height="21"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="wPa-8c-6Tw"/>
                                                         </constraints>
@@ -274,25 +277,25 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c7i-wA-eB2">
-                                                <rect key="frame" x="0.0" y="57" width="514" height="20"/>
+                                                <rect key="frame" x="0.0" y="57" width="520" height="20"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="mmd-cn-5n9">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="rrr-B3-uxK"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="SSH Private Key:" id="uRo-IC-igR">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Приватный ключ SSH:" id="uRo-IC-igR">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
                                                     <popUpButton horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="bPT-hT-KlL" userLabel="SSH Private Key Popup">
-                                                        <rect key="frame" x="155" y="-4" width="363" height="25"/>
+                                                        <rect key="frame" x="155" y="-4" width="369" height="25"/>
                                                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="XR2-Hw-m3X">
                                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="message"/>
-                                                            <menu key="menu" title="OtherViews" id="eGw-HX-T9L"/>
+                                                            <menu key="menu" title="Отображение" id="eGw-HX-T9L"/>
                                                         </popUpButtonCell>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="2cp-Q6-Ka5"/>
@@ -312,25 +315,25 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sYQ-Sz-UGS">
-                                                <rect key="frame" x="0.0" y="29" width="514" height="20"/>
+                                                <rect key="frame" x="0.0" y="29" width="520" height="20"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="NS6-OA-wNh">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="UGb-rw-coc"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Client Certificate:" id="Imk-7Z-m7H">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Сертификат клиента:" id="Imk-7Z-m7H">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
                                                     <popUpButton horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="2cc-0e-HKR" userLabel="Client Certificate Popup">
-                                                        <rect key="frame" x="155" y="-4" width="363" height="25"/>
+                                                        <rect key="frame" x="155" y="-4" width="369" height="25"/>
                                                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="4MC-Ie-pPn">
                                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="message"/>
-                                                            <menu key="menu" title="OtherViews" id="Mo7-ma-5kG"/>
+                                                            <menu key="menu" title="Отображение" id="Mo7-ma-5kG"/>
                                                         </popUpButtonCell>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="X8y-al-Fdw"/>
@@ -350,21 +353,21 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vxc-p7-tmq">
-                                                <rect key="frame" x="0.0" y="0.0" width="514" height="21"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="520" height="21"/>
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="UjQ-6u-a70">
                                                         <rect key="frame" x="-2" y="3" width="154" height="16"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="65k-sF-gW4"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Path:" id="tDz-Za-fbY">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Путь:" id="tDz-Za-fbY">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="2Op-yu-r6q" userLabel="Path Text Field">
-                                                        <rect key="frame" x="158" y="0.0" width="356" height="21"/>
+                                                        <rect key="frame" x="158" y="0.0" width="362" height="21"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="7ev-eU-Ms9"/>
                                                         </constraints>
@@ -389,22 +392,36 @@
                                             </stackView>
                                         </subviews>
                                         <constraints>
+                                            <constraint firstItem="n1T-xb-QHg" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="565-Dl-tBC"/>
+                                            <constraint firstItem="1RC-Ds-Whd" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="7Jv-zO-ZKg"/>
                                             <constraint firstAttribute="trailing" secondItem="sYQ-Sz-UGS" secondAttribute="trailing" id="7ab-lI-5IJ"/>
                                             <constraint firstItem="2cc-0e-HKR" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="7oL-sD-Sft"/>
                                             <constraint firstItem="sYQ-Sz-UGS" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="8aV-Np-igo"/>
                                             <constraint firstItem="ol5-Sm-uF6" firstAttribute="width" secondItem="Ciu-Zv-VlC" secondAttribute="width" id="8kX-V7-u3v"/>
+                                            <constraint firstAttribute="trailing" secondItem="pSw-oV-gTk" secondAttribute="trailing" id="BEt-7k-DWQ"/>
+                                            <constraint firstAttribute="trailing" secondItem="1RC-Ds-Whd" secondAttribute="trailing" id="BXB-yw-EhM"/>
+                                            <constraint firstAttribute="trailing" secondItem="Vxc-p7-tmq" secondAttribute="trailing" id="Dah-GX-j87"/>
                                             <constraint firstItem="n1T-xb-QHg" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="Iy1-OG-jZH"/>
                                             <constraint firstItem="bPT-hT-KlL" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="JZC-Gm-kjY"/>
                                             <constraint firstItem="Vxc-p7-tmq" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="KDU-3z-y2R"/>
+                                            <constraint firstItem="rod-1T-W8m" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="Lw7-Rh-xcV"/>
+                                            <constraint firstAttribute="trailing" secondItem="c7i-wA-eB2" secondAttribute="trailing" id="Mqp-f3-ZMA"/>
                                             <constraint firstAttribute="trailing" secondItem="rod-1T-W8m" secondAttribute="trailing" id="PPi-9O-qDw"/>
+                                            <constraint firstItem="c7i-wA-eB2" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="Vd9-Ud-OOW"/>
+                                            <constraint firstItem="Vxc-p7-tmq" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="X2R-vk-PTA"/>
                                             <constraint firstItem="rod-1T-W8m" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="a0q-nI-wXi"/>
                                             <constraint firstItem="c7i-wA-eB2" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="bkn-ff-GSz"/>
+                                            <constraint firstItem="pSw-oV-gTk" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="cY7-Fn-6ol"/>
+                                            <constraint firstAttribute="trailing" secondItem="rod-1T-W8m" secondAttribute="trailing" id="enN-Gn-dm3"/>
                                             <constraint firstAttribute="trailing" secondItem="pSw-oV-gTk" secondAttribute="trailing" id="fe9-6J-HpU"/>
+                                            <constraint firstAttribute="trailing" secondItem="sYQ-Sz-UGS" secondAttribute="trailing" id="gH7-ad-yP4"/>
                                             <constraint firstAttribute="trailing" secondItem="n1T-xb-QHg" secondAttribute="trailing" id="gNN-lw-d8t"/>
+                                            <constraint firstAttribute="trailing" secondItem="n1T-xb-QHg" secondAttribute="trailing" id="hos-7j-kMm"/>
                                             <constraint firstAttribute="trailing" secondItem="c7i-wA-eB2" secondAttribute="trailing" id="i3w-en-nTK"/>
                                             <constraint firstAttribute="trailing" secondItem="1RC-Ds-Whd" secondAttribute="trailing" id="iI2-Px-sgj"/>
                                             <constraint firstItem="2Op-yu-r6q" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="mRX-hc-xGK"/>
                                             <constraint firstItem="W6c-7b-puJ" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="ntV-lH-DN5"/>
+                                            <constraint firstItem="sYQ-Sz-UGS" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="qIq-QR-La5"/>
                                             <constraint firstItem="GuU-jB-XfB" firstAttribute="width" secondItem="ol5-Sm-uF6" secondAttribute="width" id="tFb-Wu-E09"/>
                                             <constraint firstItem="1RC-Ds-Whd" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="vvD-sg-Bwj"/>
                                             <constraint firstItem="pSw-oV-gTk" firstAttribute="leading" secondItem="QIL-y3-36a" secondAttribute="leading" id="xYU-Qu-d1q"/>
@@ -438,7 +455,7 @@
                                 </constraints>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="More Options" identifier="2" id="2eZ-AN-N1y">
+                        <tabViewItem label="Ещё опции" identifier="2" id="2eZ-AN-N1y">
                             <view key="view" id="jex-H7-rlY" userLabel="Tab View">
                                 <rect key="frame" x="10" y="33" width="460" height="541"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -454,7 +471,7 @@
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="fBO-2Q-spz"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Nickname:" id="aF2-yY-Rb1">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Псевдоним:" id="aF2-yY-Rb1">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -492,7 +509,7 @@
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="ZyQ-Py-gF2"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Labels:" id="GwG-Q9-MHK">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Ярлыки:" id="GwG-Q9-MHK">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -595,7 +612,7 @@
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="jcC-xE-t74"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Encoding:" id="ztU-zI-mTy">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Кодировка:" id="ztU-zI-mTy">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -606,7 +623,7 @@
                                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="jlM-tZ-G3c" id="uKv-xf-AYD">
                                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="message"/>
-                                                            <menu key="menu" title="OtherViews" id="Zsk-zc-tkW">
+                                                            <menu key="menu" title="Отображение" id="Zsk-zc-tkW">
                                                                 <items>
                                                                     <menuItem title=" " state="on" id="jlM-tZ-G3c"/>
                                                                 </items>
@@ -637,7 +654,7 @@
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="4JJ-la-Ic2"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Timezone:" id="YJp-k0-8U5">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Часовой пояс:" id="YJp-k0-8U5">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -648,7 +665,7 @@
                                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="Crs-Gx-ALk" id="gjZ-zx-akH">
                                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="message"/>
-                                                            <menu key="menu" title="OtherViews" id="i3V-Je-QO0">
+                                                            <menu key="menu" title="Отображение" id="i3V-Je-QO0">
                                                                 <items>
                                                                     <menuItem title=" " state="on" id="Crs-Gx-ALk"/>
                                                                 </items>
@@ -679,7 +696,7 @@
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="hop-W1-d8v"/>
                                                         </constraints>
-                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Connect Mode:" id="ivN-JO-MH2">
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Режим соединения:" id="ivN-JO-MH2">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -690,7 +707,7 @@
                                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="adB-eT-a6O" id="ZUj-To-hGf">
                                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="message"/>
-                                                            <menu key="menu" title="OtherViews" id="xKF-oW-SVa">
+                                                            <menu key="menu" title="Отображение" id="xKF-oW-SVa">
                                                                 <items>
                                                                     <menuItem title=" " state="on" id="adB-eT-a6O"/>
                                                                 </items>
