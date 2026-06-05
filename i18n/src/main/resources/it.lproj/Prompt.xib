@@ -101,7 +101,7 @@ Gw
                             </button>
                             <button tag="1" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5">
                                 <rect key="frame" x="467" y="-6" width="89" height="32"/>
-                                <buttonCell key="cell" type="push" title="Continue" bezelStyle="rounded" alignment="center" borderStyle="border" tag="1" inset="2" id="6">
+                                <buttonCell key="cell" type="push" title="Continua" bezelStyle="rounded" alignment="center" borderStyle="border" tag="1" inset="2" id="6">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -117,13 +117,8 @@ DQ
                             <constraint firstItem="5" firstAttribute="leading" secondItem="7" secondAttribute="trailing" constant="12" symbolic="YES" id="0et-dX-KRz"/>
                             <constraint firstItem="5" firstAttribute="centerY" secondItem="cfF-Iv-FNQ" secondAttribute="centerY" id="1ln-mz-AeO"/>
                             <constraint firstItem="7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="20" secondAttribute="trailing" constant="8" symbolic="YES" id="3UF-KP-qu4"/>
-                            <constraint firstItem="20" firstAttribute="leading" secondItem="14" secondAttribute="trailing" constant="8" symbolic="YES" id="3u9-CT-HGM"/>
-                            <constraint firstItem="14" firstAttribute="leading" secondItem="cfF-Iv-FNQ" secondAttribute="leading" id="5xn-yr-KQc"/>
-                            <constraint firstItem="7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="20" secondAttribute="trailing" constant="8" symbolic="YES" id="6X0-mG-kiP"/>
                             <constraint firstItem="14" firstAttribute="leading" secondItem="cfF-Iv-FNQ" secondAttribute="leading" id="9Kr-VE-FR4"/>
-                            <constraint firstItem="14" firstAttribute="centerY" secondItem="cfF-Iv-FNQ" secondAttribute="centerY" id="Dsb-4s-0HK"/>
                             <constraint firstAttribute="height" constant="22" id="Nza-2z-kpE"/>
-                            <constraint firstItem="20" firstAttribute="centerY" secondItem="cfF-Iv-FNQ" secondAttribute="centerY" id="RlA-0x-rDI"/>
                             <constraint firstItem="14" firstAttribute="centerY" secondItem="cfF-Iv-FNQ" secondAttribute="centerY" id="Uqp-4V-Vjr"/>
                             <constraint firstItem="7" firstAttribute="centerY" secondItem="cfF-Iv-FNQ" secondAttribute="centerY" id="YK8-w4-Jpf"/>
                             <constraint firstItem="20" firstAttribute="centerY" secondItem="cfF-Iv-FNQ" secondAttribute="centerY" id="d0w-RG-E6E"/>
@@ -134,7 +129,7 @@ DQ
                     </customView>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="04r-Aa-9Ky"/>
+                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="4d9-uE-AwY"/>
                     <constraint firstItem="cfF-Iv-FNQ" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="8bB-Fe-itP"/>
                     <constraint firstAttribute="trailing" secondItem="cfF-Iv-FNQ" secondAttribute="trailing" constant="20" symbolic="YES" id="E5r-vt-izh"/>
                     <constraint firstItem="15" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="LMi-v3-klK"/>
@@ -170,7 +165,7 @@ DQ
                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                             </textFieldCell>
                         </textField>
-                        <imageView ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hSP-0U-eb2">
+                        <imageView translatesAutoresizingMaskIntoConstraints="NO" id="hSP-0U-eb2">
                             <rect key="frame" x="16" y="130" width="16" height="16"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="16" id="pGg-sp-iHL"/>
@@ -266,8 +261,6 @@ DQ
                     </subviews>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="35" secondAttribute="trailing" id="3tO-ml-faT"/>
-                        <constraint firstAttribute="trailing" secondItem="29" secondAttribute="trailing" id="8oQ-wu-7en"/>
-                        <constraint firstAttribute="trailing" secondItem="27" secondAttribute="trailing" id="FFL-Qb-tue"/>
                         <constraint firstItem="29" firstAttribute="top" secondItem="27" secondAttribute="bottom" constant="8" symbolic="YES" id="H8C-H7-QNs"/>
                         <constraint firstItem="35" firstAttribute="leading" secondItem="Jve-Jm-UAk" secondAttribute="trailing" constant="8" symbolic="YES" id="I9N-Zb-0ep"/>
                         <constraint firstItem="27" firstAttribute="top" secondItem="35" secondAttribute="bottom" constant="8" symbolic="YES" id="I9y-ZB-Pvq"/>
@@ -279,20 +272,16 @@ DQ
                         <constraint firstAttribute="trailing" secondItem="33" secondAttribute="trailing" id="aJB-5P-9Jf"/>
                         <constraint firstItem="33" firstAttribute="top" secondItem="31" secondAttribute="bottom" constant="8" symbolic="YES" id="b0C-Be-TdV"/>
                         <constraint firstItem="hSP-0U-eb2" firstAttribute="top" secondItem="41" secondAttribute="bottom" constant="8" symbolic="YES" id="bB7-iP-h8b"/>
-                        <constraint firstAttribute="trailing" secondItem="35" secondAttribute="trailing" id="cSs-oZ-5w5"/>
-                        <constraint firstAttribute="trailing" secondItem="37" secondAttribute="trailing" id="cwS-Z9-Axl"/>
                         <constraint firstAttribute="trailing" secondItem="37" secondAttribute="trailing" id="cx5-8x-nSh"/>
                         <constraint firstItem="37" firstAttribute="leading" secondItem="hSP-0U-eb2" secondAttribute="trailing" constant="8" symbolic="YES" id="fUd-xX-yRj"/>
                         <constraint firstAttribute="trailing" secondItem="29" secondAttribute="trailing" id="fjZ-E2-kq1"/>
                         <constraint firstItem="35" firstAttribute="top" secondItem="39" secondAttribute="bottom" constant="8" symbolic="YES" id="gNB-Fi-FBP"/>
                         <constraint firstAttribute="trailing" secondItem="31" secondAttribute="trailing" id="lkd-mE-t84"/>
-                        <constraint firstAttribute="trailing" secondItem="33" secondAttribute="trailing" id="o1X-Og-N9O"/>
                         <constraint firstItem="31" firstAttribute="top" secondItem="37" secondAttribute="bottom" constant="8" symbolic="YES" id="oXl-Rl-fCx"/>
                         <constraint firstItem="35" firstAttribute="leading" secondItem="RRJ-Ck-aEj" secondAttribute="leading" constant="40" id="p1h-F9-vLZ"/>
                         <constraint firstItem="31" firstAttribute="leading" secondItem="RRJ-Ck-aEj" secondAttribute="leading" constant="40" id="pOR-8E-Un4"/>
                         <constraint firstItem="37" firstAttribute="top" secondItem="41" secondAttribute="bottom" constant="8" symbolic="YES" id="tcw-pi-k7l"/>
                         <constraint firstItem="Jve-Jm-UAk" firstAttribute="top" secondItem="39" secondAttribute="bottom" constant="8" symbolic="YES" id="voK-eX-Cjj"/>
-                        <constraint firstAttribute="trailing" secondItem="31" secondAttribute="trailing" id="yXs-jR-WJf"/>
                         <constraint firstAttribute="trailing" secondItem="27" secondAttribute="trailing" id="zuz-Yh-mva"/>
                     </constraints>
                     <visibilityPriorities>

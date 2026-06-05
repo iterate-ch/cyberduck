@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -23,17 +23,17 @@
             <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
             <value key="minSize" type="size" width="300" height="200"/>
             <view key="contentView" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4">
-                <rect key="frame" x="0.0" y="0.0" width="400" height="60"/>
+                <rect key="frame" x="0.0" y="240" width="400" height="60"/>
                 <subviews>
-                    <customView ambiguous="YES" id="cjf-RS-AF0" userLabel="Content View">
-                        <rect key="frame" x="0.0" y="60" width="800" height="0.0"/>
+                    <customView id="cjf-RS-AF0" userLabel="Content View">
+                        <rect key="frame" x="0.0" y="60" width="400" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>
-                    <customView ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ax1-78-ilT" userLabel="Action View">
-                        <rect key="frame" x="0.0" y="0.0" width="800" height="60"/>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="ax1-78-ilT" userLabel="Action View">
+                        <rect key="frame" x="0.0" y="0.0" width="520" height="60"/>
                         <subviews>
-                            <button tag="1000" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="14">
-                                <rect key="frame" x="716" y="13" width="71" height="32"/>
+                            <button tag="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14">
+                                <rect key="frame" x="421" y="13" width="71" height="32"/>
                                 <buttonCell key="cell" type="push" title="Tilslut" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -91,7 +91,7 @@ DQ
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NX8-ZW-YeI" userLabel="Download Folder Stack View">
                             <rect key="frame" x="0.0" y="28" width="400" height="20"/>
                             <subviews>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="KBh-Lx-hEn">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="KBh-Lx-hEn">
                                     <rect key="frame" x="-2" y="3" width="154" height="16"/>
                                     <constraints>
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="NpX-u0-Cjw"/>
@@ -133,7 +133,7 @@ DQ
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fxM-ZC-cQ3" userLabel="Transfer Stack View">
                             <rect key="frame" x="0.0" y="0.0" width="400" height="20"/>
                             <subviews>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Cge-dP-p1l" userLabel="Transfer Files:">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="Cge-dP-p1l" userLabel="Transfer Files:">
                                     <rect key="frame" x="-2" y="3" width="154" height="16"/>
                                     <constraints>
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="TTB-iX-60u"/>

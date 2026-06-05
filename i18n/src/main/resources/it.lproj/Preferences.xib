@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -1788,7 +1788,7 @@ Questo dovrebbe corrispondere alla codifica testo suata nel server.</string>
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Versioning" translatesAutoresizingMaskIntoConstraints="NO" id="vrs-S3-box">
+                <box fixedFrame="YES" title="Versioni" translatesAutoresizingMaskIntoConstraints="NO" id="vrs-S3-box">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="vrs-S3-cnt">
@@ -1798,7 +1798,7 @@ Questo dovrebbe corrispondere alla codifica testo suata nel server.</string>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vrs-S3-btn">
                                 <rect key="frame" x="10" y="42" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Show all versions of files" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="vrs-S3-cel">
+                                <buttonCell key="cell" type="check" title="Visualizza tutte le versioni dei file" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="vrs-S3-cel">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1806,8 +1806,10 @@ Questo dovrebbe corrispondere alla codifica testo suata nel server.</string>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vrs-S3-txt">
                                 <rect key="frame" x="9" y="8" width="447" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Show all file versions in browser. Disable for faster browsing of buckets with many versions." id="vrs-S3-txc">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="vrs-S3-txc">
                                     <font key="font" metaFont="smallSystem"/>
+                                    <string key="title">Visualizza tutte le versioni dei file nel browser. 
+Disabilita per una navigazione dei bucket con molte versioni più rapida.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
