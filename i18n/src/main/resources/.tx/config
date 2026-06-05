@@ -353,14 +353,6 @@ type          = STRINGS
 minimum_perc  = 0
 resource_name = Status
 
-[o:cyberduck:p:cyberduck:r:Support]
-file_filter   = <lang>.lproj/Support.strings
-source_file   = en.lproj/Support.strings
-source_lang   = en
-type          = STRINGS
-minimum_perc  = 0
-resource_name = Support
-
 [o:cyberduck:p:cyberduck:r:Sync]
 file_filter   = <lang>.lproj/Sync.strings
 source_file   = en.lproj/Sync.strings
