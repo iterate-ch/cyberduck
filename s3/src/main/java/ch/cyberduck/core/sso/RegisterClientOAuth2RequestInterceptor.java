@@ -73,7 +73,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
 
     public RegisterClientOAuth2RequestInterceptor(final HttpClient client, final Host host,
                                                   final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) throws ConnectionCanceledException {
-        super(client, host, null, null, null, null, host.getProtocol().getOAuthScopes(), true, prompt);
+        super(client, host, null, null, null, null, null, host.getProtocol().getOAuthScopes(), true, prompt);
         this.host = host;
         this.trust = trust;
         this.key = key;
