@@ -37,8 +37,8 @@ public class RegexLocaleTest {
     @Test
     public void testLocalizeFallback() {
         final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
-        assertEquals("Edit Bookmark", locale.localize("Edit Bookmark", "Bookmark"));
-        locale.setDefault("fr");
-        assertEquals("Éditer un signet", locale.localize("Edit Bookmark", "Bookmark"));
+        assertEquals("Edit Bookmark", locale.localize("Edit Bookmark", "Edit"));
+        locale.setDefault("de");
+        assertEquals("Lesezeichen editieren", locale.localize("Edit Bookmark", "Edit"));
     }
 }
