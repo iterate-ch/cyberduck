@@ -35,14 +35,15 @@ import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
+import ch.cyberduck.core.ssl.DelegatingCertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.PKCS11CertificateStoreX509KeyManager;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.LoginInputValidator;
 
@@ -61,6 +62,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -85,6 +87,9 @@ public abstract class BookmarkController extends SheetController implements NSTa
 
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
+
+    // List of certificates with private key
+    private final Set<String> certificates = new LinkedHashSet<>();
 
     @Outlet
     private NSTabView tabView;
@@ -177,6 +182,25 @@ public abstract class BookmarkController extends SheetController implements NSTa
 
     public void addObserver(final BookmarkObserver observer) {
         observers.add(observer);
+    }
+
+    @Override
+    public void display(final boolean key, final String frameName) {
+        super.display(key, frameName);
+        if(options.certificate) {
+            this.loadCertificateAliases();
+        }
+    }
+
+    private Set<String> loadCertificateAliases() {
+        if(certificates.isEmpty()) {
+            log.debug("Loading certificate aliases for bookmark {}", bookmark);
+            certificates.addAll(new DelegatingCertificateStoreX509KeyManager(
+                    new KeychainX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get()),
+                    new PKCS11CertificateStoreX509KeyManager(CertificateIdentityCallback.noop, bookmark, CertificateStoreFactory.get(), LoginCallbackFactory.get(this))
+            ).list());
+        }
+        return certificates;
     }
 
     public void focus() {
@@ -294,6 +318,9 @@ public abstract class BookmarkController extends SheetController implements NSTa
             bookmark.setPort(HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname()));
             bookmark.setCredentials(CredentialsConfiguratorFactory.get(selected).configure(bookmark));
             options.configure(selected);
+            if(options.certificate) {
+                this.loadCertificateAliases();
+            }
             validator.configure(selected);
         }
         this.update();
@@ -597,16 +624,13 @@ public abstract class BookmarkController extends SheetController implements NSTa
         this.certificatePopup.setTarget(this.id());
         final Selector action = Foundation.selector("certificateSelectionChanged:");
         this.certificatePopup.setAction(action);
-        // List of certificates with private key
-        final List<String> list = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
-                CertificateStoreFactory.get()).list();
         this.addObserver(bookmark -> {
             certificatePopup.setEnabled(options.certificate);
             certificatePopup.removeAllItems();
             certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
             if(options.certificate) {
                 certificatePopup.menu().addItem(NSMenuItem.separatorItem());
-                for(String certificate : list) {
+                for(String certificate : certificates) {
                     certificatePopup.addItemWithTitle(certificate);
                     certificatePopup.lastItem().setRepresentedObject(certificate);
                 }
