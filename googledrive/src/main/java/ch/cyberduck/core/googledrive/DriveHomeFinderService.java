@@ -31,15 +31,15 @@ public class DriveHomeFinderService extends AbstractHomeFeature {
 
     public static final Path MYDRIVE_FOLDER
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("My Drive", "Google Drive")),
-            EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume), new DefaultPathAttributes().setFileId(ROOT_FOLDER_ID));
+            EnumSet.of(Path.Type.directory, Path.Type.volume), new DefaultPathAttributes().setFileId(ROOT_FOLDER_ID));
 
     public static final Path SHARED_FOLDER_NAME
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared with me", "Google Drive")),
-        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+        EnumSet.of(Path.Type.directory, Path.Type.volume));
 
     public static final Path SHARED_DRIVES_NAME
         = new Path(PathNormalizer.normalize(LocaleFactory.localizedString("Shared Drives", "Google Drive")),
-        EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume));
+        EnumSet.of(Path.Type.directory, Path.Type.volume));
 
     @Override
     public Path find() throws BackgroundException {
