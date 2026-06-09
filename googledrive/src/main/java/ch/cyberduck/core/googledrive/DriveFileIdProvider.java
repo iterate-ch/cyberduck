@@ -46,11 +46,13 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
         if(StringUtils.isNotBlank(file.attributes().getFileId())) {
             return file.attributes().getFileId();
         }
+        if(new SimplePathPredicate(file).test(DriveHomeFinderService.MYDRIVE_FOLDER)) {
+            return DriveHomeFinderService.ROOT_FOLDER_ID;
+        }
         if(file.isRoot()
-                || new SimplePathPredicate(file).test(DriveHomeFinderService.MYDRIVE_FOLDER)
                 || new SimplePathPredicate(file).test(DriveHomeFinderService.SHARED_FOLDER_NAME)
                 || new SimplePathPredicate(file).test(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
-            return DriveHomeFinderService.ROOT_FOLDER_ID;
+            return null;
         }
         final String cached = super.getFileId(file);
         if(cached != null) {
