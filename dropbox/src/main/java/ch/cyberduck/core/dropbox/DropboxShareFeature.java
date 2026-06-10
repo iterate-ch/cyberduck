@@ -25,6 +25,8 @@ import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Share;
 
+import com.dropbox.core.BadResponseException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,6 +71,9 @@ public class DropboxShareFeature implements Share<Void, Void> {
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                                 LocaleFactory.localizedString("Password Share", "Dropbox"))
                 );
+            }
+            catch(BadResponseException e) {
+                throw new ConflictException(e.getMessage(), e);
             }
             catch(DbxException e) {
                 throw new DropboxExceptionMappingService().map(e);
