@@ -82,9 +82,11 @@ public class MoveWorkerTest extends AbstractDriveTest {
     public void testMoveSameFolderCryptomator() throws Exception {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final AbstractVault cryptomator = new DefaultVaultProvider(session).create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final DefaultVaultProvider provider = new DefaultVaultProvider(session);
+        provider.create(session, null, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
+        final AbstractVault cryptomator = provider.load(session, vault, new VaultVersion(vaultVersion), new VaultCredentials("test"));
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordCallback(), cryptomator));
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
