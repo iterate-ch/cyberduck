@@ -18,7 +18,6 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.OverviewRestControllerApi;
@@ -58,7 +57,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     private final int chunksize;
     private final DeepboxPathContainerService containerService;
 
-    private static final Pattern SHARED = Pattern.compile("(.*)\\s\\((.*)\\)");
+    private static final Pattern SHARED = Pattern.compile("(.*?)\\s\\((.*)\\)");
 
     public static final String DEEPBOX_NAME_PROEPRTY_KEY = "deepboxName";
 
