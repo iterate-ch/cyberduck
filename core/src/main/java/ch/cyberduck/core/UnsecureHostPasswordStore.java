@@ -16,7 +16,15 @@ import java.util.Properties;
 public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
     private static final Logger log = LogManager.getLogger(UnsecureHostPasswordStore.class);
 
-    private final Local file = LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "credentials");
+    private final Local file;
+
+    public UnsecureHostPasswordStore() {
+        this(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "credentials"));
+    }
+
+    public UnsecureHostPasswordStore(final Local file) {
+        this.file = file;
+    }
 
     private Properties load() throws AccessDeniedException {
         final Properties properties = new Properties();
