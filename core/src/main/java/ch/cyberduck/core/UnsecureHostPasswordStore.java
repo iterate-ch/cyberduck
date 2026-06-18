@@ -26,7 +26,7 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
         this.file = file;
     }
 
-    private Properties load() throws AccessDeniedException {
+    protected Properties load() throws AccessDeniedException {
         final Properties properties = new Properties();
         new DefaultLocalDirectoryFeature().mkdir(file.getParent());
         if(file.exists()) {
@@ -43,7 +43,7 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
         return properties;
     }
 
-    private void save(final Properties properties) throws AccessDeniedException {
+    protected void save(final Properties properties) throws AccessDeniedException {
         try(OutputStream out = file.getOutputStream(false)) {
             properties.store(out, "Credentials");
         }
