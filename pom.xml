@@ -74,7 +74,7 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git@github.com:iterate-ch/cyberduck.git</connection>
+        <connection>scm:git:https://github.com/iterate-ch/cyberduck.git</connection>
         <tag>HEAD</tag>
     </scm>
 
