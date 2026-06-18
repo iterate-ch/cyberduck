@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-win</TargetFramework>
+    <TargetFramework>net10.0-win</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
