@@ -137,6 +137,9 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                             return file;
                         }
                         deepBoxName = this.lookupDeepboxName(companyNodeId, companyName, boxName);
+                        if(null == deepBoxName) {
+                            return file;
+                        }
                     }
                     final EnumSet<Path.Type> type = EnumSet.copyOf(combined.getType());
                     type.add(Path.Type.shared);
@@ -159,6 +162,10 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         return result;
     }
 
+    /**
+     *
+     * @return Null when no match or API error
+     */
     protected String lookupDeepboxName(final String companyId, final String companyName, final String boxName) {
         try {
             final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
