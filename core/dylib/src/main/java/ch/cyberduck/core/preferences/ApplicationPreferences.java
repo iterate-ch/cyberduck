@@ -131,5 +131,8 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         if(null == this.getDefault("SUExpectsDSASignature")) {
             this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
         }
+        if(Factory.Platform.osversion.matches("(10|11|12)\\..*")) {
+            this.setDefault("bookmark.window.popover", String.valueOf(false));
+        }
     }
 }
