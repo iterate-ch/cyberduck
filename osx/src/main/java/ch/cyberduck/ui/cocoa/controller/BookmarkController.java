@@ -318,7 +318,6 @@ public abstract class BookmarkController extends SheetController implements NSTa
     @Outlet
     public void setLabelsField(final NSTokenField f) {
         this.labelsField = f;
-        this.labelsField.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.labels.configurable"));
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("tokenFieldDidChange:"),
                 NSControl.NSControlTextDidEndEditingNotification,
