@@ -96,7 +96,7 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
     @Test
     public void testSharedWithMe_BoxNameParantheses() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (XY (XY))", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
+        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (V2023 sp next (25.07.2023))", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
         assertNotNull(nodeid.getFileId(directory));
         assertEquals(SHARED_DEEPBOX, nodeid.getDeepBoxNodeId(directory));
         assertThrows(NotfoundException.class, () -> nodeid.getFourthLevelId(directory));
