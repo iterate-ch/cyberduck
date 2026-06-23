@@ -61,6 +61,12 @@ public abstract class DefaultBookmarkController extends BookmarkController {
     }
 
     @Override
+    public void setNicknameField(final NSTextField f) {
+        f.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.name.configurable"));
+        super.setNicknameField(f);
+    }
+
+    @Override
     public void setPasswordField(final NSSecureTextField field) {
         this.addObserver(host -> field.superview().setHidden(!options.password));
         super.setPasswordField(field);

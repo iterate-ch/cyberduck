@@ -302,7 +302,6 @@ public abstract class BookmarkController extends SheetController implements NSTa
     @Outlet
     public void setNicknameField(final NSTextField f) {
         this.nicknameField = f;
-        this.nicknameField.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.name.configurable"));
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("nicknameFieldDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
