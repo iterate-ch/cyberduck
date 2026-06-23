@@ -56,7 +56,7 @@ public abstract class DefaultBookmarkController extends BookmarkController {
 
     @Override
     public void setProtocolPopup(final NSPopUpButton button) {
-        button.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.protocol.configurable"));
+        button.setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.protocol.configurable"));
         super.setProtocolPopup(button);
     }
 
