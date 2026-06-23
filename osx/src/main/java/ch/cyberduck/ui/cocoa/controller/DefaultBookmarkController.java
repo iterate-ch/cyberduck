@@ -136,4 +136,10 @@ public abstract class DefaultBookmarkController extends BookmarkController {
         f.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.labels.configurable"));
         super.setLabelsField(f);
     }
+
+    @Override
+    public void setWebURLField(final NSTextField f) {
+        f.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.weburl.configurable"));
+        super.setWebURLField(f);
+    }
 }
