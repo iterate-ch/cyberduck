@@ -635,7 +635,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else {
             this.showHiddenFiles = false;
         }
-        this.setFilter(null);
     }
 
     /**
@@ -684,11 +683,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void reload(final Path workdir, final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
         log.debug("Reload data with selected files {}", selected);
-        for(final Path folder : folders) {
-            if(folder.getName().startsWith(".")) {
-                this.setShowHiddenFiles(true);
-            }
-        }
         final BrowserTableDataSource model = this.getSelectedBrowserModel();
         final NSTableView browser = this.getSelectedBrowserView();
         if(folders.isEmpty()) {
@@ -2470,6 +2464,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         new TouchWorker(file) {
                             @Override
                             public void cleanup(final Path folder) {
+                                if(StringUtils.startsWith(folder.getName(), ".")) {
+                                    setShowHiddenFiles(true);
+                                }
                                 reload(workdir, Collections.singletonList(file), Collections.singletonList(file));
                                 if(edit) {
                                     file.attributes().setSize(0L);
@@ -2490,6 +2487,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected.getName()) {
                     @Override
                     public void cleanup(final Path symlink) {
+                        if(StringUtils.startsWith(symlink.getName(), ".")) {
+                            setShowHiddenFiles(true);
+                        }
                         reload(workdir, Collections.singletonList(symlink), Collections.singletonList(symlink));
                     }
                 }));
@@ -2540,6 +2540,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         new CreateDirectoryWorker(folder, region) {
                             @Override
                             public void cleanup(final Path folder) {
+                                if(StringUtils.startsWith(folder.getName(), ".")) {
+                                    setShowHiddenFiles(true);
+                                }
                                 reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         }));
@@ -2564,6 +2567,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 metadata) {
                             @Override
                             public void cleanup(final Vault vault) {
+                                if(StringUtils.startsWith(folder.getName(), ".")) {
+                                    setShowHiddenFiles(true);
+                                }
                                 reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         })
@@ -3017,6 +3023,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.setShowHiddenFiles(true);
             sender.setState(NSCell.NSOnState);
         }
+        this.setFilter(null);
     }
 
     /**
