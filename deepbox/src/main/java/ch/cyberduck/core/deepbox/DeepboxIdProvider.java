@@ -110,9 +110,8 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         }
         final Deque<Path> segments = this.decompose(file);
         Path result = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
-
         while(!segments.isEmpty()) {
-            Path segment = segments.pop();
+            final Path segment = segments.pop();
             if(containerService.isSharedWithMe(segment)) {
                 final Path combined = segments.pop();
                 final String name = combined.getName();
