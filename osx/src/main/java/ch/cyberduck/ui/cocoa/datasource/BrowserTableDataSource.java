@@ -603,7 +603,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             new DeleteController(controller, controller.getSession()).delete(pasteboard, new ReloadCallback() {
                 @Override
                 public void done(final List<Path> files) {
-                    controller.reload(controller.workdir(), pasteboard, Collections.emptyList());
+                    controller.reload(pasteboard, Collections.emptyList());
                 }
             });
         }

@@ -77,7 +77,7 @@ public class CopyController extends ProxyController {
                         final List<Path> changed = new ArrayList<>();
                         changed.addAll(result.keySet());
                         changed.addAll(result.values());
-                        parent.reload(parent.workdir(), changed, new ArrayList<Path>(selected.values()));
+                        parent.reload(changed, new ArrayList<>(selected.values()));
                     }
                 }));
             }

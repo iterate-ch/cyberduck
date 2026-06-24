@@ -84,7 +84,7 @@ public class MoveController extends ProxyController {
                                 final List<Path> changed = new ArrayList<>();
                                 changed.addAll(selected.keySet());
                                 changed.addAll(selected.values());
-                                parent.reload(parent.workdir(), changed, new ArrayList<>(selected.values()));
+                                parent.reload(changed, new ArrayList<>(selected.values()));
                             }
                         }));
             }
