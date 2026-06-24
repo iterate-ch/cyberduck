@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,11 +16,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="n5y-6N-ojT" userLabel="Navigation View">
-            <rect key="frame" x="0.0" y="0.0" width="621" height="36"/>
+            <rect key="frame" x="0.0" y="0.0" width="454" height="36"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <segmentedControl horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="7F5-6a-0hh" userLabel="Segment Navigation Up">
-                    <rect key="frame" x="548" y="6" width="56" height="24"/>
+                <segmentedControl verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="7F5-6a-0hh" userLabel="Segment Navigation Up">
+                    <rect key="frame" x="381" y="6" width="56" height="24"/>
                     <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="Slg-S4-dvR" userLabel="Up">
                         <font key="font" metaFont="system"/>
                         <segments>
@@ -28,8 +28,8 @@
                         </segments>
                     </segmentedCell>
                 </segmentedControl>
-                <popUpButton horizontalHuggingPriority="150" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="1hP-4z-a3t" userLabel="Path Popup">
-                    <rect key="frame" x="145" y="4" width="402" height="25"/>
+                <popUpButton horizontalHuggingPriority="150" verticalHuggingPriority="750" horizontalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="1hP-4z-a3t" userLabel="Path Popup">
+                    <rect key="frame" x="145" y="4" width="235" height="25"/>
                     <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="zco-hI-Pdy" id="FN6-h4-qDy">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="message"/>
@@ -65,7 +65,7 @@
                 <constraint firstAttribute="height" constant="36" id="rZG-aF-Iqk"/>
                 <constraint firstItem="lfe-fW-qlT" firstAttribute="leading" secondItem="n5y-6N-ojT" secondAttribute="leading" constant="20" symbolic="YES" id="rxn-kU-Tfo"/>
             </constraints>
-            <point key="canvasLocation" x="-103" y="-348"/>
+            <point key="canvasLocation" x="-88" y="-571"/>
         </customView>
     </objects>
     <resources>
