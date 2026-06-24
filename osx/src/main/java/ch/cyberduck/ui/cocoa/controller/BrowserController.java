@@ -158,6 +158,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static ch.cyberduck.ui.browser.SearchFilterFactory.HIDDEN_FILTER;
+
 public class BrowserController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
     private static final Logger log = LogManager.getLogger(BrowserController.class);
 
@@ -310,7 +312,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = SearchFilterFactory.HIDDEN_FILTER;
+            this.filenameFilter = HIDDEN_FILTER;
             this.showHiddenFiles = false;
         }
     }
@@ -667,11 +669,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void reload(final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
         log.debug("Reload data with selected files {}", selected);
-        for(final Path folder : folders) {
-            if(folder.getName().startsWith(".")) {
-                this.setShowHiddenFiles(true);
-            }
-        }
         final BrowserTableDataSource model = this.getSelectedBrowserModel();
         final NSTableView browser = this.getSelectedBrowserView();
         if(null == workdir) {
@@ -1367,7 +1364,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(tableColumn.identifier().equals(BrowserColumn.filename.name())) {
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(file));
                 }
-                if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
+                if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(file)) {
                     Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                 }
                 else {
@@ -1514,7 +1511,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell, final NSTableColumn tableColumn, final NSInteger row) {
                 final Path file = browserListModel.get(workdir).get(row.intValue());
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
+                    if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(file)) {
                         Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
@@ -2458,6 +2455,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         new TouchWorker(file) {
                             @Override
                             public void cleanup(final Path folder) {
+                                if(!HIDDEN_FILTER.accept(folder)) {
+                                    setShowHiddenFiles(true);
+                                }
                                 reload(Collections.singletonList(file), Collections.singletonList(file));
                                 if(edit) {
                                     file.attributes().setSize(0L);
@@ -2478,6 +2478,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected.getName()) {
                     @Override
                     public void cleanup(final Path symlink) {
+                        if(!HIDDEN_FILTER.accept(symlink)) {
+                            setShowHiddenFiles(true);
+                        }
                         reload(Collections.singletonList(symlink), Collections.singletonList(symlink));
                     }
                 }));
@@ -2528,6 +2531,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         new CreateDirectoryWorker(folder, region) {
                             @Override
                             public void cleanup(final Path folder) {
+                                if(!HIDDEN_FILTER.accept(folder)) {
+                                    setShowHiddenFiles(true);
+                                }
                                 reload(Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         }));
@@ -2552,6 +2558,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 metadata) {
                             @Override
                             public void cleanup(final Vault vault) {
+                                if(!HIDDEN_FILTER.accept(folder)) {
+                                    setShowHiddenFiles(true);
+                                }
                                 reload(Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         })
