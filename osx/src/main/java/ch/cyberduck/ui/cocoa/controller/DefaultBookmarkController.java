@@ -19,12 +19,11 @@ import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSTokenField;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.ui.LoginInputValidator;
 
 public abstract class DefaultBookmarkController extends BookmarkController {
@@ -56,8 +55,14 @@ public abstract class DefaultBookmarkController extends BookmarkController {
 
     @Override
     public void setProtocolPopup(final NSPopUpButton button) {
-        button.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.protocol.configurable"));
+        button.setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.protocol.configurable"));
         super.setProtocolPopup(button);
+    }
+
+    @Override
+    public void setNicknameField(final NSTextField f) {
+        f.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.name.configurable"));
+        super.setNicknameField(f);
     }
 
     @Override
@@ -124,5 +129,17 @@ public abstract class DefaultBookmarkController extends BookmarkController {
     public void setPrivateKeyPopup(final NSPopUpButton button) {
         this.addObserver(host -> button.superview().setHidden(!host.getProtocol().isPrivateKeyConfigurable()));
         super.setPrivateKeyPopup(button);
+    }
+
+    @Override
+    public void setLabelsField(final NSTokenField f) {
+        f.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.labels.configurable"));
+        super.setLabelsField(f);
+    }
+
+    @Override
+    public void setWebURLField(final NSTextField f) {
+        f.superview().setHidden(!HostPreferencesFactory.get(bookmark).getBoolean("bookmark.weburl.configurable"));
+        super.setWebURLField(f);
     }
 }
