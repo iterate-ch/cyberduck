@@ -43,7 +43,7 @@ public class CteraUrlProvider implements UrlProvider {
         if(types.contains(DescriptiveUrl.Type.provider)) {
             return new DescriptiveUrlBag(Collections.singleton(new DescriptiveUrl(String.format("%s/%s/%s",
                     new HostUrlProvider().withUsername(false).withPath(false).get(host),
-                    "ServicesPortal/#/cloudDrive", URIEncoder.encode(PathRelativizer.relativize(host.getDefaultPath(), file.getAbsolute()))),
+                    "ServicesPortal/#/cloudDrive", URIEncoder.encode(PathRelativizer.relativize("/ServicesPortal/webdav", file.getAbsolute()))),
                     DescriptiveUrl.Type.provider,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), host.getProtocol().getScheme().toString().toUpperCase(Locale.ROOT)))));
         }
