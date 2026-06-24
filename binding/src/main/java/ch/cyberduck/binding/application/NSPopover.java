@@ -136,7 +136,6 @@ public abstract class NSPopover extends NSResponder {
      * This method raises an NSInvalidArgumentException if it can’t locate the toolbar item. This could
      * occur if the item isn’t in a toolbar, or because the toolbar isn’t in the window.
      * <p>
-     * C
      *
      * @param toolbarItem The toolbar item anchoring the popover.
      * @since macOS 14.0+
