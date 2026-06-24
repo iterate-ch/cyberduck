@@ -290,7 +290,7 @@ public class TransferController extends WindowController implements TransferList
             transfer.setBandwidth(bandwidth);
             if(transfer.isRunning()) {
                 // Find matching background task
-                for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
+                for(BackgroundAction<?> action : registry.toArray(new BackgroundAction[registry.size()])) {
                     if(action instanceof TransferBackgroundAction) {
                         final TransferBackgroundAction t = (TransferBackgroundAction) action;
                         if(t.getTransfer().equals(transfer)) {
@@ -628,7 +628,7 @@ public class TransferController extends WindowController implements TransferList
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer.isRunning()) {
                 // Find matching background task
-                for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
+                for(BackgroundAction<?> action : registry.toArray(new BackgroundAction[registry.size()])) {
                     if(action instanceof TransferBackgroundAction) {
                         final TransferBackgroundAction t = (TransferBackgroundAction) action;
                         if(t.getTransfer().equals(transfer)) {
@@ -646,7 +646,7 @@ public class TransferController extends WindowController implements TransferList
         for(final Transfer transfer : transfers) {
             if(transfer.isRunning()) {
                 // Find matching background task
-                for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
+                for(BackgroundAction<?> action : registry.toArray(new BackgroundAction[registry.size()])) {
                     if(action instanceof TransferBackgroundAction) {
                         final TransferBackgroundAction t = (TransferBackgroundAction) action;
                         if(t.getTransfer().equals(transfer)) {
