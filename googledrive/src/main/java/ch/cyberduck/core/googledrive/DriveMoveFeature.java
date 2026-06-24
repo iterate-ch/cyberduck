@@ -77,8 +77,10 @@ public class DriveMoveFeature implements Move {
                         .setFields("parents")
                         .setSupportsAllDrives(HostPreferencesFactory.get(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
                         .execute();
-                for(String parent : reference.getParents()) {
-                    previousParents.append(parent).append(',');
+                if(null != reference.getParents()) {
+                    for(String parent : reference.getParents()) {
+                        previousParents.append(parent).append(',');
+                    }
                 }
                 // Move the file to the new folder
                 result = session.getClient().files().update(id, null)
