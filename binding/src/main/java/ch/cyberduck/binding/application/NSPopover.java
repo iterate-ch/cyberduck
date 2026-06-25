@@ -84,6 +84,7 @@ public abstract class NSPopover extends NSResponder {
      *
      * @return When detached is true, the detached window is automatically created. This property does not apply when
      * detaching a popover results in a window returned by detachableWindowForPopover:.
+     * @since macOS 10.10+
      */
     public abstract boolean isDetached();
 
@@ -91,6 +92,7 @@ public abstract class NSPopover extends NSResponder {
      * The display state of the popover.
      *
      * @return The value is true if the popover is being shown, false otherwise.
+     * @since macOS 10.7+
      */
     public abstract boolean isShown();
 
@@ -134,9 +136,9 @@ public abstract class NSPopover extends NSResponder {
      * This method raises an NSInvalidArgumentException if it can’t locate the toolbar item. This could
      * occur if the item isn’t in a toolbar, or because the toolbar isn’t in the window.
      * <p>
-     * C
      *
      * @param toolbarItem The toolbar item anchoring the popover.
+     * @since macOS 14.0+
      */
     public abstract void showRelativeToToolbarItem(NSToolbarItem toolbarItem);
 
@@ -202,6 +204,9 @@ public abstract class NSPopover extends NSResponder {
 
         boolean popoverShouldClose(NSPopover popover);
 
+        /**
+         * @since macOS 10.10+
+         */
         boolean popoverShouldDetach(NSPopover popover);
 
         void popoverDidDetach(NSPopover popover);
