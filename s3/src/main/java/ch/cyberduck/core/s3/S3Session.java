@@ -339,7 +339,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     if(tokens.isExpired()) {
                         log.debug("Refresh expired tokens {} for {}", tokens, host);
                         final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
-                        return configurator.configure(host);
+                        credentials.setTokens(configurator.configure(host).getTokens());
+                        return credentials;
                     }
                 }
                 return credentials;
