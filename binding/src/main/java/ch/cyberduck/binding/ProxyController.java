@@ -379,6 +379,8 @@ public class ProxyController extends AbstractController {
             popover.setContentViewController(viewController);
             popover.showRelativeToRect_ofView_preferredEdge(positioningRect, positioningView,
                     FoundationKitFunctions.NSRectEdge.NSMinYEdge);
+            // Update window reference after content view is attached to window owned by popover
+            controller.setWindow(popover.contentViewController().view().window());
         }
 
         @Override
