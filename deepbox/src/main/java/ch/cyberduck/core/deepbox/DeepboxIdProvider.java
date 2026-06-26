@@ -37,6 +37,7 @@ import ch.cyberduck.core.deepcloud.io.swagger.client.model.UserFull;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -112,7 +113,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             return file;
         }
         final Deque<Path> segments = this.decompose(file);
-        Path result = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
+        Path result = Home.root();
         while(!segments.isEmpty()) {
             final Path segment = segments.pop();
             if(containerService.isSharedWithMe(segment)) {
