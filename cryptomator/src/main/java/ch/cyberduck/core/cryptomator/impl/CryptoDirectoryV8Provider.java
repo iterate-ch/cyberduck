@@ -49,6 +49,8 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
     private final Path home;
     private final CryptoFilename filenameProvider;
 
+    private static final byte[] NOT_FOUND = new byte[0];
+
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
     protected final LRUCache<CacheReference<Path>, byte[]> cache = LRUCache.build(
             PreferencesFactory.get().getInteger("cryptomator.cache.size"));
@@ -105,7 +107,11 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
         lock.readLock().lock();
         try {
             if(cache.contains(new SimplePathPredicate(directory))) {
-                return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(cache.get(new SimplePathPredicate(directory)));
+                final byte[] cached = cache.get(new SimplePathPredicate(directory));
+                if(cached == NOT_FOUND) {
+                    throw new NotfoundException(directory.getAbsolute());
+                }
+                return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(cached);
             }
         }
         finally {
@@ -114,9 +120,15 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
         try {
             log.debug("Acquire lock for {}", directory);
             lock.writeLock().lock();
-            final DirectoryMetadata id = this.load(session, directory);
-            cache.put(new SimplePathPredicate(directory), vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(id));
-            return id;
+            try {
+                final DirectoryMetadata id = this.load(session, directory);
+                cache.put(new SimplePathPredicate(directory), vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(id));
+                return id;
+            }
+            catch(NotfoundException e) {
+                cache.put(new SimplePathPredicate(directory), NOT_FOUND);
+                throw e;
+            }
         }
         finally {
             lock.writeLock().unlock();
@@ -158,7 +170,10 @@ public class CryptoDirectoryV8Provider implements CryptoDirectory {
         lock.writeLock().lock();
         try {
             if(cache.contains(new SimplePathPredicate(directory))) {
-                return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(cache.get(new SimplePathPredicate(directory)));
+                final byte[] cached = cache.get(new SimplePathPredicate(directory));
+                if(cached != NOT_FOUND) {
+                    return vault.getCryptor().directoryContentCryptor().decryptDirectoryMetadata(cached);
+                }
             }
             final DirectoryMetadata metadata = vault.getCryptor().directoryContentCryptor().newDirectoryMetadata();
             final byte[] encrypted = vault.getCryptor().directoryContentCryptor().encryptDirectoryMetadata(metadata);
