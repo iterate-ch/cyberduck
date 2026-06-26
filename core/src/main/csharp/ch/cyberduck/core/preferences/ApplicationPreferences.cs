@@ -134,14 +134,7 @@ public class ApplicationPreferences<T> : DefaultPreferences
 
     protected override void configureLogging(string level)
     {
-        try
-        {
-            base.configureLogging(level);
-        }
-        catch
-        {
-        }
-
+        base.configureLogging(level);
         if (Debugger.IsAttached)
         {
             Configurator.setRootLevel(Level.DEBUG);
