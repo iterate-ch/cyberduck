@@ -72,6 +72,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.NullAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
@@ -449,16 +450,22 @@ public abstract class Preferences implements Locales, PreferencesReader {
                         IfFileName.createNameCondition(String.format("%s-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
                 },
                 null, new NullConfiguration());
-        return RollingFileAppender.newBuilder()
-                .setName("default")
-                .setFileName(active.getAbsolute())
-                .setFilePattern(archives.getAbsolute())
-                .setPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
-                .setStrategy(DefaultRolloverStrategy.newBuilder().
-                        setCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                        setCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
-                .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n").setCharset(StandardCharsets.UTF_8).build())
-                .build();
+        try {
+            return RollingFileAppender.newBuilder()
+                    .setName("default")
+                    .setFileName(active.getAbsolute())
+                    .setFilePattern(archives.getAbsolute())
+                    .setPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
+                    .setStrategy(DefaultRolloverStrategy.newBuilder().
+                            setCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
+                            setCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
+                    .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n").setCharset(StandardCharsets.UTF_8).build())
+                    .build();
+        }
+        catch(IllegalStateException e) {
+            // If the factory is unable to create the manager
+            return NullAppender.createAppender("default");
+        }
     }
 
     private Appender getAuditAppender(final Configuration config, final String level) {
@@ -472,16 +479,22 @@ public abstract class Preferences implements Locales, PreferencesReader {
                         IfFileName.createNameCondition(String.format("%s-audit-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
                 },
                 null, new NullConfiguration());
-        return RollingFileAppender.newBuilder()
-                .setName("audit")
-                .setFileName(active.getAbsolute())
-                .setFilePattern(archives.getAbsolute())
-                .setPolicy(SizeBasedTriggeringPolicy.createPolicy("50MB"))
-                .setStrategy(DefaultRolloverStrategy.newBuilder().
-                        setCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                        setCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
-                .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n").setCharset(StandardCharsets.UTF_8).build())
-                .build();
+        try {
+            return RollingFileAppender.newBuilder()
+                    .setName("audit")
+                    .setFileName(active.getAbsolute())
+                    .setFilePattern(archives.getAbsolute())
+                    .setPolicy(SizeBasedTriggeringPolicy.createPolicy("50MB"))
+                    .setStrategy(DefaultRolloverStrategy.newBuilder().
+                            setCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
+                            setCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
+                    .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n").setCharset(StandardCharsets.UTF_8).build())
+                    .build();
+        }
+        catch(IllegalStateException e) {
+            // If the factory is unable to create the manager
+            return NullAppender.createAppender("audit");
+        }
     }
 
     protected void setFactories() {
