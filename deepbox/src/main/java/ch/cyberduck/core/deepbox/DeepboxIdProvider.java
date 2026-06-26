@@ -153,11 +153,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 }
             }
             else {
-                final EnumSet<Path.Type> type = EnumSet.copyOf(segment.getType());
-                if(containerService.isInSharedWithMe(segment)) {
-                    type.add(Path.Type.shared);
-                }
-                result = new Path(result, segment.getName(), type, segment.attributes());
+                result = new Path(result, segment.getName(), segment.getType(), segment.attributes());
             }
         }
         return result;

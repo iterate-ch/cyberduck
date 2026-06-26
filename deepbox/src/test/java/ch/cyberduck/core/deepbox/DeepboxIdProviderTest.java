@@ -185,16 +185,5 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (1 Christian Gruber)/Inbox/", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path normalized = new Path("/ORG 1 - DeepBox Desktop App/Testing/1 Christian Gruber/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
         assertEquals(new SimplePathPredicate(normalized), new SimplePathPredicate(nodeid.normalize(directory)));
-        Path p = nodeid.normalize(directory);
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, nodeid);
-        while(!p.isRoot()) {
-            if(container.isCompany(p)) {
-                assertFalse(p.getType().contains(AbstractPath.Type.shared));
-            }
-            else {
-                assertTrue(p.getType().contains(AbstractPath.Type.shared));
-            }
-            p = p.getParent();
-        }
     }
 }
