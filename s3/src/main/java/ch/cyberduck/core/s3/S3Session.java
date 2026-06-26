@@ -335,10 +335,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             // Tokens already configured from AWS CLI
             return () -> {
                 final TemporaryAccessTokens tokens = credentials.getTokens();
-                if(tokens.isExpired()) {
-                    log.debug("Refresh expired tokens {} for {}", tokens, host);
-                    final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
-                    return configurator.configure(host);
+                if(StringUtils.isNotBlank(credentials.getTokens().getSessionToken())) {
+                    if(tokens.isExpired()) {
+                        log.debug("Refresh expired tokens {} for {}", tokens, host);
+                        final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
+                        return configurator.configure(host);
+                    }
                 }
                 return credentials;
             };
