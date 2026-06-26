@@ -157,8 +157,10 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
             // Normalize
+            assertEquals(nodeid.getFileId(f), nodeid.getFileId(f));
             assertEquals(nodeid.getFileId(f), nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
             assertNull(nodeid.normalize(f).attributes().getFileId());
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
             assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f).withAttributes(PathAttributes.EMPTY)));
         }
     }
