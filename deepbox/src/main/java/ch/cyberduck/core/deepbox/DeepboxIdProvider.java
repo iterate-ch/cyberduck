@@ -117,16 +117,15 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
         while(!segments.isEmpty()) {
             final Path segment = segments.pop();
             if(containerService.isSharedWithMe(segment)) {
-                final Path combined = segments.pop();
-                final String name = combined.getName();
-                final Matcher matcher = SHARED.matcher(name);
+                final Path sharedFolder = segments.pop();
+                final Matcher matcher = SHARED.matcher(sharedFolder.getName());
                 if(matcher.matches()) {
                     final String companyName = matcher.group(1);
                     final String boxName = matcher.group(2);
                     final String deepBoxName;
-                    if(combined.attributes().getCustom().containsKey(DEEPBOX_NAME_PROEPRTY_KEY)) {
+                    if(sharedFolder.attributes().getCustom().containsKey(DEEPBOX_NAME_PROEPRTY_KEY)) {
                         // Shortcut for cached name in list service
-                        deepBoxName = combined.attributes().getCustom().get(DEEPBOX_NAME_PROEPRTY_KEY);
+                        deepBoxName = sharedFolder.attributes().getCustom().get(DEEPBOX_NAME_PROEPRTY_KEY);
                     }
                     else {
                         final String companyNodeId;
@@ -134,7 +133,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                             companyNodeId = this.getCompanyNodeId(file);
                         }
                         catch(BackgroundException e) {
-                            log.warn("Error {} finding company id for name {} and box {} from {}", e, companyName, boxName, name);
+                            log.warn("Error {} finding company id for name {} and box {} from {}", e, companyName, boxName, sharedFolder);
                             return file;
                         }
                         deepBoxName = this.lookupDeepboxName(companyNodeId, companyName, boxName);
@@ -142,13 +141,13 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                             return file;
                         }
                     }
-                    final EnumSet<Path.Type> type = EnumSet.copyOf(combined.getType());
+                    final EnumSet<Path.Type> type = EnumSet.copyOf(sharedFolder.getType());
                     type.add(Path.Type.shared);
-                    final Path deepBox = new Path(result, deepBoxName, type, new DefaultPathAttributes(combined.attributes()).setFileId(null));
+                    final Path deepBox = new Path(result, deepBoxName, type, new DefaultPathAttributes(sharedFolder.attributes()).setFileId(null));
                     result = new Path(deepBox, boxName, type, segment.attributes());
                 }
                 else {
-                    log.warn("Folder {} does not match pattern {}", name, SHARED.pattern());
+                    log.warn("Folder {} does not match pattern {}", sharedFolder, SHARED.pattern());
                     return file;
                 }
             }
