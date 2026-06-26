@@ -144,7 +144,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     final EnumSet<Path.Type> type = EnumSet.copyOf(sharedFolder.getType());
                     type.add(Path.Type.shared);
                     final Path deepBox = new Path(result, deepBoxName, type, new DefaultPathAttributes(sharedFolder.attributes()).setFileId(null));
-                    result = new Path(deepBox, boxName, type, segment.attributes());
+                    result = new Path(deepBox, boxName, type, new DefaultPathAttributes(segment.attributes()));
                 }
                 else {
                     log.warn("Folder {} does not match pattern {}", sharedFolder, SHARED.pattern());
@@ -152,7 +152,7 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                 }
             }
             else {
-                result = new Path(result, segment.getName(), segment.getType(), segment.attributes());
+                result = new Path(result, segment.getName(), segment.getType(), new DefaultPathAttributes(segment.attributes()));
             }
         }
         return result;
