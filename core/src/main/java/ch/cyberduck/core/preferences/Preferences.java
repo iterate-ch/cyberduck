@@ -451,13 +451,13 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 null, new NullConfiguration());
         return RollingFileAppender.newBuilder()
                 .setName("default")
-                .withFileName(active.getAbsolute())
-                .withFilePattern(archives.getAbsolute())
-                .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
-                .withStrategy(DefaultRolloverStrategy.newBuilder().
-                        withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                        withCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
-                .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
+                .setFileName(active.getAbsolute())
+                .setFilePattern(archives.getAbsolute())
+                .setPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
+                .setStrategy(DefaultRolloverStrategy.newBuilder().
+                        setCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
+                        setCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
+                .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n").setCharset(StandardCharsets.UTF_8).build())
                 .build();
     }
 
@@ -474,13 +474,13 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 null, new NullConfiguration());
         return RollingFileAppender.newBuilder()
                 .setName("audit")
-                .withFileName(active.getAbsolute())
-                .withFilePattern(archives.getAbsolute())
-                .withPolicy(SizeBasedTriggeringPolicy.createPolicy("50MB"))
-                .withStrategy(DefaultRolloverStrategy.newBuilder().
-                        withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                        withCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
-                .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
+                .setFileName(active.getAbsolute())
+                .setFilePattern(archives.getAbsolute())
+                .setPolicy(SizeBasedTriggeringPolicy.createPolicy("50MB"))
+                .setStrategy(DefaultRolloverStrategy.newBuilder().
+                        setCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
+                        setCustomActions(new Action[]{new ApplicationVersionAction(this), deleteAction}).build())
+                .setLayout(PatternLayout.newBuilder().setConfiguration(config).setPattern("%d [%t] %-5p %c - %m%n").setCharset(StandardCharsets.UTF_8).build())
                 .build();
     }
 
