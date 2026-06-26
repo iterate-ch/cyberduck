@@ -151,11 +151,15 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         for(final Path f : list) {
             assertSame(shared, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
+            assertTrue(f.attributes().getCustom().containsKey(DeepboxIdProvider.DEEPBOX_NAME_PROEPRTY_KEY));
+            assertNotNull(f.attributes().getFileId());
             // no modification/creation date for Boxes
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new DefaultPathAttributes())));
-            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
+            // Normalize
+            assertEquals(nodeid.getFileId(f), nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
+            assertNull(nodeid.normalize(f).attributes().getFileId());
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f).withAttributes(PathAttributes.EMPTY)));
         }
     }
 
