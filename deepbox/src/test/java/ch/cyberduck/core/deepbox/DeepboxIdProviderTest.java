@@ -86,10 +86,21 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
     @Test
     public void testSharedWithMe_Box() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (1 Christian Gruber)", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
+        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (1 Christian Gruber)", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
         assertEquals(SHARED_DEEPBOX_BOX, nodeid.getFileId(directory));
+        // Testing
         assertEquals(SHARED_DEEPBOX, nodeid.getDeepBoxNodeId(directory));
         assertEquals(SHARED_DEEPBOX_BOX, nodeid.getBoxNodeId(directory));
+        assertThrows(NotfoundException.class, () -> nodeid.getFourthLevelId(directory));
+    }
+
+    @Test
+    public void testSharedWithMe_BoxNameParentheses() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (V2023 sp next (25.07.2023))", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
+        assertNotNull(nodeid.getFileId(directory));
+        // Testing
+        assertEquals(SHARED_DEEPBOX, nodeid.getDeepBoxNodeId(directory));
         assertThrows(NotfoundException.class, () -> nodeid.getFourthLevelId(directory));
     }
 
@@ -101,17 +112,20 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals(ORG4, nodeid.getCompanyNodeId(directory));
         assertEquals(ORG4_DEEPBOX4, nodeid.getDeepBoxNodeId(directory));
         assertEquals(ORG4_DEEPBOX4_BOX1, nodeid.getBoxNodeId(directory));
+        // Inbox
         assertEquals("dc37e9db-36e9-4330-881c-730789aaa8ce", nodeid.getFourthLevelId(directory));
     }
 
     @Test
     public void testSharedWithMe_Inbox() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (1 Christian Gruber)/Inbox", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
+        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (1 Christian Gruber)/Inbox", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
         assertEquals("b13b6754-2b9a-4867-888c-cbd72fe353c3", nodeid.getFileId(directory));
         assertEquals(ORG1, nodeid.getCompanyNodeId(directory));
+        // Testing
         assertEquals(SHARED_DEEPBOX, nodeid.getDeepBoxNodeId(directory));
         assertEquals(SHARED_DEEPBOX_BOX, nodeid.getBoxNodeId(directory));
+        // Inbox
         assertEquals("b13b6754-2b9a-4867-888c-cbd72fe353c3", nodeid.getFourthLevelId(directory));
     }
 
@@ -123,6 +137,7 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals(ORG4, nodeid.getCompanyNodeId(directory));
         assertEquals(ORG4_DEEPBOX4, nodeid.getDeepBoxNodeId(directory));
         assertEquals(ORG4_DEEPBOX4_BOX1, nodeid.getBoxNodeId(directory));
+        // Trash
         assertEquals("1fc77175-f2a7-4b65-bd38-9aaeb9272a90", nodeid.getFourthLevelId(directory));
     }
 
@@ -134,6 +149,7 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals(ORG4, nodeid.getCompanyNodeId(directory));
         assertEquals(ORG4_DEEPBOX4, nodeid.getDeepBoxNodeId(directory));
         assertEquals(ORG4_DEEPBOX4_BOX1, nodeid.getBoxNodeId(directory));
+        // Documents
         assertEquals("ec5f9666-f99e-47ad-bc8c-41da9f1324e2", nodeid.getFourthLevelId(directory));
     }
 
@@ -145,6 +161,7 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals(ORG4, nodeid.getCompanyNodeId(directory));
         assertEquals(ORG4_DEEPBOX4, nodeid.getDeepBoxNodeId(directory));
         assertEquals(ORG4_DEEPBOX4_BOX1, nodeid.getBoxNodeId(directory));
+        // Documents
         assertEquals("ec5f9666-f99e-47ad-bc8c-41da9f1324e2", nodeid.getFourthLevelId(directory));
     }
 
@@ -156,36 +173,39 @@ public class DeepboxIdProviderTest extends AbstractDeepboxTest {
         assertEquals(ORG4, nodeid.getCompanyNodeId(file));
         assertEquals(ORG4_DEEPBOX4, nodeid.getDeepBoxNodeId(file));
         assertEquals(ORG4_DEEPBOX4_BOX1, nodeid.getBoxNodeId(file));
+        // Documents
         assertEquals("ec5f9666-f99e-47ad-bc8c-41da9f1324e2", nodeid.getFourthLevelId(file));
     }
 
     @Test
     public void testSharedWithMe_File() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path file = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (1 Christian Gruber)/Documents/Bookkeeping/screenshot.png", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
+        final Path file = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (1 Christian Gruber)/Documents/Bookkeeping/screenshot.png", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
         assertEquals("0fb9536b-391c-4d07-bcff-0d6d0e7cd2d7", nodeid.getFileId(file));
         assertEquals(ORG1, nodeid.getCompanyNodeId(file));
+        // Testing
         assertEquals(SHARED_DEEPBOX, nodeid.getDeepBoxNodeId(file));
         assertEquals(SHARED_DEEPBOX_BOX, nodeid.getBoxNodeId(file));
+        // Documents
         assertEquals("8e40548c-6367-4e19-9ee3-2590a89c8f1a", nodeid.getFourthLevelId(file));
     }
 
     @Test
-    public void testNormalizeInboxInSharedWithMe() {
+    public void testNormalizeSharedWithMe() throws Exception {
         final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
-        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (1 Christian Gruber)/Inbox/", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path normalized = new Path("/ORG 1 - DeepBox Desktop App/Testing/1 Christian Gruber/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
-        assertEquals(new SimplePathPredicate(normalized), new SimplePathPredicate(nodeid.normalize(directory)));
-        Path p = nodeid.normalize(directory);
-        final DeepboxPathContainerService container = new DeepboxPathContainerService(session, nodeid);
-        while(!p.isRoot()) {
-            if(container.isCompany(p)) {
-                assertFalse(p.getType().contains(AbstractPath.Type.shared));
-            }
-            else {
-                assertTrue(p.getType().contains(AbstractPath.Type.shared));
-            }
-            p = p.getParent();
-        }
+        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (1 Christian Gruber)/", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path reference = new Path("/ORG 1 - DeepBox Desktop App/Testing/1 Christian Gruber/", EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
+        final Path normalized = nodeid.normalize(directory);
+        assertNull(normalized.attributes().getFileId());
+        assertEquals(new SimplePathPredicate(reference), new SimplePathPredicate(normalized));
+    }
+
+    @Test
+    public void testNormalizeInboxInSharedWithMe() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final Path directory = new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (1 Christian Gruber)/Inbox/", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path reference = new Path("/ORG 1 - DeepBox Desktop App/Testing/1 Christian Gruber/Inbox/", EnumSet.of(Path.Type.directory, Path.Type.volume, AbstractPath.Type.shared));
+        final Path normalized = nodeid.normalize(directory);
+        assertEquals(new SimplePathPredicate(reference), new SimplePathPredicate(normalized));
     }
 }

@@ -18,7 +18,6 @@ package ch.cyberduck.core.deepbox;
 import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.deepbox.io.swagger.client.ApiException;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.BoxRestControllerApi;
 import ch.cyberduck.core.deepbox.io.swagger.client.api.OverviewRestControllerApi;
@@ -38,6 +37,7 @@ import ch.cyberduck.core.deepcloud.io.swagger.client.model.UserFull;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.preferences.HostPreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,8 +58,11 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
     private final int chunksize;
     private final DeepboxPathContainerService containerService;
 
-    private static final Pattern SHARED = Pattern.compile("(.*)\\s\\((.*)\\)");
+    private static final Pattern SHARED = Pattern.compile("(.*?(?:\\([^()]*\\))?)\\s*\\(([^()]*(?:\\([^()]*\\))?)\\)");
 
+    /**
+     * Cache key for Deepbox name
+     */
     public static final String DEEPBOX_NAME_PROEPRTY_KEY = "deepboxName";
 
     public DeepboxIdProvider(final DeepboxSession session) {
@@ -110,54 +113,58 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
             return file;
         }
         final Deque<Path> segments = this.decompose(file);
-        Path result = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
-
+        Path result = Home.root();
         while(!segments.isEmpty()) {
-            Path segment = segments.pop();
+            final Path segment = segments.pop();
             if(containerService.isSharedWithMe(segment)) {
-                final Path combined = segments.pop();
-                final String name = combined.getName();
-                final Matcher matcher = SHARED.matcher(name);
+                final Path sharedFolder = segments.pop();
+                final Matcher matcher = SHARED.matcher(sharedFolder.getName());
                 if(matcher.matches()) {
                     final String companyName = matcher.group(1);
                     final String boxName = matcher.group(2);
-                    final EnumSet<Path.Type> type = EnumSet.copyOf(segment.getType());
-                    type.add(Path.Type.shared);
-                    String deepboxName;
-                    if(combined.attributes().getCustom().containsKey(DEEPBOX_NAME_PROEPRTY_KEY)) {
-                        deepboxName = combined.attributes().getCustom().get(DEEPBOX_NAME_PROEPRTY_KEY);
+                    final String deepBoxName;
+                    if(sharedFolder.attributes().getCustom().containsKey(DEEPBOX_NAME_PROEPRTY_KEY)) {
+                        // Shortcut for cached name in list service
+                        deepBoxName = sharedFolder.attributes().getCustom().get(DEEPBOX_NAME_PROEPRTY_KEY);
                     }
                     else {
+                        final String companyNodeId;
                         try {
-                            deepboxName = this.lookupDeepboxName(this.getCompanyNodeId(file), companyName, boxName);
+                            companyNodeId = this.getCompanyNodeId(file);
                         }
                         catch(BackgroundException e) {
-                            log.warn("Cannot find Deepbox for company {} and box {}", companyName, boxName);
+                            log.warn("Error {} finding company id for name {} and box {} from {}", e, companyName, boxName, sharedFolder);
+                            return file;
+                        }
+                        deepBoxName = this.lookupDeepboxName(companyNodeId, companyName, boxName);
+                        if(null == deepBoxName) {
                             return file;
                         }
                     }
-                    final Path deepbox = new Path(result, deepboxName, type, new DefaultPathAttributes(combined.attributes()).setFileId(null));
-                    result = new Path(deepbox, boxName, type, segment.attributes());
+                    final EnumSet<Path.Type> type = EnumSet.copyOf(sharedFolder.getType());
+                    type.add(Path.Type.shared);
+                    final Path deepBox = new Path(result, deepBoxName, type, new DefaultPathAttributes(sharedFolder.attributes()).setFileId(null));
+                    result = new Path(deepBox, boxName, type, new DefaultPathAttributes(segment.attributes()));
                 }
                 else {
-                    log.warn("Folder {} does not match pattern {}", name, SHARED.pattern());
+                    log.warn("Folder {} does not match pattern {}", sharedFolder, SHARED.pattern());
                     return file;
                 }
             }
             else {
-                final EnumSet<Path.Type> type = EnumSet.copyOf(segment.getType());
-                if(containerService.isInSharedWithMe(segment)) {
-                    type.add(Path.Type.shared);
-                }
-                result = new Path(result, segment.getName(), type, segment.attributes());
+                result = new Path(result, segment.getName(), segment.getType(), new DefaultPathAttributes(segment.attributes()));
             }
         }
         return result;
     }
 
-    private String lookupDeepboxName(final String companyId, final String companyName, final String boxName) throws BackgroundException {
-        final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
+    /**
+     *
+     * @return Null when no match or API error
+     */
+    protected String lookupDeepboxName(final String companyId, final String companyName, final String boxName) {
         try {
+            final OverviewRestControllerApi rest = new OverviewRestControllerApi(session.getClient());
             final Overview overview = rest.getOverview(companyId, chunksize, null);
             for(final BoxEntry box : overview.getSharedWithMe().getBoxes()) {
                 if(StringUtils.equals(companyName, DeepboxPathNormalizer.name(box.getCompany().getDisplayName())) &&
@@ -165,11 +172,13 @@ public class DeepboxIdProvider extends CachingFileIdProvider implements FileIdPr
                     return box.getDeepBoxName();
                 }
             }
+            log.warn("No match for company {} and box {}", companyName, boxName);
+            return null;
         }
         catch(ApiException e) {
-            throw new DeepboxExceptionMappingService(this).map(String.format("Failure finding Deepbox for company %s and box %s", companyName, boxName), e);
+            log.warn("Error {} finding Deepbox for company {} and box {}", e, companyName, boxName);
+            return null;
         }
-        throw new NotfoundException(String.format("Cannot find Deepbox for company %s and box %s", companyName, boxName));
     }
 
     private Deque<Path> decompose(final Path path) {
