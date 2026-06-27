@@ -118,8 +118,5 @@ public class PasswordVaultLoader implements VaultLoader {
                             .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator"))).getPassword());
             return this.load(session, version, directory, credentials);
         }
-        catch(BackgroundException e) {
-            throw new VaultUnlockCancelException(directory, e);
-        }
     }
 }
