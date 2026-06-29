@@ -223,7 +223,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     public void process(final HttpRequest request, final HttpContext context) {
                         // Downloading Objects in Requester Pays Buckets
                         if(HttpGet.METHOD_NAME.equals(request.getRequestLine().getMethod()) || HttpPost.METHOD_NAME.equals(request.getRequestLine().getMethod())) {
-                            // For GET and POST requests, include x-amz-request-payer : requester in the header
+                            // For GET and POST requests, include x-amz-request-payer: requester in the header
                             request.addHeader(header, "requester");
                         }
                     }
@@ -332,7 +332,19 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         // Keep copy of credentials
         final Credentials credentials = host.getCredentials();
         if(credentials.isTokenAuthentication()) {
-            return () -> credentials;
+            // Tokens already configured from AWS CLI
+            return () -> {
+                final TemporaryAccessTokens tokens = credentials.getTokens();
+                if(StringUtils.isNotBlank(credentials.getTokens().getSessionToken())) {
+                    if(tokens.isExpired()) {
+                        log.debug("Refresh expired tokens {} for {}", tokens, host);
+                        final S3CredentialsConfigurator configurator = new S3CredentialsConfigurator().reload();
+                        credentials.setTokens(configurator.configure(host).getTokens());
+                        return credentials;
+                    }
+                }
+                return credentials;
+            };
         }
         credentials.setTokens(new TemporaryAccessTokens(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         return () -> credentials;
