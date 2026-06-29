@@ -193,7 +193,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                     return new SecurityKeyPrivateKey(sk.getKeyTypeName(), sk.getPublicKey(), sk.getFlags(), sk.getKeyHandle(),
                             new PKCS11SecurityKeySigner(sk.getPublicKey().getDelegate(),
                                     PKCS11KeyStore.build(
-                                            HostPreferencesFactory.get(bookmark).getProperty("connection.ssl.keystore.pkcs11.library"), bookmark, prompt)));
+                                            HostPreferencesFactory.get(bookmark).getProperty("ssh.authentication.pkcs11.library"), bookmark, prompt)));
                 }
             }
             return pk;
