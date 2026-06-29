@@ -17,13 +17,11 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -42,10 +40,8 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
 
     @Test
     public void testGetFileidRoot() throws Exception {
-        assertEquals("root", new DriveFileIdProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
-            .getFileId(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertEquals("root", new DriveFileIdProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
-            .getFileId(new Path("/My Drive", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertNull(new DriveFileIdProvider(session).getFileId(Home.root()));
+        assertEquals("root", new DriveFileIdProvider(session).getFileId(DriveHomeFinderService.MYDRIVE_FOLDER));
     }
 
     @Test

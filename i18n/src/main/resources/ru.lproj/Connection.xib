@@ -15,24 +15,24 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
-        <window title="New Connection" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" id="3" customClass="NSPanel">
+        <window title="Новое подключение" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" id="3" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" resizable="YES"/>
-            <rect key="contentRect" x="460" y="215" width="500" height="300"/>
+            <rect key="contentRect" x="460" y="215" width="520" height="300"/>
             <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
-            <value key="minSize" type="size" width="500" height="60"/>
+            <value key="minSize" type="size" width="300" height="60"/>
             <view key="contentView" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4">
-                <rect key="frame" x="0.0" y="240" width="491" height="60"/>
+                <rect key="frame" x="0.0" y="240" width="538" height="60"/>
                 <subviews>
                     <customView id="cjf-RS-AF0">
-                        <rect key="frame" x="0.0" y="60" width="491" height="0.0"/>
+                        <rect key="frame" x="0.0" y="60" width="538" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="jUk-Uf-XtH" userLabel="Action View">
-                        <rect key="frame" x="0.0" y="0.0" width="500" height="60"/>
+                        <rect key="frame" x="0.0" y="0.0" width="520" height="60"/>
                         <subviews>
                             <button tag="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="14">
-                                <rect key="frame" x="401" y="13" width="86" height="32"/>
-                                <buttonCell key="cell" type="push" title="Connect" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
+                                <rect key="frame" x="421" y="13" width="126" height="32"/>
+                                <buttonCell key="cell" type="push" title="Подключиться" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -44,8 +44,8 @@ DQ
                                 </connections>
                             </button>
                             <button tag="1001" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="10">
-                                <rect key="frame" x="265" y="13" width="76" height="32"/>
-                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="11">
+                                <rect key="frame" x="285" y="13" width="83" height="32"/>
+                                <buttonCell key="cell" type="push" title="Отмена" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="11">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent" base64-UTF8="YES">
@@ -57,7 +57,7 @@ Gw
                                 </connections>
                             </button>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="66">
-                                <rect key="frame" x="237" y="16" width="25" height="25"/>
+                                <rect key="frame" x="257" y="16" width="25" height="25"/>
                                 <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" inset="2" id="67">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -74,7 +74,7 @@ Gw
                                 </buttonCell>
                             </button>
                             <button tag="1002" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9x4-GT-xnj" userLabel="Save">
-                                <rect key="frame" x="339" y="13" width="64" height="32"/>
+                                <rect key="frame" x="359" y="13" width="64" height="32"/>
                                 <buttonCell key="cell" type="push" title="Save" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="J9z-Gi-v6F">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>

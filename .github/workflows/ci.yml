@@ -15,9 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ linux-self-hosted ]
+        os: [ macos-self-hosted ]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -32,4 +32,5 @@ jobs:
         if: ${{ always() }}
         uses: ScalableCapital/action-surefire-report@v2
         with:
+          report_mode: check-run
           check_name: Test Report (${{ matrix.os }})

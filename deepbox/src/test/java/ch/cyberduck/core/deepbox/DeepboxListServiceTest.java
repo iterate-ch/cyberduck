@@ -144,16 +144,24 @@ public class DeepboxListServiceTest extends AbstractDeepboxTest {
         final AttributedList<Path> list = new DeepboxListService(session, nodeid).list(shared, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
-        assertNotNull(list.find(new SimplePathPredicate(new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (1 Christian Gruber)", DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
-        assertEquals(1, list.size());
+        assertNotNull(list.find(new SimplePathPredicate(new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (1 Christian Gruber)",
+                DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertNotNull(list.find(new SimplePathPredicate(new Path(String.format("/ORG 1 - DeepBox Desktop App/%s/Demo 1 (TEST) (XY (XY))",
+                DeepboxListService.SHARED), EnumSet.of(Path.Type.directory, Path.Type.volume)))));
         for(final Path f : list) {
             assertSame(shared, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
+            assertTrue(f.attributes().getCustom().containsKey(DeepboxIdProvider.DEEPBOX_NAME_PROEPRTY_KEY));
+            assertNotNull(f.attributes().getFileId());
             // no modification/creation date for Boxes
             assertTrue(f.attributes().getModificationDate() < 0);
             assertTrue(f.attributes().getCreationDate() < 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(new DefaultPathAttributes())));
-            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f.getAbsolute(), f.getType())));
+            // Normalize
+            assertEquals(nodeid.getFileId(f), nodeid.getFileId(f));
+            assertEquals(nodeid.getFileId(f), nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
+            assertNull(nodeid.normalize(f).attributes().getFileId());
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(f));
+            assertEquals(f.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(new Path(f).withAttributes(PathAttributes.EMPTY)));
         }
     }
 

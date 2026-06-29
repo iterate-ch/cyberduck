@@ -17,7 +17,6 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSApplication;
-import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -49,7 +48,7 @@ public final class InfoControllerFactory {
             final InfoController info = new InfoController(parent, parent.getSession(), selected, new ReloadCallback() {
                 @Override
                 public void done(final List<Path> files) {
-                    parent.reload(parent.workdir(), selected, selected);
+                    parent.reload(selected, selected);
                 }
             }) {
                 @Override

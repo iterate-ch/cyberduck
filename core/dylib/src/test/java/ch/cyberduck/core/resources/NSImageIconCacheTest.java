@@ -259,4 +259,11 @@ public class NSImageIconCacheTest {
         final NSImageIconCache cache = new NSImageIconCache();
         assertNotNull(cache.iconNamed("bell.badge", 64));
     }
+
+    @Test
+    public void testSymbolBonjour() {
+        assumeFalse(Factory.Platform.osversion.matches("10\\.(12|13|14|15).*"));
+        final NSImageIconCache cache = new NSImageIconCache();
+        assertNotNull(cache.iconNamed("bonjour", 16));
+    }
 }

@@ -18,38 +18,58 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.CachingFindFeature;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
 import synapticloop.b2.response.B2StartLargeFileResponse;
+import synapticloop.b2.response.BaseB2Response;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class B2FindFeatureTest extends AbstractB2Test {
 
     @Test
-    public void testFind() throws Exception {
-        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+    public void testFindWithHideMarker() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), file, new TransferStatus());
-        assertTrue(new B2FindFeature(session, fileid).find(file));
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new B2WriteFeature(session, fileid), new Path(bucket,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path testWithVersionId = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid),
+                new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String versionId = testWithVersionId.attributes().getVersionId();
+        assertNotNull(versionId);
+        final byte[] content = RandomUtils.nextBytes(4);
+        final StatusOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(testWithVersionId, new TransferStatus().setLength(content.length), ConnectionCallback.noop);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        assertTrue(new B2FindFeature(session, fileid).find(testWithVersionId));
         assertFalse(new B2FindFeature(session, fileid).find(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+        // Add hide marker
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), LoginCallback.noop, new Delete.DisabledCallback());
+        assertTrue(new B2FindFeature(session, fileid).find(testWithVersionId));
+        assertTrue(new DefaultFindFeature(session).find(testWithVersionId));
+        assertFalse(new B2FindFeature(session, fileid).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)));
+        assertFalse(new DefaultFindFeature(session).find(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)));
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 
     @Test

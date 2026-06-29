@@ -158,6 +158,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static ch.cyberduck.ui.browser.SearchFilterFactory.HIDDEN_FILTER;
+
 public class BrowserController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
     private static final Logger log = LogManager.getLogger(BrowserController.class);
 
@@ -310,7 +312,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = SearchFilterFactory.HIDDEN_FILTER;
+            this.filenameFilter = HIDDEN_FILTER;
             this.showHiddenFiles = false;
         }
     }
@@ -621,7 +623,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else {
             this.filenameFilter = filter;
         }
-        this.reload();
     }
 
     public PathPasteboard getPasteboard() {
@@ -643,91 +644,71 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void reload() {
         if(this.isMounted()) {
-            this.reload(workdir, Collections.singleton(workdir), this.getSelectedPaths(), false);
+            this.reload(Collections.singleton(workdir), this.getSelectedPaths(), false);
         }
         else {
-            final NSTableView browser = this.getSelectedBrowserView();
-            final BrowserTableDataSource model = this.getSelectedBrowserModel();
-            model.render(browser, Collections.emptyList());
+            this.reload(Collections.emptySet(), Collections.emptyList(), false);
         }
-        this.setStatus();
     }
 
     /**
      * Make the browser reload its content. Invalidates the cache.
      *
-     * @param workdir  Use working directory as the current root of the browser
      * @param selected The items to be selected
      */
-    public void reload(final Path workdir, final List<Path> changed, final List<Path> selected) {
-        this.reload(workdir, new PathReloadFinder().find(changed), selected, true);
+    public void reload(final List<Path> changed, final List<Path> selected) {
+        this.reload(new PathReloadFinder().find(changed), selected, true);
     }
 
     /**
      * Make the browser reload its content. Invalidates the cache.
      *
-     * @param workdir  Use working directory as the current root of the browser
-     * @param folders  Folders to render
-     * @param selected The items to be selected
-     */
-    public void reload(final Path workdir, final Set<Path> folders, final List<Path> selected) {
-        this.reload(workdir, folders, selected, true);
-    }
-
-    /**
-     * Make the browser reload its content. Invalidates the cache.
-     *
-     * @param workdir    Use working directory as the current root of the browser
      * @param folders    Folders to render
      * @param selected   The items to be selected
      * @param invalidate Invalidate the cache before rendering
      */
-    public void reload(final Path workdir, final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
+    public void reload(final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
         log.debug("Reload data with selected files {}", selected);
-        for(final Path folder : folders) {
-            if(folder.getName().startsWith(".")) {
-                this.setShowHiddenFiles(true);
-            }
-        }
         final BrowserTableDataSource model = this.getSelectedBrowserModel();
         final NSTableView browser = this.getSelectedBrowserView();
-        if(folders.isEmpty()) {
-            // Render empty browser
-            model.render(browser, Collections.emptyList());
-        }
         if(null == workdir) {
-            this.setNavigation();
-            // Render empty browser
-            model.render(browser, Collections.emptyList());
+            // Render empty browser on disconnect
+            this.reload(browser, model, selected, Collections.emptyList());
         }
         else {
-            for(final Path folder : folders) {
-                if(invalidate) {
-                    // Invalidate cache
-                    cache.invalidate(folder);
-                }
-                else {
-                    if(cache.isValid(folder)) {
-                        reload(browser, model, workdir, selected, folder);
-                        return;
+            if(folders.isEmpty()) {
+                // Render empty browser
+                this.reload(browser, model, selected, Collections.emptyList());
+            }
+            else {
+                for(final Path folder : folders) {
+                    if(invalidate) {
+                        // Invalidate cache
+                        cache.invalidate(folder);
                     }
-                }
-                // Delay render until path is cached in the background
-                this.background(new WorkerBackgroundAction<>(this, pool,
-                                new ListWorker(cache, folder, listener) {
-                                    @Override
-                                    public void cleanup(final AttributedList<Path> list) {
-                                        // Put into cache
-                                        super.cleanup(list);
-                                        // Update the working directory if listing is successful
-                                        if(!(AttributedList.<Path>emptyList() == list)) {
-                                            // Reload browser
-                                            reload(browser, model, workdir, selected, folder);
+                    else {
+                        if(cache.isValid(folder)) {
+                            reload(browser, model, selected, Collections.singletonList(folder));
+                            return;
+                        }
+                    }
+                    // Delay render until path is cached in the background
+                    this.background(new WorkerBackgroundAction<>(this, pool,
+                                    new ListWorker(cache, folder, listener) {
+                                        @Override
+                                        public void cleanup(final AttributedList<Path> list) {
+                                            // Put into cache
+                                            super.cleanup(list);
+                                            // Update the working directory if listing is successful
+                                            if(!(AttributedList.<Path>emptyList() == list)) {
+                                                // Reload browser
+                                                reload(browser, model, selected, Collections.singletonList(folder));
+                                            }
                                         }
                                     }
-                                }
-                        )
-                );
+                            )
+                    );
+                }
             }
         }
     }
@@ -735,23 +716,21 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * @param browser  Browser view
      * @param model    Browser Model
-     * @param workdir  Use working directory as the current root of the browser
-     * @param selected Selected files in browser
-     * @param folder   Folder to render
+     * @param selected Selected files in the browser
+     * @param folders  Folders to render
      */
-    private void reload(final NSTableView browser, final BrowserTableDataSource model, final Path workdir, final List<Path> selected, final Path folder) {
-        this.workdir = workdir;
+    private void reload(final NSTableView browser, final BrowserTableDataSource model, final List<Path> selected, final List<Path> folders) {
         this.setNavigation();
-        model.render(browser, Collections.singletonList(folder));
+        model.render(browser, folders);
         this.setStatus();
         this.select(selected);
     }
 
     private void select(final List<Path> selected) {
-        final NSTableView browser = this.getSelectedBrowserView();
         if(CollectionUtils.isEqualCollection(this.getSelectedPaths(), selected)) {
             return;
         }
+        final NSTableView browser = this.getSelectedBrowserView();
         browser.deselectAll(null);
         for(Path path : selected) {
             this.select(path);
@@ -1206,6 +1185,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         preferences.setProperty("browser.view", selected.ordinal());
         // Remove any custom file filter
         this.setFilter(null);
+        this.reload();
     }
 
     private void selectBookmarks(final BookmarkSwitchSegement selected) {
@@ -1384,7 +1364,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(tableColumn.identifier().equals(BrowserColumn.filename.name())) {
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(file));
                 }
-                if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
+                if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(file)) {
                     Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                 }
                 else {
@@ -1429,7 +1409,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(null == directory) {
                     return;
                 }
-                reload(workdir, Collections.singleton(directory), getSelectedPaths(), false);
+                reload(Collections.singleton(directory), getSelectedPaths(), false);
             }
 
             /**
@@ -1531,7 +1511,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell, final NSTableColumn tableColumn, final NSInteger row) {
                 final Path file = browserListModel.get(workdir).get(row.intValue());
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
+                    if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(file)) {
                         Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
@@ -2018,6 +1998,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             case outline:
                 // Setup search filter
                 this.setFilter(SearchFilterFactory.create(input, showHiddenFiles));
+                // Reload with current cache
+                this.reload();
                 break;
         }
     }
@@ -2031,6 +2013,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 final String input = searchField.stringValue();
                 if(StringUtils.isBlank(input)) {
                     this.setFilter(null);
+                    // Reload with current cache
+                    this.reload();
                 }
                 else {
                     // Setup search filter
@@ -2060,6 +2044,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                                         super.cleanup(list);
                                                         // Set filter with search result
                                                         setFilter(new RecursiveSearchFilter(list));
+                                                        reload();
                                                     }
                                                 })
                                         );
@@ -2418,7 +2403,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             }
             folders.add(workdir);
-            this.reload(workdir, folders, this.getSelectedPaths(), true);
+            this.reload(folders, this.getSelectedPaths(), true);
         }
     }
 
@@ -2470,7 +2455,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         new TouchWorker(file) {
                             @Override
                             public void cleanup(final Path folder) {
-                                reload(workdir, Collections.singletonList(file), Collections.singletonList(file));
+                                if(!HIDDEN_FILTER.accept(folder)) {
+                                    setShowHiddenFiles(true);
+                                }
+                                reload(Collections.singletonList(file), Collections.singletonList(file));
                                 if(edit) {
                                     file.attributes().setSize(0L);
                                     edit(file);
@@ -2490,7 +2478,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected.getName()) {
                     @Override
                     public void cleanup(final Path symlink) {
-                        reload(workdir, Collections.singletonList(symlink), Collections.singletonList(symlink));
+                        if(!HIDDEN_FILTER.accept(symlink)) {
+                            setShowHiddenFiles(true);
+                        }
+                        reload(Collections.singletonList(symlink), Collections.singletonList(symlink));
                     }
                 }));
             }
@@ -2514,7 +2505,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                                 final List<Path> changed = new ArrayList<>();
                                                 changed.addAll(result.keySet());
                                                 changed.addAll(result.values());
-                                                reload(workdir, changed, new ArrayList<>(selected.values()));
+                                                reload(changed, new ArrayList<>(selected.values()));
                                             }
                                         }
                                 )
@@ -2540,7 +2531,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         new CreateDirectoryWorker(folder, region) {
                             @Override
                             public void cleanup(final Path folder) {
-                                reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
+                                if(!HIDDEN_FILTER.accept(folder)) {
+                                    setShowHiddenFiles(true);
+                                }
+                                reload(Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         }));
             }
@@ -2564,7 +2558,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 metadata) {
                             @Override
                             public void cleanup(final Vault vault) {
-                                reload(BrowserController.this.workdir, Collections.singletonList(folder), Collections.singletonList(folder));
+                                if(!HIDDEN_FILTER.accept(folder)) {
+                                    setShowHiddenFiles(true);
+                                }
+                                reload(Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         })
                 );
@@ -2582,7 +2579,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 @Override
                 public void cleanup(final Path vault) {
                     if(vault != null) {
-                        reload(directory, Collections.singleton(directory), Collections.emptyList(), true);
+                        reload(Collections.singleton(directory), Collections.emptyList(), true);
                     }
                 }
             }));
@@ -2594,7 +2591,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 @Override
                 public void cleanup(final Vault vault) {
                     if(vault != null) {
-                        reload(directory, Collections.singleton(directory), Collections.emptyList(), true);
+                        reload(Collections.singleton(directory), Collections.emptyList(), true);
                     }
                 }
             }));
@@ -2660,7 +2657,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }, new DefaultEditorListener(this, pool, editor, new DefaultEditorListener.Listener() {
                     @Override
                     public void saved() {
-                        reload(workdir, new PathReloadFinder().find(Collections.singletonList(file)), Collections.singletonList(file), true);
+                        reload(new PathReloadFinder().find(Collections.singletonList(file)), Collections.singletonList(file), true);
                     }
                 }))));
     }
@@ -2693,7 +2690,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         new RevertController(this, pool).revert(selected, new ReloadCallback() {
             @Override
             public void done(final List<Path> files) {
-                reload(workdir(), selected, Collections.emptyList());
+                reload(selected, Collections.emptyList());
             }
         });
     }
@@ -2704,7 +2701,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         new RestoreController(this, pool).restore(selected, new ReloadCallback() {
             @Override
             public void done(final List<Path> files) {
-                reload(workdir(), selected, selected);
+                reload(selected, selected);
             }
         });
     }
@@ -2715,7 +2712,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         new DeleteController(this, pool).delete(selected, new ReloadCallback() {
             @Override
             public void done(final List<Path> files) {
-                reload(workdir(), selected, Collections.emptyList());
+                reload(selected, Collections.emptyList());
             }
         });
     }
@@ -2941,7 +2938,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 invoke(new WindowMainAction(BrowserController.this) {
                     @Override
                     public void run() {
-                        reload(workdir, selected, selected);
+                        reload(selected, selected);
                     }
                 });
             }
@@ -2990,7 +2987,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void disconnectButtonClicked(final ID sender) {
         // Remove all pending actions
-        for(BackgroundAction action : registry.toArray(
+        for(BackgroundAction<?> action : registry.toArray(
                 new BackgroundAction[registry.size()])) {
             action.cancel();
         }
@@ -3017,6 +3014,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.setShowHiddenFiles(true);
             sender.setState(NSCell.NSOnState);
         }
+        this.reload();
     }
 
     /**
@@ -3322,11 +3320,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.setFilter(null);
         final NSTableView browser = this.getSelectedBrowserView();
         window.endEditingFor(browser);
+        workdir = directory;
         if(null == directory) {
-            this.reload(null, Collections.emptySet(), selected, false);
+            this.reload(Collections.emptySet(), selected, false);
         }
         else {
-            this.reload(directory, Collections.singleton(directory), selected, false);
+            this.reload(Collections.singleton(directory), selected, false);
         }
     }
 

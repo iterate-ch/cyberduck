@@ -134,7 +134,7 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="List" identifier="0" id="29">
+                            <tabViewItem label="Список" identifier="0" id="29">
                                 <view key="view" id="30">
                                     <rect key="frame" x="0.0" y="0.0" width="621" height="451"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -202,7 +202,7 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Outline" identifier="1" id="37">
+                            <tabViewItem label="Вложенный список" identifier="1" id="37">
                                 <view key="view" id="38">
                                     <rect key="frame" x="0.0" y="0.0" width="621" height="451"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -283,9 +283,9 @@
             </view>
             <point key="canvasLocation" x="25.5" y="-8.5"/>
         </window>
-        <menu title="Menu" id="65">
+        <menu title="Меню" id="65">
             <items>
-                <menuItem title="Refresh" keyEquivalent="r" id="66">
+                <menuItem title="Обновить" keyEquivalent="r" id="66">
                     <connections>
                         <action selector="reloadButtonClicked:" target="-1" id="167"/>
                     </connections>
@@ -293,7 +293,7 @@
                 <menuItem isSeparatorItem="YES" id="67">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="New Folder…" keyEquivalent="N" id="81">
+                <menuItem title="Новая папка…" keyEquivalent="N" id="81">
                     <connections>
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
@@ -304,19 +304,19 @@
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New File…" keyEquivalent="f" id="82">
+                <menuItem title="Новый файл…" keyEquivalent="f" id="82">
                     <connections>
                         <action selector="createFileButtonClicked:" target="-1" id="173"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Symbolic Link…" id="83">
+                <menuItem title="Новая символическая ссылка…" id="83">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="84"/>
-                <menuItem title="Info" keyEquivalent="i" id="68">
+                <menuItem title="Инфо" keyEquivalent="i" id="68">
                     <connections>
                         <action selector="infoButtonClicked:" target="-1" id="163"/>
                     </connections>
@@ -328,34 +328,34 @@
                         <action selector="quicklookButtonClicked:" target="-1" id="185"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Edit With" id="70">
-                    <menu key="submenu" title="Edit With" id="71"/>
+                <menuItem title="Редактировать в" id="70">
+                    <menu key="submenu" title="Редактировать в" id="71"/>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="74"/>
-                <menuItem title="Rename…" id="72">
+                <menuItem title="Переименовать…" id="72">
                     <connections>
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Duplicate…" keyEquivalent="d" id="73">
+                <menuItem title="Дублировать…" keyEquivalent="d" id="73">
                     <connections>
                         <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="U9L-O8-fnA"/>
-                <menuItem title="Download" keyEquivalent="" id="75">
+                <menuItem title="Скачать" keyEquivalent="" id="75">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
                         <action selector="downloadButtonClicked:" target="-1" id="164"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Download As…" keyEquivalent="" id="76">
+                <menuItem title="Скачать как…" keyEquivalent="" id="76">
                     <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
                     <connections>
                         <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Download To…" id="77">
+                <menuItem title="Скачать в…" id="77">
                     <connections>
                         <action selector="downloadToButtonClicked:" target="-1" id="177"/>
                     </connections>
@@ -366,7 +366,7 @@
                         <action selector="uploadButtonClicked:" target="-1" id="174"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Synchronize…" id="80">
+                <menuItem title="Синхронизировать…" id="80">
                     <connections>
                         <action selector="syncButtonClicked:" target="-1" id="172"/>
                     </connections>
@@ -374,7 +374,7 @@
                 <menuItem isSeparatorItem="YES" id="78">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Delete" id="85">
+                <menuItem title="Удалить" id="85">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
@@ -388,7 +388,7 @@ CA
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Restore" id="7eU-SG-dx0">
+                <menuItem title="Восстановить" id="7eU-SG-dx0">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="restoreFileButtonClicked:" target="-1" id="BbY-Jj-ck7"/>
@@ -408,7 +408,7 @@ CA
                 <menuItem title="Создать архив" id="88">
                     <menu key="submenu" title="Создать архив" id="89"/>
                 </menuItem>
-                <menuItem title="Expand Archive" id="90">
+                <menuItem title="Распаковать Архив" id="90">
                     <connections>
                         <action selector="unarchiveButtonClicked:" target="-1" id="181"/>
                     </connections>
@@ -416,11 +416,11 @@ CA
                 <menuItem isSeparatorItem="YES" id="91">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Copy URL" id="92">
+                <menuItem title="Копировать URL" id="92">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Copy URL" id="93"/>
+                    <menu key="submenu" title="Копировать URL" id="93"/>
                 </menuItem>
-                <menuItem title="Open URL" id="94">
+                <menuItem title="Открыть URL" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Открыть URL" id="95"/>
                 </menuItem>
@@ -429,7 +429,7 @@ CA
                         <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Request files…" id="MMd-ej-pkb">
+                <menuItem title="Запросить файлы…" id="MMd-ej-pkb">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="requestFilesButtonClicked:" target="-1" id="z9T-Od-FNa"/>
@@ -453,7 +453,7 @@ CA
         </menu>
         <menu title="Меню" id="99">
             <items>
-                <menuItem title="Connect" id="100">
+                <menuItem title="Подключиться" id="100">
                     <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
@@ -462,7 +462,7 @@ DQ
                         <action selector="connectBookmarkButtonClicked:" target="-1" id="178"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Disconnect" keyEquivalent="D" id="i2x-ZJ-UNQ">
+                <menuItem title="Отключиться" keyEquivalent="D" id="i2x-ZJ-UNQ">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="disconnectButtonClicked:" target="-1" id="YXB-XN-Cmw"/>
@@ -471,7 +471,7 @@ DQ
                 <menuItem isSeparatorItem="YES" id="101">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="New Bookmark" keyEquivalent="B" id="102">
+                <menuItem title="Новая закладка" keyEquivalent="B" id="102">
                     <connections>
                         <action selector="addBookmarkButtonClicked:" target="-1" id="169"/>
                     </connections>
@@ -493,11 +493,11 @@ DQ
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Sort By" id="107">
+                <menuItem title="Сортировать" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Sort By" id="108">
+                    <menu key="submenu" title="Сортировать" id="108">
                         <items>
-                            <menuItem title="Nickname" keyEquivalent="1" id="109">
+                            <menuItem title="Псевдоним" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>

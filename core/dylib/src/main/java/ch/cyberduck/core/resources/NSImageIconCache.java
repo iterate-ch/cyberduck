@@ -159,11 +159,14 @@ public class NSImageIconCache implements IconCache<NSImage> {
         if(null == name) {
             return this.iconNamed("notfound.tiff", width, height);
         }
-        NSImage image;
+        NSImage image = null;
         if(Base64.isBase64(name)) {
-            image = convert(name, NSImage.imageWithData(NSData.dataWithBase64EncodedString(name)), width, height);
+            final NSData data = NSData.dataWithBase64EncodedString(name);
+            if(null != data) {
+                image = convert(name, NSImage.imageWithData(data), width, height);
+            }
         }
-        else {
+        if(null == image) {
             // Search for an object whose name was set explicitly using the setName: method and currently
             // resides in the image cache
             image = this.load(name, width);

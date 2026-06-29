@@ -18,9 +18,11 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -208,15 +210,22 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final String invalidId = String.valueOf(RandomUtils.nextLong());
         test.attributes().setVersionId(invalidId);
         fileid.cache(test, invalidId);
-        try {
-            final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().setRemote(test.attributes()), LoginCallback.noop);
-            fail();
-        }
-        catch(NotfoundException e) {
-            //
-        }
+        assertThrows(NotfoundException.class, () -> new B2ReadFeature(session, fileid).read(test, new TransferStatus().setRemote(test.attributes()), LoginCallback.noop));
         assertNull(test.attributes().getVersionId());
         new B2DeleteFeature(session, fileid).delete(new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).toList(), LoginCallback.noop, new Delete.DisabledCallback());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testReadDeleteMarker() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path f = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path testWithVersionId = new B2TouchFeature(session, fileid).touch(new B2WriteFeature(session, fileid), f, new TransferStatus());
+        // Set delete marker
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        // Delete marker
+        IOUtils.close(new B2ReadFeature(session, fileid).read(testWithVersionId, new TransferStatus(), ConnectionCallback.noop));
+        assertThrows(NotfoundException.class, () -> new B2ReadFeature(session, fileid).read(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY), new TransferStatus(), ConnectionCallback.noop));
     }
 }

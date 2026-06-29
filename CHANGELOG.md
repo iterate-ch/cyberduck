@@ -1,5 +1,13 @@
 # Changelog
 
+[9.5.2](https://github.com/iterate-ch/cyberduck/compare/release-9-5-1...release-9-5-2)
+* [Feature] Upgrade Runtime to .NET 10 (Windows)
+* [Bugfix] Attempt to change to working directory of previous connection on connect to new bookmark (macOS) ([#18213](https://trac.cyberduck.io/ticket/18213))
+* [Bugfix] Crash opening folder prefixed with dot in filename (macOS) ([#18208](https://trac.cyberduck.io/ticket/18208))
+
+[9.5.1](https://github.com/iterate-ch/cyberduck/compare/release-9-5-0...release-9-5-1)
+* [Bugfix] Update expired provisioning profile for Mac App Store (macOS)
+
 [9.5.0](https://github.com/iterate-ch/cyberduck/compare/release-9-4-1...release-9-5-0)
 * [Feature] Support for Liquid Glass (macOS) ([#17459](https://trac.cyberduck.io/ticket/17459))
 * [Feature] AWS IAM Identity Center Support (S3) ([#13377](https://trac.cyberduck.io/ticket/13377))

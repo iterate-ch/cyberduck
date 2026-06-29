@@ -35,7 +35,18 @@ public class CteraUrlProviderTest {
         final String filename = new AlphanumericRandomStringService().random();
         final Path test = new Path(new Path("/ServicesPortal/webdav/My Files", EnumSet.of(Path.Type.directory)),
                 filename, EnumSet.of(Path.Type.file));
-        assertEquals("https://mountainduck.ctera.me/ServicesPortal/#/cloudDrive/My%20Files/" + filename,
+        assertEquals(String.format("https://mountainduck.ctera.me/ServicesPortal/#/cloudDrive/My%%20Files/%s", filename),
+                new CteraUrlProvider(host).toUrl(test).find(DescriptiveUrl.Type.provider).getUrl());
+    }
+
+    @Test
+    public void toUrlDefaultPath() {
+        final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me");
+        host.setDefaultPath("/ServicesPortal/webdav/Shared With Me");
+        final String filename = new AlphanumericRandomStringService().random();
+        final Path test = new Path(new Path("/ServicesPortal/webdav/Shared With Me", EnumSet.of(Path.Type.directory)),
+                filename, EnumSet.of(Path.Type.file));
+        assertEquals(String.format("https://mountainduck.ctera.me/ServicesPortal/#/cloudDrive/Shared%%20With%%20Me/%s", filename),
                 new CteraUrlProvider(host).toUrl(test).find(DescriptiveUrl.Type.provider).getUrl());
     }
 }

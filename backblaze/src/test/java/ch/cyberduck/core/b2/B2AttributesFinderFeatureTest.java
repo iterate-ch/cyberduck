@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
@@ -29,6 +30,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -77,16 +79,28 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         assertNotNull(status.getResponse().getVersionId());
         assertNotNull(test.attributes().getVersionId());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), LoginCallback.noop, new Delete.DisabledCallback());
-        final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
-        assertEquals(test.attributes(), f.find(test));
+        final B2AttributesFinderFeature finder = new B2AttributesFinderFeature(session, fileid);
+        assertEquals(test.attributes(), finder.find(test));
         try {
-            f.find(new Path(test).withAttributes(PathAttributes.EMPTY));
+            finder.find(new Path(test).withAttributes(PathAttributes.EMPTY));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
-        new B2DeleteFeature(session, fileid).delete(new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener()).toList(), LoginCallback.noop, new Delete.DisabledCallback());
+        final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        for(Path f : list) {
+            if(StringUtils.equals(test.attributes().getVersionId(), f.attributes().getVersionId())) {
+                assertFalse(f.attributes().isTrashed());
+            }
+            else {
+                assertTrue(f.attributes().isTrashed());
+            }
+            assertFalse(f.attributes().isHidden());
+            assertEquals(f.attributes().setDuplicate(false).setRevision(null), new B2AttributesFinderFeature(session, fileid).find(f).setDuplicate(false).setRevision(null));
+        }
+        new B2DeleteFeature(session, fileid).delete(list.toList(), LoginCallback.noop, new Delete.DisabledCallback());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), LoginCallback.noop, new Delete.DisabledCallback());
     }
 

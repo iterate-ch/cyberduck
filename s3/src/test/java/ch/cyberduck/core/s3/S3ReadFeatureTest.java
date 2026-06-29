@@ -5,8 +5,10 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -14,6 +16,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.RandomUtils;
@@ -180,5 +183,18 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.INSTANCE);
         assertEquals(content.length, count.getRecv());
         new S3DefaultDeleteFeature(virtualhost, new S3AccessControlListFeature(virtualhost)).delete(Collections.singletonList(file), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testReadDeleteMarker() throws Exception {
+        final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path f = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path testWithVersionId = new S3TouchFeature(session, acl).touch(new S3WriteFeature(session, acl), f, new TransferStatus());
+        // Set delete marker
+        new S3DefaultDeleteFeature(session, acl).delete(Collections.singletonList(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        // Delete marker
+        IOUtils.close(new S3ReadFeature(session).read(testWithVersionId, new TransferStatus(), ConnectionCallback.noop));
+        assertThrows(NotfoundException.class, () -> new S3ReadFeature(session).read(new Path(testWithVersionId).withAttributes(PathAttributes.EMPTY), new TransferStatus(), ConnectionCallback.noop));
     }
 }

@@ -61,7 +61,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
             }
         });
         final Path decrypt = vault.decrypt(session, target);
-        decrypt.attributes().setVersionId(target.attributes().getVersionId());
+        decrypt.attributes().setVersionId(target.attributes().getVersionId()).setVaultVersion(vault.getVersion());
         return decrypt;
     }
 

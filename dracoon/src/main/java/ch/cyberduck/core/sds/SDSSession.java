@@ -314,7 +314,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             Credentials deprecatedCredentials = null;
             if(this.isNewCryptoAvailable()) {
                 final List<UserKeyPairContainer> pairs = new UserApi(client).requestUserKeyPairs(null);
-                if(pairs.size() == 0) {
+                if(pairs.isEmpty()) {
                     log.debug("No keypair found for user {}", user);
                     return;
                 }
