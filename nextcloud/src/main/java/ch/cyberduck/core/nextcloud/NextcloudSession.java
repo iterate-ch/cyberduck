@@ -22,13 +22,12 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
-import ch.cyberduck.core.dav.DAVDirectoryFeature;
+import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Read;
@@ -105,6 +104,7 @@ public class NextcloudSession extends DAVSession {
             if(!ocs.locking) {
                 return null;
             }
+            return (T) new DAVLockFeature(this);
         }
         if(type == Upload.class) {
             return (T) new HttpUploadFeature();
