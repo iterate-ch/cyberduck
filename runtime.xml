@@ -20,16 +20,27 @@
     </target>
 
     <target name="shared-library-install-name">
-        <echo message="Change dynamic shared library install names to ${newname} in ${directory}"/>
-        <apply executable="/usr/bin/xcrun" failonerror="true"
-               type="file"
-               parallel="false" spawn="false" force="true">
-            <arg line="install_name_tool -change ${oldname} ${newname}"/>
-            <fileset dir="${directory}">
-                <include name="*.dylib"/>
-            </fileset>
-            <srcfile/>
-        </apply>
+        <foreach target="shared-library-install-name-change" param="file">
+            <path>
+                <fileset dir="${directory}">
+                    <include name="*.dylib"/>
+                    <include name="*.so"/>
+                </fileset>
+            </path>
+            <param name="oldname" value="${oldname}"/>
+            <param name="newname" value="${newname}"/>
+        </foreach>
+    </target>
+
+    <target name="shared-library-install-name-change">
+        <echo message="Change dynamic shared library install names to ${newname} in ${file}"/>
+        <exec executable="/usr/bin/xcrun" failonerror="true">
+            <arg line="install_name_tool -change ${oldname} ${newname} ${file}"/>
+        </exec>
+        <basename property="library.name" file="${file}"/>
+        <exec executable="/usr/bin/xcrun" failonerror="true">
+            <arg line="install_name_tool -id @rpath/${library.name} ${file}"/>
+        </exec>
     </target>
 
     <target name="lipo">
