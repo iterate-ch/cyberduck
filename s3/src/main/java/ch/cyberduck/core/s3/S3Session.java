@@ -335,6 +335,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             // Tokens already configured from AWS CLI
             return () -> {
                 final TemporaryAccessTokens tokens = credentials.getTokens();
+                log.debug("Connect with session tokens {}", tokens);
                 if(StringUtils.isNotBlank(credentials.getTokens().getSessionToken())) {
                     if(tokens.isExpired()) {
                         log.debug("Refresh expired tokens {} for {}", tokens, host);
