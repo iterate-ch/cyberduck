@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -83,13 +84,13 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
             if(match.isPresent()) {
                 // Found matching checksum for profile in remote list
                 final Optional<ProfileDescription> latest = available.stream()
-                        .filter(d -> d.getFilename().equals(match.get().getFilename()))
+                        .filter(d -> Objects.equals(d.getFilename(), match.get().getFilename()))
                         .filter(ProfileDescription::isLatest).findFirst();
                 // Find latest version from remote list
                 if(latest.isPresent()) {
-                    // Installed version is not latests
+                    // Installed version is not latest
                     if(!latest.get().equals(match.get())) {
-                        log.warn("Override {} with latest profile verison {}", l, match);
+                        log.warn("Override {} with latest profile verison {}", l, latest.get());
                         // Remove previous version
                         l.getProfile().ifPresent(registry::unregister);
                         // Register updated profile by copying temporary file to application support
