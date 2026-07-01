@@ -70,6 +70,11 @@ public final class LocalProfileDescription extends ProfileDescription {
     }
 
     @Override
+    public String getFilename() {
+        return file.getName();
+    }
+
+    @Override
     public boolean isInstalled() {
         return true;
     }

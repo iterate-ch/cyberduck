@@ -153,6 +153,11 @@ public class ProfileDescription {
         return profile.map(Profile::getProvider).orElse(null);
     }
 
+    public String getFilename() {
+        final Optional<Local> profile = this.getFile();
+        return profile.map(Local::getName).orElse(null);
+    }
+
     public String getName() {
         final Optional<Profile> profile = this.getProfile();
         return profile.map(Profile::getName).orElse(null);

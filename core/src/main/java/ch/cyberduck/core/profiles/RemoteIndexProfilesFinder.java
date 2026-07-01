@@ -225,6 +225,11 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
         }
 
         @Override
+        public String getFilename() {
+            return metadata.filename;
+        }
+
+        @Override
         public String getName() {
             final Protocol protocol = factory.forName(metadata.protocol);
             if(null == protocol) {

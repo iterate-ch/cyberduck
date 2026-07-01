@@ -81,22 +81,29 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
             // Check for matching remote checksum and download profile if this version is not equal to latest
             final Optional<ProfileDescription> match = matcher.compare(available, l);
             if(match.isPresent()) {
-                // Found matching checksum for profile in remote list which is not marked as latest version
-                final ProfileDescription latest = match.get();
-                if(latest.isLatest()) {
-                    log.warn("Override {} with latest profile version {}", l, latest);
-                    // Remove previous version
-                    l.getProfile().ifPresent(registry::unregister);
-                    // Register updated profile by copying temporary file to application support
-                    latest.getFile().ifPresent(value -> {
-                        final Local copy = registry.register(value);
-                        if(null != copy) {
-                            final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
-                            log.debug("Add synched profile {}", d);
-                            result.add(d);
-                            visitor.visit(d);
-                        }
-                    });
+                // Found matching checksum for profile in remote list
+                final Optional<ProfileDescription> latest = available.stream()
+                        .filter(d -> d.getFilename().equals(match.get().getFilename()))
+                        .filter(ProfileDescription::isLatest).findFirst();
+                // Find latest version from remote list
+                if(latest.isPresent()) {
+                    // Installed version is not latests
+                    if(!latest.get().equals(match.get())) {
+                        log.warn("Override {} with latest profile verison {}", l, match);
+                        // Remove previous version
+                        l.getProfile().ifPresent(registry::unregister);
+                        // Register updated profile by copying temporary file to application support
+                        latest.get().getFile().ifPresent(value -> {
+                            // Implementation always reads the latest version
+                            final Local copy = registry.register(value);
+                            if(null != copy) {
+                                final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
+                                log.debug("Add synched profile {}", d);
+                                result.add(d);
+                                visitor.visit(d);
+                            }
+                        });
+                    }
                 }
             }
             else {
