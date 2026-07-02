@@ -4,6 +4,8 @@
 * [Feature] Upgrade Runtime to .NET 10 (Windows)
 * [Bugfix] Attempt to change to working directory of previous connection on connect to new bookmark (macOS) ([#18213](https://trac.cyberduck.io/ticket/18213))
 * [Bugfix] Crash opening folder prefixed with dot in filename (macOS) ([#18208](https://trac.cyberduck.io/ticket/18208))
+* [Bugfix] Connection profiles not updated with the latest version available
+  ([#18254](https://trac.cyberduck.io/ticket/18254))
 
 [9.5.1](https://github.com/iterate-ch/cyberduck/compare/release-9-5-0...release-9-5-1)
 * [Bugfix] Update expired provisioning profile for Mac App Store (macOS)
