@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -148,6 +149,20 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
         private String thumbnail;
         @JsonProperty("versions")
         private ProfileMetadataVersion[] versions;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("ProfileMetadata{");
+            sb.append("filename='").append(filename).append('\'');
+            sb.append(", protocol='").append(protocol).append('\'');
+            sb.append(", vendor='").append(vendor).append('\'');
+            sb.append(", description='").append(description).append('\'');
+            sb.append(", help='").append(help).append('\'');
+            sb.append(", thumbnail='").append(thumbnail).append('\'');
+            sb.append(", versions=").append(Arrays.toString(versions));
+            sb.append('}');
+            return sb.toString();
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -160,6 +175,17 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
         private String version_id;
         @JsonProperty("latest")
         private Boolean latest;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("ProfileMetadataVersion{");
+            sb.append("checksum='").append(checksum).append('\'');
+            sb.append(", modified='").append(modified).append('\'');
+            sb.append(", version_id='").append(version_id).append('\'');
+            sb.append(", latest=").append(latest);
+            sb.append('}');
+            return sb.toString();
+        }
     }
 
     private final class RemoteIndexProfileDescription extends ProfileDescription {
@@ -261,6 +287,15 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
                 return protocol.disk();
             }
             return metadata.thumbnail;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("RemoteIndexProfileDescription{");
+            sb.append("version=").append(version);
+            sb.append(", metadata=").append(metadata);
+            sb.append('}');
+            return sb.toString();
         }
     }
 }
