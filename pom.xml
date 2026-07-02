@@ -87,7 +87,7 @@
         <jackson-version>2.22.0</jackson-version>
         <jackson-annotations-version>2.22</jackson-annotations-version>
         <slf4j-version>2.0.0</slf4j-version>
-        <log4j-version>2.26.0</log4j-version>
+        <log4j-version>2.26.1</log4j-version>
         <bouncycastle-version>1.84</bouncycastle-version>
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>2.1.1</google-http-client.version>
