@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -81,22 +82,39 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
             // Check for matching remote checksum and download profile if this version is not equal to latest
             final Optional<ProfileDescription> match = matcher.compare(available, l);
             if(match.isPresent()) {
-                // Found matching checksum for profile in remote list which is not marked as latest version
-                final ProfileDescription latest = match.get();
-                if(latest.isLatest()) {
-                    log.warn("Override {} with latest profile version {}", l, latest);
-                    // Remove previous version
-                    l.getProfile().ifPresent(registry::unregister);
-                    // Register updated profile by copying temporary file to application support
-                    latest.getFile().ifPresent(value -> {
-                        final Local copy = registry.register(value);
-                        if(null != copy) {
-                            final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
-                            log.debug("Add synched profile {}", d);
-                            result.add(d);
-                            visitor.visit(d);
-                        }
-                    });
+                // Found matching checksum for profile in remote list
+                final Optional<ProfileDescription> latest = available.stream()
+                        .filter(d -> Objects.equals(d.getFilename(), match.get().getFilename()))
+                        .filter(ProfileDescription::isLatest).findFirst();
+                // Find latest version from remote list
+                if(latest.isPresent()) {
+                    // Installed version is not latest
+                    if(!latest.get().equals(match.get())) {
+                        log.warn("Override {} with latest profile verison {}", l, latest.get());
+                        // Remove previous version
+                        l.getProfile().ifPresent(registry::unregister);
+                        // Register updated profile by copying temporary file to application support
+                        latest.get().getFile().ifPresent(value -> {
+                            // Implementation always reads the latest version
+                            final Local copy = registry.register(value);
+                            if(null != copy) {
+                                final LocalProfileDescription d = new LocalProfileDescription(registry, copy);
+                                log.debug("Add synched profile {}", d);
+                                result.add(d);
+                                visitor.visit(d);
+                            }
+                        });
+                    }
+                    else {
+                        log.debug("Keep installed profile {}", l);
+                        result.add(l);
+                        visitor.visit(l);
+                    }
+                }
+                else {
+                    log.warn("Installed profile {} no longer available", l);
+                    result.add(l);
+                    visitor.visit(l);
                 }
             }
             else {
