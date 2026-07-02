@@ -158,7 +158,6 @@ public class RemoteIndexProfilesFinder implements ProfilesFinder {
             sb.append(", vendor='").append(vendor).append('\'');
             sb.append(", description='").append(description).append('\'');
             sb.append(", help='").append(help).append('\'');
-            sb.append(", thumbnail='").append(thumbnail).append('\'');
             sb.append(", versions=").append(Arrays.toString(versions));
             sb.append('}');
             return sb.toString();
