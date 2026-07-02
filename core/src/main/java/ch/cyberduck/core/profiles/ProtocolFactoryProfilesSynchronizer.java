@@ -105,6 +105,11 @@ public class ProtocolFactoryProfilesSynchronizer implements ProfilesSynchronizer
                             }
                         });
                     }
+                    else {
+                        log.debug("Keep installed profile {}", l);
+                        result.add(l);
+                        visitor.visit(l);
+                    }
                 }
                 else {
                     log.warn("Installed profile {} no longer available", l);
