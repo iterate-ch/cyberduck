@@ -16,6 +16,7 @@ using System.IO;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using java.io;
+using java.nio.file;
 using org.apache.logging.log4j;
 using static Ch.Cyberduck.Core.Local.PlatformLocalSupport;
 using CoreLocal = ch.cyberduck.core.Local;
@@ -111,6 +112,12 @@ namespace Ch.Cyberduck.Core.Local
 
             return false;
 #endif
+        }
+
+        public override bool exists(params LinkOption[] options)
+        {
+            // Ignore options parameter as we don't support symlinks on Windows
+            return this.exists();
         }
 
         public override LocalAttributes attributes()
