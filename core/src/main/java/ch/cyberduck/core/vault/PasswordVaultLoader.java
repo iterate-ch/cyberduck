@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -70,7 +71,7 @@ public class PasswordVaultLoader implements VaultLoader {
                 }
                 final VaultCredentials credentials;
                 if(null == passphrase) {
-                    credentials = new VaultCredentials(prompt.prompt(
+                    final Credentials input = prompt.prompt(
                             bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                             MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), directory.getName()),
                             new LoginOptions()
@@ -78,7 +79,9 @@ public class PasswordVaultLoader implements VaultLoader {
                                     .user(false)
                                     .anonymous(false)
                                     .icon("cryptomator.tiff")
-                                    .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator"))).getPassword());
+                                    .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
+                    credentials = new VaultCredentials(input.getPassword());
+                    credentials.setSaved(input.isSaved());
                 }
                 else {
                     credentials = new VaultCredentials(passphrase).setSaved(false);
@@ -106,7 +109,7 @@ public class PasswordVaultLoader implements VaultLoader {
         }
         catch(VaultUnlockException e) {
             final Host bookmark = session.getHost();
-            credentials.setPassword(prompt.prompt(
+            final Credentials input = prompt.prompt(
                     bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     String.format("%s %s.", e.getDetail(),
                             MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), directory)),
@@ -115,7 +118,9 @@ public class PasswordVaultLoader implements VaultLoader {
                             .user(false)
                             .anonymous(false)
                             .icon("cryptomator.tiff")
-                            .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator"))).getPassword());
+                            .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
+            credentials.setPassword(input.getPassword());
+            credentials.setSaved(input.isSaved());
             return this.load(session, version, directory, credentials);
         }
     }
