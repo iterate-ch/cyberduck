@@ -24,7 +24,6 @@ import org.apache.http.HttpRequest;
 import org.apache.http.auth.AUTH;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.Credentials;
-import org.apache.http.auth.InvalidCredentialsException;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.routing.RouteInfo;
@@ -141,13 +140,6 @@ public class BackportWindowsNegotiateScheme extends AuthSchemeBase {
 
         final String response;
         if(clientCred == null) {
-            // ?? We don't use the credentials, should we allow anything?
-            if(!(credentials instanceof CurrentWindowsCredentials)) {
-                throw new InvalidCredentialsException(
-                    "Credentials cannot be used for " + getSchemeName() + " authentication: "
-                        + credentials.getClass().getName());
-            }
-
             // client credentials handle
             try {
                 final String username = CurrentWindowsCredentials.getCurrentUsername();
