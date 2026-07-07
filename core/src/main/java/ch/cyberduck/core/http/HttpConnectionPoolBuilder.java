@@ -195,8 +195,8 @@ public class HttpConnectionPoolBuilder {
         configuration.setRequestExecutor(new CustomHttpRequestExecutor(host, listener));
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
-        final Registry<ConnectionSocketFactory> registry = this.createRegistry();
-        final PoolingHttpClientConnectionManager connectionManager = this.createConnectionManager(registry);
+        final Registry<ConnectionSocketFactory> socketFactoryRegistry = this.createRegistry();
+        final PoolingHttpClientConnectionManager connectionManager = this.createConnectionManager(socketFactoryRegistry);
         configuration.setConnectionManager(connectionManager);
         configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
