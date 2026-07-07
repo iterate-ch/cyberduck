@@ -71,6 +71,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.auth.win.CurrentWindowsCredentials;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
@@ -155,8 +156,9 @@ public class DAVSession extends HttpSession<DAVClient> {
             for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
-                        new NTCredentials(username, credentials.getPassword(),
+                        host.getProtocol().isTokenConfigurable() ? CurrentWindowsCredentials.INSTANCE : new NTCredentials(username, credentials.getPassword(),
                                 preferences.getProperty("webdav.ntlm.workstation"), domain)
+
                 );
             }
             for(String scheme : Arrays.asList(AuthSchemes.BASIC, AuthSchemes.DIGEST, AuthSchemes.KERBEROS)) {

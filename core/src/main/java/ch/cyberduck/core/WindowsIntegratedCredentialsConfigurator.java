@@ -17,8 +17,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-import ch.cyberduck.core.preferences.HostPreferencesFactory;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.auth.win.CurrentWindowsCredentials;
 import org.apache.http.impl.client.WinHttpClients;
@@ -41,7 +39,7 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
     @Override
     public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
-        if(HostPreferencesFactory.get(host).getBoolean("webdav.ntlm.windows.authentication.enable")) {
+        if(host.getProtocol().isTokenConfigurable()) {
             if(!WinHttpClients.isWinAuthAvailable()) {
                 log.warn("No Windows authentication available");
                 return credentials;

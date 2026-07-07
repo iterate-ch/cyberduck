@@ -56,7 +56,6 @@ import org.apache.http.impl.auth.SPNegoSchemeFactory;
 import org.apache.http.impl.client.AIMDBackoffManager;
 import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
@@ -198,18 +197,21 @@ public class HttpConnectionPoolBuilder {
         final Registry<ConnectionSocketFactory> socketFactoryRegistry = this.createRegistry();
         final PoolingHttpClientConnectionManager connectionManager = this.createConnectionManager(socketFactoryRegistry);
         configuration.setConnectionManager(connectionManager);
-        configuration.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
+        final RegistryBuilder<AuthSchemeProvider> authSchemeRegistry = RegistryBuilder.create();
+        authSchemeRegistry
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
                         Charset.forName(HostPreferencesFactory.get(host).getProperty("http.credentials.charset"))))
                 .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
                         Charset.forName(HostPreferencesFactory.get(host).getProperty("http.credentials.charset"))))
-                .register(AuthSchemes.NTLM, HostPreferencesFactory.get(host).getBoolean("webdav.ntlm.windows.authentication.enable") && WinHttpClients.isWinAuthAvailable() ?
+                .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory());
+        authSchemeRegistry
+                .register(AuthSchemes.NTLM, host.getProtocol().isTokenConfigurable() ?
                         new BackportWindowsNTLMSchemeFactory(null) :
                         new NTLMSchemeFactory())
-                .register(AuthSchemes.SPNEGO, HostPreferencesFactory.get(host).getBoolean("webdav.ntlm.windows.authentication.enable") && WinHttpClients.isWinAuthAvailable() ?
+                .register(AuthSchemes.SPNEGO, host.getProtocol().isTokenConfigurable() ?
                         new BackportWindowsNegotiateSchemeFactory(null) :
-                        new SPNegoSchemeFactory())
-                .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
+                        new SPNegoSchemeFactory());
+        configuration.setDefaultAuthSchemeRegistry(authSchemeRegistry.build());
         if(HostPreferencesFactory.get(host).getBoolean("connection.retry.backoff.enable")) {
             final AIMDBackoffManager manager = new AIMDBackoffManager(connectionManager);
             manager.setPerHostConnectionCap(HostPreferencesFactory.get(host).getInteger("http.connections.route"));
