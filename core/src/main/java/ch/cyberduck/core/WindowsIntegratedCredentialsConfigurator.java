@@ -46,10 +46,6 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
                 log.warn("No Windows authentication available");
                 return credentials;
             }
-            if(credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
-                log.warn("Skip auto configuration of credentials for {}", host);
-                return credentials;
-            }
             // No username preset
             final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
             credentials.setPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
