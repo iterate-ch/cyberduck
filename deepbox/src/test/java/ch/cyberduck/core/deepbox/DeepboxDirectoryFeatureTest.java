@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -154,6 +155,22 @@ public class DeepboxDirectoryFeatureTest extends AbstractDeepboxTest {
         new DeepboxDirectoryFeature(session, nodeid).preflight(documents.withAttributes(new DeepboxAttributesFinderFeature(session, nodeid).find(documents)), Optional.of(test.getName()));
         assertTrue(new DeepboxFindFeature(session, nodeid).find(test));
         new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testTrailingWhitespace() throws Exception {
+        final DeepboxIdProvider nodeid = new DeepboxIdProvider(session);
+        final DeepboxDirectoryFeature directory = new DeepboxDirectoryFeature(session, nodeid);
+        final Path parent = new Path("/ORG 4 - DeepBox Desktop App/ORG 4 - DeepBox Desktop App/ORG3:Box1/Documents", EnumSet.of(Path.Type.directory));
+        final Path folder = directory.mkdir(new DeepboxWriteFeature(session, nodeid),
+                new Path(parent, new AlphanumericRandomStringService().random() + " ", EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new DeepboxFindFeature(session, nodeid).find(folder, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
+        assertEquals(folder.attributes(), new DeepboxAttributesFinderFeature(session, nodeid).find(folder));
+        assertTrue(new DeepboxListService(session, nodeid).list(parent, new DisabledListProgressListener()).contains(folder));
+        assertEquals(0, new DeepboxListService(session, nodeid).list(folder, new DisabledListProgressListener()).size());
+        new DeepboxDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), LoginCallback.noop, new Delete.DisabledCallback());
+        assertFalse(new DeepboxFindFeature(session, nodeid).find(folder));
     }
 
     @Test
