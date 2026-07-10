@@ -25,11 +25,9 @@ import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
@@ -37,6 +35,7 @@ import java.nio.file.Watchable;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
@@ -64,44 +63,98 @@ public class FSEventWatchServiceTest {
     }
 
     @Test
-    @Ignore
-    public void testListener() throws Exception {
+    public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
         final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
+        final CountDownLatch create = new CountDownLatch(1);
         final CountDownLatch update = new CountDownLatch(1);
         final CountDownLatch delete = new CountDownLatch(1);
+        final AtomicReference<Local> created = new AtomicReference<>();
+        final AtomicReference<Local> updated = new AtomicReference<>();
+        final AtomicReference<Local> deleted = new AtomicReference<>();
         final FileWatcherListener listener = new DisabledFileWatcherListener() {
             @Override
-            public void fileWritten(final Local file) {
-                try {
-                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
-                }
-                catch(IOException e) {
-                    fail();
-                }
+            public void fileCreated(final Local f) {
+                created.set(f);
+                create.countDown();
+            }
+
+            @Override
+            public void fileWritten(final Local f) {
+                updated.set(f);
                 update.countDown();
             }
 
             @Override
-            public void fileDeleted(final Local file) {
-                try {
-                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
-                }
-                catch(IOException e) {
-                    fail();
-                }
+            public void fileDeleted(final Local f) {
+                deleted.set(f);
                 delete.countDown();
             }
         };
+        assertTrue(watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(5L, TimeUnit.SECONDS));
         LocalTouchFactory.get().touch(file);
-        assertTrue(file.exists());
-        assertTrue(watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS));
-        final ProcessBuilder sh = new ProcessBuilder("sh", "-c", String.format("echo 'Test' >> %s", file.getAbsolute()));
-        final Process cat = sh.start();
-        assertTrue(cat.waitFor(5L, TimeUnit.SECONDS));
+        assertTrue(create.await(5L, TimeUnit.SECONDS));
+        assertEquals(file.getName(), created.get().getName());
+        final ProcessBuilder sh = new ProcessBuilder("sh", "-c", String.format("echo 'Test' >> '%s'", file.getAbsolute()));
+        assertTrue(sh.start().waitFor(5L, TimeUnit.SECONDS));
         assertTrue(update.await(5L, TimeUnit.SECONDS));
+        assertEquals(file.getName(), updated.get().getName());
         file.delete();
         assertTrue(delete.await(5L, TimeUnit.SECONDS));
+        assertEquals(file.getName(), deleted.get().getName());
         watcher.close();
+    }
+
+    @Test
+    public void testRenameIntoWatchedFileTriggersCreatedEvent() throws Exception {
+        final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
+        final Local folder = LocalFactory.get(System.getProperty("java.io.tmpdir"));
+        final Local source = LocalFactory.get(folder, new AlphanumericRandomStringService().random());
+        final Local target = LocalFactory.get(folder, new AlphanumericRandomStringService().random());
+        // Create the source file before registering so it is recorded in the timestamps snapshot
+        LocalTouchFactory.get().touch(source);
+        final CountDownLatch create = new CountDownLatch(1);
+        final AtomicReference<Local> created = new AtomicReference<>();
+        assertTrue(watcher.register(folder, new FileWatcher.DefaultFileFilter(target), new DisabledFileWatcherListener() {
+            @Override
+            public void fileCreated(final Local f) {
+                created.set(f);
+                create.countDown();
+            }
+        }).await(5L, TimeUnit.SECONDS));
+        // Rename source → target; target is not in timestamps so it appears as a new (created) file
+        new ProcessBuilder("mv", source.getAbsolute(), target.getAbsolute()).start().waitFor(5L, TimeUnit.SECONDS);
+        assertTrue(create.await(5L, TimeUnit.SECONDS));
+        assertEquals(target.getName(), created.get().getName());
+        target.delete();
+        watcher.close();
+    }
+
+    @Test
+    public void testRelease() throws Exception {
+        final RegisterWatchService fs = new FSEventWatchService();
+        final Watchable folder = Paths.get(System.getProperty("java.io.tmpdir"));
+        final WatchKey key = fs.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+        assertTrue(key.isValid());
+        fs.release();
+        assertFalse(key.isValid());
+    }
+
+    @Test
+    public void testPollReturnsNullWhenNoEvents() throws Exception {
+        final RegisterWatchService fs = new FSEventWatchService();
+        final Watchable folder = Paths.get(System.getProperty("java.io.tmpdir"));
+        fs.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+        assertNull(fs.poll());
+        fs.close();
+    }
+
+    @Test
+    public void testPollWithTimeoutReturnsNullWhenNoEvents() throws Exception {
+        final RegisterWatchService fs = new FSEventWatchService();
+        final Watchable folder = Paths.get(System.getProperty("java.io.tmpdir"));
+        fs.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+        assertNull(fs.poll(100, TimeUnit.MILLISECONDS));
+        fs.close();
     }
 }
