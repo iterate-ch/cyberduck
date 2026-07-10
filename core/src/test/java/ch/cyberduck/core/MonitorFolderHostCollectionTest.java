@@ -15,19 +15,54 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.local.LocalTouchFactory;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class MonitorFolderHostCollectionTest {
 
     @BeforeClass
     public static void register() {
         ProtocolFactory.get().register(new TestProtocol());
+    }
+
+    @Test
+    public void testFileCreatedEmptyFile() throws Exception {
+        final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final MonitorFolderHostCollection c = new MonitorFolderHostCollection(source);
+        c.load();
+        assertEquals(0, c.size());
+        // Simulate fileCreated event fired before the file content is written (empty file)
+        final Local file = new Local(source, UUID.randomUUID() + ".duck");
+        LocalTouchFactory.get().touch(file);
+        c.fileCreated(file);
+        // Parsing must fail silently; no bookmark should be added to the collection
+        assertEquals(0, c.size());
+    }
+
+    @Test
+    public void testFileCreatedTruncatedFile() throws Exception {
+        final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final MonitorFolderHostCollection c = new MonitorFolderHostCollection(source);
+        c.load();
+        assertEquals(0, c.size());
+        // Simulate fileCreated event fired while the file is only partially written (truncated plist)
+        final Local file = new Local(source, UUID.randomUUID() + ".duck");
+        LocalTouchFactory.get().touch(file);
+        final OutputStream os = file.getOutputStream(false);
+        os.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist".getBytes(StandardCharsets.UTF_8));
+        os.close();
+        c.fileCreated(file);
+        // Parsing must fail silently; no bookmark should be added to the collection
+        assertEquals(0, c.size());
     }
 
     @Test
