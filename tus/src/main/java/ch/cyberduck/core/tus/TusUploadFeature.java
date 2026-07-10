@@ -88,13 +88,11 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                        final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // In order to achieve parallel upload the Concatenation extension MAY be used.
         final List<Future<Void>> chunks = new ArrayList<>();
-        long offset = status.getOffset();
-        long remaining = status.getLength();
         final String uploadUrl;
         if(status.isAppend()) {
             if(StringUtils.isBlank(preferences.getProperty(toUploadUrlPropertyKey(host, file, status)))) {
                 log.debug("No previous upload URL for {}", file);
-                uploadUrl = this.start(file, status);
+                uploadUrl = this.start(file, status.setAppend(false));
             }
             else {
                 uploadUrl = preferences.getProperty(toUploadUrlPropertyKey(host, file, status));
@@ -106,6 +104,8 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             uploadUrl = this.start(file, status);
             preferences.setProperty(toUploadUrlPropertyKey(host, file, status), uploadUrl);
         }
+        long offset = status.getOffset();
+        long remaining = status.getLength();
         while(remaining > 0) {
             final long length = Math.min(preferences.getInteger("tus.chunk.size"), remaining);
             chunks.add(this.submit(write, file, local, throttle, streamListener, status,
