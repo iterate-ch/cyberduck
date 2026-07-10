@@ -19,7 +19,6 @@ package ch.cyberduck.core.io.watchservice;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
@@ -31,7 +30,10 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.Watchable;
@@ -42,7 +44,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
-import static org.junit.Assume.assumeTrue;
 
 public class NIOEventWatchServiceTest {
 
@@ -63,47 +64,6 @@ public class NIOEventWatchServiceTest {
         assertTrue(key.isValid());
         fs.close();
         assertFalse(key.isValid());
-    }
-
-    @Test
-    public void testListenerEventWatchServiceWindows() throws Exception {
-        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
-        final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
-        final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
-        final CountDownLatch update = new CountDownLatch(1);
-        final CountDownLatch delete = new CountDownLatch(1);
-        final FileWatcherListener listener = new DisabledFileWatcherListener() {
-            @Override
-            public void fileWritten(final Local file) {
-                try {
-                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
-                }
-                catch(IOException e) {
-                    fail();
-                }
-                update.countDown();
-            }
-
-            @Override
-            public void fileDeleted(final Local file) {
-                try {
-                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
-                }
-                catch(IOException e) {
-                    fail();
-                }
-                delete.countDown();
-            }
-        };
-        LocalTouchFactory.get().touch(file);
-        assertTrue(watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS));
-        final ProcessBuilder sh = new ProcessBuilder("cmd", "/c", String.format("echo 'Test' >> %s", file.getAbsolute()));
-        final Process cat = sh.start();
-        assertTrue(cat.waitFor(5L, TimeUnit.SECONDS));
-        assertTrue(update.await(5L, TimeUnit.SECONDS));
-        file.delete();
-        assertTrue(delete.await(5L, TimeUnit.SECONDS));
-        watcher.close();
     }
 
     @Test
@@ -137,9 +97,7 @@ public class NIOEventWatchServiceTest {
         };
         LocalTouchFactory.get().touch(file);
         assertTrue(watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS));
-        final ProcessBuilder sh = new ProcessBuilder("sh", "-c", String.format("echo 'Test' >> %s", file.getAbsolute()));
-        final Process cat = sh.start();
-        assertTrue(cat.waitFor(5L, TimeUnit.SECONDS));
+        Files.write(Paths.get(file.getAbsolute()), "Test".getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
         assertTrue(update.await(5L, TimeUnit.SECONDS));
         file.delete();
         assertTrue(delete.await(5L, TimeUnit.SECONDS));
@@ -179,13 +137,37 @@ public class NIOEventWatchServiceTest {
         LocalTouchFactory.get().touch(file);
         assertTrue(create.await(5L, TimeUnit.SECONDS));
         assertEquals(file.getName(), created.get().getName());
-        final ProcessBuilder sh = new ProcessBuilder("sh", "-c", String.format("echo 'Test' >> '%s'", file.getAbsolute()));
-        assertTrue(sh.start().waitFor(5L, TimeUnit.SECONDS));
+        Files.write(Paths.get(file.getAbsolute()), "Test".getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
         assertTrue(update.await(5L, TimeUnit.SECONDS));
         assertEquals(file.getName(), updated.get().getName());
         file.delete();
         assertTrue(delete.await(5L, TimeUnit.SECONDS));
         assertEquals(file.getName(), deleted.get().getName());
+        watcher.close();
+    }
+
+    @Test
+    public void testRenameIntoWatchedFileTriggersCreatedEvent() throws Exception {
+        final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
+        final Local folder = LocalFactory.get(System.getProperty("java.io.tmpdir"));
+        final Local source = LocalFactory.get(folder, new AlphanumericRandomStringService().random());
+        final Local target = LocalFactory.get(folder, new AlphanumericRandomStringService().random());
+        // Create the source file before registering so the watcher is active before the rename
+        LocalTouchFactory.get().touch(source);
+        final CountDownLatch create = new CountDownLatch(1);
+        final AtomicReference<Local> created = new AtomicReference<>();
+        assertTrue(watcher.register(folder, new FileWatcher.DefaultFileFilter(target), new DisabledFileWatcherListener() {
+            @Override
+            public void fileCreated(final Local f) {
+                created.set(f);
+                create.countDown();
+            }
+        }).await(5L, TimeUnit.SECONDS));
+        // Rename source → target; NIO reports ENTRY_CREATE for the new name
+        Files.move(Paths.get(source.getAbsolute()), Paths.get(target.getAbsolute()));
+        assertTrue(create.await(5L, TimeUnit.SECONDS));
+        assertEquals(target.getName(), created.get().getName());
+        target.delete();
         watcher.close();
     }
 
