@@ -230,10 +230,12 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
      * Key to use in preferences to save upload URL for file
      */
     private static String toUploadUrlPropertyKey(final Host host, final Path file, final TransferStatus status) {
-        return String.format("tus.url.%s%s",
+        final String key = String.format("tus.url.%s%s",
                 Base64.encodeBase64String(new DefaultUrlProvider(host).toUrl(file,
                         EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl().getBytes(StandardCharsets.UTF_8)),
                 null == status.getChecksum() ? StringUtils.EMPTY : String.format(":%s", status.getChecksum().base64));
+        log.debug("Return upload URL property key {} for file {}", key, file);
+        return key;
     }
 
 }
