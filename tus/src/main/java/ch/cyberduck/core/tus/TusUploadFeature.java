@@ -102,6 +102,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 log.debug("Resume upload to {} for {} from offset {}", uploadUrl, file, status.getOffset());
             }
             else {
+                log.warn("No resume upload attempt for {}", file);
                 if(!capabilities.extensions.contains(Extension.creation)) {
                     throw new InteroperabilityException(String.format("No support for %s", Extension.creation));
                 }
