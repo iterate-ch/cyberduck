@@ -107,6 +107,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         // Read remote attributes first
         if(parent.isExists()) {
             if(find.find(file)) {
+                log.debug("Found existing file {}", file);
                 status.setExists(true);
                 // Read remote attributes
                 final PathAttributes attributes = attribute.find(file);
