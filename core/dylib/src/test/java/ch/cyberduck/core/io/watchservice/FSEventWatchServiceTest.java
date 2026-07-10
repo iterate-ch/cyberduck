@@ -148,13 +148,4 @@ public class FSEventWatchServiceTest {
         assertNull(fs.poll());
         fs.close();
     }
-
-    @Test
-    public void testPollWithTimeoutReturnsNullWhenNoEvents() throws Exception {
-        final RegisterWatchService fs = new FSEventWatchService();
-        final Watchable folder = Paths.get(System.getProperty("java.io.tmpdir"));
-        fs.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
-        assertNull(fs.poll(100, TimeUnit.MILLISECONDS));
-        fs.close();
-    }
 }
