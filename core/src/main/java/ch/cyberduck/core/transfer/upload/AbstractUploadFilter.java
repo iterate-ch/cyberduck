@@ -107,6 +107,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         // Read remote attributes first
         if(parent.isExists()) {
             if(find.find(file)) {
+                log.debug("Found existing file {}", file);
                 status.setExists(true);
                 // Read remote attributes
                 final PathAttributes attributes = attribute.find(file);
@@ -132,6 +133,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(!symlinkResolver.resolve(local)) {
                     // Will resolve the symbolic link when the file is requested.
                     final Local target = local.getSymlinkTarget();
+                    log.debug("Set file size from symbolic link target {}", target);
                     status.setLength(target.attributes().getSize());
                 }
                 // No file size increase for symbolic link to be created on the server

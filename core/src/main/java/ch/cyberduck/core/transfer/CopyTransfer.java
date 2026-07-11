@@ -232,7 +232,7 @@ public class CopyTransfer extends Transfer {
                          final TransferOptions options, final TransferStatus segment,
                          final ConnectionCallback prompt,
                          final ProgressListener progress, final StreamListener listener) throws BackgroundException {
-        log.debug("Transfer file {} with options {}", source, options);
+        log.debug("Transfer file {} with options {} and status {}", source, options, segment);
         progress.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), mapping.get(source).getName()));
         if(source.isDirectory()) {
