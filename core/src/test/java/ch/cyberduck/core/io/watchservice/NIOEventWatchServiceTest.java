@@ -26,6 +26,7 @@ import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
 import java.io.File;
@@ -152,15 +153,24 @@ public class NIOEventWatchServiceTest {
         final Local folder = LocalFactory.get(System.getProperty("java.io.tmpdir"));
         final Local source = LocalFactory.get(folder, new AlphanumericRandomStringService().random());
         final Local target = LocalFactory.get(folder, new AlphanumericRandomStringService().random());
-        // Create the source file before registering so the watcher is active before the rename
-        LocalTouchFactory.get().touch(source);
+        final byte[] content = RandomUtils.nextBytes(1023);
+        // Write content to source before registering so the watcher is active before the rename
+        Files.write(Paths.get(source.getAbsolute()), content);
         final CountDownLatch create = new CountDownLatch(1);
         final AtomicReference<Local> created = new AtomicReference<>();
         assertTrue(watcher.register(folder, new FileWatcher.DefaultFileFilter(target), new DisabledFileWatcherListener() {
             @Override
             public void fileCreated(final Local f) {
-                created.set(f);
-                create.countDown();
+                try {
+                    // File must be fully available with the expected content at the time the event is received
+                    assertEquals(content.length, Files.size(Paths.get(f.getAbsolute())));
+                    assertArrayEquals(content, Files.readAllBytes(Paths.get(f.getAbsolute())));
+                    created.set(f);
+                    create.countDown();
+                }
+                catch(IOException e) {
+                    fail(e.getMessage());
+                }
             }
         }).await(5L, TimeUnit.SECONDS));
         // Rename source → target; NIO reports ENTRY_CREATE for the new name
