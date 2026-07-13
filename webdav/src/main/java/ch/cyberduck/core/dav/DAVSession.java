@@ -148,6 +148,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             if(credentials.getUsername().contains("\\")) {
                 domain = StringUtils.substringBefore(credentials.getUsername(), "\\");
                 username = StringUtils.substringAfter(credentials.getUsername(), "\\");
+                log.debug("Parsed domain {} and username {}", domain, username);
             }
             else {
                 username = credentials.getUsername();
