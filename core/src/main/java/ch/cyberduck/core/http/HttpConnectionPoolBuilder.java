@@ -56,6 +56,7 @@ import org.apache.http.impl.auth.SPNegoSchemeFactory;
 import org.apache.http.impl.client.AIMDBackoffManager;
 import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
@@ -205,10 +206,10 @@ public class HttpConnectionPoolBuilder {
                         Charset.forName(HostPreferencesFactory.get(host).getProperty("http.credentials.charset"))))
                 .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory());
         authSchemeRegistry
-                .register(AuthSchemes.NTLM, host.getProtocol().isTokenConfigurable() ?
+                .register(AuthSchemes.NTLM, WinHttpClients.isWinAuthAvailable() && host.getProtocol().isTokenConfigurable() ?
                         new BackportWindowsNTLMSchemeFactory(null) :
                         new NTLMSchemeFactory())
-                .register(AuthSchemes.SPNEGO, host.getProtocol().isTokenConfigurable() ?
+                .register(AuthSchemes.SPNEGO, WinHttpClients.isWinAuthAvailable() && host.getProtocol().isTokenConfigurable() ?
                         new BackportWindowsNegotiateSchemeFactory(null) :
                         new SPNegoSchemeFactory());
         configuration.setDefaultAuthSchemeRegistry(authSchemeRegistry.build());
