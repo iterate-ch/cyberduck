@@ -143,6 +143,15 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(host.getProtocol().isOAuthConfigurable()) {
             credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         }
+        if(host.getProtocol().isTokenConfigurable()) {
+            for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
+                log.debug("Set credentials {} for {}", credentials, scheme);
+                client.setCredentials(
+                        new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
+                        CurrentWindowsCredentials.INSTANCE
+                );
+            }
+        }
         if(host.getProtocol().isPasswordConfigurable()) {
             final String domain, username;
             if(credentials.getUsername().contains("\\")) {
@@ -158,7 +167,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 log.debug("Set credentials {} for {}", credentials, scheme);
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
-                        host.getProtocol().isTokenConfigurable() ? CurrentWindowsCredentials.INSTANCE : new NTCredentials(username, credentials.getPassword(),
+                        new NTCredentials(username, credentials.getPassword(),
                                 preferences.getProperty("webdav.ntlm.workstation"), domain)
 
                 );
