@@ -71,6 +71,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.auth.win.CurrentWindowsCredentials;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
@@ -142,24 +143,37 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(host.getProtocol().isOAuthConfigurable()) {
             credentials.setOauth(authorizationService.validate(credentials.getOauth()));
         }
+        if(host.getProtocol().isTokenConfigurable()) {
+            for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
+                log.debug("Set credentials {} for {}", credentials, scheme);
+                client.setCredentials(
+                        new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
+                        CurrentWindowsCredentials.INSTANCE
+                );
+            }
+        }
         if(host.getProtocol().isPasswordConfigurable()) {
             final String domain, username;
             if(credentials.getUsername().contains("\\")) {
                 domain = StringUtils.substringBefore(credentials.getUsername(), "\\");
                 username = StringUtils.substringAfter(credentials.getUsername(), "\\");
+                log.debug("Parsed domain {} and username {}", domain, username);
             }
             else {
                 username = credentials.getUsername();
                 domain = preferences.getProperty("webdav.ntlm.domain");
             }
             for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
+                log.debug("Set credentials {} for {}", credentials, scheme);
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
                         new NTCredentials(username, credentials.getPassword(),
                                 preferences.getProperty("webdav.ntlm.workstation"), domain)
+
                 );
             }
             for(String scheme : Arrays.asList(AuthSchemes.BASIC, AuthSchemes.DIGEST, AuthSchemes.KERBEROS)) {
+                log.debug("Set credentials {} for {}", credentials, scheme);
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
                         new UsernamePasswordCredentials(username, credentials.getPassword()));
