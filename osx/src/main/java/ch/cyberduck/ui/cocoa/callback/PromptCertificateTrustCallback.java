@@ -38,6 +38,7 @@ import org.rococoa.Rococoa;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.sun.jna.ptr.PointerByReference;
 
@@ -68,6 +69,7 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
         SecurityFunctions.library.SecTrustCreateWithCertificates(KeychainCertificateStore.toDEREncodedCertificates(certificates), policyRef, reference);
         final SecTrustRef trustRef = new SecTrustRef(reference.getValue());
         log.debug("Display trust panel for controller {}", controller);
+        final AtomicReference<WindowController.SheetDidCloseReturnCodeDelegate> closeDelegate = new AtomicReference<>();
         final int option = controller.alert(new SheetController.NoBundleSheetController() {
             @Outlet
             private SFCertificateTrustPanel panel;
@@ -88,17 +90,19 @@ public class PromptCertificateTrustCallback implements CertificateTrustCallback 
         }, new AlertRunner() {
             @Override
             public void alert(final NSWindow sheet, final SheetCallback callback) {
+                closeDelegate.set(new WindowController.SheetDidCloseReturnCodeDelegate(callback));
                 final SFCertificateTrustPanel panel = Rococoa.cast(sheet, SFCertificateTrustPanel.class);
                 if(null == window) {
                     callback.callback(panel.runModalForTrust_message(trustRef, null).intValue());
                 }
                 else {
                     panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message(
-                            window, new WindowController.SheetDidCloseReturnCodeDelegate(callback).id(),
+                            window, closeDelegate.get().id(),
                             WindowController.SheetDidCloseReturnCodeDelegate.selector, null, trustRef, null);
                 }
             }
         });
+        closeDelegate.set(null);
         FoundationKitFunctions.library.CFRelease(trustRef);
         FoundationKitFunctions.library.CFRelease(policyRef);
         switch(option) {
