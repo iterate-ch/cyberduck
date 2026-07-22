@@ -31,6 +31,7 @@ import org.bouncycastle.util.encoders.Base64;
 
 import java.security.PublicKey;
 
+import com.hierynomus.sshj.userauth.certificate.Certificate;
 import net.schmizz.sshj.common.KeyType;
 
 /**
@@ -40,25 +41,26 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
     private static final Logger log = LogManager.getLogger(PreferencesHostKeyVerifier.class);
 
     private final Preferences preferences
-        = PreferencesFactory.get();
+            = PreferencesFactory.get();
 
     @Override
     public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
-        String lookup = preferences.getProperty(this.toFormat(host, key));
+        final PublicKey pk = this.unwrap(key);
+        String lookup = preferences.getProperty(this.toFormat(host, pk));
         if(StringUtils.isEmpty(lookup)) {
-            // Backward compatiblity to find keys with no port number saved
-            lookup = preferences.getProperty(this.toFormat(host, key, false));
+            // Backward compatibility to find keys with no port number saved
+            lookup = preferences.getProperty(this.toFormat(host, pk, false));
         }
-        if(StringUtils.equals(Base64.toBase64String(key.getEncoded()), lookup)) {
-            log.info("Accepted host key {} matching {}", key, lookup);
+        if(StringUtils.equals(Base64.toBase64String(pk.getEncoded()), lookup)) {
+            log.info("Accepted host key {} matching {}", pk, lookup);
             return true;
         }
         final boolean accept;
         if(null == lookup) {
-            accept = this.isUnknownKeyAccepted(host, key);
+            accept = this.isUnknownKeyAccepted(host, pk);
         }
         else {
-            accept = this.isChangedKeyAccepted(host, key);
+            accept = this.isChangedKeyAccepted(host, pk);
         }
         return accept;
     }
@@ -74,11 +76,19 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
         return String.format("ssh.hostkey.%s.%s", KeyType.fromKey(key), host.getHostname());
     }
 
+    protected PublicKey unwrap(final PublicKey key) {
+        if(key instanceof Certificate) {
+            return ((Certificate<?>) key).getKey();
+        }
+        return key;
+    }
+
     @Override
     protected void allow(final Host host, final PublicKey key, final boolean persist) {
         if(persist) {
-            log.debug("Save host key {} to preferences for {}", key, host);
-            preferences.setProperty(this.toFormat(host, key), Base64.toBase64String(key.getEncoded()));
+            final PublicKey pk = this.unwrap(key);
+            log.debug("Save host key {} to preferences for {}", pk, host);
+            preferences.setProperty(this.toFormat(host, pk), Base64.toBase64String(pk.getEncoded()));
         }
     }
 }
