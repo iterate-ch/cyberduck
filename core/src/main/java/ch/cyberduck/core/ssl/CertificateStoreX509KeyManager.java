@@ -200,7 +200,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 selected = callback.choose(prompt, keyTypes, issuers, bookmark);
             }
             catch(ConnectionCanceledException e) {
-                log.info("Certificate selected canceled for socket {}", socket);
+                log.info("Certificate selection canceled for socket {}", socket);
                 return null;
             }
             if(null == selected) {
