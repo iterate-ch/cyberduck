@@ -133,7 +133,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     public void allow(final Host host, final PublicKey key, final boolean persist) {
         final PublicKey pk = this.unwrap(key);
         if(null == database) {
-            log.warn("Missing database {}", database);
+            log.warn("Missing database for file {}", file);
             super.allow(host, pk, persist);
         }
         else {
