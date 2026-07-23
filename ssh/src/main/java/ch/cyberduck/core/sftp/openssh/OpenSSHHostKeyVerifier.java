@@ -89,39 +89,30 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         if(type == KeyType.UNKNOWN) {
             return false;
         }
-        boolean foundApplicableHostEntry = false;
-        for(OpenSSHKnownHosts.KnownHostEntry entry : database.entries()) {
-            try {
-                if(entry.appliesTo(type, format(host))) {
-                    foundApplicableHostEntry = true;
-                    if(entry.verify(pk)) {
-                        return true;
-                    }
-                }
-                if(key instanceof Certificate) {
-                    // Verify if there is an entry for the public key of the CA certificate
-                    if(entry.appliesTo(KeyType.fromKey(key), format(host))) {
-                        foundApplicableHostEntry = true;
-                        if(entry.verify(key)) {
+        try {
+            for(OpenSSHKnownHosts.KnownHostEntry entry : database.entries()) {
+                try {
+                    if(entry.appliesTo(type, format(host))) {
+                        if(entry.verify(pk)) {
                             return true;
+                        }
+                        return this.isChangedKeyAccepted(host, pk);
+                    }
+                    if(key instanceof Certificate) {
+                        // Verify if there is an entry for the public key of the CA certificate
+                        if(entry.appliesTo(KeyType.fromKey(key), format(host))) {
+                            if(entry.verify(key)) {
+                                return true;
+                            }
+                            return this.isChangedKeyAccepted(host, pk);
                         }
                     }
                 }
+                catch(IOException e) {
+                    log.error("Failure verifying host key entry {}. {}", entry, e.getMessage());
+                    return false;
+                }
             }
-            catch(IOException e) {
-                log.error("Failure verifying host key entry {}. {}", entry, e.getMessage());
-                return false;
-            }
-        }
-        if(foundApplicableHostEntry) {
-            try {
-                return this.isChangedKeyAccepted(host, pk);
-            }
-            catch(ConnectionCanceledException | ChecksumException e) {
-                return false;
-            }
-        }
-        try {
             return this.isUnknownKeyAccepted(host, pk);
         }
         catch(ConnectionCanceledException | ChecksumException e) {
