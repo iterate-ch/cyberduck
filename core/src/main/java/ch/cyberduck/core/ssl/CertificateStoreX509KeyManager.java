@@ -189,19 +189,23 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             final X509Certificate selected;
             try {
                 final String alias = bookmark.getCredentials().getCertificate();
-                if(StringUtils.isNotBlank(alias)) {
+                if(null != alias) {
                     log.info("Return saved certificate alias {} for host {}", alias, bookmark);
+                    if(StringUtils.isBlank(alias)) {
+                        // Empty selection by user
+                        return null;
+                    }
                     return alias;
                 }
                 selected = callback.choose(prompt, keyTypes, issuers, bookmark);
             }
             catch(ConnectionCanceledException e) {
-                log.info("No certificate selected for socket {}", socket);
+                log.info("Certificate selection canceled for socket {}", socket);
                 return null;
             }
             if(null == selected) {
                 log.info("No certificate selected for socket {}", socket);
-                // Disconnect
+                bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
                 return null;
             }
             final String[] aliases = this.getClientAliases(keyTypes, issuers);
