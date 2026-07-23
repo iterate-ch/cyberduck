@@ -82,7 +82,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
         final PublicKey pk = unwrap(key);
         if(null == database) {
-            log.warn("Missing database {}", database);
+            log.warn("Missing database {}", file);
             return super.verify(host, key);
         }
         final KeyType type = KeyType.fromKey(pk);
