@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
@@ -82,7 +83,12 @@ public class TouchWorker extends Worker<Path> {
                 status.setAcl(acl.getDefault(container));
             }
         }
-        final Path result = feature.touch(session.getFeature(Write.class), file, status);
+        Write writer = session.getFeature(MultipartWrite.class);
+        if(null == writer) {
+            // Fallback if multipart write is not available
+            writer = session.getFeature(Write.class);
+        }
+        final Path result = feature.touch(writer, file, status);
         if(PathAttributes.EMPTY.equals(result.attributes())) {
             return result.withAttributes(session.getFeature(AttributesFinder.class).find(result));
         }
