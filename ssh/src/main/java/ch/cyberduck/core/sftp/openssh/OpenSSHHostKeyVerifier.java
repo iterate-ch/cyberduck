@@ -80,7 +80,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
 
     @Override
     public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
-        final PublicKey pk = this.unwrap(key);
+        final PublicKey pk = unwrap(key);
         if(null == database) {
             log.warn("Missing database {}", database);
             return super.verify(host, key);
@@ -131,7 +131,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
 
     @Override
     public void allow(final Host host, final PublicKey key, final boolean persist) {
-        final PublicKey pk = this.unwrap(key);
+        final PublicKey pk = unwrap(key);
         if(null == database) {
             log.warn("Missing database for file {}", file);
             super.allow(host, pk, persist);

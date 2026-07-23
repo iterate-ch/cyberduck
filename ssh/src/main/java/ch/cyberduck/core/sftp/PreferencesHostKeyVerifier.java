@@ -45,11 +45,11 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
 
     @Override
     public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
-        final PublicKey pk = this.unwrap(key);
-        String lookup = preferences.getProperty(this.toFormat(host, pk));
+        final PublicKey pk = unwrap(key);
+        String lookup = preferences.getProperty(toFormat(host, pk));
         if(StringUtils.isEmpty(lookup)) {
             // Backward compatibility to find keys with no port number saved
-            lookup = preferences.getProperty(this.toFormat(host, pk, false));
+            lookup = preferences.getProperty(toFormat(host, pk, false));
         }
         if(StringUtils.equals(Base64.toBase64String(pk.getEncoded()), lookup)) {
             log.info("Accepted host key {} matching {}", pk, lookup);
@@ -65,18 +65,18 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
         return accept;
     }
 
-    private String toFormat(final Host host, final PublicKey key) {
-        return this.toFormat(host, key, true);
+    protected static String toFormat(final Host host, final PublicKey key) {
+        return toFormat(host, key, true);
     }
 
-    private String toFormat(final Host host, final PublicKey key, boolean port) {
+    protected static String toFormat(final Host host, final PublicKey key, boolean port) {
         if(port) {
             return String.format("ssh.hostkey.%s.%s:%d", KeyType.fromKey(key), host.getHostname(), host.getPort());
         }
         return String.format("ssh.hostkey.%s.%s", KeyType.fromKey(key), host.getHostname());
     }
 
-    protected PublicKey unwrap(final PublicKey key) {
+    protected static PublicKey unwrap(final PublicKey key) {
         if(key instanceof Certificate) {
             return ((Certificate<?>) key).getKey();
         }
@@ -86,9 +86,9 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
     @Override
     protected void allow(final Host host, final PublicKey key, final boolean persist) {
         if(persist) {
-            final PublicKey pk = this.unwrap(key);
+            final PublicKey pk = unwrap(key);
             log.debug("Save host key {} to preferences for {}", pk, host);
-            preferences.setProperty(this.toFormat(host, pk), Base64.toBase64String(pk.getEncoded()));
+            preferences.setProperty(toFormat(host, pk), Base64.toBase64String(pk.getEncoded()));
         }
     }
 }
