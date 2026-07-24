@@ -2091,6 +2091,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
+        bookmarkTable.scrollRowToVisible(bookmarkTable.selectedRow());
         final BookmarkContainerController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
