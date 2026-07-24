@@ -407,6 +407,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getOAuthUserInfoUrl() {
+        return null;
+    }
+
+    @Override
     public String getOAuthTokenUrl() {
         return null;
     }
