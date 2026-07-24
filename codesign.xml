@@ -66,6 +66,7 @@
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="*.dylib"/>
                 <include name="*.jnilib"/>
+                <include name="*.so"/>
             </fileset>
             <srcfile/>
         </apply>

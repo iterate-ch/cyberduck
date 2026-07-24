@@ -13,9 +13,9 @@ public class CustomTrustSSLProtocolSocketFactoryTest {
 
     @Test
     public void testGetSSLContext() {
-        assertNotNull(new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new CertificateStoreX509KeyManager(
-            new DisabledCertificateIdentityCallback(),
-            new Host(new TestProtocol()), new DisabledCertificateStore()
+        assertNotNull(new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new DefaultCertificateStoreX509KeyManager(
+                new DisabledCertificateIdentityCallback(),
+                new Host(new TestProtocol()), new DisabledCertificateStore()
         )).getSSLContext());
     }
 }
