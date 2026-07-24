@@ -75,7 +75,8 @@
             <arg
                 line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.runtime}">
-                <include name="**/*.dylib"/>
+                <include name="Contents/Home/lib/*.dylib"/>
+                <include name="Contents/Home/lib/jspawnhelper"/>
             </fileset>
             <fileset dir="${bundle}/${bundle.plugins}">
                 <include name="*.docktileplugin"/>
