@@ -39,7 +39,7 @@ public sealed class WindowsSleepPreventer : SleepPreventer
     {
         lock (sync)
         {
-            if (0 == assertions.Count && !SetExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED))
+            if (assertions.Count == 0 && !SetExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED))
             {
                 return null;
             }
@@ -61,7 +61,7 @@ public sealed class WindowsSleepPreventer : SleepPreventer
             {
                 return;
             }
-            if (0 == assertions.Count)
+            if (assertions.Count == 0)
             {
                 SetExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
             }
@@ -70,6 +70,6 @@ public sealed class WindowsSleepPreventer : SleepPreventer
 
     private static bool SetExecutionState(EXECUTION_STATE executionState)
     {
-        return 0 != (uint)SetThreadExecutionState(executionState);
+        return (uint)SetThreadExecutionState(executionState) != 0;
     }
 }
