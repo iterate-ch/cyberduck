@@ -94,14 +94,14 @@ public class S3CredentialsConfigurator implements CredentialsConfigurator {
                 // Uses external process to retrieve temporary credentials
                 final String command = profile.getCredentialProcess();
                 final ObjectMapper mapper = new ObjectMapper();
-                List<String> cmd = new ArrayList<>();
+                final List<String> cmd = new ArrayList<>();
                 switch(Factory.Platform.getDefault()) {
                     case windows:
                         cmd.add("cmd");
                         cmd.add("/c");
                         break;
                     default:
-                        cmd.add("sh");
+                        cmd.add("/bin/sh");
                         cmd.add("-c");
                         break;
                 }
