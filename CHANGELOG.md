@@ -2,7 +2,6 @@
 
 [9.5.3](https://github.com/iterate-ch/cyberduck/compare/release-9-5-2...release-9-5-3)
 * [Bugfix] Password saved regardless of checkbox selection (Cryptomator)
-* [Bugfix] Skip client certificate selection with no issuers sent from server (WebDAV)
 * [Bugfix] Connect with Integrated Windows Authentication (IWA) connection profile (WebDAV)
 
 [9.5.2](https://github.com/iterate-ch/cyberduck/compare/release-9-5-1...release-9-5-2)
