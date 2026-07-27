@@ -3,6 +3,8 @@
 [9.5.3](https://github.com/iterate-ch/cyberduck/compare/release-9-5-2...release-9-5-3)
 * [Bugfix] Password saved regardless of checkbox selection (Cryptomator)
 * [Bugfix] Connect with Integrated Windows Authentication (IWA) connection profile (WebDAV)
+* [Bugfix] Command execution with credential_process configuration fails (S3, macOS) ([#18256](https://trac.cyberduck.io/ticket/18256))
+* [Bugfix] Crash when opening bookmark window (macOS) ([#18175](https://trac.cyberduck.io/ticket/18175))
 
 [9.5.2](https://github.com/iterate-ch/cyberduck/compare/release-9-5-1...release-9-5-2)
 * [Feature] Upgrade Runtime to .NET 10 (Windows)
