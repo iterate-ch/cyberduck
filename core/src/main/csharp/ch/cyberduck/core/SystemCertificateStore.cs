@@ -78,7 +78,7 @@ namespace Ch.Cyberduck.Core
                     }
                 }
 
-                return null;
+                throw new ConnectionCanceledException();
             }
             finally
             {

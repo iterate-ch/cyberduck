@@ -200,10 +200,6 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 selected = callback.choose(prompt, keyTypes, issuers, bookmark);
             }
             catch(ConnectionCanceledException e) {
-                log.info("Certificate selection canceled for socket {}", socket);
-                return null;
-            }
-            if(null == selected) {
                 log.info("No certificate selected for socket {}", socket);
                 bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
                 return null;
