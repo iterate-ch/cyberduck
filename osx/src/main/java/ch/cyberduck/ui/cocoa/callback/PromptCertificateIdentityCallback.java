@@ -74,7 +74,7 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
 
             @Override
             public void loadBundle() {
-                panel = SFChooseIdentityPanel.sharedChooseIdentityPanel();
+                ref.set(panel = SFChooseIdentityPanel.sharedChooseIdentityPanel());
                 panel.setDomain(hostname);
                 final SecPolicyRef policyRef = SecurityFunctions.library.SecPolicyCreateSSL(true, hostname);
                 panel.setPolicies(policyRef);
