@@ -113,7 +113,7 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
                 final SecIdentityRef identityRef = panel.identity();
                 if(null == identityRef) {
                     log.warn("No identity selected for {}", hostname);
-                    return null;
+                    throw new ConnectionCanceledException();
                 }
                 try {
                     return KeychainCertificateStore.toX509Certificate(identityRef);
