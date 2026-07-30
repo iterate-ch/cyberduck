@@ -17,10 +17,14 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LoginOptionsTest {
 
@@ -32,5 +36,20 @@ public class LoginOptionsTest {
         final LoginOptions b = new LoginOptions();
         b.keychain = true;
         assertNotEquals(a, b);
+    }
+
+    @Test
+    public void testConfigureKeychain() {
+        final LoginOptions options = new LoginOptions(new TestProtocol() {
+            @Override
+            public boolean isPasswordConfigurable() {
+                return false;
+            }
+        });
+        assertFalse(options.keychain());
+        assertFalse(options.save());
+        options.configure(new TestProtocol());
+        assertTrue(options.keychain());
+        assertEquals(PreferencesFactory.get().getBoolean("connection.login.keychain"), options.save());
     }
 }

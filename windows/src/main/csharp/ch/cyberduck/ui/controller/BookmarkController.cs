@@ -617,6 +617,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _host.setPort(HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname()));
                 _host.setCredentials(CredentialsConfiguratorFactory.get(selected).configure(_host));
                 _options.configure(selected);
+                _host.getCredentials().setSaved(_options.save());
                 _validator.configure(selected);
                 ItemChanged();
                 Reachable();
