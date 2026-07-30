@@ -57,6 +57,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sso.IdentityCenterAuthorizationService;
 import ch.cyberduck.core.sso.IdentityCenterCredentialsStrategy;
 import ch.cyberduck.core.sso.RegisterClientOAuth2RequestInterceptor;
+import ch.cyberduck.core.signin.AWSConsoleLoginCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAssumeRoleWithWebIdentityCredentialsStrategy;
 import ch.cyberduck.core.sts.STSAuthorizationService;
@@ -196,7 +197,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     protected RequestEntityRestStorageService connect(final ProxyFinder proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authentication = this.configureCredentialsStrategy(configuration, prompt);
+        authentication = this.configureCredentialsStrategy(configuration, prompt, cancel);
         log.debug("Configured authentication strategy {}", authentication);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new S3AuthenticationResponseInterceptor(authentication)));
@@ -265,7 +266,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
-                                                                 final LoginCallback prompt) throws BackgroundException {
+                                                                 final LoginCallback prompt,
+                                                                 final CancelCallback cancel) throws BackgroundException {
+        if(S3LoginProtocol.IDENTIFIER.equals(host.getProtocol().getIdentifier())) {
+            log.debug("Configure AWS Console Sign-In");
+            return new AWSConsoleLoginCredentialsStrategy(host, cancel);
+        }
         if(host.getProtocol().isOAuthConfigurable()) {
             if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
                 log.debug("Configure SSO");
@@ -360,7 +366,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 if(!credentials.isAnonymousLogin()) {
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
-                    new STSAuthorizationService(host, trust, key, prompt).getCallerIdentity(credentials);
+                    if(!S3LoginProtocol.IDENTIFIER.equals(host.getProtocol().getIdentifier())) {
+                        new STSAuthorizationService(host, trust, key, prompt).getCallerIdentity(credentials);
+                    }
                     return;
                 }
             }
