@@ -22,7 +22,7 @@ import java.util.Objects;
 /**
  * Temporary access credentials
  */
-public final class TemporaryAccessTokens {
+public class TemporaryAccessTokens {
 
     public static final TemporaryAccessTokens EMPTY
             = new TemporaryAccessTokens(null, null, null);
