@@ -77,7 +77,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             base.Update();
             View.SavePasswordEnabled = _options.keychain();
-            View.SavePasswordChecked = _host.getCredentials().isSaved();
+            View.SavePasswordChecked = _options.keychain() && _host.getCredentials().isSaved();
         }
 
         protected override void ItemChanged()

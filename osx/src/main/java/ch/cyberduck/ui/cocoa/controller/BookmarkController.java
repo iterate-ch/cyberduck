@@ -294,7 +294,6 @@ public abstract class BookmarkController extends SheetController implements NSTa
             bookmark.setPort(HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname()));
             bookmark.setCredentials(CredentialsConfiguratorFactory.get(selected).configure(bookmark));
             options.configure(selected);
-            bookmark.getCredentials().setSaved(options.keychain && bookmark.getCredentials().isSaved());
             validator.configure(selected);
         }
         this.update();

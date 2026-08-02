@@ -268,7 +268,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
                                                                  final LoginCallback prompt,
                                                                  final CancelCallback cancel) throws BackgroundException {
-        if(S3LoginProtocol.IDENTIFIER.equals(host.getProtocol().getIdentifier())) {
+        if(preferences.getBoolean("s3.login.enable")) {
             log.debug("Configure AWS Console Sign-In");
             return new AWSConsoleLoginCredentialsStrategy(host, cancel);
         }
@@ -366,7 +366,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 if(!credentials.isAnonymousLogin()) {
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
-                    if(!S3LoginProtocol.IDENTIFIER.equals(host.getProtocol().getIdentifier())) {
+                    if(!preferences.getBoolean("s3.login.enable")) {
                         new STSAuthorizationService(host, trust, key, prompt).getCallerIdentity(credentials);
                     }
                     return;

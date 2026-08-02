@@ -100,9 +100,8 @@ public final class LoginOptions {
         icon = protocol.disk();
         usernamePlaceholder = protocol.getUsernamePlaceholder();
         passwordPlaceholder = protocol.getPasswordPlaceholder();
-        keychain = password || token || oauth || publickey || certificate;
-        save = keychain && PreferencesFactory.get().getBoolean("connection.login.keychain");
-        return this;
+        return this.keychain(Boolean.parseBoolean(protocol.getProperties().getOrDefault(
+                "connection.login.keychain", Boolean.TRUE.toString())));
     }
 
     public LoginOptions user(boolean e) {

@@ -62,7 +62,7 @@ public class ConnectionController extends BookmarkContainerController {
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
         this.addObserver(bookmark -> {
             this.keychainCheckbox.setEnabled(options.keychain);
-            this.keychainCheckbox.setState(bookmark.getCredentials().isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
+            this.keychainCheckbox.setState(options.keychain && bookmark.getCredentials().isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
         });
     }
 
