@@ -23,11 +23,9 @@ import com.google.auto.service.AutoService;
 @AutoService(Protocol.class)
 public class S3LoginProtocol extends S3Protocol {
 
-    public static final String IDENTIFIER = "s3-login";
-
     @Override
     public String getIdentifier() {
-        return IDENTIFIER;
+        return "s3-login";
     }
 
     @Override

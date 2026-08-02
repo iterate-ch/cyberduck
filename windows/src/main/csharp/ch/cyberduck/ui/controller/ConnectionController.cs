@@ -46,6 +46,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private ConnectionController(Host bookmark,
             LoginInputValidator validator, LoginOptions options) : base(bookmark, validator, options)
         {
+            View.SavePasswordEnabled = _options.keychain();
+            View.SavePasswordChecked = bookmark.getCredentials().isSaved();
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
             View.ChangedPasswordEvent += delegate { _host.getCredentials().setPassword(View.Password); };
         }
@@ -71,13 +73,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedSavePasswordCheckboxEvent()
         {
             _host.getCredentials().setSaved(View.SavePasswordChecked);
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-            View.SavePasswordEnabled = _options.keychain();
-            View.SavePasswordChecked = _options.keychain() && _host.getCredentials().isSaved();
         }
 
         protected override void ItemChanged()

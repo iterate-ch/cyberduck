@@ -57,9 +57,7 @@ public class SpectraSession extends S3Session {
     }
 
     @Override
-    protected SpectraCredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
-                                                                       final LoginCallback prompt,
-                                                                       final CancelCallback cancel) {
+    protected SpectraCredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration, final LoginCallback prompt) {
         return new SpectraCredentialsStrategy(host.getCredentials());
     }
 

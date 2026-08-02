@@ -16,167 +16,256 @@ package ch.cyberduck.core.signin;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.io.StreamGobbler;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.oauth.LoopbackOAuth2AuthorizationCodeProvider;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
-import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.AbstractResponseHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.security.SecureRandom;
+import java.text.ParseException;
+import java.util.Base64;
+import java.util.Date;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JOSEObjectType;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
-/**
- * Temporary S3 credentials exported by an AWS CLI browser-login profile.
- */
 public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy {
+    private static final Logger log = LogManager.getLogger(AWSConsoleLoginCredentialsStrategy.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    static final String DEFAULT_REGION = "us-east-1";
-    static final String PROFILE_PREFIX = "cyberduck";
+    private static final SecureRandom RANDOM = new SecureRandom();
+    static final String CLIENT_ID = "arn:aws:signin:::devtools/same-device";
     static final String IDENTITY_PROPERTY = "s3.login.identity";
+    private static final String SERVICE = "AWS Console Sign-In";
 
+    private final HttpClient client;
     private final Host host;
-    private final CancelCallback cancel;
-    private final String profile;
-    private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
+    private final LoginCallback prompt;
+    private final PasswordStore store;
+    private final String endpoint;
 
-    public AWSConsoleLoginCredentialsStrategy(final Host host, final CancelCallback cancel) {
+    private TemporaryAccessTokens tokens = TemporaryAccessTokens.EMPTY;
+    private String refreshToken;
+    private ECKey privateKey;
+    private boolean loaded;
+
+    public AWSConsoleLoginCredentialsStrategy(final HttpClient client, final Host host, final LoginCallback prompt) {
+        this(client, host, prompt, PasswordStoreFactory.get());
+    }
+
+    protected AWSConsoleLoginCredentialsStrategy(final HttpClient client, final Host host,
+                                                 final LoginCallback prompt, final PasswordStore store) {
+        this.client = client;
         this.host = host;
-        this.cancel = cancel;
-        this.profile = String.format("%s-%s", PROFILE_PREFIX, host.getUuid());
-        host.setCredentials(new Credentials().setSaved(false));
+        this.prompt = prompt;
+        this.store = store;
+        final String region = StringUtils.defaultIfBlank(host.getRegion(), "us-east-1");
+        if(!StringUtils.containsOnly(region, "abcdefghijklmnopqrstuvwxyz0123456789-")) {
+            throw new IllegalArgumentException("Invalid AWS region");
+        }
+        this.endpoint = String.format("https://%s.signin.aws.amazon.com", region);
     }
 
     @Override
     public synchronized Credentials get() throws BackgroundException {
         if(tokens.isExpired()) {
-            Result result = this.export();
-            if(!result.success()) {
-                final Result login = this.execute("login", "--profile", profile, "--region",
-                        StringUtils.defaultIfBlank(host.getRegion(), DEFAULT_REGION),
-                        "--no-cli-auto-prompt", "--no-cli-pager");
-                if(!login.success()) {
-                    throw failure(login.error);
+            this.load();
+            if(StringUtils.isBlank(refreshToken) || null == privateKey) {
+                tokens = this.authorize();
+            }
+            else {
+                try {
+                    tokens = this.refresh();
                 }
-                result = this.export();
+                catch(LoginFailureException e) {
+                    log.warn("AWS sign-in session expired for {}", host);
+                    tokens = this.authorize();
+                }
             }
-            if(!result.success()) {
-                throw failure(result.error);
-            }
-            final TemporaryAccessTokens refreshed = parse(result.output);
-            this.validateIdentity();
-            tokens = refreshed;
         }
         return new Credentials().setTokens(tokens).setSaved(false);
     }
 
-    private Result export() throws BackgroundException {
-        return this.execute("configure", "export-credentials", "--profile", profile, "--region",
-                StringUtils.defaultIfBlank(host.getRegion(), DEFAULT_REGION), "--format", "process",
-                "--no-cli-auto-prompt", "--no-cli-pager");
-    }
-
-    private void validateIdentity() throws BackgroundException {
-        final Result result = this.execute("sts", "get-caller-identity", "--profile", profile, "--region",
-                StringUtils.defaultIfBlank(host.getRegion(), DEFAULT_REGION), "--output", "json",
-                "--no-cli-auto-prompt", "--no-cli-pager");
-        if(!result.success()) {
-            throw failure(result.error);
-        }
+    protected TemporaryAccessTokens authorize() throws BackgroundException {
+        final ECKey key;
         try {
-            final JsonNode identity = MAPPER.readTree(result.output);
-            if(null == identity || !identity.isObject()) {
-                throw failure();
-            }
-            validateIdentity(host, identity.path("Account").asText(), identity.path("Arn").asText());
+            key = new ECKeyGenerator(Curve.P_256).generate();
         }
-        catch(IOException e) {
+        catch(JOSEException e) {
             throw failure(e);
         }
+        final byte[] random = new byte[48];
+        RANDOM.nextBytes(random);
+        final String verifier = Base64.getUrlEncoder().withoutPadding().encodeToString(random);
+        final String challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(
+                DigestUtils.sha256(verifier.getBytes(StandardCharsets.US_ASCII)));
+        final String state = UUID.randomUUID().toString();
+        final AtomicReference<String> redirectUri = new AtomicReference<>();
+        final String code = new LoopbackOAuth2AuthorizationCodeProvider().prompt(host, prompt,
+                        redirect -> {
+                            redirectUri.set(redirect);
+                            return new URIBuilder(URI.create(String.format("%s/v1/authorize", endpoint)))
+                                .addParameter("response_type", "code")
+                                .addParameter("client_id", CLIENT_ID)
+                                .addParameter("state", state)
+                                .addParameter("code_challenge", challenge)
+                                .addParameter("code_challenge_method", "SHA-256")
+                                .addParameter("scope", "openid")
+                                .addParameter("redirect_uri", redirect).toString();
+                        }, state);
+        if(StringUtils.isBlank(code)) {
+            throw new LoginCanceledException();
+        }
+        final ObjectNode request = MAPPER.createObjectNode().put("clientId", CLIENT_ID)
+                .put("grantType", "authorization_code").put("code", code)
+                .put("codeVerifier", verifier).put("redirectUri", redirectUri.get());
+        return this.accept(this.exchange(request, key), key, true);
     }
 
-    protected Result execute(final String... arguments) throws BackgroundException {
-        final List<String> command = new ArrayList<>();
-        command.add(executable());
-        Collections.addAll(command, arguments);
-        final Process process;
+    private TemporaryAccessTokens refresh() throws BackgroundException {
+        final ObjectNode request = MAPPER.createObjectNode().put("clientId", CLIENT_ID)
+                .put("grantType", "refresh_token").put("refreshToken", refreshToken);
+        return this.accept(this.exchange(request, privateKey), privateKey, false);
+    }
+
+    private JsonNode exchange(final ObjectNode body, final ECKey key) throws BackgroundException {
+        final String url = String.format("%s/v1/token", endpoint);
+        final HttpPost request = new HttpPost(url);
         try {
-            process = new ProcessBuilder(command).start();
-        }
-        catch(IOException e) {
-            throw failure(e);
-        }
-        try(InputStream output = new StreamGobbler(process.getInputStream());
-            InputStream error = new StreamGobbler(process.getErrorStream())) {
-            // Browser login must never wait on an invisible terminal prompt.
-            process.getOutputStream().close();
-            while(!process.waitFor(250L, TimeUnit.MILLISECONDS)) {
-                cancel.verify();
-            }
-            return new Result(process.exitValue(),
-                    IOUtils.toString(output, StandardCharsets.UTF_8),
-                    IOUtils.toString(error, StandardCharsets.UTF_8));
-        }
-        catch(InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new LoginCanceledException(e);
-        }
-        catch(IOException e) {
-            throw failure(e);
-        }
-        finally {
-            process.destroy();
-        }
-    }
-
-    private static TemporaryAccessTokens parse(final String output) throws LoginFailureException {
-        try {
-            final JsonNode value = MAPPER.readTree(output);
-            if(null == value || !value.isObject()) {
-                throw failure();
-            }
-            final String accessKey = value.path("AccessKeyId").asText();
-            final String secretKey = value.path("SecretAccessKey").asText();
-            final String sessionToken = value.path("SessionToken").asText();
-            final long expiration = OffsetDateTime.parse(value.path("Expiration").asText()).toInstant().toEpochMilli();
-            if(StringUtils.isAnyBlank(accessKey, secretKey, sessionToken) || expiration <= System.currentTimeMillis()) {
-                throw failure();
-            }
-            return new TemporaryAccessTokens(accessKey, secretKey, sessionToken, expiration);
-        }
-        catch(IOException | DateTimeParseException e) {
-            throw failure(e);
-        }
-    }
-
-    private static String executable() {
-        if(Factory.Platform.Name.mac.equals(Factory.Platform.getDefault())) {
-            for(String candidate : new String[]{"/usr/local/bin/aws", "/opt/homebrew/bin/aws"}) {
-                if(Files.isExecutable(Paths.get(candidate))) {
-                    return candidate;
+            request.setHeader("DPoP", proof(key, url));
+            request.setEntity(new StringEntity(MAPPER.writeValueAsString(body), ContentType.APPLICATION_JSON));
+            return client.execute(request, new AbstractResponseHandler<JsonNode>() {
+                @Override
+                public JsonNode handleEntity(final HttpEntity entity) throws IOException {
+                    return MAPPER.readTree(entity.getContent());
                 }
-            }
+            });
         }
-        return Factory.Platform.Name.windows.equals(Factory.Platform.getDefault()) ? "aws.exe" : "aws";
+        catch(HttpResponseException e) {
+            if(e.getStatusCode() >= 400 && e.getStatusCode() < 500 && e.getStatusCode() != 429) {
+                throw failure(e);
+            }
+            throw new DefaultHttpResponseExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+    }
+
+    private TemporaryAccessTokens accept(final JsonNode response, final ECKey key,
+                                         final boolean validateIdentity) throws LoginFailureException {
+        if(null == response) {
+            throw failure();
+        }
+        final JsonNode access = response.path("accessToken");
+        final String accessKey = access.path("accessKeyId").asText();
+        final String secretKey = access.path("secretAccessKey").asText();
+        final String sessionToken = access.path("sessionToken").asText();
+        final String refresh = response.path("refreshToken").asText();
+        final long expires = response.path("expiresIn").asLong(-1L);
+        if(StringUtils.isAnyBlank(accessKey, secretKey, sessionToken, refresh) || expires <= 0L) {
+            throw failure();
+        }
+        if(validateIdentity) {
+            validateIdentity(host, response.path("idToken").asText());
+        }
+        refreshToken = refresh;
+        privateKey = key;
+        this.save();
+        return new TemporaryAccessTokens(accessKey, secretKey, sessionToken,
+                System.currentTimeMillis() + expires * 1000L - 5L * 60L * 1000L);
+    }
+
+    private void load() {
+        if(loaded || !host.getCredentials().isSaved()) {
+            loaded = true;
+            return;
+        }
+        loaded = true;
+        try {
+            refreshToken = store.getPassword(SERVICE, this.account("Refresh Token"));
+            final String key = store.getPassword(SERVICE, this.account("DPoP Private Key"));
+            if(StringUtils.isBlank(refreshToken) || StringUtils.isBlank(key)) {
+                refreshToken = null;
+                return;
+            }
+            privateKey = ECKey.parse(key);
+        }
+        catch(AccessDeniedException | ParseException e) {
+            log.warn("Failure loading AWS sign-in session for {}", host);
+            refreshToken = null;
+            privateKey = null;
+        }
+    }
+
+    private void save() {
+        if(!host.getCredentials().isSaved()) {
+            return;
+        }
+        try {
+            store.addPassword(SERVICE, this.account("DPoP Private Key"), privateKey.toJSONString());
+            store.addPassword(SERVICE, this.account("Refresh Token"), refreshToken);
+        }
+        catch(AccessDeniedException e) {
+            log.warn("Failure saving AWS sign-in session for {}", host);
+        }
+    }
+
+    private String account(final String secret) {
+        return String.format("%s %s", host.getUuid(), secret);
+    }
+
+    private static String proof(final ECKey key, final String url) throws LoginFailureException {
+        try {
+            final SignedJWT jwt = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.ES256)
+                            .type(new JOSEObjectType("dpop+jwt")).jwk(key.toPublicJWK()).build(),
+                    new JWTClaimsSet.Builder().claim("htm", "POST").claim("htu", url)
+                            .issueTime(new Date()).jwtID(UUID.randomUUID().toString()).build());
+            jwt.sign(new ECDSASigner(key));
+            return jwt.serialize();
+        }
+        catch(JOSEException e) {
+            throw failure(e);
+        }
     }
 
     private static String identity(final String account, final String arn) {
@@ -186,6 +275,16 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
                     StringUtils.removeStart(resource, "assumed-role/"), "/"));
         }
         return String.format("%s/%s", account, resource);
+    }
+
+    static void validateIdentity(final Host host, final String idToken) throws LoginFailureException {
+        try {
+            final String arn = JWT.decode(idToken).getSubject();
+            validateIdentity(host, StringUtils.substringBetween(arn, "::", ":"), arn);
+        }
+        catch(JWTDecodeException e) {
+            throw failure(e);
+        }
     }
 
     static void validateIdentity(final Host host, final String account, final String arn) throws LoginFailureException {
@@ -206,36 +305,10 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
     }
 
     private static LoginFailureException failure() {
-        return failure((Throwable) null);
+        return failure(null);
     }
 
     private static LoginFailureException failure(final Throwable cause) {
-        return new LoginFailureException(
-                "AWS browser sign-in failed. AWS CLI 2.32 or later is required.",
-                cause);
-    }
-
-    private static LoginFailureException failure(final String detail) {
-        if(StringUtils.isBlank(detail)) {
-            return failure();
-        }
-        return new LoginFailureException(String.format(
-                "AWS browser sign-in failed: %s", StringUtils.abbreviate(StringUtils.trim(detail), 1000)));
-    }
-
-    protected static final class Result {
-        private final int status;
-        private final String output;
-        private final String error;
-
-        protected Result(final int status, final String output, final String error) {
-            this.status = status;
-            this.output = output;
-            this.error = error;
-        }
-
-        private boolean success() {
-            return status == 0;
-        }
+        return new LoginFailureException("AWS browser sign-in failed.", cause);
     }
 }

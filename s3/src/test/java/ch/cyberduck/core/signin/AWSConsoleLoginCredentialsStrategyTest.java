@@ -16,34 +16,25 @@ package ch.cyberduck.core.signin;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.s3.S3LoginProtocol;
-import ch.cyberduck.core.threading.CancelCallback;
 
 import org.junit.Test;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 public class AWSConsoleLoginCredentialsStrategyTest {
 
     @Test
-    public void testExportAndMemoryCache() throws Exception {
-        final Host host = new Host(new S3LoginProtocol()).setUuid("bookmark");
-        host.getCredentials().setSaved(true);
-        final TestStrategy strategy = new TestStrategy(host,
-                new AWSConsoleLoginCredentialsStrategy.Result(0, credentials(), ""),
-                new AWSConsoleLoginCredentialsStrategy.Result(0,
-                        identity("arn:aws:iam::123456789012:user/alice"), ""));
+    public void testMemoryCache() throws Exception {
+        final Host host = new Host(new S3LoginProtocol());
+        host.getCredentials().setSaved(false);
+        final TestStrategy strategy = new TestStrategy(host);
 
         final Credentials first = strategy.get();
         final Credentials second = strategy.get();
@@ -53,54 +44,7 @@ public class AWSConsoleLoginCredentialsStrategyTest {
         assertEquals("session", first.getTokens().getSessionToken());
         assertFalse(first.isSaved());
         assertFalse(second.isSaved());
-        assertFalse(host.getCredentials().isSaved());
-        assertEquals(2, strategy.commands.size());
-        assertEquals(Arrays.asList("configure", "export-credentials", "--profile", "cyberduck-bookmark",
-                "--region", "us-east-1", "--format", "process", "--no-cli-auto-prompt", "--no-cli-pager"),
-                strategy.commands.get(0));
-        assertEquals(Arrays.asList("sts", "get-caller-identity", "--profile", "cyberduck-bookmark",
-                "--region", "us-east-1", "--output", "json", "--no-cli-auto-prompt", "--no-cli-pager"),
-                strategy.commands.get(1));
-    }
-
-    @Test
-    public void testLoginWhenExportFails() throws Exception {
-        final TestStrategy strategy = new TestStrategy(
-                new Host(new S3LoginProtocol()).setRegion("eu-west-1").setUuid("bookmark"),
-                new AWSConsoleLoginCredentialsStrategy.Result(1, "No credentials", ""),
-                new AWSConsoleLoginCredentialsStrategy.Result(0, "Login succeeded", ""),
-                new AWSConsoleLoginCredentialsStrategy.Result(0, credentials(), ""),
-                new AWSConsoleLoginCredentialsStrategy.Result(0,
-                        identity("arn:aws:iam::123456789012:user/alice"), ""));
-
-        strategy.get();
-
-        assertEquals(4, strategy.commands.size());
-        assertEquals(Arrays.asList("configure", "export-credentials", "--profile", "cyberduck-bookmark",
-                "--region", "eu-west-1", "--format", "process", "--no-cli-auto-prompt", "--no-cli-pager"),
-                strategy.commands.get(0));
-        assertEquals(Arrays.asList("login", "--profile", "cyberduck-bookmark", "--region", "eu-west-1",
-                "--no-cli-auto-prompt", "--no-cli-pager"), strategy.commands.get(1));
-    }
-
-    @Test
-    public void testShowLoginErrorWithoutCredentialOutput() {
-        final TestStrategy strategy = new TestStrategy(new Host(new S3LoginProtocol()),
-                new AWSConsoleLoginCredentialsStrategy.Result(1, "credentials", ""),
-                new AWSConsoleLoginCredentialsStrategy.Result(1, "sign-in URL", "permission denied"));
-
-        final LoginFailureException failure = assertThrows(LoginFailureException.class, strategy::get);
-        assertTrue(failure.getDetail(false).contains("permission denied"));
-        assertFalse(failure.getDetail(false).contains("credentials"));
-    }
-
-    @Test
-    public void testRejectPermanentCredentials() {
-        final TestStrategy strategy = new TestStrategy(new Host(new S3LoginProtocol()),
-                new AWSConsoleLoginCredentialsStrategy.Result(0,
-                        "{\"Version\":1,\"AccessKeyId\":\"key\",\"SecretAccessKey\":\"secret\"}", ""));
-
-        assertThrows(LoginFailureException.class, strategy::get);
+        assertEquals(1, strategy.authorizations);
     }
 
     @Test
@@ -127,28 +71,17 @@ public class AWSConsoleLoginCredentialsStrategyTest {
                 host.getProperty(AWSConsoleLoginCredentialsStrategy.IDENTITY_PROPERTY));
     }
 
-    private static String credentials() {
-        return "{\"Version\":1,\"AccessKeyId\":\"ASIAEXAMPLE\",\"SecretAccessKey\":\"secret\","
-                + "\"SessionToken\":\"session\",\"Expiration\":\"2099-01-01T00:00:00+00:00\"}";
-    }
-
-    private static String identity(final String arn) {
-        return String.format("{\"Account\":\"123456789012\",\"Arn\":\"%s\"}", arn);
-    }
-
     private static final class TestStrategy extends AWSConsoleLoginCredentialsStrategy {
-        private final Queue<Result> results = new ArrayDeque<>();
-        private final List<List<String>> commands = new ArrayList<>();
+        private int authorizations;
 
-        private TestStrategy(final Host host, final Result... results) {
-            super(host, CancelCallback.noop);
-            this.results.addAll(Arrays.asList(results));
+        private TestStrategy(final Host host) {
+            super(null, host, null, new DisabledPasswordStore());
         }
 
         @Override
-        protected Result execute(final String... arguments) {
-            commands.add(Arrays.asList(arguments));
-            return results.remove();
+        protected TemporaryAccessTokens authorize() {
+            authorizations++;
+            return new TemporaryAccessTokens("ASIAEXAMPLE", "secret", "session", Long.MAX_VALUE);
         }
     }
 }

@@ -75,7 +75,6 @@
         </array>
         <key>Properties</key>
         <array>
-            <string>connection.login.keychain=false</string>
             <string>s3.login.enable=true</string>
             <string>s3.storage.class.options=STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY
                 GLACIER GLACIER_IR DEEP_ARCHIVE

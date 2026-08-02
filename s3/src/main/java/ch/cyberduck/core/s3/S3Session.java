@@ -197,7 +197,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     protected RequestEntityRestStorageService connect(final ProxyFinder proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authentication = this.configureCredentialsStrategy(configuration, prompt, cancel);
+        authentication = this.configureCredentialsStrategy(configuration, prompt);
         log.debug("Configured authentication strategy {}", authentication);
         configuration.setServiceUnavailableRetryStrategy(new CustomServiceUnavailableRetryStrategy(host,
                 new S3AuthenticationResponseInterceptor(authentication)));
@@ -266,11 +266,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     protected S3CredentialsStrategy configureCredentialsStrategy(final HttpClientBuilder configuration,
-                                                                 final LoginCallback prompt,
-                                                                 final CancelCallback cancel) throws BackgroundException {
+                                                                 final LoginCallback prompt) throws BackgroundException {
         if(preferences.getBoolean("s3.login.enable")) {
             log.debug("Configure AWS Console Sign-In");
-            return new AWSConsoleLoginCredentialsStrategy(host, cancel);
+            return new AWSConsoleLoginCredentialsStrategy(configuration.build(), host, prompt);
         }
         if(host.getProtocol().isOAuthConfigurable()) {
             if(host.getProtocol().getOAuthScopes().contains(IdentityCenterCredentialsStrategy.SSO_ACCOUNT_ACCESS_SCOPE)) {
@@ -366,9 +365,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 if(!credentials.isAnonymousLogin()) {
                     // Returns details about the IAM user or role whose credentials are used to call the operation.
                     // No permissions are required to perform this operation.
-                    if(!preferences.getBoolean("s3.login.enable")) {
-                        new STSAuthorizationService(host, trust, key, prompt).getCallerIdentity(credentials);
-                    }
+                    new STSAuthorizationService(host, trust, key, prompt).getCallerIdentity(credentials);
                     return;
                 }
             }

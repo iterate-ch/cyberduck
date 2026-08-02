@@ -100,8 +100,7 @@ public final class LoginOptions {
         icon = protocol.disk();
         usernamePlaceholder = protocol.getUsernamePlaceholder();
         passwordPlaceholder = protocol.getPasswordPlaceholder();
-        return this.keychain(Boolean.parseBoolean(protocol.getProperties().getOrDefault(
-                "connection.login.keychain", Boolean.TRUE.toString())));
+        return this;
     }
 
     public LoginOptions user(boolean e) {
