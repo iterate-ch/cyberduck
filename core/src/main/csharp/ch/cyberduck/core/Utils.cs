@@ -44,32 +44,6 @@ namespace Ch.Cyberduck.Core
 
         public delegate T ApplyPerItemReverseDelegate<T>(object item);
 
-        private static readonly List<String> ExtendedCharsets = new List<string>
-        {
-            "Big5",
-            "Big5-HKSCS",
-            "EUC-JP",
-            "EUC-KR",
-            "GB18030",
-            "GB2312",
-            "GBK",
-            "ISO-2022-CN",
-            "ISO-2022-JP",
-            "ISO-2022-JP-2",
-            "ISO-2022-KR",
-            "ISO-8859-3",
-            "ISO-8859-6",
-            "ISO-8859-8",
-            "JIS_X0201",
-            "JIS_X0212-1990",
-            "Shift_JIS",
-            "TIS-620",
-            "windows-1255",
-            "windows-1256",
-            "windows-1258",
-            "windows-31j"
-        };
-
         public static bool IsWin10 => OSVersion.IsVersion(OSVersion.Windows10.Release);
         public static bool IsWin10FallCreatorsUpdate => OSVersion.IsVersion(OSVersion.Windows10.V1709);
         public static bool IsWin101809 => OSVersion.IsVersion(OSVersion.Windows10.V1809);
