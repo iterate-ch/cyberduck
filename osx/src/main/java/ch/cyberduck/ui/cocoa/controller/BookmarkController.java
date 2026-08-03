@@ -35,7 +35,6 @@ import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FilesystemBookmarkResolverFactory;
@@ -602,6 +601,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
             certificatePopup.setEnabled(options.certificate);
             certificatePopup.removeAllItems();
             certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+            certificatePopup.lastItem().setRepresentedObject(StringUtils.EMPTY);
             if(options.certificate) {
                 certificatePopup.menu().addItem(NSMenuItem.separatorItem());
                 for(String certificate : list) {

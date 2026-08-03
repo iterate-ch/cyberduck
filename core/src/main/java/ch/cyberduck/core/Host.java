@@ -277,7 +277,7 @@ public class Host implements Serializable, Comparable<Host>, PreferencesReader {
         if(StringUtils.isNotBlank(encoding)) {
             dict.setStringForKey(encoding, "Encoding");
         }
-        if(StringUtils.isNotBlank(credentials.getCertificate())) {
+        if(null != credentials.getCertificate()) {
             dict.setStringForKey(credentials.getCertificate(), "Client Certificate");
         }
         if(null != credentials.getIdentity()) {

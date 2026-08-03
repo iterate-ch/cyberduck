@@ -80,7 +80,7 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
                 panel.setPolicies(policyRef);
                 FoundationKitFunctions.library.CFRelease(policyRef);
                 panel.setShowsHelp(false);
-                panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
+                panel.setAlternateButtonTitle(LocaleFactory.localizedString("Cancel"));
                 panel.setInformativeText(MessageFormat.format(LocaleFactory.localizedString(
                         "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."), hostname));
             }
@@ -113,7 +113,7 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
                 final SecIdentityRef identityRef = panel.identity();
                 if(null == identityRef) {
                     log.warn("No identity selected for {}", hostname);
-                    throw new ConnectionCanceledException();
+                    throw new ConnectionCanceledException("Missing identity selection");
                 }
                 try {
                     return KeychainCertificateStore.toX509Certificate(identityRef);
