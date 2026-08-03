@@ -212,7 +212,7 @@ public class AWSConsoleLoginCredentialsStrategy implements S3CredentialsStrategy
         privateKey = key;
         this.save();
         return new TemporaryAccessTokens(accessKey, secretKey, sessionToken,
-                System.currentTimeMillis() + expires * 1000L - 5L * 60L * 1000L);
+                System.currentTimeMillis() + (expires - Math.min(5L * 60L, expires / 2L)) * 1000L);
     }
 
     private void load() {
