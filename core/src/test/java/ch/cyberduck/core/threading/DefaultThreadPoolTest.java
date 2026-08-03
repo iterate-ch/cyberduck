@@ -96,10 +96,9 @@ public class DefaultThreadPoolTest {
     @Test
     public void testShutdownGracefully() {
         final DefaultThreadPool p = new DefaultThreadPool(Integer.MAX_VALUE);
-        final List<Future<Integer>> wait = new ArrayList<>();
         final AtomicInteger counter = new AtomicInteger(0);
         for(int i = 0; i < 1000; i++) {
-            wait.add(p.execute(counter::incrementAndGet));
+            p.execute(counter::incrementAndGet);
         }
         p.shutdown(true);
         assertEquals(1000, counter.get());
