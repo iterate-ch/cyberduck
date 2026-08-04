@@ -13,36 +13,28 @@
 // GNU General Public License for more details.
 //
 
-using ch.cyberduck.core;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using ch.cyberduck.core;
+using Windows.Win32.System.Power;
+using static Windows.Win32.CorePInvoke;
 
 namespace Ch.Cyberduck.Core;
 
 public sealed class WindowsSleepPreventer : SleepPreventer
 {
-    [Flags]
-    private enum EXECUTION_STATE : uint
-    {
-        ES_SYSTEM_REQUIRED = 0x00000001,
-        ES_CONTINUOUS = 0x80000000
-    }
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE executionState);
-
-    private static readonly object sync = new();
-    private static readonly HashSet<string> assertions = new(StringComparer.Ordinal);
+    private readonly HashSet<string> assertions = new(StringComparer.Ordinal);
+    private readonly object sync = new();
 
     string SleepPreventer.@lock()
     {
         lock (sync)
         {
-            if (assertions.Count == 0 && !SetExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED))
+            if (assertions.Count == 0 && !TrySetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED))
             {
                 return null;
             }
+
             string id = Guid.NewGuid().ToString("N");
             assertions.Add(id);
             return id;
@@ -55,21 +47,23 @@ public sealed class WindowsSleepPreventer : SleepPreventer
         {
             return;
         }
+
         lock (sync)
         {
             if (!assertions.Remove(id))
             {
                 return;
             }
+
             if (assertions.Count == 0)
             {
-                SetExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
+                _ = TrySetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
             }
         }
     }
 
-    private static bool SetExecutionState(EXECUTION_STATE executionState)
+    private static bool TrySetThreadExecutionState(EXECUTION_STATE executionState)
     {
-        return (uint)SetThreadExecutionState(executionState) != 0;
+        return SetThreadExecutionState(executionState) != 0;
     }
 }
