@@ -259,6 +259,8 @@ public interface Protocol extends FeatureFactory, Comparable<Protocol>, Serializ
      */
     String getOAuthAuthorizationUrl();
 
+    String getOAuthUserInfoUrl();
+
     /**
      * @return OAuth 2 Token Server URL
      */
