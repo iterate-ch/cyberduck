@@ -78,7 +78,6 @@ namespace Ch.Cyberduck.Core.CredentialManager
             {
                 password = Encoding.Unicode.GetString(cred.CredentialBlob, (int)cred.CredentialBlobSize);
             }
-            var attributes = new Dictionary<string, string>();
 
             var result = new WindowsCredentialManagerCredential(username, password, type, flags, persist);
             if (cred.AttributeCount > 0)
