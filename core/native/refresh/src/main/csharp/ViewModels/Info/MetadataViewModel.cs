@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
         private bool adding;
         private bool discard;
         private IEnumerable<Path> paths;
-        private ArrayList pathsJava;
+        private List pathsJava = Collections.emptyList();
 
         public ReactiveCommand<MetadataTemplateProvider.Template, Unit> AddMetadata { get; }
 
@@ -206,7 +206,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             var result = controller.background(new WorkerBackgroundAction(controller, session, worker));
             if (result.isDone() && !worker.Task.IsCompleted)
             {
-                return Task.FromResult(default(object));
+                return Task.CompletedTask;
             }
 
             return worker.Task;
