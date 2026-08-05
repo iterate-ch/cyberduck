@@ -29,6 +29,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -64,17 +65,28 @@ public class TransferTableDataSource extends ListDataSource {
 
     private final Collection<Transfer> collection
         = TransferCollection.defaultCollection();
+    private final CollectionListener<Transfer> collectionListener = new AbstractCollectionListener<Transfer>() {
+        @Override
+        public void collectionItemRemoved(final Transfer item) {
+            final ProgressController controller = controllers.remove(item);
+            if(controller != null) {
+                controller.invalidate();
+            }
+        }
+    };
 
     public TransferTableDataSource() {
-        collection.addListener(new AbstractCollectionListener<Transfer>() {
-            @Override
-            public void collectionItemRemoved(final Transfer item) {
-                final ProgressController controller = controllers.remove(item);
-                if(controller != null) {
-                    controller.invalidate();
-                }
-            }
-        });
+        collection.addListener(collectionListener);
+    }
+
+    @Override
+    public void invalidate() {
+        collection.removeListener(collectionListener);
+        for(ProgressController controller : controllers.values()) {
+            controller.invalidate();
+        }
+        controllers.clear();
+        super.invalidate();
     }
 
     /**
