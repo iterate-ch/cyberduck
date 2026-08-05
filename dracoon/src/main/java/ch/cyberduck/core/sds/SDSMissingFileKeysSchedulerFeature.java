@@ -40,19 +40,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoException;
-import com.dracoon.sdk.crypto.error.CryptoSystemException;
-import com.dracoon.sdk.crypto.error.InvalidFileKeyException;
-import com.dracoon.sdk.crypto.error.InvalidKeyPairException;
-import com.dracoon.sdk.crypto.error.InvalidPasswordException;
-import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
-import com.dracoon.sdk.crypto.model.UserPrivateKey;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -89,6 +84,7 @@ public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeatu
             final List<UserFileKeySetRequest> processed = new ArrayList<>();
             // Null when operating from scheduler. File reference is set for post upload.
             final Long fileId = file != null ? Long.parseLong(nodeid.getVersionId(file)) : null;
+            final Map<Long, PlainFileKey> plainFileKeys = new HashMap<>();
             UserFileKeySetBatchRequest request;
             do {
                 log.debug("Request a list of missing file keys limited to {}", fileId);
@@ -100,12 +96,18 @@ public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeatu
                 for(UserIdFileIdItem item : missingKeys.getItems()) {
                     for(FileFileKeys fileKey : files.get(item.getFileId())) {
                         final EncryptedFileKey encryptedFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(fileKey.getFileKeyContainer());
-                        final UserKeyPairContainer keyPairForDecryption = session.getKeyPairForFileKey(encryptedFileKey.getVersion());
-                        final Credentials passphrase = session.unlockTripleCryptKeyPair(callback, TripleCryptConverter.toCryptoUserKeyPair(keyPairForDecryption));
-                        for(UserUserPublicKey userPublicKey : userPublicKeys.get(item.getUserId())) {
-                            final EncryptedFileKey fk = this.encryptFileKey(
+                        if(!plainFileKeys.containsKey(item.getFileId())) {
+                            final UserKeyPairContainer keyPairForDecryption = session.getKeyPairForFileKey(encryptedFileKey.getVersion());
+                            final Credentials passphrase = session.unlockTripleCryptKeyPair(callback, TripleCryptConverter.toCryptoUserKeyPair(keyPairForDecryption));
+                            final PlainFileKey plainFileKey = Crypto.decryptFileKey(encryptedFileKey,
                                     TripleCryptConverter.toCryptoUserPrivateKey(keyPairForDecryption.getPrivateKeyContainer()),
-                                    passphrase, userPublicKey, fileKey);
+                                    passphrase.getPassword().toCharArray());
+                            plainFileKeys.put(item.getFileId(), plainFileKey);
+                        }
+                        final PlainFileKey plainFileKey = plainFileKeys.get(item.getFileId());
+                        for(UserUserPublicKey userPublicKey : userPublicKeys.get(item.getUserId())) {
+                            final EncryptedFileKey fk = Crypto.encryptFileKey(plainFileKey,
+                                    TripleCryptConverter.toCryptoUserPublicKey(userPublicKey.getPublicKeyContainer()));
                             final UserFileKeySetRequest keySetRequest = new UserFileKeySetRequest()
                                     .fileId(item.getFileId())
                                     .userId(item.getUserId())
@@ -145,14 +147,5 @@ public class SDSMissingFileKeysSchedulerFeature extends ThreadPoolSchedulerFeatu
                 }
             }
         }
-    }
-
-    private EncryptedFileKey encryptFileKey(final UserPrivateKey privateKey, final Credentials passphrase,
-                                            final UserUserPublicKey pubkey, final FileFileKeys fileKeys)
-            throws InvalidFileKeyException, InvalidKeyPairException, InvalidPasswordException, CryptoSystemException, UnknownVersionException {
-        final PlainFileKey plainFileKey = Crypto.decryptFileKey(
-                TripleCryptConverter.toCryptoEncryptedFileKey(fileKeys.getFileKeyContainer()), privateKey, passphrase.getPassword().toCharArray());
-        return Crypto.encryptFileKey(
-                plainFileKey, TripleCryptConverter.toCryptoUserPublicKey(pubkey.getPublicKeyContainer()));
     }
 }
