@@ -83,11 +83,16 @@
             </fileset>
             <srcfile/>
         </apply>
+        <condition property="codesign.jdk.arg"
+                   value="--entitlements ${setup}/app/net.java.openjdk.jdk.entitlements"
+                   else="">
+            <contains string="${codesign.arg}" substring="sandbox.entitlements"/>
+        </condition>
         <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                    line="codesign ${codesign.options} --entitlements ${setup}/app/net.java.openjdk.jdk.entitlements --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+                    line="codesign ${codesign.options} ${codesign.jdk.arg} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.runtime}">
                 <include name="Contents/Home/lib/jspawnhelper"/>
             </fileset>
