@@ -76,11 +76,20 @@
                 line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.runtime}">
                 <include name="Contents/Home/lib/**/*.dylib"/>
-                <include name="Contents/Home/lib/jspawnhelper"/>
             </fileset>
             <fileset dir="${bundle}/${bundle.plugins}">
                 <include name="*.docktileplugin"/>
                 <include name="*.jre"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/xcrun" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg
+                    line="codesign ${codesign.options} --entitlements ${setup}/app/net.java.openjdk.jdk.entitlements --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.runtime}">
+                <include name="Contents/Home/lib/jspawnhelper"/>
             </fileset>
             <srcfile/>
         </apply>
