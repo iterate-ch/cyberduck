@@ -92,6 +92,7 @@ public class STSAuthorizationService {
      * @return User ID
      */
     public String getCallerIdentity(final Credentials credentials) throws BackgroundException {
+        log.debug("Get caller identity with credentials {}", credentials);
         try {
             final GetCallerIdentityResult identity = service.getCallerIdentity(new GetCallerIdentityRequest()
                     .withRequestCredentialsProvider(S3CredentialsStrategy.toCredentialsProvider(credentials)));
