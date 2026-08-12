@@ -86,7 +86,7 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public String getSTSEndpoint() {
-        return "https://sts.amazonaws.com/";
+        return DEFAULT_STS_ENDPOINT;
     }
 
     @Override
@@ -193,4 +193,6 @@ public class S3Protocol extends AbstractProtocol {
         }
         return super.getFeature(type);
     }
+
+    public static final String DEFAULT_STS_ENDPOINT = "https://sts.amazonaws.com/";
 }
