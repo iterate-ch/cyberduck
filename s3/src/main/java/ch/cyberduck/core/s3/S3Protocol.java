@@ -81,7 +81,7 @@ public class S3Protocol extends AbstractProtocol {
 
     @Override
     public String getDefaultHostname() {
-        return "s3.amazonaws.com";
+        return DEFAULT_HOSTNAME;
     }
 
     @Override
@@ -194,5 +194,6 @@ public class S3Protocol extends AbstractProtocol {
         return super.getFeature(type);
     }
 
+    public static final String DEFAULT_HOSTNAME = "s3.amazonaws.com";
     public static final String DEFAULT_STS_ENDPOINT = "https://sts.amazonaws.com/";
 }
