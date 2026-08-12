@@ -33,6 +33,7 @@ import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.preferences.ProxyPreferencesReader;
 import ch.cyberduck.core.s3.S3CredentialsStrategy;
+import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -76,7 +77,7 @@ public class STSAuthorizationService {
         this.service = AWSSecurityTokenServiceClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(bookmark.getProtocol().getSTSEndpoint(),
-                        bookmark.getRegion()))
+                        S3Protocol.DEFAULT_STS_ENDPOINT.equals(bookmark.getProtocol().getSTSEndpoint()) ? null : bookmark.getRegion()))
                 .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
                 .withClientConfiguration(new CustomClientConfiguration(bookmark,
                         new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getProtocol().getSTSEndpoint()), key))
