@@ -47,8 +47,10 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
     @Test
     public void testIsSupported() throws Exception {
         final Path home = new NextcloudHomeFeature(session.getHost()).find();
-        assertTrue(new NextcloudShareFeature(session).isSupported(home, Share.Type.download));
-        assertTrue(new NextcloudShareFeature(session).isSupported(home, Share.Type.upload));
+        assertFalse(new NextcloudShareFeature(session).isSupported(home, Share.Type.download));
+        assertFalse(new NextcloudShareFeature(session).isSupported(home, Share.Type.upload));
+        assertTrue(new NextcloudShareFeature(session).isSupported(new Path(home, "d", EnumSet.of(Path.Type.directory)), Share.Type.upload));
+        assertTrue(new NextcloudShareFeature(session).isSupported(new Path(home, "f", EnumSet.of(Path.Type.file)), Share.Type.download));
     }
 
     @Test
