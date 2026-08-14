@@ -28,8 +28,6 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
             }, Observable.Return(!string.IsNullOrWhiteSpace(ProfileDescription.getHelp())));
         }
 
-        public string DefaultHostName => string.Empty;
-
         public string Description => ProfileDescription.getDescription();
 
         public bool Enabled { get; }
@@ -47,6 +45,8 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
         public ProfileDescription ProfileDescription { get; }
 
         public string Thumbnail => ProfileDescription.getThumbnail();
+
+        public override string ToString() => Description;
 
         private static bool IsDefaultProfile(ProfileDescription profile, Host host)
         {

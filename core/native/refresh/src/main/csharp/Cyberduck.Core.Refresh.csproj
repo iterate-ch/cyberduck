@@ -55,4 +55,9 @@
     <ImageResource Include="$(CyberduckDir)cyberduck-application.ico" />
     <ImageResource Include="$(CyberduckDir)cyberduck-document.ico" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Resources\AppStyles.net472.xaml" Link="Resources\AppStyles.xaml" />
+    <Page Update="Resources\AppStyles.net10.0.xaml" Link="Resources\AppStyles.xaml" />
+  </ItemGroup>
 </Project>

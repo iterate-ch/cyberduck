@@ -25,7 +25,6 @@ using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Refresh;
 using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Core.Refresh.Splat;
-using Ch.Cyberduck.Core.Refresh.UserControls;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Dialogs;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 using Ch.Cyberduck.Core.Refresh.Views;
@@ -92,7 +91,6 @@ namespace Ch.Cyberduck.Ui
                 x.ForConcreteSingleton<WinFormsIconProvider>();
                 x.ForConcreteSingleton<WpfIconProvider>();
 
-                x.For<IViewFor<ProfileViewModel>>().Use<ProfileElement>();
                 x.Forward<PromptShareeWindow.Factory, IWindowFactory<PromptShareeViewModel>>();
 
                 // Singletons

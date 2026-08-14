@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="DialogMenuStyle"
+           TargetType="Menu"
+           BasedOn="{StaticResource {x:Type Menu}}">
+        <Setter Property="Background"
+                Value="{DynamicResource ControlFillColorDefaultBrush}" />
+    </Style>
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="AppStyles.Base.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

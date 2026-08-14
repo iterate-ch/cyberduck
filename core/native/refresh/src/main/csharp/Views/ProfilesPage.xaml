@@ -5,52 +5,124 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                         xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
+                        xmlns:vm="clr-namespace:Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages"
                         xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
                         mc:Ignorable="d"
                         d:DesignHeight="450"
                         d:DesignWidth="800">
     <Grid>
-        <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="8"
+                    Grid.Row="0">
+            <TextBlock Text="{xaml:Text 'Connection Profiles',Table=Profiles}"
+                       Focusable="True"
+                       x:Name="ConnectionProfilesTitle"
+                       Style="{StaticResource SubtitleTextBlockStyle}" />
+            <TextBlock Text="{xaml:Text 'Install additional connection profiles from different service providers.',Table=Profiles}"
+                       x:Name="TitleDescription"
+                       Style="{StaticResource CaptionTextBlockStyle}" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Text="{xaml:Text Connection Profiles,Table=Profiles}" />
-            <Grid Margin="2,7"
-                  Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
+            <StackPanel HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Grid.Row="0"
+                        Margin="0,0,0,4">
+                <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
+                           Text="&#xE721;"
+                           VerticalAlignment="Center"
+                           Margin="0,0,2,0" />
 
-                <TextBlock Text="{xaml:Text Install additional connection profiles from different service providers.,Table=Profiles}"
-                           Foreground="{x:Static SystemColors.GrayTextBrush}"
-                           Grid.ColumnSpan="3"
-                           Grid.Row="0" />
-                <Image x:Name="SearchImage"
-                       Source="{xaml:Icon search-inactive}"
-                       Grid.Column="1"
-                       Grid.Row="1" />
-                <TextBox x:Name="Search"
-                         Margin="0,7"
-                         Padding="2,1"
-                         Grid.Column="2"
-                         Grid.Row="1" />
-                <ListView x:Name="profilesList"
-                          HorizontalContentAlignment="Stretch"
-                          Grid.Row="2"
-                          Grid.ColumnSpan="3" />
-            </Grid>
+                <TextBox Name="Search"
+                         Width="140"
+                         Margin="2,0,0,0"
+                         AutomationProperties.Name="{xaml:Text 'Search…',Table=Main}" />
+            </StackPanel>
+
+            <DataGrid x:Name="profilesList"
+                      AutoGenerateColumns="False"
+                      HeadersVisibility="None"
+                      SelectionMode="Single"
+                      SelectionUnit="FullRow"
+                      VerticalGridLinesBrush="{x:Null}"
+                      AutomationProperties.LabeledBy="{Binding ElementName=ConnectionProfilesTitle}"
+                      AutomationProperties.HelpText="{Binding Text,ElementName=TitleDescription}"
+                      Grid.Row="1"
+                      Margin="0,4,0,0"
+                      TargetUpdated="profilesList_TargetUpdated">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Binding="{Binding Installed}"
+                                            Width="48">
+                        <DataGridCheckBoxColumn.ElementStyle>
+                            <Style TargetType="CheckBox">
+                                <Setter Property="VerticalContentAlignment"
+                                        Value="Center" />
+                                <Setter Property="IsEnabled"
+                                        Value="{Binding Enabled}" />
+                            </Style>
+                        </DataGridCheckBoxColumn.ElementStyle>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Focusable"
+                                        Value="False" />
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="vm:ProfileViewModel">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Text="{Binding Description}"
+                                               x:Name="Description"
+                                               Style="{StaticResource BodyStrongTextBlockStyle}"
+                                               Grid.Column="1"
+                                               Grid.Row="0" />
+                                    <TextBlock Text="{Binding Name}"
+                                               x:Name="ProtocolType"
+                                               Style="{StaticResource BodyTextBlockStyle}"
+                                               Grid.Column="1"
+                                               Grid.Row="1" />
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="48">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="vm:ProfileViewModel">
+                                <Button Command="{Binding OpenHelp}"
+                                        HorizontalAlignment="Center"
+                                        AutomationProperties.Name="{xaml:Text Help,Table=Support}">
+                                    <TextBlock FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                               Text="&#xE897;"
+                                               Style="{StaticResource BodyStrongTextBlockStyle}" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
 
         <xctk:BusyIndicator x:Name="Status"
-                            BusyContent="{x:Null}" />
+                            BusyContent="{x:Null}"
+                            Grid.RowSpan="2" />
     </Grid>
 </local:ProfilesPageBase>
