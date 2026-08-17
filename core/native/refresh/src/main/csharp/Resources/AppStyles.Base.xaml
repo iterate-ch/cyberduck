@@ -1,4 +1,40 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- WinUI Spacing Guides -->
+    <Thickness x:Key="CompactSpacing">4</Thickness>
+    <Thickness x:Key="CompactNegativeSpacing">-4</Thickness>
+    <Thickness x:Key="CompactItemSpacing">2</Thickness>
+    <Thickness x:Key="CompactItemNegativeSpacing">-2</Thickness>
 
+    <Thickness x:Key="UISpacing">8</Thickness>
+    <Thickness x:Key="UINegativeSpacing">-8</Thickness>
+    <Thickness x:Key="UIItemSpacing">4</Thickness>
+    <Thickness x:Key="UIItemNegativeSpacing">-4</Thickness>
+
+    <Thickness x:Key="ControlSpacing">12</Thickness>
+    <Thickness x:Key="ControlNegativeSpacing">-12</Thickness>
+    <Thickness x:Key="ControlItemSpacing">6</Thickness>
+    <Thickness x:Key="ControlItemNegativeSpacing">-6</Thickness>
+
+    <Thickness x:Key="CardSpacing">16</Thickness>
+    <Thickness x:Key="CardNegativeSpacing">-16</Thickness>
+    <Thickness x:Key="CardItemSpacing">8</Thickness>
+    <Thickness x:Key="CardItemNegativeSpacing">-8</Thickness>
+    <Thickness x:Key="CardRowSpacing">0,8</Thickness>
+    <Thickness x:Key="CardColumnSpacing">8,0</Thickness>
+
+    <Thickness x:Key="ContentSpacing">24</Thickness>
+    <Thickness x:Key="ContentNegativeSpacing">-24</Thickness>
+    <Thickness x:Key="ContentItemSpacing">12</Thickness>
+    <Thickness x:Key="ContentItemNegativeSpacing">-12</Thickness>
+    
+    <!-- Combinations -->
+    <!-- Key: $(Target Spacing)$(Inner Spacing)Spacing -->
+    <Thickness x:Key="UIItemCompactItemSpacing">2</Thickness>
+    <Thickness x:Key="ControlCompactItemSpacing">10</Thickness>
+    <Thickness x:Key="CardItemCompactItemSpacing">14</Thickness>
+    
+    <!-- Special Use -->
+    <!-- Key: $(Role)$(Base Spacing)$(Inner Spacing)Spacing-->
+    <Thickness x:Key="PageTitleCardItemCompactItemSpacing">14,14,14,6</Thickness>
 </ResourceDictionary>

@@ -1,19 +1,18 @@
-﻿using Ch.Cyberduck.Core.Refresh.Services;
-using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Reactive.Linq;
-using System.Windows.Controls;
+using Ch.Cyberduck.Core.Refresh.Services;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
+using Ch.Cyberduck.Core.Refresh.Views.Services;
+using ReactiveUI;
 
 namespace Ch.Cyberduck.Core.Refresh.Views
 {
     public partial class ProfilesPage
     {
-        private WpfIconProvider iconProvider;
-
-        public ProfilesPage()
+        public ProfilesPage(WpfIconProvider iconProvider)
         {
             InitializeComponent();
+            ((ProfileDescriptionThumbnailConverter)FindResource("ProfileThumbnails")).IconProvider = iconProvider;
 
             this.WhenActivated(d =>
             {
@@ -23,15 +22,6 @@ namespace Ch.Cyberduck.Core.Refresh.Views
 
                 d(ViewModel.LoadProfiles.ExecuteIfPossible().Subscribe());
             });
-        }
-
-        private void profilesList_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
-        {
-            //foreach (DataGridColumn column in ((DataGrid)sender).Columns)
-            //{
-            //}
-
-            ((DataGrid)sender).InvalidateMeasure();
         }
     }
 
