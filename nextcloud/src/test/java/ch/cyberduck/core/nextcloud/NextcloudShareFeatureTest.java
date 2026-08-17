@@ -17,6 +17,7 @@ package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
@@ -47,10 +48,15 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
     @Test
     public void testIsSupported() throws Exception {
         final Path home = new NextcloudHomeFeature(session.getHost()).find();
+        home.setAttributes(new NextcloudAttributesFinderFeature(session).find(home));
         assertFalse(new NextcloudShareFeature(session).isSupported(home, Share.Type.download));
         assertFalse(new NextcloudShareFeature(session).isSupported(home, Share.Type.upload));
-        assertTrue(new NextcloudShareFeature(session).isSupported(new Path(home, "d", EnumSet.of(Path.Type.directory)), Share.Type.upload));
-        assertTrue(new NextcloudShareFeature(session).isSupported(new Path(home, "f", EnumSet.of(Path.Type.file)), Share.Type.download));
+        final Path directory = new Path(home, "d", EnumSet.of(Path.Type.directory));
+        directory.setAttributes(new DefaultPathAttributes().setFileId("id"));
+        assertTrue(new NextcloudShareFeature(session).isSupported(directory, Share.Type.upload));
+        final Path file = new Path(home, "f", EnumSet.of(Path.Type.file));
+        file.setAttributes(new DefaultPathAttributes().setFileId("id"));
+        assertTrue(new NextcloudShareFeature(session).isSupported(file, Share.Type.download));
     }
 
     @Test
