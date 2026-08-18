@@ -79,7 +79,6 @@
             </fileset>
             <fileset dir="${bundle}/${bundle.plugins}">
                 <include name="*.docktileplugin"/>
-                <include name="*.jre"/>
             </fileset>
             <srcfile/>
         </apply>
@@ -95,6 +94,16 @@
                     line="codesign ${codesign.options} ${codesign.jdk.arg} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.runtime}">
                 <include name="Contents/Home/lib/jspawnhelper"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/xcrun" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg
+                    line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.plugins}">
+                <include name="*.jre"/>
             </fileset>
             <srcfile/>
         </apply>
