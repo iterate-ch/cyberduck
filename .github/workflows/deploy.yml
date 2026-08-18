@@ -71,7 +71,7 @@ jobs:
         shell: bash
         run: echo "SPARKLE_FEED=${{ github.ref_type == 'branch' && 'nightly' || '' }}" >> "$GITHUB_OUTPUT"
       - name: Build with Maven
-        run: mvn --batch-mode deploy -Pinstaller -DskipTests -DskipITs -D"sparkle.feed=${{ steps.sparkle-feed.outputs.SPARKLE_FEED }}"
+        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -Pinstaller -DskipTests -DskipITs -D"sparkle.feed=${{ steps.sparkle-feed.outputs.SPARKLE_FEED }}"
         env:
           DEVELOPER_DIR: /Applications/Xcode 15.app/Contents/Developer
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
