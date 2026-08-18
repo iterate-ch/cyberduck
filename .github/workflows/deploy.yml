@@ -105,11 +105,31 @@ jobs:
           path: ${{ runner.os == 'macos' && 'osx/target/release/Cyberduck-*' || 'windows/target/release/Cyberduck-*' }}
           args: '--verbose --existing overwrite --region DFW'
 
-      - name: Upload Artifacts (macOS)
+      - name: Credentials
+        id: identity
+        env:
+          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
+        run: |
+          echo "$SFTP_IDENTITY" > private-key.pem
+          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Feed
+        if: runner.os == 'macos' || runner.os == 'windows'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: ${{ runner.os == 'macos' && (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/nightly/' || 'sftp://version.cyberduck.io/') || (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/windows/nightly/' || 'sftp://version.cyberduck.io/windows/') }}
+          path: ${{ runner.os == 'macos' && 'osx/target/update/changelog.*' || 'windows/target/update/changelog.*' }}
+          args: '--existing overwrite --verbose'
+
+      - name: Archive Artifacts (macOS)
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
-          name: Snapshot Binaries (macOS)
+          name: Binaries (macOS)
           path: |-
             osx/target/release/*.zip
             osx/target/release/*.pkg
@@ -119,7 +139,7 @@ jobs:
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
-          name: Snapshot Binaries (Windows)
+          name: Binaries (Windows)
           path: |-
             windows/target/release/*.exe
             windows/target/release/*.msi
@@ -131,7 +151,7 @@ jobs:
         if: runner.os == 'linux'
         uses: actions/upload-artifact@v7
         with:
-          name: Snapshot Binaries (Linux)
+          name: Binaries (Linux)
           path: |-
             cli/linux/target/release/*.deb
             cli/linux/target/release/*.rpm
