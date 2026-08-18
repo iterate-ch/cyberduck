@@ -76,6 +76,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           KEYCHAIN_PATH: ${{ runner.temp }}/build.keychain-db
+          SIGNTOOL_CSP: ${{ secrets.SIGNTOOL_CSP }}
+          SIGNTOOL_KC: ${{ secrets.SIGNTOOL_KC }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
