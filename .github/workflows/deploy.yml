@@ -81,6 +81,30 @@ jobs:
           SIGNTOOL_CSP: ${{ secrets.SIGNTOOL_CSP }}
           SIGNTOOL_KC: ${{ secrets.SIGNTOOL_KC }}
 
+      - name: S3 Upload
+        if: runner.os == 'macos' || runner.os == 'windows'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.AWS_ACCESS_KEY_ID}}
+          PASSWORD: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        with:
+          mode: upload
+          url: ${{ github.ref_type == 'branch' && 's3:/snapshots.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
+          path: ${{ runner.os == 'macos' && 'osx/target/release/Cyberduck-*' || 'windows/target/release/Cyberduck-*' }}
+          args: '--verbose --existing overwrite --region us-east-1'
+
+      - name: Rackspace Upload
+        if: runner.os == 'macos' || runner.os == 'windows'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.RACKSPACE_USER}}
+          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
+        with:
+          mode: upload
+          url: ${{ github.ref_type == 'branch' && 'rackspace:/snapshots.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
+          path: ${{ runner.os == 'macos' && 'osx/target/release/Cyberduck-*' || 'windows/target/release/Cyberduck-*' }}
+          args: '--verbose --existing overwrite --region DFW'
+
       - name: Upload Artifacts (macOS)
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
