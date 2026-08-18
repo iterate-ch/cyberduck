@@ -83,7 +83,7 @@ jobs:
 
       - name: Upload Artifacts (macOS)
         if: runner.os == 'macos'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Snapshot Binaries (macOS)
           path: |-
@@ -91,9 +91,9 @@ jobs:
             osx/target/release/*.pkg
             cli/osx/target/release/*.pkg
 
-      - name: Upload Artifacts (Windows)
+      - name: Archive Artifacts (Windows)
         if: runner.os == 'windows'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Snapshot Binaries (Windows)
           path: |-
@@ -103,9 +103,9 @@ jobs:
             cli/windows/target/release/*.exe
             cli/windows/target/release/*.msi
 
-      - name: Upload Artifacts (Linux)
+      - name: Archive Artifacts (Linux)
         if: runner.os == 'linux'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Snapshot Binaries (Linux)
           path: |-
