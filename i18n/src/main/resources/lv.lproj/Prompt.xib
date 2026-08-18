@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24765" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24765"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -34,7 +34,7 @@
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15" userLabel="Overwrite Action">
-                        <rect key="frame" x="17" y="327" width="556" height="25"/>
+                        <rect key="frame" x="20" y="327" width="549" height="24"/>
                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="18" id="16">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="message"/>
@@ -46,13 +46,13 @@
                         </popUpButtonCell>
                     </popUpButton>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9">
-                        <rect key="frame" x="20" y="60" width="549" height="263"/>
+                        <rect key="frame" x="20" y="60" width="549" height="259"/>
                         <clipView key="contentView" id="RNR-mg-LJN">
-                            <rect key="frame" x="1" y="1" width="547" height="261"/>
+                            <rect key="frame" x="1" y="1" width="547" height="257"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" autosaveName="ValidateTable" id="11" customClass="CDOutlineView">
-                                    <rect key="frame" x="0.0" y="0.0" width="547" height="261"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="547" height="257"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -75,7 +75,7 @@
                     <customView verticalCompressionResistancePriority="150" translatesAutoresizingMaskIntoConstraints="NO" id="cfF-Iv-FNQ" userLabel="Button View">
                         <rect key="frame" x="20" y="13" width="549" height="22"/>
                         <subviews>
-                            <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="14">
+                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="14">
                                 <rect key="frame" x="0.0" y="3" width="16" height="16"/>
                             </progressIndicator>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="20" userLabel="Progress Field">
@@ -87,7 +87,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7">
-                                <rect key="frame" x="404" y="-6" width="70" height="32"/>
+                                <rect key="frame" x="403" y="-1" width="60" height="24"/>
                                 <buttonCell key="cell" type="push" title="Atcelt" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="8">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -100,7 +100,7 @@ Gw
                                 </connections>
                             </button>
                             <button tag="1" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5">
-                                <rect key="frame" x="472" y="-6" width="84" height="32"/>
+                                <rect key="frame" x="475" y="-1" width="74" height="24"/>
                                 <buttonCell key="cell" type="push" title="Turpināt" bezelStyle="rounded" alignment="center" borderStyle="border" tag="1" inset="2" id="6">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -133,7 +133,7 @@ DQ
                     <constraint firstAttribute="trailing" secondItem="cfF-Iv-FNQ" secondAttribute="trailing" constant="20" symbolic="YES" id="E5r-vt-izh"/>
                     <constraint firstItem="15" firstAttribute="top" secondItem="4" secondAttribute="top" constant="20" symbolic="YES" id="LMi-v3-klK"/>
                     <constraint firstItem="15" firstAttribute="leading" secondItem="4" secondAttribute="leading" constant="20" symbolic="YES" id="NEP-Ec-4US"/>
-                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="QVF-Qt-Q7H"/>
+                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" constant="60" id="RcD-7U-Plb"/>
                     <constraint firstAttribute="trailing" secondItem="15" secondAttribute="trailing" constant="20" symbolic="YES" id="Spw-Z5-Co6"/>
                     <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" constant="20" symbolic="YES" id="Tvi-Wv-CFu"/>
                     <constraint firstItem="9" firstAttribute="top" secondItem="15" secondAttribute="bottom" constant="8" symbolic="YES" id="UNL-sT-YuO"/>
@@ -166,7 +166,7 @@ DQ
                             </textFieldCell>
                         </textField>
                         <imageView translatesAutoresizingMaskIntoConstraints="NO" id="hSP-0U-eb2">
-                            <rect key="frame" x="16" y="114" width="16" height="32"/>
+                            <rect key="frame" x="16" y="130" width="16" height="16"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="16" id="pGg-sp-iHL"/>
                                 <constraint firstAttribute="width" constant="16" id="v08-Z7-BRE"/>
