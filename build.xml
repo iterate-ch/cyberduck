@@ -153,6 +153,12 @@
         <property name="msbuild.sign" value=""/>
 
         <property name="signtool" value="cng" />
+        <condition property="signtool.csp" value="${env.SIGNTOOL_CSP}">
+            <isset property="env.SIGNTOOL_CSP"/>
+        </condition>
+        <condition property="signtool.kc" value="${env.SIGNTOOL_KC}">
+            <isset property="env.SIGNTOOL_KC"/>
+        </condition>
         <property name="revision" value="0" />
         <copy todir="${build}/generated/msbuild" overwrite="True">
             <resources>
