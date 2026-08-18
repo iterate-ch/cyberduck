@@ -54,11 +54,11 @@ jobs:
         with:
           args: install openssl -y
       - name: Copy Sparkle Updater Private Key (DSA)
-        run: ${{ env.SPARKLE_PRIVATE_KEY_DSA }} > www/update/private.pem
+        run: echo "${{ env.SPARKLE_PRIVATE_KEY_DSA }}" > www/update/private.pem
         env:
           SPARKLE_PRIVATE_KEY_DSA: ${{ secrets.SPARKLE_PRIVATE_KEY_DSA }}
       - name: Copy Sparkle Updater Private Key (ED25519)
-        run: ${{ env.SPARKLE_PRIVATE_KEY_ED25519 }} > www/update/private-ed25519.pem
+        run: echo "${{ env.SPARKLE_PRIVATE_KEY_ED25519 }}" > www/update/private-ed25519.pem
         env:
           SPARKLE_PRIVATE_KEY_ED25519: ${{ secrets.SPARKLE_PRIVATE_KEY_ED25519 }}
       - name: Import Developer ID certificate
