@@ -77,8 +77,6 @@ jobs:
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
           NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
           NOTARIZATION_TEAMID: ${{ secrets.NOTARIZATION_TEAMID }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           KEYCHAIN_PATH: ${{ runner.temp }}/build.keychain-db
           SIGNTOOL_CSP: ${{ secrets.SIGNTOOL_CSP }}
           SIGNTOOL_KC: ${{ secrets.SIGNTOOL_KC }}
