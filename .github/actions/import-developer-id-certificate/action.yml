@@ -1,0 +1,35 @@
+name: Import Developer ID Certificate
+description: Imports the Developer ID certificate and intermediate CAs into a temporary keychain on macOS runners.
+
+inputs:
+  certificate:
+    description: Base64-encoded Developer ID certificate (PKCS#12)
+    required: true
+  certificate-password:
+    description: Password for the PKCS#12 certificate
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Import Developer ID certificate
+      if: runner.os == 'macOS'
+      shell: bash
+      env:
+        CERTIFICATE_BASE64: ${{ inputs.certificate }}
+        CERTIFICATE_PASSWORD: ${{ inputs.certificate-password }}
+      run: |
+        echo "$CERTIFICATE_BASE64" | base64 --decode > certificate.p12
+        KEYCHAIN_PATH=${{ runner.temp }}/build.keychain-db
+        KEYCHAIN_PASSWORD=$(uuidgen)
+        /usr/bin/security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+        /usr/bin/security set-keychain-settings -u "$KEYCHAIN_PATH"
+        /usr/bin/security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+        curl -sS -o AppleWWDRCAG3.cer https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer
+        /usr/bin/security import AppleWWDRCAG3.cer -k "$KEYCHAIN_PATH" -T /usr/bin/codesign
+        curl -sS -o DeveloperIDCA.cer https://www.apple.com/certificateauthority/DeveloperIDCA.cer
+        /usr/bin/security import DeveloperIDCA.cer -k "$KEYCHAIN_PATH" -T /usr/bin/codesign
+        /usr/bin/security import certificate.p12 -k "$KEYCHAIN_PATH" -P "$CERTIFICATE_PASSWORD" -t cert -f pkcs12 -T /usr/bin/codesign -T /usr/bin/security
+        /usr/bin/security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+        /usr/bin/security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+        /usr/bin/security list-keychains -d user -s "$KEYCHAIN_PATH"
