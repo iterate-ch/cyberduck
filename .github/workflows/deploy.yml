@@ -73,6 +73,8 @@ jobs:
       - name: Build with Maven
         run: mvn --settings .github/maven-settings.xml --batch-mode deploy -Pinstaller -DskipTests -DskipITs -D"sparkle.feed=${{ steps.sparkle-feed.outputs.SPARKLE_FEED }}"
         env:
+          MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
+          MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}
           DEVELOPER_DIR: /Applications/Xcode 15.app/Contents/Developer
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
           NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
