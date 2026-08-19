@@ -22,7 +22,8 @@
     </parent>
     <artifactId>azure</artifactId>
     <properties>
-        <azure-storage-version>12.35.1</azure-storage-version>
+        <azure-storage-blob-version>12.35.1</azure-storage-blob-version>
+        <azure-storage-file-datalake-version>12.28.1</azure-storage-file-datalake-version>
     </properties>
 
     <dependencies>
@@ -41,7 +42,18 @@
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-blob</artifactId>
-            <version>${azure-storage-version}</version>
+            <version>${azure-storage-blob-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-core-http-netty</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-file-datalake</artifactId>
+            <version>${azure-storage-file-datalake-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.azure</groupId>
