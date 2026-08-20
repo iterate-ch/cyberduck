@@ -65,87 +65,53 @@ public class AzureObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
-                final Credentials credentials = session.getHost().getCredentials();
-                final DataLakeServiceClientBuilder builder = new DataLakeServiceClientBuilder()
-                        .endpoint(session.getClient().getAccountUrl())
-                        .pipeline(session.getClient().getHttpPipeline());
-                if(credentials.isTokenAuthentication()) {
-                    builder.credential(new AzureSasCredential(credentials.getToken()));
-                }
-                else {
-                    builder.credential(new StorageSharedKeyCredential(credentials.getUsername(), credentials.getPassword()));
-                }
-                final DataLakeServiceClient client = builder.buildClient();
-                final DataLakeFileSystemClient filesystem = client.getFileSystemClient(containerService.getContainer(directory).getName());
-                final ListPathsOptions options = new ListPathsOptions().setRecursive(false);
-                if(!containerService.isContainer(directory)) {
-                    options.setPath(StringUtils.removeEnd(containerService.getKey(directory), String.valueOf(Path.DELIMITER)));
-                }
-                String continuationToken = null;
-                for(PagedResponse<PathItem> response : filesystem.listPaths(options, null).iterableByPage(continuationToken,
-                        HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
-                    for(PathItem item : response.getElements()) {
-                        final EnumSet<Path.Type> types = item.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                        final Path child = new Path(directory, PathNormalizer.name(item.getName()), types, attributes.toAttributes(item));
-                        children.add(child);
-                    }
-                    listener.chunk(directory, children);
-                    continuationToken = response.getContinuationToken();
-                    if(StringUtils.isBlank(continuationToken)) {
-                        break;
-                    }
+            final BlobContainerClient containerClient = session.getClient().getBlobContainerClient(containerService.getContainer(directory).getName());
+            String prefix = StringUtils.EMPTY;
+            if(!containerService.isContainer(directory)) {
+                prefix = containerService.getKey(directory);
+                if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
+                    prefix += Path.DELIMITER;
                 }
             }
-            else {
-                final BlobContainerClient containerClient = session.getClient().getBlobContainerClient(containerService.getContainer(directory).getName());
-                String prefix = StringUtils.EMPTY;
-                if(!containerService.isContainer(directory)) {
-                    prefix = containerService.getKey(directory);
-                    if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
-                        prefix += Path.DELIMITER;
-                    }
-                }
-                boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
-                String continuationToken = null;
-                for(PagedResponse<BlobItem> response : containerClient.listBlobsByHierarchy(String.valueOf(Path.DELIMITER), new ListBlobsOptions()
-                        .setDetails(new BlobListDetails().setRetrieveMetadata(true))
-                        .setPrefix(prefix)
-                        .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize")), null).iterableByPage(continuationToken,
-                        HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
-                    for(BlobItem item : response.getElements()) {
-                        if(StringUtils.equals(prefix, item.getName())) {
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Skip placeholder key %s", item));
-                            }
-                            hasDirectoryPlaceholder = true;
-                            continue;
+            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
+            String continuationToken = null;
+            for(PagedResponse<BlobItem> response : containerClient.listBlobsByHierarchy(String.valueOf(Path.DELIMITER), new ListBlobsOptions()
+                    .setDetails(new BlobListDetails().setRetrieveMetadata(true))
+                    .setPrefix(prefix)
+                    .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize")), null).iterableByPage(continuationToken,
+                    HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
+                for(BlobItem item : response.getElements()) {
+                    if(StringUtils.equals(prefix, item.getName())) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Skip placeholder key %s", item));
                         }
-                        final PathAttributes attr;
-                        if(item.isPrefix()) {
-                            attr = PathAttributes.EMPTY;
-                        }
-                        else {
-                            attr = attributes.toAttributes(item.getProperties());
-                        }
-                        // A directory is designated by a delimiter character.
-                        final EnumSet<Path.Type> types = null != item.isPrefix() && item.isPrefix()
-                                ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
-                        final Path child = new Path(directory, PathNormalizer.name(item.getName()), types, attr);
-                        children.add(child);
+                        hasDirectoryPlaceholder = true;
+                        continue;
                     }
-                    listener.chunk(directory, children);
-                    continuationToken = response.getContinuationToken();
-                    if(StringUtils.isBlank(continuationToken)) {
-                        break;
+                    final PathAttributes attr;
+                    if(item.isPrefix()) {
+                        attr = PathAttributes.EMPTY;
                     }
+                    else {
+                        attr = attributes.toAttributes(item.getProperties());
+                    }
+                    // A directory is designated by a delimiter character.
+                    final EnumSet<Path.Type> types = null != item.isPrefix() && item.isPrefix()
+                            ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+                    final Path child = new Path(directory, PathNormalizer.name(item.getName()), types, attr);
+                    children.add(child);
                 }
-                if(!hasDirectoryPlaceholder && children.isEmpty()) {
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("No placeholder found for directory %s", directory));
-                    }
-                    throw new NotfoundException(directory.getAbsolute());
+                listener.chunk(directory, children);
+                continuationToken = response.getContinuationToken();
+                if(StringUtils.isBlank(continuationToken)) {
+                    break;
                 }
+            }
+            if(!hasDirectoryPlaceholder && children.isEmpty()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("No placeholder found for directory %s", directory));
+                }
+                throw new NotfoundException(directory.getAbsolute());
             }
             return children;
         }
