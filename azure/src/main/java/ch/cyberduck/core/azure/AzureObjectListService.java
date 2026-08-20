@@ -16,6 +16,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -33,13 +34,19 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
+import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
-import com.azure.core.http.rest.PagedIterable;
 import com.azure.core.http.rest.PagedResponse;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobListDetails;
 import com.azure.storage.blob.models.ListBlobsOptions;
+import com.azure.storage.common.StorageSharedKeyCredential;
+import com.azure.storage.file.datalake.DataLakeFileSystemClient;
+import com.azure.storage.file.datalake.DataLakeServiceClient;
+import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
+import com.azure.storage.file.datalake.models.ListPathsOptions;
+import com.azure.storage.file.datalake.models.PathItem;
 
 public class AzureObjectListService implements ListService {
     private static final Logger log = LogManager.getLogger(AzureObjectListService.class);
@@ -57,55 +64,88 @@ public class AzureObjectListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            final BlobContainerClient containerClient = session.getClient().getBlobContainerClient(containerService.getContainer(directory).getName());
             final AttributedList<Path> children = new AttributedList<>();
-            PagedIterable<BlobItem> result;
-            String prefix = StringUtils.EMPTY;
-            if(!containerService.isContainer(directory)) {
-                prefix = containerService.getKey(directory);
-                if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
-                    prefix += Path.DELIMITER;
+            if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+                final Credentials credentials = session.getHost().getCredentials();
+                final DataLakeServiceClientBuilder builder = new DataLakeServiceClientBuilder()
+                        .endpoint(session.getClient().getAccountUrl())
+                        .pipeline(session.getClient().getHttpPipeline());
+                if(credentials.isTokenAuthentication()) {
+                    builder.credential(new AzureSasCredential(credentials.getToken()));
+                }
+                else {
+                    builder.credential(new StorageSharedKeyCredential(credentials.getUsername(), credentials.getPassword()));
+                }
+                final DataLakeServiceClient client = builder.buildClient();
+                final DataLakeFileSystemClient filesystem = client.getFileSystemClient(containerService.getContainer(directory).getName());
+                final ListPathsOptions options = new ListPathsOptions().setRecursive(false);
+                if(!containerService.isContainer(directory)) {
+                    options.setPath(StringUtils.removeEnd(containerService.getKey(directory), String.valueOf(Path.DELIMITER)));
+                }
+                String continuationToken = null;
+                for(PagedResponse<PathItem> response : filesystem.listPaths(options, null).iterableByPage(continuationToken,
+                        HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
+                    for(PathItem item : response.getElements()) {
+                        final EnumSet<Path.Type> types = item.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                        final Path child = new Path(directory, PathNormalizer.name(item.getName()), types, attributes.toAttributes(item));
+                        children.add(child);
+                    }
+                    listener.chunk(directory, children);
+                    continuationToken = response.getContinuationToken();
+                    if(StringUtils.isBlank(continuationToken)) {
+                        break;
+                    }
                 }
             }
-            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
-            String continuationToken = null;
-            for(PagedResponse<BlobItem> response : containerClient.listBlobsByHierarchy(String.valueOf(Path.DELIMITER), new ListBlobsOptions()
-                    .setDetails(new BlobListDetails().setRetrieveMetadata(true))
-                    .setPrefix(prefix)
-                    .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize")), null).iterableByPage(continuationToken,
-                    HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
-                for(BlobItem item : response.getElements()) {
-                    if(StringUtils.equals(prefix, item.getName())) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Skip placeholder key %s", item));
+            else {
+                final BlobContainerClient containerClient = session.getClient().getBlobContainerClient(containerService.getContainer(directory).getName());
+                String prefix = StringUtils.EMPTY;
+                if(!containerService.isContainer(directory)) {
+                    prefix = containerService.getKey(directory);
+                    if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
+                        prefix += Path.DELIMITER;
+                    }
+                }
+                boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
+                String continuationToken = null;
+                for(PagedResponse<BlobItem> response : containerClient.listBlobsByHierarchy(String.valueOf(Path.DELIMITER), new ListBlobsOptions()
+                        .setDetails(new BlobListDetails().setRetrieveMetadata(true))
+                        .setPrefix(prefix)
+                        .setMaxResultsPerPage(HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize")), null).iterableByPage(continuationToken,
+                        HostPreferencesFactory.get(session.getHost()).getInteger("azure.listing.chunksize"))) {
+                    for(BlobItem item : response.getElements()) {
+                        if(StringUtils.equals(prefix, item.getName())) {
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Skip placeholder key %s", item));
+                            }
+                            hasDirectoryPlaceholder = true;
+                            continue;
                         }
-                        hasDirectoryPlaceholder = true;
-                        continue;
+                        final PathAttributes attr;
+                        if(item.isPrefix()) {
+                            attr = PathAttributes.EMPTY;
+                        }
+                        else {
+                            attr = attributes.toAttributes(item.getProperties());
+                        }
+                        // A directory is designated by a delimiter character.
+                        final EnumSet<Path.Type> types = null != item.isPrefix() && item.isPrefix()
+                                ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+                        final Path child = new Path(directory, PathNormalizer.name(item.getName()), types, attr);
+                        children.add(child);
                     }
-                    final PathAttributes attr;
-                    if(item.isPrefix()) {
-                        attr = PathAttributes.EMPTY;
+                    listener.chunk(directory, children);
+                    continuationToken = response.getContinuationToken();
+                    if(StringUtils.isBlank(continuationToken)) {
+                        break;
                     }
-                    else {
-                        attr = attributes.toAttributes(item.getProperties());
+                }
+                if(!hasDirectoryPlaceholder && children.isEmpty()) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("No placeholder found for directory %s", directory));
                     }
-                    // A directory is designated by a delimiter character.
-                    final EnumSet<Path.Type> types = null != item.isPrefix() && item.isPrefix()
-                            ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
-                    final Path child = new Path(directory, PathNormalizer.name(item.getName()), types, attr);
-                    children.add(child);
+                    throw new NotfoundException(directory.getAbsolute());
                 }
-                listener.chunk(directory, children);
-                continuationToken = response.getContinuationToken();
-                if(StringUtils.isBlank(continuationToken)) {
-                    break;
-                }
-            }
-            if(!hasDirectoryPlaceholder && children.isEmpty()) {
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("No placeholder found for directory %s", directory));
-                }
-                throw new NotfoundException(directory.getAbsolute());
             }
             return children;
         }
