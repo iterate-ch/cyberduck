@@ -3,6 +3,7 @@
 [9.5.4](https://github.com/iterate-ch/cyberduck/compare/release-9-5-3...release-9-5-4)
 * [Feature] Suppress sleep mode during file transfers (Windows)
 * [Feature] Resolve *.localhost hostnames to loopback address
+* [Feature] Support hierarchical namespaces in Azure Data Lake filesystems (Azure)
 * [Bugfix] Performance improvement providing missing file keys for shared files (DRACOON)
 * [Bugfix] Login failure connecting to AWS GovCloud (S3) ([#18336](https://trac.cyberduck.io/ticket/18336))
 * [Bugfix] Failure comparing large files with no checksum available (Backblaze B2) ([#18363](https://trac.cyberduck.io/ticket/18363))
