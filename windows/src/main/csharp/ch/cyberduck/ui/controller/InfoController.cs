@@ -183,15 +183,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void InitVersions()
         {
-            if (View.Versions.ViewModel is not VersionsViewModel viewModel)
+            if (View.Versions.DataContext is not VersionsViewModel viewModel)
             {
                 viewModel = new VersionsViewModel(_controller, _controller.Pool);
-                View.Versions.ViewModel = viewModel;
-                viewModel.PromptDelete.RegisterHandler(c => c.SetOutput(_controller.DeletePathsPrompt(c.Input)));
+                viewModel.OnDeleteConfirmation += e => e.Result = _controller.DeletePathsPrompt(e.Files);
                 viewModel.Reverted += Versions_Reverted;
+                View.Versions.DataContext = viewModel;
             }
+
             viewModel.Selection = SelectedPath;
-            viewModel.Load.ExecuteIfPossible().Subscribe();
+            viewModel.Load();
         }
 
         private void Versions_Reverted(IList<Path> files)

@@ -13,51 +13,101 @@
     <system:Double x:Key="TextControlThemeMinHeight">24</system:Double>
     <system:Double x:Key="TextControlThemeMinWidth">0</system:Double>
     <Thickness x:Key="TextControlThemePadding">10,5,6,6</Thickness>
-    <Style x:Key="BaseTextBlockStyle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="{StaticResource BodyTextBlockFontSize}" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-        <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="LineStackingStrategy" Value="MaxHeight" />
+    <Style x:Key="BaseTextBlockStyle"
+           TargetType="TextBlock">
+        <Setter Property="FontSize"
+                Value="{StaticResource BodyTextBlockFontSize}" />
+        <Setter Property="FontWeight"
+                Value="SemiBold" />
+        <Setter Property="TextTrimming"
+                Value="CharacterEllipsis" />
+        <Setter Property="TextWrapping"
+                Value="Wrap" />
+        <Setter Property="LineStackingStrategy"
+                Value="MaxHeight" />
     </Style>
-    <Style x:Key="CaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
-        <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}" />
-        <Setter Property="FontWeight" Value="Normal" />
+    <Style x:Key="CaptionTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize"
+                Value="{StaticResource CaptionTextBlockFontSize}" />
+        <Setter Property="FontWeight"
+                Value="Normal" />
     </Style>
-    <Style x:Key="BodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
-        <Setter Property="FontWeight" Value="Normal" />
+    <Style x:Key="BodyTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontWeight"
+                Value="Normal" />
     </Style>
-    <Style x:Key="BodyStrongTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}" />
-    <Style x:Key="SubtitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
-        <Setter Property="FontSize" Value="{StaticResource SubtitleTextBlockFontSize}" />
+    <Style x:Key="BodyStrongTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource BaseTextBlockStyle}" />
+    <Style x:Key="SubtitleTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize"
+                Value="{StaticResource SubtitleTextBlockFontSize}" />
     </Style>
-    <Style x:Key="TitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
-        <Setter Property="FontSize" Value="{StaticResource TitleTextBlockFontSize}" />
+    <Style x:Key="TitleTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize"
+                Value="{StaticResource TitleTextBlockFontSize}" />
     </Style>
-    <Style x:Key="TitleLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
-        <Setter Property="FontSize" Value="{StaticResource TitleLargeTextBlockFontSize}" />
+    <Style x:Key="TitleLargeTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize"
+                Value="{StaticResource TitleLargeTextBlockFontSize}" />
     </Style>
-    <Style x:Key="DisplayTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
-        <Setter Property="FontSize" Value="{StaticResource DisplayTextBlockFontSize}" />
+    <Style x:Key="DisplayTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontSize"
+                Value="{StaticResource DisplayTextBlockFontSize}" />
     </Style>
-    <Style x:Key="DefaultTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-        <Setter Property="HorizontalContentAlignment" Value="Left" />
-        <Setter Property="VerticalContentAlignment" Value="Top" />
-        <Setter Property="MinHeight" Value="{DynamicResource TextControlThemeMinHeight}" />
-        <Setter Property="MinWidth" Value="{DynamicResource TextControlThemeMinWidth}" />
-        <Setter Property="Padding" Value="{DynamicResource TextControlThemePadding}" />
+    <Style x:Key="DefaultTextBoxStyle"
+           TargetType="TextBox"
+           BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="HorizontalContentAlignment"
+                Value="Left" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Top" />
+        <Setter Property="MinHeight"
+                Value="{DynamicResource TextControlThemeMinHeight}" />
+        <Setter Property="MinWidth"
+                Value="{DynamicResource TextControlThemeMinWidth}" />
+        <Setter Property="Padding"
+                Value="{DynamicResource TextControlThemePadding}" />
     </Style>
-    <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}" />
-    
+    <Style TargetType="TextBox"
+           BasedOn="{StaticResource DefaultTextBoxStyle}" />
+
     <Thickness x:Key="ButtonPadding">11,5,11,6</Thickness>
-    <Style x:Key="DefaultButtonStyle" TargetType="ButtonBase">
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
+    <Style x:Key="DefaultButtonStyle"
+           TargetType="ButtonBase">
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Padding"
+                Value="{StaticResource ButtonPadding}" />
     </Style>
-    <Style TargetType="ButtonBase" BasedOn="{StaticResource DefaultButtonStyle}" />
-    <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}" />
-    
-    <Style x:Key="DialogMenuStyle" />
+    <Style TargetType="ButtonBase"
+           BasedOn="{StaticResource DefaultButtonStyle}" />
+    <Style TargetType="Button"
+           BasedOn="{StaticResource DefaultButtonStyle}" />
+
+    <Style x:Key="DialogMenuStyle"
+           TargetType="Menu">
+        <Setter Property="TextElement.FontSize"
+                Value="{StaticResource BodyTextBlockFontSize}" />
+        <Setter Property="Padding"
+                Value="{StaticResource UISpacing}" />
+    </Style>
+    <Style TargetType="MenuItem">
+        <Setter Property="Padding"
+                Value="14" />
+    </Style>
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="AppStyles.Base.xaml" />

@@ -35,6 +35,7 @@
     <Thickness x:Key="CardItemCompactItemSpacing">14</Thickness>
     
     <!-- Special Use -->
+    <Thickness x:Key="PageTitleControlSpacing">24,24,24,12</Thickness>
     <!-- Key: $(Role)$(Base Spacing)$(Inner Spacing)Spacing-->
     <Thickness x:Key="PageTitleCardItemCompactItemSpacing">14,14,14,6</Thickness>
 </ResourceDictionary>

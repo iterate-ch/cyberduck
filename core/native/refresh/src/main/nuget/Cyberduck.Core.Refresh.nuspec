@@ -10,6 +10,7 @@
       <group>
         <dependency id="Cyberduck.Core" version="$version$" />
         <dependency id="Cyberduck.Core.Native" version="$version$" />
+        <dependency id="CommunityToolkit.Mvvm" version="$PkgCommunityToolkit_MvvmVersion$" />
         <dependency id="DotNetProjects.Extended.Wpf.Toolkit" version="$PkgDotNetProjects_Extended_Wpf_ToolkitVersion$" />
         <dependency id="ReactiveUI.WPF" version="$PkgReactiveUI_WPFVersion$" />
         <dependency id="System.Runtime.Caching" version="$PkgSystem_Runtime_CachingVersion$" />
