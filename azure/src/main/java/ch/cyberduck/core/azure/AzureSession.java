@@ -153,7 +153,7 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
         final StorageAccountInfo accountInfo = this.getStorageAccountInfo();
         final AccountKind kind = accountInfo.getAccountKind();
         if(log.isInfoEnabled()) {
-            log.info(String.format("Connected to account of kind %s", kind));
+            log.info("Connected to account of kind {}", kind);
         }
     }
 
