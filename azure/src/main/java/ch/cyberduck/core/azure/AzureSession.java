@@ -17,7 +17,6 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
@@ -56,6 +55,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
@@ -91,8 +91,8 @@ public class AzureSession extends HttpSession<BlobServiceClient> {
     private final CredentialsHttpPipelinePolicy authenticator
             = new CredentialsHttpPipelinePolicy();
 
-    private final ExpiringObjectHolder<StorageAccountInfo> storageAccountInfo
-            = new ExpiringObjectHolder<>(Long.MAX_VALUE);
+    private final AtomicReference<StorageAccountInfo> storageAccountInfo
+            = new AtomicReference<>();
 
     public AzureSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
