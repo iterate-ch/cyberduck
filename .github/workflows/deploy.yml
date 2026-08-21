@@ -2,6 +2,7 @@ name: Publish Artifacts
 on:
   workflow_dispatch:
   push:
+    tags: [ '*' ]
     branches:
       - master
 jobs:
@@ -14,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        os: [ macos-self-hosted, linux-self-hosted, windows-self-hosted ]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -26,7 +27,7 @@ jobs:
           java-version: 21
           cache: maven
       - name: Add msbuild to PATH
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: microsoft/setup-msbuild@v3
         with:
           msbuild-architecture: x64
@@ -37,23 +38,107 @@ jobs:
         run: |
           echo "NuGetPackageSourceCredentials_gh-ikvmnet=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
           echo "NuGetPackageSourceCredentials_gh-iterate-ch=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
-      - name: Install Bonjour SDK
-        if: ${{ runner.os == 'Windows' }}
-        uses: crazy-max/ghaction-chocolatey@v4
-        with:
-          args: install bonjour -y
-      - name: Install WiX Toolset
-        if: ${{ runner.os == 'Windows' }}
-        uses: crazy-max/ghaction-chocolatey@v4
-        with:
-          args: install wixtoolset -y
-      - name: Install OpenSSL
-        if: ${{ runner.os == 'Windows' }}
-        uses: crazy-max/ghaction-chocolatey@v4
-        with:
-          args: install openssl -y
-      - name: Build with Maven
-        run: mvn --batch-mode deploy -DskipTests -DskipITs -DskipSign -DskipNotarize
+      - name: Copy Sparkle Updater Private Key (DSA)
+        run: echo "${{ env.SPARKLE_PRIVATE_KEY_DSA }}" > www/update/private.pem
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SPARKLE_PRIVATE_KEY_DSA: ${{ secrets.SPARKLE_PRIVATE_KEY_DSA }}
+      - name: Copy Sparkle Updater Private Key (ED25519)
+        run: echo "${{ env.SPARKLE_PRIVATE_KEY_ED25519 }}" > www/update/private-ed25519.pem
+        env:
+          SPARKLE_PRIVATE_KEY_ED25519: ${{ secrets.SPARKLE_PRIVATE_KEY_ED25519 }}
+      - name: Import Developer ID certificate
+        uses: ./.github/actions/import-developer-id-certificate
+        with:
+          certificate: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_BASE64 }}
+          certificate-password: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_PASSWORD }}
+      - name: Determine Sparkle Feed
+        id: sparkle-feed
+        shell: bash
+        run: echo "SPARKLE_FEED=${{ github.ref_type == 'branch' && 'nightly' || '' }}" >> "$GITHUB_OUTPUT"
+      - name: Build with Maven
+        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -Pinstaller -DskipTests -DskipITs -D"sparkle.feed=${{ steps.sparkle-feed.outputs.SPARKLE_FEED }}"
+        env:
+          MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
+          MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}
+          DEVELOPER_DIR: /Applications/Xcode 15.app/Contents/Developer
+          NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
+          NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
+          NOTARIZATION_TEAMID: ${{ secrets.NOTARIZATION_TEAMID }}
+          KEYCHAIN_PATH: ${{ runner.temp }}/build.keychain-db
+          SIGNTOOL_CSP: ${{ secrets.SIGNTOOL_CSP }}
+          SIGNTOOL_KC: ${{ secrets.SIGNTOOL_KC }}
+
+      - name: S3 Upload
+        if: runner.os == 'macos' || runner.os == 'windows'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.AWS_ACCESS_KEY_ID}}
+          PASSWORD: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        with:
+          mode: upload
+          url: ${{ github.ref_type == 'branch' && 's3:/snapshots.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
+          path: ${{ runner.os == 'macos' && 'osx/target/release/Cyberduck-*' || 'windows/target/release/Cyberduck-*' }}
+          args: '--verbose --existing overwrite --region us-east-1'
+
+      - name: Rackspace Upload
+        if: runner.os == 'macos' || runner.os == 'windows'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.RACKSPACE_USER}}
+          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
+        with:
+          mode: upload
+          url: ${{ github.ref_type == 'branch' && 'rackspace:/snapshots.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
+          path: ${{ runner.os == 'macos' && 'osx/target/release/Cyberduck-*' || 'windows/target/release/Cyberduck-*' }}
+          args: '--verbose --existing overwrite --region DFW'
+
+      - name: Credentials
+        id: identity
+        env:
+          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
+        run: |
+          echo "$SFTP_IDENTITY" > private-key.pem
+          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Feed
+        if: runner.os == 'macos' || runner.os == 'windows'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: ${{ runner.os == 'macos' && (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/nightly/' || 'sftp://version.cyberduck.io/') || (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/windows/nightly/' || 'sftp://version.cyberduck.io/windows/') }}
+          path: ${{ runner.os == 'macos' && 'osx/target/update/changelog.*' || 'windows/target/update/changelog.*' }}
+          args: '--existing overwrite --verbose'
+
+      - name: Archive Artifacts (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          name: Binaries (macOS)
+          path: |-
+            osx/target/release/*.zip
+            osx/target/release/*.pkg
+            cli/osx/target/release/*.pkg
+
+      - name: Archive Artifacts (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: Binaries (Windows)
+          path: |-
+            windows/target/release/*.exe
+            windows/target/release/*.msi
+            windows/target/release/*.appx
+            cli/windows/target/release/*.exe
+            cli/windows/target/release/*.msi
+
+      - name: Archive Artifacts (Linux)
+        if: runner.os == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: Binaries (Linux)
+          path: |-
+            cli/linux/target/release/*.deb
+            cli/linux/target/release/*.rpm
