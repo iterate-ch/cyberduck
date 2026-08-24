@@ -329,16 +329,17 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * Does not follow symlinks. Can be expensive if called many times due to symlink check.
+     * Does not follow symlinks.
      *
      * @return True if the path exists on the file system.
-     * @see <a href="https://rules.sonarsource.com/java/tag/performance/RSPEC-3725"/>
      */
     public boolean exists() {
         return this.exists(LinkOption.NOFOLLOW_LINKS);
     }
 
     /**
+     * Can be expensive if called many times due to symlink check.
+     *
      * @return True if the path exists on the file system.
      */
     public boolean exists(LinkOption... options) {

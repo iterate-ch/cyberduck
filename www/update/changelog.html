@@ -85,6 +85,56 @@
 </p>
 
 <p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/9.5.4"><strong>Version 9.5.4</strong></a>
+</p>
+<ul data-sparkle-version="9.5.4">
+    <li><span class="label label-success">Feature</span> Suppress sleep mode during file transfers (Windows)</li>
+    <li><span class="label label-success">Feature</span> Resolve *.localhost hostnames to loopback address</li>
+    <li><span class="label label-success">Feature</span> Support hierarchical namespaces in Azure Data Lake filesystems
+        (Azure)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Performance improvement providing missing file keys for shared
+        files (DRACOON)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Login failure connecting to AWS GovCloud
+        (S3) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18336">#18336</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Failure comparing large files with no checksum available
+        (Backblaze B2) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18363">#18363</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Failure to list, upload or download files with separate
+        provider and consumer nodes (iRODS) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18152">#18152</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Disable option to create share for root folder (Nextcloud)</li>
+    <li><span class="label label-warning">Bugfix</span> Command execution with credential_process configuration fails
+        (S3, macOS) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18256">#18256</a>)
+    </li>
+</ul>
+
+<p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/9.5.3"><strong>Version 9.5.3</strong></a>
+</p>
+<ul data-sparkle-version="9.5.3">
+    <li><span class="label label-warning">Bugfix</span> Password saved regardless of checkbox selection (Cryptomator)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Connect with Integrated Windows Authentication (IWA) connection
+        profile (WebDAV)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Command execution with credential_process configuration fails
+        (S3, macOS) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18256">#18256</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Crash when opening bookmark
+        window (macOS) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18175">#18175</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Skip sending client certificate when cancelling certificate selection
+        (WebDAV) (<a target="_blank" href="https://trac.cyberduck.io/ticket/10468">#10468</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Metadata tab in Info window never populates
+        (Windows) (<a target="_blank" href="https://trac.cyberduck.io/ticket/18332">#18332</a>)
+    </li>
+</ul>
+
+<p>
     <a target="_blank" href="https://trac.cyberduck.io/milestone/9.5.2"><strong>Version 9.5.2</strong></a>
 </p>
 <ul data-sparkle-version="9.5.2">
@@ -93,8 +143,13 @@
         connect to new bookmark (macOS) (<a target="_blank"
                                             href="https://trac.cyberduck.io/ticket/18213">#18213</a>)
     </li>
-    <li><span class="label label-warning">Bugfix</span> Crash opening folder prefixed with dot in filename (macOS) (<a target="_blank"
-                                            href="https://trac.cyberduck.io/ticket/18208">#18208</a>)
+    <li><span class="label label-warning">Bugfix</span> Crash opening folder prefixed with dot in filename (macOS) (<a
+            target="_blank"
+            href="https://trac.cyberduck.io/ticket/18208">#18208</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Connection profiles not updated with the latest version
+        available (<a target="_blank"
+                      href="https://trac.cyberduck.io/ticket/18254">#18254</a>)
     </li>
 </ul>
 

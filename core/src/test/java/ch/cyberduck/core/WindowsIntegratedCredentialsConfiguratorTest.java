@@ -26,14 +26,24 @@ public class WindowsIntegratedCredentialsConfiguratorTest {
     @Test
     public void testConfigure() {
         assumeFalse(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
-        final Host bookmark = new Host(new TestProtocol());
+        final Host bookmark = new Host(new TestProtocol() {
+            @Override
+            public boolean isTokenConfigurable() {
+                return true;
+            }
+        });
         assertEquals(bookmark.getCredentials(), new WindowsIntegratedCredentialsConfigurator().configure(bookmark));
     }
 
     @Test
     public void testConfigureWindows() {
         assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
-        final Host bookmark = new Host(new TestProtocol());
+        final Host bookmark = new Host(new TestProtocol() {
+            @Override
+            public boolean isTokenConfigurable() {
+                return true;
+            }
+        });
         final Credentials configured = new WindowsIntegratedCredentialsConfigurator().configure(bookmark);
         assertNotSame(bookmark.getCredentials(), configured);
         assertFalse(configured.getUsername().isEmpty());

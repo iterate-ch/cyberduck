@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathRelativizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -76,12 +77,18 @@ public class NextcloudShareFeature implements ch.cyberduck.core.features.Share<V
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
+        try {
+            if(new SimplePathPredicate(NextcloudHomeFeature.Context.files.home(session.getHost()).find()).test(file)) {
+                // You cannot share your root folder
+                return false;
+            }
+        }
+        catch(BackgroundException e) {
+            log.warn("Failure {} retrieving home directory", e.getMessage());
+            return false;
+        }
         switch(type) {
             case upload:
-                if(NextcloudHomeFeature.Context.files.home(session.getHost()).equals(file)) {
-                    // You cannot share your root folder
-                    return false;
-                }
                 return file.isDirectory();
         }
         return true;

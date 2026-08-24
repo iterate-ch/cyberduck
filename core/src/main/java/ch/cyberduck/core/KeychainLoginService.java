@@ -98,7 +98,7 @@ public class KeychainLoginService implements LoginService {
                     if(keys != null) {
                         if(null == keys.getPrivateKey(alias)) {
                             log.warn("No private key found for alias {} in keychain", alias);
-                            throw new LoginFailureException(LocaleFactory.localizedString("Provide additional login credentials", "Credentials"));
+                            throw new LoginFailureException(LocaleFactory.localizedString("No private key found for selected certificate", "Credentials"));
                         }
                     }
                 }

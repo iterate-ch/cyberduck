@@ -72,6 +72,7 @@ public class DAVClient extends SardineImpl {
     }
 
     public void setCredentials(final AuthScope authScope, final Credentials credentials) {
+        log.debug("Set credentials {} for {}", credentials, authScope);
         authProvider.setCredentials(authScope, credentials);
     }
 

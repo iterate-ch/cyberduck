@@ -67,19 +67,20 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
     public X509Certificate prompt(final String hostname, final List<X509Certificate> certificates) throws ConnectionCanceledException {
         final AtomicReference<SFChooseIdentityPanel> ref = new AtomicReference<>();
         final NSArray identities = KeychainCertificateStore.toDEREncodedCertificates(certificates);
+        final AtomicReference<WindowController.SheetDidCloseReturnCodeDelegate> closeDelegate = new AtomicReference<>();
         final int option = controller.alert(new SheetController.NoBundleSheetController() {
             @Outlet
             private SFChooseIdentityPanel panel;
 
             @Override
             public void loadBundle() {
-                panel = SFChooseIdentityPanel.sharedChooseIdentityPanel();
+                ref.set(panel = SFChooseIdentityPanel.sharedChooseIdentityPanel());
                 panel.setDomain(hostname);
                 final SecPolicyRef policyRef = SecurityFunctions.library.SecPolicyCreateSSL(true, hostname);
                 panel.setPolicies(policyRef);
                 FoundationKitFunctions.library.CFRelease(policyRef);
                 panel.setShowsHelp(false);
-                panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
+                panel.setAlternateButtonTitle(LocaleFactory.localizedString("Cancel"));
                 panel.setInformativeText(MessageFormat.format(LocaleFactory.localizedString(
                         "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."), hostname));
             }
@@ -91,18 +92,20 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
         }, new AlertRunner() {
             @Override
             public void alert(final NSWindow sheet, final SheetCallback callback) {
+                closeDelegate.set(new WindowController.SheetDidCloseReturnCodeDelegate(callback));
                 final SFChooseIdentityPanel panel = Rococoa.cast(sheet, SFChooseIdentityPanel.class);
                 if(null == window) {
                     callback.callback(panel.runModalForIdentities_message(identities, null).intValue());
                 }
                 else {
                     panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_identities_message(
-                            window, new WindowController.SheetDidCloseReturnCodeDelegate(callback).id(),
+                            window, closeDelegate.get().id(),
                             WindowController.SheetDidCloseReturnCodeDelegate.selector, null, identities, null
                     );
                 }
             }
         });
+        closeDelegate.set(null);
         switch(option) {
             case SheetCallback.DEFAULT_OPTION:
                 // Use the identity method to obtain the identity chosen by the user.
@@ -110,7 +113,7 @@ public class PromptCertificateIdentityCallback implements CertificateIdentityCal
                 final SecIdentityRef identityRef = panel.identity();
                 if(null == identityRef) {
                     log.warn("No identity selected for {}", hostname);
-                    throw new ConnectionCanceledException();
+                    throw new ConnectionCanceledException("Missing identity selection");
                 }
                 try {
                     return KeychainCertificateStore.toX509Certificate(identityRef);

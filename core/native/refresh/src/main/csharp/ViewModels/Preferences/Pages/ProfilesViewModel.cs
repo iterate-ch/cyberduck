@@ -24,7 +24,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 
         private readonly ReadOnlyObservableCollection<ProfileViewModel> profiles;
         private bool busy;
-        private string filterText;
+        private string filterText = "";
 
         public ProfilesViewModel(ProtocolFactory protocols, ProfileListObserver profileListObserver, Controller controller)
         {

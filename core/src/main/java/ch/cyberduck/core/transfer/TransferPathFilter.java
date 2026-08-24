@@ -22,17 +22,17 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.TransferStatusCanceledException;
 
 public interface TransferPathFilter {
 
     /**
      * @param file     File
      * @param parent   Parent transfer status
-     * @param progress
-     * @return True if file should be transferred
+     * @param listener Progress listener
+     * @return True if the file should be transferred
      */
-    boolean accept(Path file, Local local, TransferStatus parent, ProgressListener progress) throws BackgroundException;
+    boolean accept(Path file, Local local, TransferStatus parent, ProgressListener listener)
+            throws BackgroundException;
 
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer such as calculating its
@@ -43,30 +43,28 @@ public interface TransferPathFilter {
      * @param parent   Parent transfer status
      * @param listener Progress listener
      * @return Transfer status
-     * @throws TransferStatusCanceledException To skip item
      */
     TransferStatus prepare(Path file, Local local, TransferStatus parent, ProgressListener listener)
-            throws TransferStatusCanceledException, BackgroundException;
+            throws BackgroundException;
 
     /**
-     * Apply filter outcome such as renaming file prior transfer
+     * Apply a filter outcome such as renaming file prior transfer
      *
      * @param file     Remote file
      * @param local    File on disk
      * @param status   Transfer status
      * @param listener Progress listener
-     * @throws BackgroundException
      */
     void apply(Path file, Local local, TransferStatus status, ProgressListener listener)
             throws BackgroundException;
 
     /**
-     * Post processing of completed transfer.
+     * Post-processing of a completed transfer.
      *
      * @param file     File
      * @param status   Transfer status
      * @param listener Progress listener
      */
-    void complete(Path file, Local local,
-                  TransferStatus status, ProgressListener listener) throws BackgroundException;
+    void complete(Path file, Local local, TransferStatus status, ProgressListener listener)
+            throws BackgroundException;
 }

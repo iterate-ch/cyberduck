@@ -1,9 +1,29 @@
 # Changelog
 
+[9.5.4](https://github.com/iterate-ch/cyberduck/compare/release-9-5-3...release-9-5-4)
+* [Feature] Suppress sleep mode during file transfers (Windows)
+* [Feature] Resolve *.localhost hostnames to loopback address
+* [Feature] Support hierarchical namespaces in Azure Data Lake filesystems (Azure)
+* [Bugfix] Performance improvement providing missing file keys for shared files (DRACOON)
+* [Bugfix] Login failure connecting to AWS GovCloud (S3) ([#18336](https://trac.cyberduck.io/ticket/18336))
+* [Bugfix] Failure comparing large files with no checksum available (Backblaze B2) ([#18363](https://trac.cyberduck.io/ticket/18363))
+* [Bugfix] Failure to list, upload or download files with separate provider and consumer nodes (iRODS) ([#18152](https://trac.cyberduck.io/ticket/18152))
+* [Bugfix] Disable option to create share for root folder (Nextcloud)
+* [Bugfix] Command execution with credential_process configuration fails (S3, macOS) ([#18256](https://trac.cyberduck.io/ticket/18256))
+
+[9.5.3](https://github.com/iterate-ch/cyberduck/compare/release-9-5-2...release-9-5-3)
+* [Bugfix] Password saved regardless of checkbox selection (Cryptomator)
+* [Bugfix] Connect with Integrated Windows Authentication (IWA) connection profile (WebDAV)
+* [Bugfix] Crash when opening bookmark window (macOS) ([#18175](https://trac.cyberduck.io/ticket/18175))
+* [Bugfix] Skip sending client certificate when cancelling certificate selection (WebDAV) ([#10468](https://trac.cyberduck.io/ticket/10468))
+* [Bugfix] Metadata tab in Info window never populates (Windows) ([#18332](https://trac.cyberduck.io/ticket/18332))
+
 [9.5.2](https://github.com/iterate-ch/cyberduck/compare/release-9-5-1...release-9-5-2)
 * [Feature] Upgrade Runtime to .NET 10 (Windows)
 * [Bugfix] Attempt to change to working directory of previous connection on connect to new bookmark (macOS) ([#18213](https://trac.cyberduck.io/ticket/18213))
 * [Bugfix] Crash opening folder prefixed with dot in filename (macOS) ([#18208](https://trac.cyberduck.io/ticket/18208))
+* [Bugfix] Connection profiles not updated with the latest version available
+  ([#18254](https://trac.cyberduck.io/ticket/18254))
 
 [9.5.1](https://github.com/iterate-ch/cyberduck/compare/release-9-5-0...release-9-5-1)
 * [Bugfix] Update expired provisioning profile for Mac App Store (macOS)

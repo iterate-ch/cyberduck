@@ -16,6 +16,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.CancellingListProgressListener;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultPathAttributes;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
@@ -37,11 +38,17 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.azure.core.credential.AzureSasCredential;
 import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobContainerProperties;
 import com.azure.storage.blob.models.BlobItemProperties;
 import com.azure.storage.blob.models.BlobProperties;
+import com.azure.storage.common.StorageSharedKeyCredential;
+import com.azure.storage.file.datalake.DataLakeServiceClient;
+import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
+import com.azure.storage.file.datalake.models.PathItem;
+import com.azure.storage.file.datalake.models.PathProperties;
 
 public class AzureAttributesFinderFeature implements AttributesFinder, AttributesAdapter<BlobItemProperties> {
     private static final Logger log = LogManager.getLogger(AzureAttributesFinderFeature.class);
@@ -69,6 +76,26 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
                 attributes.setETag(properties.getETag());
                 attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
                 return attributes;
+            }
+            if(file.isDirectory()) {
+                if(session.getStorageAccountInfo().isHierarchicalNamespaceEnabled()) {
+                    final Credentials credentials = session.getHost().getCredentials();
+                    final DataLakeServiceClientBuilder builder = new DataLakeServiceClientBuilder()
+                            .endpoint(session.getClient().getAccountUrl())
+                            .pipeline(session.getClient().getHttpPipeline());
+                    if(credentials.isTokenAuthentication()) {
+                        builder.credential(new AzureSasCredential(credentials.getToken()));
+                    }
+                    else {
+                        builder.credential(new StorageSharedKeyCredential(credentials.getUsername(), credentials.getPassword()));
+                    }
+                    final DataLakeServiceClient client = builder.buildClient();
+                    final PathProperties properties = client
+                            .getFileSystemClient(containerService.getContainer(file).getName())
+                            .getDirectoryClient(StringUtils.removeEnd(containerService.getKey(file), String.valueOf(Path.DELIMITER)))
+                            .getProperties();
+                    return this.toAttributes(properties);
+                }
             }
             if(file.isFile() || file.isPlaceholder()) {
                 try {
@@ -116,6 +143,25 @@ public class AzureAttributesFinderFeature implements AttributesFinder, Attribute
         final Map<String, String> custom = new HashMap<>();
         custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
         attributes.setCustom(custom);
+        return attributes;
+    }
+
+    public PathAttributes toAttributes(final PathProperties properties) {
+        final PathAttributes attributes = new DefaultPathAttributes();
+        attributes.setSize(properties.getFileSize());
+        attributes.setModificationDate(properties.getLastModified().toInstant().toEpochMilli());
+        if(properties.getContentMd5() != null) {
+            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(properties.getContentMd5())));
+        }
+        attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(properties.getETag(), "\""), "\""));
+        return attributes;
+    }
+
+    public PathAttributes toAttributes(final PathItem item) {
+        final PathAttributes attributes = new DefaultPathAttributes();
+        attributes.setSize(item.getContentLength());
+        attributes.setModificationDate(item.getLastModified().toInstant().toEpochMilli());
+        attributes.setETag(StringUtils.removeStart(StringUtils.removeEnd(item.getETag(), "\""), "\""));
         return attributes;
     }
 

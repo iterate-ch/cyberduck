@@ -301,7 +301,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             View.PopulateClientCertificates(keys);
-            if (_host.getCredentials().isCertificateAuthentication())
+            if (_host.getCredentials().isCertificateAuthentication() &&
+                !string.IsNullOrEmpty(_host.getCredentials().getCertificate()))
             {
                 View.SelectedClientCertificate = _host.getCredentials().getCertificate();
             }
@@ -541,7 +542,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedClientCertificateEvent()
         {
-            _host.getCredentials().setCertificate(View.SelectedClientCertificate);
+            _host.getCredentials().setCertificate(
+                LocaleFactory.localizedString("None").Equals(View.SelectedClientCertificate)
+                    ? string.Empty
+                    : View.SelectedClientCertificate);
             ItemChanged();
         }
 

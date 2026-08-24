@@ -53,8 +53,6 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -67,8 +65,6 @@ public class CryptomatorVaultTest {
     @Test
     public void testLoad() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
-
-            private final Map<String, byte[]> fileStore = new HashMap<>();
 
             @Override
             @SuppressWarnings("unchecked")

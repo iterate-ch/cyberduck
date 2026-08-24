@@ -17,6 +17,11 @@
         <copy todir="${bundle}/${bundle.runtime}" preservelastmodified="true">
             <fileset followsymlinks="true" dir="${runtime.dependency}" excludesfile="${home}/runtime-excludes.properties"/>
         </copy>
+        <chmod perm="a+x" type="file">
+            <fileset dir="${bundle}/${bundle.runtime}">
+                <include name="Contents/Home/lib/jspawnhelper"/>
+            </fileset>
+        </chmod>
     </target>
 
     <target name="shared-library-install-name">

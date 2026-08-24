@@ -210,36 +210,43 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
 
     @Override
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
-        final Logger log = LogManager.getLogger(getClass());
-        final String saved = bookmark.getCredentials().getCertificate();
-        if(StringUtils.isNotBlank(saved)) {
-            log.info("Return saved certificate alias {} for host {}", saved, bookmark);
-            return saved;
-        }
-        final X509Certificate selected;
         try {
-            selected = callback.choose(prompt, keyTypes, issuers, bookmark);
-        }
-        catch(ConnectionCanceledException e) {
-            log.info("No certificate selected for socket {}", socket);
-            return null;
-        }
-        if(null == selected) {
-            log.info("No certificate selected for socket {}", socket);
-            return null;
-        }
-        final String[] aliases = this.getClientAliases(keyTypes, issuers);
-        if(null != aliases) {
-            for(String alias : aliases) {
-                final X509Certificate[] chain = this.getCertificateChain(alias);
-                if(chain != null && chain.length > 0 && chain[0].equals(selected)) {
-                    log.info("Selected certificate alias {} for certificate {}", alias, selected);
-                    bookmark.getCredentials().setCertificate(alias);
+            final X509Certificate selected;
+            try {
+                final String alias = bookmark.getCredentials().getCertificate();
+                if(null != alias) {
+                    log.info("Return saved certificate alias {} for host {}", alias, bookmark);
+                    if(StringUtils.isBlank(alias)) {
+                        // Empty selection by user
+                        return null;
+                    }
                     return alias;
                 }
+                selected = callback.choose(prompt, keyTypes, issuers, bookmark);
             }
+            catch(ConnectionCanceledException e) {
+                log.info("No certificate selected for socket {}", socket);
+                bookmark.getCredentials().setCertificate(StringUtils.EMPTY);
+                return null;
+            }
+            final String[] aliases = this.getClientAliases(keyTypes, issuers);
+            if(null != aliases) {
+                for(String alias : aliases) {
+                    if(keystore.get().getCertificate(alias).equals(selected)) {
+                        log.info("Selected certificate alias {} for certificate {}", alias, selected);
+                        bookmark.getCredentials().setCertificate(alias);
+                        return alias;
+                    }
+                }
+            }
+            log.warn("No matching alias found for selected certificate {}", selected);
+            // Return null if there are no matches
+            return null;
         }
-        log.warn("No matching alias found for selected certificate {}", selected);
+        catch(ConcurrentException | KeyStoreException e) {
+            log.error("Keystore not loaded {}", e.getMessage());
+        }
+        // Return null if there are no matches
         return null;
     }
 }

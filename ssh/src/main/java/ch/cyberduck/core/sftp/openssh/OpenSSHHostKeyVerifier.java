@@ -43,6 +43,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 
+import com.hierynomus.sshj.userauth.certificate.Certificate;
 import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.common.SSHRuntimeException;
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
@@ -79,11 +80,12 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
 
     @Override
     public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
+        final PublicKey pk = unwrap(key);
         if(null == database) {
-            log.warn("Missing database {}", database);
+            log.warn("Missing database {}", file);
             return super.verify(host, key);
         }
-        final KeyType type = KeyType.fromKey(key);
+        final KeyType type = KeyType.fromKey(pk);
         if(type == KeyType.UNKNOWN) {
             return false;
         }
@@ -92,8 +94,17 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
             try {
                 if(entry.appliesTo(type, format(host))) {
                     foundApplicableHostEntry = true;
-                    if(entry.verify(key)) {
+                    if(entry.verify(pk)) {
                         return true;
+                    }
+                }
+                if(key instanceof Certificate) {
+                    // Verify if there is an entry for the public key of the CA certificate
+                    if(entry.appliesTo(KeyType.fromKey(key), format(host))) {
+                        foundApplicableHostEntry = true;
+                        if(entry.verify(key)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -104,14 +115,14 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         }
         if(foundApplicableHostEntry) {
             try {
-                return this.isChangedKeyAccepted(host, key);
+                return this.isChangedKeyAccepted(host, pk);
             }
             catch(ConnectionCanceledException | ChecksumException e) {
                 return false;
             }
         }
         try {
-            return this.isUnknownKeyAccepted(host, key);
+            return this.isUnknownKeyAccepted(host, pk);
         }
         catch(ConnectionCanceledException | ChecksumException e) {
             return false;
@@ -120,21 +131,22 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
 
     @Override
     public void allow(final Host host, final PublicKey key, final boolean persist) {
+        final PublicKey pk = unwrap(key);
         if(null == database) {
-            log.warn("Missing database {}", database);
-            super.allow(host, key, persist);
+            log.warn("Missing database for file {}", file);
+            super.allow(host, pk, persist);
         }
         else {
             try {
                 // Add the host key to the in-memory database
-                final KeyType type = KeyType.fromKey(key);
+                final KeyType type = KeyType.fromKey(pk);
                 switch(type) {
                     case UNKNOWN:
-                        log.warn("Unknown key type {}", key);
+                        log.warn("Unknown key type {}", pk);
                         return;
                 }
                 final OpenSSHKnownHosts.HostEntry entry
-                        = new OpenSSHKnownHosts.HostEntry(null, format(host), type, key);
+                        = new OpenSSHKnownHosts.HostEntry(null, format(host), type, pk);
                 database.entries().add(entry);
                 if(persist) {
                     if(file.attributes().getPermission().isWritable()) {
@@ -145,7 +157,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
             }
             catch(IOException e) {
                 log.error("Failure adding host key to database: {}", e.getMessage());
-                super.allow(host, key, persist);
+                super.allow(host, pk, persist);
             }
         }
     }

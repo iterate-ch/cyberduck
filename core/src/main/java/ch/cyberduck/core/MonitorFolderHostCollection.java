@@ -77,7 +77,7 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn("Failure reading file {}", file);
+                log.warn("Failure {} reading file {}", e, file);
             }
         }
     }
@@ -138,7 +138,7 @@ public class MonitorFolderHostCollection extends AbstractFolderHostCollection im
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn("Failure reading file {}", file);
+                log.warn("Failure {} reading file {}", e, file);
             }
         }
     }

@@ -33,7 +33,6 @@ import ch.cyberduck.core.s3.S3PathContainerService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -64,7 +63,6 @@ public class SpectraObjectListService extends S3AbstractListService {
         return this.list(directory, listener, HostPreferencesFactory.get(session.getHost()).getInteger("s3.listing.chunksize"));
     }
 
-    @NotNull
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         try {
             final String prefix = this.createPrefix(directory);
@@ -144,7 +142,6 @@ public class SpectraObjectListService extends S3AbstractListService {
         }
     }
 
-    @NotNull
     private PathAttributes toAttributes(final Contents object) {
         final PathAttributes attr = new DefaultPathAttributes();
         attr.setETag(object.getETag());

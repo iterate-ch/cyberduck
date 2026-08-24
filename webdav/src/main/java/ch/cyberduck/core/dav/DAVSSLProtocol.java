@@ -18,12 +18,15 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.WindowsIntegratedCredentialsConfigurator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.client.WinHttpClients;
 
 import com.google.auto.service.AutoService;
 
@@ -90,10 +93,18 @@ public class DAVSSLProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean validate(final Credentials credentials, final LoginOptions options) {
+        if(options.token) {
+            return WinHttpClients.isWinAuthAvailable();
+        }
+        return super.validate(credentials, options);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == CredentialsConfigurator.class) {
-            return (T) new DAVWindowsIntegratedCredentialsConfigurator(new WindowsIntegratedCredentialsConfigurator(true));
+            return (T) new WindowsIntegratedCredentialsConfigurator(true);
         }
         return super.getFeature(type);
     }

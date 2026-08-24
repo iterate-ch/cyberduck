@@ -626,6 +626,7 @@ public abstract class BookmarkController extends SheetController implements NSTa
             certificatePopup.setEnabled(options.certificate);
             certificatePopup.removeAllItems();
             certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+            certificatePopup.lastItem().setRepresentedObject(StringUtils.EMPTY);
             if(options.certificate) {
                 certificatePopup.menu().addItem(NSMenuItem.separatorItem());
                 for(String certificate : certificates) {

@@ -35,7 +35,7 @@ import java.util.List;
 public class DefaultCertificateStore implements CertificateStore {
 
     private final DefaultHostnameVerifier verifier
-        = new DefaultHostnameVerifier();
+            = new DefaultHostnameVerifier();
 
     @Override
     public X509Certificate choose(final CertificateIdentityCallback prompt, final String[] keyTypes, final Principal[] issuers, final Host bookmark) throws ConnectionCanceledException {
@@ -43,12 +43,17 @@ public class DefaultCertificateStore implements CertificateStore {
         final String[] aliases = store.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
             throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found",
-                Arrays.toString(issuers)));
+                    Arrays.toString(issuers)));
         }
         for(String alias : aliases) {
-            return store.getCertificate(alias, keyTypes, issuers);
+            final X509Certificate certificate = store.getCertificate(alias, keyTypes, issuers);
+            if(null == certificate) {
+                continue;
+            }
+            return certificate;
         }
-        return null;
+        throw new ConnectionCanceledException(String.format("No certificate matching aliases %s found",
+                Arrays.toString(aliases)));
     }
 
     @Override

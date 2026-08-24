@@ -42,6 +42,11 @@ public final class RemoteProfileDescription extends ProfileDescription {
     }
 
     @Override
+    public String getFilename() {
+        return file.getName();
+    }
+
+    @Override
     public boolean isLatest() {
         return !file.attributes().isDuplicate();
     }

@@ -113,6 +113,9 @@
         <antcall target="codesign" unless:true="${skipSign}">
             <param name="bundle" value="${app.bundle}"/>
         </antcall>
+        <antcall target="verify-signature" unless:true="${skipSign}">
+            <param name="bundle" value="${app.bundle}"/>
+        </antcall>
     </target>
 
     <target name="package" depends="version">

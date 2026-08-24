@@ -35,11 +35,11 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
         private readonly Controller controller;
         private readonly Metadata feature;
         private readonly ObservableCollectionExtended<Entry> metadata = new();
-        private readonly ArrayList pathsJava = new();
         private readonly SessionPool session;
         private bool adding;
         private bool discard;
         private IEnumerable<Path> paths;
+        private List pathsJava = Collections.emptyList();
 
         public ReactiveCommand<MetadataTemplateProvider.Template, Unit> AddMetadata { get; }
 
@@ -59,11 +59,13 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             set
             {
                 paths = value;
-                pathsJava.clear();
+                ArrayList temporary = [];
                 foreach (var item in value)
                 {
-                    pathsJava.add(item);
+                    temporary.add(item);
                 }
+
+                pathsJava = temporary;
             }
         }
 
@@ -77,27 +79,30 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             var locale = Locator.Current.GetService<Locale>();
             var preferences = Locator.Current.GetService<Preferences>();
             var provider = Locator.Current.GetService<MetadataTemplateProvider>();
-
             Load = ReactiveCommand.CreateFromTask(OnLoadAsync);
             Save = ReactiveCommand.CreateFromTask(OnSaveAsync);
             Save.InvokeCommand(Load);
-            var busyObservable = Observable.CombineLatest(Load.IsExecuting, Save.IsExecuting, (l, s) => l | s).Replay(1).RefCount();
+            var busyObservable = Observable.CombineLatest(Load.IsExecuting, Save.IsExecuting, (l, s) => l | s)
+                .ObserveOnDispatcher()
+                .Replay(1).RefCount();
             busy = busyObservable.ToProperty(this, nameof(Busy));
 
             AddMetadata = ReactiveCommand.Create<MetadataTemplateProvider.Template>(OnAddMetadata, busyObservable.Select(s => !s));
 
-            var loadScan = Load.Scan((List: metadata, ChangeSet: metadata.ToObservableChangeSet(), Subscriptions: new CompositeDisposable()), (acc, val) =>
-            {
-                var (List, ChangeSet, Subscriptions) = acc;
-                using (List.SuspendNotifications())
+            var loadScan = Load.ObserveOnDispatcher().Scan(
+                (List: metadata, ChangeSet: metadata.ToObservableChangeSet(), Subscriptions: new CompositeDisposable()),
+                (acc, val) =>
                 {
-                    Subscriptions.Dispose();
+                    var (List, ChangeSet, Subscriptions) = acc;
+                    using (List.SuspendNotifications())
+                    {
+                        Subscriptions.Dispose();
 
-                    List.Load(val.entrySet().AsEnumerable<Map.Entry>().Select(s => new Entry(s)));
-                }
+                        List.Load(val.entrySet().AsEnumerable<Map.Entry>().Select(s => new Entry(s)));
+                    }
 
-                return acc with { Subscriptions = new() };
-            });
+                    return acc with { Subscriptions = new() };
+                });
 
             var changeNotifications = Observable.Create<EventArgs>(outer =>
             {
@@ -135,7 +140,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             (bool adding, bool discard, this.adding, this.discard) = (this.adding, this.discard, false, false);
             switch (obj)
             {
-                case NotifyCollectionChangedEventArgs and { Action: NotifyCollectionChangedAction.Add }:
+                case NotifyCollectionChangedEventArgs { Action: NotifyCollectionChangedAction.Add }:
                     // Handles all Add-collection changes
                     // - That is they are added through SplitButton-Menu (AddNewMetadata, adding = true)
                     // - Added through the data grid new item placeholder (adding = false)
@@ -163,7 +168,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
 
                     break;
 
-                case EntryEditEventArgs and { EditAction: DataGridEditAction.Cancel }:
+                case EntryEditEventArgs { EditAction: DataGridEditAction.Cancel }:
                     // pass on discard from NCC if added from DataGrid
                     this.discard = discard;
                     return;
@@ -180,26 +185,31 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
         private Task<Map> OnLoadAsync()
         {
             ReadMetadataWorkerImpl worker = new(pathsJava);
-            controller.background(new WorkerBackgroundAction(controller, session, worker));
+            var result = controller.background(new WorkerBackgroundAction(controller, session, worker));
+            if (result.isDone() && !worker.Result.IsCompleted)
+            {
+                return Task.FromResult(Collections.emptyMap());
+            }
+
             return worker.Result;
         }
 
         private Task OnSaveAsync()
         {
-            return Task.Factory.StartNew(Run).Unwrap();
-
-            Task Run()
+            HashMap copy = new(metadata.Count);
+            foreach (var item in metadata)
             {
-                HashMap copy = new(metadata.Count);
-                foreach (var item in metadata)
-                {
-                    copy.put(item.Key, item.Value);
-                }
-
-                var worker = new WriteMetadataWorkerImpl(pathsJava, copy, this, ProgressListener.noop);
-                controller.background(new WorkerBackgroundAction(controller, session, worker));
-                return worker.Task;
+                copy.put(item.Key, item.Value);
             }
+
+            var worker = new WriteMetadataWorkerImpl(pathsJava, copy, this, ProgressListener.noop);
+            var result = controller.background(new WorkerBackgroundAction(controller, session, worker));
+            if (result.isDone() && !worker.Task.IsCompleted)
+            {
+                return Task.CompletedTask;
+            }
+
+            return worker.Task;
         }
 
         bool Worker.RecursiveCallback.recurse(Path directory, object value)
