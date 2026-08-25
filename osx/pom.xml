@@ -231,6 +231,8 @@
             </dependencies>
             <properties>
                 <xcode.configuration>Release</xcode.configuration>
+                <codesign.certificate>Developer ID Application: David Kocher (G69SCX94XU)</codesign.certificate>
+                <installer.certificate>Developer ID Installer: David Kocher (G69SCX94XU)</installer.certificate>
                 <codesign.arg>--entitlements ../setup/app/default.entitlements --requirements ../setup/app/codesign-requirement.bin</codesign.arg>
                 <codesign.provisionprofile.name>default.provisionprofile</codesign.provisionprofile.name>
             </properties>
@@ -253,6 +255,8 @@
             <id>appstore</id>
             <properties>
                 <xcode.configuration>Mac App Store</xcode.configuration>
+                <codesign.certificate>Apple Distribution: David Kocher (G69SCX94XU)</codesign.certificate>
+                <installer.certificate>3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)</installer.certificate>
                 <codesign.provisionprofile.name>appstore.provisionprofile</codesign.provisionprofile.name>
                 <skipNotarize>true</skipNotarize>
             </properties>
