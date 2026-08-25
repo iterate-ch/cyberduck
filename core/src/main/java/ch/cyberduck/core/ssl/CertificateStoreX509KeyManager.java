@@ -45,6 +45,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
+    private static final Logger log = LogManager.getLogger(CertificateStoreX509KeyManager.class);
 
     protected final CertificateIdentityCallback prompt;
     protected final Host bookmark;
@@ -65,7 +66,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
 
     @Override
     public List<String> list() {
-        final Logger log = LogManager.getLogger(getClass());
         final List<String> list = new ArrayList<>();
         if(keystore == null) {
             return list;
@@ -95,7 +95,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
     }
 
     public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
-        final Logger log = LogManager.getLogger(getClass());
         if(keystore == null) {
             return null;
         }
@@ -124,7 +123,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
 
     @Override
     public X509Certificate[] getCertificateChain(final String alias) {
-        final Logger log = LogManager.getLogger(getClass());
         if(keystore == null) {
             return null;
         }
@@ -160,7 +158,6 @@ public abstract class CertificateStoreX509KeyManager extends AbstractX509KeyMana
 
     @Override
     public PrivateKey getPrivateKey(final String alias) {
-        final Logger log = LogManager.getLogger(getClass());
         if(keystore == null) {
             return null;
         }
