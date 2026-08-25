@@ -106,7 +106,7 @@
     </Style>
     <Style TargetType="MenuItem">
         <Setter Property="Padding"
-                Value="14" />
+                Value="{StaticResource ButtonPadding}" />
     </Style>
 
     <ResourceDictionary.MergedDictionaries>

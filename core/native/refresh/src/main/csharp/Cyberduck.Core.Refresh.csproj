@@ -44,10 +44,6 @@
     <PackageReference Include="System.Runtime.Caching" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETFramework'">
-    <PackageReference Include="System.Memory" />
-  </ItemGroup>
-
   <ItemGroup>
     <ImageResource Include="$(CyberduckDir)img\*.png" />
     <ImageResource Include="$(CyberduckDir)img\*.tiff" />

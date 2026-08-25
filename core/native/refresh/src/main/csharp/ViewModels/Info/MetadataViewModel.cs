@@ -1,16 +1,4 @@
-﻿using ch.cyberduck.core;
-using ch.cyberduck.core.features;
-using ch.cyberduck.core.pool;
-using ch.cyberduck.core.threading;
-using ch.cyberduck.core.worker;
-using Ch.Cyberduck.Core.Refresh.Services;
-using DynamicData;
-using DynamicData.Binding;
-using java.util;
-using ReactiveMarbles.ObservableEvents;
-using ReactiveUI;
-using Splat;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -21,6 +9,17 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
+using ch.cyberduck.core.threading;
+using ch.cyberduck.core.worker;
+using Ch.Cyberduck.Core.Refresh.Services;
+using DynamicData;
+using DynamicData.Binding;
+using java.util;
+using ReactiveMarbles.ObservableEvents;
+using ReactiveUI;
+using Splat;
 using ArrayList = java.util.ArrayList;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Observable = System.Reactive.Linq.Observable;
@@ -33,7 +32,6 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
     {
         private readonly ObservableAsPropertyHelper<bool> busy;
         private readonly Controller controller;
-        private readonly Metadata feature;
         private readonly ObservableCollectionExtended<Entry> metadata = new();
         private readonly SessionPool session;
         private bool adding;
@@ -73,9 +71,10 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
 
         public ReactiveCommand<Unit, Unit> Save { get; }
 
-        public MetadataViewModel(Metadata feature, Controller controller, SessionPool session)
+        public MetadataViewModel(Controller controller, SessionPool session)
         {
-            (this.feature, this.controller, this.session) = (feature, controller, session);
+            this.controller = controller;
+            this.session = session;
             var locale = Locator.Current.GetService<Locale>();
             var preferences = Locator.Current.GetService<Preferences>();
             var provider = Locator.Current.GetService<MetadataTemplateProvider>();

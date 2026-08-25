@@ -53,6 +53,7 @@ using static Ch.Cyberduck.ImageHelper;
 using Boolean = java.lang.Boolean;
 using Object = System.Object;
 using Optional = java.util.Optional;
+using Observable = System.Reactive.Linq.Observable;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
 
@@ -264,18 +265,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                var feature = (Metadata)session.getFeature(typeof(Metadata));
-                bool metadataAvailable = feature != null;
-                if (metadataAvailable && View.MetadataViewModel is not MetadataViewModel viewModel)
-                {
-                    View.MetadataViewModel = viewModel = new(feature, _controller, _controller.Pool);
-                    viewModel.Recurse.RegisterHandler(c =>
-                    {
-                        DialogRecursiveCallback dialog = new(this);
-                        c.SetOutput(dialog.recurse(c.Input.Directory, c.Input.Value));
-                    });
-                }
-                View.ToolbarMetadataEnabled = metadataAvailable;
+                View.ToolbarMetadataEnabled = session.getFeature(typeof(Metadata)) != null;
             }
         }
 
@@ -284,11 +274,18 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private void InitMetadata()
         {
-            if(View.MetadataViewModel is MetadataViewModel viewModel)
+            if (View.Metadata.DataContext is not MetadataViewModel viewModel)
             {
-                viewModel.Paths = Files;
-                viewModel.Load.Execute().Subscribe();
+                View.Metadata.DataContext = viewModel = new(_controller, _controller.Pool);
+                viewModel.Recurse.RegisterHandler(c =>
+                {
+                    DialogRecursiveCallback dialog = new(this);
+                    c.SetOutput(dialog.recurse(c.Input.Directory, c.Input.Value));
+                });
             }
+
+            viewModel.Paths = Files;
+            viewModel.Load.ExecuteIfPossible().Subscribe();
         }
 
         private void AddAclEntry(Acl.User user, Acl.Role role)
