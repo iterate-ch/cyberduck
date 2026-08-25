@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Reactive.Linq;
+using System.Windows;
 using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
-using Ch.Cyberduck.Core.Refresh.Views.Services;
 using ReactiveUI;
 
 namespace Ch.Cyberduck.Core.Refresh.Views
 {
     public partial class ProfilesPage
     {
-        public ProfilesPage(WpfIconProvider iconProvider)
+        public static readonly DependencyProperty IconProviderProperty = DependencyProperty.Register(nameof(IconProvider), typeof(WpfIconProvider), typeof(ProfilesPage), new FrameworkPropertyMetadata(OnIconProviderPropertyChanged));
+
+        public WpfIconProvider IconProvider
+        {
+            get { return (WpfIconProvider)GetValue(IconProviderProperty); }
+            set { SetValue(IconProviderProperty, value); }
+        }
+
+        public ProfilesPage()
         {
             InitializeComponent();
-            ((ProfileDescriptionThumbnailConverter)FindResource("ProfileThumbnails")).IconProvider = iconProvider;
 
             this.WhenActivated(d =>
             {

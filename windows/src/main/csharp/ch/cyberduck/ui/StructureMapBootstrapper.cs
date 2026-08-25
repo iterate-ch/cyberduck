@@ -103,6 +103,14 @@ namespace Ch.Cyberduck.Ui
 
         public static SmartInstance<T> ForConcreteSingleton<T>(this IRegistry registry) => registry.For<T>().Singleton().Use<T>();
 
+        public class IocServiceProvider : IServiceProvider
+        {
+            public object GetService(Type serviceType)
+            {
+                return ObjectFactory.GetInstance(serviceType);
+            }
+        }
+
         public class SplatDependencyResolver : IDependencyResolver
         {
             public void Dispose()

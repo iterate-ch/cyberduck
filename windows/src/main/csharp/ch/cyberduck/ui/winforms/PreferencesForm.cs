@@ -24,13 +24,13 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
+using Ch.Cyberduck.Core.Refresh.Views;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using Ch.Cyberduck.Core.Refresh.Views;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
 using Application = ch.cyberduck.core.local.Application;
-using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -131,6 +131,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             var profilesViewModel = ObjectFactory.GetInstance<ProfilesViewModel>();
             var profilesPage = ObjectFactory.GetInstance<ProfilesPage>();
+            profilesPage.IconProvider = ObjectFactory.GetInstance<Cyberduck.Core.Refresh.Services.WpfIconProvider>();
             profilesPage.ViewModel = profilesViewModel;
             profilesPageHost.Child = profilesPage;
 

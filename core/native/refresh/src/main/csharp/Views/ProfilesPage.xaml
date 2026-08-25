@@ -14,7 +14,8 @@
                         d:DesignWidth="800">
     <local:ProfilesPageBase.Resources>
         <sys:Int32 x:Key="ThumbnailSize">32</sys:Int32>
-        <viewServices:ProfileDescriptionThumbnailConverter x:Key="ProfileThumbnails" />
+        <viewServices:ProfileDescriptionThumbnailConverter x:Key="ProfileThumbnails"
+                                                           IconProvider="{Binding IconProvider,RelativeSource={RelativeSource AncestorType=local:ProfilesPage}}" />
     </local:ProfilesPageBase.Resources>
 
     <Grid>

@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core.Refresh.Services;
 
 namespace Ch.Cyberduck.Core.Refresh.Views.Services;
 
-public class ProfileDescriptionThumbnailConverter : IValueConverter
+public class ProfileDescriptionThumbnailConverter : DependencyObject, IValueConverter
 {
-    public WpfIconProvider IconProvider { get; set; }
+    public static readonly DependencyProperty IconProviderProperty = DependencyProperty.Register(nameof(IconProvider), typeof(WpfIconProvider), typeof(ProfileDescriptionThumbnailConverter));
+
+    public WpfIconProvider IconProvider
+    {
+        get { return (WpfIconProvider)GetValue(IconProviderProperty); }
+        set { SetValue(IconProviderProperty, value); }
+    }
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {

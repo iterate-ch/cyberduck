@@ -39,6 +39,7 @@ using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Core.Ui.Preferences;
 using Ch.Cyberduck.Ui.Core.Contracts;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using java.util;
 using org.apache.logging.log4j;
 using ReactiveUI;
@@ -136,6 +137,7 @@ namespace Ch.Cyberduck.Ui.Controller
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
             mainThreadSync = SynchronizationContext.Current;
 
+            Ioc.Default.ConfigureServices(new StructureMapBootstrapper.IocServiceProvider());
             Locator.SetLocator(new StructureMapBootstrapper.SplatDependencyResolver());
             Locator.CurrentMutable.InitializeSplat();
             Locator.CurrentMutable.InitializeReactiveUI();
