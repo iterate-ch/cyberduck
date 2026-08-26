@@ -108,33 +108,75 @@ jobs:
           path: ${{ runner.os == 'macos' && 'osx/target/update/changelog.*' || 'windows/target/update/changelog.*' }}
           args: '--existing overwrite --verbose'
 
-      - name: Archive Artifacts (macOS)
+      - name: Archive App ZIP (macOS)
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
-          name: Binaries (macOS)
+          archive: false
           path: |-
             osx/target/release/*.zip
+      - name: Archive App PKG (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
             osx/target/release/*.pkg
+      - name: Archive CLI PKG (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
             cli/osx/target/release/*.pkg
 
-      - name: Archive Artifacts (Windows)
+      - name: Archive EXE (Windows)
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
-          name: Binaries (Windows)
+          archive: false
           path: |-
             windows/target/release/*.exe
+      - name: Archive MSI (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
             windows/target/release/*.msi
+      - name: Archive APPX (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
             windows/target/release/*.appx
+      - name: Archive CLI EXE (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
             cli/windows/target/release/*.exe
+      - name: Archive CLI MSI (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
             cli/windows/target/release/*.msi
 
-      - name: Archive Artifacts (Linux)
+      - name: Archive DEB (Linux)
         if: runner.os == 'linux'
         uses: actions/upload-artifact@v7
         with:
-          name: Binaries (Linux)
+          archive: false
           path: |-
             cli/linux/target/release/*.deb
+      - name: Archive RPM (Linux)
+        if: runner.os == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
             cli/linux/target/release/*.rpm
