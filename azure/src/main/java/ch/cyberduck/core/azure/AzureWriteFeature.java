@@ -137,7 +137,6 @@ public class AzureWriteFeature implements Write<Void> {
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
                                 .setMetadata(metadata)
                                 .setHeaders(headers)
-                                .setMetadata(metadata)
                                 .setParallelTransferOptions(new ParallelTransferOptions()
                                         .setBlockSizeLong(preferences.getLong("azure.upload.blocksize")));
                         out = client.getBlockBlobClient().getBlobOutputStream(options);
@@ -151,8 +150,7 @@ public class AzureWriteFeature implements Write<Void> {
                         final AppendBlobClient append = client.getAppendBlobClient();
                         final AppendBlobCreateOptions options = new AppendBlobCreateOptions()
                                 .setMetadata(metadata)
-                                .setHeaders(headers)
-                                .setMetadata(metadata);
+                                .setHeaders(headers);
                         append.createWithResponse(options, null, null);
                         out = append.getBlobOutputStream();
                         break;
@@ -162,7 +160,6 @@ public class AzureWriteFeature implements Write<Void> {
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
                                 .setMetadata(metadata)
                                 .setHeaders(headers)
-                                .setMetadata(metadata)
                                 .setParallelTransferOptions(new ParallelTransferOptions()
                                         .setBlockSizeLong(preferences.getLong("azure.upload.blocksize")));
                         out = block.getBlobOutputStream(options);
