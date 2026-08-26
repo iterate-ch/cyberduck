@@ -48,6 +48,7 @@ import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.models.BlobType;
+import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.azure.storage.blob.options.AppendBlobCreateOptions;
 import com.azure.storage.blob.options.BlockBlobOutputStreamOptions;
 import com.azure.storage.blob.specialized.AppendBlobClient;
@@ -136,7 +137,9 @@ public class AzureWriteFeature implements Write<Void> {
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
                                 .setMetadata(metadata)
                                 .setHeaders(headers)
-                                .setMetadata(metadata);
+                                .setMetadata(metadata)
+                                .setParallelTransferOptions(new ParallelTransferOptions()
+                                        .setBlockSizeLong(preferences.getLong("azure.upload.blocksize")));
                         out = client.getBlockBlobClient().getBlobOutputStream(options);
                     }
                 }
@@ -159,7 +162,9 @@ public class AzureWriteFeature implements Write<Void> {
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
                                 .setMetadata(metadata)
                                 .setHeaders(headers)
-                                .setMetadata(metadata);
+                                .setMetadata(metadata)
+                                .setParallelTransferOptions(new ParallelTransferOptions()
+                                        .setBlockSizeLong(preferences.getLong("azure.upload.blocksize")));
                         out = block.getBlobOutputStream(options);
                         break;
                     }
