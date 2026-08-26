@@ -153,6 +153,12 @@
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
+            <properties>
+                <xcode.configuration>Release</xcode.configuration>
+                <codesign.certificate>Developer ID Application: David Kocher (G69SCX94XU)</codesign.certificate>
+                <installer.certificate>Developer ID Installer: David Kocher (G69SCX94XU)</installer.certificate>
+                <codesign.provisionprofile.name>default.provisionprofile</codesign.provisionprofile.name>
+            </properties>
         </profile>
         <profile>
             <id>local</id>
