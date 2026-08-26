@@ -33,6 +33,9 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import com.azure.core.http.rest.Response;
+import com.azure.storage.blob.models.AppendBlobItem;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -151,7 +154,11 @@ public class AzureWriteFeature implements Write<Void> {
                         final AppendBlobCreateOptions options = new AppendBlobCreateOptions()
                                 .setMetadata(metadata)
                                 .setHeaders(headers);
-                        append.createWithResponse(options, null, null);
+                        // Creates a 0-length append blob
+                        final Response<AppendBlobItem> response = append.createWithResponse(options, null, null);
+                        if(log.isDebugEnabled()) {
+                            log.debug("Created append blob {} with status {}", file, response.getStatusCode());
+                        }
                         out = append.getBlobOutputStream();
                         break;
                     }
