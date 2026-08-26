@@ -38,12 +38,14 @@ import com.azure.storage.blob.models.AppendBlobItem;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -120,7 +122,7 @@ public class AzureWriteFeature implements Write<Void> {
                         break;
                 }
             }
-            final BlobOutputStream out;
+            final OutputStream out;
             if(status.isExists()) {
                 if(preferences.getBoolean("azure.upload.snapshot")) {
                     session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
@@ -128,13 +130,27 @@ public class AzureWriteFeature implements Write<Void> {
                 }
                 if(status.isAppend()) {
                     // Existing append blob type
-                    out = client.getAppendBlobClient().getBlobOutputStream();
+                    final AppendBlobClient append = client.getAppendBlobClient();
+                    out = new ProxyOutputStream(append.getBlobOutputStream()) {
+                        @Override
+                        protected void afterWrite(final int n) throws IOException {
+                            // Check if the stream is faulted
+                            this.flush();
+                        }
+                    };
                 }
                 else {
                     // Existing block blob type
                     final PathAttributes attr = new AzureAttributesFinderFeature(session).find(file);
                     if(BlobType.APPEND_BLOB == BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE))) {
-                        out = client.getAppendBlobClient().getBlobOutputStream(true);
+                        final AppendBlobClient append = client.getAppendBlobClient();
+                        out = new ProxyOutputStream(append.getBlobOutputStream(true)) {
+                            @Override
+                            protected void afterWrite(final int n) throws IOException {
+                                // Check if the stream is faulted
+                                this.flush();
+                            }
+                        };
                     }
                     else {
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
@@ -159,7 +175,13 @@ public class AzureWriteFeature implements Write<Void> {
                         if(log.isDebugEnabled()) {
                             log.debug("Created append blob {} with status {}", file, response.getStatusCode());
                         }
-                        out = append.getBlobOutputStream();
+                        out = new ProxyOutputStream(append.getBlobOutputStream()) {
+                            @Override
+                            protected void afterWrite(final int n) throws IOException {
+                                // Check if the stream is faulted
+                                this.flush();
+                            }
+                        };
                         break;
                     }
                     default: {
