@@ -21,8 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -74,15 +72,6 @@ public class AzureWriteFeature implements Write<Void> {
     }
 
     public AzureWriteFeature(final AzureSession session, final BlobType blobType) {
-        this.session = session;
-        this.blobType = blobType;
-    }
-
-    public AzureWriteFeature(final AzureSession session, final Find finder, final AttributesFinder attributes) {
-        this(session, finder, attributes, BlobType.valueOf(HostPreferencesFactory.get(session.getHost()).getProperty("azure.upload.blobtype")));
-    }
-
-    public AzureWriteFeature(final AzureSession session, final Find finder, final AttributesFinder attributes, final BlobType blobType) {
         this.session = session;
         this.blobType = blobType;
     }
