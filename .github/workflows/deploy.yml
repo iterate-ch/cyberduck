@@ -163,6 +163,7 @@ jobs:
 
   publish:
     needs: snapshot
+    if: ${{ !cancelled() }}
     permissions:
       actions: read
       contents: read
@@ -173,20 +174,34 @@ jobs:
         target: [ macos, windows ]
     steps:
       - name: Download Release Artifacts
+        continue-on-error: true
         uses: actions/download-artifact@v7
         with:
           pattern: cyberduck-${{ matrix.target }}-app-*
           path: release
           merge-multiple: true
       - name: Download Update Feed
+        continue-on-error: true
         uses: actions/download-artifact@v7
         with:
           pattern: cyberduck-${{ matrix.target }}-changelog
           path: update
           merge-multiple: true
 
+      - name: Check Artifacts
+        id: check
+        shell: bash
+        run: |
+          if compgen -G "release/Cyberduck-*" > /dev/null; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::No ${{ matrix.target }} artifacts found, skipping publish for this target."
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Credentials
         id: identity
+        if: steps.check.outputs.found == 'true'
         env:
           SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
         shell: bash
@@ -195,6 +210,7 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: S3 Upload
+        if: steps.check.outputs.found == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: ${{secrets.AWS_ACCESS_KEY_ID}}
@@ -206,6 +222,7 @@ jobs:
           args: '--verbose --existing overwrite --region us-east-1'
 
       - name: Rackspace Upload
+        if: steps.check.outputs.found == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: ${{secrets.RACKSPACE_USER}}
@@ -217,6 +234,7 @@ jobs:
           args: '--verbose --existing overwrite --region DFW'
 
       - name: Upload Feed
+        if: steps.check.outputs.found == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
