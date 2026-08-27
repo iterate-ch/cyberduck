@@ -71,7 +71,6 @@ jobs:
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
-          name: cyberduck-macos-app-zip
           archive: false
           path: |-
             osx/target/release/*.zip
@@ -79,7 +78,6 @@ jobs:
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
-          name: cyberduck-macos-app-pkg
           archive: false
           path: |-
             osx/target/release/*.pkg
@@ -103,7 +101,6 @@ jobs:
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
-          name: cyberduck-windows-app-exe
           archive: false
           path: |-
             windows/target/release/*.exe
@@ -111,7 +108,6 @@ jobs:
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
-          name: cyberduck-windows-app-msi
           archive: false
           path: |-
             windows/target/release/*.msi
@@ -119,7 +115,6 @@ jobs:
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
-          name: cyberduck-windows-app-appx
           archive: false
           path: |-
             windows/target/release/*.appx
@@ -173,11 +168,44 @@ jobs:
       matrix:
         target: [ macos, windows ]
     steps:
-      - name: Download Release Artifacts
+      - name: Download App ZIP (macOS)
+        if: matrix.target == 'macos'
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
-          pattern: cyberduck-${{ matrix.target }}-app-*
+          pattern: Cyberduck-*.zip
+          path: release
+          merge-multiple: true
+      - name: Download App PKG (macOS)
+        if: matrix.target == 'macos'
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: Cyberduck-*.pkg
+          path: release
+          merge-multiple: true
+      - name: Download EXE (Windows)
+        if: matrix.target == 'windows'
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: Cyberduck-Installer-*.exe
+          path: release
+          merge-multiple: true
+      - name: Download MSI (Windows)
+        if: matrix.target == 'windows'
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: Cyberduck-Installer-*.msi
+          path: release
+          merge-multiple: true
+      - name: Download APPX (Windows)
+        if: matrix.target == 'windows'
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: '*.appx'
           path: release
           merge-multiple: true
       - name: Download Update Feed
