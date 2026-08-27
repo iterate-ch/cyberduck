@@ -184,6 +184,14 @@ jobs:
           pattern: Cyberduck-*.pkg
           path: release
           merge-multiple: true
+      - name: Download CLI PKG (macOS)
+        if: matrix.target == 'macos'
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: duck[-_]*.pkg
+          path: release
+          merge-multiple: true
       - name: Download EXE (Windows)
         if: matrix.target == 'windows'
         continue-on-error: true
@@ -278,6 +286,18 @@ jobs:
           path: release/Cyberduck-*
           args: '--verbose --existing overwrite --region DFW'
 
+      - name: Rackspace Upload (macOS CLI)
+        if: matrix.target == 'macos' && steps.check.outputs.found == 'true'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.RACKSPACE_USER}}
+          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
+        with:
+          mode: upload
+          url: rackspace:/cdn.duck.sh/
+          path: release/duck[-_]*
+          args: '--verbose --existing overwrite --region IAD'
+
       - name: Rackspace Upload (Linux)
         if: matrix.target == 'linux' && steps.check.outputs.found == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
@@ -288,7 +308,7 @@ jobs:
           mode: upload
           url: rackspace:/cdn.duck.sh/
           path: release/duck[-_]*
-          args: '--verbose --existing overwrite --region DFW'
+          args: '--verbose --existing overwrite --region IAD'
 
       - name: Upload Feed
         if: matrix.target != 'linux' && steps.check.outputs.found == 'true'
