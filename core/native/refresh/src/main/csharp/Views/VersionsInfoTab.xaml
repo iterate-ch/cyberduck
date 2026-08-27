@@ -23,8 +23,7 @@
                    Margin="{StaticResource CardSpacing}"
                    Grid.Row="0" />
 
-        <Grid Margin="{StaticResource UIItemNegativeSpacing}"
-              Grid.Row="1">
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -38,7 +37,6 @@
                       IsReadOnly="True"
                       SelectionMode="Single"
                       SelectionUnit="FullRow"
-                      Margin="{StaticResource UIItemSpacing}"
                       AutomationProperties.LabeledBy="{Binding ElementName=VersionsTitle}"
                       Grid.Row="0">
                 <DataGrid.Columns>
@@ -58,7 +56,6 @@
             </DataGrid>
 
             <Menu Style="{StaticResource DialogMenuStyle}"
-                  Margin="{StaticResource UIItemSpacing}"
                   Grid.Row="1">
                 <MenuItem x:Name="RevertButton"
                           Command="{Binding RevertVersionCommand}"

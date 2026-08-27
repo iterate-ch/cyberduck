@@ -23,8 +23,7 @@
                    Margin="{StaticResource CardSpacing}"
                    Grid.Row="0" />
 
-        <Grid Margin="{StaticResource UIItemNegativeSpacing}"
-              Grid.Row="1">
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -36,7 +35,6 @@
                       CanUserResizeRows="False"
                       SelectionMode="Single"
                       SelectionUnit="FullRow"
-                      Margin="{StaticResource UIItemSpacing}"
                       AutomationProperties.LabeledBy="{Binding ElementName=HeadersTitle}"
                       Grid.Row="0">
                 <DataGrid.Columns>
@@ -52,7 +50,6 @@
             </DataGrid>
 
             <Menu Style="{StaticResource DialogMenuStyle}"
-                  Margin="{StaticResource UIItemSpacing}"
                   Grid.Row="1">
                 <MenuItem x:Name="AddNewMetadataButton"
                           ItemsSource="{Binding MetadataMenuItems}"

@@ -27,13 +27,13 @@
     <Thickness x:Key="ContentNegativeSpacing">-24</Thickness>
     <Thickness x:Key="ContentItemSpacing">12</Thickness>
     <Thickness x:Key="ContentItemNegativeSpacing">-12</Thickness>
-    
+
     <!-- Combinations -->
     <!-- Key: $(Target Spacing)$(Inner Spacing)Spacing -->
     <Thickness x:Key="UIItemCompactItemSpacing">2</Thickness>
     <Thickness x:Key="ControlCompactItemSpacing">10</Thickness>
     <Thickness x:Key="CardItemCompactItemSpacing">14</Thickness>
-    
+
     <!-- Special Use -->
     <Thickness x:Key="PageTitleControlSpacing">24,24,24,12</Thickness>
     <!-- Key: $(Role)$(Base Spacing)$(Inner Spacing)Spacing-->

@@ -9,7 +9,7 @@ namespace Ch.Cyberduck.Core.Refresh.Views
 {
     public partial class ProfilesPage
     {
-        public static readonly DependencyProperty IconProviderProperty = DependencyProperty.Register(nameof(IconProvider), typeof(WpfIconProvider), typeof(ProfilesPage), new FrameworkPropertyMetadata(OnIconProviderPropertyChanged));
+        public static readonly DependencyProperty IconProviderProperty = DependencyProperty.Register(nameof(IconProvider), typeof(WpfIconProvider), typeof(ProfilesPage));
 
         public WpfIconProvider IconProvider
         {
