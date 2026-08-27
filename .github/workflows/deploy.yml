@@ -147,6 +147,22 @@ jobs:
           archive: false
           path: |-
             cli/windows/target/release/*.msi
+      - name: Chocolatey Push (Windows)
+        if: runner.os == 'windows' && github.ref_type == 'tag'
+        env:
+          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+        run: |
+          Get-ChildItem "windows\target\release\cyberduck.*.nupkg" | ForEach-Object {
+            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
+          }
+      - name: Chocolatey Push (Windows CLI)
+        if: runner.os == 'windows' && github.ref_type == 'tag'
+        env:
+          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+        run: |
+          Get-ChildItem "cli\windows\target\release\duck.*.nupkg" | ForEach-Object {
+            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
+          }
 
       - name: Archive DEB (Linux)
         if: runner.os == 'linux'
