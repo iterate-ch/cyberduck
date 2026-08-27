@@ -109,6 +109,22 @@
                 Value="{StaticResource ButtonPadding}" />
     </Style>
 
+    <Style x:Key="DataGridCellAppStyle"
+           TargetType="DataGridCell"
+           BasedOn="{StaticResource DefaultDataGridCellStyle}" />
+    <Style x:Key="DataGridComboBoxColumnElementAppStyle"
+           TargetType="ComboBox"
+           BasedOn="{x:Static DataGridComboBoxColumn.DefaultElementStyle}" />
+    <Style x:Key="DataGridComboBoxColumnEditingElementAppStyle"
+           TargetType="ComboBox"
+           BasedOn="{x:Static DataGridComboBoxColumn.DefaultEditingElementStyle}" />
+    <Style x:Key="DataGridTextColumnElementAppStyle"
+           TargetType="TextBlock"
+           BasedOn="{x:Static DataGridTextColumn.DefaultElementStyle}" />
+    <Style x:Key="DataGridTextColumnEditingElementAppStyle"
+           TargetType="TextBox"
+           BasedOn="{x:Static DataGridTextColumn.DefaultEditingElementStyle}" />
+
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="AppStyles.Base.xaml" />
     </ResourceDictionary.MergedDictionaries>

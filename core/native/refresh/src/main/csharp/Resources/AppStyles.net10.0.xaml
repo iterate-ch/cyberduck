@@ -7,6 +7,38 @@
                 Value="{DynamicResource ControlFillColorDefaultBrush}" />
     </Style>
 
+    <Style x:Key="DataGridCellAppStyle"
+            TargetType="DataGridCell"
+            BasedOn="{StaticResource DefaultDataGridCellStyle}" />
+    <Style x:Key="DataGridComboBoxColumnElementAppStyle"
+           TargetType="ComboBox"
+           BasedOn="{StaticResource {x:Static DataGridComboBoxColumn.TextBlockComboBoxStyleKey}}">
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+    </Style>
+    <Style x:Key="DataGridComboBoxColumnEditingElementAppStyle"
+           TargetType="ComboBox"
+           BasedOn="{StaticResource {x:Type ComboBox}}">
+        <Setter Property="IsSynchronizedWithCurrentItem"
+                Value="False" />
+    </Style>
+    <Style x:Key="DataGridTextColumnElementAppStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="Margin"
+                Value="{StaticResource TextControlThemePadding}" />
+        <Setter Property="TextWrapping"
+                Value="NoWrap" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+    </Style>
+    <Style x:Key="DataGridTextColumnEditingElementAppStyle"
+           TargetType="TextBox"
+           BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="BorderThickness"
+                Value="0" />
+    </Style>
+
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="AppStyles.Base.xaml" />
     </ResourceDictionary.MergedDictionaries>

@@ -41,10 +41,14 @@
                     <DataGridTextColumn x:Name="KeyColumn"
                                         Header="{xaml:Text Name, Table=Info}"
                                         Binding="{Binding Key}"
+                                        ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
+                                        EditingElementStyle="{StaticResource DataGridTextColumnEditingElementAppStyle}"
                                         Width="*" />
                     <DataGridTextColumn x:Name="ValueColumn"
                                         Header="{xaml:Text Value, Table=Info}"
                                         Binding="{Binding Display}"
+                                        ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
+                                        EditingElementStyle="{StaticResource DataGridTextColumnEditingElementAppStyle}"
                                         Width="*" />
                 </DataGrid.Columns>
             </DataGrid>

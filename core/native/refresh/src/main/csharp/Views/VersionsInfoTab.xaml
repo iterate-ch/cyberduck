@@ -42,15 +42,19 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{xaml:Text 'Modified', Table=Info}"
                                         Binding="{Binding Timestamp}"
+                                        ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
                                         Width="*" />
                     <DataGridTextColumn Header="{xaml:Text 'Checksum', Table=Info}"
                                         Binding="{Binding Checksum}"
+                                        ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
                                         Width="*" />
                     <DataGridTextColumn Header="{xaml:Text 'Size', Table=Info}"
                                         Binding="{Binding Size}"
+                                        ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
                                         Width="*" />
                     <DataGridTextColumn Header="{xaml:Text 'Owner', Table=Info}"
                                         Binding="{Binding Owner}"
+                                        ElementStyle="{StaticResource DataGridTextColumnElementAppStyle}"
                                         Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
