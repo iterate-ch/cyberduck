@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-self-hosted, linux-self-hosted, windows-self-hosted ]
+        os: [ macos-self-hosted, linux-self-hosted, linux-arm64-self-hosted, windows-self-hosted ]
     steps:
       - uses: actions/checkout@v7
         with:
