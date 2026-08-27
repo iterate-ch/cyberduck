@@ -166,7 +166,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [ macos, windows ]
+        target: [ macos, windows, linux ]
     steps:
       - name: Download App ZIP (macOS)
         if: matrix.target == 'macos'
@@ -208,7 +208,24 @@ jobs:
           pattern: '*.appx'
           path: release
           merge-multiple: true
+      - name: Download DEB (Linux)
+        if: matrix.target == 'linux'
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: duck-*.deb
+          path: release
+          merge-multiple: true
+      - name: Download RPM (Linux)
+        if: matrix.target == 'linux'
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: duck-*.rpm
+          path: release
+          merge-multiple: true
       - name: Download Update Feed
+        if: matrix.target != 'linux'
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
@@ -220,7 +237,7 @@ jobs:
         id: check
         shell: bash
         run: |
-          if compgen -G "release/Cyberduck-*" > /dev/null; then
+          if compgen -G "release/*" > /dev/null; then
             echo "found=true" >> "$GITHUB_OUTPUT"
           else
             echo "::warning::No ${{ matrix.target }} artifacts found, skipping publish for this target."
@@ -229,7 +246,7 @@ jobs:
 
       - name: Credentials
         id: identity
-        if: steps.check.outputs.found == 'true'
+        if: matrix.target != 'linux' && steps.check.outputs.found == 'true'
         env:
           SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
         shell: bash
@@ -238,7 +255,7 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: S3 Upload
-        if: steps.check.outputs.found == 'true'
+        if: matrix.target != 'linux' && steps.check.outputs.found == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: ${{secrets.AWS_ACCESS_KEY_ID}}
@@ -250,7 +267,7 @@ jobs:
           args: '--verbose --existing overwrite --region us-east-1'
 
       - name: Rackspace Upload
-        if: steps.check.outputs.found == 'true'
+        if: matrix.target != 'linux' && steps.check.outputs.found == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: ${{secrets.RACKSPACE_USER}}
@@ -261,8 +278,20 @@ jobs:
           path: release/Cyberduck-*
           args: '--verbose --existing overwrite --region DFW'
 
+      - name: Rackspace Upload (Linux)
+        if: matrix.target == 'linux' && steps.check.outputs.found == 'true'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.RACKSPACE_USER}}
+          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
+        with:
+          mode: upload
+          url: rackspace:/cdn.duck.sh/
+          path: release/duck-*
+          args: '--verbose --existing overwrite --region DFW'
+
       - name: Upload Feed
-        if: steps.check.outputs.found == 'true'
+        if: matrix.target != 'linux' && steps.check.outputs.found == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
