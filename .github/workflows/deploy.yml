@@ -330,6 +330,18 @@ jobs:
           path: release/duck[-_]*
           args: '--verbose --existing overwrite --region IAD'
 
+      - name: SFTP Upload (App)
+        if: github.ref_type == 'branch' && steps.check.outputs.found == 'true'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://dist.duck.sh/
+          path: release/Cyberduck-*
+          args: '--existing overwrite --verbose'
+
       - name: SFTP Upload (CLI)
         if: steps.check.outputs.found == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
