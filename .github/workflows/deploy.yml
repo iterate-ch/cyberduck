@@ -67,55 +67,11 @@ jobs:
           SIGNTOOL_CSP: ${{ secrets.SIGNTOOL_CSP }}
           SIGNTOOL_KC: ${{ secrets.SIGNTOOL_KC }}
 
-      - name: S3 Upload
-        if: runner.os == 'macos' || runner.os == 'windows'
-        uses: iterate-ch/cyberduck-cli-action@v1
-        env:
-          USERNAME: ${{secrets.AWS_ACCESS_KEY_ID}}
-          PASSWORD: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        with:
-          mode: upload
-          url: ${{ github.ref_type == 'branch' && 's3:/snapshots.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
-          path: ${{ runner.os == 'macos' && 'osx/target/release/Cyberduck-*' || 'windows/target/release/Cyberduck-*' }}
-          args: '--verbose --existing overwrite --region us-east-1'
-
-      - name: Rackspace Upload
-        if: runner.os == 'macos' || runner.os == 'windows'
-        uses: iterate-ch/cyberduck-cli-action@v1
-        env:
-          USERNAME: ${{secrets.RACKSPACE_USER}}
-          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
-        with:
-          mode: upload
-          url: ${{ github.ref_type == 'branch' && 'rackspace:/snapshots.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
-          path: ${{ runner.os == 'macos' && 'osx/target/release/Cyberduck-*' || 'windows/target/release/Cyberduck-*' }}
-          args: '--verbose --existing overwrite --region DFW'
-
-      - name: Credentials
-        id: identity
-        env:
-          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
-        shell: bash
-        run: |
-          printf '%s' "$SFTP_IDENTITY" > private-key.pem
-          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
-
-      - name: Upload Feed
-        if: runner.os == 'macos' || runner.os == 'windows'
-        uses: iterate-ch/cyberduck-cli-action@v1
-        env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
-          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
-        with:
-          mode: upload
-          url: ${{ runner.os == 'macos' && (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/nightly/' || 'sftp://version.cyberduck.io/') || (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/windows/nightly/' || 'sftp://version.cyberduck.io/windows/') }}
-          path: ${{ runner.os == 'macos' && 'osx/target/update/changelog.*' || 'windows/target/update/changelog.*' }}
-          args: '--existing overwrite --verbose'
-
       - name: Archive App ZIP (macOS)
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
+          name: cyberduck-macos-app-zip
           archive: false
           path: |-
             osx/target/release/*.zip
@@ -123,9 +79,18 @@ jobs:
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
+          name: cyberduck-macos-app-pkg
           archive: false
           path: |-
             osx/target/release/*.pkg
+      - name: Archive Update Feed (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          name: cyberduck-macos-changelog
+          archive: false
+          path: |-
+            osx/target/update/changelog.*
       - name: Archive CLI PKG (macOS)
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
@@ -138,6 +103,7 @@ jobs:
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
+          name: cyberduck-windows-app-exe
           archive: false
           path: |-
             windows/target/release/*.exe
@@ -145,6 +111,7 @@ jobs:
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
+          name: cyberduck-windows-app-msi
           archive: false
           path: |-
             windows/target/release/*.msi
@@ -152,9 +119,18 @@ jobs:
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
+          name: cyberduck-windows-app-appx
           archive: false
           path: |-
             windows/target/release/*.appx
+      - name: Archive Update Feed (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: cyberduck-windows-changelog
+          archive: false
+          path: |-
+            windows/target/update/changelog.*
       - name: Archive CLI EXE (Windows)
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
@@ -184,3 +160,69 @@ jobs:
           archive: false
           path: |-
             cli/linux/target/release/*.rpm
+
+  publish:
+    needs: snapshot
+    permissions:
+      actions: read
+      contents: read
+    runs-on: linux-self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [ macos, windows ]
+    steps:
+      - name: Download Release Artifacts
+        uses: actions/download-artifact@v7
+        with:
+          pattern: cyberduck-${{ matrix.target }}-app-*
+          path: release
+          merge-multiple: true
+      - name: Download Update Feed
+        uses: actions/download-artifact@v7
+        with:
+          pattern: cyberduck-${{ matrix.target }}-changelog
+          path: update
+          merge-multiple: true
+
+      - name: Credentials
+        id: identity
+        env:
+          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
+        shell: bash
+        run: |
+          printf '%s' "$SFTP_IDENTITY" > private-key.pem
+          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
+
+      - name: S3 Upload
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.AWS_ACCESS_KEY_ID}}
+          PASSWORD: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        with:
+          mode: upload
+          url: ${{ github.ref_type == 'branch' && 's3:/snapshots.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
+          path: release/Cyberduck-*
+          args: '--verbose --existing overwrite --region us-east-1'
+
+      - name: Rackspace Upload
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.RACKSPACE_USER}}
+          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
+        with:
+          mode: upload
+          url: ${{ github.ref_type == 'branch' && 'rackspace:/snapshots.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
+          path: release/Cyberduck-*
+          args: '--verbose --existing overwrite --region DFW'
+
+      - name: Upload Feed
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: ${{ matrix.target == 'macos' && (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/nightly/' || 'sftp://version.cyberduck.io/') || (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/windows/nightly/' || 'sftp://version.cyberduck.io/windows/') }}
+          path: update/changelog.*
+          args: '--existing overwrite --verbose'
