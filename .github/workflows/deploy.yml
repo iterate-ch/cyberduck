@@ -213,7 +213,7 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
-          pattern: duck-*.deb
+          pattern: duck[-_]*.deb
           path: release
           merge-multiple: true
       - name: Download RPM (Linux)
@@ -221,7 +221,7 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
-          pattern: duck-*.rpm
+          pattern: duck[-_]*.rpm
           path: release
           merge-multiple: true
       - name: Download Update Feed
@@ -287,7 +287,7 @@ jobs:
         with:
           mode: upload
           url: rackspace:/cdn.duck.sh/
-          path: release/duck-*
+          path: release/duck[-_]*
           args: '--verbose --existing overwrite --region DFW'
 
       - name: Upload Feed
