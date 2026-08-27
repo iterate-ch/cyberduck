@@ -1,10 +1,10 @@
-name: Publish Artifacts
+name: Build and Publish Artifacts
 on:
-  workflow_dispatch:
-  push:
-    tags: [ '*' ]
-    branches:
-      - master
+  workflow_call:
+    inputs:
+      sparkle-feed:
+        required: true
+        type: string
 jobs:
   snapshot:
     permissions:
@@ -55,7 +55,7 @@ jobs:
           certificate: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_BASE64 }}
           certificate-password: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_PASSWORD }}
       - name: Build with Maven
-        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -DskipTests -DskipITs -D"sparkle.feed=${{ github.ref_type == 'branch' && 'nightly' || '' }}" -P!local
+        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -DskipTests -DskipITs -D"sparkle.feed=${{ inputs['sparkle-feed'] }}" -P!local
         env:
           MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
           MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}
@@ -148,7 +148,7 @@ jobs:
           path: |-
             cli/windows/target/release/*.msi
       - name: Chocolatey Push (Windows)
-        if: runner.os == 'windows' && github.ref_type == 'tag'
+        if: runner.os == 'windows' && inputs['sparkle-feed'] != 'nightly'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
@@ -156,7 +156,7 @@ jobs:
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
       - name: Chocolatey Push (Windows CLI)
-        if: runner.os == 'windows' && github.ref_type == 'tag'
+        if: runner.os == 'windows' && inputs['sparkle-feed'] != 'nightly'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
@@ -309,7 +309,7 @@ jobs:
           PASSWORD: ${{secrets.AWS_SECRET_ACCESS_KEY}}
         with:
           mode: upload
-          url: ${{ github.ref_type == 'branch' && 's3:/snapshots.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
+          url: ${{ inputs['sparkle-feed'] == 'nightly' && 's3:/snapshots.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
           path: release/Cyberduck-*
           args: '--verbose --existing overwrite --region us-east-1'
 
@@ -321,7 +321,7 @@ jobs:
           PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
         with:
           mode: upload
-          url: ${{ github.ref_type == 'branch' && 'rackspace:/snapshots.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
+          url: ${{ inputs['sparkle-feed'] == 'nightly' && 'rackspace:/snapshots.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
           path: release/Cyberduck-*
           args: '--verbose --existing overwrite --region DFW'
 
@@ -362,7 +362,7 @@ jobs:
           args: '--verbose --existing overwrite --region IAD'
 
       - name: SFTP Upload (App)
-        if: github.ref_type == 'branch' && steps.check.outputs.found == 'true'
+        if: inputs['sparkle-feed'] == 'nightly' && steps.check.outputs.found == 'true'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
@@ -405,6 +405,6 @@ jobs:
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
-          url: ${{ matrix.target == 'macos' && (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/nightly/' || 'sftp://version.cyberduck.io/') || (github.ref_type == 'branch' && 'sftp://version.cyberduck.io/windows/nightly/' || 'sftp://version.cyberduck.io/windows/') }}
+          url: ${{ matrix.target == 'macos' && (inputs['sparkle-feed'] == 'nightly' && 'sftp://version.cyberduck.io/nightly/' || 'sftp://version.cyberduck.io/') || (inputs['sparkle-feed'] == 'nightly' && 'sftp://version.cyberduck.io/windows/nightly/' || 'sftp://version.cyberduck.io/windows/') }}
           path: update/changelog.*
           args: '--existing overwrite --verbose'
