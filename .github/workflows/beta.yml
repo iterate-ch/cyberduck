@@ -3,7 +3,12 @@ on:
   workflow_dispatch:
 jobs:
   deploy:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ macos, windows, linux, linux-arm64 ]
     uses: ./.github/workflows/deploy.yml
     with:
       sparkle-feed: beta
+      platform: ${{ matrix['platform'] }}
     secrets: inherit

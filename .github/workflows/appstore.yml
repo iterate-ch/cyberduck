@@ -1,41 +1,34 @@
 name: Publish App Store
+
 on:
   push:
     tags: [ '*' ]
+
 jobs:
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    with:
+      maven-profiles: '!local,appstore,sandbox'
+      platform: macos
+      sparkle-feed: ''
+      publish: false
+    secrets: inherit
+
   appstore:
+    needs: deploy
     permissions:
-      checks: write
+      actions: read
       contents: read
-      packages: read
-    runs-on: macos-self-hosted
+    runs-on: macos
     steps:
-      - uses: actions/checkout@v7
+      - name: Download App PKG (macOS)
+        uses: actions/download-artifact@v7
         with:
-          fetch-depth: 0
-      - name: Set up JDK
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: 21
-          cache: maven
-      - name: Import Developer ID certificate
-        uses: ./.github/actions/import-developer-id-certificate
-        with:
-          certificate: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_BASE64 }}
-          certificate-password: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_PASSWORD }}
-      - name: Build with Maven
-        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -DskipTests -DskipITs -P!local,appstore,sandbox
-        env:
-          MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
-          MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}
-          DEVELOPER_DIR: /Applications/Xcode 15.app/Contents/Developer
-          NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
-          NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
-          NOTARIZATION_TEAMID: ${{ secrets.NOTARIZATION_TEAMID }}
-          KEYCHAIN_PATH: ${{ runner.temp }}/build.keychain-db
+          pattern: Cyberduck-*.pkg
+          path: release
+          merge-multiple: true
       - name: Upload to App Store
         env:
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
           NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
-        run: xcrun altool --verbose --upload-app -f osx/target/release/*.pkg -t osx -u "$NOTARIZATION_USER" -p "$NOTARIZATION_PW"
+        run: xcrun altool --verbose --upload-app -f release/*.pkg -t osx -u "$NOTARIZATION_USER" -p "$NOTARIZATION_PW"

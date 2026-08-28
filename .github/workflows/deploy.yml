@@ -1,21 +1,29 @@
 name: Build and Publish Artifacts
+
 on:
   workflow_call:
     inputs:
       sparkle-feed:
+        type: string
+      maven-profiles:
+        required: false
+        type: string
+        default: '!local'
+      platform:
         required: true
         type: string
+      publish:
+        required: false
+        default: true
+        type: boolean
+
 jobs:
-  snapshot:
+  build:
     permissions:
       checks: write
       contents: read
       packages: read
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ macos-self-hosted, linux-self-hosted, linux-arm64-self-hosted, windows-self-hosted ]
+    runs-on: ${{ inputs['platform']-self-hosted }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -27,12 +35,12 @@ jobs:
           java-version: 21
           cache: maven
       - name: Add msbuild to PATH
-        if: runner.os == 'windows'
+        if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v3
         with:
           msbuild-architecture: x64
       - name: "NuGet"
-        if: runner.os == 'windows'
+        if: runner.os == 'Windows'
         env:
           NugetCredentials: "Username=${{ github.actor }};Password=${{ secrets.GITHUB_TOKEN }}"
         run: |
@@ -55,7 +63,7 @@ jobs:
           certificate: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_BASE64 }}
           certificate-password: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_PASSWORD }}
       - name: Build with Maven
-        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -DskipTests -DskipITs -D"sparkle.feed=${{ inputs['sparkle-feed'] }}" -P!local
+        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -DskipTests -DskipITs -D"sparkle.feed=${{ inputs['sparkle-feed'] }}" -P"${{ inputs['maven-profiles'] }}"
         env:
           MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
           MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}
@@ -68,87 +76,88 @@ jobs:
           SIGNTOOL_KC: ${{ secrets.SIGNTOOL_KC }}
 
       - name: Archive App ZIP (macOS)
-        if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             osx/target/release/*.zip
       - name: Archive App PKG (macOS)
-        if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             osx/target/release/*.pkg
       - name: Archive Update Feed (macOS)
-        if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
-          name: cyberduck-macos-changelog
+          name: cyberduck-${{ inputs['platform'] }}-changelog
           archive: false
           path: |-
             osx/target/update/changelog.*
       - name: Archive CLI PKG (macOS)
-        if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             cli/osx/target/release/*.pkg
       - name: Archive CLI Formula (macOS)
-        if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             cli/osx/target/release/*.rb
-
       - name: Archive EXE (Windows)
-        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             windows/target/release/*.exe
       - name: Archive MSI (Windows)
-        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             windows/target/release/*.msi
       - name: Archive APPX (Windows)
-        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             windows/target/release/*.appx
       - name: Archive Update Feed (Windows)
-        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
-          name: cyberduck-windows-changelog
+          name: cyberduck-${{ inputs['platform'] }}-changelog
           archive: false
           path: |-
             windows/target/update/changelog.*
       - name: Archive CLI EXE (Windows)
-        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             cli/windows/target/release/*.exe
       - name: Archive CLI MSI (Windows)
-        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             cli/windows/target/release/*.msi
+      - name: Archive DEB (Linux)
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/linux/target/release/*.deb
+      - name: Archive RPM (Linux)
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/linux/target/release/*.rpm
+
       - name: Chocolatey Push (Windows)
-        if: runner.os == 'windows' && inputs['sparkle-feed'] != 'nightly'
+        if: runner.os == 'Windows' && inputs['sparkle-feed'] != 'nightly'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
@@ -156,7 +165,7 @@ jobs:
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
       - name: Chocolatey Push (Windows CLI)
-        if: runner.os == 'windows' && inputs['sparkle-feed'] != 'nightly'
+        if: runner.os == 'Windows' && inputs['sparkle-feed'] != 'nightly'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
@@ -164,119 +173,28 @@ jobs:
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
 
-      - name: Archive DEB (Linux)
-        if: runner.os == 'linux'
-        uses: actions/upload-artifact@v7
-        with:
-          archive: false
-          path: |-
-            cli/linux/target/release/*.deb
-      - name: Archive RPM (Linux)
-        if: runner.os == 'linux'
-        uses: actions/upload-artifact@v7
-        with:
-          archive: false
-          path: |-
-            cli/linux/target/release/*.rpm
-
   publish:
-    needs: snapshot
-    if: ${{ !cancelled() }}
+    needs: build
+    if: ${{ inputs['publish'] && !cancelled() }}
     permissions:
       actions: read
       contents: read
-    runs-on: linux-self-hosted
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [ macos, windows, linux ]
+    runs-on: linux
     steps:
-      - name: Download App ZIP (macOS)
-        if: matrix.target == 'macos'
+      - name: Download Artifacts
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
-          pattern: Cyberduck-*.zip
+          pattern: '{*.zip,*.pkg,*.msi,*.appx,*.deb,*.rpm,*.rb}'
           path: release
           merge-multiple: true
-      - name: Download App PKG (macOS)
-        if: matrix.target == 'macos'
-        continue-on-error: true
-        uses: actions/download-artifact@v7
-        with:
-          pattern: Cyberduck-*.pkg
-          path: release
-          merge-multiple: true
-      - name: Download CLI PKG (macOS)
-        if: matrix.target == 'macos'
-        continue-on-error: true
-        uses: actions/download-artifact@v7
-        with:
-          pattern: duck[-_]*.pkg
-          path: release
-          merge-multiple: true
-      - name: Download CLI Formula (macOS)
-        if: matrix.target == 'macos'
-        continue-on-error: true
-        uses: actions/download-artifact@v7
-        with:
-          pattern: '*.rb'
-          path: release
-          merge-multiple: true
-      - name: Download EXE (Windows)
-        if: matrix.target == 'windows'
-        continue-on-error: true
-        uses: actions/download-artifact@v7
-        with:
-          pattern: Cyberduck-Installer-*.exe
-          path: release
-          merge-multiple: true
-      - name: Download MSI (Windows)
-        if: matrix.target == 'windows'
-        continue-on-error: true
-        uses: actions/download-artifact@v7
-        with:
-          pattern: Cyberduck-Installer-*.msi
-          path: release
-          merge-multiple: true
-      - name: Download APPX (Windows)
-        if: matrix.target == 'windows'
-        continue-on-error: true
-        uses: actions/download-artifact@v7
-        with:
-          pattern: '*.appx'
-          path: release
-          merge-multiple: true
-      - name: Download CLI (Windows)
-        if: matrix.target == 'windows'
-        continue-on-error: true
-        uses: actions/download-artifact@v7
-        with:
-          pattern: duck[-_]*
-          path: release
-          merge-multiple: true
-      - name: Download DEB (Linux)
-        if: matrix.target == 'linux'
-        continue-on-error: true
-        uses: actions/download-artifact@v7
-        with:
-          pattern: duck[-_]*.deb
-          path: release
-          merge-multiple: true
-      - name: Download RPM (Linux)
-        if: matrix.target == 'linux'
-        continue-on-error: true
-        uses: actions/download-artifact@v7
-        with:
-          pattern: duck[-_]*.rpm
-          path: release
-          merge-multiple: true
+
       - name: Download Update Feed
-        if: matrix.target != 'linux'
+        if: inputs['platform'] == 'macos' || inputs['platform'] == 'windows'
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
-          pattern: cyberduck-${{ matrix.target }}-changelog
+          pattern: cyberduck-${{ inputs['platform'] }}-changelog
           path: update
           merge-multiple: true
 
@@ -290,62 +208,36 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: S3 Upload
-        if: matrix.target != 'linux'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: ${{secrets.AWS_ACCESS_KEY_ID}}
           PASSWORD: ${{secrets.AWS_SECRET_ACCESS_KEY}}
         with:
           mode: upload
-          url: ${{ inputs['sparkle-feed'] == 'nightly' && 's3:/snapshots.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
+          url: ${{ inputs['sparkle-feed'] == 'nightly' && 's3:/snapshots.cyberduck.io/' || inputs['sparkle-feed'] == 'beta' && 's3:/beta.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
           path: release/Cyberduck-*
           args: '--verbose --existing overwrite --region us-east-1'
 
       - name: Rackspace Upload
-        if: matrix.target != 'linux'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: ${{secrets.RACKSPACE_USER}}
           PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
         with:
           mode: upload
-          url: ${{ inputs['sparkle-feed'] == 'nightly' && 'rackspace:/snapshots.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
+          url: ${{ inputs['sparkle-feed'] == 'nightly' && 'rackspace:/snapshots.cyberduck.io/' || inputs['sparkle-feed'] == 'beta' && 'rackspace:/beta.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
           path: release/Cyberduck-*
           args: '--verbose --existing overwrite --region DFW'
 
-      - name: Rackspace Upload (macOS CLI)
-        if: matrix.target == 'macos'
+      - name: Rackspace Upload (CLI)
+        if: inputs['sparkle-feed'] == ''
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: ${{secrets.RACKSPACE_USER}}
           PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
         with:
           mode: upload
-          url: rackspace:/cdn.duck.sh/
-          path: release/duck[-_]*
-          args: '--verbose --existing overwrite --region IAD'
-
-      - name: Rackspace Upload (Windows CLI)
-        if: matrix.target == 'windows'
-        uses: iterate-ch/cyberduck-cli-action@v1
-        env:
-          USERNAME: ${{secrets.RACKSPACE_USER}}
-          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
-        with:
-          mode: upload
-          url: rackspace:/cdn.duck.sh/
-          path: release/duck[-_]*
-          args: '--verbose --existing overwrite --region IAD'
-
-      - name: Rackspace Upload (Linux)
-        if: matrix.target == 'linux'
-        uses: iterate-ch/cyberduck-cli-action@v1
-        env:
-          USERNAME: ${{secrets.RACKSPACE_USER}}
-          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
-        with:
-          mode: upload
-          url: rackspace:/cdn.duck.sh/
+          url: ${{ inputs['sparkle-feed'] == 'nightly' && 'rackspace:/cdn.duck.sh/nightly/' || inputs['sparkle-feed'] == 'beta' && 'rackspace:/cdn.duck.sh/nightly/' || 'rackspace:/cdn.duck.sh/' }}
           path: release/duck[-_]*
           args: '--verbose --existing overwrite --region IAD'
 
@@ -357,11 +249,12 @@ jobs:
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
-          url: sftp://dist.duck.sh/
+          url: sftp://update.cyberduck.io/nightly/
           path: release/Cyberduck-*
           args: '--existing overwrite --verbose'
 
       - name: SFTP Upload (CLI)
+        if: inputs['sparkle-feed'] == ''
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
@@ -373,7 +266,7 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: SFTP Upload (macOS CLI Formula)
-        if: matrix.target == 'macos'
+        if: inputs['platform'] == 'macos'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
@@ -385,13 +278,13 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: Upload Feed
-        if: matrix.target != 'linux'
+        if: inputs['platform'] == 'macos' || inputs['platform'] == 'windows'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
-          url: ${{ matrix.target == 'macos' && (inputs['sparkle-feed'] == 'nightly' && 'sftp://version.cyberduck.io/nightly/' || 'sftp://version.cyberduck.io/') || (inputs['sparkle-feed'] == 'nightly' && 'sftp://version.cyberduck.io/windows/nightly/' || 'sftp://version.cyberduck.io/windows/') }}
+          url: ${{ format('sftp://version.cyberduck.io/{0}/{1}', inputs['platform'], inputs['sparkle-feed']) }}
           path: update/changelog.*
           args: '--existing overwrite --verbose'

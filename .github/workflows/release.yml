@@ -4,5 +4,12 @@ on:
     tags: [ '*' ]
 jobs:
   deploy:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ macos, windows, linux, linux-arm64 ]
     uses: ./.github/workflows/deploy.yml
+    with:
+      sparkle-feed: release
+      platform: ${{ matrix['platform'] }}
     secrets: inherit
