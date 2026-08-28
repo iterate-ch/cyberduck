@@ -121,7 +121,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         return null;
     }
 
-    private String start(Path file, TransferStatus status) throws BackgroundException {
+    private String start(final Path file, final TransferStatus status) throws BackgroundException {
         final String uploadUrl;
         if(!capabilities.extensions.contains(Extension.creation)) {
             throw new InteroperabilityException(String.format("No support for %s", Extension.creation));
