@@ -131,7 +131,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
         request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
         // The Upload-Length header indicates the size of the entire upload in bytes
-        request.setHeader(TUS_HEADER_UPLOAD_LENGTH, String.valueOf(status.getDestinationlength()));
+        request.setHeader(TUS_HEADER_UPLOAD_LENGTH, String.valueOf(status.getParent().getLength()));
         // The Upload-Metadata request and response header MUST consist of one or more comma-separated key-value pairs
         final StringAppender metadata = new StringAppender(',');
         metadata.append(String.format("filename %s", Base64.encodeBase64String(file.getName().getBytes(StandardCharsets.UTF_8))));
@@ -178,7 +178,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             public Void call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                        .setSegment(true)
+                        .setSegment(true).setParent(overall)
                         .setOffset(offset)
                         .setLength(length);
                 status.setHeader(overall.getHeader());
