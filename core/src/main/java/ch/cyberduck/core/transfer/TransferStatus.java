@@ -104,11 +104,6 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     private long length = TransferStatus.UNKNOWN_LENGTH;
 
     /**
-     * Destination size may differ when encrypted or by some other transformation
-     */
-    private long destinationlength = TransferStatus.UNKNOWN_LENGTH;
-
-    /**
      * The transfer has been canceled by the user.
      */
     private final AtomicBoolean canceled
@@ -166,6 +161,11 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     private Map<String, String> metadata
             = Collections.emptyMap();
 
+    /**
+     * Overall transfer status for this segment
+     */
+    private TransferStatus parent;
+
     private List<TransferStatus> segments
             = Collections.emptyList();
 
@@ -218,7 +218,7 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.hidden = copy.hidden;
         this.offset.set(copy.offset.get());
         this.length = copy.length;
-        this.destinationlength = copy.destinationlength;
+        this.parent = copy.parent;
         this.canceled.set(copy.canceled.get());
         this.complete.set(copy.complete.get());
         this.checksum = copy.checksum;
@@ -233,7 +233,6 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         this.created = copy.created;
         this.parameters = copy.parameters;
         this.metadata = copy.metadata;
-        this.segment = copy.segment;
         this.part = copy.part;
         this.url = copy.url;
         this.header = copy.header;
@@ -325,18 +324,6 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
      */
     public TransferStatus setLength(final long bytes) {
         this.length = bytes;
-        return this;
-    }
-
-    public long getDestinationlength() {
-        if(UNKNOWN_LENGTH == destinationlength) {
-            return length;
-        }
-        return destinationlength;
-    }
-
-    public TransferStatus setDestinationLength(final long destinationlength) {
-        this.destinationlength = destinationlength;
         return this;
     }
 
@@ -556,6 +543,18 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
     public TransferStatus setUrl(final String url) {
         this.url = url;
         return this;
+    }
+
+    public TransferStatus setParent(TransferStatus parent) {
+        this.parent = parent;
+        return this;
+    }
+
+    public TransferStatus getParent() {
+        if(null == parent) {
+            return this;
+        }
+        return parent;
     }
 
     public List<TransferStatus> getSegments() {
