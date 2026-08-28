@@ -5,6 +5,4 @@ on:
 jobs:
   deploy:
     uses: ./.github/workflows/deploy.yml
-    with:
-      sparkle-feed: ''
     secrets: inherit
