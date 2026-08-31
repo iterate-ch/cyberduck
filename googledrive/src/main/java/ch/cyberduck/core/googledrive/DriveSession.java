@@ -179,6 +179,9 @@ public class DriveSession extends HttpSession<Drive> {
         if(type == Versioning.class) {
             return (T) new DriveVersioningFeature(this, fileid);
         }
+        if(type == Thumbnail.class) {
+            return (T) new DriveThumbnailFeature(this, fileid);
+        }
         return super._getFeature(type);
     }
 
