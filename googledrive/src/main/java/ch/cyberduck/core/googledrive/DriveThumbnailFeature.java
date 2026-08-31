@@ -28,6 +28,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,6 +68,7 @@ public class DriveThumbnailFeature implements Thumbnail {
                 case HttpStatus.SC_OK:
                     return new HttpMethodReleaseInputStream(response);
                 default:
+                    EntityUtils.consumeQuietly(response.getEntity());
                     throw new DefaultHttpResponseExceptionMappingService().map("Download {0} failed", new HttpResponseException(
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()), file);
             }
