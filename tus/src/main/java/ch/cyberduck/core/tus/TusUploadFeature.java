@@ -178,7 +178,8 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             public Void call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                        .setSegment(true).setParent(overall)
+                        .setSegment(true)
+                        .setParent(overall)
                         .setOffset(offset)
                         .setLength(length);
                 status.setHeader(overall.getHeader());
