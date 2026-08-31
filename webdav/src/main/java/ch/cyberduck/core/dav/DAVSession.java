@@ -145,7 +145,7 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(host.getProtocol().isTokenConfigurable()) {
             for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
-                log.debug("Set credentials {} for {}", credentials, scheme);
+                log.debug("Set {} credentials {} for {}", CurrentWindowsCredentials.INSTANCE, credentials, scheme);
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
                         CurrentWindowsCredentials.INSTANCE
@@ -164,7 +164,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 domain = preferences.getProperty("webdav.ntlm.domain");
             }
             for(String scheme : Arrays.asList(AuthSchemes.NTLM, AuthSchemes.SPNEGO)) {
-                log.debug("Set credentials {} for {}", credentials, scheme);
+                log.debug("Set NT credentials {} for {}", credentials, scheme);
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
                         new NTCredentials(username, credentials.getPassword(),
@@ -173,7 +173,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 );
             }
             for(String scheme : Arrays.asList(AuthSchemes.BASIC, AuthSchemes.DIGEST, AuthSchemes.KERBEROS)) {
-                log.debug("Set credentials {} for {}", credentials, scheme);
+                log.debug("Set username/password credentials {} for {}", credentials, scheme);
                 client.setCredentials(
                         new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, scheme),
                         new UsernamePasswordCredentials(username, credentials.getPassword()));
