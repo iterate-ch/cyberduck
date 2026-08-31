@@ -246,6 +246,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             public TransferStatus call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
+                        .setParent(overall)
                         .setSegment(true)
                         .setLength(length)
                         .setOffset(offset);
