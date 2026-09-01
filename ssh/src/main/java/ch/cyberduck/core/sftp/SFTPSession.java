@@ -33,6 +33,7 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.auth.SFTPAgentAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPChallengeResponseAuthentication;
+import ch.cyberduck.core.sftp.auth.SFTPGssApiAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPNoneAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPasswordAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
@@ -295,6 +296,7 @@ public class SFTPSession extends Session<SSHClient> {
             }
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
+        defaultMethods.add(new SFTPGssApiAuthentication(client));
         if(credentials.isPasswordAuthentication()) {
             defaultMethods.add(0, new SFTPPasswordAuthentication(client));
             defaultMethods.add(0, new SFTPChallengeResponseAuthentication(client));
