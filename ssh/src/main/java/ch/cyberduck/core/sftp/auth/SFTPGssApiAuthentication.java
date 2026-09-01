@@ -127,7 +127,7 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
             loginContext = new LoginContext("cyberduck-sftp", new Subject(), null, jaasConfig);
             loginContext.login();
             loggedIn = true;
-            log.debug("Kerberos TGT acquired for principal {}", loginContext.getSubject());
+            log.debug("Kerberos TGT acquired for principals {}", loginContext.getSubject().getPrincipals());
             final List<Oid> mechanisms = Collections.singletonList(KRB5_MECH);
             System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
             try {
