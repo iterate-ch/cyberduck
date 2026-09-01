@@ -12,6 +12,9 @@ on:
       PLATFORM:
         required: true
         type: string
+      DEVELOPER_DIR:
+        required: false
+        type: string
       SIGNTOOL_CSP:
         required: false
         type: string
