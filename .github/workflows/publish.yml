@@ -1,0 +1,133 @@
+name: Publish Artifacts
+
+on:
+  workflow_call:
+    inputs:
+      SPARKLE_FEED:
+        required: true
+        type: string
+
+jobs:
+  publish:
+    if: ${{ !cancelled() }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: linux
+    steps:
+      - name: Download Artifacts
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: '{*.zip,*.pkg,*.msi,*.appx,*.deb,*.rpm,*.rb}'
+          path: release
+          merge-multiple: true
+
+      - name: Download Update Feed
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: changelog-*
+          path: update
+
+      - name: Credentials
+        id: identity
+        env:
+          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
+        shell: bash
+        run: |
+          printf '%s' "$SFTP_IDENTITY" > private-key.pem
+          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
+
+      - name: S3 Upload
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.AWS_ACCESS_KEY_ID}}
+          PASSWORD: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        with:
+          mode: upload
+          url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 's3:/snapshots.cyberduck.io/' || inputs['SPARKLE_FEED'] == 'beta' && 's3:/beta.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
+          path: release/Cyberduck-*
+          args: '--verbose --existing overwrite --region us-east-1'
+
+      - name: Rackspace Upload
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.RACKSPACE_USER}}
+          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
+        with:
+          mode: upload
+          url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/snapshots.cyberduck.io/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/beta.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
+          path: release/Cyberduck-*
+          args: '--verbose --existing overwrite --region DFW'
+
+      - name: Rackspace Upload (CLI)
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: ${{secrets.RACKSPACE_USER}}
+          PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
+        with:
+          mode: upload
+          url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/cdn.duck.sh/nightly/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/cdn.duck.sh/nightly/' || 'rackspace:/cdn.duck.sh/' }}
+          path: release/duck[-_]*
+          args: '--verbose --existing overwrite --region IAD'
+
+      - name: SFTP Upload (App)
+        if: inputs['SPARKLE_FEED'] == 'nightly'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://update.cyberduck.io/nightly/
+          path: release/Cyberduck-*
+          args: '--existing overwrite --verbose'
+
+      - name: SFTP Upload (CLI)
+        if: inputs['SPARKLE_FEED'] == 'release'
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://dist.duck.sh/
+          path: release/duck[-_]*
+          args: '--existing overwrite --verbose'
+
+      - name: SFTP Upload (macOS CLI Formula)
+        continue-on-error: true
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://version.cyberduck.io/
+          path: release/*.rb
+          args: '--existing overwrite --verbose'
+
+      - name: Upload Feed (macOS)
+        continue-on-error: true
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: ${{ format('sftp://version.cyberduck.io/macos/{0}', inputs['SPARKLE_FEED']) }}
+          path: update/changelog-macos/changelog.*
+          args: '--existing overwrite --verbose'
+
+      - name: Upload Feed (Windows)
+        continue-on-error: true
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: ${{ format('sftp://version.cyberduck.io/windows/{0}', inputs['SPARKLE_FEED']) }}
+          path: update/changelog-windows/changelog.*
+          args: '--existing overwrite --verbose'

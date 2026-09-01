@@ -15,3 +15,11 @@ jobs:
       SIGNTOOL_CSP: 'Google Cloud KMS Provider'
       SIGNTOOL_KC: 'projects/api-project-996125414232/locations/europe/keyRings/code-signing/cryptoKeys/windows/cryptoKeyVersions/1'
     secrets: inherit
+
+  publish:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    uses: ./.github/workflows/publish.yml
+    with:
+      SPARKLE_FEED: beta
+    secrets: inherit
