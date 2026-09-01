@@ -54,12 +54,15 @@ jobs:
       - name: Copy Sparkle Updater Private Key (DSA)
         shell: bash
         run: |
+          umask 077
           printf '%s' "$SPARKLE_PRIVATE_KEY_DSA" > www/update/private.pem
         env:
           SPARKLE_PRIVATE_KEY_DSA: ${{ secrets.SPARKLE_PRIVATE_KEY_DSA }}
       - name: Copy Sparkle Updater Private Key (ED25519)
         shell: bash
-        run: echo "${{ env.SPARKLE_PRIVATE_KEY_ED25519 }}" > www/update/private-ed25519.pem
+        run: |
+          umask 077
+          printf '%s' "$SPARKLE_PRIVATE_KEY_ED25519" > www/update/private-ed25519.pem
         env:
           SPARKLE_PRIVATE_KEY_ED25519: ${{ secrets.SPARKLE_PRIVATE_KEY_ED25519 }}
       - name: Import Developer ID certificate
