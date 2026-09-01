@@ -56,7 +56,7 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
     private final Session<DAVClient> session;
     private final TusCapabilities capabilities;
 
-    public TusWriteFeature(Session<DAVClient> session, TusCapabilities capabilities) {
+    public TusWriteFeature(final Session<DAVClient> session, final TusCapabilities capabilities) {
         super(session.getHost(), new VoidAttributesAdapter());
         this.session = session;
         this.capabilities = capabilities;
