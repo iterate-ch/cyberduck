@@ -76,7 +76,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     private final Session<DAVClient> session;
     private final TusCapabilities capabilities;
 
-    public TusUploadFeature(Session<DAVClient> session, TusCapabilities capabilities) {
+    public TusUploadFeature(final Session<DAVClient> session, final TusCapabilities capabilities) {
         this.session = session;
         this.capabilities = capabilities;
     }
