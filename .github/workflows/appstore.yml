@@ -8,10 +8,11 @@ jobs:
   deploy:
     uses: ./.github/workflows/deploy.yml
     with:
-      maven-profiles: '!local,appstore,sandbox'
-      platform: macos
-      sparkle-feed: ''
-      publish: false
+      MAVEN_PROFILES: '!local,appstore,sandbox'
+      PLATFORM: macos
+      SPARKLE_FEED: ''
+      PUBLISH: false
+      DEVELOPER_DIR: '/Applications/Xcode 26.app/Contents/Developer'
     secrets: inherit
 
   appstore:

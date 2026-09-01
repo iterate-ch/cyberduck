@@ -3,19 +3,25 @@ name: Build and Publish Artifacts
 on:
   workflow_call:
     inputs:
-      sparkle-feed:
+      SPARKLE_FEED:
         type: string
-      maven-profiles:
+      MAVEN_PROFILES:
         required: false
         type: string
         default: '!local'
-      platform:
+      PLATFORM:
         required: true
         type: string
-      publish:
+      PUBLISH:
         required: false
         default: true
         type: boolean
+      SIGNTOOL_CSP:
+        required: false
+        type: string
+      SIGNTOOL_KC:
+        required: false
+        type: string
 
 jobs:
   build:
@@ -23,7 +29,7 @@ jobs:
       checks: write
       contents: read
       packages: read
-    runs-on: ${{ format('{0}-self-hosted', inputs.platform) }}
+    runs-on: ${{ format('{0}-self-hosted', inputs.PLATFORM) }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -63,17 +69,17 @@ jobs:
           certificate: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_BASE64 }}
           certificate-password: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_PASSWORD }}
       - name: Build with Maven
-        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -DskipTests -DskipITs -D"sparkle.feed=${{ inputs['sparkle-feed'] }}" -P"${{ inputs['maven-profiles'] }}"
+        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -DskipTests -DskipITs -D"sparkle.feed=${{ inputs['SPARKLE_FEED'] }}" -P"${{ inputs['MAVEN_PROFILES'] }}"
         env:
           MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
           MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}
-          DEVELOPER_DIR: /Applications/Xcode 15.app/Contents/Developer
+          DEVELOPER_DIR: ${{ inputs['DEVELOPER_DIR'] }}
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
           NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
           NOTARIZATION_TEAMID: ${{ secrets.NOTARIZATION_TEAMID }}
           KEYCHAIN_PATH: ${{ runner.temp }}/build.keychain-db
-          SIGNTOOL_CSP: ${{ secrets.SIGNTOOL_CSP }}
-          SIGNTOOL_KC: ${{ secrets.SIGNTOOL_KC }}
+          SIGNTOOL_CSP: ${{ inputs['SIGNTOOL_CSP'] }}
+          SIGNTOOL_KC: ${{ inputs['SIGNTOOL_KC'] }}
 
       - name: Archive App ZIP (macOS)
         uses: actions/upload-artifact@v7
@@ -90,7 +96,7 @@ jobs:
       - name: Archive Update Feed (macOS)
         uses: actions/upload-artifact@v7
         with:
-          name: cyberduck-${{ inputs['platform'] }}-changelog
+          name: cyberduck-${{ inputs['PLATFORM'] }}-changelog
           archive: false
           path: |-
             osx/target/update/changelog.*
@@ -127,7 +133,7 @@ jobs:
       - name: Archive Update Feed (Windows)
         uses: actions/upload-artifact@v7
         with:
-          name: cyberduck-${{ inputs['platform'] }}-changelog
+          name: cyberduck-${{ inputs['PLATFORM'] }}-changelog
           archive: false
           path: |-
             windows/target/update/changelog.*
@@ -157,7 +163,7 @@ jobs:
             cli/linux/target/release/*.rpm
 
       - name: Chocolatey Push (Windows)
-        if: runner.os == 'Windows' && inputs['sparkle-feed'] == 'release'
+        if: runner.os == 'Windows' && inputs['SPARKLE_FEED'] == 'release'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
@@ -165,7 +171,7 @@ jobs:
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
       - name: Chocolatey Push (Windows CLI)
-        if: runner.os == 'Windows' && inputs['sparkle-feed'] == 'release'
+        if: runner.os == 'Windows' && inputs['SPARKLE_FEED'] == 'release'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
@@ -190,11 +196,11 @@ jobs:
           merge-multiple: true
 
       - name: Download Update Feed
-        if: inputs['platform'] == 'macos' || inputs['platform'] == 'windows'
+        if: inputs['PLATFORM'] == 'macos' || inputs['PLATFORM'] == 'windows'
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
-          pattern: cyberduck-${{ inputs['platform'] }}-changelog
+          pattern: cyberduck-${{ inputs['PLATFORM'] }}-changelog
           path: update
           merge-multiple: true
 
@@ -214,7 +220,7 @@ jobs:
           PASSWORD: ${{secrets.AWS_SECRET_ACCESS_KEY}}
         with:
           mode: upload
-          url: ${{ inputs['sparkle-feed'] == 'nightly' && 's3:/snapshots.cyberduck.io/' || inputs['sparkle-feed'] == 'beta' && 's3:/beta.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
+          url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 's3:/snapshots.cyberduck.io/' || inputs['SPARKLE_FEED'] == 'beta' && 's3:/beta.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
           path: release/Cyberduck-*
           args: '--verbose --existing overwrite --region us-east-1'
 
@@ -225,7 +231,7 @@ jobs:
           PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
         with:
           mode: upload
-          url: ${{ inputs['sparkle-feed'] == 'nightly' && 'rackspace:/snapshots.cyberduck.io/' || inputs['sparkle-feed'] == 'beta' && 'rackspace:/beta.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
+          url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/snapshots.cyberduck.io/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/beta.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
           path: release/Cyberduck-*
           args: '--verbose --existing overwrite --region DFW'
 
@@ -236,12 +242,12 @@ jobs:
           PASSWORD: ${{secrets.RACKSPACE_PASSWORD}}
         with:
           mode: upload
-          url: ${{ inputs['sparkle-feed'] == 'nightly' && 'rackspace:/cdn.duck.sh/nightly/' || inputs['sparkle-feed'] == 'beta' && 'rackspace:/cdn.duck.sh/nightly/' || 'rackspace:/cdn.duck.sh/' }}
+          url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/cdn.duck.sh/nightly/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/cdn.duck.sh/nightly/' || 'rackspace:/cdn.duck.sh/' }}
           path: release/duck[-_]*
           args: '--verbose --existing overwrite --region IAD'
 
       - name: SFTP Upload (App)
-        if: inputs['sparkle-feed'] == 'nightly'
+        if: inputs['SPARKLE_FEED'] == 'nightly'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
@@ -253,7 +259,7 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: SFTP Upload (CLI)
-        if: inputs['sparkle-feed'] == 'release'
+        if: inputs['SPARKLE_FEED'] == 'release'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
@@ -265,7 +271,7 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: SFTP Upload (macOS CLI Formula)
-        if: inputs['platform'] == 'macos'
+        if: inputs['PLATFORM'] == 'macos'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
@@ -277,13 +283,13 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: Upload Feed
-        if: inputs['platform'] == 'macos' || inputs['platform'] == 'windows'
+        if: inputs['PLATFORM'] == 'macos' || inputs['PLATFORM'] == 'windows'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
-          url: ${{ format('sftp://version.cyberduck.io/{0}/{1}', inputs['platform'], inputs['sparkle-feed']) }}
+          url: ${{ format('sftp://version.cyberduck.io/{0}/{1}', inputs['PLATFORM'], inputs['SPARKLE_FEED']) }}
           path: update/changelog.*
           args: '--existing overwrite --verbose'

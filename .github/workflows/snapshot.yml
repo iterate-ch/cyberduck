@@ -11,6 +11,9 @@ jobs:
         platform: [ macos, windows, linux, linux-arm64 ]
     uses: ./.github/workflows/deploy.yml
     with:
-      sparkle-feed: nightly
-      platform: ${{ matrix['platform'] }}
+      SPARKLE_FEED: nightly
+      PLATFORM: ${{ matrix['platform'] }}
+      DEVELOPER_DIR: '/Applications/Xcode 26.app/Contents/Developer'
+      SIGNTOOL_CSP: 'Google Cloud KMS Provider'
+      SIGNTOOL_KC: 'projects/api-project-996125414232/locations/europe/keyRings/code-signing/cryptoKeys/windows/cryptoKeyVersions/1'
     secrets: inherit
