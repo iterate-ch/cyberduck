@@ -1,4 +1,4 @@
-name: Publish App Store
+name: Publish Mac App Store
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           pattern: Cyberduck-*.pkg
           path: release
           merge-multiple: true
-      - name: Upload to App Store
+      - name: Upload to Mac App Store
         env:
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
           NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
