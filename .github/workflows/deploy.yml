@@ -179,6 +179,10 @@ jobs:
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
 
+      - name: Cleanup Developer ID certificate
+        if: always()
+        uses: ./.github/actions/import-developer-id-certificate/cleanup
+
   publish:
     needs: build
     if: ${{ inputs['publish'] && !cancelled() }}

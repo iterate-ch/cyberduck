@@ -1,0 +1,16 @@
+name: Cleanup Developer ID Certificate
+description: Removes the temporary keychain created by the Import Developer ID Certificate action and restores the default keychain list.
+
+runs:
+  using: composite
+  steps:
+    - name: Delete temporary keychain
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        KEYCHAIN_PATH=${{ runner.temp }}/build.keychain-db
+        /usr/bin/security list-keychains -d user -s login.keychain-db
+        if [ -f "$KEYCHAIN_PATH" ]; then
+          /usr/bin/security delete-keychain "$KEYCHAIN_PATH" || true
+        fi
+        rm -f certificate.p12 AppleWWDRCAG3.cer DeveloperIDCA.cer
