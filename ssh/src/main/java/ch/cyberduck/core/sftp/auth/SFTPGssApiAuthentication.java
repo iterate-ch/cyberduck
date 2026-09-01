@@ -83,7 +83,10 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
         final String savedKrb5Conf = System.getProperty("java.security.krb5.conf");
         final String savedSubjectCredsOnly = System.getProperty("javax.security.auth.useSubjectCredsOnly");
         File krb5conf = null;
-        if(parts.length >= 2) {
+        if(savedKrb5Conf == null && parts.length >= 2) {
+            // Only apply the macOS workaround when no explicit krb5.conf is already configured.
+            // If the user or system has set java.security.krb5.conf we leave it untouched so
+            // that working Linux/macOS environments with a real KDC configuration are unaffected.
             final String realm = (parts[parts.length - 2] + "." + parts[parts.length - 1]).toUpperCase(java.util.Locale.ROOT);
             log.debug("Derived Kerberos realm {} from hostname {}", realm, hostname);
             try {
