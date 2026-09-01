@@ -157,7 +157,7 @@ jobs:
             cli/linux/target/release/*.rpm
 
       - name: Chocolatey Push (Windows)
-        if: runner.os == 'Windows' && inputs['sparkle-feed'] != 'nightly'
+        if: runner.os == 'Windows' && inputs['sparkle-feed'] == 'release'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
@@ -165,7 +165,7 @@ jobs:
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
       - name: Chocolatey Push (Windows CLI)
-        if: runner.os == 'Windows' && inputs['sparkle-feed'] != 'nightly'
+        if: runner.os == 'Windows' && inputs['sparkle-feed'] == 'release'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
@@ -230,7 +230,6 @@ jobs:
           args: '--verbose --existing overwrite --region DFW'
 
       - name: Rackspace Upload (CLI)
-        if: inputs['sparkle-feed'] == ''
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: ${{secrets.RACKSPACE_USER}}
@@ -254,7 +253,7 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: SFTP Upload (CLI)
-        if: inputs['sparkle-feed'] == ''
+        if: inputs['sparkle-feed'] == 'release'
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
