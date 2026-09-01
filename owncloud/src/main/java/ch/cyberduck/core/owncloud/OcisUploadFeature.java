@@ -21,6 +21,6 @@ import ch.cyberduck.core.tus.TusUploadFeature;
 public class OcisUploadFeature extends TusUploadFeature {
 
     public OcisUploadFeature(final OwncloudSession session, final TusCapabilities capabilities) {
-        super(session.getHost(), session.getClient(), capabilities);
+        super(session, capabilities);
     }
 }
