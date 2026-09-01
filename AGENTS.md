@@ -84,8 +84,8 @@ register it in that protocol's `*Protocol`/`*Session`; don't add methods to `Ses
 - `binding` — Cocoa Java bindings (Rococoa) used by `osx`.
 - Protocol modules, one per family: `ftp`, `ssh` (SFTP), `s3`, `webdav`, `azure`, `googledrive`, `googlestorage`,
   `dropbox`, `onedrive`, `box`, `backblaze`, `openstack` (Swift), `nio` (local), `smb`, `irods`, `spectra`,
-  `dracoon`, `storegate`, `brick`, `nextcloud`, `owncloud`, `ctera`, `eue`, `deepbox`, `manta`, `tus`, `freenet`,
-  `googlestorage`, … `protocols` is an aggregator POM depending on all of them.
+  `dracoon`, `storegate`, `brick`, `nextcloud`, `owncloud`, `ctera`, `eue`, `deepbox`, `manta`, `tus`, `freenet`, …
+  `protocols` is an aggregator POM depending on all of them.
 - `profiles` — bundled `*.cyberduckprofile` plist files (connection profiles). `ProtocolFactory.register(Local)`
   loads them via `ProfilePlistReader`. Non-bundled profiles live in the separate `iterate-ch/profiles` repo.
 - `oauth`, `jersey` — shared OAuth 2 and JAX-RS/HTTP client plumbing.
