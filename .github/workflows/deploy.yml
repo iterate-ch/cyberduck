@@ -23,7 +23,7 @@ jobs:
       checks: write
       contents: read
       packages: read
-    runs-on: ${{ inputs['platform']-self-hosted }}
+    runs-on: ${{ format('{0}-self-hosted', inputs.platform) }}
     steps:
       - uses: actions/checkout@v7
         with:
