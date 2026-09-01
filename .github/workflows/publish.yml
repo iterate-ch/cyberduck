@@ -36,6 +36,7 @@ jobs:
           SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
         shell: bash
         run: |
+          umask 077
           printf '%s' "$SFTP_IDENTITY" > private-key.pem
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
