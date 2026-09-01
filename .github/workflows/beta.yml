@@ -1,4 +1,4 @@
-name: Publish Snapshot
+name: Publish Beta
 on:
   workflow_dispatch:
 jobs:
