@@ -1,0 +1,14 @@
+name: Publish Snapshot
+
+# Placeholder on master. The real implementation lives on feature branches and
+# replaces this file when merged. It exists here only so the workflow can be
+# started with workflow_dispatch against a feature branch that implements it.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Placeholder. Run this workflow from a feature branch that implements it."
