@@ -53,9 +53,9 @@
     <!-- Enable hardened runtime -->
     <property name="codesign.options" value="--force --options runtime"/>
     <condition property="codesign.arg"
-               value="--entitlements ${codesign.entitlements}"
-               else="--entitlements ${codesign.entitlements} --requirements ${codesign.requirement}">
-        <contains string="${codesign.entitlements}" substring="sandbox.entitlements"/>
+               value="--entitlements ${codesign.entitlements} --requirements ${codesign.requirement}"
+               else="--entitlements ${codesign.entitlements}">
+        <equals arg1="${codesign.certificate}" arg2="Developer ID Application: David Kocher (G69SCX94XU)"/>
     </condition>
 
     <target name="codesign" depends="dotclean,compile-codesign-requirement">
