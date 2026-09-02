@@ -23,7 +23,7 @@
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageVersion Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.100" />
     <PackageVersion Include="ExceptionReporter " Version="2.4.2" />
-    <PackageVersion Include="IKVM" Version="8.13.4" />
+    <PackageVersion Include="IKVM" Version="8.16.0" />
     <PackageVersion Include="iterate-ch.IKVM.MSBuild.SkipDuplicates" Version="1.1.0" />
     <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="17.1.0" />
     <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
@@ -41,7 +41,7 @@
     <PackageVersion Include="StructureMap" Version="2.6.4.1" />
     <PackageVersion Include="System.CommandLine" Version="2.0.3" />
     <PackageVersion Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
-    <PackageVersion Include="System.Memory" Version="4.5.5" />
+    <PackageVersion Include="System.Memory" Version="4.6.3" />
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.0" />
     <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
     <PackageVersion Include="WixToolset.Bal.wixext" Version="5.0.2" />
