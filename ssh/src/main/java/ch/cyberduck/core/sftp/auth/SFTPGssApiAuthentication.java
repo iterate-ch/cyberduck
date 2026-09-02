@@ -133,26 +133,7 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
             log.debug("Kerberos TGT acquired for principals {}", loginContext.getSubject().getPrincipals());
             final List<Oid> mechanisms = Collections.singletonList(KRB5_MECH);
             System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
-            try {
-                client.auth(credentials.getUsername(), new AuthGssApiWithMic(loginContext, mechanisms));
-            }
-            finally {
-                if(savedKrb5Conf != null) {
-                    System.setProperty("java.security.krb5.conf", savedKrb5Conf);
-                }
-                else {
-                    System.clearProperty("java.security.krb5.conf");
-                }
-                if(savedSubjectCredsOnly != null) {
-                    System.setProperty("javax.security.auth.useSubjectCredsOnly", savedSubjectCredsOnly);
-                }
-                else {
-                    System.clearProperty("javax.security.auth.useSubjectCredsOnly");
-                }
-                if(krb5conf != null) {
-                    krb5conf.delete();
-                }
-            }
+            client.auth(credentials.getUsername(), new AuthGssApiWithMic(loginContext, mechanisms));
             final boolean authenticated = client.isAuthenticated();
             log.debug("GSS-API authentication result: authenticated={}, partialSuccess={}", authenticated,
                     client.getUserAuth().hadPartialSuccess());
@@ -168,6 +149,23 @@ public class SFTPGssApiAuthentication implements AuthenticationProvider<Boolean>
             return false;
         }
         finally {
+            // Always restore system properties and delete the temp file regardless of how we exit —
+            // including the LoginException path where client.auth() is never reached.
+            if(savedKrb5Conf != null) {
+                System.setProperty("java.security.krb5.conf", savedKrb5Conf);
+            }
+            else {
+                System.clearProperty("java.security.krb5.conf");
+            }
+            if(savedSubjectCredsOnly != null) {
+                System.setProperty("javax.security.auth.useSubjectCredsOnly", savedSubjectCredsOnly);
+            }
+            else {
+                System.clearProperty("javax.security.auth.useSubjectCredsOnly");
+            }
+            if(krb5conf != null) {
+                krb5conf.delete();
+            }
             if(loggedIn) {
                 try {
                     loginContext.logout();
