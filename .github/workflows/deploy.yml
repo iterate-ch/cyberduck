@@ -136,12 +136,6 @@ jobs:
           archive: false
           path: |-
             cli/osx/target/release/*.pkg
-      - name: Archive CLI Formula (macOS)
-        uses: actions/upload-artifact@v7
-        with:
-          archive: false
-          path: |-
-            cli/osx/target/release/*.rb
       - name: Archive EXE (Windows)
         uses: actions/upload-artifact@v7
         with:

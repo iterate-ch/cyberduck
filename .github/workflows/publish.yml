@@ -19,7 +19,7 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
-          pattern: '{*.zip,*.pkg,*.msi,*.appx,*.deb,*.rpm,*.rb}'
+          pattern: '{*.zip,*.pkg,*.msi,*.appx,*.deb,*.rpm}'
           path: release
           merge-multiple: true
 
@@ -95,18 +95,6 @@ jobs:
           mode: upload
           url: sftp://dist.duck.sh/
           path: release/duck[-_]*
-          args: '--existing overwrite --verbose'
-
-      - name: SFTP Upload (macOS CLI Formula)
-        continue-on-error: true
-        uses: iterate-ch/cyberduck-cli-action@v1
-        env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
-          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
-        with:
-          mode: upload
-          url: sftp://version.cyberduck.io/
-          path: release/*.rb
           args: '--existing overwrite --verbose'
 
       - name: Upload Feed (macOS)
