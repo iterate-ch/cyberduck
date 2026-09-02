@@ -143,7 +143,7 @@
 
     <target name="msbuild-props" depends="version">
         <condition property="msbuild.sign" value="false">
-            <isset property="skipSign"/>
+            <isset property="env.SKIP_SIGN"/>
         </condition>
         <property name="msbuild.sign" value=""/>
 

@@ -110,8 +110,8 @@
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
-            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
+                           value="https://update.cyberduck.io/${env.SPARKLE_FEED}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${env.SPARKLE_FEED}/changelog.html"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${HASH}" value="${hash}"/>
@@ -138,8 +138,8 @@
             <include name="tools/*.ps1"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
-            <replacefilter token="${FEED}" value="${sparkle.feed}"/>
-            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
+            <replacefilter token="${FEED}" value="${env.SPARKLE_FEED}"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${env.SPARKLE_FEED}/changelog.html"/>
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>

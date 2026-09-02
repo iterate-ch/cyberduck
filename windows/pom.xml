@@ -173,7 +173,6 @@
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
-                                        <property name="skip" value="${skipSign}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </target>
                                 </configuration>
@@ -190,7 +189,6 @@
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="hash" value="${git.revision}" />
-                                        <property name="sparkle.feed" value="${sparkle.feed}" />
                                         <ant antfile="${project.basedir}/build.xml" target="deploy" dir="." />
                                     </target>
                                 </configuration>

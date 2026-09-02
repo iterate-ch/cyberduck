@@ -21,6 +21,27 @@ on:
       SIGNTOOL_KC:
         required: false
         type: string
+      CODESIGN_CERTIFICATE:
+        required: false
+        type: string
+      INSTALLER_CERTIFICATE:
+        required: false
+        type: string
+      CODESIGN_PROVISIONPROFILE_NAME:
+        required: false
+        type: string
+      CODESIGN_ENTITLEMENTS_NAME:
+        required: false
+        type: string
+      XCODE_CONFIGURATION:
+        required: false
+        type: string
+      SKIP_NOTARIZE:
+        required: false
+        type: boolean
+      SKIP_SIGN:
+        required: false
+        type: boolean
 
 jobs:
   build:
@@ -71,17 +92,25 @@ jobs:
           certificate: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_BASE64 }}
           certificate-password: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_PASSWORD }}
       - name: Build with Maven
-        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -DskipTests -DskipITs -D"sparkle.feed=${{ inputs['SPARKLE_FEED'] }}" -P"${{ inputs['MAVEN_PROFILES'] }}"
+        run: mvn --settings .github/maven-settings.xml --batch-mode deploy -DskipTests -DskipITs -P"${{ inputs['MAVEN_PROFILES'] }}"
         env:
           MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
           MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}
           DEVELOPER_DIR: ${{ inputs['DEVELOPER_DIR'] }}
+          SKIP_NOTARIZE: ${{ inputs['SKIP_NOTARIZE'] }}
+          SKIP_SIGN: ${{ inputs['SKIP_SIGN'] }}
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
           NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
           NOTARIZATION_TEAMID: ${{ secrets.NOTARIZATION_TEAMID }}
           KEYCHAIN_PATH: ${{ runner.temp }}/build.keychain-db
           SIGNTOOL_CSP: ${{ inputs['SIGNTOOL_CSP'] }}
           SIGNTOOL_KC: ${{ inputs['SIGNTOOL_KC'] }}
+          CODESIGN_CERTIFICATE: ${{ inputs['CODESIGN_CERTIFICATE'] }}
+          INSTALLER_CERTIFICATE: ${{ inputs['INSTALLER_CERTIFICATE'] }}
+          CODESIGN_PROVISIONPROFILE_NAME: ${{ inputs['CODESIGN_PROVISIONPROFILE_NAME'] }}
+          CODESIGN_ENTITLEMENTS_NAME: ${{ inputs['CODESIGN_ENTITLEMENTS_NAME'] }}
+          XCODE_CONFIGURATION: ${{ inputs['XCODE_CONFIGURATION'] }}
+          SPARKLE_FEED: ${{ inputs['SPARKLE_FEED'] }}
 
       - name: Archive App ZIP (macOS)
         uses: actions/upload-artifact@v7

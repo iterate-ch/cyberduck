@@ -42,12 +42,16 @@
               value="CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO JVM_RUNTIME_ARGS='${jvm.runtime.debug}${jvm.runtime.args}' JAVA_HOME=${java.home} SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <condition property="build.xcodeoptions"
-               value="${build.xcodeoptions.default} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' INFOPLIST_PREPROCESSOR_DEFINITIONS=SPARKLE_BUILD"
+               value="${build.xcodeoptions.default} SPARKLEFEED='https://version.cyberduck.io/${env.SPARKLE_FEED}/changelog.rss' INFOPLIST_PREPROCESSOR_DEFINITIONS=SPARKLE_BUILD"
                else="${build.xcodeoptions.default}">
-        <isset property="sparkle.feed"/>
+        <isset property="env.SPARKLE_FEED"/>
     </condition>
 
-    <property name="xcode.configuration" value="Release"/>
+    <condition property="xcode.configuration"
+               value="${env.XCODE_CONFIGURATION}"
+               else="Release">
+        <isset property="env.XCODE_CONFIGURATION"/>
+    </condition>
     <property name="xcode.target" value="app"/>
 
     <property name="build.lipo.arch.remove" value="i386"/>
@@ -100,10 +104,10 @@
     </target>
 
     <target name="sign" depends="version">
-        <antcall target="codesign" unless:true="${skipSign}">
+        <antcall target="codesign" unless:true="${env.SKIP_SIGN}">
             <param name="bundle" value="${app.bundle}"/>
         </antcall>
-        <antcall target="verify-signature" unless:true="${skipSign}">
+        <antcall target="verify-signature" unless:true="${env.SKIP_SIGN}">
             <param name="bundle" value="${app.bundle}"/>
         </antcall>
     </target>
@@ -119,7 +123,7 @@
             <param name="target" value="${bundle.archive.zip}"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
-        <antcall target="notarize" unless:true="${skipNotarize}">
+        <antcall target="notarize" unless:true="${env.SKIP_NOTARIZE}">
             <param name="notarize.archive.upload" value="${build.deploy}/${bundle.archive.zip}"/>
             <param name="notarize.archive.staple" value="${app.bundle}"/>
         </antcall>
@@ -157,8 +161,8 @@
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/${sparkle.feed}/${bundle.archive.zip}"/>
-            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${sparkle.feed}/changelog.html"/>
+                           value="https://update.cyberduck.io/${env.SPARKLE_FEED}/${bundle.archive.zip}"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${env.SPARKLE_FEED}/changelog.html"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${HASH}" value="${hash}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
@@ -172,7 +176,7 @@
         <exec dir="${build.deploy}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="productbuild --component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${bundle.archive.pkg}"/>
         </exec>
-        <antcall target="notarize" unless:true="${skipNotarize}">
+        <antcall target="notarize" unless:true="${env.SKIP_NOTARIZE}">
             <param name="notarize.archive.upload" value="${build.deploy}/${bundle.archive.pkg}"/>
             <param name="notarize.archive.staple" value="${build.deploy}/${bundle.archive.pkg}"/>
         </antcall>

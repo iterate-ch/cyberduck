@@ -27,6 +27,7 @@ jobs:
       - name: Build with Maven
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+          SKIP_SIGN: true
         run: mvn verify -pl protocols -am --no-transfer-progress --batch-mode --fail-at-end -D"enforcer.skip"
       - name: Publish Test Report
         if: ${{ always() }}

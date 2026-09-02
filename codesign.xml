@@ -21,13 +21,19 @@
  -->
 <project name="Codesign" basedir=".">
 
-    <property name="installer.certificate" value=""/>
     <condition property="installer.keychain" value="${env.KEYCHAIN_PATH}"
                else="${user.home}/Library/Keychains/login.keychain-db">
         <isset property="env.KEYCHAIN_PATH"/>
     </condition>
 
-    <property name="codesign.certificate" value=""/>
+    <condition property="codesign.certificate" value="${env.CODESIGN_CERTIFICATE}"
+               else="Apple Development: David Kocher (DF448WW9PY)">
+        <isset property="env.CODESIGN_CERTIFICATE"/>
+    </condition>
+    <condition property="installer.certificate" value="${env.INSTALLER_CERTIFICATE}"
+               else="Apple Development: David Kocher (DF448WW9PY)">
+        <isset property="env.INSTALLER_CERTIFICATE"/>
+    </condition>
     <condition property="codesign.keychain" value="${env.KEYCHAIN_PATH}"
                else="${user.home}/Library/Keychains/login.keychain-db">
         <isset property="env.KEYCHAIN_PATH"/>
@@ -36,23 +42,33 @@
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>
-    <property name="codesign.provisionprofile" value="${setup}/app/${codesign.provisionprofile.name}"/>
+    <condition property="codesign.provisionprofile" value="${setup}/app/${env.CODESIGN_PROVISIONPROFILE_NAME}"
+               else="${setup}/app/default.provisionprofile">
+        <isset property="env.CODESIGN_PROVISIONPROFILE_NAME"/>
+    </condition>
+    <condition property="codesign.entitlements" value="${setup}/app/${env.CODESIGN_ENTITLEMENTS_NAME}"
+               else="${setup}/app/default.entitlements">
+        <isset property="env.CODESIGN_ENTITLEMENTS_NAME"/>
+    </condition>
     <!-- Enable hardened runtime -->
     <property name="codesign.options" value="--force --options runtime"/>
-    <property name="codesign.arg"
-              value="--entitlements ${setup}/app/default.entitlements --requirements ${codesign.requirement}"/>
+    <condition property="codesign.arg"
+               value="--entitlements ${codesign.entitlements}"
+               else="--entitlements ${codesign.entitlements} --requirements ${codesign.requirement}">
+        <contains string="${codesign.entitlements}" substring="sandbox.entitlements"/>
+    </condition>
 
     <target name="codesign" depends="dotclean,compile-codesign-requirement">
         <copy tofile="${bundle}/${bundle.contents}/embedded.provisionprofile" overwrite="true" failonerror="false">
             <file file="${codesign.provisionprofile}"/>
         </copy>
         <echo
-            message="Code signing ${bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg} from ${codesign.keychain}"/>
+                message="Code signing ${bundle} with certificate ${codesign.certificate} and arguments ${codesign.arg} from ${codesign.keychain}"/>
         <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+                    line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.spotlight}" erroronmissingdir="false">
                 <include name="*.mdimporter"/>
             </fileset>
@@ -62,7 +78,7 @@
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+                    line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="*.dylib"/>
                 <include name="*.jnilib"/>
@@ -73,7 +89,7 @@
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+                    line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.runtime}">
                 <include name="Contents/Home/lib/**/*.dylib"/>
             </fileset>
@@ -85,7 +101,7 @@
         <condition property="codesign.jdk.arg"
                    value="--entitlements ${setup}/app/net.java.openjdk.jdk.entitlements"
                    else="">
-            <contains string="${codesign.arg}" substring="sandbox.entitlements"/>
+            <contains string="${codesign.entitlements}" substring="sandbox.entitlements"/>
         </condition>
         <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
@@ -111,7 +127,7 @@
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                line="codesign ${codesign.options} --entitlements ${setup}/app/org.sparkle-project.Downloader.entitlements --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+                    line="codesign ${codesign.options} --entitlements ${setup}/app/org.sparkle-project.Downloader.entitlements --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="Sparkle.framework/Versions/*/XPCServices/Downloader.xpc"/>
             </fileset>
@@ -121,7 +137,7 @@
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+                    line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="Sparkle.framework/Versions/*/XPCServices/Installer.xpc"/>
                 <include name="Sparkle.framework/Versions/*/Autoupdate"/>
@@ -133,7 +149,7 @@
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+                    line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="*.framework"/>
             </fileset>
@@ -143,7 +159,7 @@
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
+                    line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <file name="${bundle}"/>
             <srcfile/>
         </apply>

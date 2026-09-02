@@ -530,7 +530,6 @@
                                     <property name="version" value="${project.version}" />
                                     <property name="revision" value="${git.commitsCount}" />
                                     <property name="hash" value="${git.revision}" />
-                                    <property name="sparkle.feed" value="${sparkle.feed}" />
                                     <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                 </target>
                             </configuration>
@@ -1124,7 +1123,6 @@
                                             <property name="version" value="${project.version}" />
                                             <property name="revision" value="${git.commitsCount}" />
                                             <property name="hash" value="${git.revision}" />
-                                            <property name="sparkle.feed" value="${sparkle.feed}" />
                                             <ant antfile="${project.basedir}/build.xml" target="msbuild-props" dir="." />
                                         </target>
                                     </configuration>
