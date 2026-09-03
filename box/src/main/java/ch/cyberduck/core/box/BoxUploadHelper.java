@@ -71,7 +71,7 @@ public class BoxUploadHelper {
                         client.getBasePath(), fileid.getFileId(file)));
                 final ByteArrayOutputStream content = new ByteArrayOutputStream();
                 final FileIdUploadSessionsBody idUploadSessionsBody = new FileIdUploadSessionsBody().fileName(file.getName());
-                if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
+                if(status.getParent().getLength() != TransferStatus.UNKNOWN_LENGTH) {
                     idUploadSessionsBody.fileSize(status.getLength());
                 }
                 new JSON().getContext(null).writeValue(content, idUploadSessionsBody);
