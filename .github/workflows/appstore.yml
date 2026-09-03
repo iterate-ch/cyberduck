@@ -12,8 +12,8 @@ jobs:
       # App Store artifacts are already published by the release/snapshot macOS leg;
       # this run only needs to build the sandboxed .pkg for upload.
       MAVEN_GOAL: install
-      RUNNER_OS: macOS
-      RUNNER_ARCH: ARM64
+      RUNNER_OS: macos
+      RUNNER_ARCH: arm64
       DEVELOPER_DIR: '/Applications/Xcode 26.app/Contents/Developer'
       CODESIGN_CERTIFICATE: 'Apple Distribution: David Kocher (G69SCX94XU)'
       INSTALLER_CERTIFICATE: '3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)'

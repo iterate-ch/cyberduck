@@ -56,10 +56,7 @@ jobs:
       checks: write
       contents: read
       packages: read
-    runs-on:
-      - self-hosted
-      - ${{ inputs.RUNNER_OS }}
-      - ${{ inputs.RUNNER_ARCH }}
+    runs-on: [ self-hosted, "${{ inputs.RUNNER_OS }}", "${{ inputs.RUNNER_ARCH }}" ]
     steps:
       - uses: actions/checkout@v7
         with:

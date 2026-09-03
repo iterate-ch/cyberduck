@@ -9,10 +9,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: macOS, arch: ARM64, goal: deploy }
-          - { os: Windows, arch: X64, goal: deploy }
-          - { os: Linux, arch: X64, goal: deploy }
-          - { os: Linux, arch: ARM64, goal: deploy }
+          - { os: macos, arch: arm64, goal: deploy }
+          - { os: windows, arch: x64, goal: deploy }
+          - { os: linux, arch: x64, goal: deploy }
+          - { os: linux, arch: arm64, goal: deploy }
     uses: ./.github/workflows/deploy.yml
     with:
       SPARKLE_FEED: nightly
