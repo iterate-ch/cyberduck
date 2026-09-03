@@ -33,7 +33,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 import static ch.cyberduck.core.tus.TusCapabilities.*;
-import static ch.cyberduck.core.tus.TusCapabilities.TUS_HEADER_UPLOAD_OFFSET;
 
 public class TusUploadHelper {
     private static final Logger log = LogManager.getLogger(TusUploadHelper.class);
