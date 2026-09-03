@@ -25,7 +25,7 @@ runs:
         KEYCHAIN_PASSWORD=$(uuidgen)
         /usr/bin/security delete-keychain "$KEYCHAIN_PATH" 2>/dev/null || true
         /usr/bin/security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-        /usr/bin/security set-keychain-settings -u "$KEYCHAIN_PATH"
+        /usr/bin/security set-keychain-settings "$KEYCHAIN_PATH"
         /usr/bin/security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
         curl -fsSL -o AppleWWDRCAG3.cer https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer
         /usr/bin/security import AppleWWDRCAG3.cer -k "$KEYCHAIN_PATH" -T /usr/bin/codesign
