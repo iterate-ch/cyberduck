@@ -68,12 +68,12 @@ jobs:
           java-version: 21
           cache: maven
       - name: Add msbuild to PATH
-        if: runner.os == 'Windows'
+        if: runner.os == 'windows'
         uses: microsoft/setup-msbuild@v3
         with:
           msbuild-architecture: x64
       - name: "NuGet"
-        if: runner.os == 'Windows'
+        if: runner.os == 'windows'
         env:
           NugetCredentials: "Username=${{ github.actor }};Password=${{ secrets.GITHUB_TOKEN }}"
         run: |
@@ -130,72 +130,84 @@ jobs:
           SPARKLE_FEED: ${{ inputs['SPARKLE_FEED'] }}
 
       - name: Archive App ZIP (macOS)
+        if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             osx/target/release/*.zip
       - name: Archive App PKG (macOS)
+        if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             osx/target/release/*.pkg
       - name: Archive Update Feed (macOS)
+        if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
           name: changelog-${{ runner.os }}
           path: |-
             osx/target/update/changelog.*
       - name: Archive CLI PKG (macOS)
+        if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             cli/osx/target/release/*.pkg
       - name: Archive EXE (Windows)
+        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             windows/target/release/*.exe
       - name: Archive MSI (Windows)
+        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             windows/target/release/*.msi
       - name: Archive APPX (Windows)
+        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             windows/target/release/*.appx
       - name: Archive Update Feed (Windows)
+        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           name: changelog-${{ runner.os }}
           path: |-
             windows/target/update/changelog.*
       - name: Archive CLI EXE (Windows)
+        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             cli/windows/target/release/*.exe
       - name: Archive CLI MSI (Windows)
+        if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             cli/windows/target/release/duck-*-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' || runner.arch }}.msi
       - name: Archive DEB (Linux)
+        if: runner.os == 'linux'
         uses: actions/upload-artifact@v7
         with:
           archive: false
           path: |-
             cli/linux/target/release/*.deb
       - name: Archive RPM (Linux)
+        if: runner.os == 'linux'
         uses: actions/upload-artifact@v7
         with:
           archive: false
@@ -203,7 +215,7 @@ jobs:
             cli/linux/target/release/*.rpm
 
       - name: Chocolatey Push (Windows)
-        if: runner.os == 'Windows' && inputs['SPARKLE_FEED'] == 'release'
+        if: runner.os == 'windows' && inputs['SPARKLE_FEED'] == 'release'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
@@ -211,7 +223,7 @@ jobs:
             choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
           }
       - name: Chocolatey Push (Windows CLI)
-        if: runner.os == 'Windows' && inputs['SPARKLE_FEED'] == 'release'
+        if: runner.os == 'windows' && inputs['SPARKLE_FEED'] == 'release'
         env:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
         run: |
