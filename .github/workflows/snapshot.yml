@@ -8,11 +8,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ macos, windows, linux, linux-arm64 ]
+        include:
+          - { os: macOS, arch: ARM64, goal: deploy }
+          - { os: Windows, arch: X64, goal: deploy }
+          - { os: Linux, arch: X64, goal: deploy }
+          - { os: Linux, arch: ARM64, goal: deploy }
     uses: ./.github/workflows/deploy.yml
     with:
       SPARKLE_FEED: nightly
-      PLATFORM: ${{ matrix['platform'] }}
+      RUNNER_OS: ${{ matrix.os }}
+      RUNNER_ARCH: ${{ matrix.arch }}
+      MAVEN_GOAL: ${{ matrix.goal }}
       DEVELOPER_DIR: '/Applications/Xcode 26.app/Contents/Developer'
       SIGNTOOL_CSP: 'Google Cloud KMS Provider'
       SIGNTOOL_KC: 'projects/api-project-996125414232/locations/europe/keyRings/code-signing/cryptoKeys/windows/cryptoKeyVersions/1'

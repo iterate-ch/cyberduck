@@ -9,7 +9,14 @@ on:
         required: false
         type: string
         default: '!local'
-      PLATFORM:
+      MAVEN_GOAL:
+        required: false
+        type: string
+        default: deploy
+      RUNNER_OS:
+        required: true
+        type: string
+      RUNNER_ARCH:
         required: true
         type: string
       DEVELOPER_DIR:
@@ -49,7 +56,10 @@ jobs:
       checks: write
       contents: read
       packages: read
-    runs-on: ${{ format('{0}-self-hosted', inputs.PLATFORM) }}
+    runs-on:
+      - self-hosted
+      - ${{ inputs.RUNNER_OS }}
+      - ${{ inputs.RUNNER_ARCH }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -127,7 +137,7 @@ jobs:
       - name: Archive Update Feed (macOS)
         uses: actions/upload-artifact@v7
         with:
-          name: changelog-${{ inputs['PLATFORM'] }}
+          name: changelog-${{ runner.os }}
           path: |-
             osx/target/update/changelog.*
       - name: Archive CLI PKG (macOS)
@@ -157,7 +167,7 @@ jobs:
       - name: Archive Update Feed (Windows)
         uses: actions/upload-artifact@v7
         with:
-          name: changelog-${{ inputs['PLATFORM'] }}
+          name: changelog-${{ runner.os }}
           path: |-
             windows/target/update/changelog.*
       - name: Archive CLI EXE (Windows)

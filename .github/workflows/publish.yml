@@ -106,7 +106,7 @@ jobs:
         with:
           mode: upload
           url: ${{ format('sftp://version.cyberduck.io/macos/{0}', inputs['SPARKLE_FEED']) }}
-          path: update/changelog-macos/changelog.*
+          path: update/changelog-macOS/changelog.*
           args: '--existing overwrite --verbose'
 
       - name: Upload Feed (Windows)
@@ -118,5 +118,5 @@ jobs:
         with:
           mode: upload
           url: ${{ format('sftp://version.cyberduck.io/windows/{0}', inputs['SPARKLE_FEED']) }}
-          path: update/changelog-windows/changelog.*
+          path: update/changelog-Windows/changelog.*
           args: '--existing overwrite --verbose'
