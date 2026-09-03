@@ -205,7 +205,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         try {
             return new Write.Append(true).withStatus(status).withOffset(new TusUploadHelper(session).offset(uploadUrl));
         }
-        catch(NotfoundException | AccessDeniedException e) {
+        catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
             log.warn("Delete upload URL {}", uploadUrl);
             preferences.deleteProperty(property);
             return Write.override;
