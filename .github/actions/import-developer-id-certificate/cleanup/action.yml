@@ -10,7 +10,8 @@ runs:
       run: |
         set -euo pipefail
         KEYCHAIN_PATH=${{ runner.temp }}/build.keychain-db
-        /usr/bin/security list-keychains -d user -s login.keychain-db
+        REMAINING=$(/usr/bin/security list-keychains -d user | sed -e 's/"//g' -e 's/^[[:space:]]*//' | grep -v -F "$KEYCHAIN_PATH" || true)
+        /usr/bin/security list-keychains -d user -s ${REMAINING:-login.keychain-db}
         if [ -f "$KEYCHAIN_PATH" ]; then
           /usr/bin/security delete-keychain "$KEYCHAIN_PATH" || true
         fi
