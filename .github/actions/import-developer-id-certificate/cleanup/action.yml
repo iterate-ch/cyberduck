@@ -8,6 +8,7 @@ runs:
       if: runner.os == 'macOS'
       shell: bash
       run: |
+        set -euo pipefail
         KEYCHAIN_PATH=${{ runner.temp }}/build.keychain-db
         /usr/bin/security list-keychains -d user -s login.keychain-db
         if [ -f "$KEYCHAIN_PATH" ]; then

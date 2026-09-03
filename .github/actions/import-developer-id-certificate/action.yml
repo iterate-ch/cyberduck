@@ -19,6 +19,7 @@ runs:
         CERTIFICATE_BASE64: ${{ inputs.certificate }}
         CERTIFICATE_PASSWORD: ${{ inputs.certificate-password }}
       run: |
+        set -euo pipefail
         printf '%s' "$CERTIFICATE_BASE64" | base64 -D > certificate.p12
         KEYCHAIN_PATH=${{ runner.temp }}/build.keychain-db
         KEYCHAIN_PASSWORD=$(uuidgen)
