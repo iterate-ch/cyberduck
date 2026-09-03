@@ -13,7 +13,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    runs-on: linux
+    runs-on: [linux, x64]
     steps:
       - name: Download Artifacts
         continue-on-error: true
