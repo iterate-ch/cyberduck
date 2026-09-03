@@ -95,6 +95,14 @@
     </target>
 
     <target name="version" depends="init">
+        <property name="revision" value="0"/>
+        <fail message="Invalid revision '${revision}'">
+            <condition>
+                <not>
+                    <matches string="${revision}" pattern="^\d+$"/>
+                </not>
+            </condition>
+        </fail>
         <property name="fullversion" value="${version}"/>
         <propertyregex property="version"
                        override="true"
