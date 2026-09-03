@@ -845,7 +845,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <repositoryDirectory>${project.basedir}</repositoryDirectory>
+                    <repositoryDirectory>${main.basedir}</repositoryDirectory>
                     <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
                 </configuration>
             </plugin>
