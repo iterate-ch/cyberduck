@@ -171,7 +171,7 @@ jobs:
         with:
           archive: false
           path: |-
-            cli/windows/target/release/*.msi
+            cli/windows/target/release/duck-*-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' || runner.arch }}.msi
       - name: Archive DEB (Linux)
         uses: actions/upload-artifact@v7
         with:
