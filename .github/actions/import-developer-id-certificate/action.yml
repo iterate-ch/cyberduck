@@ -13,7 +13,7 @@ runs:
   using: composite
   steps:
     - name: Import Developer ID certificate
-      if: runner.os == 'macOS'
+      if: runner.os == 'macos'
       shell: bash
       env:
         CERTIFICATE_BASE64: ${{ inputs.certificate }}
