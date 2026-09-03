@@ -832,9 +832,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>ru.concerteza.buildnumber</groupId>
-                <artifactId>maven-jgit-buildnumber-plugin</artifactId>
-                <version>1.2.10</version>
+                <groupId>com.labun.buildnumber</groupId>
+                <artifactId>jgit-buildnumber-maven-plugin</artifactId>
+                <version>2.7.0</version>
                 <executions>
                     <execution>
                         <id>git-buildnumber</id>
