@@ -182,13 +182,10 @@ jobs:
           printf '%s' "$DEB_GPG_PRIVATE_KEY" | gpg --homedir "$GNUPGHOME" --batch --import
           echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3'
-
       - name: Install deb-s3
-        run: gem install deb-s3
+        run: |
+          sudo dnf install -y ruby rubygems
+          gem install deb-s3 --no-document
         shell: bash
 
       # Builds land in the 'nightly' codename, releases in 'stable'.
