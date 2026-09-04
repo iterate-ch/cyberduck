@@ -124,7 +124,6 @@ jobs:
       # Snapshot builds land in the 'nightly' codename, releases in 'stable'. Beta feeds
       # have no APT channel, so these steps are skipped for them.
       - name: Import GPG Signing Key
-        if: inputs['SPARKLE_FEED'] == 'nightly' || inputs['SPARKLE_FEED'] == 'release'
         env:
           DEB_GPG_PRIVATE_KEY: ${{ secrets.DEB_GPG_PRIVATE_KEY }}
         shell: bash
@@ -136,11 +135,9 @@ jobs:
           echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
 
       - name: Setup deb-s3
-        if: inputs['SPARKLE_FEED'] == 'nightly' || inputs['SPARKLE_FEED'] == 'release'
         uses: deb-s3/setup-deb-s3@v1
 
       - name: Debian Package Upload
-        if: inputs['SPARKLE_FEED'] == 'nightly' || inputs['SPARKLE_FEED'] == 'release'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
