@@ -58,7 +58,19 @@
         <equals arg1="${codesign.certificate}" arg2="Developer ID Application: David Kocher (G69SCX94XU)"/>
     </condition>
 
-    <target name="codesign" depends="dotclean,compile-codesign-requirement">
+    <!-- macOS relocks the temporary CI keychain during the reactor build; unlock it again
+         immediately before each signing operation or codesign reports "no identity found" -->
+    <target name="unlock-keychain" if="env.KEYCHAIN_PATH">
+        <echo message="Unlock keychain ${codesign.keychain}"/>
+        <exec executable="/usr/bin/security" failonerror="true">
+            <arg line="unlock-keychain -p ${env.KEYCHAIN_PASSWORD} ${codesign.keychain}"/>
+        </exec>
+        <exec executable="/usr/bin/security" failonerror="true">
+            <arg line="find-identity -v -p codesigning ${codesign.keychain}"/>
+        </exec>
+    </target>
+
+    <target name="codesign" depends="unlock-keychain,dotclean,compile-codesign-requirement">
         <copy tofile="${bundle}/${bundle.contents}/embedded.provisionprofile" overwrite="true" failonerror="false">
             <file file="${codesign.provisionprofile}"/>
         </copy>

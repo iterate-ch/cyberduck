@@ -172,6 +172,7 @@
             <replacefilter token="${MACOSX_DEPLOYMENT_TARGET}" value="${app.runtime.system.min}"/>
         </replace>
         <echo message="Building ${build.deploy}/${bundle.archive.pkg}"/>
+        <antcall target="unlock-keychain"/>
         <echo message="Code signing ${app.bundle} with certificate ${installer.certificate} from ${installer.keychain}"/>
         <exec dir="${build.deploy}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="productbuild --component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${bundle.archive.pkg}"/>

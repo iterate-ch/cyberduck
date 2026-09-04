@@ -36,3 +36,7 @@ runs:
         /usr/bin/security find-identity -v -p codesigning "$KEYCHAIN_PATH"
         # Prepend our keychain to the user search list without dropping the keychains already there
         /usr/bin/security list-keychains -d user -s "$KEYCHAIN_PATH" $(/usr/bin/security list-keychains -d user | sed -e 's/"//g' -e 's/^[[:space:]]*//' | grep -v -F "$KEYCHAIN_PATH")
+        # Hand the keychain password to the build: macOS relocks this keychain during the
+        # long reactor build, so codesign has to unlock it again right before signing
+        echo "::add-mask::$KEYCHAIN_PASSWORD"
+        echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> "$GITHUB_ENV"
