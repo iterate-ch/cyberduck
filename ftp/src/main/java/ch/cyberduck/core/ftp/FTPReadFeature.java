@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPReply;
@@ -31,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
+import java.time.Duration;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -85,12 +88,19 @@ public class FTPReadFeature implements Read {
     }
 
     private final class ReadReplyInputStream extends ProxyInputStream {
+        private final long idleMillis;
+        private long lastIdleTimeMillis = System.currentTimeMillis();
         private final AtomicBoolean close;
         private final TransferStatus status;
 
         public ReadReplyInputStream(final InputStream proxy, final TransferStatus status) {
+            this(proxy, status, session.getClient().getControlKeepAliveTimeoutDuration());
+        }
+
+        public ReadReplyInputStream(final InputStream proxy, final TransferStatus status, final Duration idleDuration) {
             super(proxy);
             this.status = status;
+            this.idleMillis = idleDuration.toMillis();
             this.close = new AtomicBoolean();
         }
 
@@ -104,8 +114,7 @@ public class FTPReadFeature implements Read {
                 super.close();
                 if(session.isConnected()) {
                     // Read 226 status after closing stream
-                    int reply = session.getClient().getReply();
-                    if(!FTPReply.isPositiveCompletion(reply)) {
+                    if(!FTPReply.isPositiveCompletion(session.getClient().getReply())) {
                         final String text = session.getClient().getReplyString();
                         if(status.isSegment()) {
                             // Ignore 451 and 426 response because stream was prematurely closed
@@ -123,6 +132,28 @@ public class FTPReadFeature implements Read {
             }
             finally {
                 close.set(true);
+            }
+        }
+
+        @Override
+        protected void afterRead(final int n) throws IOException {
+            if(idleMillis > 0) {
+                if(IOUtils.EOF != n) {
+                    final long nowMillis = System.currentTimeMillis();
+                    if(nowMillis - lastIdleTimeMillis > idleMillis) {
+                        try {
+                            session.getClient().noop();
+                        }
+                        catch(final SocketTimeoutException e) {
+                            log.warn("Timeout waiting for keepalive reply");
+                        }
+                        catch(final IOException e) {
+                            // Ignored
+                        }
+                        lastIdleTimeMillis = nowMillis;
+                    }
+                    super.afterRead(n);
+                }
             }
         }
     }
