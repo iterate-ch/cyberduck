@@ -157,6 +157,13 @@ jobs:
           archive: false
           path: |-
             cli/osx/target/release/*.pkg
+      - name: Archive CLI Formula (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/osx/target/release/duck.rb
       - name: Archive EXE (Windows)
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
