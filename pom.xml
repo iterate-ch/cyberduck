@@ -81,6 +81,9 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <!-- Default project root. Overridden by directory-maven-plugin in the
+             project-root-jenkins profile. -->
+        <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
         <argLine />
         <jna-version>5.14.0</jna-version>
         <jersey-version>2.38</jersey-version>
@@ -1034,15 +1037,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <profile>
-            <id>project-root-local</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
-            </properties>
         </profile>
         <profile>
             <id>no-testcontainers</id>
