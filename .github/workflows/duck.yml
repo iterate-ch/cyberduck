@@ -1,4 +1,4 @@
-name: Create duck image
+name: Build and push Docker image for Cyberduck CLI (Linux)
 on:
   push:
     tags: [ '*' ]
