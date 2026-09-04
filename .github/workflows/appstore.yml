@@ -31,7 +31,7 @@ jobs:
     runs-on: macos
     steps:
       - name: Download App PKG (macOS)
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: Cyberduck-*.pkg
           path: release
