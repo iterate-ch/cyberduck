@@ -41,7 +41,6 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: S3 Upload
-        id: s3upload
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
           USERNAME: ${{secrets.AWS_ACCESS_KEY_ID}}
@@ -51,10 +50,6 @@ jobs:
           url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 's3:/snapshots.cyberduck.io/' || inputs['SPARKLE_FEED'] == 'beta' && 's3:/beta.cyberduck.io/' || 's3:/release.cyberduck.io/' }}
           path: release/Cyberduck-*
           args: '--verbose --existing overwrite --region us-east-1'
-
-      - name: S3 Upload Log
-        if: always()
-        run: echo "${{ steps.s3upload.outputs.log }}"
 
       - name: Rackspace Upload
         uses: iterate-ch/cyberduck-cli-action@v1
