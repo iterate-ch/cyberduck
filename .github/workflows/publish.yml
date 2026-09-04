@@ -232,7 +232,7 @@ jobs:
       - name: Credentials
         id: identity
         env:
-          SFTP_IDENTITY: ${{ secrets.RPM_REPO_SSH_IDENTITY }}
+          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
         shell: bash
         run: |
           umask 077
