@@ -58,9 +58,10 @@ jobs:
           java-version: 21
           cache: maven
       - run: |
-          export COUNT=$(git rev-list --count ${{ env.TAG }})
           mvn -B verify --projects cli/linux --also-make -DskipTests
-          dpkg-deb -R cli/linux/target/release/duck_${{env.VERSION}}.$COUNT_amd64.deb .
+          deb=$(ls cli/linux/target/release/duck_*_amd64.deb)
+          echo "Extracting $deb"
+          dpkg-deb -R "$deb" .
       - name: Log in to the Container registry
         uses: docker/login-action@v4
         with:
