@@ -149,7 +149,7 @@ jobs:
         with:
           name: changelog-${{ runner.os }}
           path: |-
-            osx/target/update/changelog.*
+            osx/target/release/changelog.*
       - name: Archive CLI PKG (macOS)
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
@@ -177,7 +177,7 @@ jobs:
         with:
           name: changelog-${{ runner.os }}
           path: |-
-            windows/target/update/changelog.*
+            windows/target/release/changelog.*
       - name: Archive CLI EXE (Windows)
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7

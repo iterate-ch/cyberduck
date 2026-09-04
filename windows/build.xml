@@ -83,8 +83,6 @@
             <classpath path="${lib.ext}/xmltask.jar"/>
         </taskdef>
 
-        <mkdir dir="${build}/update"/>
-
         <echo message="Calculating DSA signature..."/>
         <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
             <arg value="-o"/>
@@ -98,15 +96,15 @@
         <xmltask source="${www.update}/changelog.rss" destbuffer="xmltaskbuffer">
             <remove path="//*[local-name()='minimumSystemVersion']"/>
         </xmltask>
-        <xmltask sourcebuffer="xmltaskbuffer" dest="${build}/update/changelog.rss">
+        <xmltask sourcebuffer="xmltaskbuffer" dest="${build.deploy}/changelog.rss">
             <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive InstallBonjour=0 Autostart=1"/>
         </xmltask>
-        <copy todir="${build}/update" overwrite="true">
+        <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${www.update}">
                 <include name="changelog.html"/>
             </fileset>
         </copy>
-        <replace dir="${build}/update" summary="true" encoding="UTF-8">
+        <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
