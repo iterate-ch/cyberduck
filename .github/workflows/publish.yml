@@ -158,6 +158,7 @@ jobs:
           args: '--existing overwrite --verbose'
 
   deb:
+    needs: cli
     permissions:
       actions: read
       contents: read
@@ -204,3 +205,67 @@ jobs:
             --sign 3FEFBE72 \
             --gpg-options "--no-tty" \
             "${packages[@]}"
+
+  rpm:
+    needs: cli
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ linux, x64 ]
+    # RPM/YUM repository on repo.cyberduck.io. Builds land in the 'nightly' tree, releases in 'stable'.
+    env:
+      CODENAME: ${{ inputs['SPARKLE_FEED'] == 'release' && 'stable' || 'nightly' }}
+    steps:
+      - name: Download RPM
+        uses: actions/download-artifact@v7
+        with:
+          pattern: '*.rpm'
+          path: release
+          merge-multiple: true
+
+      - name: Credentials
+        id: identity
+        env:
+          SFTP_IDENTITY: ${{ secrets.RPM_REPO_SSH_IDENTITY }}
+        shell: bash
+        run: |
+          umask 077
+          printf '%s' "$SFTP_IDENTITY" > private-key.pem
+          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
+
+      - name: SFTP Upload (aarch64)
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.RPM_REPO_SSH_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://repo.cyberduck.io/data/repo.cyberduck.io/${{ env.CODENAME }}/aarch64/
+          path: release/duck-*.aarch64.rpm
+          args: '--existing overwrite --verbose'
+
+      - name: SFTP Upload (x86_64)
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.RPM_REPO_SSH_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://repo.cyberduck.io/data/repo.cyberduck.io/${{ env.CODENAME }}/x86_64/
+          path: release/duck-*.x86_64.rpm
+          args: '--existing overwrite --verbose'
+
+      - name: Rebuild Repository Metadata
+        env:
+          RPM_REPO_SSH_USER: ${{ secrets.RPM_REPO_SSH_USER }}
+          KEYFILE: ${{ steps.identity.outputs.KEYFILE }}
+        shell: bash
+        run: |
+          host="$RPM_REPO_SSH_USER@repo.cyberduck.io"
+          for arch in aarch64 x86_64; do
+            remote="/data/repo.cyberduck.io/$CODENAME/$arch"
+            echo "Rebuilding repository metadata for $host:$remote"
+            ssh -F /dev/null -i "$KEYFILE" -o BatchMode=yes \
+              -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+              "$host" "/usr/bin/createrepo --update '$remote'"
+          done
