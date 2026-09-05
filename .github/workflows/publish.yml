@@ -302,6 +302,7 @@ jobs:
           repository: homebrew-cyberduck
           branch: master
           commit_message: Update version
+          commit_author: cyberduck
           commit_user_name: iterate GmbH
           commit_user_email: noreply@cyberduck.io
           file_pattern: duck.rb
