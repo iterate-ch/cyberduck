@@ -128,6 +128,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
                         .setSegment(true)
+                        .setParent(overall)
                         .setOffset(offset)
                         .setLength(length);
                 status.setPart(partNumber);

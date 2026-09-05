@@ -107,7 +107,7 @@ public class NextcloudSession extends DAVSession {
             return (T) new DAVLockFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new HttpUploadFeature();
+            return (T) new HttpUploadFeature<>();
         }
         if(type == Write.class) {
             return (T) new NextcloudWriteFeature(this);

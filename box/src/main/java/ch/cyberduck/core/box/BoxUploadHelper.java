@@ -71,7 +71,7 @@ public class BoxUploadHelper {
                         client.getBasePath(), fileid.getFileId(file)));
                 final ByteArrayOutputStream content = new ByteArrayOutputStream();
                 final FileIdUploadSessionsBody idUploadSessionsBody = new FileIdUploadSessionsBody().fileName(file.getName());
-                if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
+                if(status.getParent().getLength() != TransferStatus.UNKNOWN_LENGTH) {
                     idUploadSessionsBody.fileSize(status.getLength());
                 }
                 new JSON().getContext(null).writeValue(content, idUploadSessionsBody);
@@ -83,8 +83,8 @@ public class BoxUploadHelper {
                 final FilesUploadSessionsBody uploadSessionsBody = new FilesUploadSessionsBody()
                         .folderId(fileid.getFileId(file.getParent()))
                         .fileName(file.getName());
-                if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
-                    uploadSessionsBody.fileSize(status.getLength());
+                if(status.getParent().getLength() != TransferStatus.UNKNOWN_LENGTH) {
+                    uploadSessionsBody.fileSize(status.getParent().getLength());
                 }
                 new JSON().getContext(null).writeValue(content, uploadSessionsBody);
                 request.setEntity(new ByteArrayEntity(content.toByteArray()));
