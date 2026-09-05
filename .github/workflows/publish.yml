@@ -239,7 +239,7 @@ jobs:
       - name: SFTP Upload (aarch64)
         uses: iterate-ch/cyberduck-cli-action@v2
         env:
-          USERNAME: '${{ secrets.RPM_REPO_SSH_USER }}'
+          USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -250,7 +250,7 @@ jobs:
       - name: SFTP Upload (x86_64)
         uses: iterate-ch/cyberduck-cli-action@v2
         env:
-          USERNAME: '${{ secrets.RPM_REPO_SSH_USER }}'
+          USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
@@ -260,11 +260,11 @@ jobs:
 
       - name: Rebuild Repository Metadata
         env:
-          RPM_REPO_SSH_USER: ${{ secrets.RPM_REPO_SSH_USER }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
           KEYFILE: ${{ steps.identity.outputs.KEYFILE }}
         shell: bash
         run: |
-          host="$RPM_REPO_SSH_USER@repo.cyberduck.io"
+          host="$SFTP_USER@repo.cyberduck.io"
           for arch in aarch64 x86_64; do
             remote="/data/repo.cyberduck.io/$CODENAME/$arch"
             echo "Rebuilding repository metadata for $host:$remote"
