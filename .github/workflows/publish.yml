@@ -185,7 +185,7 @@ jobs:
       - name: Install deb-s3
         run: |
           sudo dnf install -y ruby rubygems
-          gem install deb-s3 --no-document
+          sudo gem install deb-s3 --no-document
         shell: bash
 
       # Builds land in the 'nightly' codename, releases in 'stable'.
