@@ -211,7 +211,6 @@
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
-                                        <property name="skipSign" value="${skipSign}" />
                                         <ant antfile="${project.basedir}/build.xml" target="sign" dir="." />
                                     </target>
                                 </configuration>
@@ -229,40 +228,10 @@
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
-            <properties>
-                <xcode.configuration>Release</xcode.configuration>
-                <codesign.arg>--entitlements ../setup/app/default.entitlements --requirements ../setup/app/codesign-requirement.bin</codesign.arg>
-                <codesign.provisionprofile.name>default.provisionprofile</codesign.provisionprofile.name>
-            </properties>
-        </profile>
-        <profile>
-            <id>debug</id>
-            <properties>
-                <codesign.certificate>Apple Development: David Kocher (DF448WW9PY)</codesign.certificate>
-                <installer.certificate>Apple Development: David Kocher (DF448WW9PY)</installer.certificate>
-                <codesign.arg>--entitlements ../setup/app/default.entitlements</codesign.arg>
-            </properties>
-        </profile>
-        <profile>
-            <id>sandbox</id>
-            <properties>
-                <codesign.arg>--entitlements ../setup/app/sandbox.entitlements</codesign.arg>
-            </properties>
-        </profile>
-        <profile>
-            <id>appstore</id>
-            <properties>
-                <xcode.configuration>Mac App Store</xcode.configuration>
-                <codesign.provisionprofile.name>appstore.provisionprofile</codesign.provisionprofile.name>
-                <skipNotarize>true</skipNotarize>
-            </properties>
         </profile>
         <profile>
             <id>installer</id>
             <activation>
-                <property>
-                    <name>env.JENKINS_HOME</name>
-                </property>
                 <os>
                     <family>Mac</family>
                 </os>
@@ -284,8 +253,6 @@
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="hash" value="${git.revision}" />
-                                        <property name="skipNotarize" value="${skipNotarize}" />
-                                        <property name="skipSign" value="${skipSign}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </target>
                                 </configuration>

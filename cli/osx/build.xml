@@ -44,14 +44,6 @@
 
     <target name="build" depends="version">
         <echo message="Building ${cli.bundle} with configuration ${xcode.configuration}"/>
-        <antcall target="tar">
-            <param name="directory" value="${home}"/>
-            <param name="source" value="."/>
-            <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
-        </antcall>
-        <echo message="Calculating SHA256..."/>
-        <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz"
-                  algorithm="sha-256" property="source.sha256"/>
         <local name="build.settings"/>
         <property name="build.settings"
                   value="${build.xcodeoptions} RUNTIME_SOURCE=${runtime.dependency} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
@@ -74,7 +66,7 @@
     </target>
 
     <target name="package" depends="build">
-        <antcall target="codesign" unless:true="${skipSign}">
+        <antcall target="codesign" unless:true="${env.SKIP_SIGN}">
             <param name="bundle" value="${cli.bundle}"/>
         </antcall>
         <antcall target="tar">
@@ -100,20 +92,17 @@
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${ARCHIVE.SHA256}" value="${archive.sha256}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://dist.duck.sh/${sparkle.feed}/duck-${version}.${revision}.tar.gz"/>
-            <replacefilter token="${SOURCE.SHA256}" value="${source.sha256}"/>
-            <replacefilter token="${SOURCE}"
-                           value="https://dist.duck.sh/duck-src-${version}.${revision}.tar.gz"/>
+                           value="https://dist.duck.sh/${env.SPARKLE_FEED}/duck-${version}.${revision}.tar.gz"/>
         </replace>
         <exec dir="${build.deploy}" executable="/usr/bin/xcrun" spawn="false" failonerror="true"
-              unless:true="${skipSign}">
+              unless:true="${env.SKIP_SIGN}">
             <arg line="pkgbuild --component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
-        <checksum file="${build.deploy}/duck-${version}.${revision}.pkg" algorithm="md5" unless:true="${skipSign}"/>
-        <exec executable="/usr/bin/xcrun" failonerror="true" unless:true="${skipSign}">
+        <checksum file="${build.deploy}/duck-${version}.${revision}.pkg" algorithm="md5" unless:true="${env.SKIP_SIGN}"/>
+        <exec executable="/usr/bin/xcrun" failonerror="true" unless:true="${env.SKIP_SIGN}">
             <arg line="pkgutil --check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
-        <antcall target="notarize" unless:true="${skipNotarize}">
+        <antcall target="notarize" unless:true="${env.SKIP_NOTARIZE}">
             <param name="notarize.archive.upload" value="${build.deploy}/duck-${version}.${revision}.pkg"/>
             <param name="notarize.archive.staple" value="${build.deploy}/duck-${version}.${revision}.pkg"/>
         </antcall>

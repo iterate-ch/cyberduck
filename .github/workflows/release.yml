@@ -1,14 +1,36 @@
 name: Publish Release
-
-# Placeholder on master. The real implementation lives on feature branches and
-# replaces this file when merged. It exists here only so the workflow can be
-# started with workflow_dispatch against a feature branch that implements it.
-
 on:
-  workflow_dispatch:
-
+  push:
+    tags: [ '*' ]
 jobs:
-  placeholder:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Placeholder. Run this workflow from a feature branch that implements it."
+  deploy:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos, arch: arm64, goal: deploy }
+          - { os: windows, arch: x64, goal: deploy }
+          - { os: linux, arch: x64, goal: deploy }
+          - { os: linux, arch: arm64, goal: deploy }
+    uses: ./.github/workflows/deploy.yml
+    with:
+      SPARKLE_FEED: release
+      RUNNER_OS: ${{ matrix.os }}
+      RUNNER_ARCH: ${{ matrix.arch }}
+      MAVEN_GOAL: ${{ matrix.goal }}
+      DEVELOPER_DIR: '/Applications/Xcode 26.app/Contents/Developer'
+      SIGNTOOL_CSP: 'Google Cloud KMS Provider'
+      SIGNTOOL_KC: 'projects/api-project-996125414232/locations/europe/keyRings/code-signing/cryptoKeys/windows/cryptoKeyVersions/1'
+      CODESIGN_CERTIFICATE: 'Developer ID Application: David Kocher (G69SCX94XU)'
+      INSTALLER_CERTIFICATE: 'Developer ID Installer: David Kocher (G69SCX94XU)'
+      CODESIGN_PROVISIONPROFILE_NAME: 'default.provisionprofile'
+      CODESIGN_ENTITLEMENTS_NAME: 'default.entitlements'
+    secrets: inherit
+
+  publish:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    uses: ./.github/workflows/publish.yml
+    with:
+      SPARKLE_FEED: release
+    secrets: inherit

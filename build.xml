@@ -95,6 +95,14 @@
     </target>
 
     <target name="version" depends="init">
+        <property name="revision" value="0"/>
+        <fail message="Invalid revision '${revision}'">
+            <condition>
+                <not>
+                    <matches string="${revision}" pattern="^\d+$"/>
+                </not>
+            </condition>
+        </fail>
         <property name="fullversion" value="${version}"/>
         <propertyregex property="version"
                        override="true"
@@ -135,11 +143,6 @@
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar" />
         </taskdef>
-
-        <condition property="msbuild.sign" value="false">
-            <isset property="skipSign"/>
-        </condition>
-        <property name="msbuild.sign" value="" />
         <condition property="msbuild.configuration" value="Debug">
             <equals arg1="${configuration}" arg2="debug" />
         </condition>
@@ -148,11 +151,17 @@
 
     <target name="msbuild-props" depends="version">
         <condition property="msbuild.sign" value="false">
-            <isset property="skipSign"/>
+            <isset property="env.SKIP_SIGN"/>
         </condition>
         <property name="msbuild.sign" value=""/>
 
         <property name="signtool" value="cng" />
+        <condition property="signtool.csp" value="${env.SIGNTOOL_CSP}">
+            <isset property="env.SIGNTOOL_CSP"/>
+        </condition>
+        <condition property="signtool.kc" value="${env.SIGNTOOL_KC}">
+            <isset property="env.SIGNTOOL_KC"/>
+        </condition>
         <property name="revision" value="0" />
         <copy todir="${build}/generated/msbuild" overwrite="True">
             <resources>

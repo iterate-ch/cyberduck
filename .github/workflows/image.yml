@@ -1,4 +1,4 @@
-name: Create duck image
+name: Build and push Docker image for Cyberduck CLI (Linux)
 on:
   push:
     tags: [ '*' ]
@@ -46,21 +46,22 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}.{{patch}},value=${{env.VERSION}}
             type=semver,pattern={{major}}.{{minor}},value=${{env.VERSION}}
             type=semver,pattern={{major}},value=${{env.VERSION}}
-      - name: Set up JDK 21
-        uses: actions/setup-java@v6
-        with:
-          distribution: 'temurin'
-          java-version: 21
-          cache: maven
       - name: checkout
         uses: actions/checkout@v7
         with:
           ref: ${{ env.TAG }}
           fetch-depth: 0
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: maven
       - run: |
-          export COUNT=$(git rev-list --count ${{ env.TAG }})
           mvn -B verify --projects cli/linux --also-make -DskipTests
-          dpkg-deb -R cli/linux/target/release/duck_${{env.VERSION}}.$COUNT_amd64.deb .
+          deb=$(ls cli/linux/target/release/duck_*_amd64.deb)
+          echo "Extracting $deb"
+          dpkg-deb -R "$deb" .
       - name: Log in to the Container registry
         uses: docker/login-action@v4
         with:

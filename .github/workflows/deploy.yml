@@ -1,32 +1,74 @@
-name: Publish Artifacts
+name: Build Artifacts
+
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - master
+  workflow_call:
+    inputs:
+      SPARKLE_FEED:
+        type: string
+      MAVEN_PROFILES:
+        required: false
+        type: string
+        default: '!local'
+      MAVEN_GOAL:
+        required: false
+        type: string
+        default: deploy
+      RUNNER_OS:
+        required: true
+        type: string
+      RUNNER_ARCH:
+        required: true
+        type: string
+      DEVELOPER_DIR:
+        required: false
+        type: string
+      SIGNTOOL_CSP:
+        required: false
+        type: string
+      SIGNTOOL_KC:
+        required: false
+        type: string
+      CODESIGN_CERTIFICATE:
+        required: false
+        type: string
+      INSTALLER_CERTIFICATE:
+        required: false
+        type: string
+      CODESIGN_PROVISIONPROFILE_NAME:
+        required: false
+        type: string
+      CODESIGN_ENTITLEMENTS_NAME:
+        required: false
+        type: string
+      XCODE_CONFIGURATION:
+        required: false
+        type: string
+      SKIP_NOTARIZE:
+        required: false
+        type: boolean
+      SKIP_SIGN:
+        required: false
+        type: boolean
+
 jobs:
-  snapshot:
+  build:
     permissions:
       checks: write
       contents: read
       packages: read
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+    runs-on: [ self-hosted, "${{ inputs.RUNNER_OS }}", "${{ inputs.RUNNER_ARCH }}" ]
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Set up JDK
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: 21
           cache: maven
       - name: Add msbuild to PATH
-        if: ${{ runner.os == 'Windows' }}
+        if: runner.os == 'windows'
         uses: microsoft/setup-msbuild@v3
         with:
           msbuild-architecture: x64
@@ -37,23 +79,158 @@ jobs:
         run: |
           echo "NuGetPackageSourceCredentials_gh-ikvmnet=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
           echo "NuGetPackageSourceCredentials_gh-iterate-ch=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
-      - name: Install Bonjour SDK
-        if: ${{ runner.os == 'Windows' }}
-        uses: crazy-max/ghaction-chocolatey@v4
-        with:
-          args: install bonjour -y
-      - name: Install WiX Toolset
-        if: ${{ runner.os == 'Windows' }}
-        uses: crazy-max/ghaction-chocolatey@v4
-        with:
-          args: install wixtoolset -y
-      - name: Install OpenSSL
-        if: ${{ runner.os == 'Windows' }}
-        uses: crazy-max/ghaction-chocolatey@v4
-        with:
-          args: install openssl -y
-      - name: Build with Maven
-        run: mvn --batch-mode deploy -DskipTests -DskipITs -DskipSign -DskipNotarize
+      - name: Copy Sparkle Updater Private Key (DSA)
+        shell: bash
+        run: |
+          umask 077
+          printf '%s' "$SPARKLE_PRIVATE_KEY_DSA" > www/update/private.pem
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SPARKLE_PRIVATE_KEY_DSA: ${{ secrets.SPARKLE_PRIVATE_KEY_DSA }}
+      - name: Copy Sparkle Updater Private Key (ED25519)
+        shell: bash
+        run: |
+          umask 077
+          printf '%s' "$SPARKLE_PRIVATE_KEY_ED25519" > www/update/private-ed25519.pem
+        env:
+          SPARKLE_PRIVATE_KEY_ED25519: ${{ secrets.SPARKLE_PRIVATE_KEY_ED25519 }}
+      - name: Import Developer ID certificate
+        uses: ./.github/actions/import-developer-id-certificate
+        with:
+          certificate: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_BASE64 }}
+          certificate-password: ${{ secrets.CODESIGN_MACOS_CERTIFICATES_PASSWORD }}
+      # Build only the dependency closure this runner's OS owns (--also-make) and run
+      # MAVEN_GOAL against it: the cross-platform Java modules resolve from Linux, the
+      # Windows .nupkg/.dll libraries (with their Java deps) from Windows, libcore/osx
+      # from macOS. Each platform-native module lives in exactly one closure, so its
+      # pom and its .nupkg/.dylib are always deployed together by the same runner.
+      # cli/<os> is selected next to the app so the "Archive CLI ..." steps find it.
+      - name: Build with Maven
+        run: >-
+          mvn --settings .github/maven-settings.xml --batch-mode
+          ${{ inputs.MAVEN_GOAL }}
+          -DskipTests -DskipITs -P"${{ inputs['MAVEN_PROFILES'] }}"
+          --also-make --projects ${{ fromJSON('{"Linux":"cli/linux","Windows":"windows,cli/windows","macOS":"osx,cli/osx"}')[runner.os] }}
+        env:
+          MAVEN_CYBERDUCK_USERNAME: ${{ secrets.MAVEN_CYBERDUCK_USERNAME }}
+          MAVEN_CYBERDUCK_PASSWORD: ${{ secrets.MAVEN_CYBERDUCK_PASSWORD }}
+          DEVELOPER_DIR: ${{ inputs['DEVELOPER_DIR'] }}
+          SKIP_NOTARIZE: ${{ inputs['SKIP_NOTARIZE'] }}
+          SKIP_SIGN: ${{ inputs['SKIP_SIGN'] }}
+          NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
+          NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
+          NOTARIZATION_TEAMID: ${{ secrets.NOTARIZATION_TEAMID }}
+          KEYCHAIN_PATH: ${{ runner.temp }}/build.keychain-db
+          SIGNTOOL_CSP: ${{ inputs['SIGNTOOL_CSP'] }}
+          SIGNTOOL_KC: ${{ inputs['SIGNTOOL_KC'] }}
+          CODESIGN_CERTIFICATE: ${{ inputs['CODESIGN_CERTIFICATE'] }}
+          INSTALLER_CERTIFICATE: ${{ inputs['INSTALLER_CERTIFICATE'] }}
+          CODESIGN_PROVISIONPROFILE_NAME: ${{ inputs['CODESIGN_PROVISIONPROFILE_NAME'] }}
+          CODESIGN_ENTITLEMENTS_NAME: ${{ inputs['CODESIGN_ENTITLEMENTS_NAME'] }}
+          XCODE_CONFIGURATION: ${{ inputs['XCODE_CONFIGURATION'] }}
+          SPARKLE_FEED: ${{ inputs['SPARKLE_FEED'] }}
+
+      - name: Archive App ZIP (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            osx/target/release/*.zip
+      - name: Archive App PKG (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            osx/target/release/*.pkg
+      - name: Archive Update Feed (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          name: changelog-${{ runner.os }}
+          path: |-
+            osx/target/release/changelog.*
+      - name: Archive CLI PKG (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/osx/target/release/*.pkg
+      - name: Archive CLI Formula (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/osx/target/release/duck.rb
+      - name: Archive EXE (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            windows/target/release/*.exe
+      - name: Archive MSI (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            windows/target/release/*.msi
+      - name: Archive Update Feed (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: changelog-${{ runner.os }}
+          path: |-
+            windows/target/release/changelog.*
+      - name: Archive CLI EXE (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/windows/target/release/*.exe
+      - name: Archive CLI MSI (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/windows/target/release/duck-*-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' || runner.arch }}.msi
+      - name: Archive DEB (Linux)
+        if: runner.os == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/linux/target/release/*.deb
+      - name: Archive RPM (Linux)
+        if: runner.os == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/linux/target/release/*.rpm
+
+      - name: Chocolatey Push (Windows)
+        if: runner.os == 'windows' && inputs['SPARKLE_FEED'] == 'release'
+        env:
+          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+        run: |
+          Get-ChildItem "windows\target\release\cyberduck.*.nupkg" | ForEach-Object {
+            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
+          }
+      - name: Chocolatey Push (Windows CLI)
+        if: runner.os == 'windows' && inputs['SPARKLE_FEED'] == 'release'
+        env:
+          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+        run: |
+          Get-ChildItem "cli\windows\target\release\duck.*.nupkg" | ForEach-Object {
+            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
+          }
+
+      - name: Cleanup Developer ID certificate
+        if: always()
+        uses: ./.github/actions/import-developer-id-certificate/cleanup

@@ -155,21 +155,6 @@
             </dependencies>
         </profile>
         <profile>
-            <id>sparkle</id>
-            <!-- activate profile for non-Jenkins builds -->
-            <activation>
-                <property>
-                    <name>!env.JENKINS_HOME</name>
-                </property>
-            </activation>
-            <properties>
-                <xcode.configuration>Release</xcode.configuration>
-                <sparkle.feed>local</sparkle.feed>
-                <codesign.certificate>Apple Development: David Kocher (DF448WW9PY)</codesign.certificate>
-                <installer.certificate>Apple Development: David Kocher (DF448WW9PY)</installer.certificate>
-            </properties>
-        </profile>
-        <profile>
             <id>installer</id>
             <activation>
                 <os>
@@ -193,10 +178,6 @@
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="hash" value="${git.revision}" />
-                                        <property name="sparkle.feed" value="${sparkle.feed}" />
-                                        <property name="installer.certificate" value="${installer.certificate}" />
-                                        <property name="skipNotarize" value="${skipNotarize}" />
-                                        <property name="skipSign" value="${skipSign}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </target>
                                 </configuration>

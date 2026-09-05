@@ -28,7 +28,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up JDK 21
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: 21
@@ -51,7 +51,9 @@ jobs:
           echo "NuGetPackageSourceCredentials_gh-ikvmnet=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
           echo "NuGetPackageSourceCredentials_gh-iterate-ch=${{ env.NugetCredentials }}" >> $env:GITHUB_ENV
       - name: Build with Maven
-        run: mvn --no-transfer-progress verify -DskipITs -DskipSign ${{ env.args }} --batch-mode -Drevision=0
+        run: mvn --no-transfer-progress verify -DskipITs ${{ env.args }} --batch-mode -Drevision=0
+        env:
+          SKIP_SIGN: true
       - name: Publish Test Report
         if: github.event.pull_request.head.repo.fork == false
         uses: ScalableCapital/action-surefire-report@v2
