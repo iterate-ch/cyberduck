@@ -32,7 +32,7 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: S3 Upload
-        uses: iterate-ch/cyberduck-cli-action@v2
+        uses: iterate-ch/cyberduck-cli-action@main
         env:
           USERNAME: ${{ secrets.AWS_ACCESS_KEY_ID }}
           PASSWORD: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -43,7 +43,7 @@ jobs:
           args: '--verbose --existing overwrite --region us-east-1'
 
       - name: Rackspace Upload
-        uses: iterate-ch/cyberduck-cli-action@v2
+        uses: iterate-ch/cyberduck-cli-action@main
         env:
           USERNAME: ${{ secrets.RACKSPACE_USER }}
           PASSWORD: ${{ secrets.RACKSPACE_PASSWORD }}
@@ -55,7 +55,7 @@ jobs:
 
       - name: SFTP Upload
         if: ${{ inputs['SPARKLE_FEED'] == 'nightly' }}
-        uses: iterate-ch/cyberduck-cli-action@v2
+        uses: iterate-ch/cyberduck-cli-action@main
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
@@ -89,7 +89,7 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: Rackspace Upload
-        uses: iterate-ch/cyberduck-cli-action@v2
+        uses: iterate-ch/cyberduck-cli-action@main
         env:
           USERNAME: ${{ secrets.RACKSPACE_USER }}
           PASSWORD: ${{ secrets.RACKSPACE_PASSWORD }}
@@ -101,7 +101,7 @@ jobs:
 
       - name: SFTP Upload
         if: ${{ inputs['SPARKLE_FEED'] == 'release' }}
-        uses: iterate-ch/cyberduck-cli-action@v2
+        uses: iterate-ch/cyberduck-cli-action@main
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
@@ -136,7 +136,7 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: Upload Feed (macOS)
-        uses: iterate-ch/cyberduck-cli-action@v2
+        uses: iterate-ch/cyberduck-cli-action@main
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
@@ -147,7 +147,7 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: Upload Feed (Windows)
-        uses: iterate-ch/cyberduck-cli-action@v2
+        uses: iterate-ch/cyberduck-cli-action@main
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
@@ -237,7 +237,7 @@ jobs:
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
       - name: SFTP Upload (aarch64)
-        uses: iterate-ch/cyberduck-cli-action@v2
+        uses: iterate-ch/cyberduck-cli-action@main
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
@@ -248,7 +248,7 @@ jobs:
           args: '--existing overwrite --verbose'
 
       - name: SFTP Upload (x86_64)
-        uses: iterate-ch/cyberduck-cli-action@v2
+        uses: iterate-ch/cyberduck-cli-action@main
         env:
           USERNAME: '${{ secrets.SFTP_USER }}'
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
