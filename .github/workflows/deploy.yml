@@ -171,6 +171,13 @@ jobs:
           archive: false
           path: |-
             windows/target/release/*.exe
+      - name: Archive APPX (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            windows/target/release/*.appx
       - name: Archive MSI (Windows)
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
