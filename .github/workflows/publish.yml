@@ -142,7 +142,7 @@ jobs:
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
-          url: ${{ format('sftp://version.cyberduck.io/macos/{0}', inputs['SPARKLE_FEED']) }}
+          url: ${{ format('sftp://version.cyberduck.io/var/data/version.cyberduck.io/macos/{0}', inputs['SPARKLE_FEED']) }}
           path: update/changelog-macOS/changelog.*
           args: '--existing overwrite --verbose'
 
@@ -153,7 +153,7 @@ jobs:
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
-          url: ${{ format('sftp://version.cyberduck.io/windows/{0}', inputs['SPARKLE_FEED']) }}
+          url: ${{ format('sftp://version.cyberduck.io/var/data/version.cyberduck.io/windows/{0}', inputs['SPARKLE_FEED']) }}
           path: update/changelog-Windows/changelog.*
           args: '--existing overwrite --verbose'
 
