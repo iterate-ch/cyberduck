@@ -178,6 +178,13 @@ jobs:
           archive: false
           path: |-
             windows/target/release/*.msi
+      - name: Archive NUPKG (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            windows/target/release/*.nupkg
       - name: Archive Update Feed (Windows)
         if: runner.os == 'windows'
         uses: actions/upload-artifact@v7
@@ -199,6 +206,13 @@ jobs:
           archive: false
           path: |-
             cli/windows/target/release/duck-*-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' || runner.arch }}.msi
+      - name: Archive CLI NUPKG (Windows)
+        if: runner.os == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/windows/target/release/*.nupkg
       - name: Archive DEB (Linux)
         if: runner.os == 'linux'
         uses: actions/upload-artifact@v7
@@ -213,23 +227,6 @@ jobs:
           archive: false
           path: |-
             cli/linux/target/release/*.rpm
-
-      - name: Chocolatey Push (Windows)
-        if: runner.os == 'windows' && inputs['SPARKLE_FEED'] == 'release'
-        env:
-          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
-        run: |
-          Get-ChildItem "windows\target\release\cyberduck.*.nupkg" | ForEach-Object {
-            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
-          }
-      - name: Chocolatey Push (Windows CLI)
-        if: runner.os == 'windows' && inputs['SPARKLE_FEED'] == 'release'
-        env:
-          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
-        run: |
-          Get-ChildItem "cli\windows\target\release\duck.*.nupkg" | ForEach-Object {
-            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
-          }
 
       - name: Cleanup Developer ID certificate
         if: always()
