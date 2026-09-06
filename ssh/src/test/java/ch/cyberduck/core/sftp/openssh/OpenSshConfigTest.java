@@ -205,4 +205,13 @@ public class OpenSshConfigTest {
         // IdentityFile is only set by the Match block, so it must be applied
         assertEquals("~/.ssh/match-key", host.getIdentityFile());
     }
+
+    @Test
+    public void testProxyCommand() {
+        final OpenSshConfig config = new OpenSshConfig(new Local("src/test/resources", "openssh/config"));
+        assertEquals("ssh -W %h:%p bastion.example.org", config.lookup("proxycommand-host").getProxyCommand());
+        // ProxyCommand none disables any inherited proxy command
+        assertNull(config.lookup("proxycommand-none").getProxyCommand());
+        assertNull(config.lookup("server2").getProxyCommand());
+    }
 }
