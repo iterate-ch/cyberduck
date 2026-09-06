@@ -51,7 +51,7 @@ jobs:
           mode: upload
           url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/snapshots.cyberduck.io/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/beta.cyberduck.io/' || 'rackspace:/cdn.cyberduck.ch/' }}
           path: release/Cyberduck-*
-          args: '--verbose --existing overwrite --region DFW'
+          args: ${{ format('--verbose --existing overwrite --region {0}', inputs['SPARKLE_FEED'] == 'release' && 'DFW' || 'IAD') }}
 
       - name: SFTP Upload
         if: ${{ inputs['SPARKLE_FEED'] == 'nightly' }}
