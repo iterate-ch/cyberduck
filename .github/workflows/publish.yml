@@ -206,7 +206,7 @@ jobs:
             --codename ${{ inputs['SPARKLE_FEED'] == 'release' && 'stable' || 'nightly' }} \
             --s3-region us-east-1 \
             --sign 3FEFBE72 \
-            --gpg-options "--no-tty" \
+            --gpg-options="--no-tty" \
             "${packages[@]}"
 
   rpm:
