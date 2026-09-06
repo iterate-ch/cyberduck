@@ -61,7 +61,7 @@ jobs:
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
-          url: sftp://update.cyberduck.io/nightly/
+          url: sftp://update.cyberduck.io/var/data/update.cyberduck.io/${{ inputs['SPARKLE_FEED']}}/
           path: release/Cyberduck-*
           args: '--existing overwrite --verbose'
 
