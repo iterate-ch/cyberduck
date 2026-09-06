@@ -107,7 +107,7 @@ jobs:
           IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
         with:
           mode: upload
-          url: sftp://dist.duck.sh/
+          url: sftp://dist.duck.sh/var/data/dist.duck.sh/
           path: release/duck-*
           args: '--existing overwrite --verbose'
 
