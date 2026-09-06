@@ -236,6 +236,12 @@ jobs:
           printf '%s' "$SFTP_IDENTITY" > private-key.pem
           echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
 
+      - name: Diagnose Key Format
+        run: |
+          file private-key.pem
+          ssh-keygen -lf private-key.pem || true
+        shell: bash
+
       - name: SFTP Upload (aarch64)
         uses: iterate-ch/cyberduck-cli-action@main
         env:
