@@ -27,21 +27,25 @@ using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using java.util;
 using static Ch.Cyberduck.ImageHelper;
-using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     class VaultController : FolderController
     {
         private readonly INewVaultPromptView _view;
+        private readonly VaultVersion _version;
 
         public VaultController(INewVaultPromptView view, BrowserController browserController,
-            IList<Location.Name> regions, Location.Name defaultRegion) : base(view, browserController, regions,
-            defaultRegion)
+            IList<Location.Name> regions, Location.Name defaultRegion, VaultVersion version) : base(view,
+            browserController, regions, defaultRegion)
         {
             _view = view;
-            _view.EnablePassphrase();
-            _view.ValidateInput += ValidateInputEventHandler;
+            _version = version;
+            if (VaultVersion.Type.V8 == _version.type)
+            {
+                _view.EnablePassphrase();
+                _view.ValidateInput += ValidateInputEventHandler;
+            }
         }
 
         public override Image IconView => Images.Cryptomator.Size(64);
@@ -70,21 +74,24 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (DialogResult.OK == result)
             {
+                VaultCredentials credentials = VaultVersion.Type.V8 == _version.type
+                    ? new VaultCredentials(_view.Passphrase).setSaved(false)
+                    : new VaultCredentials().setSaved(false);
                 BrowserController.background(new CreateVaultAction(BrowserController,
                     new UploadTargetFinder(Workdir).find(BrowserController.SelectedPath), View.InputText,
-                    HasLocation() ? _view.Region : null, _view.Passphrase));
+                    HasLocation() ? _view.Region : null, credentials, _version));
             }
         }
 
         private class CreateVaultAction : WorkerBackgroundAction
         {
             public CreateVaultAction(BrowserController controller, Path directory, string filename, string region,
-                string passphrase)
+                VaultCredentials credentials, VaultVersion version)
                 : base(
                     controller, controller.Pool,
                     new InnerCreateVaultWorker(controller,
                         new Path(directory, filename, EnumSet.of(AbstractPath.Type.directory)), filename, region,
-                        passphrase))
+                        credentials, version))
             {
             }
 
@@ -95,10 +102,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _folder;
 
                 public InnerCreateVaultWorker(BrowserController controller, Path folder, String filename,
-                    String region, String passphrase)
-                    : base(region, folder, new VaultCredentials(passphrase).setSaved(false),
-                        new VaultVersion(VaultVersion.Type.valueOf(PreferencesFactory.get()
-                            .getProperty("cryptomator.vault.default"))))
+                    String region, VaultCredentials credentials, VaultVersion version)
+                    : base(region, folder, credentials, version)
                 {
                     _controller = controller;
                     _folder = folder;
