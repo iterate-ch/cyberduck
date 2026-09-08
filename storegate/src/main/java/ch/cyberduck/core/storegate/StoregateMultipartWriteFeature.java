@@ -147,7 +147,6 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
                                         offset += content.length;
                                         break;
                                     default:
-                                        EntityUtils.updateEntity(response, new BufferedHttpEntity(entity));
                                         final ApiException failure = new ApiException(response.getStatusLine().getStatusCode(),
                                                 response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                                 EntityUtils.toString(response.getEntity()));
