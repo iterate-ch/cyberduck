@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Share;
+import ch.cyberduck.core.features.Thumbnail;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -141,6 +142,9 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
         }
         if(type == Share.class) {
             return (T) new BoxShareFeature(this, fileid);
+        }
+        if(type == Thumbnail.class) {
+            return (T) new BoxThumbnailFeature(this, fileid);
         }
         return super._getFeature(type);
     }
