@@ -16,11 +16,13 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
@@ -36,6 +38,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -198,12 +201,15 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
 
     protected void cancel(final Path file, final String location) throws BackgroundException {
         log.warn("Cancel failed upload {} for {}", location, file);
+        final HttpDelete delete = new HttpDelete(location);
         try {
-            final HttpDelete delete = new HttpDelete(location);
-            session.getClient().getClient().execute(delete);
+            EntityUtils.consumeQuietly(session.getClient().getClient().execute(delete).getEntity());
+        }
+        catch(HttpResponseException e) {
+            throw new DefaultHttpResponseExceptionMappingService().map(e);
         }
         catch(IOException e) {
-            throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 }
