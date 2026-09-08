@@ -18,8 +18,8 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStore;
-import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -30,7 +30,7 @@ public class PreferencesX509KeyManager extends KeychainX509KeyManager {
         = PreferencesFactory.get();
 
     public PreferencesX509KeyManager(final Host bookmark, final CertificateStore callback) {
-        super(new DisabledCertificateIdentityCallback(), bookmark, callback);
+        super(CertificateIdentityCallback.noop, bookmark, callback);
     }
 
     @Override
