@@ -34,3 +34,54 @@ jobs:
     with:
       SPARKLE_FEED: release
     secrets: inherit
+
+  # Publish a GitHub Release for the pushed tag with the installer artifacts
+  # attached. Runs independently of `publish` so a delivery-channel failure
+  # never blocks the release, and vice versa.
+  release:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    permissions:
+      contents: write
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Determine Version
+        id: version
+        shell: bash
+        run: |
+          version=${GITHUB_REF_NAME#release-}
+          echo "version=${version//-/.}" >> "$GITHUB_OUTPUT"
+
+      - name: Download App
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Cyberduck-*
+          path: release
+          merge-multiple: true
+
+      - name: Download CLI
+        uses: actions/download-artifact@v8
+        with:
+          pattern: duck-*
+          path: release
+          merge-multiple: true
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Cyberduck ${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          # Attach whatever built; a failed matrix leg must not fail the release.
+          fail_on_unmatched_files: false
+          files: |
+            release/Cyberduck-*.zip
+            release/Cyberduck-*.pkg
+            release/Cyberduck-*.exe
+            release/Cyberduck-*.msi
+            release/Cyberduck-*.appx
+            release/duck-*.pkg
+            release/duck-*.exe
+            release/duck-*.msi
+            release/duck-*.deb
+            release/duck-*.rpm
