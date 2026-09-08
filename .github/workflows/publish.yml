@@ -21,16 +21,6 @@ jobs:
           path: release
           merge-multiple: true
 
-      - name: Credentials
-        id: identity
-        env:
-          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
-        shell: bash
-        run: |
-          umask 077
-          printf '%s' "$SFTP_IDENTITY" > private-key.pem
-          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
-
       - name: S3 Upload
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
@@ -53,18 +43,6 @@ jobs:
           path: release/Cyberduck-*
           args: ${{ format('--verbose --existing overwrite --region {0}', inputs['SPARKLE_FEED'] == 'release' && 'DFW' || 'IAD') }}
 
-      - name: SFTP Upload
-        if: ${{ inputs['SPARKLE_FEED'] == 'nightly' }}
-        uses: iterate-ch/cyberduck-cli-action@v1
-        env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
-          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
-        with:
-          mode: upload
-          url: sftp://update.cyberduck.io/var/data/update.cyberduck.io/${{ inputs['SPARKLE_FEED']}}/
-          path: release/Cyberduck-*
-          args: '--existing overwrite --verbose'
-
   cli:
     permissions:
       actions: read
@@ -78,16 +56,6 @@ jobs:
           path: release
           merge-multiple: true
 
-      - name: Credentials
-        id: identity
-        env:
-          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
-        shell: bash
-        run: |
-          umask 077
-          printf '%s' "$SFTP_IDENTITY" > private-key.pem
-          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
-
       - name: Rackspace Upload
         uses: iterate-ch/cyberduck-cli-action@v1
         env:
@@ -98,18 +66,6 @@ jobs:
           url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/cdn.duck.sh/nightly/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/cdn.duck.sh/nightly/' || 'rackspace:/cdn.duck.sh/' }}
           path: release/duck-*
           args: '--verbose --existing overwrite --region IAD'
-
-      - name: SFTP Upload
-        if: ${{ inputs['SPARKLE_FEED'] == 'release' }}
-        uses: iterate-ch/cyberduck-cli-action@v1
-        env:
-          USERNAME: '${{ secrets.SFTP_USER }}'
-          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
-        with:
-          mode: upload
-          url: sftp://dist.duck.sh/var/data/dist.duck.sh/
-          path: release/duck-*
-          args: '--existing overwrite --verbose'
 
   changelog:
     # Publish the appcast only after the app archives it points at are live.

@@ -35,6 +35,44 @@ jobs:
       SPARKLE_FEED: release
     secrets: inherit
 
+  # Mirror the CLI installers to the dist.duck.sh SFTP host. Release only, so it
+  # lives here rather than in the shared publish.yml.
+  sftp:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Download CLI
+        uses: actions/download-artifact@v8
+        with:
+          pattern: '{duck-*.pkg,duck-*.exe,duck-*.msi}'
+          path: release
+          merge-multiple: true
+
+      - name: Credentials
+        id: identity
+        env:
+          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
+        shell: bash
+        run: |
+          umask 077
+          printf '%s' "$SFTP_IDENTITY" > private-key.pem
+          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
+
+      - name: SFTP Upload
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://dist.duck.sh/var/data/dist.duck.sh/
+          path: release/duck-*
+          args: '--existing overwrite --verbose'
+
   # Publish a GitHub Release for the pushed tag with the installer artifacts
   # attached. Runs independently of `publish` so a delivery-channel failure
   # never blocks the release, and vice versa.

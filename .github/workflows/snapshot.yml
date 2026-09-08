@@ -29,8 +29,48 @@ jobs:
       CODESIGN_ENTITLEMENTS_NAME: 'default.entitlements'
     secrets: inherit
 
-  publish:
+  # Mirror the app archives to the update.cyberduck.io SFTP host that the nightly
+  # appcast enclosures point at. Nightly only, so it lives here rather than in the
+  # shared publish.yml. Blocks `publish` so its `changelog` job never publishes an
+  # appcast ahead of the archives it references.
+  sftp:
     needs: deploy
+    if: ${{ !cancelled() }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Download App
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Cyberduck-*
+          path: release
+          merge-multiple: true
+
+      - name: Credentials
+        id: identity
+        env:
+          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
+        shell: bash
+        run: |
+          umask 077
+          printf '%s' "$SFTP_IDENTITY" > private-key.pem
+          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
+
+      - name: SFTP Upload
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://update.cyberduck.io/var/data/update.cyberduck.io/nightly/
+          path: release/Cyberduck-*
+          args: '--existing overwrite --verbose'
+
+  publish:
+    needs: [ deploy, sftp ]
     if: ${{ !cancelled() }}
     uses: ./.github/workflows/publish.yml
     with:
