@@ -39,6 +39,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -146,6 +147,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
                                         offset += content.length;
                                         break;
                                     default:
+                                        EntityUtils.updateEntity(response, new BufferedHttpEntity(entity));
                                         final ApiException failure = new ApiException(response.getStatusLine().getStatusCode(),
                                                 response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                                 EntityUtils.toString(response.getEntity()));
@@ -211,6 +213,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:
+                                EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                 final ApiException failure = new ApiException(response.getStatusLine().getStatusCode(),
                                         response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                         EntityUtils.toString(response.getEntity()));
