@@ -91,7 +91,7 @@ public class HttpReachability implements Reachability {
             final HttpRequestBase resource = new HttpHead(new HostUrlProvider().withUsername(false).withPath(true).get(bookmark));
             final CloseableHttpResponse response = client.execute(resource);
             log.debug("Received response {}", response);
-            EntityUtils.consume(response.getEntity());
+            EntityUtils.consumeQuietly(response.getEntity());
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_BAD_GATEWAY:
                 case HttpStatus.SC_INTERNAL_SERVER_ERROR:
