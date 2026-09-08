@@ -121,7 +121,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
                                 throw new EueExceptionMappingService().map(response);
                             }
                             finally {
-                                EntityUtils.consume(response.getEntity());
+                                EntityUtils.consumeQuietly(response.getEntity());
                             }
                         }
                         catch(HttpResponseException e) {

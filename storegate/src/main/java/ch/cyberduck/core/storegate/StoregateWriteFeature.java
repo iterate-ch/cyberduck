@@ -127,7 +127,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
                         throw e;
                     }
                     finally {
-                        EntityUtils.consume(putResponse.getEntity());
+                        EntityUtils.consumeQuietly(putResponse.getEntity());
                     }
                 }
                 catch(IOException e) {
@@ -185,7 +185,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<File> {
                 }
             }
             finally {
-                EntityUtils.consume(response.getEntity());
+                EntityUtils.consumeQuietly(response.getEntity());
             }
             if(response.containsHeader(HttpHeaders.LOCATION)) {
                 return response.getFirstHeader(HttpHeaders.LOCATION).getValue();

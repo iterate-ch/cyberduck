@@ -158,7 +158,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                 }
             }
             finally {
-                EntityUtils.consume(response.getEntity());
+                EntityUtils.consumeQuietly(response.getEntity());
             }
             // Get username
             final ExtendedUser me = new UsersApi(client).usersGetMe();
