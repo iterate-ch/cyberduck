@@ -36,3 +36,38 @@ jobs:
     with:
       SPARKLE_FEED: nightly
     secrets: inherit
+
+  # Update the Homebrew tap at github.com/iterate-ch/homebrew-cyberduck. Nightly
+  # only, so it lives here rather than in the shared publish.yml.
+  brew:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Checkout Tap
+        uses: actions/checkout@v7
+        with:
+          repository: iterate-ch/homebrew-cyberduck
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-cyberduck
+
+      - name: Download Formula
+        uses: actions/download-artifact@v8
+        with:
+          pattern: duck.rb
+          path: homebrew-cyberduck
+          merge-multiple: true
+
+      - name: Commit Formula
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          repository: homebrew-cyberduck
+          branch: master
+          commit_message: Update version
+          commit_author: cyberduck
+          commit_user_name: iterate GmbH
+          commit_user_email: noreply@cyberduck.io
+          file_pattern: duck.rb
