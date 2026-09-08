@@ -306,34 +306,3 @@ jobs:
           commit_user_name: iterate GmbH
           commit_user_email: noreply@cyberduck.io
           file_pattern: duck.rb
-
-  chocolatey:
-    # Push to the Chocolatey community repository. Release only.
-    if: ${{ inputs['SPARKLE_FEED'] == 'release' }}
-    permissions:
-      actions: read
-      contents: read
-    runs-on: [ self-hosted, windows, x64 ]
-    steps:
-      - name: Download NUPKG
-        uses: actions/download-artifact@v8
-        with:
-          pattern: '*.nupkg'
-          path: release
-          merge-multiple: true
-
-      - name: Chocolatey Push (Windows)
-        env:
-          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
-        run: |
-          Get-ChildItem "release\cyberduck.*.nupkg" | ForEach-Object {
-            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
-          }
-
-      - name: Chocolatey Push (Windows CLI)
-        env:
-          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
-        run: |
-          Get-ChildItem "release\duck.*.nupkg" | ForEach-Object {
-            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
-          }
