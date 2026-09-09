@@ -36,7 +36,7 @@ import com.bettercloud.vault.VaultException;
 public class VaultTest {
 
     private static final String VAULT_PATH = "kv/test.properties";
-    private static final long VAULT_RENEW_THRESHOLD = 86400; // Renew if TTL is less
+    private static final long VAULT_RENEW_THRESHOLD = 2592000; // Renew if TTL is less than 30 days
 
     protected static Vault VAULT;
     protected static Map<String, String> PROPERTIES;
