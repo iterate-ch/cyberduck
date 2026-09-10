@@ -40,10 +40,10 @@
     <PackageVersion Include="ReactiveUI.WPF" Version="17.1.50" />
     <PackageVersion Include="StructureMap" Version="2.6.4.1" />
     <PackageVersion Include="System.CommandLine" Version="2.0.3" />
-    <PackageVersion Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+    <PackageVersion Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
-    <PackageVersion Include="System.Runtime.Caching" Version="8.0.0" />
-    <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <PackageVersion Include="System.Runtime.Caching" Version="10.0.0" />
+    <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
     <PackageVersion Include="WixToolset.Bal.wixext" Version="5.0.2" />
     <PackageVersion Include="WixToolset.Heat" Version="5.0.2" />
     <PackageVersion Include="WixToolset.NetFx.wixext" Version="5.0.2" />
