@@ -105,6 +105,33 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
     }
 
     @Test
+    public void testWriteOverwriteExistingTruncates() throws Exception {
+        // Overwrite (not append) of an existing file must truncate it, also with shorter content
+        final SFTPWriteFeature feature = new SFTPWriteFeature(session);
+        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final byte[] initial = RandomUtils.nextBytes(65536);
+        {
+            final TransferStatus status = new TransferStatus().setExists(false).setLength(initial.length);
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(initial), out);
+            out.close();
+        }
+        assertEquals(initial.length, new SFTPAttributesFinderFeature(session).find(test).getSize());
+        final byte[] shorter = RandomUtils.nextBytes(1024);
+        {
+            final TransferStatus status = new TransferStatus().setExists(true).setLength(shorter.length);
+            final OutputStream out = feature.write(test, status, ConnectionCallback.noop);
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(shorter), out);
+            out.close();
+        }
+        assertEquals(shorter.length, new SFTPAttributesFinderFeature(session).find(test).getSize());
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(shorter.length);
+        IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().setLength(shorter.length), ConnectionCallback.noop), buffer);
+        assertArrayEquals(shorter, buffer.toByteArray());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), LoginCallback.noop, new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testWriteSymlink() throws Exception {
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path target = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
