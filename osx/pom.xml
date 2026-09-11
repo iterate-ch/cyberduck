@@ -232,6 +232,9 @@
         <profile>
             <id>installer</id>
             <activation>
+                <property>
+                    <name>env.CI</name>
+                </property>
                 <os>
                     <family>Mac</family>
                 </os>
