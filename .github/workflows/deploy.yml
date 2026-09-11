@@ -157,6 +157,13 @@ jobs:
           archive: false
           path: |-
             cli/osx/target/release/*.pkg
+      - name: Archive CLI Tarball (macOS)
+        if: runner.os == 'macos'
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |-
+            cli/osx/target/release/*.tar.gz
       - name: Archive CLI Formula (macOS)
         if: runner.os == 'macos'
         uses: actions/upload-artifact@v7
