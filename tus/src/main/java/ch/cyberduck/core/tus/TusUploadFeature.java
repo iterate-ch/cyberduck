@@ -22,11 +22,14 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.dav.DAVClient;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -43,13 +46,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,15 +71,13 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
 
     public static final String UPLOAD_URL = "uploadUrl";
 
-    private final Host host;
-    private final DAVClient client;
     private final Preferences preferences = PreferencesFactory.get();
 
+    private final Session<DAVClient> session;
     private final TusCapabilities capabilities;
 
-    public TusUploadFeature(final Host host, final DAVClient client, final TusCapabilities capabilities) {
-        this.host = host;
-        this.client = client;
+    public TusUploadFeature(final Session<DAVClient> session, final TusCapabilities capabilities) {
+        this.session = session;
         this.capabilities = capabilities;
     }
 
@@ -90,19 +88,19 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         final List<Future<Void>> chunks = new ArrayList<>();
         final String uploadUrl;
         if(status.isAppend()) {
-            if(StringUtils.isBlank(preferences.getProperty(toUploadUrlPropertyKey(host, file, status)))) {
+            if(StringUtils.isBlank(preferences.getProperty(toUploadUrlPropertyKey(session.getHost(), file, status)))) {
                 log.debug("No previous upload URL for {}", file);
                 uploadUrl = this.start(file, status.setAppend(false));
             }
             else {
-                uploadUrl = preferences.getProperty(toUploadUrlPropertyKey(host, file, status));
+                uploadUrl = preferences.getProperty(toUploadUrlPropertyKey(session.getHost(), file, status));
                 log.debug("Resume upload to {} for {} from offset {}", uploadUrl, file, status.getOffset());
             }
         }
         else {
             log.warn("No resume upload attempt for {}", file);
             uploadUrl = this.start(file, status);
-            preferences.setProperty(toUploadUrlPropertyKey(host, file, status), uploadUrl);
+            preferences.setProperty(toUploadUrlPropertyKey(session.getHost(), file, status), uploadUrl);
         }
         long offset = status.getOffset();
         long remaining = status.getLength();
@@ -117,21 +115,21 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         Interruptibles.awaitAll(chunks);
         // Mark parent status as complete
         log.debug("Completed all chunks to {} for {}", uploadUrl, file);
-        preferences.deleteProperty(toUploadUrlPropertyKey(host, file, status.setComplete()));
+        preferences.deleteProperty(toUploadUrlPropertyKey(session.getHost(), file, status.setComplete()));
         return null;
     }
 
-    private String start(Path file, TransferStatus status) throws BackgroundException {
+    private String start(final Path file, final TransferStatus status) throws BackgroundException {
         final String uploadUrl;
         if(!capabilities.extensions.contains(Extension.creation)) {
             throw new InteroperabilityException(String.format("No support for %s", Extension.creation));
         }
         // Create an Upload URL
-        final HttpPost request = new HttpPost(new DefaultUrlProvider(host).toUrl(file.getParent(),
+        final HttpPost request = new HttpPost(new DefaultUrlProvider(session.getHost()).toUrl(file.getParent(),
                 EnumSet.of(DescriptiveUrl.Type.provider)).find(DescriptiveUrl.Type.provider).getUrl());
         request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
         // The Upload-Length header indicates the size of the entire upload in bytes
-        request.setHeader(TUS_HEADER_UPLOAD_LENGTH, String.valueOf(status.getDestinationlength()));
+        request.setHeader(TUS_HEADER_UPLOAD_LENGTH, String.valueOf(status.getParent().getLength()));
         // The Upload-Metadata request and response header MUST consist of one or more comma-separated key-value pairs
         final StringAppender metadata = new StringAppender(',');
         metadata.append(String.format("filename %s", Base64.encodeBase64String(file.getName().getBytes(StandardCharsets.UTF_8))));
@@ -147,7 +145,7 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         }
         request.setHeader(TUS_HEADER_UPLOAD_METADATA, metadata.toString());
         try {
-            uploadUrl = client.execute(request, new ResponseHandler<String>() {
+            uploadUrl = session.getClient().execute(request, new ResponseHandler<String>() {
                 @Override
                 public String handleResponse(final HttpResponse response) throws HttpResponseException {
                     if(response.containsHeader(HttpHeaders.LOCATION)) {
@@ -173,12 +171,13 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                                 final long offset, final long length, final ConnectionCallback callback) throws BackgroundException {
         overall.validate();
         log.info("Send part of {} with offset {} and length {} from {}", file, offset, length, overall.getLength());
-        return ConcurrentUtils.constantFuture(new DefaultRetryCallable<>(host, new BackgroundExceptionCallable<Void>() {
+        return ConcurrentUtils.constantFuture(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
             @Override
             public Void call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
                         .setSegment(true)
+                        .setParent(overall)
                         .setOffset(offset)
                         .setLength(length);
                 status.setHeader(overall.getHeader());
@@ -197,39 +196,19 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     @Override
     public Write.Append append(final Path file, final TransferStatus status) throws BackgroundException {
         // Determine the offset at which the upload should be continued
-        final String property = toUploadUrlPropertyKey(host, file, status);
+        final String property = toUploadUrlPropertyKey(session.getHost(), file, status);
         final String uploadUrl = preferences.getProperty(property);
         if(StringUtils.isBlank(uploadUrl)) {
             log.debug("No previous upload URL for {}", file);
             return Write.override;
         }
-        final HttpHead request = new HttpHead(uploadUrl);
-        request.setHeader(TUS_HEADER_RESUMABLE, TUS_VERSION);
         try {
-            final Long offset = client.execute(request, new ResponseHandler<Long>() {
-                @Override
-                public Long handleResponse(final HttpResponse response) throws HttpResponseException {
-                    switch(response.getStatusLine().getStatusCode()) {
-                        case HttpStatus.SC_OK:
-                            if(response.containsHeader(TUS_HEADER_UPLOAD_OFFSET)) {
-                                final Header header = response.getFirstHeader(TUS_HEADER_UPLOAD_OFFSET);
-                                log.debug("Return offset header {}", header);
-                                return Long.valueOf(header.getValue());
-                            }
-                    }
-                    // If the resource is not found, the Server SHOULD return either the 404 Not Found,
-                    // 410 Gone or 403 Forbidden status without the Upload-Offset header.
-                    throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
-                }
-            });
-            return new Write.Append(true).withStatus(status).withOffset(offset);
+            return new Write.Append(true).withStatus(status).withOffset(new TusUploadHelper(session).offset(uploadUrl));
         }
-        catch(HttpResponseException e) {
+        catch(NotfoundException | AccessDeniedException | InteroperabilityException e) {
+            log.warn("Delete upload URL {}", uploadUrl);
             preferences.deleteProperty(property);
             return Write.override;
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 
@@ -244,5 +223,4 @@ public class TusUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         log.debug("Return upload URL property key {} for file {}", key, file);
         return key;
     }
-
 }

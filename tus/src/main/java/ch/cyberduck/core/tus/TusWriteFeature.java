@@ -17,8 +17,8 @@ package ch.cyberduck.core.tus;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.HostPreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpEntity;
@@ -38,11 +39,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.EnumSet;
 
 import static ch.cyberduck.core.tus.TusCapabilities.*;
@@ -50,13 +53,13 @@ import static ch.cyberduck.core.tus.TusCapabilities.*;
 public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
     private static final Logger log = LogManager.getLogger(TusWriteFeature.class);
 
+    private final Session<DAVClient> session;
     private final TusCapabilities capabilities;
-    private final DAVClient client;
 
-    public TusWriteFeature(final Host host, final TusCapabilities capabilities, final DAVClient client) {
-        super(host, new VoidAttributesAdapter());
+    public TusWriteFeature(final Session<DAVClient> session, final TusCapabilities capabilities) {
+        super(session.getHost(), new VoidAttributesAdapter());
+        this.session = session;
         this.capabilities = capabilities;
-        this.client = client;
     }
 
     @Override
@@ -74,8 +77,17 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
                 request.setHeader(TUS_HEADER_UPLOAD_OFFSET, String.valueOf(status.getOffset()));
                 // All PATCH requests MUST use Content-Type: application/offset+octet-stream
                 request.setHeader(HttpHeaders.CONTENT_TYPE, "application/offset+octet-stream");
+                // Last chunk completing the upload. The server may take a significant amount of time to respond
+                // while assembling and validating previously uploaded chunks
+                final boolean finalize = (status.getOffset() + status.getLength()) == status.getParent().getLength();
+                if(finalize) {
+                    final RequestConfig context = session.getClient().getContext().getRequestConfig();
+                    request.setConfig(RequestConfig.copy(context)
+                            .setSocketTimeout(1000 * HostPreferencesFactory.get(session.getHost()).getInteger("tus.upload.finalize.timeout"))
+                            .build());
+                }
                 try {
-                    return client.execute(request, new ResponseHandler<Void>() {
+                    return session.getClient().execute(request, new ResponseHandler<Void>() {
                         @Override
                         public Void handleResponse(final HttpResponse response) throws HttpResponseException {
                             switch(response.getStatusLine().getStatusCode()) {
@@ -85,6 +97,22 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
                             throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
                         }
                     });
+                }
+                catch(SocketTimeoutException e) {
+                    if(finalize) {
+                        log.warn("Timeout waiting for response completing upload of {} to {}", file, request.getURI(), e);
+                        try {
+                            if(status.getParent().getLength() == new TusUploadHelper(session).offset(request.getURI().toString())) {
+                                log.info("Confirmed upload of {} is complete querying offset for {} after timeout waiting for response",
+                                        file, request.getURI());
+                                return null;
+                            }
+                        }
+                        catch(BackgroundException ignore) {
+                            log.warn("Failure {} querying offset for {} to confirm completion of {}", ignore, request.getURI(), file);
+                        }
+                    }
+                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 catch(HttpResponseException e) {
                     throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
