@@ -44,7 +44,9 @@
     <condition property="build.xcodeoptions"
                value="${build.xcodeoptions.default} SPARKLEFEED='https://version.cyberduck.io/${env.SPARKLE_FEED}/changelog.rss' INFOPLIST_PREPROCESSOR_DEFINITIONS=SPARKLE_BUILD"
                else="${build.xcodeoptions.default}">
-        <isset property="env.SPARKLE_FEED"/>
+        <not>
+            <equals arg1="${env.SPARKLE_FEED}" arg2=""/>
+        </not>
     </condition>
 
     <condition property="xcode.configuration"
