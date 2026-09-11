@@ -196,9 +196,9 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("oauth.handler.scheme",
                 String.format("x-%s-action", StringUtils.deleteWhitespace(StringUtils.lowerCase(this.getProperty("application.name")))));
 
-        this.setDefault("update.feed.release", "https://version.cyberduck.io/changelog.rss");
-        this.setDefault("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
-        this.setDefault("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.rss");
+        this.setDefault("update.feed.release", "https://version.cyberduck.io/macos/changelog.rss");
+        this.setDefault("update.feed.beta", "https://version.cyberduck.io/macos/beta/changelog.rss");
+        this.setDefault("update.feed.nightly", "https://version.cyberduck.io/macos/nightly/changelog.rss");
 
         this.setDefault("bookmark.import.filezilla.location", "~/.config/filezilla/sitemanager.xml");
         this.setDefault("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");

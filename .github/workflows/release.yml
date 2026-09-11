@@ -1,14 +1,158 @@
 name: Publish Release
-
-# Placeholder on master. The real implementation lives on feature branches and
-# replaces this file when merged. It exists here only so the workflow can be
-# started with workflow_dispatch against a feature branch that implements it.
-
 on:
-  workflow_dispatch:
-
+  push:
+    tags: [ '*' ]
 jobs:
-  placeholder:
-    runs-on: ubuntu-latest
+  deploy:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos, arch: arm64, goal: deploy }
+          - { os: windows, arch: x64, goal: deploy }
+          - { os: linux, arch: x64, goal: deploy }
+          - { os: linux, arch: arm64, goal: deploy }
+    uses: ./.github/workflows/deploy.yml
+    with:
+      SPARKLE_FEED: release
+      RUNNER_OS: ${{ matrix.os }}
+      RUNNER_ARCH: ${{ matrix.arch }}
+      MAVEN_GOAL: ${{ matrix.goal }}
+      DEVELOPER_DIR: '/Applications/Xcode 26.app/Contents/Developer'
+      SIGNTOOL_CSP: 'Google Cloud KMS Provider'
+      SIGNTOOL_KC: 'projects/api-project-996125414232/locations/europe/keyRings/code-signing/cryptoKeys/windows/cryptoKeyVersions/1'
+      CODESIGN_CERTIFICATE: 'Developer ID Application: David Kocher (G69SCX94XU)'
+      INSTALLER_CERTIFICATE: 'Developer ID Installer: David Kocher (G69SCX94XU)'
+      CODESIGN_PROVISIONPROFILE_NAME: 'default.provisionprofile'
+      CODESIGN_ENTITLEMENTS_NAME: 'default.entitlements'
+    secrets: inherit
+
+  publish:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    uses: ./.github/workflows/publish.yml
+    with:
+      SPARKLE_FEED: release
+    secrets: inherit
+
+  # Mirror the CLI installers to the dist.duck.sh SFTP host. Release only, so it
+  # lives here rather than in the shared publish.yml.
+  sftp:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ linux, x64 ]
     steps:
-      - run: echo "Placeholder. Run this workflow from a feature branch that implements it."
+      - name: Download CLI
+        uses: actions/download-artifact@v8
+        with:
+          pattern: '{duck-*,duck_*}'
+          path: release
+          merge-multiple: true
+
+      - name: Credentials
+        id: identity
+        env:
+          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
+        shell: bash
+        run: |
+          umask 077
+          printf '%s' "$SFTP_IDENTITY" > private-key.pem
+          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
+
+      - name: SFTP Upload
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://dist.duck.sh/var/data/dist.duck.sh/
+          path: release/duck-*
+          args: '--existing overwrite --verbose'
+
+  # Publish a GitHub Release for the pushed tag with the installer artifacts
+  # attached. Runs independently of `publish` so a delivery-channel failure
+  # never blocks the release, and vice versa.
+  release:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    permissions:
+      contents: write
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Determine Version
+        id: version
+        shell: bash
+        run: |
+          version=${GITHUB_REF_NAME#release-}
+          echo "version=${version//-/.}" >> "$GITHUB_OUTPUT"
+
+      - name: Download App
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Cyberduck-*
+          path: release
+          merge-multiple: true
+
+      - name: Download CLI
+        uses: actions/download-artifact@v8
+        with:
+          pattern: '{duck-*,duck_*}'
+          path: release
+          merge-multiple: true
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Cyberduck ${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          # Attach whatever built; a failed matrix leg must not fail the release.
+          fail_on_unmatched_files: false
+          files: |
+            release/Cyberduck-*.zip
+            release/Cyberduck-*.pkg
+            release/Cyberduck-*.exe
+            release/Cyberduck-*.msi
+            release/Cyberduck-*.appx
+            release/duck-*.pkg
+            release/duck-*.exe
+            release/duck-*.msi
+            release/duck_*.deb
+            release/duck-*.rpm
+
+  # Push to the Chocolatey community repository. Release only, so it lives here
+  # rather than in the shared publish.yml.
+  chocolatey:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ self-hosted, windows, x64 ]
+    steps:
+      - name: Download NUPKG
+        uses: actions/download-artifact@v8
+        with:
+          pattern: '*.nupkg'
+          path: release
+          merge-multiple: true
+
+      - name: Chocolatey Push (Windows)
+        env:
+          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+        run: |
+          Get-ChildItem "release\cyberduck.*.nupkg" | ForEach-Object {
+            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
+          }
+
+      - name: Chocolatey Push (Windows CLI)
+        env:
+          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+        run: |
+          Get-ChildItem "release\duck.*.nupkg" | ForEach-Object {
+            choco push $_.FullName --api-key $env:CHOCOLATEY_API_KEY --verbose
+          }

@@ -1,14 +1,113 @@
 name: Publish Snapshot
-
-# Placeholder on master. The real implementation lives on feature branches and
-# replaces this file when merged. It exists here only so the workflow can be
-# started with workflow_dispatch against a feature branch that implements it.
-
 on:
   workflow_dispatch:
-
+  push:
+    branches:
+      - master
 jobs:
-  placeholder:
-    runs-on: ubuntu-latest
+  deploy:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos, arch: arm64, goal: deploy }
+          - { os: windows, arch: x64, goal: deploy }
+          - { os: linux, arch: x64, goal: deploy }
+          - { os: linux, arch: arm64, goal: deploy }
+    uses: ./.github/workflows/deploy.yml
+    with:
+      SPARKLE_FEED: nightly
+      RUNNER_OS: ${{ matrix.os }}
+      RUNNER_ARCH: ${{ matrix.arch }}
+      MAVEN_GOAL: ${{ matrix.goal }}
+      DEVELOPER_DIR: '/Applications/Xcode 26.app/Contents/Developer'
+      SIGNTOOL_CSP: 'Google Cloud KMS Provider'
+      SIGNTOOL_KC: 'projects/api-project-996125414232/locations/europe/keyRings/code-signing/cryptoKeys/windows/cryptoKeyVersions/1'
+      CODESIGN_CERTIFICATE: 'Developer ID Application: David Kocher (G69SCX94XU)'
+      INSTALLER_CERTIFICATE: 'Developer ID Installer: David Kocher (G69SCX94XU)'
+      CODESIGN_PROVISIONPROFILE_NAME: 'default.provisionprofile'
+      CODESIGN_ENTITLEMENTS_NAME: 'default.entitlements'
+    secrets: inherit
+
+  # Mirror the app archives to the update.cyberduck.io SFTP host that the nightly
+  # appcast enclosures point at. Nightly only, so it lives here rather than in the
+  # shared publish.yml. Blocks `publish` so its `changelog` job never publishes an
+  # appcast ahead of the archives it references.
+  sftp:
+    needs: deploy
+    if: ${{ !cancelled() }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ linux, x64 ]
     steps:
-      - run: echo "Placeholder. Run this workflow from a feature branch that implements it."
+      - name: Download App
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Cyberduck-*
+          path: release
+          merge-multiple: true
+
+      - name: Credentials
+        id: identity
+        env:
+          SFTP_IDENTITY: ${{ secrets.SFTP_IDENTITY }}
+        shell: bash
+        run: |
+          umask 077
+          printf '%s' "$SFTP_IDENTITY" > private-key.pem
+          echo "KEYFILE=private-key.pem" >> "$GITHUB_OUTPUT"
+
+      - name: SFTP Upload
+        uses: iterate-ch/cyberduck-cli-action@v1
+        env:
+          USERNAME: '${{ secrets.SFTP_USER }}'
+          IDENTITY: '${{ steps.identity.outputs.KEYFILE }}'
+        with:
+          mode: upload
+          url: sftp://update.cyberduck.io/var/data/update.cyberduck.io/nightly/
+          path: release/Cyberduck-*
+          args: '--existing overwrite --verbose'
+
+  publish:
+    needs: [ deploy, sftp ]
+    if: ${{ !cancelled() }}
+    uses: ./.github/workflows/publish.yml
+    with:
+      SPARKLE_FEED: nightly
+    secrets: inherit
+
+  # Update the Homebrew tap at github.com/iterate-ch/homebrew-cyberduck. Nightly
+  # only, so it lives here rather than in the shared publish.yml.
+  brew:
+    needs: [ publish ]
+    if: ${{ !cancelled() }}
+    permissions:
+      actions: read
+      contents: read
+    runs-on: [ linux, x64 ]
+    steps:
+      - name: Checkout Tap
+        uses: actions/checkout@v7
+        with:
+          repository: iterate-ch/homebrew-cyberduck
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-cyberduck
+
+      - name: Download Formula
+        uses: actions/download-artifact@v8
+        with:
+          pattern: duck.rb
+          path: homebrew-cyberduck
+          merge-multiple: true
+
+      - name: Commit Formula
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          repository: homebrew-cyberduck
+          branch: master
+          commit_message: Update version
+          commit_author: cyberduck
+          commit_user_name: iterate GmbH
+          commit_user_email: noreply@cyberduck.io
+          file_pattern: duck.rb

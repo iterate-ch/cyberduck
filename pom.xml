@@ -81,6 +81,9 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <!-- Default project root. Overridden by directory-maven-plugin in the
+             project-root-jenkins profile. -->
+        <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
         <argLine />
         <jna-version>5.14.0</jna-version>
         <jersey-version>2.38</jersey-version>
@@ -530,7 +533,6 @@
                                     <property name="version" value="${project.version}" />
                                     <property name="revision" value="${git.commitsCount}" />
                                     <property name="hash" value="${git.revision}" />
-                                    <property name="sparkle.feed" value="${sparkle.feed}" />
                                     <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                 </target>
                             </configuration>
@@ -833,9 +835,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>ru.concerteza.buildnumber</groupId>
-                <artifactId>maven-jgit-buildnumber-plugin</artifactId>
-                <version>1.2.10</version>
+                <groupId>com.labun.buildnumber</groupId>
+                <artifactId>jgit-buildnumber-maven-plugin</artifactId>
+                <version>2.7.0</version>
                 <executions>
                     <execution>
                         <id>git-buildnumber</id>
@@ -846,7 +848,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <repositoryDirectory>${project.basedir}</repositoryDirectory>
+                    <repositoryDirectory>${main.basedir}</repositoryDirectory>
                     <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
                 </configuration>
             </plugin>
@@ -1037,18 +1039,6 @@
             </build>
         </profile>
         <profile>
-            <id>project-root-local</id>
-            <!-- activate profile for non-Jenkins builds -->
-            <activation>
-                <property>
-                    <name>!env.JENKINS_HOME</name>
-                </property>
-            </activation>
-            <properties>
-                <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
-            </properties>
-        </profile>
-        <profile>
             <id>no-testcontainers</id>
             <properties>
                 <surefire.group.excluded>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest
@@ -1124,7 +1114,6 @@
                                             <property name="version" value="${project.version}" />
                                             <property name="revision" value="${git.commitsCount}" />
                                             <property name="hash" value="${git.revision}" />
-                                            <property name="sparkle.feed" value="${sparkle.feed}" />
                                             <ant antfile="${project.basedir}/build.xml" target="msbuild-props" dir="." />
                                         </target>
                                     </configuration>

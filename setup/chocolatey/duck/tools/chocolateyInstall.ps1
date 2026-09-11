@@ -1,7 +1,7 @@
 ﻿$packageName = 'duck'
 $installerType = 'exe'
 $silentArgs = '/quiet'
-$url = 'https://dist.duck.sh/${FEED}/duck-${VERSION}.${REVISION}.exe'
+$url = 'https://dist.duck.sh/${FEED}duck-${VERSION}.${REVISION}.exe'
 $checksum = '${CHECKSUM}'
 $checksumType = 'sha256'
 $validExitCodes = @(0)

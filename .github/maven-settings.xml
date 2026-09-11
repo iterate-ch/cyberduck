@@ -1,0 +1,14 @@
+<settings>
+    <servers>
+        <server>
+            <id>maven.cyberduck.io-release</id>
+            <username>${env.MAVEN_CYBERDUCK_USERNAME}</username>
+            <password>${env.MAVEN_CYBERDUCK_PASSWORD}</password>
+        </server>
+        <server>
+            <id>maven.cyberduck.io-snapshot</id>
+            <username>${env.MAVEN_CYBERDUCK_USERNAME}</username>
+            <password>${env.MAVEN_CYBERDUCK_PASSWORD}</password>
+        </server>
+    </servers>
+</settings>

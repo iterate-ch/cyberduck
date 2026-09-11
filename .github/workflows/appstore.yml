@@ -1,14 +1,43 @@
 name: Publish Mac App Store
 
-# Placeholder on master. The real implementation lives on feature branches and
-# replaces this file when merged. It exists here only so the workflow can be
-# started with workflow_dispatch against a feature branch that implements it.
-
 on:
-  workflow_dispatch:
+  push:
+    tags: [ '*' ]
 
 jobs:
-  placeholder:
-    runs-on: ubuntu-latest
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    with:
+      MAVEN_PROFILES: 'appstore'
+      # App Store artifacts are already published by the release/snapshot macOS leg;
+      # this run only needs to build the sandboxed .pkg for upload.
+      MAVEN_GOAL: install
+      RUNNER_OS: macos
+      RUNNER_ARCH: arm64
+      DEVELOPER_DIR: '/Applications/Xcode 26.app/Contents/Developer'
+      CODESIGN_CERTIFICATE: 'Apple Distribution: David Kocher (G69SCX94XU)'
+      INSTALLER_CERTIFICATE: '3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)'
+      CODESIGN_PROVISIONPROFILE_NAME: 'appstore.provisionprofile'
+      CODESIGN_ENTITLEMENTS_NAME: 'sandbox.entitlements'
+      SKIP_NOTARIZE: true
+      XCODE_CONFIGURATION: 'Mac App Store'
+    secrets: inherit
+
+  appstore:
+    needs: deploy
+    permissions:
+      actions: read
+      contents: read
+    runs-on: macos
     steps:
-      - run: echo "Placeholder. Run this workflow from a feature branch that implements it."
+      - name: Download App PKG (macOS)
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Cyberduck-*.pkg
+          path: release
+          merge-multiple: true
+      - name: Upload to Mac App Store
+        env:
+          NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
+          NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
+        run: xcrun altool --verbose --upload-app -f release/*.pkg -t osx -u "$NOTARIZATION_USER" -p "$NOTARIZATION_PW"
