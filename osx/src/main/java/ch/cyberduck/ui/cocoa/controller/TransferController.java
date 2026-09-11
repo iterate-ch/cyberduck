@@ -36,6 +36,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -104,6 +105,50 @@ public class TransferController extends WindowController implements TransferList
         = PreferencesFactory.get();
 
     private final TransferCollection collection = TransferCollection.defaultCollection();
+    private final CollectionListener<Transfer> collectionListener = new AbstractCollectionListener<Transfer>() {
+        @Override
+        public void collectionLoaded() {
+            invoke(new ControllerMainAction(TransferController.this) {
+                @Override
+                public void run() {
+                    reload();
+                }
+            });
+        }
+
+        @Override
+        public void collectionItemAdded(final Transfer item) {
+            invoke(new ControllerMainAction(TransferController.this) {
+                @Override
+                public void run() {
+                    reload();
+                }
+            });
+        }
+
+        @Override
+        public void collectionItemRemoved(final Transfer item) {
+            invoke(new ControllerMainAction(TransferController.this) {
+                @Override
+                public void run() {
+                    reload();
+                }
+            });
+        }
+    };
+    private final CollectionListener<Transfer> collectionLoadedListener = new AbstractCollectionListener<Transfer>() {
+        @Override
+        public void collectionLoaded() {
+            invoke(new WindowMainAction(TransferController.this) {
+                @Override
+                public void run() {
+                    transferSpinner.stopAnimation(null);
+                    transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
+                }
+            });
+            collection.removeListener(this);
+        }
+    };
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
     private final BandwidthMenuDelegate bandwidthMenuDelegate = new BandwidthMenuDelegate();
     private final TranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
@@ -130,37 +175,7 @@ public class TransferController extends WindowController implements TransferList
     private AbstractTableDelegate<Transfer, TransferColumn> transferTableDelegate;
 
     public TransferController() {
-        collection.addListener(new AbstractCollectionListener<Transfer>() {
-            @Override
-            public void collectionLoaded() {
-                invoke(new ControllerMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        reload();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemAdded(final Transfer item) {
-                invoke(new ControllerMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        reload();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemRemoved(final Transfer item) {
-                invoke(new ControllerMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        reload();
-                    }
-                });
-            }
-        });
+        collection.addListener(collectionListener);
     }
 
     @Override
@@ -174,20 +189,9 @@ public class TransferController extends WindowController implements TransferList
 
         if(!collection.isLoaded()) {
             transferSpinner.startAnimation(null);
+            collection.addListener(collectionLoadedListener);
         }
-        collection.addListener(new AbstractCollectionListener<Transfer>() {
-            @Override
-            public void collectionLoaded() {
-                invoke(new WindowMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        transferSpinner.stopAnimation(null);
-                        transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
-                    }
-                });
-            }
-        });
-        if(collection.isLoaded()) {
+        else {
             transferSpinner.stopAnimation(null);
             transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
@@ -311,6 +315,8 @@ public class TransferController extends WindowController implements TransferList
     @Override
     public void invalidate() {
         toolbar.setDelegate(null);
+        collection.removeListener(collectionLoadedListener);
+        collection.removeListener(collectionListener);
         transferTableModel.invalidate();
         super.invalidate();
     }
