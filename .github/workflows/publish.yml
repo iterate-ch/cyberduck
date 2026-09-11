@@ -63,7 +63,7 @@ jobs:
           PASSWORD: ${{ secrets.RACKSPACE_PASSWORD }}
         with:
           mode: upload
-          url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/cdn.duck.sh/nightly/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/cdn.duck.sh/nightly/' || 'rackspace:/cdn.duck.sh/' }}
+          url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/cdn.duck.sh/nightly/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/cdn.duck.sh/beta/' || 'rackspace:/cdn.duck.sh/' }}
           path: 'release/{duck-*,duck_*}'
           args: '--verbose --existing overwrite --region IAD'
 
