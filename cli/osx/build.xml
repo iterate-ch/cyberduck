@@ -86,13 +86,22 @@
                 <include name="*.rb"/>
             </fileset>
         </copy>
+        <!-- The tarball is uploaded to cdn.duck.sh (Rackspace, see publish.yml) under a
+             per-feed prefix; release is served from the container root. -->
+        <condition property="archive.feed.path" value="nightly/">
+            <equals arg1="${env.SPARKLE_FEED}" arg2="nightly"/>
+        </condition>
+        <condition property="archive.feed.path" value="beta/">
+            <equals arg1="${env.SPARKLE_FEED}" arg2="beta"/>
+        </condition>
+        <property name="archive.feed.path" value=""/>
         <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
             <include name="*.rb"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${ARCHIVE.SHA256}" value="${archive.sha256}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://dist.duck.sh/${env.SPARKLE_FEED}/duck-${version}.${revision}.tar.gz"/>
+                           value="https://dist.duck.sh/${archive.feed.path}duck-${version}.${revision}.tar.gz"/>
         </replace>
         <exec dir="${build.deploy}" executable="/usr/bin/xcrun" spawn="false" failonerror="true"
               unless:true="${env.SKIP_SIGN}">
