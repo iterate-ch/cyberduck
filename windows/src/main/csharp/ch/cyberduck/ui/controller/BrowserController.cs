@@ -2104,10 +2104,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_NewVault()
         {
             Location feature = (Location)Pool.getFeature(typeof(Location));
+            VaultVersion version = new VaultVersion(VaultVersion.Type.valueOf(PreferencesFactory.get()
+                .getProperty("cryptomator.vault.default")));
             FolderController fc = new VaultController(ObjectFactory.GetInstance<INewVaultPromptView>(), this,
                 feature != null
                     ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations(Workdir))
-                    : new List<Location.Name>(), feature != null ? feature.getDefault(Workdir) : Location.unknown);
+                    : new List<Location.Name>(), feature != null ? feature.getDefault(Workdir) : Location.unknown, version);
             fc.Show();
         }
 
