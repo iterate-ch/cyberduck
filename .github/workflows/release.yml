@@ -48,7 +48,7 @@ jobs:
       - name: Download CLI
         uses: actions/download-artifact@v8
         with:
-          pattern: '{duck-*.pkg,duck-*.exe,duck-*.msi}'
+          pattern: '{duck-*,duck_*}'
           path: release
           merge-multiple: true
 
@@ -100,7 +100,7 @@ jobs:
       - name: Download CLI
         uses: actions/download-artifact@v8
         with:
-          pattern: duck-*
+          pattern: '{duck-*,duck_*}'
           path: release
           merge-multiple: true
 
@@ -121,7 +121,7 @@ jobs:
             release/duck-*.pkg
             release/duck-*.exe
             release/duck-*.msi
-            release/duck-*.deb
+            release/duck_*.deb
             release/duck-*.rpm
 
   # Push to the Chocolatey community repository. Release only, so it lives here

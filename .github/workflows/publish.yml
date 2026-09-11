@@ -52,7 +52,7 @@ jobs:
       - name: Download CLI
         uses: actions/download-artifact@v8
         with:
-          pattern: '{duck-*.pkg,duck-*.exe,duck-*.msi}'
+          pattern: '{duck-*,duck_*}'
           path: release
           merge-multiple: true
 
@@ -64,7 +64,7 @@ jobs:
         with:
           mode: upload
           url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/cdn.duck.sh/nightly/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/cdn.duck.sh/nightly/' || 'rackspace:/cdn.duck.sh/' }}
-          path: release/duck-*
+          path: 'release/{duck-*,duck_*}'
           args: '--verbose --existing overwrite --region IAD'
 
   changelog:
