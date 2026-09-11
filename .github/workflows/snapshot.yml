@@ -80,7 +80,7 @@ jobs:
   # Update the Homebrew tap at github.com/iterate-ch/homebrew-cyberduck. Nightly
   # only, so it lives here rather than in the shared publish.yml.
   brew:
-    needs: deploy
+    needs: [ publish ]
     if: ${{ !cancelled() }}
     permissions:
       actions: read
