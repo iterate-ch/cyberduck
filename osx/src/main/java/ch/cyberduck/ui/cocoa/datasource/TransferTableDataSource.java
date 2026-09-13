@@ -59,6 +59,16 @@ public class TransferTableDataSource extends ListDataSource {
     private final Map<Transfer, ProgressController> controllers
             = new HashMap<>();
 
+    private final AbstractCollectionListener<Transfer> listener = new AbstractCollectionListener<Transfer>() {
+        @Override
+        public void collectionItemRemoved(final Transfer item) {
+            final ProgressController controller = controllers.remove(item);
+            if(controller != null) {
+                controller.invalidate();
+            }
+        }
+    };
+
     private TransferFilter filter
             = new NullTransferFilter();
 
@@ -66,15 +76,17 @@ public class TransferTableDataSource extends ListDataSource {
         = TransferCollection.defaultCollection();
 
     public TransferTableDataSource() {
-        collection.addListener(new AbstractCollectionListener<Transfer>() {
-            @Override
-            public void collectionItemRemoved(final Transfer item) {
-                final ProgressController controller = controllers.remove(item);
-                if(controller != null) {
-                    controller.invalidate();
-                }
-            }
-        });
+        collection.addListener(listener);
+    }
+
+    @Override
+    public void invalidate() {
+        collection.removeListener(listener);
+        for(ProgressController controller : controllers.values()) {
+            controller.invalidate();
+        }
+        controllers.clear();
+        super.invalidate();
     }
 
     /**
