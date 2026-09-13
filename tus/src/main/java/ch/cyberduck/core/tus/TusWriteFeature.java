@@ -80,7 +80,9 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
                 request.setHeader(HttpHeaders.CONTENT_TYPE, "application/offset+octet-stream");
                 // Last chunk completing the upload. The server may take a significant amount of time to respond
                 // while assembling and validating previously uploaded chunks
-                final boolean finalize = (status.getOffset() + status.getLength()) == status.getParent().getLength();
+                // Overall status has offset and remaining length set when resuming upload
+                final long total = status.getParent().getOffset() + status.getParent().getLength();
+                final boolean finalize = (status.getOffset() + status.getLength()) == total;
                 if(finalize) {
                     // Request configuration replaces client defaults. Copy from client to retain connect and pool timeouts
                     final RequestConfig defaults = ((Configurable) session.getClient().getClient()).getConfig();
@@ -104,7 +106,7 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
                     if(finalize) {
                         log.warn("Timeout waiting for response completing upload of {} to {}", file, request.getURI(), e);
                         try {
-                            if(status.getParent().getLength() == new TusUploadHelper(session).offset(request.getURI().toString())) {
+                            if(total == new TusUploadHelper(session).offset(request.getURI().toString())) {
                                 log.info("Confirmed upload of {} is complete querying offset for {} after timeout waiting for response",
                                         file, request.getURI());
                                 return null;
