@@ -40,6 +40,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.Configurable;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -81,8 +82,10 @@ public class TusWriteFeature extends AbstractHttpWriteFeature<Void> {
                 // while assembling and validating previously uploaded chunks
                 final boolean finalize = (status.getOffset() + status.getLength()) == status.getParent().getLength();
                 if(finalize) {
-                    final RequestConfig context = session.getClient().getContext().getRequestConfig();
-                    request.setConfig(RequestConfig.copy(context)
+                    // Request configuration replaces client defaults. Copy from client to retain connect and pool timeouts
+                    final RequestConfig defaults = session.getClient().getClient() instanceof Configurable ?
+                            ((Configurable) session.getClient().getClient()).getConfig() : RequestConfig.DEFAULT;
+                    request.setConfig(RequestConfig.copy(defaults)
                             .setSocketTimeout(1000 * HostPreferencesFactory.get(session.getHost()).getInteger("tus.upload.finalize.timeout"))
                             .build());
                 }
