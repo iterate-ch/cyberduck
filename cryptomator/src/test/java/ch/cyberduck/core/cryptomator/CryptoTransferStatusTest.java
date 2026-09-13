@@ -71,4 +71,43 @@ public class CryptoTransferStatusTest extends AbstractCryptoTests {
         assertSame(overall.getParent(), cipherSegment.getParent());
         assertEquals(cipherLength, cipherSegment.getParent().getLength());
     }
+
+    @Test
+    public void testGetParentOfWrappedStatusWithoutParentReturnsCiphertextLength() throws Exception {
+        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
+        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final AbstractVault vault = new CryptomatorVault(home);
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
+        final Path file = new Path(home, "f", EnumSet.of(Path.Type.file));
+
+        // Simulate CryptoWriteFeature#write wrapping status without parent such as when creating empty file
+        final TransferStatus status = new TransferStatus().setLength(0L);
+        final CryptoTransferStatus cipher = new CryptoTransferStatus(vault, file, status);
+        assertSame(cipher, cipher.getParent());
+        assertEquals(vault.toCiphertextSize(0L, 0L), cipher.getParent().getLength());
+    }
+
+    @Test
+    public void testGetParentOfWrappedOverallStatusReturnsCiphertextLength() throws Exception {
+        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
+        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final AbstractVault vault = new CryptomatorVault(home);
+        vault.create(session, null, new MasterkeyVaultMetadataProvider(new VaultCredentials("test")));
+        final Path file = new Path(home, "f", EnumSet.of(Path.Type.file));
+
+        final long clearLength = vault.getFileContentCryptor().cleartextChunkSize() + 100L;
+        final long cipherLength = vault.toCiphertextSize(0L, clearLength);
+
+        // Simulate CryptoUploadFeature#upload attaching the whole file ciphertext status
+        final TransferStatus overall = new TransferStatus().setLength(clearLength);
+        overall.setParent(new CryptoTransferStatus(vault, file, overall));
+        // No cycle between plaintext and ciphertext overall status
+        assertSame(overall.getParent(), overall.getParent().getParent());
+        assertEquals(cipherLength, overall.getParent().getLength());
+
+        // Simulate HttpUploadFeature#transfer passing overall status to CryptoWriteFeature#write
+        final CryptoTransferStatus cipher = new CryptoTransferStatus(vault, file, overall);
+        assertSame(cipher, cipher.getParent());
+        assertEquals(cipherLength, cipher.getParent().getLength());
+    }
 }
