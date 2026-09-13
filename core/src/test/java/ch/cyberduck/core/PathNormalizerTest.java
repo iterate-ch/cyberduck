@@ -2,11 +2,46 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class PathNormalizerTest {
+
+    @Test
+    public void testNormalizeSelection() {
+        final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
+        final Path ab = new Path("/a/b", EnumSet.of(Path.Type.file));
+        final Path abc = new Path("/a/b/c", EnumSet.of(Path.Type.file));
+        final Path sibling = new Path("/ab", EnumSet.of(Path.Type.directory));
+        final Path f = new Path("/f", EnumSet.of(Path.Type.file));
+        final Path fc = new Path("/f/c", EnumSet.of(Path.Type.file));
+        // Children of included directory are removed
+        assertEquals(Arrays.asList(a, sibling), PathNormalizer.normalize(Arrays.asList(a, ab, abc, sibling)));
+        // Only directories included before are considered
+        assertEquals(Arrays.asList(ab, a), PathNormalizer.normalize(Arrays.asList(ab, a)));
+        // A file has no children
+        assertEquals(Arrays.asList(f, fc), PathNormalizer.normalize(Arrays.asList(f, fc)));
+        final Path root = new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        assertEquals(Collections.singletonList(root), PathNormalizer.normalize(Arrays.asList(root, a, ab, f)));
+        assertTrue(PathNormalizer.normalize(Collections.emptyList()).isEmpty());
+    }
+
+    @Test
+    public void testNormalizeLargeSelection() {
+        final Path directory = new Path("/d", EnumSet.of(Path.Type.directory));
+        final List<Path> selected = new ArrayList<>();
+        for(int i = 0; i < 100000; i++) {
+            selected.add(new Path(directory, String.format("f-%d", i), EnumSet.of(Path.Type.file)));
+        }
+        assertEquals(selected, PathNormalizer.normalize(selected));
+        selected.add(0, directory);
+        assertEquals(Collections.singletonList(directory), PathNormalizer.normalize(selected));
+    }
 
     @Test
     public void testNormalize() {
