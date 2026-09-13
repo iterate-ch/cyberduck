@@ -550,6 +550,17 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
         return this;
     }
 
+    /**
+     * Overall status with offset and length of the complete transfer as received by the server. Segments of an
+     * upload must link to the overall status with {@link #setParent(TransferStatus)}.
+     * <ul>
+     * <li>For a segment, the overall status of the transfer</li>
+     * <li>For the overall status of an upload to a vault, the overall status with ciphertext offset and length</li>
+     * <li>Otherwise this status</li>
+     * </ul>
+     *
+     * @return Overall transfer status or this status if no parent is set
+     */
     public TransferStatus getParent() {
         if(null == parent) {
             return this;
