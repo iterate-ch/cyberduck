@@ -130,3 +130,9 @@ controllers (`osx`, `windows`, `cli`'s `TerminalController`) submit workers and 
 - Commit messages: short, imperative, capitalized single sentence ending with a period (e.g. "Fix expression.",
   "Refactor to reusable workflow.").
 - License / distribution: GPLv3. GPL Maven artifacts are published to an S3-hosted repo (see README.md).
+
+## Attribution
+
+Do not add `Co-Authored-By` trailers in commit messages naming an AI. Using tools is fine and needs no disclosure.
+Whoever submits the work is responsible for it either way, so there is nothing for the tool to take credit or blame for.
+Commits and pull requests are attributed to their human author.

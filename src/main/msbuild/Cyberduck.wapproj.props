@@ -16,6 +16,5 @@
 <Project>
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)</OutputPath>
-    <AppxPackageDir>$(OutputPath)$(Configuration)\</AppxPackageDir>
   </PropertyGroup>
 </Project>
