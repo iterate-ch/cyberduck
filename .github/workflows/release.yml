@@ -27,8 +27,38 @@ jobs:
       CODESIGN_ENTITLEMENTS_NAME: 'default.entitlements'
     secrets: inherit
 
+  # Source tarball referenced by the homebrew-core `duck` formula, which builds from
+  # https://dist.duck.sh/duck-src-<version>.<revision>.tar.gz. Archives tracked files
+  # only. Uploaded as a `duck-*` artifact so the `cli`, `sftp` and `release` jobs
+  # pick it up.
+  source:
+    permissions:
+      contents: read
+    runs-on: [ linux, x64 ]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The revision is the commit count at the tag
+          fetch-depth: 0
+
+      - name: Archive Source
+        shell: bash
+        run: |
+          version=${GITHUB_REF_NAME#release-}
+          version=${version//-/.}
+          revision=$(git rev-list --count HEAD)
+          name="duck-src-${version}.${revision}"
+          git archive --format=tar --prefix="${name}/" HEAD | gzip -9n > "${name}.tar.gz"
+          sha256sum "${name}.tar.gz"
+
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          path: duck-src-*.tar.gz
+          archive: false
+
   publish:
-    needs: deploy
+    needs: [ deploy, source ]
     if: ${{ !cancelled() }}
     uses: ./.github/workflows/publish.yml
     with:
@@ -38,7 +68,7 @@ jobs:
   # Mirror the CLI installers to the dist.duck.sh SFTP host. Release only, so it
   # lives here rather than in the shared publish.yml.
   sftp:
-    needs: deploy
+    needs: [ deploy, source ]
     if: ${{ !cancelled() }}
     permissions:
       actions: read
@@ -77,7 +107,7 @@ jobs:
   # attached. Runs independently of `publish` so a delivery-channel failure
   # never blocks the release, and vice versa.
   release:
-    needs: deploy
+    needs: [ deploy, source ]
     if: ${{ !cancelled() }}
     permissions:
       contents: write
@@ -123,6 +153,7 @@ jobs:
             release/duck-*.msi
             release/duck_*.deb
             release/duck-*.rpm
+            release/duck-*.tar.gz
 
   # Push to the Chocolatey community repository. Release only, so it lives here
   # rather than in the shared publish.yml.
