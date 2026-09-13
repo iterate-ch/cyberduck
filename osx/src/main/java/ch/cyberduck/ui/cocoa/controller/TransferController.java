@@ -29,6 +29,7 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -89,7 +90,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class TransferController extends WindowController implements TransferListener, NSToolbar.Delegate, NSMenu.Validation {
+public class TransferController extends WindowController implements TransferListener, CollectionListener<Transfer>, NSToolbar.Delegate, NSMenu.Validation {
     private static final Logger log = LogManager.getLogger(TransferController.class);
 
     private final TransferToolbarValidator toolbarValidator = new TransferToolbarValidator(this);
@@ -129,38 +130,48 @@ public class TransferController extends WindowController implements TransferList
     @Delegate
     private AbstractTableDelegate<Transfer, TransferColumn> transferTableDelegate;
 
-    public TransferController() {
-        collection.addListener(new AbstractCollectionListener<Transfer>() {
+    @Override
+    public void collectionLoaded() {
+        this.invoke(new ControllerMainAction(TransferController.this) {
             @Override
-            public void collectionLoaded() {
-                invoke(new ControllerMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        reload();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemAdded(final Transfer item) {
-                invoke(new ControllerMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        reload();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemRemoved(final Transfer item) {
-                invoke(new ControllerMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        reload();
-                    }
-                });
+            public void run() {
+                reload();
             }
         });
+    }
+
+    @Override
+    public void collectionItemAdded(final Transfer item) {
+        this.invoke(new ControllerMainAction(TransferController.this) {
+            @Override
+            public void run() {
+                reload();
+            }
+        });
+    }
+
+    @Override
+    public void collectionItemRemoved(final Transfer item) {
+        this.invoke(new ControllerMainAction(TransferController.this) {
+            @Override
+            public void run() {
+                reload();
+            }
+        });
+    }
+
+    @Override
+    public void collectionItemChanged(final Transfer item) {
+        this.invoke(new ControllerMainAction(TransferController.this) {
+            @Override
+            public void run() {
+                reload();
+            }
+        });
+    }
+
+    public TransferController() {
+        collection.addListener(this);
     }
 
     @Override
@@ -185,6 +196,7 @@ public class TransferController extends WindowController implements TransferList
                         transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
                     }
                 });
+                collection.removeListener(this);
             }
         });
         if(collection.isLoaded()) {
@@ -311,6 +323,7 @@ public class TransferController extends WindowController implements TransferList
     @Override
     public void invalidate() {
         toolbar.setDelegate(null);
+        collection.removeListener(this);
         transferTableModel.invalidate();
         super.invalidate();
     }
