@@ -107,7 +107,7 @@ public class DistributionPurgeWorker extends Worker<Boolean> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DistributionPurgeWorker{");
-        sb.append("files=").append(files);
+        sb.append("files=").append(abbreviate(files));
         sb.append('}');
         return sb.toString();
     }
