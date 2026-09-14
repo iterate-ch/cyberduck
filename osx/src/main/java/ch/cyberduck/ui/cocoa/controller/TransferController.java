@@ -217,6 +217,14 @@ public class TransferController extends WindowController implements TransferList
         super.setWindow(window);
     }
 
+    /**
+     * Keep controller when window is closed to continue receiving progress from running transfers
+     */
+    @Override
+    protected boolean isReleasedWhenClosed() {
+        return false;
+    }
+
     @Override
     public String windowFrameName() {
         return "Transfers";
