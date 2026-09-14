@@ -124,7 +124,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CalculateSizeWorker{");
-        sb.append("files=").append(files);
+        sb.append("files=").append(abbreviate(files));
         sb.append('}');
         return sb.toString();
     }
