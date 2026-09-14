@@ -185,21 +185,21 @@ public class TransferController extends WindowController implements TransferList
 
         if(!collection.isLoaded()) {
             transferSpinner.startAnimation(null);
+            collection.addListener(new AbstractCollectionListener<Transfer>() {
+                @Override
+                public void collectionLoaded() {
+                    invoke(new WindowMainAction(TransferController.this) {
+                        @Override
+                        public void run() {
+                            transferSpinner.stopAnimation(null);
+                            transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
+                        }
+                    });
+                    collection.removeListener(this);
+                }
+            });
         }
-        collection.addListener(new AbstractCollectionListener<Transfer>() {
-            @Override
-            public void collectionLoaded() {
-                invoke(new WindowMainAction(TransferController.this) {
-                    @Override
-                    public void run() {
-                        transferSpinner.stopAnimation(null);
-                        transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
-                    }
-                });
-                collection.removeListener(this);
-            }
-        });
-        if(collection.isLoaded()) {
+        else {
             transferSpinner.stopAnimation(null);
             transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
