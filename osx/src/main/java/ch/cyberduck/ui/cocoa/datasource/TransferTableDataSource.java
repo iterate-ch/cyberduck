@@ -82,10 +82,6 @@ public class TransferTableDataSource extends ListDataSource {
     @Override
     public void invalidate() {
         collection.removeListener(listener);
-        for(ProgressController controller : controllers.values()) {
-            controller.invalidate();
-        }
-        controllers.clear();
         super.invalidate();
     }
 
