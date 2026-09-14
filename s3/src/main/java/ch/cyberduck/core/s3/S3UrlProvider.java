@@ -144,7 +144,7 @@ public class S3UrlProvider implements UrlProvider {
             }
         }
         else {
-            final String hostname = this.getHostnameForContainer(containerService.getContainer(file));
+            final String hostname = this.getHostnameForBucket(containerService.getContainer(file));
             if(hostname.startsWith(containerService.getContainer(file).getName())) {
                 url.append(hostname);
                 if(port != scheme.getPort()) {
@@ -181,9 +181,37 @@ public class S3UrlProvider implements UrlProvider {
         return new PresignedUrl(file, expiry);
     }
 
-    private String getHostnameForContainer(final Path bucket) {
-        if(!ServiceUtils.isBucketNameValidDNSName(containerService.getContainer(bucket).getName())) {
+
+    private String getRegionForBucket(final Path bucket) {
+        if(session.isConnected()) {
+            try {
+                return new S3LocationFeature(session).getLocation(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()).getIdentifier();
+            }
+            catch(BackgroundException e) {
+                log.warn("Error {} determine region for bucket {}", e, bucket);
+            }
+        }
+        final String region = session.getHost().getRegion();
+        if(StringUtils.isBlank(region)) {
+            // Only for AWS
+            switch(session.getSignatureVersion()) {
+                case AWS4HMACSHA256:
+                    // Region is required for AWS4-HMAC-SHA256 signature
+                    return S3LocationFeature.DEFAULT_REGION.getIdentifier();
+            }
+        }
+        return region;
+    }
+
+    private String getHostnameForBucket(final Path bucket) {
+        if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
             return session.getHost().getHostname();
+        }
+        if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+            final String endpoint = HostPreferencesFactory.get(session.getHost()).getProperty("s3.endpoint.format.ipv4");
+            final String region = this.getRegionForBucket(bucket);
+            log.debug("Apply region {} to endpoint {}", region, endpoint);
+            return String.format("%s.%s", bucket.getName(), String.format(endpoint, region));
         }
         if(StringUtils.equals(session.getHost().getHostname(), session.getHost().getProtocol().getDefaultHostname())) {
             return String.format("%s.%s", bucket.getName(), session.getHost().getHostname());
@@ -211,22 +239,9 @@ public class S3UrlProvider implements UrlProvider {
                 log.error("Failure retrieving secret required to sign temporary URL", e);
                 return DescriptiveUrl.EMPTY.getUrl();
             }
-            String region = session.getHost().getRegion();
             final Path bucket = containerService.getContainer(file);
             final String bucketname = bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName();
-            if(session.isConnected()) {
-                if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(bucketname)) {
-                    region = session.getClient().getRegionEndpointCache().getRegionForBucketName(bucketname);
-                }
-            }
-            if(StringUtils.isBlank(region)) {
-                // Only for AWS
-                switch(session.getSignatureVersion()) {
-                    case AWS4HMACSHA256:
-                        // Region is required for AWS4-HMAC-SHA256 signature
-                        region = S3LocationFeature.DEFAULT_REGION.getIdentifier();
-                }
-            }
+            final String region = getRegionForBucket(bucket);
             return new S3PresignedUrlProvider(session).create(
                     credentials,
                     bucketname,
