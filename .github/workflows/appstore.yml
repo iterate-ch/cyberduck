@@ -1,9 +1,11 @@
 name: Publish Mac App Store
-
 on:
   push:
     tags: [ '*' ]
-
+# Queue instead of running in parallel
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 jobs:
   deploy:
     uses: ./.github/workflows/deploy.yml

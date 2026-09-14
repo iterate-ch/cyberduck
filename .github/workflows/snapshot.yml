@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+# Queue instead of running in parallel
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 jobs:
   deploy:
     strategy:
