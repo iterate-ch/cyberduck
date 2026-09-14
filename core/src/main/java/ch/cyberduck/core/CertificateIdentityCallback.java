@@ -21,6 +21,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 public interface CertificateIdentityCallback {
+    CertificateIdentityCallback noop = new DisabledCertificateIdentityCallback();
 
     /**
      * Prompt user to select certificate
