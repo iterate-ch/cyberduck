@@ -135,7 +135,7 @@ Replace `YourUsername` with your GitHub username and `YourPAT` with your persona
 
 ## Building
 
-Run `mvn verify -DskipTests -DskipSign` to build without running any tests and skip codesign. Find build artifacts in
+Run `SKIP_SIGN=true mvn verify -DskipTests` to build without running any tests and skip code-signing. Find build artifacts in
 
 * `osx/target/Cyberduck.app`
 * `windows/target/Cyberduck.exe`

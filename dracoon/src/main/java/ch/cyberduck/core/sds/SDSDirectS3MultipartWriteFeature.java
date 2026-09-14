@@ -185,7 +185,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                                     }
                                 }
                                 finally {
-                                    EntityUtils.consume(response.getEntity());
+                                    EntityUtils.consumeQuietly(response.getEntity());
                                 }
                             }
                             //

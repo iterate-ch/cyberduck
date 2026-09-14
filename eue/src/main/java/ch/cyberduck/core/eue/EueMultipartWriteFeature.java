@@ -193,7 +193,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                                     throw e;
                                 }
                                 finally {
-                                    EntityUtils.consume(response.getEntity());
+                                    EntityUtils.consumeQuietly(response.getEntity());
                                 }
                             }
                             catch(IOException | DecoderException e) {

@@ -158,7 +158,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
                                 throw e;
                             }
                             finally {
-                                EntityUtils.consume(response.getEntity());
+                                EntityUtils.consumeQuietly(response.getEntity());
                             }
                         }
                         catch(IOException e) {
@@ -221,7 +221,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<File> {
                         throw new IOException(e);
                     }
                     finally {
-                        EntityUtils.consume(response.getEntity());
+                        EntityUtils.consumeQuietly(response.getEntity());
                     }
                 }
             }

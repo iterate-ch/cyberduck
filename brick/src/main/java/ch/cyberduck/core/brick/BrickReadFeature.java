@@ -36,6 +36,7 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -79,6 +80,7 @@ public class BrickReadFeature implements Read {
                 case HttpStatus.SC_PARTIAL_CONTENT:
                     return new HttpMethodReleaseInputStream(response, status);
                 default:
+                    EntityUtils.consumeQuietly(response.getEntity());
                     throw new DefaultHttpResponseExceptionMappingService().map("Download {0} failed", new HttpResponseException(
                         response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()), file);
             }

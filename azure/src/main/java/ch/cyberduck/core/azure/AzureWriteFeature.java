@@ -21,8 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -35,14 +33,19 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import com.azure.core.http.rest.Response;
+import com.azure.storage.blob.models.AppendBlobItem;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +53,7 @@ import com.azure.core.exception.HttpResponseException;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.models.BlobType;
+import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.azure.storage.blob.options.AppendBlobCreateOptions;
 import com.azure.storage.blob.options.BlockBlobOutputStreamOptions;
 import com.azure.storage.blob.specialized.AppendBlobClient;
@@ -74,15 +78,6 @@ public class AzureWriteFeature implements Write<Void> {
     }
 
     public AzureWriteFeature(final AzureSession session, final BlobType blobType) {
-        this.session = session;
-        this.blobType = blobType;
-    }
-
-    public AzureWriteFeature(final AzureSession session, final Find finder, final AttributesFinder attributes) {
-        this(session, finder, attributes, BlobType.valueOf(HostPreferencesFactory.get(session.getHost()).getProperty("azure.upload.blobtype")));
-    }
-
-    public AzureWriteFeature(final AzureSession session, final Find finder, final AttributesFinder attributes, final BlobType blobType) {
         this.session = session;
         this.blobType = blobType;
     }
@@ -127,7 +122,7 @@ public class AzureWriteFeature implements Write<Void> {
                         break;
                 }
             }
-            final BlobOutputStream out;
+            final OutputStream out;
             if(status.isExists()) {
                 if(preferences.getBoolean("azure.upload.snapshot")) {
                     session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
@@ -135,19 +130,34 @@ public class AzureWriteFeature implements Write<Void> {
                 }
                 if(status.isAppend()) {
                     // Existing append blob type
-                    out = client.getAppendBlobClient().getBlobOutputStream();
+                    final AppendBlobClient append = client.getAppendBlobClient();
+                    out = new ProxyOutputStream(append.getBlobOutputStream()) {
+                        @Override
+                        protected void afterWrite(final int n) throws IOException {
+                            // Check if the stream is faulted
+                            this.flush();
+                        }
+                    };
                 }
                 else {
                     // Existing block blob type
                     final PathAttributes attr = new AzureAttributesFinderFeature(session).find(file);
                     if(BlobType.APPEND_BLOB == BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE))) {
-                        out = client.getAppendBlobClient().getBlobOutputStream(true);
+                        final AppendBlobClient append = client.getAppendBlobClient();
+                        out = new ProxyOutputStream(append.getBlobOutputStream(true)) {
+                            @Override
+                            protected void afterWrite(final int n) throws IOException {
+                                // Check if the stream is faulted
+                                this.flush();
+                            }
+                        };
                     }
                     else {
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
                                 .setMetadata(metadata)
                                 .setHeaders(headers)
-                                .setMetadata(metadata);
+                                .setParallelTransferOptions(new ParallelTransferOptions()
+                                        .setBlockSizeLong(preferences.getLong("azure.upload.blocksize")));
                         out = client.getBlockBlobClient().getBlobOutputStream(options);
                     }
                 }
@@ -159,10 +169,19 @@ public class AzureWriteFeature implements Write<Void> {
                         final AppendBlobClient append = client.getAppendBlobClient();
                         final AppendBlobCreateOptions options = new AppendBlobCreateOptions()
                                 .setMetadata(metadata)
-                                .setHeaders(headers)
-                                .setMetadata(metadata);
-                        append.createWithResponse(options, null, null);
-                        out = append.getBlobOutputStream();
+                                .setHeaders(headers);
+                        // Creates a 0-length append blob
+                        final Response<AppendBlobItem> response = append.createWithResponse(options, null, null);
+                        if(log.isDebugEnabled()) {
+                            log.debug("Created append blob {} with status {}", file, response.getStatusCode());
+                        }
+                        out = new ProxyOutputStream(append.getBlobOutputStream()) {
+                            @Override
+                            protected void afterWrite(final int n) throws IOException {
+                                // Check if the stream is faulted
+                                this.flush();
+                            }
+                        };
                         break;
                     }
                     default: {
@@ -170,7 +189,8 @@ public class AzureWriteFeature implements Write<Void> {
                         final BlockBlobOutputStreamOptions options = new BlockBlobOutputStreamOptions()
                                 .setMetadata(metadata)
                                 .setHeaders(headers)
-                                .setMetadata(metadata);
+                                .setParallelTransferOptions(new ParallelTransferOptions()
+                                        .setBlockSizeLong(preferences.getLong("azure.upload.blocksize")));
                         out = block.getBlobOutputStream(options);
                         break;
                     }

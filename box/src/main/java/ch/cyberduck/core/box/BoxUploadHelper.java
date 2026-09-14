@@ -132,7 +132,7 @@ public class BoxUploadHelper {
                 public Files handleResponse(final HttpResponse response) throws IOException {
                     if(response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED) {
                         log.debug("Wait for server to process chunks with response {}", response);
-                        this.flush(file, response, uploadSessionId);
+                        this.flush(uploadSessionId);
                         return session.getClient().execute(request, this);
                     }
                     return super.handleResponse(response);
@@ -146,7 +146,7 @@ public class BoxUploadHelper {
                 /**
                  * Wait for server processing all pending chunks
                  */
-                private void flush(final Path file, final HttpResponse response, final String uploadSessionId) throws IOException {
+                private void flush(final String uploadSessionId) throws IOException {
                     UploadSession uploadSession;
                     do {
                         final HttpGet request = new HttpGet(String.format("%s/files/upload_sessions/%s", client.getBasePath(), uploadSessionId));

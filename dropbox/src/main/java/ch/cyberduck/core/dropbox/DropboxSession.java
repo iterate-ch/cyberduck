@@ -190,6 +190,9 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         if(type == Versioning.class) {
             return (T) new DropboxVersioningFeature(this);
         }
+        if(type == Thumbnail.class) {
+            return (T) new DropboxThumbnailFeature(this);
+        }
         if(type == PathContainerService.class) {
             return (T) new DropboxPathContainerService();
         }

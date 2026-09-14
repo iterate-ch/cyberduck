@@ -116,7 +116,7 @@ public class MultipartUploadTokenOutputStream extends OutputStream {
                             throw e;
                         }
                         finally {
-                            EntityUtils.consume(response.getEntity());
+                            EntityUtils.consumeQuietly(response.getEntity());
                         }
                     }
                     catch(HttpResponseException e) {

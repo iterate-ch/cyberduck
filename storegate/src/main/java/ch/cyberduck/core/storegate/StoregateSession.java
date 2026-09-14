@@ -148,17 +148,19 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                         }
                         break;
                     case HttpStatus.SC_FORBIDDEN:
+                        EntityUtils.updateEntity(response, response.getEntity());
                         // Insufficient scope
                         final BackgroundException failure = new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                 EntityUtils.toString(response.getEntity())));
                         throw new LoginFailureException(failure.getDetail(), failure);
                     default:
+                        EntityUtils.updateEntity(response, response.getEntity());
                         throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                 EntityUtils.toString(response.getEntity())));
                 }
             }
             finally {
-                EntityUtils.consume(response.getEntity());
+                EntityUtils.consumeQuietly(response.getEntity());
             }
             // Get username
             final ExtendedUser me = new UsersApi(client).usersGetMe();

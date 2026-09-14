@@ -26,6 +26,7 @@
         <EntryPointProjectUniqueName>..\csharp\Cyberduck.csproj</EntryPointProjectUniqueName>
         <!-- Unsupported with IKVM -->
         <AppxSymbolPackageEnabled>false</AppxSymbolPackageEnabled>
+        <AppxPackageDir>$(OutputPath)AppPackages\</AppxPackageDir>
     </PropertyGroup>
     <PropertyGroup>
         <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
@@ -67,6 +68,12 @@
         <ProjectReference Include="..\csharp\Cyberduck.csproj" />
         <PackageReference Include="IKVM" ExcludeAssets="build;buildTransitive;buildMultiTargeting" />
     </ItemGroup>
+
+    <Target Name="CopyAppxPackage" DependsOnTargets="_ComputeAppxPackageOutput" AfterTargets="PrepareForRun">
+        <Copy SourceFiles="$(AppxPackageOutput)" DestinationFolder="$(OutputPath)$(Configuration)\">
+            <Output TaskParameter="CopiedFiles" ItemName="FileWrites" />
+        </Copy>
+    </Target>
 
     <Target Name="ResolveLocalPackagePayload" BeforeTargets="_GenerateAppxPackageRecipeFile" Returns="@(AppxPackagePayload)">
         <ItemGroup>

@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>9.5.4-SNAPSHOT</version>
+    <version>9.6.0-SNAPSHOT</version>
 
     <modules>
         <module>defaults</module>
@@ -81,6 +81,9 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <!-- Default project root. Overridden by directory-maven-plugin in the
+             project-root-jenkins profile. -->
+        <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
         <argLine />
         <jna-version>5.14.0</jna-version>
         <jersey-version>2.38</jersey-version>
@@ -91,7 +94,7 @@
         <bouncycastle-version>1.85</bouncycastle-version>
         <httpclient-version>4.5.14</httpclient-version>
         <google-http-client.version>2.2.0</google-http-client.version>
-        <jwt.version>4.6.0</jwt.version>
+        <jwt.version>4.6.1</jwt.version>
         <java-native-dll>8u312b07</java-native-dll>
         <rococoa-version>0.10.0</rococoa-version>
         <jansi.version>2.4.2</jansi.version>
@@ -120,7 +123,7 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.18.12</version>
+                <version>1.18.13</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
@@ -325,7 +328,7 @@
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>2.2.54</version>
+                <version>2.2.55</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
@@ -360,7 +363,7 @@
             <dependency>
                 <groupId>com.google.api-client</groupId>
                 <artifactId>google-api-client</artifactId>
-                <version>2.9.0</version>
+                <version>2.9.1</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.httpcomponents.client5</groupId>
@@ -452,7 +455,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.15.0</version>
+                    <version>3.16.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
@@ -530,7 +533,6 @@
                                     <property name="version" value="${project.version}" />
                                     <property name="revision" value="${git.commitsCount}" />
                                     <property name="hash" value="${git.revision}" />
-                                    <property name="sparkle.feed" value="${sparkle.feed}" />
                                     <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                 </target>
                             </configuration>
@@ -833,9 +835,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>ru.concerteza.buildnumber</groupId>
-                <artifactId>maven-jgit-buildnumber-plugin</artifactId>
-                <version>1.2.10</version>
+                <groupId>com.labun.buildnumber</groupId>
+                <artifactId>jgit-buildnumber-maven-plugin</artifactId>
+                <version>2.7.0</version>
                 <executions>
                     <execution>
                         <id>git-buildnumber</id>
@@ -846,7 +848,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <repositoryDirectory>${project.basedir}</repositoryDirectory>
+                    <repositoryDirectory>${main.basedir}</repositoryDirectory>
                     <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
                 </configuration>
             </plugin>
@@ -1037,18 +1039,6 @@
             </build>
         </profile>
         <profile>
-            <id>project-root-local</id>
-            <!-- activate profile for non-Jenkins builds -->
-            <activation>
-                <property>
-                    <name>!env.JENKINS_HOME</name>
-                </property>
-            </activation>
-            <properties>
-                <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
-            </properties>
-        </profile>
-        <profile>
             <id>no-testcontainers</id>
             <properties>
                 <surefire.group.excluded>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest
@@ -1124,7 +1114,6 @@
                                             <property name="version" value="${project.version}" />
                                             <property name="revision" value="${git.commitsCount}" />
                                             <property name="hash" value="${git.revision}" />
-                                            <property name="sparkle.feed" value="${sparkle.feed}" />
                                             <ant antfile="${project.basedir}/build.xml" target="msbuild-props" dir="." />
                                         </target>
                                     </configuration>

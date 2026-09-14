@@ -59,7 +59,7 @@ public class EueMultipartUploadCompleter {
                 }
             }
             finally {
-                EntityUtils.consume(response.getEntity());
+                EntityUtils.consumeQuietly(response.getEntity());
             }
         }
         catch(IOException e) {

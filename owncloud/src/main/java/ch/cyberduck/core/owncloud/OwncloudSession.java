@@ -22,6 +22,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
+import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -126,6 +127,7 @@ public class OwncloudSession extends DAVSession {
             if(!ocs.locking) {
                 return null;
             }
+            return (T) new DAVLockFeature(this);
         }
         if(type == Upload.class) {
             if(ArrayUtils.contains(tus.versions, TUS_VERSION) && tus.extensions.contains(TusCapabilities.Extension.creation)) {
