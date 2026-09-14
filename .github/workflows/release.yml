@@ -79,6 +79,10 @@ jobs:
       contents: read
     runs-on: [ linux, x64 ]
     steps:
+      - name: Clean
+        run: rm -rf release
+        shell: bash
+
       - name: Download CLI
         uses: actions/download-artifact@v8
         with:
@@ -123,6 +127,10 @@ jobs:
         run: |
           version=${GITHUB_REF_NAME#release-}
           echo "version=${version//-/.}" >> "$GITHUB_OUTPUT"
+
+      - name: Clean
+        run: rm -rf release
+        shell: bash
 
       - name: Download App
         uses: actions/download-artifact@v8
@@ -171,6 +179,9 @@ jobs:
       contents: read
     runs-on: [ self-hosted, windows, x64 ]
     steps:
+      - name: Clean
+        run: Remove-Item -Recurse -Force release -ErrorAction SilentlyContinue
+
       - name: Download NUPKG
         uses: actions/download-artifact@v8
         with:

@@ -45,6 +45,10 @@ jobs:
       contents: read
     runs-on: [ linux, x64 ]
     steps:
+      - name: Clean
+        run: rm -rf release
+        shell: bash
+
       - name: Download App
         uses: actions/download-artifact@v8
         with:

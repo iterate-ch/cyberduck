@@ -32,6 +32,9 @@ jobs:
       contents: read
     runs-on: macos
     steps:
+      - name: Clean
+        run: rm -rf release
+        shell: bash
       - name: Download App PKG (macOS)
         uses: actions/download-artifact@v8
         with:
@@ -42,4 +45,4 @@ jobs:
         env:
           NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
           NOTARIZATION_PW: ${{ secrets.NOTARIZATION_PW }}
-        run: xcrun altool --verbose --upload-app -f release/*.pkg -t osx -u "$NOTARIZATION_USER" -p "$NOTARIZATION_PW"
+        run: xcrun altool --verbose --upload-app -f release/Cyberduck-*.pkg -t osx -u "$NOTARIZATION_USER" -p "$NOTARIZATION_PW"
