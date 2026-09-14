@@ -279,6 +279,14 @@ public class OpenSshConfig {
                     }
                 }
             }
+            else if("ProxyCommand".equalsIgnoreCase(keyword)) {
+                for(final Host c : current) {
+                    if(c.proxyCommand == null) {
+                        // The whole argument is passed to the user's shell, do not strip embedded quotes
+                        c.proxyCommand = none(argValue);
+                    }
+                }
+            }
             else if("User".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.user == null) {
@@ -485,6 +493,7 @@ public class OpenSshConfig {
 
         String hostName;
         String proxyJump;
+        String proxyCommand;
         int port;
         String identityFile;
         String identityAgent;
@@ -499,6 +508,9 @@ public class OpenSshConfig {
             }
             if(proxyJump == null) {
                 proxyJump = src.proxyJump;
+            }
+            if(proxyCommand == null) {
+                proxyCommand = src.proxyCommand;
             }
             if(port == 0) {
                 port = src.port;
@@ -532,6 +544,14 @@ public class OpenSshConfig {
 
         public String getProxyJump() {
             return proxyJump;
+        }
+
+        /**
+         * @return the command to use to connect to the server, or null if a direct connection or {@code ProxyJump}
+         * should be used. The returned value may still contain the tokens {@code %h}, {@code %p} and {@code %r}.
+         */
+        public String getProxyCommand() {
+            return proxyCommand;
         }
 
         /**
@@ -591,6 +611,7 @@ public class OpenSshConfig {
             sb.append("patternsApplied=").append(patternsApplied);
             sb.append(", hostName='").append(hostName).append('\'');
             sb.append(", proxyJump='").append(proxyJump).append('\'');
+            sb.append(", proxyCommand='").append(proxyCommand).append('\'');
             sb.append(", port=").append(port);
             sb.append(", identityFile=").append(identityFile);
             sb.append(", identityAgent=").append(identityAgent);

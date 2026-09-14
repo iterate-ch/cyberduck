@@ -22,6 +22,7 @@ package ch.cyberduck.core.diagnostics;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.JumpHostConfiguratorFactory;
+import ch.cyberduck.core.JumphostConfigurator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -59,16 +60,20 @@ public class ReachabilityFactory extends Factory<Reachability> {
                     new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(proxy), new HttpReachability(proxy)).test(bookmark);
                     break;
                 case sftp:
-                    final Host jumphost = JumpHostConfiguratorFactory.get(bookmark.getProtocol()).getJumphost(bookmark.getHostname());
+                    final JumphostConfigurator configurator = JumpHostConfiguratorFactory.get(bookmark.getProtocol());
+                    final Host jumphost = configurator.getJumphost(bookmark.getHostname());
                     if(null != jumphost) {
                         log.warn("Run reachablity check for jump host {}", jumphost);
                         new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(proxy), new TcpReachability(proxy)).test(jumphost);
                         return;
                     }
-                    else {
-                        new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(proxy), new TcpReachability(proxy)).test(bookmark);
+                    if(null != configurator.getProxyCommand(bookmark.getHostname())) {
+                        // Target is reached through an external proxy command and may not be resolvable or
+                        // reachable directly. Nothing to test.
+                        log.warn("Skip reachability check for {} connecting through proxy command", bookmark);
+                        return;
                     }
-                    break;
+                    // Break through
                 default:
                     new ChainedReachability(new HostnameReachability(), monitor, new ResolverReachability(proxy), new TcpReachability(proxy)).test(bookmark);
                     break;
