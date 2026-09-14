@@ -51,6 +51,8 @@ jobs:
           pattern: Cyberduck-*
           path: release
           merge-multiple: true
+          # Keep the app ZIP as is instead of extracting Cyberduck.app
+          skip-decompress: true
 
       - name: Credentials
         id: identity

@@ -20,6 +20,8 @@ jobs:
           pattern: Cyberduck-*
           path: release
           merge-multiple: true
+          # Keep the app ZIP as is instead of extracting Cyberduck.app
+          skip-decompress: true
 
       - name: S3 Upload
         uses: iterate-ch/cyberduck-cli-action@v1
