@@ -64,7 +64,7 @@ jobs:
         with:
           mode: upload
           url: ${{ inputs['SPARKLE_FEED'] == 'nightly' && 'rackspace:/cdn.duck.sh/nightly/' || inputs['SPARKLE_FEED'] == 'beta' && 'rackspace:/cdn.duck.sh/beta/' || 'rackspace:/cdn.duck.sh/' }}
-          path: 'release/{duck-*,duck_*}'
+          path: 'release/*'
           args: '--verbose --existing overwrite --region IAD'
 
   changelog:
