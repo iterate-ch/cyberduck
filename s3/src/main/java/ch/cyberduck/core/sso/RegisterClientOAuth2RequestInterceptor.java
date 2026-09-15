@@ -164,7 +164,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
      * Send token request as application/json instead of default application/x-www-form-urlencoded
      */
     @Override
-    protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode) throws BackgroundException {
+    protected IdTokenResponse exchangeToken(final AuthorizationCodeFlow flow, final String authorizationCode, final String redirectUri) throws BackgroundException {
         final AWSSSOOIDCClientBuilder configuration = AWSSSOOIDCClientBuilder.standard()
                 .withRegion(region)
                 .withClientConfiguration(new CustomClientConfiguration(host,
@@ -184,7 +184,7 @@ public class RegisterClientOAuth2RequestInterceptor extends OAuth2RequestInterce
                     .withClientSecret(this.getClientsecret())
                     .withGrantType(this.getFlowType().toString())
                     .withCode(authorizationCode)
-                    .withRedirectUri(this.getRedirectUri())
+                    .withRedirectUri(redirectUri)
                     .withCodeVerifier(codeVerifier);
             final CreateTokenResult tokenResponse = client.createToken(tokenRequest);
             return new IdTokenResponse()
