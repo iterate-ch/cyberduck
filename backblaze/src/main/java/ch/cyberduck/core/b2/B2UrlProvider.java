@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.PathRelativizer;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
@@ -30,13 +31,12 @@ import java.util.Locale;
 
 public class B2UrlProvider implements UrlProvider {
 
-    private final PathContainerService containerService
-        = new B2PathContainerService();
-
+    private final PathContainerService containerService;
     private final B2Session session;
 
     public B2UrlProvider(final B2Session session) {
         this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override
@@ -45,12 +45,38 @@ public class B2UrlProvider implements UrlProvider {
             return DescriptiveUrlBag.empty();
         }
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.isFile()) {
-            final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
-                URIEncoder.encode(containerService.getContainer(file).getName()),
-                URIEncoder.encode(containerService.getKey(file)));
-            list.add(new DescriptiveUrl(download, DescriptiveUrl.Type.http,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.https.name().toUpperCase(Locale.ROOT))));
+        if(file.isFile() || file.isDirectory()) {
+            if(types.contains(DescriptiveUrl.Type.http) && file.isFile()) {
+                final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
+                    URIEncoder.encode(containerService.getContainer(file).getName()),
+                    URIEncoder.encode(containerService.getKey(file)));
+                list.add(new DescriptiveUrl(download, DescriptiveUrl.Type.http,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.https.name().toUpperCase(Locale.ROOT))));
+            }
+            if(types.contains(DescriptiveUrl.Type.provider)) {
+                final Path container = containerService.getContainer(file);
+                if(!file.isRoot()) {
+                    String cliUrl;
+                    if(container.equals(file)) {
+                        cliUrl = String.format("b2://%s/", container.getName());
+                    }
+                    else {
+                        String key;
+                        if(file.isDirectory()) {
+                            key = PathRelativizer.relativize(container.getAbsolute(), file.getAbsolute());
+                        }
+                        else {
+                            key = containerService.getKey(file);
+                        }
+                        if(file.isDirectory() && !key.endsWith("/")) {
+                            key = key + "/";
+                        }
+                        cliUrl = String.format("b2://%s/%s", container.getName(), key);
+                    }
+                    list.add(new DescriptiveUrl(cliUrl, DescriptiveUrl.Type.provider,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "B2 CLI")));
+                }
+            }
         }
         return list;
     }
