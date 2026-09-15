@@ -206,6 +206,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                             long length = Math.min(segmentSize, remaining);
                             final TransferStatus segmentStatus = new TransferStatus()
                                     .setSegment(true) // Skip completion filter for single segment
+                                    .setParent(status)
                                     .setAppend(true) // Read with offset
                                     .setOffset(offset)
                                     .setLength(length)

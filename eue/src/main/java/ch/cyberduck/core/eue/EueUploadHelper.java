@@ -91,8 +91,8 @@ public final class EueUploadHelper {
                                                                   final TransferStatus status, final UploadType uploadType) throws BackgroundException {
         try {
             final ResourceResourceIdBody body = new ResourceResourceIdBody().uploadType(uploadType);
-            if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
-                body.setSize(status.getLength());
+            if(TransferStatus.UNKNOWN_LENGTH != status.getParent().getLength()) {
+                body.setSize(status.getParent().getLength());
             }
             final ResourceUpdateModelUpdate resourceUpdateModel = new ResourceUpdateModelUpdate();
             final UiWin32 uiwin32 = new UiWin32();
@@ -117,8 +117,8 @@ public final class EueUploadHelper {
         final ResourceCreationRepresentationArrayInner resourceCreationRepresentation = new ResourceCreationRepresentationArrayInner();
         resourceCreationRepresentation.setForceOverwrite(true);
         resourceCreationRepresentation.setPath(filename);
-        if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
-            resourceCreationRepresentation.setSize(status.getLength());
+        if(TransferStatus.UNKNOWN_LENGTH != status.getParent().getLength()) {
+            resourceCreationRepresentation.setSize(status.getParent().getLength());
         }
         resourceCreationRepresentation.setUploadType(uploadType);
         resourceCreationRepresentation.setResourceType(ResourceCreationRepresentationArrayInner.ResourceTypeEnum.FILE);
